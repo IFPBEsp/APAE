@@ -12,13 +12,13 @@ Projeto em desenvolvimento, surtido de uma parceria entre o IFPB (Campus Esperan
 
 Ao fazer um commit, siga o seguinte padrão:
 
-    <tipo>[escopo]:<Descrição>
+    <tipo>[escopo]:<descrição>
 
     <Corpo Opcional> 
 
 Exemplo:
 
-    Feat[service]: Adiciona login de usuário
+    feat[service]: adiciona login de usuário
 
 __observações:__ Adicione o corpo do commit, somente quando achar necessário especificar algo mais importante para um melhor entendimento da alteração feita. Para adicionar quebra de linha na mensagem do commit pelo terminal, use "\n".
 
@@ -96,7 +96,7 @@ Testes:
 
 Para criar branchs, siga a seguinte estrutura:
 
-    <Número da Issue>-<Descrição>
+    <número da issue>-<descrição>
 
 Exemplo: 
 
