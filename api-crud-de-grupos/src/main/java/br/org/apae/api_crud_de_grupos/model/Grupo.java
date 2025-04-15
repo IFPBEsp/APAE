@@ -1,28 +1,46 @@
 package br.org.apae.api_crud_de_grupos.model;
 
-import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
-import jakarta.persistence.Entity;
+import jakarta.persistence.*;
 
 @Entity
+@Table(name = "grupos")
 public class Grupo {
-    private UUID id;
-    private String nomeDoGrupo;
-    private ArrayList<Paciente> listaDeParticipantes;
 
-    public Grupo(UUID id, String nomeDoGrupo, ArrayList<Paciente> listaDeParticipantes) {
-        this.id = id;
+    @Id
+    @GeneratedValue
+    private UUID id;
+
+    @Column(name = "nome_do_grupo", nullable = false)
+    private String nomeDoGrupo;
+
+    @Column(name = "descricao", nullable = false)
+    private String descricao;
+
+    @ElementCollection
+    @CollectionTable(name = "grupo_pacientes", joinColumns = @JoinColumn(name = "grupo_id"))
+    @Column(name = "paciente_id")
+    private List<UUID> listaDePacientesId;
+
+    @ElementCollection
+    @CollectionTable(name = "grupo_profissionais", joinColumns = @JoinColumn(name = "grupo_id"))
+    @Column(name = "profissional_id")
+    private List<UUID> listaDeProfissionaisDeSaudeId;
+
+    //Construtor vazio para o JPA
+    public Grupo() {}
+
+    public Grupo(String nomeDoGrupo, String descricao, List<UUID> listaDePacientesId, List<UUID> listaDeProfissionaisDeSaudeId) {
         this.nomeDoGrupo = nomeDoGrupo;
-        this.listaDeParticipantes = listaDeParticipantes;
+        this.descricao = descricao;
+        this.listaDePacientesId = listaDePacientesId;
+        this.listaDeProfissionaisDeSaudeId = listaDeProfissionaisDeSaudeId;
     }
 
     public UUID getId() {
         return id;
-    }
-
-    public void setId(UUID id) {
-        this.id = id;
     }
 
     public String getNomeDoGrupo() {
@@ -33,12 +51,27 @@ public class Grupo {
         this.nomeDoGrupo = nomeDoGrupo;
     }
 
-    public ArrayList<Paciente> getListaDeParticipantes() {
-        return listaDeParticipantes;
+    public String getDescricao() {
+        return descricao;
     }
 
-    public void setListaDeParticipantes(ArrayList<Paciente> listaDeParticipantes) {
-        this.listaDeParticipantes = listaDeParticipantes;
+    public void setDescricao(String descricao) {
+        this.descricao = descricao;
     }
 
+    public List<UUID> getListaDePacientesId() {
+        return listaDePacientesId;
+    }
+
+    public void setListaDePacientesId(List<UUID> listaDePacientesId) {
+        this.listaDePacientesId = listaDePacientesId;
+    }
+
+    public List<UUID> getListaDeProfissionaisDeSaudeId() {
+        return listaDeProfissionaisDeSaudeId;
+    }
+
+    public void setListaDeProfissionaisDeSaudeId(List<UUID> listaDeProfissionaisDeSaudeId) {
+        this.listaDeProfissionaisDeSaudeId = listaDeProfissionaisDeSaudeId;
+    }
 }
