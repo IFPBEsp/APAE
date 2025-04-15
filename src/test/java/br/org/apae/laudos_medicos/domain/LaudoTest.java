@@ -12,18 +12,18 @@ public class LaudoTest {
     @Test
     void criarEntidadeLaudo() {
         // Arrange
-        Long idConsulta = 1L;
+        Long idLaudo = 1L;
         LocalDate dataEmissao = LocalDate.of(2025, 3, 21);
         String descricao = "Descrição";
         Long idPaciente = 2L;
         Long idMedico = 3L;
 
         // Act
-        Laudo laudo = new Laudo(idConsulta, idPaciente, idMedico, dataEmissao, descricao);
+        Laudo laudo = new Laudo(idLaudo, idPaciente, idMedico, dataEmissao, descricao);
 
         // Assert
         assertNotNull(laudo);
-        assertEquals(idConsulta, laudo.getId());
+        assertEquals(idLaudo, laudo.getId());
         assertEquals(dataEmissao, laudo.getDataEmissao());
         assertEquals(descricao, laudo.getDescricao());
         assertEquals(idPaciente, laudo.getIdPaciente());
@@ -32,27 +32,27 @@ public class LaudoTest {
 
     @Test
     void deveLancarExcecaoSeIdMedicoForNulo() {
-        Long idConsulta = 1L;
+        Long idLaudo= 1L;
         LocalDate dataEmissao = LocalDate.of(2025, 3, 21);
         String descricao = "Descrição";
         Long idPaciente = 2L;
         Long idMedico = null;
 
 
-        IdMedicoNaoEncontradoException exception = assertThrows(IdMedicoNaoEncontradoException.class, () -> new Laudo(idConsulta, idPaciente, idMedico, dataEmissao, descricao));
+        IdMedicoNaoEncontradoException exception = assertThrows(IdMedicoNaoEncontradoException.class, () -> new Laudo(idLaudo, idPaciente, idMedico, dataEmissao, descricao));
 
         assertEquals("O id médico precisa ser preenchido.", exception.getMessage());
     }
 
     @Test
     void deveLancarExcecaoSeIdPacienteForNulo() {
-        Long idConsulta = 1L;
+        Long idLaudo = 1L;
         LocalDate dataEmissao = LocalDate.of(2025, 3, 21);
         String descricao = "Descrição";
         Long idPaciente = null;
         Long idMedico = 3L;
 
-        IdPacienteNaoEncontradoException exception = assertThrows(IdPacienteNaoEncontradoException.class, () -> new Laudo(idConsulta, idPaciente, idMedico, dataEmissao, descricao));
+        IdPacienteNaoEncontradoException exception = assertThrows(IdPacienteNaoEncontradoException.class, () -> new Laudo(idLaudo, idPaciente, idMedico, dataEmissao, descricao));
 
         assertEquals("O id paciente precisa ser preenchida.", exception.getMessage());
 
@@ -60,15 +60,14 @@ public class LaudoTest {
 
     @Test
     void deveLancarExcecaoSeDescricaoForInvalida() {
-        Long idConsulta = 1L;
+        Long idLaudo = 1L;
         LocalDate dataEmissao = LocalDate.of(2025, 3, 21);
         String descricao = "";
         Long idPaciente = 2L;
         Long idMedico = 3L;
 
-        DescricaoInvalidaException exception = assertThrows(DescricaoInvalidaException.class, () -> new Laudo(idConsulta, idPaciente, idMedico, dataEmissao, descricao));
+        DescricaoInvalidaException exception = assertThrows(DescricaoInvalidaException.class, () -> new Laudo(idLaudo, idPaciente, idMedico, dataEmissao, descricao));
 
         assertEquals("A descrição do laudo precisa ser preenchida.", exception.getMessage());
-
     }
 }
