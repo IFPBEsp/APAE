@@ -1,11 +1,11 @@
 package com.apae.profissional_de_saude.application.service;
 
+import com.apae.profissional_de_saude.application.exception.ProfissionalDeSaudeNaoEncontradoException;
 import com.apae.profissional_de_saude.domain.model.ProfissionalDeSaude;
 import com.apae.profissional_de_saude.domain.repository.ProfissionalDeSaudeRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class ProfissionalDeSaudeService {
@@ -19,8 +19,8 @@ public class ProfissionalDeSaudeService {
         return repository.findAll();
     }
 
-    public Optional<ProfissionalDeSaude> buscarPorId(Long id) {
-        return repository.findById(id);
+    public ProfissionalDeSaude buscarPorId(Long id) {
+        return repository.findById(id).orElseThrow(() -> new ProfissionalDeSaudeNaoEncontradoException("Profissional de saúde não encontrado"));
     }
 
     public void salvar(ProfissionalDeSaude profissionalDeSaude) {
