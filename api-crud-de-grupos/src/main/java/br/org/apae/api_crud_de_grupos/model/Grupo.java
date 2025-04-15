@@ -14,7 +14,7 @@ public class Grupo {
     @GeneratedValue
     private UUID id;
 
-    @Column(name = "nome_do_grupo", nullable = false)
+    @Column(name = "nome_grupo", nullable = false)
     private String nomeDoGrupo;
 
     @Column(name = "descricao", nullable = false)
