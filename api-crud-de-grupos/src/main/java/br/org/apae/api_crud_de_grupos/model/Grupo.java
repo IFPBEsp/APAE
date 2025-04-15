@@ -1,5 +1,6 @@
 package br.org.apae.api_crud_de_grupos.model;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -22,12 +23,12 @@ public class Grupo {
     @ElementCollection
     @CollectionTable(name = "grupo_pacientes", joinColumns = @JoinColumn(name = "grupo_id"))
     @Column(name = "paciente_id")
-    private List<UUID> listaDePacientesId;
+    private List<UUID> listaDePacientesId = new ArrayList<>();
 
     @ElementCollection
     @CollectionTable(name = "grupo_profissionais", joinColumns = @JoinColumn(name = "grupo_id"))
     @Column(name = "profissional_id")
-    private List<UUID> listaDeProfissionaisDeSaudeId;
+    private List<UUID> listaDeProfissionaisDeSaudeId = new ArrayList<>();
 
     //Construtor vazio para o JPA
     public Grupo() {}
