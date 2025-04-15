@@ -26,4 +26,11 @@ public class ProfissionalDeSaudeController {
 
         return ResponseEntity.status(HttpStatus.OK).body(profissionalDeSaudes);
     }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<ProfissionalDeSaude> buscar(@PathVariable Long id) {
+        ProfissionalDeSaude profissionalDeSaude = service.buscarPorId(id);
+
+        return ResponseEntity.status(HttpStatus.OK).body(profissionalDeSaude);
+    }
 }
