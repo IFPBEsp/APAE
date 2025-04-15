@@ -1,6 +1,9 @@
 package br.org.apae.laudos_medicos.domain;
 
 import br.org.apae.laudos_medicos.domain.entities.Laudo;
+import br.org.apae.laudos_medicos.domain.exceptions.DescricaoInvalidaException;
+import br.org.apae.laudos_medicos.domain.exceptions.IdMedicoNaoEncontradoException;
+import br.org.apae.laudos_medicos.domain.exceptions.IdPacienteNaoEncontradoException;
 import org.junit.jupiter.api.Test;
 
 import java.time.LocalDate;
@@ -10,7 +13,7 @@ import static org.junit.jupiter.api.Assertions.*;
 public class LaudoTest {
 
     @Test
-    void criarEntidadeLaudo() {
+    void criarEntidadeLaudo() throws Exception {
         // Arrange
         Long idLaudo = 1L;
         LocalDate dataEmissao = LocalDate.of(2025, 3, 21);
