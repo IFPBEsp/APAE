@@ -16,7 +16,7 @@ public class Laudo {
     public Laudo() {
     }
 
-    public Laudo(Long id, Long idPaciente, Long idMedico, LocalDate dataEmissao, String descricao) throws Exception {
+    public Laudo(Long id, Long idPaciente, Long idMedico, LocalDate dataEmissao, String descricao) {
         if (idMedico == null) throw new IdMedicoNaoEncontradoException();
         if (idPaciente == null) throw  new IdPacienteNaoEncontradoException();
         if (descricao == null || descricao.trim().isEmpty()) throw  new DescricaoInvalidaException();

@@ -1,6 +1,7 @@
 package br.org.apae.laudos_medicos.application;
 
 import br.org.apae.laudos_medicos.application.dtos.requests.LaudoRequestDTO;
+import br.org.apae.laudos_medicos.application.dtos.responses.LaudoResponseDTO;
 import br.org.apae.laudos_medicos.application.services.LaudoService;
 import br.org.apae.laudos_medicos.domain.entities.Laudo;
 import br.org.apae.laudos_medicos.domain.repositories.LaudoRepository;
@@ -181,7 +182,7 @@ public class LaudoServiceTest {
         when(laudoRepository.findById(id)).thenReturn(Optional.of(laudoExistente));
         when(laudoRepository.save(any(Laudo.class))).thenAnswer(invocation -> invocation.getArgument(0));
 
-        Laudo atualizado = laudoService.atualizarLaudo(id, novoDto);
+        LaudoResponseDTO atualizado = laudoService.atualizarLaudo(id, novoDto);
 
         assertNotNull(atualizado);
         assertEquals("Nova descrição", atualizado.getDescricao());
