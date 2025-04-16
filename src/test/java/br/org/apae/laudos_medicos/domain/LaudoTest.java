@@ -13,7 +13,7 @@ import static org.junit.jupiter.api.Assertions.*;
 public class LaudoTest {
 
     @Test
-    void criarEntidadeLaudo() throws Exception {
+    void criarEntidadeLaudo()  {
         // Arrange
         Long idLaudo = 1L;
         LocalDate dataEmissao = LocalDate.of(2025, 3, 21);
@@ -22,7 +22,7 @@ public class LaudoTest {
         Long idMedico = 3L;
 
         // Act
-        Laudo laudo = new Laudo(idLaudo, idPaciente, idMedico, dataEmissao, descricao);
+        Laudo laudo = assertDoesNotThrow(() -> new Laudo(idLaudo, idPaciente, idMedico, dataEmissao, descricao));
 
         // Assert
         assertNotNull(laudo);
