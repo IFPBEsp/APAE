@@ -1,7 +1,7 @@
 package br.org.apae.laudos_medicos.application;
 
 import br.org.apae.laudos_medicos.application.dtos.requests.LaudoRequestDTO;
-import br.org.apae.laudos_medicos.application.services.LaudoService;
+import br.org.apae.laudos_medicos.application.services.ILaudoService;
 import br.org.apae.laudos_medicos.domain.entities.Laudo;
 import br.org.apae.laudos_medicos.domain.repositories.LaudoRepository;
 import br.org.apae.laudos_medicos.infrastructure.clients.MedicoClient;
@@ -23,7 +23,7 @@ import static org.mockito.Mockito.*;
 @ExtendWith(MockitoExtension.class)
 public class LaudoServiceTest {
     @InjectMocks
-    private LaudoService laudoService;
+    private ILaudoService laudoService;
 
     @Mock
     private LaudoRepository laudoRepository;
@@ -106,7 +106,7 @@ public class LaudoServiceTest {
     @Test
     void deveRetornarLaudoPorId() {
         Long id = 1L;
-        Laudo laudo = new Laudo(id, 2L, 3L, LocalDate.now(), "Laudo de teste");
+        Laudo laudo = assertDoesNotThrow(() -> new Laudo(id, 2L, 3L, LocalDate.now(), "Laudo de teste"));
 
         when(laudoRepository.findById(id)).thenReturn(Optional.of(laudo));
 
@@ -131,10 +131,9 @@ public class LaudoServiceTest {
     @Test
     void deveRetornarLaudosPorIdPaciente() {
         Long idPaciente = 2L;
-        List<Laudo> laudos = List.of(
-                new Laudo(1L, 2L, 3L, LocalDate.now(), "Descrição 1"),
-                new Laudo(2L, 2L, 4L, LocalDate.now(), "Descrição 2")
-        );
+        Laudo laudo1 = assertDoesNotThrow(() -> new Laudo(1L, 2L, 3L, LocalDate.now(), "Descrição 1"));
+        Laudo laudo2 = assertDoesNotThrow(() -> new Laudo(2L, 2L, 4L, LocalDate.now(), "Descrição 2"));
+        List<Laudo> laudos = List.of(laudo1, laudo2);
 
         when(pacienteClient.buscarPacientePorId(idPaciente))
                 .thenReturn(new PacienteResponseDTO(idPaciente, "Paciente 1"));
@@ -152,10 +151,9 @@ public class LaudoServiceTest {
 
     @Test
     void deveRetornarTodosOsLaudos() {
-        List<Laudo> laudos = List.of(
-                new Laudo(1L, 2L, 3L, LocalDate.now(), "Descrição 1"),
-                new Laudo(2L, 3L, 4L, LocalDate.now(), "Descrição 2")
-        );
+        Laudo laudo1 = assertDoesNotThrow(() -> new Laudo(1L, 2L, 3L, LocalDate.now(), "Descrição 1"));
+        Laudo laudo2 = assertDoesNotThrow(() -> new Laudo(2L, 3L, 4L, LocalDate.now(), "Descrição 2"));
+        List<Laudo> laudos = List.of(laudo1, laudo2);
 
         when(laudoRepository.findAll()).thenReturn(laudos);
 
@@ -169,7 +167,7 @@ public class LaudoServiceTest {
     @Test
     void deveAtualizarLaudoComSucesso() {
         Long id = 1L;
-        Laudo laudoExistente = new Laudo(id, 2L, 3L, LocalDate.now(), "Antiga descrição");
+        Laudo laudoExistente = assertDoesNotThrow(() -> new Laudo(id, 2L, 3L, LocalDate.now(), "Antiga descrição"));
 
         LaudoRequestDTO novoDto = new LaudoRequestDTO(
                 2L,
@@ -204,7 +202,7 @@ public class LaudoServiceTest {
     @Test
     void deveLancarExcecaoSeIdMedicoInvalidoNoUpdate() {
         Long id = 1L;
-        Laudo laudoExistente = new Laudo(id, 1L, 2L, LocalDate.now(), "Descrição antiga");
+        Laudo laudoExistente = assertDoesNotThrow(() -> new Laudo(id, 1L, 2L, LocalDate.now(), "Descrição antiga"));
         LaudoRequestDTO dto = new LaudoRequestDTO(999L, 2L, LocalDate.now(), "Descrição atualizada");
 
         when(laudoRepository.findById(id)).thenReturn(Optional.of(laudoExistente));
@@ -221,7 +219,7 @@ public class LaudoServiceTest {
     @Test
     void deveLancarExcecaoSeIdPacienteInvalidoNoUpdate() {
         Long id = 1L;
-        Laudo laudoExistente = new Laudo(id, 1L, 2L, LocalDate.now(), "Descrição antiga");
+        Laudo laudoExistente = assertDoesNotThrow(() -> new Laudo(id, 1L, 2L, LocalDate.now(), "Descrição antiga"));
         LaudoRequestDTO dto = new LaudoRequestDTO(1L, 999L, LocalDate.now(), "Descrição atualizada");
 
         when(laudoRepository.findById(id)).thenReturn(Optional.of(laudoExistente));
@@ -238,7 +236,7 @@ public class LaudoServiceTest {
     @Test
     void deveLancarExcecaoSeDescricaoInvalidaNoUpdate() {
         Long id = 1L;
-        Laudo laudoExistente = new Laudo(id, 1L, 2L, LocalDate.now(), "Descrição antiga");
+        Laudo laudoExistente = assertDoesNotThrow(() -> new Laudo(id, 1L, 2L, LocalDate.now(), "Descrição antiga"));
         LaudoRequestDTO dto = new LaudoRequestDTO(1L, 2L, LocalDate.now(), " "); // descrição vazia
 
         when(laudoRepository.findById(id)).thenReturn(Optional.of(laudoExistente));
@@ -253,7 +251,7 @@ public class LaudoServiceTest {
     @Test
     void deveDeletarLaudoComSucesso() {
         Long id = 1L;
-        Laudo laudo = new Laudo(id, 2L, 3L, LocalDate.now(), "Descrição");
+        Laudo laudo = assertDoesNotThrow(() -> new Laudo(id, 2L, 3L, LocalDate.now(), "Descrição"));
 
         when(laudoRepository.findById(id)).thenReturn(Optional.of(laudo));
         doNothing().when(laudoRepository).delete(id);
