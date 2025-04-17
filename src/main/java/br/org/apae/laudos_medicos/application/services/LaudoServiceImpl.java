@@ -5,16 +5,18 @@ import br.org.apae.laudos_medicos.application.dtos.requests.LaudoRequestDTO;
 import br.org.apae.laudos_medicos.application.exceptions.LaudoNaoEncontradoException;
 import br.org.apae.laudos_medicos.domain.entities.Laudo;
 import br.org.apae.laudos_medicos.infrastructure.persistences.LaudoRepositoryImpl;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
 @Service
-public class LaudoService implements ILaudoService {
+public class LaudoServiceImpl implements LaudoService {
 
+    @Autowired
     private final LaudoRepositoryImpl laudoRepository;
 
-    public LaudoService(LaudoRepositoryImpl laudoRepository) {
+    public LaudoServiceImpl(LaudoRepositoryImpl laudoRepository) {
         this.laudoRepository = laudoRepository;
     }
 
@@ -30,7 +32,7 @@ public class LaudoService implements ILaudoService {
 
     @Override
     public Laudo buscarLaudoPorId(Long id) {
-        return this.laudoRepository.findById(id).orElseThrow(() -> new LaudoNaoEncontradoException("Laudo não encontrado com esse id"));
+        return this.laudoRepository.findById(id).orElseThrow(() -> new LaudoNaoEncontradoException("Laudo não encontrado com esse id."));
     }
 
     @Override
@@ -55,6 +57,7 @@ public class LaudoService implements ILaudoService {
 
     @Override
     public void deletarLaudo(Long id) {
-        this.laudoRepository.delete(id);
+        Laudo laudo = this.buscarLaudoPorId(id);
+        this.laudoRepository.delete(laudo);
     }
 }
