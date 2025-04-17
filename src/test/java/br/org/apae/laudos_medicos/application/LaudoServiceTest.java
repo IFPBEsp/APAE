@@ -1,13 +1,17 @@
 package br.org.apae.laudos_medicos.application;
 
 import br.org.apae.laudos_medicos.application.dtos.requests.LaudoRequestDTO;
-import br.org.apae.laudos_medicos.application.dtos.responses.LaudoResponseDTO;
-import br.org.apae.laudos_medicos.application.services.LaudoService;
-import br.org.apae.laudos_medicos.application.services.ILaudoService;
+import br.org.apae.laudos_medicos.application.exceptions.LaudoNaoEncontradoException;
+import br.org.apae.laudos_medicos.application.services.LaudoServiceImpl;
 import br.org.apae.laudos_medicos.domain.entities.Laudo;
-import br.org.apae.laudos_medicos.domain.repositories.LaudoRepository;
+import br.org.apae.laudos_medicos.domain.exceptions.DescricaoInvalidaException;
 import br.org.apae.laudos_medicos.infrastructure.clients.MedicoClient;
 import br.org.apae.laudos_medicos.infrastructure.clients.PacienteClient;
+import br.org.apae.laudos_medicos.infrastructure.clients.dtos.MedicoResponseDTO;
+import br.org.apae.laudos_medicos.infrastructure.clients.dtos.PacienteResponseDTO;
+import br.org.apae.laudos_medicos.infrastructure.clients.exceptions.IdMedicoInvalidoException;
+import br.org.apae.laudos_medicos.infrastructure.clients.exceptions.IdPacienteInvalidoException;
+import br.org.apae.laudos_medicos.infrastructure.persistences.LaudoRepositoryImpl;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -25,10 +29,10 @@ import static org.mockito.Mockito.*;
 @ExtendWith(MockitoExtension.class)
 public class LaudoServiceTest {
     @InjectMocks
-    private ILaudoService laudoService;
+    private LaudoServiceImpl laudoService;
 
     @Mock
-    private LaudoRepository laudoRepository;
+    private LaudoRepositoryImpl laudoRepository;
 
     @Mock
     private MedicoClient medicoClient;
@@ -137,7 +141,7 @@ public class LaudoServiceTest {
         Laudo laudo2 = assertDoesNotThrow(() -> new Laudo(2L, 2L, 4L, LocalDate.now(), "Descrição 2"));
         List<Laudo> laudos = List.of(laudo1, laudo2);
 
-        when(pacienteClient.buscarPacientePorId(idPaciente))
+        lenient().when(pacienteClient.buscarPacientePorId(idPaciente))
                 .thenReturn(new PacienteResponseDTO(idPaciente, "Paciente 1"));
 
         when(laudoRepository.findLaudosByPacientId(idPaciente))
@@ -178,10 +182,16 @@ public class LaudoServiceTest {
                 "Nova descrição"
         );
 
+        when(medicoClient.buscarMedicoPorId(novoDto.idMedico()))
+                .thenReturn(new MedicoResponseDTO(2L, "Medico"));
+
+        when(pacienteClient.buscarPacientePorId(novoDto.idPaciente()))
+                .thenReturn(new PacienteResponseDTO(3L, "Paciente"));
+
         when(laudoRepository.findById(id)).thenReturn(Optional.of(laudoExistente));
         when(laudoRepository.save(any(Laudo.class))).thenAnswer(invocation -> invocation.getArgument(0));
 
-        LaudoResponseDTO atualizado = laudoService.atualizarLaudo(id, novoDto);
+        Laudo atualizado = laudoService.atualizarLaudo(id, novoDto);
 
         assertNotNull(atualizado);
         assertEquals("Nova descrição", atualizado.getDescricao());
@@ -208,6 +218,9 @@ public class LaudoServiceTest {
         LaudoRequestDTO dto = new LaudoRequestDTO(999L, 2L, LocalDate.now(), "Descrição atualizada");
 
         when(laudoRepository.findById(id)).thenReturn(Optional.of(laudoExistente));
+
+        when(pacienteClient.buscarPacientePorId(dto.idPaciente()))
+                .thenReturn(new PacienteResponseDTO(dto.idPaciente(), "Paciente"));
 
         when(medicoClient.buscarMedicoPorId(999L))
                 .thenThrow(new IdMedicoInvalidoException("Id do médico não existe ou não encontrado."));
@@ -243,6 +256,12 @@ public class LaudoServiceTest {
 
         when(laudoRepository.findById(id)).thenReturn(Optional.of(laudoExistente));
 
+        when(medicoClient.buscarMedicoPorId(dto.idMedico()))
+                .thenReturn(new MedicoResponseDTO(2L, "Medico"));
+
+        when(pacienteClient.buscarPacientePorId(dto.idPaciente()))
+                .thenReturn(new PacienteResponseDTO(3L, "Paciente"));
+
         DescricaoInvalidaException exception = assertThrows(DescricaoInvalidaException.class,
                 () -> laudoService.atualizarLaudo(id, dto));
 
@@ -256,7 +275,7 @@ public class LaudoServiceTest {
         Laudo laudo = assertDoesNotThrow(() -> new Laudo(id, 2L, 3L, LocalDate.now(), "Descrição"));
 
         when(laudoRepository.findById(id)).thenReturn(Optional.of(laudo));
-        doNothing().when(laudoRepository).delete(id);
+        doNothing().when(laudoRepository).delete(laudo);
 
         assertDoesNotThrow(() -> laudoService.deletarLaudo(id));
 
@@ -268,9 +287,8 @@ public class LaudoServiceTest {
         Long id = 999L;
 
         when(laudoRepository.findById(id)).thenReturn(Optional.empty());
-        doNothing().when(laudoRepository).delete(id);
 
-        LaudoNaoEncontradoException exception = assertThrows(LaudoNaoEncontradoException.class, () -> laudoService.deleteLaudo(id));
+        LaudoNaoEncontradoException exception = assertThrows(LaudoNaoEncontradoException.class, () -> laudoService.deletarLaudo(id));
 
         assertEquals("Laudo não encontrado com esse id.", exception.getMessage());
 
