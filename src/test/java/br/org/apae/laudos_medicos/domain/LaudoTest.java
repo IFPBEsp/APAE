@@ -71,6 +71,6 @@ public class LaudoTest {
 
         DescricaoInvalidaException exception = assertThrows(DescricaoInvalidaException.class, () -> new Laudo(idLaudo, idPaciente, idMedico, dataEmissao, descricao));
 
-        assertEquals("A descrição do laudo precisa ser preenchida.", exception.getMessage());
+        assertEquals("Descrição inválida. A descrição não pode estar vazia ou em branco.", exception.getMessage());
     }
 }
