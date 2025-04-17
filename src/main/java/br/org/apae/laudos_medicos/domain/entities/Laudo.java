@@ -17,15 +17,12 @@ public class Laudo {
     }
 
     public Laudo(Long id, Long idPaciente, Long idMedico, LocalDate dataEmissao, String descricao) {
-        if (idMedico == null) throw new IdMedicoNaoEncontradoException();
-        if (idPaciente == null) throw  new IdPacienteNaoEncontradoException();
-        if (descricao == null || descricao.trim().isEmpty()) throw  new DescricaoInvalidaException();
-
         this.id = id;
-        this.idPaciente = idPaciente;
-        this.idMedico = idMedico;
-        this.dataEmissao = dataEmissao;
         this.descricao = descricao;
+        this.dataEmissao = dataEmissao;
+        this.setDescricao(descricao);
+        this.setIdPaciente(idPaciente);
+        this.setIdMedico(idMedico);
     }
 
     public Long getId() {
@@ -41,6 +38,7 @@ public class Laudo {
     }
 
     public void setIdPaciente(Long idPaciente) {
+        if (idPaciente == null) throw  new IdPacienteNaoEncontradoException();
         this.idPaciente = idPaciente;
     }
 
@@ -49,6 +47,7 @@ public class Laudo {
     }
 
     public void setIdMedico(Long idMedico) {
+        if (idMedico == null) throw new IdMedicoNaoEncontradoException();
         this.idMedico = idMedico;
     }
 
@@ -65,6 +64,7 @@ public class Laudo {
     }
 
     public void setDescricao(String descricao) {
+        if (descricao == null || descricao.trim().isEmpty()) throw new DescricaoInvalidaException();
         this.descricao = descricao;
     }
 }
