@@ -16,7 +16,9 @@ public class Paciente {
     @Column(name = "nome_completo", nullable = false)
     private String nome_completo;
 
-    @Column()
+    @ElementCollection
+    @CollectionTable(name = "contatos_paciente", joinColumns = @JoinColumn(name = "paciente_id"))
+    @Column(name = "contato")
     private List<String> contatos;
 
     @Column(name = "data_nascimento", nullable = false)
