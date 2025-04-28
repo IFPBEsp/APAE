@@ -48,6 +48,8 @@ public class DocumentosDigitalizadosServiceImp implements DocumentosDigitalidado
 
     @Override
     public void excluir(Long id) {
+        buscarPorId(id);
 
+        repository.deleteById(id);
     }
 }
