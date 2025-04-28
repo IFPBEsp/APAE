@@ -1,4 +1,9 @@
 package br.org.apae.documentos_digitalizados.application.dtos;
 
-public record DocumentosDigitalizadosResponseDTO() {
+import java.util.UUID;
+
+public record DocumentosDigitalizadosResponseDTO(Long id,
+                                                 Long pacienteId,
+                                                 UUID encaminhamento,
+                                                 UUID laudoMedico) {
 }
