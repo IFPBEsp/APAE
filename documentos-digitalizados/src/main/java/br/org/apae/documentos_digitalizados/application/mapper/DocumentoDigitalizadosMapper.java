@@ -18,4 +18,12 @@ public class DocumentoDigitalizadosMapper {
                 documento.getLaudoMedico()
             )).collect(Collectors.toList());
     }
+
+    public DocumentosDigitalizadosResponseDTO toDTO(DocumentosDigitalizados documentosDigitalizados) {
+        return new DocumentosDigitalizadosResponseDTO(
+                documentosDigitalizados.getId(),
+                documentosDigitalizados.getPacienteId(),
+                documentosDigitalizados.getEncaminhamento(),
+                documentosDigitalizados.getLaudoMedico());
+    }
 }
