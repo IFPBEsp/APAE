@@ -36,4 +36,12 @@ public class DocumentoDigitalizadosMapper {
 
         return documento;
     }
+
+    public DocumentosDigitalizados toEntity(Long id, DocumentosDigitalizadosRequestDTO documentosDigitalizadosRequestDTO) {
+        DocumentosDigitalizados documento = new DocumentosDigitalizados();
+        documento.setId(id);
+        documento.setPacienteId(documentosDigitalizadosRequestDTO.pacienteId());
+
+        return documento;
+    }
 }
