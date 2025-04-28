@@ -14,3 +14,11 @@ spring:
     hibernate:
       ddl-auto: none
     database-platform: org.hibernate.dialect.H2Dialect
+
+minio:
+  endpoint: http://localhost:9000
+  accessKey: minioadmin
+  secretKey: minioadmin
+  buckets:
+    laudos: laudos-medicos
+    encaminhamentos: encaminhamentos
