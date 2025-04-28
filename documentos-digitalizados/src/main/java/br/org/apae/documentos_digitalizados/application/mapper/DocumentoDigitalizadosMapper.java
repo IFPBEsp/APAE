@@ -1,5 +1,6 @@
 package br.org.apae.documentos_digitalizados.application.mapper;
 
+import br.org.apae.documentos_digitalizados.application.dtos.DocumentosDigitalizadosRequestDTO;
 import br.org.apae.documentos_digitalizados.application.dtos.DocumentosDigitalizadosResponseDTO;
 import br.org.apae.documentos_digitalizados.domain.DocumentosDigitalizados;
 import org.springframework.stereotype.Component;
@@ -16,7 +17,8 @@ public class DocumentoDigitalizadosMapper {
                 documento.getPacienteId(),
                 documento.getEncaminhamento(),
                 documento.getLaudoMedico()
-            )).collect(Collectors.toList());
+            )).collect(Collectors.toList()
+        );
     }
 
     public DocumentosDigitalizadosResponseDTO toDTO(DocumentosDigitalizados documentosDigitalizados) {
@@ -24,6 +26,14 @@ public class DocumentoDigitalizadosMapper {
                 documentosDigitalizados.getId(),
                 documentosDigitalizados.getPacienteId(),
                 documentosDigitalizados.getEncaminhamento(),
-                documentosDigitalizados.getLaudoMedico());
+                documentosDigitalizados.getLaudoMedico()
+        );
+    }
+
+    public DocumentosDigitalizados toEntity(DocumentosDigitalizadosRequestDTO documentosDigitalizadosRequestDTO) {
+        DocumentosDigitalizados documento = new DocumentosDigitalizados();
+        documento.setPacienteId(documentosDigitalizadosRequestDTO.pacienteId());
+
+        return documento;
     }
 }

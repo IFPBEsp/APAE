@@ -20,7 +20,10 @@ public class DocumentosDigitalizadosServiceImp implements DocumentosDigitalidado
 
     @Override
     public DocumentosDigitalizadosResponseDTO criar(DocumentosDigitalizadosRequestDTO dto) {
-        return null;
+        DocumentosDigitalizados documentoDigitalizado = mapper.toEntity(dto);
+        documentoDigitalizado = repository.save(documentoDigitalizado);
+
+        return mapper.toDTO(documentoDigitalizado);
     }
 
     @Override
