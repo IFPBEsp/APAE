@@ -1,57 +1,86 @@
 package br.org.apae.documentos_digitalizados.api.controller;
 
-import br.org.apae.documentos_digitalizados.application.dtos.DocumentosDigitalizadosRequestDTO;
 import br.org.apae.documentos_digitalizados.application.dtos.DocumentosDigitalizadosResponseDTO;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
+import java.util.UUID;
 
 @RequestMapping("/pacientes")
 public interface DocumentosDigitalizadosController {
 
-
     @GetMapping("/{id_paciente}/documentos")
-    ResponseEntity<List<DocumentosDigitalizadosResponseDTO>> listarDocumentosPaciente(
-            @PathVariable Long id_paciente);
-
+    ResponseEntity<List<MultipartFile>> listarDocumentosPaciente(
+            @PathVariable Long id_paciente
+    );
 
     @GetMapping("/{id_paciente}/laudos_medico/documentos")
     ResponseEntity<List<DocumentosDigitalizadosResponseDTO>> listarLaudosMedicos(
-            @PathVariable Long id_paciente);
+            @PathVariable Long id_paciente
+    );
 
+    @GetMapping("/{id_paciente}/encaminhamento/documentos")
+    ResponseEntity<List<DocumentosDigitalizadosResponseDTO>> listarEncaminhamentos(
+            @PathVariable Long id_paciente
+    );
 
-    @PostMapping("/{id_paciente}/laudos_medico/documentos")
-    ResponseEntity<DocumentosDigitalizadosResponseDTO> uploadLaudoMedico(
-            @PathVariable Long id_paciente,
-            @RequestParam("file") MultipartFile file,
-            @RequestBody DocumentosDigitalizadosRequestDTO requestDTO);
-
-    @GetMapping("/{id_paciente}/laudos_medico/documentos/{id}")
+    @GetMapping("/{id_paciente}/laudos_medico/documentos/{uuid}")
     ResponseEntity<DocumentosDigitalizadosResponseDTO> obterLaudoMedico(
             @PathVariable Long id_paciente,
-            @PathVariable Long id);
+            @PathVariable UUID uuid
+    );
 
-    @GetMapping("/{id_paciente}/documentos/{id}")
-    ResponseEntity<DocumentosDigitalizadosResponseDTO> obterDocumento(
+    @GetMapping("/{id_paciente}/encaminhamento/documentos/{uuid}")
+    ResponseEntity<DocumentosDigitalizadosResponseDTO> obterEncaminhamento(
             @PathVariable Long id_paciente,
-            @PathVariable Long id);
+            @PathVariable UUID uuid
+    );
 
-    @PostMapping("/{id_paciente}/documentos")
-    ResponseEntity<DocumentosDigitalizadosResponseDTO> uploadDocumento(
+    @PostMapping(value = "/{id_paciente}/documentos", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    ResponseEntity<Void> salvarDocumentosPaciente(
             @PathVariable Long id_paciente,
-            @RequestParam("file") MultipartFile file,
-            @RequestBody DocumentosDigitalizadosRequestDTO requestDTO);
+            @RequestPart("encaminhamento") MultipartFile encaminhamento,
+            @RequestPart("laudo_medico") MultipartFile laudoMedico
+    );
 
-    @PutMapping("/{id_paciente}/documentos/{id}")
-    ResponseEntity<DocumentosDigitalizadosResponseDTO> atualizarDocumento(
+    @PostMapping(value = "/{id_paciente}/laudo_medico/documentos", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    ResponseEntity<Void> uploadLaudoMedico(
             @PathVariable Long id_paciente,
-            @PathVariable Long id,
-            @RequestBody DocumentosDigitalizadosRequestDTO requestDTO);
+            @RequestParam("laudo_medico") MultipartFile file
+    );
 
-    @DeleteMapping("/{id_paciente}/documentos/{id}")
-    ResponseEntity<Void> removerDocumento(
+    @PostMapping(value = "/{id_paciente}/encaminhamento/documentos", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    ResponseEntity<Void> uploadEncaminhamento(
             @PathVariable Long id_paciente,
-            @PathVariable Long id);
+            @RequestParam("encaminhamento") MultipartFile file
+    );
+
+    @PutMapping(value = "/{id_paciente}/laudo_medico/documentos/{uuid}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    ResponseEntity<Void> atualizarLaudoMedico(
+            @PathVariable Long id_paciente,
+            @PathVariable UUID uuid,
+            @RequestParam("laudo_medico") MultipartFile file
+    );
+
+    @PutMapping(value = "/{id_paciente}/encaminhamento/documentos/{uuid}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    ResponseEntity<Void> atualizarEncaminhamento(
+            @PathVariable Long id_paciente,
+            @PathVariable UUID uuid,
+            @RequestParam("encaminhamento") MultipartFile file
+    );
+
+    @DeleteMapping("/{id_paciente}/laudo_medico/documentos/{uuid}")
+    ResponseEntity<Void> removerLaudoMedico(
+            @PathVariable Long id_paciente,
+            @PathVariable UUID uuid
+    );
+
+    @DeleteMapping("/{id_paciente}/encaminhamento/documentos/{uuid}")
+    ResponseEntity<Void> removerEncaminhamento(
+            @PathVariable Long id_paciente,
+            @PathVariable UUID uuid
+    );
 }
