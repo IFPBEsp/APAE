@@ -17,7 +17,7 @@ public interface DocumentosDigitalizadosController {
             @PathVariable Long id_paciente
     );
 
-    @GetMapping("/{id_paciente}/laudos_medico/documentos/{uuid}")
+    @GetMapping("/{id_paciente}/laudo_medico/documentos/{uuid}")
     ResponseEntity<MultipartFile> obterLaudoMedico(
             @PathVariable Long id_paciente,
             @PathVariable UUID uuid
