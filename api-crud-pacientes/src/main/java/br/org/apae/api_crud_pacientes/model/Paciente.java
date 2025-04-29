@@ -16,6 +16,9 @@ public class Paciente {
     @Column(name = "nome_completo", nullable = false)
     private String nome_completo;
 
+    @Column(name = "cpf", nullable = false)
+    private String cpf;
+
     @ElementCollection
     @CollectionTable(name = "contatos_paciente", joinColumns = @JoinColumn(name = "paciente_id"))
     @Column(name = "contato")
@@ -26,6 +29,14 @@ public class Paciente {
 
     public UUID getId() {
         return id;
+    }
+
+    public String getCpf() {
+        return cpf;
+    }
+
+    public void setCpf(String cpf) {
+        this.cpf = cpf;
     }
 
     public void setId(UUID id) {
