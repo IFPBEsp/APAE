@@ -14,7 +14,7 @@ public class DocumentosDigitalizados {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false)
+    @Column(nullable = false, unique = true)
     private Long pacienteId;
 
     @Column(nullable = false, unique = true)
