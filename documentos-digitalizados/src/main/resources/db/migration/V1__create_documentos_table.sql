@@ -1,6 +1,6 @@
 CREATE TABLE documentos_digitalizados (
                                           id BIGINT PRIMARY KEY AUTO_INCREMENT,
-                                          paciente_id BIGINT NOT NULL,
+                                          paciente_id BIGINT PRIMARY KEY NOT NULL UNIQUE,
                                           encaminhamento UUID NOT NULL UNIQUE,
                                           laudo_medico UUID NOT NULL UNIQUE
 );
