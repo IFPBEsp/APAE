@@ -17,24 +17,14 @@ public interface DocumentosDigitalizadosController {
             @PathVariable Long id_paciente
     );
 
-    @GetMapping("/{id_paciente}/laudos_medico/documentos")
-    ResponseEntity<List<DocumentosDigitalizadosResponseDTO>> listarLaudosMedicos(
-            @PathVariable Long id_paciente
-    );
-
-    @GetMapping("/{id_paciente}/encaminhamento/documentos")
-    ResponseEntity<List<DocumentosDigitalizadosResponseDTO>> listarEncaminhamentos(
-            @PathVariable Long id_paciente
-    );
-
     @GetMapping("/{id_paciente}/laudos_medico/documentos/{uuid}")
-    ResponseEntity<DocumentosDigitalizadosResponseDTO> obterLaudoMedico(
+    ResponseEntity<MultipartFile> obterLaudoMedico(
             @PathVariable Long id_paciente,
             @PathVariable UUID uuid
     );
 
     @GetMapping("/{id_paciente}/encaminhamento/documentos/{uuid}")
-    ResponseEntity<DocumentosDigitalizadosResponseDTO> obterEncaminhamento(
+    ResponseEntity<MultipartFile> obterEncaminhamento(
             @PathVariable Long id_paciente,
             @PathVariable UUID uuid
     );
@@ -44,18 +34,6 @@ public interface DocumentosDigitalizadosController {
             @PathVariable Long id_paciente,
             @RequestPart("encaminhamento") MultipartFile encaminhamento,
             @RequestPart("laudo_medico") MultipartFile laudoMedico
-    );
-
-    @PostMapping(value = "/{id_paciente}/laudo_medico/documentos", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    ResponseEntity<Void> uploadLaudoMedico(
-            @PathVariable Long id_paciente,
-            @RequestParam("laudo_medico") MultipartFile file
-    );
-
-    @PostMapping(value = "/{id_paciente}/encaminhamento/documentos", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    ResponseEntity<Void> uploadEncaminhamento(
-            @PathVariable Long id_paciente,
-            @RequestParam("encaminhamento") MultipartFile file
     );
 
     @PutMapping(value = "/{id_paciente}/laudo_medico/documentos/{uuid}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
