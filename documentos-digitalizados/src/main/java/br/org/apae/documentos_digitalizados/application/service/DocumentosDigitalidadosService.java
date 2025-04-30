@@ -7,10 +7,25 @@ import br.org.apae.documentos_digitalizados.domain.DocumentosDigitalizados;
 import java.util.List;
 
 public interface DocumentosDigitalidadosService {
-    void criar(DocumentosDigitalizadosRequestDTO dto);
-    DocumentosDigitalizados buscarPorId(Long id);
-    List<DocumentosDigitalizados> listarTodos();
-    void atualizar(Long id, DocumentosDigitalizadosRequestDTO dto);
-    void excluir(Long id);
-    DocumentosDigitalizados buscarPorPaciente(Long id);
+    DocumentosDigitalizados salvarDocumento(DocumentosDigitalizadosRequestDTO dto);
+
+    List<DocumentosDigitalizados> listarTodosDocumentos();
+
+    List<DocumentosDigitalizados> listarTodosDocumentosPessoal();
+
+    List<DocumentosDigitalizados> listarTodosDocumentosMedico();
+
+    List<DocumentosDigitalizados> listarTodosDocumentosEscolar();
+
+    List<DocumentosDigitalizados> listarTodosDocumentosPorPaciente(Long pacienteId);
+
+    List<DocumentosDigitalizados> listarDocumentosPessoalPorPaciente(Long pacienteId);
+
+    List<DocumentosDigitalizados> listarDocumentosMedicoPorPaciente(Long pacienteId);
+
+    List<DocumentosDigitalizados> listarDocumentosEscolarPorPaciente(Long pacienteId);
+
+    void atualizarDocumento(String nomeDoDocumento, DocumentosDigitalizadosRequestDTO dto);
+
+    void removerDocumento(String nomeDoDocumento);
 }
