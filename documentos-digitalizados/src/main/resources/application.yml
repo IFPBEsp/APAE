@@ -20,5 +20,6 @@ minio:
   accessKey: minioadmin
   secretKey: minioadmin
   buckets:
-    laudos: laudos-medicos
-    encaminhamentos: encaminhamentos
+    pessoal: pessoal
+    medico: medico
+    escolar: escolar
