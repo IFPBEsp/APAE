@@ -2,46 +2,35 @@ package br.org.apae.documentos_digitalizados.api.controller;
 
 import br.org.apae.documentos_digitalizados.application.dtos.DocumentosDigitalizadosRequestDTO;
 import br.org.apae.documentos_digitalizados.application.dtos.DocumentosDigitalizadosResponseDTO;
+import br.org.apae.documentos_digitalizados.domain.TipoDeDocumento;
+import org.springframework.data.domain.Page;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.util.List;
+import java.awt.print.Pageable;
 
 @RequestMapping("/documento")
 public interface DocumentosDigitalizadosController {
-    @PostMapping
-    ResponseEntity<Void> salvarDocumento(DocumentosDigitalizadosRequestDTO dto,
-                                         MultipartFile documento);
+    @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    ResponseEntity<Void> salvarDocumento(@RequestPart("documento") DocumentosDigitalizadosRequestDTO dto,
+                                         @RequestPart("anexo") MultipartFile documento);
 
     @GetMapping
-    ResponseEntity<List<DocumentosDigitalizadosResponseDTO>> listarTodosDocumentos();
+    ResponseEntity<Page<DocumentosDigitalizadosResponseDTO>> listarDocumentos(
+            @RequestParam(required = false) TipoDeDocumento tipo,
+            @RequestParam(required = false) Long pacienteId,
+            Pageable pageable);
 
-    @GetMapping("/pessoal")
-    ResponseEntity<List<DocumentosDigitalizadosResponseDTO>> listarTodosDocumentosPessoal();
+    @GetMapping("/{nomeDoDocumento}")
+    ResponseEntity<DocumentosDigitalizadosResponseDTO> buscarDocumentoPorNomeDoDocumento(
+            @PathVariable String nomeDoDocumento);
 
-    @GetMapping("/medico")
-    ResponseEntity<List<DocumentosDigitalizadosResponseDTO>> listarTodosDocumentosMedico();
-
-    @GetMapping("/escolar")
-    ResponseEntity<List<DocumentosDigitalizadosResponseDTO>> listarTodosDocumentosEscolar();
-
-    @GetMapping("/{pacienteId}")
-    ResponseEntity<List<DocumentosDigitalizadosResponseDTO>> listarTodosDocumentosPorPaciente(@PathVariable Long pacienteId);
-
-    @GetMapping("/pessoal/{pacienteId}")
-    ResponseEntity<List<DocumentosDigitalizadosResponseDTO>> listarDocumentosPessoalPorPaciente(@PathVariable Long pacienteId);
-
-    @GetMapping("/medico/{pacienteId}")
-    ResponseEntity<List<DocumentosDigitalizadosResponseDTO>> listarDocumentosMedicoPorPaciente(@PathVariable Long pacienteId);
-
-    @GetMapping("/escolar/{pacienteId}")
-    ResponseEntity<List<DocumentosDigitalizadosResponseDTO>> listarDocumentosEscolarPorPaciente(@PathVariable Long pacienteId);
-
-    @PutMapping("/{nomeDoDocumento}")
+    @PutMapping(value = "/{nomeDoDocumento}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     ResponseEntity<Void> atualizarDocumento(@PathVariable String nomeDoDocumento,
-                                            DocumentosDigitalizadosRequestDTO dto,
-                                            MultipartFile documento);
+                                            @RequestPart("documento") DocumentosDigitalizadosRequestDTO dto,
+                                            @RequestPart("anexo") MultipartFile documento);
 
     @DeleteMapping("/{nomeDoDocumento}")
     ResponseEntity<Void> removerDocumento(@PathVariable String nomeDoDocumento);
