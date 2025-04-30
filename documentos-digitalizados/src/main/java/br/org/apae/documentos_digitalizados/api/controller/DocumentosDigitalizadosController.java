@@ -2,7 +2,7 @@ package br.org.apae.documentos_digitalizados.api.controller;
 
 import br.org.apae.documentos_digitalizados.application.dtos.DocumentosDigitalizadosRequestDTO;
 import br.org.apae.documentos_digitalizados.application.dtos.DocumentosDigitalizadosResponseDTO;
-import br.org.apae.documentos_digitalizados.domain.TipoDeDocumento;
+import br.org.apae.documentos_digitalizados.domain.TipoDocumento;
 import org.springframework.data.domain.Page;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -19,7 +19,7 @@ public interface DocumentosDigitalizadosController {
 
     @GetMapping
     ResponseEntity<Page<DocumentosDigitalizadosResponseDTO>> listarDocumentos(
-            @RequestParam(required = false) TipoDeDocumento tipo,
+            @RequestParam(required = false) TipoDocumento tipo,
             @RequestParam(required = false) Long pacienteId,
             Pageable pageable);
 
