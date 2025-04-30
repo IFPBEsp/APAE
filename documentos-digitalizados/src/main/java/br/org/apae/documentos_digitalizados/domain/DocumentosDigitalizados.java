@@ -17,7 +17,7 @@ public class DocumentosDigitalizados {
 
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
-    private TipoDeDocumento tipoDeDocumento;
+    private TipoDocumento tipoDocumento;
 
     @Column(nullable = false, unique = true)
     private String documento;
