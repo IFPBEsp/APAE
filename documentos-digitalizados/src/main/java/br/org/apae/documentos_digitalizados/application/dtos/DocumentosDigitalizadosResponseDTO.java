@@ -1,8 +1,6 @@
 package br.org.apae.documentos_digitalizados.application.dtos;
 
-import org.springframework.web.multipart.MultipartFile;
+import org.springframework.core.io.Resource;
 
-import java.util.UUID;
-
-public record DocumentosDigitalizadosResponseDTO(MultipartFile documento) {
+public record DocumentosDigitalizadosResponseDTO(Resource documento) {
 }
