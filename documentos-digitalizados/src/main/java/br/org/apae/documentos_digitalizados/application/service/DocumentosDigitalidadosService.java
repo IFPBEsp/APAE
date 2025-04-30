@@ -3,10 +3,12 @@ package br.org.apae.documentos_digitalizados.application.service;
 import br.org.apae.documentos_digitalizados.application.dtos.DocumentosDigitalizadosRequestDTO;
 import br.org.apae.documentos_digitalizados.application.dtos.DocumentosDigitalizadosResponseDTO;
 import br.org.apae.documentos_digitalizados.domain.DocumentosDigitalizados;
+import jakarta.transaction.Transactional;
 
 import java.util.List;
 
 public interface DocumentosDigitalidadosService {
+    @Transactional
     DocumentosDigitalizados salvarDocumento(DocumentosDigitalizadosRequestDTO dto);
 
     List<DocumentosDigitalizados> listarTodosDocumentos();
@@ -25,7 +27,9 @@ public interface DocumentosDigitalidadosService {
 
     List<DocumentosDigitalizados> listarDocumentosEscolarPorPaciente(Long pacienteId);
 
+    @Transactional
     void atualizarDocumento(String nomeDoDocumento, DocumentosDigitalizadosRequestDTO dto);
 
+    @Transactional
     void removerDocumento(String nomeDoDocumento);
 }
