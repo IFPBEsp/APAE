@@ -1,9 +1,8 @@
 package br.org.apae.documentos_digitalizados.application.dtos;
 
+import org.springframework.web.multipart.MultipartFile;
+
 import java.util.UUID;
 
-public record DocumentosDigitalizadosResponseDTO(Long id,
-                                                 Long pacienteId,
-                                                 UUID encaminhamento,
-                                                 UUID laudoMedico) {
+public record DocumentosDigitalizadosResponseDTO(MultipartFile documento) {
 }
