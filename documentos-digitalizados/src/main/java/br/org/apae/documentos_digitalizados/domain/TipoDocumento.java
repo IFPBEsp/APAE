@@ -5,7 +5,7 @@ import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
 @Getter
-public enum TipoDeDocumento {
+public enum TipoDocumento {
     PESSOAL("pessoal"),
     MEDICO("medico"),
     ESCOLAR("escolar");
