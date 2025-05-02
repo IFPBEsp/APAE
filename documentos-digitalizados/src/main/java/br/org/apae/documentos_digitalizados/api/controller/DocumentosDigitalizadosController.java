@@ -1,38 +1,31 @@
 package br.org.apae.documentos_digitalizados.api.controller;
 
-import br.org.apae.documentos_digitalizados.application.dtos.DocumentosDigitalizadosRequestDTO;
-import br.org.apae.documentos_digitalizados.application.dtos.DocumentosDigitalizadosResponseDTO;
-import br.org.apae.documentos_digitalizados.domain.TipoDocumento;
+import br.org.apae.documentos_digitalizados.application.dtos.*;
 import jakarta.validation.Valid;
-import org.springframework.data.domain.Page;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.awt.print.Pageable;
+import java.util.List;
 
 @RequestMapping("/documento")
 public interface DocumentosDigitalizadosController {
+
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     ResponseEntity<Void> salvarDocumento(@RequestPart("documento") @Valid DocumentosDigitalizadosRequestDTO dto,
                                          @RequestPart("anexo") MultipartFile documento);
 
     @GetMapping
-    ResponseEntity<Page<DocumentosDigitalizadosResponseDTO>> listarDocumentos(
-            @RequestParam(required = false) TipoDocumento tipo,
-            @RequestParam(required = false) Long pacienteId,
-            Pageable pageable);
+    ResponseEntity<List<String>> listarDocumentos(@RequestBody @Valid ListagemBucketRequestDTO dto);
 
-    @GetMapping("/{nomeDoDocumento}")
-    ResponseEntity<DocumentosDigitalizadosResponseDTO> buscarDocumentoPorNomeDoDocumento(
-            @PathVariable String nomeDoDocumento);
+    @GetMapping("/{pacienteID}")
+    ResponseEntity<PacienteDocumentoResponseDTO> buscarPorPaciente(@PathVariable("pacienteID") Long pacienteID);
 
-    @PutMapping(value = "/{nomeDoDocumento}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    ResponseEntity<Void> atualizarDocumento(@PathVariable String nomeDoDocumento,
-                                            @RequestPart("documento") @Valid DocumentosDigitalizadosRequestDTO dto,
+    @GetMapping("/download")
+    ResponseEntity<DocumentosDigitalizadosResponseDTO> buscarDocumentoPorNome(@RequestBody @Valid BuscaDocumentoRequestDTO dto);
+
+    @PutMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    ResponseEntity<Void> atualizarDocumento(@RequestPart("documento") @Valid DocumentosDigitalizadosRequestDTO dto,
                                             @RequestPart("anexo") MultipartFile documento);
-
-    @DeleteMapping("/{nomeDoDocumento}")
-    ResponseEntity<Void> removerDocumento(@PathVariable String nomeDoDocumento);
 }
