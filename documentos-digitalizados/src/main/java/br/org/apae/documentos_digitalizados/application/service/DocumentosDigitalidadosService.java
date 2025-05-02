@@ -1,35 +1,22 @@
 package br.org.apae.documentos_digitalizados.application.service;
 
-import br.org.apae.documentos_digitalizados.application.dtos.DocumentosDigitalizadosRequestDTO;
-import br.org.apae.documentos_digitalizados.application.dtos.DocumentosDigitalizadosResponseDTO;
+import br.org.apae.documentos_digitalizados.application.dtos.*;
 import br.org.apae.documentos_digitalizados.domain.DocumentosDigitalizados;
 import jakarta.transaction.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
 public interface DocumentosDigitalidadosService {
     @Transactional
-    DocumentosDigitalizados salvarDocumento(DocumentosDigitalizadosRequestDTO dto);
+    DocumentosDigitalizados salvarDocumento(DocumentosDigitalizadosRequestDTO dto, MultipartFile documento);
 
-    List<DocumentosDigitalizados> listarTodosDocumentos();
+    List<String> listarDocumentos(ListagemBucketRequestDTO dto);
 
-    List<DocumentosDigitalizados> listarTodosDocumentosPessoal();
+    List<PacienteDocumentoResponseDTO> listarPaciente(Long idPaciente);
 
-    List<DocumentosDigitalizados> listarTodosDocumentosMedico();
-
-    List<DocumentosDigitalizados> listarTodosDocumentosEscolar();
-
-    List<DocumentosDigitalizados> listarTodosDocumentosPorPaciente(Long pacienteId);
-
-    List<DocumentosDigitalizados> listarDocumentosPessoalPorPaciente(Long pacienteId);
-
-    List<DocumentosDigitalizados> listarDocumentosMedicoPorPaciente(Long pacienteId);
-
-    List<DocumentosDigitalizados> listarDocumentosEscolarPorPaciente(Long pacienteId);
+    DocumentosDigitalizadosResponseDTO downloadDocumento(BuscaDocumentoRequestDTO dto);
 
     @Transactional
-    void atualizarDocumento(String nomeDoDocumento, DocumentosDigitalizadosRequestDTO dto);
-
-    @Transactional
-    void removerDocumento(String nomeDoDocumento);
+    void atualizarDocumento(DocumentosDigitalizadosRequestDTO dto, MultipartFile documento);
 }
