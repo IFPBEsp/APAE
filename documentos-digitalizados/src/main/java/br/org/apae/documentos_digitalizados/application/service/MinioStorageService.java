@@ -1,11 +1,15 @@
 package br.org.apae.documentos_digitalizados.application.service;
 
 import br.org.apae.documentos_digitalizados.domain.TipoDocumento;
-import org.springframework.core.io.Resource;
 import org.springframework.web.multipart.MultipartFile;
 
-public interface MinioStorageService {
+import java.io.InputStream;
 
+public interface MinioStorageService {
+    void criarBucket(String bucketNome);
+    boolean existeBucket(String bucketNome);
+    String listarDocumentos(String bucketNome, String subBucket);
     void uploadDocumento(TipoDocumento tipo, String documentoNome, MultipartFile file);
-    Resource downloadDocumento(TipoDocumento tipo, String documentoNome);
+    InputStream downloadDocumento(TipoDocumento tipo, String documentoNome);
+    void atualizarDocumento(String bucketNome, String documentoNome, MultipartFile file);
 }
