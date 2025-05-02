@@ -17,7 +17,7 @@ public class DocumentosDigitalizados {
     @Column(nullable = false, unique = true)
     private String nomeBucket;
 
-    @Column(nullable = false)
+    @Column(nullable = false, unique = true)
     private Long pacienteId;
 
     @Column(nullable = false)
