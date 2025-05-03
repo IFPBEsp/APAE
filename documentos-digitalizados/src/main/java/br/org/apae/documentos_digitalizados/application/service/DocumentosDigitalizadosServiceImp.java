@@ -29,8 +29,12 @@ public class DocumentosDigitalizadosServiceImp implements DocumentosDigitalidado
     }
 
     @Override
-    public List<String> listarDocumentos(ListagemBucketRequestDTO dto) {
-        return List.of();
+    public ListagemBucketResponseDTO listarDocumentos(ListagemBucketRequestDTO dto) {
+        String nomeBucket = mapper.nomeBucket(dto);
+        String subBucket = mapper.subBucket(dto);
+
+        List<String> listagem = minioStorageService.listarDocumentos(nomeBucket, subBucket);
+        return mapper.toListagem(listagem);
     }
 
     @Override

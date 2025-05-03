@@ -1,7 +1,6 @@
 package br.org.apae.documentos_digitalizados.application.service;
 
 import br.org.apae.documentos_digitalizados.application.dtos.*;
-import br.org.apae.documentos_digitalizados.domain.DocumentosDigitalizados;
 import jakarta.transaction.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -11,7 +10,7 @@ public interface DocumentosDigitalidadosService {
     @Transactional
     void salvarDocumento(DocumentosDigitalizadosRequestDTO dto, MultipartFile documento);
 
-    List<String> listarDocumentos(ListagemBucketRequestDTO dto);
+    ListagemBucketResponseDTO listarDocumentos(ListagemBucketRequestDTO dto);
 
     List<PacienteDocumentoResponseDTO> listarPaciente(Long idPaciente);
 

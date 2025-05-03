@@ -1,12 +1,16 @@
 package br.org.apae.documentos_digitalizados.application.mapper;
 
 import br.org.apae.documentos_digitalizados.application.dtos.DocumentosDigitalizadosRequestDTO;
+import br.org.apae.documentos_digitalizados.application.dtos.ListagemBucketRequestDTO;
+import br.org.apae.documentos_digitalizados.application.dtos.ListagemBucketResponseDTO;
 import br.org.apae.documentos_digitalizados.application.exception.ExtensaoArquivoException;
 import br.org.apae.documentos_digitalizados.domain.DocumentosDigitalizados;
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 @Component
@@ -27,6 +31,31 @@ public class DocumentoDigitalizadosMapper {
         documento.setDataAtualizacao(LocalDateTime.now());
 
         return documento;
+    }
+
+    public ListagemBucketResponseDTO toListagem(List<String> listagem) {
+        return new ListagemBucketResponseDTO(new ArrayList<>(listagem));
+    }
+
+    public String nomeBucket(ListagemBucketRequestDTO dto) {
+        return dto.idPaciente() + "-" + dto.nomePaciente();
+    }
+
+    public String subBucket(ListagemBucketRequestDTO dto) {
+        switch (dto.tipoDocumento()) {
+            case PESSOAL -> {
+                return "documentos-pessoal/";
+            }
+            case ESCOLAR -> {
+                return "documentos-escolar/";
+            }
+            case MEDICO -> {
+                return "documentos-medico/";
+            }
+            default -> {
+                return "";
+            }
+        }
     }
 
     private String extrairExtensao(String nomeArquivo) {
