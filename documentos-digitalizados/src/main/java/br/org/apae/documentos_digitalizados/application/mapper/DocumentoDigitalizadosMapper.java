@@ -1,9 +1,6 @@
 package br.org.apae.documentos_digitalizados.application.mapper;
 
-import br.org.apae.documentos_digitalizados.application.dtos.DocumentosDigitalizadosRequestDTO;
-import br.org.apae.documentos_digitalizados.application.dtos.ListagemBucketRequestDTO;
-import br.org.apae.documentos_digitalizados.application.dtos.ListagemBucketResponseDTO;
-import br.org.apae.documentos_digitalizados.application.dtos.PacienteDocumentoResponseDTO;
+import br.org.apae.documentos_digitalizados.application.dtos.*;
 import br.org.apae.documentos_digitalizados.application.exception.ExtensaoArquivoException;
 import br.org.apae.documentos_digitalizados.domain.DocumentosDigitalizados;
 import org.springframework.stereotype.Component;
@@ -43,24 +40,28 @@ public class DocumentoDigitalizadosMapper {
                 documento.getDataAtualizacao());
     }
 
+    public String toCaminho(String tipoDocumento, String nomeDocumento) {
+        return subBucket(tipoDocumento) + nomeDocumento;
+    }
+
     public String nomeDocumento(DocumentosDigitalizadosRequestDTO dto, MultipartFile arquivo) {
         String extensao = extrairExtensao(arquivo.getOriginalFilename());
         return dto.nomeDocumento() + "-" + UUID.randomUUID() + extensao;
     }
 
-    public String nomeBucket(ListagemBucketRequestDTO dto) {
-        return dto.idPaciente() + "-" + dto.nomePaciente();
+    public String nomeBucket(Long id, String nome) {
+        return id + "-" + nome;
     }
 
-    public String subBucket(ListagemBucketRequestDTO dto) {
-        switch (dto.tipoDocumento()) {
-            case PESSOAL -> {
+    public String subBucket(String tipoDocumento) {
+        switch (tipoDocumento) {
+            case "pessoal" -> {
                 return "documentos-pessoal/";
             }
-            case ESCOLAR -> {
+            case "escolar" -> {
                 return "documentos-escolar/";
             }
-            case MEDICO -> {
+            case "medico" -> {
                 return "documentos-medico/";
             }
             default -> {

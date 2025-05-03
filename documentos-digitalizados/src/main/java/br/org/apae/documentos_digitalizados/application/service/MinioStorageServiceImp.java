@@ -79,6 +79,20 @@ public class MinioStorageServiceImp implements MinioStorageService {
     }
 
     @Override
+    public StatObjectResponse metadadoDocumento(String bucketNome, String documentoCaminho) {
+        try {
+            return minioClient.statObject(
+                    StatObjectArgs.builder()
+                            .bucket(bucketNome)
+                            .object(documentoCaminho)
+                            .build()
+            );
+        } catch (Exception e) {
+            throw new DocumentoStorageException("Falha no busca do metadado do documento\n" + e);
+        }
+    }
+
+    @Override
     public List<String> listarDocumentos(String bucketNome, String subBucket) {
         List<String> documentos = new ArrayList<>();
 

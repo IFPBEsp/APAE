@@ -5,10 +5,13 @@ import br.org.apae.documentos_digitalizados.application.exception.DocumentoDigit
 import br.org.apae.documentos_digitalizados.application.mapper.DocumentoDigitalizadosMapper;
 import br.org.apae.documentos_digitalizados.domain.DocumentosDigitalizados;
 import br.org.apae.documentos_digitalizados.infrastructure.repository.DocumentosDigitalizadosRepository;
+import io.minio.StatObjectResponse;
 import lombok.RequiredArgsConstructor;
+import org.springframework.core.io.InputStreamResource;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.InputStream;
 import java.util.List;
 
 @RequiredArgsConstructor
@@ -33,8 +36,8 @@ public class DocumentosDigitalizadosServiceImp implements DocumentosDigitalidado
 
     @Override
     public ListagemBucketResponseDTO listarDocumentos(ListagemBucketRequestDTO dto) {
-        String nomeBucket = mapper.nomeBucket(dto);
-        String subBucket = mapper.subBucket(dto);
+        String nomeBucket = mapper.nomeBucket(dto.idPaciente(), dto.nomePaciente());
+        String subBucket = mapper.subBucket(dto.tipoDocumento().getTipo());
 
         List<String> listagem = minioStorageService.listarDocumentos(nomeBucket, subBucket);
         return mapper.toListagem(listagem);
@@ -49,7 +52,21 @@ public class DocumentosDigitalizadosServiceImp implements DocumentosDigitalidado
 
     @Override
     public DocumentosDigitalizadosResponseDTO downloadDocumento(BuscaDocumentoRequestDTO dto) {
-        return null;
+        String caminho = mapper.toCaminho(dto.tipoDocumento().getTipo(), dto.nomeDocumento());
+        String nomeBucket = mapper.nomeBucket(dto.idPaciente(), dto.nomePaciente());
+
+        InputStream documento = minioStorageService.downloadDocumento(nomeBucket, caminho);
+        StatObjectResponse metadado = minioStorageService.metadadoDocumento(nomeBucket, caminho);
+
+        return new DocumentosDigitalizadosResponseDTO(new InputStreamResource(documento));
+    }
+
+    @Override
+    public StatObjectResponse metadadoDocumento(BuscaDocumentoRequestDTO dto) {
+        String caminho = mapper.toCaminho(dto.tipoDocumento().getTipo(), dto.nomeDocumento());
+        String nomeBucket = mapper.nomeBucket(dto.idPaciente(), dto.nomePaciente());
+
+        return minioStorageService.metadadoDocumento(nomeBucket, caminho);
     }
 
     @Override
