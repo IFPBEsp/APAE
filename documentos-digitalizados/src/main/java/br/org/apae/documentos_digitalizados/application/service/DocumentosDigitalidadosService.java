@@ -12,7 +12,7 @@ public interface DocumentosDigitalidadosService {
 
     ListagemBucketResponseDTO listarDocumentos(ListagemBucketRequestDTO dto);
 
-    List<PacienteDocumentoResponseDTO> listarPaciente(Long idPaciente);
+    PacienteDocumentoResponseDTO buscarPaciente(Long idPaciente);
 
     DocumentosDigitalizadosResponseDTO downloadDocumento(BuscaDocumentoRequestDTO dto);
 

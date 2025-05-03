@@ -3,6 +3,7 @@ package br.org.apae.documentos_digitalizados.application.mapper;
 import br.org.apae.documentos_digitalizados.application.dtos.DocumentosDigitalizadosRequestDTO;
 import br.org.apae.documentos_digitalizados.application.dtos.ListagemBucketRequestDTO;
 import br.org.apae.documentos_digitalizados.application.dtos.ListagemBucketResponseDTO;
+import br.org.apae.documentos_digitalizados.application.dtos.PacienteDocumentoResponseDTO;
 import br.org.apae.documentos_digitalizados.application.exception.ExtensaoArquivoException;
 import br.org.apae.documentos_digitalizados.domain.DocumentosDigitalizados;
 import org.springframework.stereotype.Component;
@@ -35,6 +36,15 @@ public class DocumentoDigitalizadosMapper {
 
     public ListagemBucketResponseDTO toListagem(List<String> listagem) {
         return new ListagemBucketResponseDTO(new ArrayList<>(listagem));
+    }
+
+    public PacienteDocumentoResponseDTO toPaciente(DocumentosDigitalizados documento) {
+        return new PacienteDocumentoResponseDTO(
+                documento.getPacienteId(),
+                documento.getNomePaciente(),
+                documento.getNomeBucket(),
+                documento.getTipoPaciente(),
+                documento.getDataAtualizacao());
     }
 
     public String nomeBucket(ListagemBucketRequestDTO dto) {

@@ -1,6 +1,7 @@
 package br.org.apae.documentos_digitalizados.application.service;
 
 import br.org.apae.documentos_digitalizados.application.dtos.*;
+import br.org.apae.documentos_digitalizados.application.exception.DocumentoDigitalizadoNaoEncontradoException;
 import br.org.apae.documentos_digitalizados.application.mapper.DocumentoDigitalizadosMapper;
 import br.org.apae.documentos_digitalizados.domain.DocumentosDigitalizados;
 import br.org.apae.documentos_digitalizados.infrastructure.repository.DocumentosDigitalizadosRepository;
@@ -38,8 +39,10 @@ public class DocumentosDigitalizadosServiceImp implements DocumentosDigitalidado
     }
 
     @Override
-    public List<PacienteDocumentoResponseDTO> listarPaciente(Long idPaciente) {
-        return List.of();
+    public PacienteDocumentoResponseDTO buscarPaciente(Long idPaciente) {
+        DocumentosDigitalizados documento = repository.findByPacienteId(idPaciente).orElseThrow(() -> new DocumentoDigitalizadoNaoEncontradoException("Paciênte não encontrado!"));
+
+        return mapper.toPaciente(documento);
     }
 
     @Override
