@@ -119,7 +119,7 @@ public class MinioStorageServiceImp implements MinioStorageService {
     }
 
     @Override
-    public void atualizarDocumento(String bucketNome,TipoDocumento tipoDocumento, String documentoNome, MultipartFile file) {
+    public void atualizarDocumento(String bucketNome, TipoDocumento tipoDocumento, String documentoNome, MultipartFile file) {
         uploadDocumento(bucketNome, tipoDocumento, documentoNome, file);
     }
 

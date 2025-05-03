@@ -70,7 +70,14 @@ public class DocumentosDigitalizadosServiceImp implements DocumentosDigitalidado
     }
 
     @Override
-    public void atualizarDocumento(DocumentosDigitalizadosRequestDTO dto, MultipartFile documento) {
-        
+    public void atualizarDocumento(DocumentosDigitalizadosRequestDTO dto, MultipartFile arquivo) {
+        if (repository.findByPacienteId(dto.pacienteId()).isPresent()) {
+            DocumentosDigitalizados documento = mapper.toEntity(dto);
+            repository.save(documento);
+
+            String nomeDocumento = mapper.nomeDocumento(dto, arquivo);
+
+            minioStorageService.atualizarDocumento(documento.getNomeBucket(), documento.getTipoDocumento(), nomeDocumento, arquivo);
+        }
     }
 }
