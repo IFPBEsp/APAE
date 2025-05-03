@@ -17,7 +17,7 @@ public interface DocumentosDigitalizadosController {
                                          @RequestPart("anexo") MultipartFile documento);
 
     @GetMapping
-    ResponseEntity<List<String>> listarDocumentos(@RequestBody @Valid ListagemBucketRequestDTO dto);
+    ResponseEntity<ListagemBucketResponseDTO> listarDocumentos(@RequestBody @Valid ListagemBucketRequestDTO dto);
 
     @GetMapping("/{pacienteID}")
     ResponseEntity<PacienteDocumentoResponseDTO> buscarPorPaciente(@PathVariable("pacienteID") Long pacienteID);
