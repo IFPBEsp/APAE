@@ -17,7 +17,7 @@ import java.util.UUID;
 @Component
 public class DocumentoDigitalizadosMapper {
 
-    public DocumentosDigitalizados toEntity(DocumentosDigitalizadosRequestDTO dto, MultipartFile arquivo) {
+    public DocumentosDigitalizados toEntity(DocumentosDigitalizadosRequestDTO dto) {
         DocumentosDigitalizados documento = new DocumentosDigitalizados();
 
         documento.setNomeBucket(dto.pacienteId() + "-" + dto.nomePaciente());
@@ -25,10 +25,6 @@ public class DocumentoDigitalizadosMapper {
         documento.setNomePaciente(dto.nomePaciente());
         documento.setTipoPaciente(dto.tipoPaciente());
         documento.setTipoDocumento(dto.tipoDocumento());
-
-        String extensao = extrairExtensao(arquivo.getOriginalFilename());
-        documento.setDocumento(dto.nomeDocumento() + "-" + UUID.randomUUID() + extensao);
-
         documento.setDataAtualizacao(LocalDateTime.now());
 
         return documento;
@@ -45,6 +41,11 @@ public class DocumentoDigitalizadosMapper {
                 documento.getNomeBucket(),
                 documento.getTipoPaciente(),
                 documento.getDataAtualizacao());
+    }
+
+    public String nomeDocumento(DocumentosDigitalizadosRequestDTO dto, MultipartFile arquivo) {
+        String extensao = extrairExtensao(arquivo.getOriginalFilename());
+        return dto.nomeDocumento() + "-" + UUID.randomUUID() + extensao;
     }
 
     public String nomeBucket(ListagemBucketRequestDTO dto) {

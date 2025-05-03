@@ -21,12 +21,14 @@ public class DocumentosDigitalizadosServiceImp implements DocumentosDigitalidado
 
 
     @Override
-    public void salvarDocumento(DocumentosDigitalizadosRequestDTO dto, MultipartFile file) {
-        DocumentosDigitalizados documento = mapper.toEntity(dto, file);
+    public void salvarDocumento(DocumentosDigitalizadosRequestDTO dto, MultipartFile arquivo) {
+        DocumentosDigitalizados documento = mapper.toEntity(dto);
         repository.save(documento);
 
+        String nomeDocumento = mapper.nomeDocumento(dto, arquivo);
+
         minioStorageService.criarBucket(documento.getNomeBucket(), documento.getTipoPaciente());
-        minioStorageService.uploadDocumento(documento.getNomeBucket(), documento.getTipoDocumento(), documento.getDocumento(), file);
+        minioStorageService.uploadDocumento(documento.getNomeBucket(), documento.getTipoDocumento(), nomeDocumento, arquivo);
     }
 
     @Override
