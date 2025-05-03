@@ -1,13 +1,12 @@
 package br.org.apae.documentos_digitalizados.application.service;
 
-import br.org.apae.documentos_digitalizados.application.dtos.DocumentosDigitalizadosRequestDTO;
-import br.org.apae.documentos_digitalizados.application.dtos.DocumentosDigitalizadosResponseDTO;
-import br.org.apae.documentos_digitalizados.application.exception.DocumentoDigitalizadoNaoEncontradoException;
+import br.org.apae.documentos_digitalizados.application.dtos.*;
 import br.org.apae.documentos_digitalizados.application.mapper.DocumentoDigitalizadosMapper;
 import br.org.apae.documentos_digitalizados.domain.DocumentosDigitalizados;
 import br.org.apae.documentos_digitalizados.infrastructure.repository.DocumentosDigitalizadosRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -17,39 +16,35 @@ public class DocumentosDigitalizadosServiceImp implements DocumentosDigitalidado
 
     private final DocumentosDigitalizadosRepository repository;
     private final DocumentoDigitalizadosMapper mapper;
+    private final MinioStorageService minioStorageService;
+
 
     @Override
-    public DocumentosDigitalizadosResponseDTO criar(DocumentosDigitalizadosRequestDTO dto) {
-        DocumentosDigitalizados documentoDigitalizado = mapper.toEntity(dto);
-        documentoDigitalizado = repository.save(documentoDigitalizado);
+    public void salvarDocumento(DocumentosDigitalizadosRequestDTO dto, MultipartFile file) {
+        DocumentosDigitalizados documento = mapper.toEntity(dto, file);
+        repository.save(documento);
 
-        return mapper.toDTO(documentoDigitalizado);
+        minioStorageService.criarBucket(documento.getNomeBucket(), documento.getTipoPaciente());
+        minioStorageService.uploadDocumento(documento.getNomeBucket(), documento.getTipoDocumento(), documento.getDocumento(), file);
     }
 
     @Override
-    public DocumentosDigitalizadosResponseDTO buscarPorId(Long id) {
-        DocumentosDigitalizados documentoDigitalizado = repository.findById(id).orElseThrow(() -> new DocumentoDigitalizadoNaoEncontradoException("Documento digitalizado não encontrado!"));
-        return mapper.toDTO(documentoDigitalizado);
+    public List<String> listarDocumentos(ListagemBucketRequestDTO dto) {
+        return List.of();
     }
 
     @Override
-    public List<DocumentosDigitalizadosResponseDTO> listarTodos() {
-        List<DocumentosDigitalizados> documentosDigitalizados = repository.findAll();
-        return mapper.toDTO(documentosDigitalizados);
+    public List<PacienteDocumentoResponseDTO> listarPaciente(Long idPaciente) {
+        return List.of();
     }
 
     @Override
-    public DocumentosDigitalizadosResponseDTO atualizar(Long id, DocumentosDigitalizadosRequestDTO dto) {
-        DocumentosDigitalizados documentoDigitalizado = mapper.toEntity(id, dto);
-        documentoDigitalizado = repository.save(documentoDigitalizado);
-
-        return mapper.toDTO(documentoDigitalizado);
+    public DocumentosDigitalizadosResponseDTO downloadDocumento(BuscaDocumentoRequestDTO dto) {
+        return null;
     }
 
     @Override
-    public void excluir(Long id) {
-        buscarPorId(id);
-
-        repository.deleteById(id);
+    public void atualizarDocumento(DocumentosDigitalizadosRequestDTO dto, MultipartFile documento) {
+        
     }
 }

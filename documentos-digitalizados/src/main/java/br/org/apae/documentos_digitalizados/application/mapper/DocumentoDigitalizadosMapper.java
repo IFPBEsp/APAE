@@ -6,6 +6,7 @@ import br.org.apae.documentos_digitalizados.domain.DocumentosDigitalizados;
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Component
@@ -13,20 +14,17 @@ public class DocumentoDigitalizadosMapper {
 
     public DocumentosDigitalizados toEntity(DocumentosDigitalizadosRequestDTO dto, MultipartFile arquivo) {
         DocumentosDigitalizados documento = new DocumentosDigitalizados();
+
+        documento.setNomeBucket(dto.pacienteId() + "-" + dto.nomePaciente());
         documento.setPacienteId(dto.pacienteId());
+        documento.setNomePaciente(dto.nomePaciente());
+        documento.setTipoPaciente(dto.tipoPaciente());
         documento.setTipoDocumento(dto.tipoDocumento());
 
         String extensao = extrairExtensao(arquivo.getOriginalFilename());
-
         documento.setDocumento(dto.nomeDocumento() + "-" + UUID.randomUUID() + extensao);
 
-        return documento;
-    }
-
-    public DocumentosDigitalizados toEntity(Long id, DocumentosDigitalizadosRequestDTO documentosDigitalizadosRequestDTO) {
-        DocumentosDigitalizados documento = new DocumentosDigitalizados();
-        documento.setId(id);
-        documento.setPacienteId(documentosDigitalizadosRequestDTO.pacienteId());
+        documento.setDataAtualizacao(LocalDateTime.now());
 
         return documento;
     }

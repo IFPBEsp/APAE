@@ -9,7 +9,7 @@ import java.util.List;
 
 public interface DocumentosDigitalidadosService {
     @Transactional
-    DocumentosDigitalizados salvarDocumento(DocumentosDigitalizadosRequestDTO dto, MultipartFile documento);
+    void salvarDocumento(DocumentosDigitalizadosRequestDTO dto, MultipartFile documento);
 
     List<String> listarDocumentos(ListagemBucketRequestDTO dto);
 
