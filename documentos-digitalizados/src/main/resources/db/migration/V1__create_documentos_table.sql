@@ -5,6 +5,5 @@ CREATE TABLE documentos_digitalizados (
     nome_paciente VARCHAR(255) NOT NULL,
     tipo_paciente VARCHAR(255) NOT NULL,
     tipo_documento VARCHAR(255) NOT NULL,
-    documento VARCHAR(255) NOT NULL,
     data_atualizacao TIMESTAMP NOT NULL
 );

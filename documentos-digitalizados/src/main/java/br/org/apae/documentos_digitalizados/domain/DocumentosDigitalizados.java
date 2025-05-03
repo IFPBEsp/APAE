@@ -32,8 +32,5 @@ public class DocumentosDigitalizados {
     private TipoDocumento tipoDocumento;
 
     @Column(nullable = false)
-    private String documento;
-
-    @Column(nullable = false)
     private LocalDateTime dataAtualizacao;
 }
