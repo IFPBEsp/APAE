@@ -6,6 +6,7 @@ import br.org.apae.documentos_digitalizados.domain.DocumentosDigitalizados;
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.text.Normalizer;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -50,7 +51,15 @@ public class DocumentoDigitalizadosMapper {
     }
 
     public String nomeBucket(Long id, String nome) {
-        return id + "-" + nome;
+        String nomeFormatado = Normalizer
+                .normalize(nome, Normalizer.Form.NFD)
+                .replaceAll("[^\\p{ASCII}]", "")
+                .replaceAll("[^a-z0-9\\-]", "-")
+                .replaceAll("-+", "-")
+                .replaceAll("^-|-$", "")
+                .toLowerCase();
+
+        return id + "-" + nomeFormatado;
     }
 
     public String subBucket(String tipoDocumento) {
