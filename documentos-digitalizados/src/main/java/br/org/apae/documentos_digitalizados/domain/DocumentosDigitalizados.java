@@ -1,7 +1,9 @@
 package br.org.apae.documentos_digitalizados.domain;
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.LocalDateTime;
@@ -9,6 +11,8 @@ import java.time.LocalDateTime;
 @Getter
 @Setter
 @Entity
+@NoArgsConstructor
+@AllArgsConstructor
 public class DocumentosDigitalizados {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
