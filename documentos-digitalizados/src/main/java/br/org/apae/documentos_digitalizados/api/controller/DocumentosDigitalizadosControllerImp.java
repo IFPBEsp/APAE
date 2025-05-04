@@ -1,5 +1,6 @@
 package br.org.apae.documentos_digitalizados.api.controller;
 
+import br.org.apae.documentos_digitalizados.application.dtos.*;
 import br.org.apae.documentos_digitalizados.application.service.DocumentosDigitalidadosService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -17,43 +18,30 @@ public class DocumentosDigitalizadosControllerImp implements DocumentosDigitaliz
 
     private final DocumentosDigitalidadosService documentosDigitalidadosService;
 
+
     @Override
-    public ResponseEntity<List<MultipartFile>> listarDocumentosPaciente(Long id_paciente) {
+    public ResponseEntity<Void> salvarDocumento(DocumentosDigitalizadosRequestDTO dto, MultipartFile documento) {
+        documentosDigitalidadosService.salvarDocumento(dto, documento);
+        return ResponseEntity.ok().build();
+    }
+
+    @Override
+    public ResponseEntity<ListagemBucketResponseDTO> listarDocumentos(ListagemBucketRequestDTO dto) {
         return null;
     }
 
     @Override
-    public ResponseEntity<MultipartFile> obterLaudoMedico(Long id_paciente, UUID uuid) {
+    public ResponseEntity<PacienteDocumentoResponseDTO> buscarPorPaciente(Long pacienteID) {
         return null;
     }
 
     @Override
-    public ResponseEntity<MultipartFile> obterEncaminhamento(Long id_paciente, UUID uuid) {
+    public ResponseEntity<DocumentosDigitalizadosResponseDTO> buscarDocumentoPorNome(BuscaDocumentoRequestDTO dto) {
         return null;
     }
 
     @Override
-    public ResponseEntity<Void> salvarDocumentosPaciente(Long id_paciente, MultipartFile encaminhamento, MultipartFile laudoMedico) {
-        return null;
-    }
-
-    @Override
-    public ResponseEntity<Void> atualizarLaudoMedico(Long id_paciente, UUID uuid, MultipartFile file) {
-        return null;
-    }
-
-    @Override
-    public ResponseEntity<Void> atualizarEncaminhamento(Long id_paciente, UUID uuid, MultipartFile file) {
-        return null;
-    }
-
-    @Override
-    public ResponseEntity<Void> removerLaudoMedico(Long id_paciente, UUID uuid) {
-        return null;
-    }
-
-    @Override
-    public ResponseEntity<Void> removerEncaminhamento(Long id_paciente, UUID uuid) {
+    public ResponseEntity<Void> atualizarDocumento(DocumentosDigitalizadosRequestDTO dto, MultipartFile documento) {
         return null;
     }
 }
