@@ -13,6 +13,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.InputStream;
 import java.util.List;
+import java.util.UUID;
 
 @RequiredArgsConstructor
 @Service
@@ -24,27 +25,26 @@ public class DocumentosDigitalizadosServiceImp implements DocumentosDigitalidado
 
 
     @Override
-    public void salvarDocumento(DocumentosDigitalizadosRequestDTO dto, MultipartFile arquivo) {
+    public void salvarDocumento(DocumentosDigitalizadosRequestDTO dto, MultipartFile arquivo) throws Exception {
         DocumentosDigitalizados documento = mapper.toEntity(dto);
+
+        minioStorageService.criarBucket(documento.getNomeBucket());
+        minioStorageService.uploadDocumento(documento.getNomeBucket(), documento.getTipoDocumento(), arquivo);
         repository.save(documento);
-
-        String nomeDocumento = mapper.nomeDocumento(dto, arquivo);
-
-        minioStorageService.criarBucket(documento.getNomeBucket(), documento.getTipoPaciente());
-        minioStorageService.uploadDocumento(documento.getNomeBucket(), documento.getTipoDocumento(), nomeDocumento, arquivo);
     }
 
     @Override
     public ListagemBucketResponseDTO listarDocumentos(ListagemBucketRequestDTO dto) {
-        String nomeBucket = mapper.nomeBucket(dto.idPaciente(), dto.nomePaciente());
-        String subBucket = mapper.subBucket(dto.tipoDocumento().getTipo());
-
-        List<String> listagem = minioStorageService.listarDocumentos(nomeBucket, subBucket);
-        return mapper.toListagem(listagem);
+//        String nomeBucket = mapper.nomeBucket(dto.idPaciente(), dto.nomePaciente());
+//        String subBucket = mapper.subBucket(dto.tipoDocumento().getTipo());
+//
+//        List<String> listagem = minioStorageService.listarDocumentos(nomeBucket, subBucket);
+//        return mapper.toListagem(listagem);
+        return null;
     }
 
     @Override
-    public PacienteDocumentoResponseDTO buscarPaciente(Long idPaciente) {
+    public PacienteDocumentoResponseDTO buscarPaciente(UUID idPaciente) {
         DocumentosDigitalizados documento = repository.findByPacienteId(idPaciente).orElseThrow(() -> new DocumentoDigitalizadoNaoEncontradoException("Paciênte não encontrado!"));
 
         return mapper.toPaciente(documento);
@@ -71,13 +71,13 @@ public class DocumentosDigitalizadosServiceImp implements DocumentosDigitalidado
 
     @Override
     public void atualizarDocumento(DocumentosDigitalizadosRequestDTO dto, MultipartFile arquivo) {
-        if (repository.findByPacienteId(dto.pacienteId()).isPresent()) {
-            DocumentosDigitalizados documento = mapper.toEntity(dto);
-            repository.save(documento);
-
-            String nomeDocumento = mapper.nomeDocumento(dto, arquivo);
-
-            minioStorageService.atualizarDocumento(documento.getNomeBucket(), documento.getTipoDocumento(), nomeDocumento, arquivo);
-        }
+//        if (repository.findByPacienteId(dto.pacienteId()).isPresent()) {
+//            DocumentosDigitalizados documento = mapper.toEntity(dto);
+//            repository.save(documento);
+//
+//            String nomeDocumento = mapper.nomeDocumento(dto, arquivo);
+//
+//            minioStorageService.atualizarDocumento(documento.getNomeBucket(), documento.getTipoDocumento(), nomeDocumento, arquivo);
+//        }
     }
 }
