@@ -12,7 +12,7 @@ public interface DocumentosDigitalizadosController {
 
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     ResponseEntity<Void> salvarDocumento(@RequestPart("documento") @Valid DocumentosDigitalizadosRequestDTO dto,
-                                         @RequestPart("anexo") MultipartFile documento);
+                                         @RequestPart("anexo") MultipartFile documento) throws Exception;
 
     @GetMapping
     ResponseEntity<ListagemBucketResponseDTO> listarDocumentos(@RequestBody @Valid ListagemBucketRequestDTO dto);
