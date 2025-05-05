@@ -18,19 +18,20 @@ public class DocumentoDigitalizadosMapper {
     public DocumentosDigitalizados toEntity(DocumentosDigitalizadosRequestDTO dto) {
         DocumentosDigitalizados documento = new DocumentosDigitalizados();
 
-        documento.setNomeBucket(dto.pacienteId() + "-" + dto.nomePaciente());
+        documento.setNomeBucket(String.valueOf(dto.pacienteId()));
         documento.setPacienteId(dto.pacienteId());
         documento.setNomePaciente(dto.nomePaciente());
         documento.setTipoPaciente(dto.tipoPaciente());
         documento.setTipoDocumento(dto.tipoDocumento());
         documento.setDataAtualizacao(LocalDateTime.now());
+        documento.setRotaDocumentos(dto.pacienteId() +"/" + dto.tipoDocumento() +"/"+ dto.nomeDocumento());
 
         return documento;
     }
 
-    public ListagemBucketResponseDTO toListagem(List<String> listagem) {
-        return new ListagemBucketResponseDTO(new ArrayList<>(listagem));
-    }
+//    public ListagemBucketResponseDTO toListagem(List<String> listagem) {
+//        return new ListagemBucketResponseDTO(new ArrayList<>(listagem));
+//    }
 
     public PacienteDocumentoResponseDTO toPaciente(DocumentosDigitalizados documento) {
         return new PacienteDocumentoResponseDTO(
@@ -50,16 +51,10 @@ public class DocumentoDigitalizadosMapper {
         return dto.nomeDocumento() + "-" + UUID.randomUUID() + extensao;
     }
 
-    public String nomeBucket(Long id, String nome) {
-        String nomeFormatado = Normalizer
-                .normalize(nome, Normalizer.Form.NFD)
-                .replaceAll("[^\\p{ASCII}]", "")
-                .replaceAll("[^a-z0-9\\-]", "-")
-                .replaceAll("-+", "-")
-                .replaceAll("^-|-$", "")
-                .toLowerCase();
+    public String nomeBucket(UUID id, String nome) {
 
-        return id + "-" + nomeFormatado;
+
+        return id.toString() ;
     }
 
     public String subBucket(String tipoDocumento) {
