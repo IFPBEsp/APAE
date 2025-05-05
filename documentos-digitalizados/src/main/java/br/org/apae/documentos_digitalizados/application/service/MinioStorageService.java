@@ -9,8 +9,8 @@ import java.io.InputStream;
 import java.util.List;
 
 public interface MinioStorageService {
-    void criarBucket(String bucketNome, TipoPaciente tipoPaciente);
-    void uploadDocumento(String nomeBucket, TipoDocumento tipoDocumento, String documentoNome, MultipartFile file);
+    void criarBucket(String bucketNome) throws Exception;
+    void uploadDocumento(String nomeBucket, TipoDocumento tipoDocumento, MultipartFile file) throws Exception;
     InputStream downloadDocumento(String bucketNome, String documentoCaminho);
     StatObjectResponse metadadoDocumento(String bucketNome, String documentoCaminho);
     List<String> listarDocumentos(String bucketNome, String subBucket);
