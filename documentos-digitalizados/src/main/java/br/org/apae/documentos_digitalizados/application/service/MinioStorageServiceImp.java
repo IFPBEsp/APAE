@@ -22,45 +22,66 @@ public class MinioStorageServiceImp implements MinioStorageService {
     private final MinioClient minioClient;
 
     @Override
-    public void criarBucket(String bucketNome, TipoPaciente tipoPaciente) {
-        try {
-            if (!existeBucket(bucketNome)) {
-                minioClient.makeBucket(MakeBucketArgs.builder().bucket(bucketNome).build());
-
-                switch (tipoPaciente) {
-                    case PACIENTE:
-                        criarSubBucket(bucketNome, "documentos-medico");
-                        criarSubBucket(bucketNome, "documentos-pessoal");
-                        break;
-                    case ALUNO:
-                        criarSubBucket(bucketNome, "documentos-escolar");
-                        criarSubBucket(bucketNome, "documentos-pessoal");
-                        break;
-                    case AMBOS:
-                        criarSubBucket(bucketNome, "documentos-escolar");
-                        criarSubBucket(bucketNome, "documentos-medico");
-                        criarSubBucket(bucketNome, "documentos-pessoal");
-                        break;
-                }
-            }
-        } catch (Exception e) {
-            throw new DocumentoStorageException("Erro ao criar bucket\n" + e.getMessage());
+    public void criarBucket(String bucketNome) throws Exception {
+//        try {
+//            if (!existeBucket(bucketNome)) {
+//                minioClient.makeBucket(MakeBucketArgs.builder().bucket(bucketNome).build());
+//
+//                switch (tipoPaciente) {
+//                    case PACIENTE:
+//                        criarSubBucket(bucketNome, "documentos-medico");
+//                        criarSubBucket(bucketNome, "documentos-pessoal");
+//                        break;
+//                    case ALUNO:
+//                        criarSubBucket(bucketNome, "documentos-escolar");
+//                        criarSubBucket(bucketNome, "documentos-pessoal");
+//                        break;
+//                    case AMBOS:
+//                        criarSubBucket(bucketNome, "documentos-escolar");
+//                        criarSubBucket(bucketNome, "documentos-medico");
+//                        criarSubBucket(bucketNome, "documentos-pessoal");
+//                        break;
+//                }
+//            }
+//        } catch (Exception e) {
+//            throw new DocumentoStorageException("Erro ao criar bucket\n" + e.getMessage());
+//        }
+        boolean exists = minioClient.bucketExists(BucketExistsArgs.builder().bucket(bucketNome).build());
+        if (!exists) {
+            minioClient.makeBucket(MakeBucketArgs.builder().bucket(bucketNome).build());
         }
     }
 
     @Override
-    public void uploadDocumento(String nomeBucket, TipoDocumento tipoDocumento, String documentoNome, MultipartFile file) {
-        validarArquivo(file);
+    public void uploadDocumento(String nomeBucket, TipoDocumento tipoDocumento,MultipartFile file) throws Exception {
+//        validarArquivo(file);
+//        String subBucket = determinarSubBucket(tipoDocumento);
+//
+//        try (InputStream inputStream = file.getInputStream()) {
+//            String caminhoCompleto = subBucket + documentoNome;
+//            salvarDocumento(nomeBucket, caminhoCompleto, inputStream, file.getContentType(), file.getSize());
+//        } catch (IOException e) {
+//            throw new DocumentoStorageException("Falha ao ler arquivo\n" + e);
+//        } catch (Exception e) {
+//            throw new DocumentoStorageException("Falha no upload para MinIO\n" + e);
+//        }
 
-        String subBucket = determinarSubBucket(tipoDocumento);
 
-        try (InputStream inputStream = file.getInputStream()) {
-            String caminhoCompleto = subBucket + documentoNome;
-            salvarDocumento(nomeBucket, caminhoCompleto, inputStream, file.getContentType(), file.getSize());
-        } catch (IOException e) {
-            throw new DocumentoStorageException("Falha ao ler arquivo\n" + e);
-        } catch (Exception e) {
-            throw new DocumentoStorageException("Falha no upload para MinIO\n" + e);
+
+        criarBucket(nomeBucket);
+
+        String objectName = tipoDocumento.toString().endsWith("/") ? tipoDocumento + file.getOriginalFilename()
+                : tipoDocumento + "/" + file.getOriginalFilename();
+
+        try (InputStream stream = file.getInputStream()) {
+            minioClient.putObject(
+                    PutObjectArgs.builder()
+                            .bucket(nomeBucket)
+                            .object(objectName)
+                            .stream(stream, file.getSize(), -1)
+                            .contentType(file.getContentType())
+                            .build()
+            );
         }
     }
 
@@ -120,7 +141,7 @@ public class MinioStorageServiceImp implements MinioStorageService {
 
     @Override
     public void atualizarDocumento(String bucketNome, TipoDocumento tipoDocumento, String documentoNome, MultipartFile file) {
-        uploadDocumento(bucketNome, tipoDocumento, documentoNome, file);
+//        uploadDocumento(bucketNome, tipoDocumento, file);
     }
 
     private void validarArquivo(MultipartFile file) {
@@ -133,13 +154,13 @@ public class MinioStorageServiceImp implements MinioStorageService {
         }
     }
 
-    private String determinarSubBucket(TipoDocumento tipo) {
-        return switch (tipo) {
-            case PESSOAL -> "documentos-pessoal/";
-            case MEDICO -> "documentos-medico/";
-            case ESCOLAR -> "documentos-escolar/";
-        };
-    }
+//    private String determinarSubBucket(TipoDocumento tipo) {
+//        return switch (tipo) {
+//            case PESSOAL -> "documentos-pessoal/";
+//            case MEDICO -> "documentos-medico/";
+//            case ESCOLAR -> "documentos-escolar/";
+//        };
+//    }
 
     private void salvarDocumento(String bucket, String documentoNome, InputStream inputStream, String contentType, long size) {
         try {
@@ -163,17 +184,18 @@ public class MinioStorageServiceImp implements MinioStorageService {
         }
     }
 
-    private void criarSubBucket(String bucket, String subBucket) {
-        try {
-            minioClient.putObject(
-                    PutObjectArgs.builder()
-                            .bucket(bucket)
-                            .object(subBucket)
-                            .stream(new ByteArrayInputStream(new byte[0]), 0, -1)
-                            .build()
-            );
-        } catch (Exception e){
-            throw new DocumentoStorageException("Falha ao criar arquivo\n" + e);
-        }
-    }
+//    private void criarSubBucket(String bucket, String subBucket) {
+//
+//        try {
+//            minioClient.putObject(
+//                    PutObjectArgs.builder()
+//                            .bucket(bucket)
+//                            .object(subBucket)
+//                            .stream(new ByteArrayInputStream(new byte[0]), 0, -1)
+//                            .build()
+//            );
+//        } catch (Exception e){
+//            throw new DocumentoStorageException("Falha ao criar arquivo\n" + e);
+//        }
+//    }
 }
