@@ -1,14 +1,14 @@
-package br.org.apae.api_crud_pacientes.repository;
+package br.org.apae.api_crud_pacientes.domain.repository;
 
 import java.util.UUID;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
-
-import br.org.apae.api_crud_pacientes.model.Paciente;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
+
+import br.org.apae.api_crud_pacientes.domain.model.Paciente;
 
 public interface PacienteRepository extends JpaRepository<Paciente, UUID> {
     @Query("SELECT p FROM Paciente p WHERE p.cpf LIKE %:cpf%")

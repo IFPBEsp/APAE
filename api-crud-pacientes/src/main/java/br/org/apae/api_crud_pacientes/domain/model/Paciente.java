@@ -1,4 +1,4 @@
-package br.org.apae.api_crud_pacientes.model;
+package br.org.apae.api_crud_pacientes.domain.model;
 
 import jakarta.persistence.*;
 import java.time.LocalDate;

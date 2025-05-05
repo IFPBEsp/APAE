@@ -1,9 +1,9 @@
-package br.org.apae.api_crud_pacientes.service;
+package br.org.apae.api_crud_pacientes.domain.service;
 
-import br.org.apae.api_crud_pacientes.dto.request.PacienteRequest;
-import br.org.apae.api_crud_pacientes.dto.response.PacienteResponse;
-import br.org.apae.api_crud_pacientes.model.Paciente;
-import br.org.apae.api_crud_pacientes.repository.PacienteRepository;
+import br.org.apae.api_crud_pacientes.api.dto.PacienteRequest;
+import br.org.apae.api_crud_pacientes.api.dto.PacienteResponse;
+import br.org.apae.api_crud_pacientes.domain.model.Paciente;
+import br.org.apae.api_crud_pacientes.domain.repository.PacienteRepository;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
