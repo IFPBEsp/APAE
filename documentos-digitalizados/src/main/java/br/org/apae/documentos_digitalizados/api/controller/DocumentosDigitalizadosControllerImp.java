@@ -8,8 +8,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.util.List;
-import java.util.UUID;
 
 @RequiredArgsConstructor
 @RestController
@@ -20,7 +18,7 @@ public class DocumentosDigitalizadosControllerImp implements DocumentosDigitaliz
 
 
     @Override
-    public ResponseEntity<Void> salvarDocumento(DocumentosDigitalizadosRequestDTO dto, MultipartFile documento) {
+    public ResponseEntity<Void> salvarDocumento(DocumentosDigitalizadosRequestDTO dto, MultipartFile documento) throws Exception {
         documentosDigitalidadosService.salvarDocumento(dto, documento);
         return ResponseEntity.ok().build();
     }
