@@ -5,8 +5,9 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 import java.util.Optional;
+import java.util.UUID;
 
 @Repository
 public interface DocumentosDigitalizadosRepository extends JpaRepository<DocumentosDigitalizados, Long> {
-    Optional<DocumentosDigitalizados> findByPacienteId(Long pacienteId);
+    Optional<DocumentosDigitalizados> findByPacienteId(UUID pacienteId);
 }
