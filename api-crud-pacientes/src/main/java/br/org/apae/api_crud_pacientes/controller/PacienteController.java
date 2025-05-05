@@ -1,7 +1,7 @@
 package br.org.apae.api_crud_pacientes.controller;
 
-import br.org.apae.api_crud_pacientes.DTO.request.PacienteRequest;
-import br.org.apae.api_crud_pacientes.DTO.response.PacienteResponse;
+import br.org.apae.api_crud_pacientes.dto.request.PacienteRequest;
+import br.org.apae.api_crud_pacientes.dto.response.PacienteResponse;
 import br.org.apae.api_crud_pacientes.service.PacienteService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;

@@ -1,4 +1,4 @@
-package br.org.apae.api_crud_pacientes.DTO.response;
+package br.org.apae.api_crud_pacientes.dto.response;
 
 import br.org.apae.api_crud_pacientes.model.Paciente;
 
@@ -18,7 +18,7 @@ public class PacienteResponse {
         this.id = paciente.getId();
         this.nome_completo = paciente.getNome_completo();
         this.cpf = paciente.getCpf();
-        this.contatos = paciente.getContatos();
+        // this.contatos = paciente.getContatos();
         this.data_nascimento = paciente.getData_nascimento();
     }
 

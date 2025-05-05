@@ -1,7 +1,7 @@
 package br.org.apae.api_crud_pacientes.service;
 
-import br.org.apae.api_crud_pacientes.DTO.request.PacienteRequest;
-import br.org.apae.api_crud_pacientes.DTO.response.PacienteResponse;
+import br.org.apae.api_crud_pacientes.dto.request.PacienteRequest;
+import br.org.apae.api_crud_pacientes.dto.response.PacienteResponse;
 import br.org.apae.api_crud_pacientes.model.Paciente;
 import br.org.apae.api_crud_pacientes.repository.PacienteRepository;
 import jakarta.persistence.EntityNotFoundException;
@@ -34,7 +34,7 @@ public class PacienteService {
         Paciente paciente = new Paciente();
         paciente.setNome_completo(request.getNome_completo());
         paciente.setCpf(request.getCpf());
-        paciente.setContatos(request.getContatos());
+        // paciente.setContatos(request.getContatos());
         paciente.setData_nascimento(request.getData_nascimento());
 
         Paciente pacienteSalvo = pacienteRepository.save(paciente);

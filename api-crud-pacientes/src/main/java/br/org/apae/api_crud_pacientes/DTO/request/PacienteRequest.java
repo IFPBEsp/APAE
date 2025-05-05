@@ -1,4 +1,4 @@
-package br.org.apae.api_crud_pacientes.DTO.request;
+package br.org.apae.api_crud_pacientes.dto.request;
 
 import java.time.LocalDate;
 import java.util.List;
