@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 @Getter
 @Setter
@@ -21,8 +22,8 @@ public class DocumentosDigitalizados {
     @Column(nullable = false, unique = true)
     private String nomeBucket;
 
-    @Column(nullable = false, unique = true)
-    private Long pacienteId;
+    @Column(nullable = false)
+    private UUID pacienteId;
 
     @Column(nullable = false)
     private String nomePaciente;
@@ -37,4 +38,6 @@ public class DocumentosDigitalizados {
 
     @Column(nullable = false)
     private LocalDateTime dataAtualizacao;
+
+    private String rotaDocumentos;
 }
