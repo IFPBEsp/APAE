@@ -29,7 +29,6 @@ jobs:
           VALIDATE_HTML_PRETTIER: true
           VALIDATE_JAVASCRIPT_ES: true
           VALIDATE_JAVASCRIPT_PRETTIER: true
-          VALIDATE_JAVASCRIPT_STANDARD: true
           VALIDATE_JSON: true
           VALIDATE_JSON_PRETTIER: true
           VALIDATE_JSX: true
@@ -37,7 +36,6 @@ jobs:
           VALIDATE_TSX: true
           VALIDATE_TYPESCRIPT_ES: true
           VALIDATE_TYPESCRIPT_PRETTIER: true
-          VALIDATE_TYPESCRIPT_STANDARD: true
           VALIDATE_YAML: true
           VALIDATE_YAML_PRETTIER: true
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
