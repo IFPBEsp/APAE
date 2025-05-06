@@ -3,13 +3,11 @@ name: Lint Code Base
 
 on:
   push:
-    branches: 
-      - main
-      - dev
+    branches: ["**"]
+     
   pull_request:
-    branches:
-      - main
-      - dev
+    branches: ["**"]
+
 jobs:
   lint:
     name: Lint code base
@@ -22,6 +20,20 @@ jobs:
       - name: Run Super-Linter
         uses: github/super-linter@v5
         env:
-          VALIDATE_ALL_CODEBASE: false
-          DEFAULT_BRANCH: main
+          VALIDATE_GITHUB_ACTIONS: true
+          VALIDATE_HTML: true
+          VALIDATE_HTML_PRETTIER: true
+          VALIDATE_JAVASCRIPT_ES: true
+          VALIDATE_JAVASCRIPT_PRETTIER: true
+          VALIDATE_JAVASCRIPT_STANDARD: true
+          VALIDATE_JSON: true
+          VALIDATE_JSON_PRETTIER: true
+          VALIDATE_JSX: true
+          VALIDATE_JSX_PRETTIER: true
+          VALIDATE_TSX: true
+          VALIDATE_TYPESCRIPT_ES: true
+          VALIDATE_TYPESCRIPT_PRETTIER: true
+          VALIDATE_TYPESCRIPT_STANDARD: true
+          VALIDATE_YAML: true
+          VALIDATE_YAML_PRETTIER: true
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
