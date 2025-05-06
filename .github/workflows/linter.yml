@@ -1,4 +1,3 @@
-
 name: Lint Code Base
 
 on:
@@ -20,6 +19,10 @@ jobs:
       - name: Run Super-Linter
         uses: github/super-linter@v5
         env:
+          FIX_YAML_PRETTIER: true
+
+          VALIDATE_CSS: true
+          VALIDATE_CSS_PRETTIER: true
           VALIDATE_GITHUB_ACTIONS: true
           VALIDATE_HTML: true
           VALIDATE_HTML_PRETTIER: true
