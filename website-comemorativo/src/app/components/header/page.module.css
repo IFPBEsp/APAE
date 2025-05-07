@@ -1,0 +1,52 @@
+.header, .linksTelas {
+  display: flex;
+  flex-direction: row;
+}
+
+.header {
+  padding: 20px 40px;
+  box-shadow: 0px 2px 10px;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.linksTelas {
+  gap: 20px;
+}
+
+.hamburguer {
+  display: none;
+}
+
+.link, .linkAtivo {
+  padding: 8px;
+  border-radius: 10px;
+}
+
+.linkAtivo {
+  background-color: #ccc;
+}
+
+@media (max-width: 900px) {
+  .linksTelas {
+    display: none;
+  }
+
+  .hamburguer {
+    display: flex;
+    background: none;
+    border: none;
+  }
+
+  .menu {
+    display: flex;
+    flex-direction: column;
+    min-width: 300px;
+    padding: 30px;
+    list-style-type: none;
+    gap: 20px;
+    background-color: #0D4F97;
+    color: #fff;
+    height: 100%;
+  }
+}
