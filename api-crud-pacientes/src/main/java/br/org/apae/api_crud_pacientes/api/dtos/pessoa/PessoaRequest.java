@@ -1,14 +1,11 @@
-package br.org.apae.api_crud_pacientes.api.dto;
+package br.org.apae.api_crud_pacientes.api.dtos.pessoa;
 
 import java.time.LocalDate;
-import java.util.UUID;
 
-public class PessoaResponse {
-
-    private UUID id;
+public class PessoaRequest {
     private String nome_completo;
     private LocalDate data_nascimento;
-    private String num_registro_nasc;
+    private  String num_registro_nasc;
     private String fls;
     private String livro;
     private String cartorio;
@@ -19,12 +16,6 @@ public class PessoaResponse {
     private String cns;
     private String nis;
     private LocalDate data_cadastramento;
-
-
-    public UUID getId() {
-        return id;
-    }
-
 
     public String getNome_completo() {
         return nome_completo;
