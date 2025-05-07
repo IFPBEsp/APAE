@@ -4,7 +4,7 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.UUID;
 
-import br.org.apae.api_crud_pacientes.domain.model.Paciente;
+import br.org.apae.api_crud_pacientes.domain.model.Pessoa;
 
 public class PacienteResponse {
 
@@ -14,12 +14,12 @@ public class PacienteResponse {
     private List<String> contatos;
     private LocalDate data_nascimento;
 
-    public PacienteResponse(Paciente paciente) {
-        this.id = paciente.getId();
-        this.nome_completo = paciente.getNome_completo();
-        this.cpf = paciente.getCpf();
+    public PacienteResponse(Pessoa pessoa) {
+        this.id = pessoa.getId();
+        this.nome_completo = pessoa.getNome_completo();
+        this.cpf = pessoa.getCpf();
         // this.contatos = paciente.getContatos();
-        this.data_nascimento = paciente.getData_nascimento();
+        this.data_nascimento = pessoa.getData_nascimento();
     }
 
     public UUID getId() {

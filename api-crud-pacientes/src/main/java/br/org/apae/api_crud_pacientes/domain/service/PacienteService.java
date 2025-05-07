@@ -2,7 +2,7 @@ package br.org.apae.api_crud_pacientes.domain.service;
 
 import br.org.apae.api_crud_pacientes.api.dto.PacienteRequest;
 import br.org.apae.api_crud_pacientes.api.dto.PacienteResponse;
-import br.org.apae.api_crud_pacientes.domain.model.Paciente;
+import br.org.apae.api_crud_pacientes.domain.model.Pessoa;
 import br.org.apae.api_crud_pacientes.domain.repository.PacienteRepository;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.data.domain.Page;
@@ -21,24 +21,24 @@ public class PacienteService {
     }
 
     public PacienteResponse buscarPorId(UUID id) {
-        Optional<Paciente> optionalPaciente = pacienteRepository.findById(id);
+        Optional<Pessoa> optionalPaciente = pacienteRepository.findById(id);
         if(optionalPaciente.isEmpty()){
             throw new EntityNotFoundException("Paciente não encontrado");
         }
 
-        Paciente paciente = optionalPaciente.get();
-        return new PacienteResponse(paciente);
+        Pessoa pessoa = optionalPaciente.get();
+        return new PacienteResponse(pessoa);
     }
 
     public PacienteResponse criarPaciente(PacienteRequest request) {
-        Paciente paciente = new Paciente();
-        paciente.setNome_completo(request.getNome_completo());
-        paciente.setCpf(request.getCpf());
+        Pessoa pessoa = new Pessoa();
+        pessoa.setNome_completo(request.getNome_completo());
+        pessoa.setCpf(request.getCpf());
         // paciente.setContatos(request.getContatos());
-        paciente.setData_nascimento(request.getData_nascimento());
+        pessoa.setData_nascimento(request.getData_nascimento());
 
-        Paciente pacienteSalvo = pacienteRepository.save(paciente);
-        return new PacienteResponse(pacienteSalvo);
+        Pessoa pessoaSalvo = pacienteRepository.save(pessoa);
+        return new PacienteResponse(pessoaSalvo);
     }
 
     public Page<PacienteResponse> listarPacientes(Pageable pageable, String cpf, String nome) {
