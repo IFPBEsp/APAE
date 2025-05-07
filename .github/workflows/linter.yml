@@ -38,4 +38,5 @@ jobs:
           VALIDATE_TYPESCRIPT_PRETTIER: true
           VALIDATE_YAML: true
           VALIDATE_YAML_PRETTIER: true
+          VALIDATE_JAVA: true
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
