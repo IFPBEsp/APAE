@@ -20,6 +20,16 @@ jobs:
       - name: Run Super-Linter
         uses: github/super-linter@v5
         env:
+          FIX_CSS_PRETTIER: true
+          FIX_HTML_PRETTIER: true
+          FIX_JAVASCRIPT_ES: true
+          FIX_JAVASCRIPT_PRETTIER: true
+          FIX_JSON_PRETTIER: true
+          FIX_JSX_PRETTIER: true
+          FIX_JSX: true
+          FIX_TSX: true
+          FIX_TYPESCRIPT_ES: true
+          FIX_TYPESCRIPT_PRETTIER: true
           FIX_YAML_PRETTIER: true
 
           VALIDATE_CSS: true
