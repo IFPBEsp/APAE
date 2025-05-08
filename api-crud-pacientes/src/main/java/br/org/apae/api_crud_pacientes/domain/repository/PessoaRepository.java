@@ -10,7 +10,7 @@ import org.springframework.data.repository.query.Param;
 
 import br.org.apae.api_crud_pacientes.domain.model.Pessoa;
 
-public interface PacienteRepository extends JpaRepository<Pessoa, UUID> {
+public interface PessoaRepository extends JpaRepository<Pessoa, UUID> {
     @Query("SELECT p FROM Pessoa p WHERE p.cpf LIKE %:cpf%")
     Page<Pessoa> findByCpfContaining(@Param("cpf") String cpf, Pageable pageable);
 

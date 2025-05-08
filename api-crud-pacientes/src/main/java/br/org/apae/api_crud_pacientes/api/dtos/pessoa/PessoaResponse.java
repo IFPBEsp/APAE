@@ -20,6 +20,8 @@ public class PessoaResponse {
     private String nis;
     private LocalDate data_cadastramento;
 
+    public PessoaResponse() {}
+
 
     public UUID getId() {
         return id;

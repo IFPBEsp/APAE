@@ -2,7 +2,7 @@ package br.org.apae.api_crud_pacientes.api.controller;
 
 import br.org.apae.api_crud_pacientes.api.dtos.PacienteRequest;
 import br.org.apae.api_crud_pacientes.api.dtos.PacienteResponse;
-import br.org.apae.api_crud_pacientes.domain.service.PacienteService;
+import br.org.apae.api_crud_pacientes.domain.service.PessoaService;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -17,9 +17,9 @@ import java.util.UUID;
 @RestController
 @RequestMapping("/pacientes")
 public class PacienteController {
-    private final PacienteService pacienteService;
+    private final PessoaService pacienteService;
 
-    public PacienteController(PacienteService pacienteService) {
+    public PacienteController(PessoaService pacienteService) {
         this.pacienteService = pacienteService;
     }
 
