@@ -1,29 +1,29 @@
 package br.org.apae.documentos_digitalizados.api.controller;
 
-import br.org.apae.documentos_digitalizados.application.dtos.*;
+import br.org.apae.documentos_digitalizados.api.dto.AtualizarBucketRequestDTO;
+import br.org.apae.documentos_digitalizados.api.dto.CriarBucketRequestDTO;
+import br.org.apae.documentos_digitalizados.api.dto.ListagemBucketResponseDTO;
 import jakarta.validation.Valid;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
+
+import java.util.List;
 
 @RequestMapping("/documento")
 public interface DocumentosDigitalizadosController {
 
-    @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    ResponseEntity<Void> salvarDocumento(@RequestPart("documento") @Valid DocumentosDigitalizadosRequestDTO dto,
-                                         @RequestPart("anexo") MultipartFile documento) throws Exception;
+    @PostMapping
+    ResponseEntity<Void> criarBucket(@RequestBody @Valid CriarBucketRequestDTO dto);
 
     @GetMapping
-    ResponseEntity<ListagemBucketResponseDTO> listarDocumentos(@RequestBody @Valid ListagemBucketRequestDTO dto);
+    ResponseEntity<List<ListagemBucketResponseDTO>> listarBuckets();
 
-    @GetMapping("/{pacienteID}")
-    ResponseEntity<PacienteDocumentoResponseDTO> buscarPorPaciente(@PathVariable("pacienteID") Long pacienteID);
+    @GetMapping("/{bucket}")
+    ResponseEntity<ListagemBucketResponseDTO> listarBucket(@PathVariable String bucket);
 
-    @GetMapping("/download")
-    ResponseEntity<DocumentosDigitalizadosResponseDTO> buscarDocumento(@RequestBody @Valid BuscaDocumentoRequestDTO dto);
+    @PutMapping
+    ResponseEntity<Void> atualizarBucket(@RequestBody @Valid AtualizarBucketRequestDTO dto);
 
-    @PutMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    ResponseEntity<Void> atualizarDocumento(@RequestPart("documento") @Valid DocumentosDigitalizadosRequestDTO dto,
-                                            @RequestPart("anexo") MultipartFile documento);
+    @DeleteMapping("/{bucket}")
+    ResponseEntity<Void> deletarBucket(@PathVariable String bucket);
 }
