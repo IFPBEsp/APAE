@@ -1,7 +1,8 @@
 package br.org.apae.documentos_digitalizados.application.service;
 
-import br.org.apae.documentos_digitalizados.application.exception.DocumentoStorageException;
-import io.minio.*;
+import io.minio.BucketExistsArgs;
+import io.minio.MakeBucketArgs;
+import io.minio.MinioClient;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -28,20 +29,23 @@ public class MinioStorageServiceImp implements MinioStorageService {
         }
     }
 
-
-
     @Override
-    public StatObjectResponse metadadoDocumento(String bucketNome, String documentoCaminho) {
-        try {
-            return minioClient.statObject(
-                    StatObjectArgs.builder()
-                            .bucket(bucketNome)
-                            .object(documentoCaminho)
-                            .build()
-            );
-        } catch (Exception e) {
-            throw new DocumentoStorageException("Falha no busca do metadado do documento\n" + e);
-        }
+    public void listarBuckets() {
+
     }
 
+    @Override
+    public void listarBucketPorNome(String bucketNome) {
+
+    }
+
+    @Override
+    public void atualizarBucket(String bucketNome) {
+
+    }
+
+    @Override
+    public void deletarBucket(String bucketNome) {
+
+    }
 }
