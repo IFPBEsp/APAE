@@ -1,7 +1,6 @@
 package br.org.apae.documentos_digitalizados.api.controller;
 
 import br.org.apae.documentos_digitalizados.application.dtos.*;
-import br.org.apae.documentos_digitalizados.application.service.DocumentosDigitalidadosService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -14,12 +13,10 @@ import org.springframework.web.multipart.MultipartFile;
 @RequestMapping("/pacientes")
 public class DocumentosDigitalizadosControllerImp implements DocumentosDigitalizadosController {
 
-    private final DocumentosDigitalidadosService documentosDigitalidadosService;
 
 
     @Override
     public ResponseEntity<Void> salvarDocumento(DocumentosDigitalizadosRequestDTO dto, MultipartFile documento) throws Exception {
-        documentosDigitalidadosService.salvarDocumento(dto, documento);
         return ResponseEntity.ok().build();
     }
 
@@ -34,7 +31,7 @@ public class DocumentosDigitalizadosControllerImp implements DocumentosDigitaliz
     }
 
     @Override
-    public ResponseEntity<DocumentosDigitalizadosResponseDTO> buscarDocumentoPorNome(BuscaDocumentoRequestDTO dto) {
+    public ResponseEntity<DocumentosDigitalizadosResponseDTO> buscarDocumento(BuscaDocumentoRequestDTO dto) {
         return null;
     }
 

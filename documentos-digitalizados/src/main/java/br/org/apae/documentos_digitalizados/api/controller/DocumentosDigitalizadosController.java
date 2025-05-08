@@ -21,7 +21,7 @@ public interface DocumentosDigitalizadosController {
     ResponseEntity<PacienteDocumentoResponseDTO> buscarPorPaciente(@PathVariable("pacienteID") Long pacienteID);
 
     @GetMapping("/download")
-    ResponseEntity<DocumentosDigitalizadosResponseDTO> buscarDocumentoPorNome(@RequestBody @Valid BuscaDocumentoRequestDTO dto);
+    ResponseEntity<DocumentosDigitalizadosResponseDTO> buscarDocumento(@RequestBody @Valid BuscaDocumentoRequestDTO dto);
 
     @PutMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     ResponseEntity<Void> atualizarDocumento(@RequestPart("documento") @Valid DocumentosDigitalizadosRequestDTO dto,
