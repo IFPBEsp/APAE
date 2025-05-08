@@ -1,4 +1,4 @@
-package br.org.apae.documentos_digitalizados.domain;
+package br.org.apae.documentos_digitalizados.domain.model;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
