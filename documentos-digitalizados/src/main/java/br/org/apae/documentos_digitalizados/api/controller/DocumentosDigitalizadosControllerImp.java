@@ -40,11 +40,4 @@ public class DocumentosDigitalizadosControllerImp implements DocumentosDigitaliz
     public ResponseEntity<Void> deletarBucket(UUID bucketNome) {
         return null;
     }
-
-    @Override
-    public ResponseEntity<Boolean> verificarBucket(UUID bucketNome) {
-        boolean existeBucket = minioStorageService.existeBucket(bucketNome.toString());
-
-        return ResponseEntity.status(HttpStatus.OK).body(existeBucket);
-    }
 }
