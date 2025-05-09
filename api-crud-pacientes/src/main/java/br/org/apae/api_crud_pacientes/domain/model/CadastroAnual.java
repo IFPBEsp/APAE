@@ -1,11 +1,7 @@
 package br.org.apae.api_crud_pacientes.domain.model;
 
 import jakarta.persistence.*;
-
-<<<<<<< HEAD
 import java.util.Objects;
-=======
->>>>>>> b4ad552e61fef9e3453f669a085528fcf38a8060
 import java.util.UUID;
 
 @Entity
@@ -13,7 +9,6 @@ import java.util.UUID;
 public class CadastroAnual {
 
     @Id
-<<<<<<< HEAD
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private UUID id;
 
@@ -113,12 +108,4 @@ public class CadastroAnual {
     public int hashCode() {
         return Objects.hash(id);
     }
-=======
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    private UUID id;
-
-    @ManyToOne
-    @JoinColumn(name = "pessoa_id", nullable = false)
-    private Pessoa pessoa;
->>>>>>> b4ad552e61fef9e3453f669a085528fcf38a8060
 }
