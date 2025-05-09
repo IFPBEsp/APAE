@@ -1,7 +1,7 @@
-package br.org.apae.documentos_pessoais_digitalizados.api.controllers;
+package br.org.apae.documentos_pessoais_digitalizados.api.controller;
 
-import br.org.apae.documentos_pessoais_digitalizados.api.dtos.req.PersonalDocumentReqDTO;
-import br.org.apae.documentos_pessoais_digitalizados.api.dtos.res.PersonalDocumentResDTO;
+import br.org.apae.documentos_pessoais_digitalizados.api.dto.req.PersonalDocumentReqDTO;
+import br.org.apae.documentos_pessoais_digitalizados.api.dto.res.PersonalDocumentResDTO;
 import org.springframework.http.ResponseEntity;
 
 import java.util.List;

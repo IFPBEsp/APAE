@@ -1,6 +1,6 @@
-package br.org.apae.documentos_pessoais_digitalizados.domain.repositories;
+package br.org.apae.documentos_pessoais_digitalizados.domain.repository;
 
-import br.org.apae.documentos_pessoais_digitalizados.domain.models.PersonalDocument;
+import br.org.apae.documentos_pessoais_digitalizados.domain.model.PersonalDocument;
 
 import java.util.List;
 import java.util.Optional;

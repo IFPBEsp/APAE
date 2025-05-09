@@ -1,10 +1,9 @@
-package br.org.apae.documentos_pessoais_digitalizados.api.controllers.impl;
+package br.org.apae.documentos_pessoais_digitalizados.api.controller;
 
-import br.org.apae.documentos_pessoais_digitalizados.api.controllers.PersonalDocumentController;
-import br.org.apae.documentos_pessoais_digitalizados.api.dtos.req.PersonalDocumentReqDTO;
-import br.org.apae.documentos_pessoais_digitalizados.api.dtos.res.PersonalDocumentResDTO;
-import br.org.apae.documentos_pessoais_digitalizados.domain.services.PersonalDocumentService;
-import br.org.apae.documentos_pessoais_digitalizados.domain.services.StorageService;
+import br.org.apae.documentos_pessoais_digitalizados.api.dto.req.PersonalDocumentReqDTO;
+import br.org.apae.documentos_pessoais_digitalizados.api.dto.res.PersonalDocumentResDTO;
+import br.org.apae.documentos_pessoais_digitalizados.application.service.PersonalDocumentService;
+import br.org.apae.documentos_pessoais_digitalizados.application.service.StorageService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
 

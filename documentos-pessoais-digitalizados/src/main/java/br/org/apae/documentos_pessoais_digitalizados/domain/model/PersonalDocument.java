@@ -1,4 +1,4 @@
-package br.org.apae.documentos_pessoais_digitalizados.domain.models;
+package br.org.apae.documentos_pessoais_digitalizados.domain.model;
 
 import jakarta.persistence.*;
 

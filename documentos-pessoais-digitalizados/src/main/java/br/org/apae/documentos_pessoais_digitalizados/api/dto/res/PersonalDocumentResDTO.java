@@ -1,4 +1,4 @@
-package br.org.apae.documentos_pessoais_digitalizados.api.dtos.res;
+package br.org.apae.documentos_pessoais_digitalizados.api.dto.res;
 
 import java.util.List;
 
