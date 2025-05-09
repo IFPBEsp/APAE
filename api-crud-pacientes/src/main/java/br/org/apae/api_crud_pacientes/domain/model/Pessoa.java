@@ -2,6 +2,7 @@ package br.org.apae.api_crud_pacientes.domain.model;
 
 import jakarta.persistence.*;
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
 
@@ -51,6 +52,12 @@ public class Pessoa {
 
     @Column(name = "data_cadastramento", nullable = false)
     private LocalDate data_cadastramento;
+
+    @OneToMany(mappedBy = "pessoa", cascade = CascadeType.ALL)
+    private List<PessoaResponsavel> responsaveis;
+
+    @OneToMany(mappedBy = "pessoa", cascade = CascadeType.ALL)
+    private List<CadastroAnual> cadastrosAnuais;
 
     public UUID getId() {
         return id;

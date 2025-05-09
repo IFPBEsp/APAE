@@ -2,18 +2,11 @@ package br.org.apae.api_crud_pacientes.domain.model;
 
 import java.util.UUID;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 
 @Entity
 @Table(name = "pessoa_responsavel")
-public class Pessoa_Responsavel {
+public class PessoaResponsavel {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private UUID id;
@@ -46,6 +39,10 @@ public class Pessoa_Responsavel {
     @Enumerated(EnumType.STRING)
     @Column(name = "tipo_responsavel", nullable = false)
     private tipo_responsavel tipoResponsavel;
+
+    @ManyToOne
+    @JoinColumn(name = "pessoa_id")
+    private Pessoa pessoa;
 
     public UUID getId() {
         return id;
@@ -125,7 +122,7 @@ public class Pessoa_Responsavel {
             return false;
         if (getClass() != obj.getClass())
             return false;
-        Pessoa_Responsavel other = (Pessoa_Responsavel) obj;
+        PessoaResponsavel other = (PessoaResponsavel) obj;
         if (id == null) {
             if (other.id != null)
                 return false;
