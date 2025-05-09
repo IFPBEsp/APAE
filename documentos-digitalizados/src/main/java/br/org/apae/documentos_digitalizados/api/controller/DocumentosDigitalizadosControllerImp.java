@@ -42,7 +42,9 @@ public class DocumentosDigitalizadosControllerImp implements DocumentosDigitaliz
 
     @Override
     public ResponseEntity<Void> deletarBucket(UUID bucketNome) {
-        return null;
+        minioStorageService.deletarBucket(bucketNome.toString());
+
+        return ResponseEntity.status(HttpStatus.OK).build();
     }
 
     @Override
