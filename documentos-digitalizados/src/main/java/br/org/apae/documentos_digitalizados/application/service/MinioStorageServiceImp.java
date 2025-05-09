@@ -1,16 +1,21 @@
 package br.org.apae.documentos_digitalizados.application.service;
 
+import br.org.apae.documentos_digitalizados.api.dto.BucketResponseDTO;
+import br.org.apae.documentos_digitalizados.api.dto.ListagemBucketResponseDTO;
 import br.org.apae.documentos_digitalizados.domain.exception.CriacaoBucketException;
 import br.org.apae.documentos_digitalizados.domain.exception.DiretorioException;
 import br.org.apae.documentos_digitalizados.domain.exception.ExisteBucketException;
+import br.org.apae.documentos_digitalizados.domain.exception.ListagemBucketException;
 import io.minio.BucketExistsArgs;
 import io.minio.MakeBucketArgs;
 import io.minio.MinioClient;
 import io.minio.PutObjectArgs;
+import io.minio.messages.Bucket;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.io.ByteArrayInputStream;
+import java.util.List;
 import java.util.UUID;
 
 @RequiredArgsConstructor
@@ -36,13 +41,26 @@ public class MinioStorageServiceImp implements MinioStorageService {
     }
 
     @Override
-    public void listarBuckets() {
+    public ListagemBucketResponseDTO listarBuckets() {
+        try {
+            List<String> buckets = minioClient.listBuckets()
+                    .stream()
+                    .map(Bucket::name)
+                    .toList();
 
+            return new ListagemBucketResponseDTO(buckets);
+        } catch (Exception e) {
+            throw new ListagemBucketException("Erro ao listar nomes dos buckets!\n" + e.getMessage());
+        }
     }
 
     @Override
-    public void listarBucketPorNome(String bucketNome) {
+    public BucketResponseDTO listarBucketPorNome(String bucketNome) {
+        if (existeBucket(bucketNome)) {
+            return new BucketResponseDTO(bucketNome);
+        }
 
+        throw new ExisteBucketException("Não existe o bucket '" + bucketNome + "'!");
     }
 
     @Override
@@ -69,7 +87,7 @@ public class MinioStorageServiceImp implements MinioStorageService {
                             .build()
             );
         } catch (Exception e){
-            throw new DiretorioException("Falha ao criar diretório!\n" + e);
+            throw new DiretorioException("Falha ao criar diretório!\n" + e.getMessage());
         }
     }
 }
