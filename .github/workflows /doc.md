@@ -23,10 +23,6 @@
 ## Pipeline.yml
 
 ```yml
-# Nome do workflow principal que aparecerá na aba "Actions"
-name: CI Pipeline
-
-# Define os gatilhos para iniciar o pipeline
 on:
   push:
     branches:
@@ -38,22 +34,46 @@ on:
       - develop # Executa o pipeline em PRs com destino à develop
 
 jobs:
-  # Etapa de lint (análise estática de código)
-  lint:
-    uses: ./.github/workflows/lint.yml # Reutiliza o workflow definido no arquivo lint.yml
+  # Etapa de testes do backend com JUnit e Gradle
+  test:
+    name: Run Backend Tests
+    runs-on: ubuntu-latest
 
-  # Etapa de testes do backend
-  test-backend:
-    uses: ./.github/workflows/test-backend.yml # Reutiliza o workflow de testes do backend
-    needs: lint # Só executa se o lint passar
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
 
-  # Etapa de testes do frontend
-  test-frontend:
-    uses: ./.github/workflows/test-frontend.yml # Reutiliza o workflow de testes do frontend
-    needs: lint # Só executa se o lint passar
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: "17"
+          distribution: "temurin"
 
-  # Etapa de build (geração do sistema)
+      - name: Grant execute permission for Gradle wrapper
+        run: chmod +x ./gradlew
+
+      - name: Run Tests with JUnit
+        run: ./gradlew test
+
+  # Etapa de build do projeto Spring Boot
   build:
-    uses: ./.github/workflows/build.yml # Reutiliza o workflow de build
-    needs: [test-backend, test-frontend] # Só executa se os testes de backend e frontend forem bem-sucedidos
+    name: Build Spring Boot Project
+    runs-on: ubuntu-latest
+    needs: test # Só executa se os testes passarem
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: "17"
+          distribution: "temurin"
+
+      - name: Grant execute permission for Gradle wrapper
+        run: chmod +x ./gradlew
+
+      - name: Build the project
+        run: ./gradlew build
 ```
