@@ -17,7 +17,7 @@ jobs:
 
     defaults:
       run:
-        working-directory: api/demo
+        working-directory: api
 
     steps:
       - name: Checkout code
@@ -42,7 +42,7 @@ jobs:
 
     defaults:
       run:
-        working-directory: api/demo
+        working-directory: api
 
     steps:
       - name: Checkout code
