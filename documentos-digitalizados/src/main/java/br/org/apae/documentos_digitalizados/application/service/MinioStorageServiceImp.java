@@ -2,15 +2,10 @@ package br.org.apae.documentos_digitalizados.application.service;
 
 import br.org.apae.documentos_digitalizados.api.dto.BucketResponseDTO;
 import br.org.apae.documentos_digitalizados.api.dto.ListagemBucketResponseDTO;
-import br.org.apae.documentos_digitalizados.domain.exception.CriacaoBucketException;
-import br.org.apae.documentos_digitalizados.domain.exception.DiretorioException;
-import br.org.apae.documentos_digitalizados.domain.exception.ExisteBucketException;
-import br.org.apae.documentos_digitalizados.domain.exception.ListagemBucketException;
-import io.minio.BucketExistsArgs;
-import io.minio.MakeBucketArgs;
-import io.minio.MinioClient;
-import io.minio.PutObjectArgs;
+import br.org.apae.documentos_digitalizados.domain.exception.*;
+import io.minio.*;
 import io.minio.messages.Bucket;
+import io.minio.messages.Item;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -65,7 +60,20 @@ public class MinioStorageServiceImp implements MinioStorageService {
 
     @Override
     public void deletarBucket(String bucketNome) {
+        if (!existeBucket(bucketNome)) {
+            throw new ExisteBucketException("O bucket: '" + bucketNome + "' não existe!");
+        }
 
+        esvaziarBucket(bucketNome);
+        try {
+            minioClient.removeBucket(
+                    RemoveBucketArgs.builder()
+                            .bucket(bucketNome)
+                            .build()
+            );
+        } catch (Exception e) {
+            throw new ListagemBucketException("Erro ao deletar o bucket: " + bucketNome + "!\n" + e.getMessage());
+        }
     }
 
     @Override
@@ -88,6 +96,29 @@ public class MinioStorageServiceImp implements MinioStorageService {
             );
         } catch (Exception e){
             throw new DiretorioException("Falha ao criar diretório!\n" + e.getMessage());
+        }
+    }
+
+    private void esvaziarBucket(String bucketNome){
+        Iterable<Result<Item>> objects = minioClient.listObjects(
+                ListObjectsArgs.builder()
+                        .bucket(bucketNome)
+                        .recursive(true)
+                        .build()
+        );
+
+        try {
+            for (Result<Item> result : objects) {
+                Item item = result.get();
+                minioClient.removeObject(
+                        RemoveObjectArgs.builder()
+                                .bucket(bucketNome)
+                                .object(item.objectName())
+                                .build()
+                );
+            }
+        } catch (Exception e){
+            throw new DeletarObjetosException("Erro ao deletar os dados do bucket!\n" + e.getMessage());
         }
     }
 }
