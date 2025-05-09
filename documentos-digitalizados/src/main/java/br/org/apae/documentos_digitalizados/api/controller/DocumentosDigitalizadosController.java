@@ -20,4 +20,7 @@ public interface DocumentosDigitalizadosController {
 
     @DeleteMapping("/{bucketNome}")
     ResponseEntity<Void> deletarBucket(@PathVariable UUID bucketNome);
+
+    @GetMapping("/verificar/{bucketNome}")
+    ResponseEntity<Boolean> verificarBucket(@PathVariable UUID bucketNome);
 }
