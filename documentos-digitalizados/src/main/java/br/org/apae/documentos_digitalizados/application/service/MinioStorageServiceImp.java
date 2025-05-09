@@ -1,6 +1,8 @@
 package br.org.apae.documentos_digitalizados.application.service;
 
+import br.org.apae.documentos_digitalizados.domain.exception.CriacaoBucketException;
 import br.org.apae.documentos_digitalizados.domain.exception.DiretorioException;
+import br.org.apae.documentos_digitalizados.domain.exception.ExisteBucketException;
 import io.minio.BucketExistsArgs;
 import io.minio.MakeBucketArgs;
 import io.minio.MinioClient;
@@ -28,7 +30,7 @@ public class MinioStorageServiceImp implements MinioStorageService {
                 criarPasta(bucketNome.toString(), "documentos-medico/");
                 criarPasta(bucketNome.toString(), "documentos-escolar/");
             } catch (Exception e) {
-                throw new RuntimeException(e);
+                throw new CriacaoBucketException("Erro na criação de bucket no minIO!\n" + e.getMessage());
             }
         }
     }
@@ -48,11 +50,12 @@ public class MinioStorageServiceImp implements MinioStorageService {
 
     }
 
-    private boolean existeBucket(String bucketNome) {
+    @Override
+    public boolean existeBucket(String bucketNome) {
         try {
             return minioClient.bucketExists(BucketExistsArgs.builder().bucket(bucketNome).build());
         } catch (Exception e) {
-            throw new RuntimeException(e);
+            throw new ExisteBucketException("Erro na busca de bucket no minIO!\n" + e.getMessage());
         }
     }
 
