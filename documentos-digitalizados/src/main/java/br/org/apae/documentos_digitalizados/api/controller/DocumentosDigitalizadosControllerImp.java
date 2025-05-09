@@ -1,5 +1,6 @@
 package br.org.apae.documentos_digitalizados.api.controller;
 
+import br.org.apae.documentos_digitalizados.api.dto.BucketResponseDTO;
 import br.org.apae.documentos_digitalizados.api.dto.ListagemBucketResponseDTO;
 import br.org.apae.documentos_digitalizados.application.service.MinioStorageService;
 import lombok.RequiredArgsConstructor;
@@ -8,7 +9,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.List;
 import java.util.UUID;
 
 
@@ -27,13 +27,17 @@ public class DocumentosDigitalizadosControllerImp implements DocumentosDigitaliz
     }
 
     @Override
-    public ResponseEntity<List<ListagemBucketResponseDTO>> listarBuckets() {
-        return null;
+    public ResponseEntity<ListagemBucketResponseDTO> listarBuckets() {
+        ListagemBucketResponseDTO dto = minioStorageService.listarBuckets();
+
+        return ResponseEntity.status(HttpStatus.OK).body(dto);
     }
 
     @Override
-    public ResponseEntity<ListagemBucketResponseDTO> listarBucket(UUID bucketNome) {
-        return null;
+    public ResponseEntity<BucketResponseDTO> listarBucket(UUID bucketNome) {
+        BucketResponseDTO dto = minioStorageService.listarBucketPorNome(bucketNome.toString());
+
+        return ResponseEntity.status(HttpStatus.OK).body(dto);
     }
 
     @Override
