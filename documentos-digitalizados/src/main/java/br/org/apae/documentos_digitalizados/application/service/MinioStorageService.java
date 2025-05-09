@@ -7,5 +7,4 @@ public interface MinioStorageService {
     void listarBuckets();
     void listarBucketPorNome(String bucketNome);
     void deletarBucket(String bucketNome);
-    boolean existeBucket(String bucketNome);
 }

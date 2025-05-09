@@ -48,8 +48,7 @@ public class MinioStorageServiceImp implements MinioStorageService {
 
     }
 
-    @Override
-    public boolean existeBucket(String bucketNome) {
+    private boolean existeBucket(String bucketNome) {
         try {
             return minioClient.bucketExists(BucketExistsArgs.builder().bucket(bucketNome).build());
         } catch (Exception e) {
