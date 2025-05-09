@@ -30,7 +30,7 @@ jobs:
           distribution: "temurin"
 
       - name: Grant execute permission for Gradle wrapper
-        run: chmod +x ./gradlew
+        run: chmod +x ./gradlew demo:test
 
       - name: Run Tests with JUnit
         run: ./gradlew test
@@ -55,7 +55,7 @@ jobs:
           distribution: "temurin"
 
       - name: Grant execute permission for Gradle wrapper
-        run: chmod +x ./gradlew
+        run: chmod +x ./gradlew demo:test
 
       - name: Build the project
         run: ./gradlew build
