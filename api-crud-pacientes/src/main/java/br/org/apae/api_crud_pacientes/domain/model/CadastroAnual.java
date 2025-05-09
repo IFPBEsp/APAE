@@ -26,9 +26,9 @@ public class CadastroAnual {
     @JoinColumn(name = "pessoa_id", nullable = false)
     private Pessoa pessoa;
 
-    @ManyToOne
-    @JoinColumn(name = "tipo_atendimento_id")
-    private TipoAtendimento tipoAtendimento;
+    // @ManyToOne
+    // @JoinColumn(name = "tipo_atendimento_id")
+    // private TipoAtendimento tipoAtendimento;
 
 
     public UUID getId() {
@@ -87,13 +87,13 @@ public class CadastroAnual {
         this.pessoa = pessoa;
     }
 
-    public TipoAtendimento getTipoAtendimento() {
-        return tipoAtendimento;
-    }
+    // public TipoAtendimento getTipoAtendimento() {
+    //     return tipoAtendimento;
+    // }
 
-    public void setTipoAtendimento(TipoAtendimento tipoAtendimento) {
-        this.tipoAtendimento = tipoAtendimento;
-    }
+    // public void setTipoAtendimento(TipoAtendimento tipoAtendimento) {
+    //     this.tipoAtendimento = tipoAtendimento;
+    // }
 
 
     @Override

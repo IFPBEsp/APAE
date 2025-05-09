@@ -3,7 +3,7 @@ package br.org.apae.api_crud_pacientes.api.dtos.cadastro_anual;
 import java.util.UUID;
 
 public class CadastroAnualResponse {
-    private Long id;
+    private UUID id;
     private Boolean beneficioDePrestacaoContinuada;
     private String historicosAlergias;
     private String medicacoesContinuas;
@@ -12,11 +12,11 @@ public class CadastroAnualResponse {
     private UUID pessoaId;
     private Long tipoAtendimentoId;
 
-    public Long getId() {
+    public UUID getId() {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(UUID id) {
         this.id = id;
     }
 
