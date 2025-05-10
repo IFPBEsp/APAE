@@ -13,9 +13,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
-import java.util.UUID;
 
 public class StorageServiceImpl implements StorageService {
 
@@ -29,13 +27,8 @@ public class StorageServiceImpl implements StorageService {
     }
 
     @Override
-    public void uploadDocuments(UUID patientId, List<PersonalDocumentFileReqDTO> documents) {
-        documents.forEach(document -> uploadDocument(document, patientId.toString()));
-    }
-
-    @Override
     public byte[] findDocumentByFileName(String fileName, String bucketName) throws FileNotFoundException {
-        try (InputStream stream = minioClient.getObject(
+        try (InputStream stream = this.minioClient.getObject(
                 GetObjectArgs.builder()
                         .bucket(bucketName)
                         .object(fileName)
@@ -47,19 +40,22 @@ public class StorageServiceImpl implements StorageService {
         }
     }
 
-    private void uploadDocument(PersonalDocumentFileReqDTO personalDocument, String bucketName) {
+    @Override
+    public String uploadDocuments(PersonalDocumentFileReqDTO personalDocument, String bucketName) {
         Map<String, String> tags = new HashMap<>();
         tags.put("documentType", personalDocument.personalDocumentType().name());
         Tags objectTags = Tags.newObjectTags(tags);
         MultipartFile file = personalDocument.file();
         try (InputStream inputStream = file.getInputStream()) {
-            minioClient.putObject(PutObjectArgs.builder()
+            String pathOfFile = this.folderName + "/" + file.getOriginalFilename();
+            this.minioClient.putObject(PutObjectArgs.builder()
                     .bucket(bucketName)
-                    .object(file.getOriginalFilename())
+                    .object(pathOfFile)
                     .stream(inputStream, file.getSize(), -1)
                     .contentType(file.getContentType())
                     .tags(objectTags)
                     .build());
+            return pathOfFile;
         } catch (Exception e) {
             throw new StorageException();
         }
