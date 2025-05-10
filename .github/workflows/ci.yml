@@ -54,17 +54,6 @@ jobs:
           java-version: "21"
           distribution: "temurin"
 
-      - name: Wait for DB to be healthy
-        run: |
-          for i in {1..30}; do  # Aumentando as tentativas
-            if [ "$(docker inspect -f '{{ .State.Health.Status }}' demo_database)" = "healthy" ]; then
-              echo "Database is healthy"
-              break
-            fi
-            echo "Waiting for demo_database to become healthy..."
-            sleep 10  # Aumentando o tempo de espera
-          done
-
       - name: Grant execute permission for Gradle wrapper
         run: chmod +x ./gradlew
 
@@ -89,17 +78,6 @@ jobs:
         with:
           java-version: "21"
           distribution: "temurin"
-
-      - name: Wait for DB to be healthy
-        run: |
-          for i in {1..30}; do  # Aumentando as tentativas
-            if [ "$(docker inspect -f '{{ .State.Health.Status }}' demo_database)" = "healthy" ]; then
-              echo "Database is healthy"
-              break
-            fi
-            echo "Waiting for demo_database to become healthy..."
-            sleep 10  # Aumentando o tempo de espera
-          done
 
       - name: Grant execute permission for Gradle wrapper
         run: chmod +x ./gradlew
