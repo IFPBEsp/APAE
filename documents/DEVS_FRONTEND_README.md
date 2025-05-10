@@ -48,6 +48,7 @@ Esse será o nosso gerenciador de pacotes no frontend e também a tecnologia que
 ---
 
 ![componentes-front](./images/draw-frontend.svg)
+
 > Componentes front-end.
 
 ---
@@ -57,11 +58,13 @@ Esse será o nosso gerenciador de pacotes no frontend e também a tecnologia que
 ### Via terminal:
 
 #### Usando node:
+
 ```sh
 npm install -g pnpm@latest
 ```
 
 #### Instalador oficial:
+
 ```sh
 curl -fsSL https://get.pnpm.io/install.sh | sh -
 ```
@@ -77,26 +80,30 @@ curl -fsSL https://get.pnpm.io/install.sh | sh -
 Vamos repassar alguns comandos básicos do pnpm:
 
 - adicionar uma nova dependência
+
 ```node
-pnpm add react 
+pnpm add react
 // adicionar a dependência para dependencies
 
-pnpm add typescript -D 
+pnpm add typescript -D
 // adicionar a dependência para devDependencies
 ```
 
 - adicionar uma nova dependência do workspace (exemplo: uma lib)
+
 ```node
-pnpm add lib-ui --workspace 
+pnpm add lib-ui --workspace
 // adicionar a dependência do nosso próprio workspace
 ```
 
 - buildar
+
 ```node
 pnpm build
 ```
 
 - rodar em modo dev
+
 ```node
 pnpm dev
 ```
@@ -106,12 +113,14 @@ pnpm dev
 O pnpm também nos permite utilizar o `--filter` que pode nos ajudar, diminuindo a necessidade de mudança de contextos no terminal. Vamos aos exemplos:
 
 - Para adicionar uma nova dependência
+
 ```node
-pnpm add --filter next-app typescript -D 
+pnpm add --filter next-app typescript -D
 // adiciona typescript como dependência de dev
 ```
 
 - Para rodar em modo dev
+
 ```node
 pnpm --filter next-app dev
 ```
