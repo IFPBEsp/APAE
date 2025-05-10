@@ -54,13 +54,10 @@ public class PersonalDocumentControllerImpl implements PersonalDocumentControlle
         return ResponseEntity.ok(all);
     }
 
-    @DeleteMapping("/{id}")
-    @Override
+    @DeleteMapping("/documents/{id}")
     public ResponseEntity<PersonalDocumentResDTO> delete(@PathVariable UUID id) {
-        PersonalDocumentResDTO deleted = personalDocumentService.findById(id);
-
-        //to-do
-        return null;
+        PersonalDocumentResDTO deletedDocument = personalDocumentService.delete(id);
+        return ResponseEntity.ok(deletedDocument);
     }
 
    @GetMapping("/{id}/file")
