@@ -1,6 +1,7 @@
 package br.org.apae.documentos_pessoais_digitalizados.application.service;
 
 import br.org.apae.documentos_pessoais_digitalizados.api.dto.req.PersonalDocumentFileReqDTO;
+import br.org.apae.documentos_pessoais_digitalizados.application.exception.DocumentNotFoundException;
 import br.org.apae.documentos_pessoais_digitalizados.application.exception.StorageException;
 import io.minio.GetObjectArgs;
 import io.minio.MinioClient;
@@ -8,13 +9,14 @@ import io.minio.PutObjectArgs;
 import io.minio.messages.Tags;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
 
+@Service
 public class StorageServiceImpl implements StorageService {
 
     private final MinioClient minioClient;
@@ -27,7 +29,7 @@ public class StorageServiceImpl implements StorageService {
     }
 
     @Override
-    public byte[] findDocumentByFileName(String fileName, String bucketName) throws FileNotFoundException {
+    public byte[] findDocumentByFileName(String fileName, String bucketName) {
         try (InputStream stream = this.minioClient.getObject(
                 GetObjectArgs.builder()
                         .bucket(bucketName)
@@ -36,7 +38,21 @@ public class StorageServiceImpl implements StorageService {
 
             return stream.readAllBytes();
         } catch (Exception e) {
-            throw new FileNotFoundException();
+            throw new DocumentNotFoundException();
+        }
+    }
+
+    @Override
+    public void deleteFile(String fileName, String bucketName) {
+        try {
+            this.minioClient.removeObject(
+                    io.minio.RemoveObjectArgs.builder()
+                            .bucket(bucketName)
+                            .object(fileName)
+                            .build());
+
+        } catch (Exception e) {
+            throw new DocumentNotFoundException();
         }
     }
 

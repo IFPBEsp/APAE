@@ -8,7 +8,7 @@ import org.springframework.web.client.RestClient;
 public class StorageClient {
     private final RestClient restClient;
 
-    public StorageClient(RestClient restClient, @Value("${storage.service.base.url}") String url) {
+    public StorageClient(@Value("${storage.service.base.url}") String url) {
         this.restClient = RestClient.builder()
                 .baseUrl(url)
                 .build();

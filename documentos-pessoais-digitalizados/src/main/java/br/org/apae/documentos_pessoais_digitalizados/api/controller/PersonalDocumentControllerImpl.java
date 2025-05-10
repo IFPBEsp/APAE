@@ -1,10 +1,10 @@
 package br.org.apae.documentos_pessoais_digitalizados.api.controller;
 
 import br.org.apae.documentos_pessoais_digitalizados.api.dto.req.PersonalDocumentReqDTO;
-import br.org.apae.documentos_pessoais_digitalizados.api.dto.res.PersonalDocumentResDTO;
+import br.org.apae.documentos_pessoais_digitalizados.api.dto.res.PersonalDocumentResUrlDTO;
 import br.org.apae.documentos_pessoais_digitalizados.application.service.PersonalDocumentService;
 import br.org.apae.documentos_pessoais_digitalizados.application.service.StorageService;
-import org.springframework.http.HttpHeaders;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -13,57 +13,50 @@ import java.util.List;
 import java.util.UUID;
 
 @RestController
-@RequestMapping("/api/personal-documents")
+@RequestMapping("/api/documents")
 public class PersonalDocumentControllerImpl implements PersonalDocumentController {
 
     private final PersonalDocumentService personalDocumentService;
     private final StorageService storageService;
 
-    public PersonalDocumentControllerImpl(PersonalDocumentService personalDocumentService,
-        StorageService storageService) {
+    @Autowired
+    public PersonalDocumentControllerImpl(PersonalDocumentService personalDocumentService, StorageService storageService) {
         this.personalDocumentService = personalDocumentService;
         this.storageService = storageService;
     }
 
-    @PostMapping
     @Override
-      public ResponseEntity<List<PersonalDocumentResDTO>> create(@RequestBody PersonalDocumentReqDTO personalDocumentReqDTO) {
-        List<PersonalDocumentResDTO> created = personalDocumentService.create(personalDocumentReqDTO);
-        return new ResponseEntity<>(created, HttpStatus.CREATED);
+    @PostMapping("/{patientId}/upload")
+    public ResponseEntity<List<PersonalDocumentResUrlDTO>> create(
+            @PathVariable UUID patientId,
+            @ModelAttribute PersonalDocumentReqDTO personalDocumentReqDTO
+    ) {
+        List<PersonalDocumentResUrlDTO> personalDocumentResUrlDTOS = this.personalDocumentService.create(patientId, personalDocumentReqDTO);
+        return new ResponseEntity<>(personalDocumentResUrlDTOS, HttpStatus.CREATED);
     }
 
-    @PutMapping("/{id}")
     @Override
-    public ResponseEntity<PersonalDocumentResDTO> update(@PathVariable UUID id,
-        @RequestBody PersonalDocumentReqDTO reqDTO) {
-        PersonalDocumentResDTO updated = personalDocumentService.update(id, reqDTO);
-        return ResponseEntity.ok(updated);
+    public ResponseEntity<PersonalDocumentResUrlDTO> update(UUID id, PersonalDocumentReqDTO personalDocumentReqDTO) {
+        return null;
     }
 
-    @GetMapping("/{id}")
     @Override
-    public ResponseEntity<PersonalDocumentResDTO> findById(@PathVariable UUID id) {
-        PersonalDocumentResDTO dto = personalDocumentService.findById(id);
-        return ResponseEntity.ok(dto);
+    public ResponseEntity<PersonalDocumentResUrlDTO> findById(UUID id) {
+        return null;
     }
 
-    @GetMapping
     @Override
-    public ResponseEntity<List<PersonalDocumentResDTO>> findAll() {
-        List<PersonalDocumentResDTO> all = personalDocumentService.findAll();
-        return ResponseEntity.ok(all);
+    public ResponseEntity<List<PersonalDocumentResUrlDTO>> findAll() {
+        return null;
     }
 
-    @DeleteMapping("/documents/{id}")
-    public ResponseEntity<PersonalDocumentResDTO> delete(@PathVariable UUID id) {
-        PersonalDocumentResDTO deletedDocument = personalDocumentService.delete(id);
-        return ResponseEntity.ok(deletedDocument);
+    @Override
+    public ResponseEntity<PersonalDocumentResUrlDTO> delete(UUID id) {
+        return null;
     }
 
-   @GetMapping("/{id}/file")
     @Override
-    public ResponseEntity<byte[]> findDocumentById(@PathVariable UUID id) {
-    ///to-do
-    return null;
+    public ResponseEntity<byte[]> findFileByDocumentId(UUID id) {
+        return null;
     }
 }

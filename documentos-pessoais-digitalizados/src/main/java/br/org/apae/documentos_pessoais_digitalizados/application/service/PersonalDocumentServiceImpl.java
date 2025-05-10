@@ -2,15 +2,18 @@ package br.org.apae.documentos_pessoais_digitalizados.application.service;
 
 import br.org.apae.documentos_pessoais_digitalizados.api.dto.req.PersonalDocumentFileReqDTO;
 import br.org.apae.documentos_pessoais_digitalizados.api.dto.req.PersonalDocumentReqDTO;
-import br.org.apae.documentos_pessoais_digitalizados.api.dto.res.PersonalDocumentResDTO;
+import br.org.apae.documentos_pessoais_digitalizados.api.dto.res.PersonalDocumentResUrlDTO;
+import br.org.apae.documentos_pessoais_digitalizados.application.exception.DocumentNotFoundException;
 import br.org.apae.documentos_pessoais_digitalizados.domain.model.PersonalDocument;
 import br.org.apae.documentos_pessoais_digitalizados.domain.repository.PersonalDocumentRepository;
 import br.org.apae.documentos_pessoais_digitalizados.infrastructure.mapper.PersonalDocumentMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.UUID;
 
+@Service
 public class PersonalDocumentServiceImpl implements PersonalDocumentService{
 
     private final PersonalDocumentRepository personalDocumentRepository;
@@ -25,39 +28,44 @@ public class PersonalDocumentServiceImpl implements PersonalDocumentService{
     }
 
     @Override
-    public List<PersonalDocumentResDTO> create(PersonalDocumentReqDTO personalDocumentReqDTO) {
+    public List<PersonalDocumentResUrlDTO> create(UUID patientId, PersonalDocumentReqDTO personalDocumentReqDTO) {
+        List<PersonalDocument> personalDocuments = personalDocumentReqDTO.documents().stream()
+                .map(document -> createPersonalDocumentAndSaveFileStorage(patientId, document))
+                .toList();
 
-        return null;
-    }
-
-    @Override
-    public PersonalDocumentResDTO delete(UUID id) {
-    PersonalDocument personalDocument = this.personalDocumentRepository.findById(id).orElseThrow();
-    PersonalDocument deletedDocument = this.personalDocumentRepository.delete(id);
-    return this.personalDocumentMapper.toDTO(deletedDocument);
-    }
-
-
-    @Override
-    public PersonalDocumentResDTO update(UUID id, PersonalDocumentReqDTO personalDocument) {
-        return null;
-    }
-
-    @Override
-    public PersonalDocumentResDTO findById(UUID id) {
-        PersonalDocument personalDocument = this.personalDocumentRepository.findById(id).orElseThrow();
-        return this.personalDocumentMapper.toDTO(personalDocument);
-    }
-
-    @Override
-    public List<PersonalDocumentResDTO> findAll() {
-        List<PersonalDocument> personalDocuments = this.personalDocumentRepository.findAll();
         return personalDocuments.stream()
                 .map(this.personalDocumentMapper::toDTO)
                 .toList();
     }
 
-    private String createPersonalDocumentAndSaveFileStorage(UUID patientId, PersonalDocumentFileReqDTO personalDocumentFileReqDTO) {
+    @Override
+    public void delete(UUID id) {
+        this.personalDocumentRepository.delete(id);
+    }
+
+    @Override
+    public PersonalDocumentResUrlDTO update(UUID id, PersonalDocumentFileReqDTO personalDocumentFileReqDTO) {
+        PersonalDocument personalDocument = this.personalDocumentRepository.findById(id).orElseThrow(DocumentNotFoundException::new);
+        String bucketName = personalDocument.getPatient().toString();
+        this.storageService.deleteFile(personalDocument.getPathDocumentStorage(), bucketName);
+        String pathOfFile = this.storageService.uploadDocuments(personalDocumentFileReqDTO, bucketName);
+        personalDocument.setPersonalDocumentType(personalDocumentFileReqDTO.personalDocumentType());
+        personalDocument.setPathDocumentStorage(pathOfFile);
+        return this.personalDocumentMapper.toDTO(this.personalDocumentRepository.create(personalDocument));
+    }
+
+    @Override
+    public List<PersonalDocumentResUrlDTO> findAll() {
+        List<PersonalDocument> personalDocuments = this.personalDocumentRepository.findAll();
+        return personalDocuments.stream().map(this.personalDocumentMapper::toDTO).toList();
+    }
+
+    @Override
+    public PersonalDocument findFileByDocumentId(UUID id) {
+        return this.personalDocumentRepository.findById(id).orElseThrow(DocumentNotFoundException::new);
+    }
+
+    private PersonalDocument createPersonalDocumentAndSaveFileStorage(UUID patientId, PersonalDocumentFileReqDTO personalDocumentFileReqDTO) {
         String pathOfFile = this.storageService.uploadDocuments(personalDocumentFileReqDTO, patientId.toString());
         PersonalDocument personalDocument = new PersonalDocument(
                 personalDocumentFileReqDTO.personalDocumentType(),
@@ -65,6 +73,6 @@ public class PersonalDocumentServiceImpl implements PersonalDocumentService{
                 personalDocumentFileReqDTO.file().getContentType(),
                 patientId
         );
-        return  "/" + pathOfFile;
+        return this.personalDocumentRepository.create(personalDocument);
     }
 }
