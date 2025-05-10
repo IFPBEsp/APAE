@@ -9,6 +9,31 @@ on:
       - "*"
 
 jobs:
+  # DOC detect_changes:
+  # detect_changes é reponsável por identificar em qual módulo houveram alterações no commit,
+  # para que apenas os tests e o build desse módulo específico sejam rodados.
+  #
+  # Para adicionar um novo módulo (ex: "demo2"), siga os passos:
+  #
+  # 1. Crie uma nova variável na seção de outputs do job:
+  #      demo3_changed: ${{ steps.set_output.outputs.demo2_changed }}
+  #
+  # 2. Crie uma nova flag de controle dentro do script detect_changes:
+  #      DEMO2_CHANGED=false
+  #
+  # 3. Adicione uma verificação de alteração usando grep:
+  #      if grep -q '^api/demo2/' changed_files.txt; then
+  #        DEMO2_CHANGED=true
+  #      fi
+  #
+  # 4. Exporte a flag como variável de ambiente:
+  #      echo "demo2_changed=$DEMO2_CHANGED" >> $GITHUB_ENV
+  #
+  # 5. Adicione a nova saída no passo 'Set outputs':
+  #      echo "::set-output name=demo2_changed::${{ env.demo2_changed }}"
+  #
+  # 6. Adicione a condição de run ao job de test e build do novo modulo
+  #     if: needs.detect_changes.outputs.demo2_changed == 'true'
   detect_changes:
     runs-on: ubuntu-latest
     outputs:
@@ -17,7 +42,7 @@ jobs:
       - name: Checkout full history
         uses: actions/checkout@v4
         with:
-          fetch-depth: 0 # PRECISA do histórico completo para o diff funcionar corretamente
+          fetch-depth: 0
 
       - name: Get base branch
         run: echo "BASE_BRANCH=${{ github.event.pull_request.base.ref || 'dev' }}" >> $GITHUB_ENV
@@ -97,7 +122,6 @@ jobs:
           SPRING_DATASOURCE_USERNAME: admin
           SPRING_DATASOURCE_PASSWORD: admin
 
-  # 3. Build só roda se os testes do demo rodarem
   build:
     name: Build Spring Boot Project
     runs-on: ubuntu-latest
