@@ -13,11 +13,10 @@ on:
 
 jobs:
   ping:
-    name: Just Test Workflow Trigger
+    name: Ping Check
     runs-on: ubuntu-latest
     steps:
-      - name: Hello World
-        run: echo "✅ Pipeline acionada com sucesso!"
+      - run: echo "Ping job for dependency order."
 
   test:
     name: Run Backend Tests
@@ -32,17 +31,27 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Set up JDK 17
+      - name: Set up JDK 21
         uses: actions/setup-java@v4
         with:
-          java-version: "17"
+          java-version: "21"
           distribution: "temurin"
+
+      - name: Start Docker Compose
+        run: docker-compose -f docker/docker-compose.yml up -d
+
+      - name: Wait for DB to be healthy
+        run: |
+          until [ "$(docker inspect -f '{{ .State.Health.Status }}' demo_database)" = "healthy" ]; do
+            echo "Waiting for demo_database to become healthy..."
+            sleep 2
+          done
 
       - name: Grant execute permission for Gradle wrapper
         run: chmod +x ./gradlew
 
       - name: Run Tests with JUnit
-        run: ./gradlew :demo:test
+        run: ./gradlew build:test
 
   build:
     name: Build Spring Boot Project
@@ -57,14 +66,24 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Set up JDK 17
+      - name: Set up JDK 21
         uses: actions/setup-java@v4
         with:
-          java-version: "17"
+          java-version: "21"
           distribution: "temurin"
+
+      - name: Start Docker Compose
+        run: docker-compose -f docker/docker-compose.yml up -d
+
+      - name: Wait for DB to be healthy
+        run: |
+          until [ "$(docker inspect -f '{{ .State.Health.Status }}' demo_database)" = "healthy" ]; do
+            echo "Waiting for demo_database to become healthy..."
+            sleep 2
+          done
 
       - name: Grant execute permission for Gradle wrapper
         run: chmod +x ./gradlew
 
       - name: Build the project
-        run: ./gradlew :demo:build
+        run: ./gradlew demo:build
