@@ -29,6 +29,14 @@ public class PersonalDocumentServiceImpl implements PersonalDocumentService{
     }
 
     @Override
+    public PersonalDocumentResDTO delete(UUID id) {
+    PersonalDocument personalDocument = this.personalDocumentRepository.findById(id).orElseThrow();
+    PersonalDocument deletedDocument = this.personalDocumentRepository.delete(id);
+    return this.personalDocumentMapper.toDTO(deletedDocument);
+    }
+
+
+    @Override
     public PersonalDocumentResDTO update(UUID id, PersonalDocumentReqDTO personalDocument) {
         return null;
     }
