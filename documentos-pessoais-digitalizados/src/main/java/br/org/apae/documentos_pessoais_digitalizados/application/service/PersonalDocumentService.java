@@ -8,7 +8,7 @@ import java.util.UUID;
 
 public interface PersonalDocumentService {
     List<PersonalDocumentResDTO> create(PersonalDocumentReqDTO personalDocument);
-    PersonalDocumentReqDTO delete(UUID id) 
+    PersonalDocumentReqDTO delete(UUID id);
     PersonalDocumentResDTO update(UUID id, PersonalDocumentReqDTO personalDocument);
     PersonalDocumentResDTO findById(UUID id);
     List<PersonalDocumentResDTO> findAll();
