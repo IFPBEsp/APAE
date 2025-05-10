@@ -11,4 +11,5 @@ public interface PersonalDocumentRepository {
     PersonalDocument update(UUID id, PersonalDocument personalDocument);
     Optional<PersonalDocument> findById(UUID id);
     List<PersonalDocument> findAll();
+    PersonalDocument delete (UUID id);
 }
