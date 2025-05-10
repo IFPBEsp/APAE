@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import br.org.apae.documentos_medicos.domain.ports.storage.MinioStorage;
 import io.minio.GetObjectArgs;
@@ -15,6 +16,7 @@ import io.minio.PutObjectArgs;
 import io.minio.Result;
 import io.minio.messages.Item;
 
+@Component
 public class MinioMedicalDocumentStorageImpl implements MinioStorage {
 
     private final MinioClient minioClient;
