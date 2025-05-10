@@ -1,4 +1,3 @@
----
 name: CI Pipeline
 
 on:
@@ -10,10 +9,29 @@ on:
       - "*"
 
 jobs:
+  setup-docker-compose:
+    name: Set up Docker Compose
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Install Docker and Docker Compose
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y docker.io
+          sudo curl -L "https://github.com/docker/compose/releases/download/$(curl -s https://api.github.com/repos/docker/compose/releases/latest | jq -r .tag_name)/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
+          sudo chmod +x /usr/local/bin/docker-compose
+          docker-compose --version  # Verifique a instalação
+
+      - name: Start Docker Compose
+        run: docker-compose -f docker/docker-compose.yml up -d
+
   test:
     name: Run Backend Tests
     runs-on: ubuntu-latest
-    needs: ping
+    needs: setup-docker-compose # Depende do job 'setup-docker-compose'
 
     defaults:
       run:
@@ -28,15 +46,6 @@ jobs:
         with:
           java-version: "21"
           distribution: "temurin"
-
-      - name: Install Docker Compose
-        run: |
-          sudo curl -L "https://github.com/docker/compose/releases/download/$(curl -s https://api.github.com/repos/docker/compose/releases/latest | jq -r .tag_name)/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
-          sudo chmod +x /usr/local/bin/docker-compose
-          docker-compose --version  # Verify the installation
-
-      - name: Start Docker Compose
-        run: docker-compose -f docker/docker-compose.yml up -d
 
       - name: Wait for DB to be healthy
         run: |
@@ -54,7 +63,7 @@ jobs:
   build:
     name: Build Spring Boot Project
     runs-on: ubuntu-latest
-    needs: test
+    needs: setup-docker-compose # Depende do job 'setup-docker-compose'
 
     defaults:
       run:
@@ -69,15 +78,6 @@ jobs:
         with:
           java-version: "21"
           distribution: "temurin"
-
-      - name: Install Docker Compose
-        run: |
-          sudo curl -L "https://github.com/docker/compose/releases/download/$(curl -s https://api.github.com/repos/docker/compose/releases/latest | jq -r .tag_name)/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
-          sudo chmod +x /usr/local/bin/docker-compose
-          docker-compose --version  # Verify the installation
-
-      - name: Start Docker Compose
-        run: docker-compose -f docker/docker-compose.yml up -d
 
       - name: Wait for DB to be healthy
         run: |
