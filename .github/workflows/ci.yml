@@ -37,8 +37,8 @@ jobs:
   api-testes:
     name: Run Backend Tests
     runs-on: ubuntu-latest
-    needs: changes
-    if: needs.changes.outputs.demo == 'true'
+    needs: detect_changes
+    if: needs.detect_changes.outputs.demo_changed == 'true'
 
     services:
       postgres:
