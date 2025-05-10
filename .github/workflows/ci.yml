@@ -29,10 +29,13 @@ jobs:
           sudo chmod +x /usr/local/bin/docker-compose
           docker-compose --version  # Verifique a instalação
 
+      - name: Start Docker Compose
+        run: docker-compose -f docker/docker-compose.yml up -d
+
   test:
     name: Run Backend Tests
     runs-on: ubuntu-latest
-    needs: setup-docker-compose # Depende do job 'setup-docker-compose'
+    needs: setup-docker-compose
 
     defaults:
       run:
