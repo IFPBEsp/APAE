@@ -4,6 +4,7 @@ import br.org.apae.documentos_pessoais_digitalizados.api.dto.req.PersonalDocumen
 import br.org.apae.documentos_pessoais_digitalizados.api.dto.res.PersonalDocumentResDTO;
 import br.org.apae.documentos_pessoais_digitalizados.application.service.PersonalDocumentService;
 import br.org.apae.documentos_pessoais_digitalizados.application.service.StorageService;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -17,15 +18,15 @@ public class PersonalDocumentControllerImpl implements PersonalDocumentControlle
     private final StorageService storageService;
 
     public PersonalDocumentControllerImpl(PersonalDocumentService personalDocumentService,
-        StorageService storageService) {
+                                          StorageService storageService) {
         this.personalDocumentService = personalDocumentService;
         this.storageService = storageService;
     }
 
     @Override
-    public ResponseEntity<PersonalDocumentResDTO> create(PersonalDocumentReqDTO personalDocumentReqDTO) {
-        // TODO: Implementar criação de documento pessoal
-        return null;
+    public ResponseEntity<List<PersonalDocumentResDTO>> create(PersonalDocumentReqDTO personalDocumentReqDTO) {
+        // Chama o serviço para criar os documentos pessoais
+       return null;
     }
 
     @Override

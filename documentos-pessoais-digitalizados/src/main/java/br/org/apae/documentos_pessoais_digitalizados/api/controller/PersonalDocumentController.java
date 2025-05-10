@@ -8,7 +8,7 @@ import java.util.List;
 import java.util.UUID;
 
 public interface PersonalDocumentController {
-    ResponseEntity<PersonalDocumentResDTO> create(PersonalDocumentReqDTO personalDocumentReqDTO);
+    ResponseEntity<List<PersonalDocumentResDTO>> create(PersonalDocumentReqDTO personalDocumentReqDTO);
     ResponseEntity<PersonalDocumentResDTO> update(UUID id,PersonalDocumentReqDTO personalDocumentReqDTO);
     ResponseEntity<PersonalDocumentResDTO> findById(UUID id);
     ResponseEntity<List<PersonalDocumentResDTO>> findAll();
