@@ -13,5 +13,5 @@ public interface PersonalDocumentController {
     ResponseEntity<PersonalDocumentResDTO> findById(UUID id);
     ResponseEntity<List<PersonalDocumentResDTO>> findAll();
     ResponseEntity<PersonalDocumentResDTO> delete(UUID id);
-    ResponseEntity<byte[]> findDocumentById(UUID id);
+    ResponseEntity<byte[]> findDocumentByFileName(UUID id);
 }
