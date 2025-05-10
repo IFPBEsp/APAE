@@ -9,24 +9,31 @@ on:
       - "*"
 
 jobs:
-  # 1. Job que detecta se houve mudanças em api/demo
-  changes:
+  detect_changes:
     runs-on: ubuntu-latest
     outputs:
-      demo: ${{ steps.filter.outputs.demo }}
+      demo_changed: ${{ steps.detect_demo_changes.outputs.demo_changed }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Check changed paths
-        id: filter
-        uses: dorny/paths-filter@v3
-        with:
-          filters: |
-            demo:
-              - 'api/demo/src/**'
+      - name: Detect changes in demo module
+        id: detect_demo_changes
+        run: |
+          # Obtenha as diferenças entre o commit anterior e o commit atual
+          git diff --name-only ${{ github.event.before }} ${{ github.sha }} > changed_files.txt
 
-  # 2. Job de testes que só roda se api/demo foi alterado
+          # Verifique se há alterações no módulo demo
+          if grep -q '^api/demo/' changed_files.txt; then
+            echo "demo_changed=true" >> $GITHUB_ENV
+          else
+            echo "demo_changed=false" >> $GITHUB_ENV
+          fi
+
+      - name: Set output for demo changes
+        id: set_output
+        run: echo "::set-output name=demo_changed::${{ env.demo_changed }}"
+
   api-testes:
     name: Run Backend Tests
     runs-on: ubuntu-latest
