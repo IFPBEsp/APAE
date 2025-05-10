@@ -6,10 +6,12 @@ on:
     branches:
       - main
       - dev
+      - 39-pipeline-config
   pull_request:
     branches:
       - main
       - dev
+      - 39-pipeline-config
 
 jobs:
   ping:
