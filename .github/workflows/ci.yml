@@ -12,25 +12,33 @@ jobs:
   detect_changes:
     runs-on: ubuntu-latest
     outputs:
-      demo_changed: ${{ steps.detect_demo_changes.outputs.demo_changed }}
+      demo_changed: ${{ steps.set_output.outputs.demo_changed }}
     steps:
-      - name: Checkout code
+      - name: Checkout full history
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # PRECISA do histórico completo para o diff funcionar corretamente
 
-      - name: Detect changes in demo module
-        id: detect_demo_changes
+      - name: Get base branch
+        run: echo "BASE_BRANCH=${{ github.event.pull_request.base.ref || 'dev' }}" >> $GITHUB_ENV
+
+      - name: Fetch base branch
+        run: git fetch origin ${{ env.BASE_BRANCH }}
+
+      - name: Compare current code with base branch
+        id: detect_changes
         run: |
-          # Obtenha as diferenças entre o commit anterior e o commit atual
-          git diff --name-only ${{ github.event.before }} ${{ github.sha }} > changed_files.txt
+          BASE=$(git merge-base HEAD origin/${{ env.BASE_BRANCH }})
+          echo "Comparing with base commit: $BASE"
+          git diff --name-only $BASE HEAD > changed_files.txt
 
-          # Verifique se há alterações no módulo demo
           if grep -q '^api/demo/' changed_files.txt; then
             echo "demo_changed=true" >> $GITHUB_ENV
           else
             echo "demo_changed=false" >> $GITHUB_ENV
           fi
 
-      - name: Set output for demo changes
+      - name: Set output
         id: set_output
         run: echo "::set-output name=demo_changed::${{ env.demo_changed }}"
 
