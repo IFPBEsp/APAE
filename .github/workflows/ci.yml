@@ -24,7 +24,7 @@ jobs:
         with:
           filters: |
             demo:
-              - 'api/demo/**'
+              - 'api/demo/src/**'
 
   # 2. Job de testes que só roda se api/demo foi alterado
   api-testes:
