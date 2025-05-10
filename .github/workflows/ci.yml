@@ -9,36 +9,24 @@ on:
       - "*"
 
 jobs:
-  setup-docker-compose:
-    name: Set up Docker Compose
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Install Docker and Docker Compose
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y apt-transport-https ca-certificates curl software-properties-common
-          sudo curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo tee /etc/apt/trusted.gpg.d/docker.asc
-          sudo add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable"
-          sudo apt-get update
-          sudo apt-get install -y docker-ce docker-ce-cli containerd.io
-          sudo curl -L "https://github.com/docker/compose/releases/download/$(curl -s https://api.github.com/repos/docker/compose/releases/latest | jq -r .tag_name)/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
-          sudo chmod +x /usr/local/bin/docker-compose
-          docker-compose --version  # Verifique a instalação
-
-      - name: Start Docker Compose
-        run: |
-          docker-compose -f docker/docker-compose.yml up -d
-          sleep 10
-          docker ps
-
   api-testes:
     name: Run Backend Tests
     runs-on: ubuntu-latest
-    needs: setup-docker-compose
+
+    services:
+      postgres:
+        image: postgres:16
+        ports:
+          - 5432:5432
+        env:
+          POSTGRES_DB: demo_db
+          POSTGRES_USER: admin
+          POSTGRES_PASSWORD: admin
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
 
     defaults:
       run:
@@ -59,12 +47,15 @@ jobs:
 
       - name: Run Tests with JUnit
         run: ./gradlew demo:test
+        env:
+          SPRING_DATASOURCE_URL: jdbc:postgresql://localhost:5432/demo_db
+          SPRING_DATASOURCE_USERNAME: admin
+          SPRING_DATASOURCE_PASSWORD: admin
 
   build:
     name: Build Spring Boot Project
     runs-on: ubuntu-latest
     needs:
-      - setup-docker-compose
       - api-testes
 
     defaults:
