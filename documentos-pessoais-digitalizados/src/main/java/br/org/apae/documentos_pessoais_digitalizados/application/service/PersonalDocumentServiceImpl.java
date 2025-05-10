@@ -1,5 +1,6 @@
 package br.org.apae.documentos_pessoais_digitalizados.application.service;
 
+import br.org.apae.documentos_pessoais_digitalizados.api.dto.req.PersonalDocumentFileReqDTO;
 import br.org.apae.documentos_pessoais_digitalizados.api.dto.req.PersonalDocumentReqDTO;
 import br.org.apae.documentos_pessoais_digitalizados.api.dto.res.PersonalDocumentResDTO;
 import br.org.apae.documentos_pessoais_digitalizados.domain.model.PersonalDocument;
@@ -14,18 +15,19 @@ public class PersonalDocumentServiceImpl implements PersonalDocumentService{
 
     private final PersonalDocumentRepository personalDocumentRepository;
     private final PersonalDocumentMapper personalDocumentMapper;
+    private final StorageService storageService;
 
     @Autowired
-    public PersonalDocumentServiceImpl(PersonalDocumentRepository personalDocumentRepository, PersonalDocumentMapper personalDocumentMapper) {
+    public PersonalDocumentServiceImpl(PersonalDocumentRepository personalDocumentRepository, PersonalDocumentMapper personalDocumentMapper, StorageService storageService) {
         this.personalDocumentRepository = personalDocumentRepository;
         this.personalDocumentMapper = personalDocumentMapper;
+        this.storageService = storageService;
     }
 
     @Override
     public List<PersonalDocumentResDTO> create(PersonalDocumentReqDTO personalDocumentReqDTO) {
-        List<PersonalDocument> personalDocument = this.personalDocumentMapper.toEntity(personalDocumentReqDTO);
-        List<PersonalDocument> createdPersonalDocument = personalDocument.stream().map(this.personalDocumentRepository::create).toList();
-        return createdPersonalDocument.stream().map(this.personalDocumentMapper::toDTO).toList();
+
+        return null;
     }
 
     @Override
@@ -49,9 +51,20 @@ public class PersonalDocumentServiceImpl implements PersonalDocumentService{
 
     @Override
     public List<PersonalDocumentResDTO> findAll() {
-        List<PersonalDocument>  personalDocuments = this.personalDocumentRepository.findAll();
+        List<PersonalDocument> personalDocuments = this.personalDocumentRepository.findAll();
         return personalDocuments.stream()
                 .map(this.personalDocumentMapper::toDTO)
                 .toList();
+    }
+
+    private String createPersonalDocumentAndSaveFileStorage(UUID patientId, PersonalDocumentFileReqDTO personalDocumentFileReqDTO) {
+        String pathOfFile = this.storageService.uploadDocuments(personalDocumentFileReqDTO, patientId.toString());
+        PersonalDocument personalDocument = new PersonalDocument(
+                personalDocumentFileReqDTO.personalDocumentType(),
+                pathOfFile,
+                personalDocumentFileReqDTO.file().getContentType(),
+                patientId
+        );
+        return  "/" + pathOfFile;
     }
 }
