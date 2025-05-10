@@ -58,7 +58,7 @@ jobs:
         run: chmod +x ./gradlew
 
       - name: Run Tests with JUnit
-        run: ./gradlew build:test
+        run: ./gradlew demo:test
 
   build:
     name: Build Spring Boot Project
