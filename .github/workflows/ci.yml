@@ -10,12 +10,6 @@ on:
       - "*"
 
 jobs:
-  ping:
-    name: Ping Check
-    runs-on: ubuntu-latest
-    steps:
-      - run: echo "Ping job for dependency order."
-
   test:
     name: Run Backend Tests
     runs-on: ubuntu-latest
@@ -34,6 +28,12 @@ jobs:
         with:
           java-version: "21"
           distribution: "temurin"
+
+      - name: Install Docker Compose
+        run: |
+          sudo curl -L "https://github.com/docker/compose/releases/download/$(curl -s https://api.github.com/repos/docker/compose/releases/latest | jq -r .tag_name)/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
+          sudo chmod +x /usr/local/bin/docker-compose
+          docker-compose --version  # Verify the installation
 
       - name: Start Docker Compose
         run: docker-compose -f docker/docker-compose.yml up -d
@@ -69,6 +69,12 @@ jobs:
         with:
           java-version: "21"
           distribution: "temurin"
+
+      - name: Install Docker Compose
+        run: |
+          sudo curl -L "https://github.com/docker/compose/releases/download/$(curl -s https://api.github.com/repos/docker/compose/releases/latest | jq -r .tag_name)/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
+          sudo chmod +x /usr/local/bin/docker-compose
+          docker-compose --version  # Verify the installation
 
       - name: Start Docker Compose
         run: docker-compose -f docker/docker-compose.yml up -d
