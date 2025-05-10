@@ -3,13 +3,13 @@ package br.org.apae.documentos_digitalizados.global;
 import br.org.apae.documentos_digitalizados.domain.exception.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.context.request.WebRequest;
 
 import java.time.LocalDateTime;
 
-@ControllerAdvice
+@RestControllerAdvice
 public class GlobalExceptionHandler {
 
     private ErrorResponse buildErrorResponse(Exception ex, HttpStatus status, String errorCode, WebRequest request) {
@@ -23,10 +23,10 @@ public class GlobalExceptionHandler {
                 .build();
     }
 
-    @ExceptionHandler(CriacaoBucketException.class)
-    public ResponseEntity<ErrorResponse> handleCriacaoBucket(CriacaoBucketException ex, WebRequest request) {
+    @ExceptionHandler(MinIOException.class)
+    public ResponseEntity<ErrorResponse> handleMinIO(MinIOException ex, WebRequest request) {
         return new ResponseEntity<>(
-                buildErrorResponse(ex, HttpStatus.INTERNAL_SERVER_ERROR, "BUCKET_CREATION_FAILED", request),
+                buildErrorResponse(ex, HttpStatus.INTERNAL_SERVER_ERROR, "MINIO_ERROR", request),
                 HttpStatus.INTERNAL_SERVER_ERROR
         );
     }
@@ -60,6 +60,14 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(
                 buildErrorResponse(ex, HttpStatus.BAD_REQUEST, "BUCKET_ALREADY_EXISTS", request),
                 HttpStatus.BAD_REQUEST
+        );
+    }
+
+    @ExceptionHandler(NaoExisteBucketException.class)
+    public ResponseEntity<ErrorResponse> handleNaoExisteBucket(NaoExisteBucketException ex, WebRequest request) {
+        return new ResponseEntity<>(
+                buildErrorResponse(ex, HttpStatus.NOT_FOUND, "BUCKET_ALREADY_NOT_EXISTS", request),
+                HttpStatus.NOT_FOUND
         );
     }
 

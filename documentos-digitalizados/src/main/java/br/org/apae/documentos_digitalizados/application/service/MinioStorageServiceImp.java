@@ -23,15 +23,17 @@ public class MinioStorageServiceImp implements MinioStorageService {
     public void criarBucket(UUID bucketNome) {
         boolean existe = existeBucket(bucketNome.toString());
 
-        if (!existe) {
-            try {
-                minioClient.makeBucket(MakeBucketArgs.builder().bucket(bucketNome.toString()).build());
-                criarPasta(bucketNome.toString(), "documentos-pessoal/");
-                criarPasta(bucketNome.toString(), "documentos-medico/");
-                criarPasta(bucketNome.toString(), "documentos-escolar/");
-            } catch (Exception e) {
-                throw new CriacaoBucketException("Erro na criação de bucket no minIO!\n" + e.getMessage());
-            }
+        if (existe) {
+            throw new ExisteBucketException("Já existe o bucket '" + bucketNome + "'!");
+        }
+
+        try {
+            minioClient.makeBucket(MakeBucketArgs.builder().bucket(bucketNome.toString()).build());
+            criarPasta(bucketNome.toString(), "documentos-pessoal/");
+            criarPasta(bucketNome.toString(), "documentos-medico/");
+            criarPasta(bucketNome.toString(), "documentos-escolar/");
+        } catch (Exception e) {
+            throw new MinIOException("Erro na criação de bucket no minIO!\n" + e.getMessage());
         }
     }
 
@@ -55,13 +57,13 @@ public class MinioStorageServiceImp implements MinioStorageService {
             return new BucketResponseDTO(bucketNome);
         }
 
-        throw new ExisteBucketException("Não existe o bucket '" + bucketNome + "'!");
+        throw new NaoExisteBucketException("Não existe o bucket '" + bucketNome + "'!");
     }
 
     @Override
     public void deletarBucket(String bucketNome) {
         if (!existeBucket(bucketNome)) {
-            throw new ExisteBucketException("O bucket: '" + bucketNome + "' não existe!");
+            throw new NaoExisteBucketException("O bucket: '" + bucketNome + "' não existe!");
         }
 
         esvaziarBucket(bucketNome);
@@ -72,7 +74,7 @@ public class MinioStorageServiceImp implements MinioStorageService {
                             .build()
             );
         } catch (Exception e) {
-            throw new ListagemBucketException("Erro ao deletar o bucket: " + bucketNome + "!\n" + e.getMessage());
+            throw new DeletarBucketException("Erro ao deletar o bucket: " + bucketNome + "!\n" + e.getMessage());
         }
     }
 
@@ -81,7 +83,7 @@ public class MinioStorageServiceImp implements MinioStorageService {
         try {
             return minioClient.bucketExists(BucketExistsArgs.builder().bucket(bucketNome).build());
         } catch (Exception e) {
-            throw new ExisteBucketException("Erro na busca de bucket no minIO!\n" + e.getMessage());
+            throw new MinIOException("Erro na busca de bucket no minIO!\n" + e.getMessage());
         }
     }
 
