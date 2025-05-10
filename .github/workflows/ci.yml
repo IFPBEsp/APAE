@@ -9,9 +9,29 @@ on:
       - "*"
 
 jobs:
+  # 1. Job que detecta se houve mudanças em api/demo
+  changes:
+    runs-on: ubuntu-latest
+    outputs:
+      demo: ${{ steps.filter.outputs.demo }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Check changed paths
+        id: filter
+        uses: dorny/paths-filter@v3
+        with:
+          filters: |
+            demo:
+              - 'api/demo/**'
+
+  # 2. Job de testes que só roda se api/demo foi alterado
   api-testes:
     name: Run Backend Tests
     runs-on: ubuntu-latest
+    needs: changes
+    if: needs.changes.outputs.demo == 'true'
 
     services:
       postgres:
@@ -62,11 +82,13 @@ jobs:
           SPRING_DATASOURCE_USERNAME: admin
           SPRING_DATASOURCE_PASSWORD: admin
 
+  # 3. Build só roda se os testes do demo rodarem
   build:
     name: Build Spring Boot Project
     runs-on: ubuntu-latest
     needs:
       - api-testes
+    if: needs.api-testes.result == 'success'
 
     services:
       postgres:
