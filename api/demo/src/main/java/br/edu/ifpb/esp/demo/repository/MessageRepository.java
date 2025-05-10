@@ -6,3 +6,4 @@ import br.edu.ifpb.esp.demo.domain.Message;
 
 public interface MessageRepository extends JpaRepository<Message, Long> {
 }
+// teste
