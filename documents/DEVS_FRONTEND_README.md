@@ -117,3 +117,7 @@ pnpm --filter next-app dev
 ```
 
 Sendo assim, não precisamos sair do contexto raíz do projeto para executar esses comandos `pnpm`.
+
+## **PARA MAIS INFORMAÇÕES ACESSE A DOCUMENTAÇÃO OFICIAL DA TECNOLOGIA:**
+
+Documentação PNPM: https://pnpm.io/pt/installation
