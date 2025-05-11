@@ -9,7 +9,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class PersonalDocumentMapper {
 
-    private String domainUri;
+    private final String domainUri;
 
     @Autowired
     public PersonalDocumentMapper(@Value("${app.web.domain}") String domainUri) {
@@ -18,7 +18,7 @@ public class PersonalDocumentMapper {
 
     public PersonalDocumentResUrlDTO toDTO(PersonalDocument personalDocument) {
         String url = domainUri + "/api/documents/" + personalDocument.getId() + "/file";
-        return new PersonalDocumentResUrlDTO(url);
+        return new PersonalDocumentResUrlDTO(url, personalDocument.getPersonalDocumentType());
     }
 
 }
