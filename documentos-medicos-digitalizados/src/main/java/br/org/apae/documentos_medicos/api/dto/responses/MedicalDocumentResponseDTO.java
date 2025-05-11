@@ -13,7 +13,7 @@ public record MedicalDocumentResponseDTO(
     String documentType,
     LocalDate uploadDate,
     List<String> urls
-
+  
 ) {
     public MedicalDocumentResponseDTO(UUID id, String fileName, String description, Integer year, String documentType, LocalDate uploadDate, List<String> urls) {
         this.id = id;
@@ -23,5 +23,6 @@ public record MedicalDocumentResponseDTO(
         this.documentType = documentType;
         this.uploadDate = uploadDate;
         this.urls = urls;
+    
     }
 }

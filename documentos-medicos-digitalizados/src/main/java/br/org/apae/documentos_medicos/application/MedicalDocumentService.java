@@ -21,7 +21,7 @@ public interface MedicalDocumentService {
 
     MedicalDocumentResponseDTO visualizarDocumentosMedicosPaciente(UUID pacienteId, UUID documentoId);
 
-    MedicalDocumentResponseDTO atualizarDocumento(UUID pacienteId, UUID documentoId, MedicalDocumentRequestDTO documentoAtualizado);
+    MedicalDocumentResponseDTO atualizarDocumento(UUID pacienteId, UUID documentoId, MedicalDocumentRequestDTO documentoAtualizado, MultipartFile novoArquivo);
 
     void desativarDocumento(UUID pacienteId, UUID documentoId);
 }

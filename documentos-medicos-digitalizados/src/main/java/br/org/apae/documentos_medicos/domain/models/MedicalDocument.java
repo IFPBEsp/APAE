@@ -12,9 +12,10 @@ public class MedicalDocument {
     private LocalDate dataReferencia;
     private LocalDate dataUpload;
     private String caminhoBucket;
+    private Boolean ativo = true;
 
     public MedicalDocument(UUID id, String nomeArquivo, MedcialDocumentType tipoDocumento, String descricao,
-            LocalDate dataReferencia, LocalDate dataUpload, String caminhoBucket) {
+            LocalDate dataReferencia, LocalDate dataUpload, String caminhoBucket, Boolean ativo) {
         this.id = id;
         this.nomeArquivo = nomeArquivo;
         this.tipoDocumento = tipoDocumento;
@@ -22,6 +23,15 @@ public class MedicalDocument {
         this.dataReferencia = dataReferencia;
         this.dataUpload = dataUpload;
         this.caminhoBucket = caminhoBucket;
+        this.ativo = ativo;
+    }
+
+    public Boolean getAtivo() {
+        return ativo;
+    }
+
+    public void setAtivo(Boolean ativo) {
+        this.ativo = ativo;
     }
 
     public UUID getId() {
