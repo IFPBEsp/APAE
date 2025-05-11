@@ -14,6 +14,7 @@ public interface PersonalDocumentService {
     List<PersonalDocumentResUrlDTO> create(UUID patientId, PersonalDocumentReqDTO personalDocument);
     void delete(UUID id);
     PersonalDocumentResUrlDTO update(UUID id, PersonalDocumentFileReqDTO personalDocumentFileReqDTO);
-    List<PersonalDocumentResUrlDTO> findAll();
+    List<PersonalDocumentResUrlDTO> findAll(UUID patientId);
+    PersonalDocumentResUrlDTO findById(UUID id);
     PersonalDocument findFileByDocumentId(UUID id);
 }

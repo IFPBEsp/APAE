@@ -1,5 +1,6 @@
 package br.org.apae.documentos_pessoais_digitalizados.api.controller;
 
+import br.org.apae.documentos_pessoais_digitalizados.api.dto.req.PersonalDocumentFileReqDTO;
 import br.org.apae.documentos_pessoais_digitalizados.api.dto.req.PersonalDocumentReqDTO;
 import br.org.apae.documentos_pessoais_digitalizados.api.dto.res.PersonalDocumentResUrlDTO;
 import org.springframework.http.ResponseEntity;
@@ -11,9 +12,9 @@ import java.util.UUID;
 @RestController
 public interface PersonalDocumentController {
     ResponseEntity<List<PersonalDocumentResUrlDTO>> create(UUID id, PersonalDocumentReqDTO personalDocumentReqDTO);
-    ResponseEntity<PersonalDocumentResUrlDTO> update(UUID id,PersonalDocumentReqDTO personalDocumentReqDTO);
+    ResponseEntity<PersonalDocumentResUrlDTO> update(UUID id, PersonalDocumentFileReqDTO personalDocumentFileReqDTO);
     ResponseEntity<PersonalDocumentResUrlDTO> findById(UUID id);
-    ResponseEntity<List<PersonalDocumentResUrlDTO>> findAll();
+    ResponseEntity<List<PersonalDocumentResUrlDTO>> findAll(UUID patientId);
     ResponseEntity<PersonalDocumentResUrlDTO> delete(UUID id);
     ResponseEntity<byte[]> findFileByDocumentId(UUID id);
 }

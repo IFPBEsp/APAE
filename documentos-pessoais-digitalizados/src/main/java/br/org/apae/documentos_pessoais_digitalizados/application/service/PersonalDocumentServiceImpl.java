@@ -55,9 +55,15 @@ public class PersonalDocumentServiceImpl implements PersonalDocumentService{
     }
 
     @Override
-    public List<PersonalDocumentResUrlDTO> findAll() {
-        List<PersonalDocument> personalDocuments = this.personalDocumentRepository.findAll();
+    public List<PersonalDocumentResUrlDTO> findAll(UUID patientId) {
+        List<PersonalDocument> personalDocuments = this.personalDocumentRepository.findByPatient(patientId);
         return personalDocuments.stream().map(this.personalDocumentMapper::toDTO).toList();
+    }
+
+    @Override
+    public PersonalDocumentResUrlDTO findById(UUID id) {
+        PersonalDocument personalDocument = this.personalDocumentRepository.findById(id).orElseThrow(DocumentNotFoundException::new);
+        return this.personalDocumentMapper.toDTO(personalDocument);
     }
 
     @Override
