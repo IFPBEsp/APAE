@@ -3,6 +3,7 @@ package br.org.apae.api_crud_pacientes.api.controller;
 import br.org.apae.api_crud_pacientes.api.dtos.cadastro_anual.CadastroAnualRequest;
 import br.org.apae.api_crud_pacientes.api.dtos.cadastro_anual.CadastroAnualResponse;
 import br.org.apae.api_crud_pacientes.domain.service.CadastroAnualService;
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
