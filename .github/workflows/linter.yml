@@ -9,7 +9,7 @@ permissions: {}
 
 jobs:
   lint:
-    name: Lint code base
+    name: Lint Code Base
     runs-on: ubuntu-latest
 
     permissions:
@@ -23,38 +23,30 @@ jobs:
         with:
           fetch-depth: 0
 
+      - name: Load super-linter configuration
+        run: grep -v '^#' .github/super-linter.env >> "$GITHUB_ENV"
+
       - name: Run Super-Linter
         uses: super-linter/super-linter@v7.3.0
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-          VALIDATE_CSS: true
-          VALIDATE_CSS_PRETTIER: true
-          VALIDATE_GITHUB_ACTIONS: true
-          VALIDATE_HTML: true
-          VALIDATE_HTML_PRETTIER: true
-          VALIDATE_JAVASCRIPT_ES: true
-          VALIDATE_JAVASCRIPT_PRETTIER: true
-          VALIDATE_JSON: true
-          VALIDATE_JSON_PRETTIER: true
-          VALIDATE_JSX: true
-          VALIDATE_JSX_PRETTIER: true
-          VALIDATE_TSX: true
-          VALIDATE_TYPESCRIPT_ES: true
-          VALIDATE_TYPESCRIPT_PRETTIER: true
-          VALIDATE_YAML: true
-          VALIDATE_YAML_PRETTIER: true
-
   fix-lint-issues:
+    name: Fix Lint Issues
     permissions:
       contents: write
       statuses: write
 
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout code
+        uses: actions/checkout@v4
         with:
           fetch-depth: 0
+
+      - name: Load super-linter configuration
+        run: grep -v '^#' .github/super-linter.env >> "$GITHUB_ENV"
+
       - name: Super-Linter
         uses: super-linter/super-linter@v7.3.0
         env:
