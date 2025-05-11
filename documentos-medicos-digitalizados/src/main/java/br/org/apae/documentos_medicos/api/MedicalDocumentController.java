@@ -16,7 +16,7 @@ import br.org.apae.documentos_medicos.application.MedicalDocumentService;
 @RestController
 @RequestMapping("/api/v1/documentos-medicos")
 public class MedicalDocumentController {
-    
+
     private MedicalDocumentService medicalDocumentService;
 
     @Autowired
