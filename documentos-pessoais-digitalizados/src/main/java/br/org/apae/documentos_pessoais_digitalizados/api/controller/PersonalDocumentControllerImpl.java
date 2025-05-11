@@ -6,7 +6,7 @@ import br.org.apae.documentos_pessoais_digitalizados.api.dto.res.PersonalDocumen
 import br.org.apae.documentos_pessoais_digitalizados.application.service.PersonalDocumentService;
 import br.org.apae.documentos_pessoais_digitalizados.application.service.StorageService;
 import br.org.apae.documentos_pessoais_digitalizados.domain.model.PersonalDocument;
-import jakarta.persistence.GeneratedValue;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -32,8 +32,8 @@ public class PersonalDocumentControllerImpl implements PersonalDocumentControlle
     @Override
     @PostMapping("/{patientId}/upload")
     public ResponseEntity<List<PersonalDocumentResUrlDTO>> create(
-            @PathVariable UUID patientId,
-            @ModelAttribute PersonalDocumentReqDTO personalDocumentReqDTO
+            @Valid @PathVariable UUID patientId,
+            @Valid @ModelAttribute PersonalDocumentReqDTO personalDocumentReqDTO
     ) {
         List<PersonalDocumentResUrlDTO> personalDocumentResUrlDTOS = this.personalDocumentService.create(patientId, personalDocumentReqDTO);
         return new ResponseEntity<>(personalDocumentResUrlDTOS, HttpStatus.CREATED);
@@ -42,8 +42,8 @@ public class PersonalDocumentControllerImpl implements PersonalDocumentControlle
     @Override
     @PutMapping("/{id}")
     public ResponseEntity<PersonalDocumentResUrlDTO> update(
-            @PathVariable UUID id,
-            @ModelAttribute PersonalDocumentFileReqDTO personalDocumentFileReqDTO
+            @Valid @PathVariable UUID id,
+            @Valid @ModelAttribute PersonalDocumentFileReqDTO personalDocumentFileReqDTO
     ) {
         PersonalDocumentResUrlDTO  personalDocumentResUrlDTO = this.personalDocumentService.update(id, personalDocumentFileReqDTO);
         return ResponseEntity.ok(personalDocumentResUrlDTO);
