@@ -26,6 +26,9 @@ jobs:
       - name: Load super-linter configuration
         run: grep -v '^#' .github/super-linter.env >> "$GITHUB_ENV"
 
+      - name: Install dependencies
+        run: npm ci
+
       - name: Run Super-Linter
         uses: super-linter/super-linter@v7.3.0
         env:
@@ -46,6 +49,9 @@ jobs:
 
       - name: Load super-linter configuration
         run: grep -v '^#' .github/super-linter.env >> "$GITHUB_ENV"
+
+      - name: Install dependencies
+        run: npm ci
 
       - name: Super-Linter
         uses: super-linter/super-linter@v7.3.0
