@@ -57,13 +57,19 @@ public class StorageServiceImpl implements StorageService {
     }
 
     @Override
-    public String uploadDocuments(PersonalDocumentFileReqDTO personalDocument, String bucketName) {
+    public String updateFile(PersonalDocumentFileReqDTO personalDocument, String bucketName, String pathOfOldFile) {
+        this.deleteFile(pathOfOldFile, bucketName);
+        return this.uploadDocument(personalDocument, bucketName);
+    }
+
+    @Override
+    public String uploadDocument(PersonalDocumentFileReqDTO personalDocument, String bucketName) {
         Map<String, String> tags = new HashMap<>();
         tags.put("documentType", personalDocument.personalDocumentType().name());
         Tags objectTags = Tags.newObjectTags(tags);
         MultipartFile file = personalDocument.file();
+        String pathOfFile = getPathFileWithFolder(file.getOriginalFilename());
         try (InputStream inputStream = file.getInputStream()) {
-            String pathOfFile = this.folderName + "/" + file.getOriginalFilename();
             this.minioClient.putObject(PutObjectArgs.builder()
                     .bucket(bucketName)
                     .object(pathOfFile)
@@ -75,5 +81,9 @@ public class StorageServiceImpl implements StorageService {
         } catch (Exception e) {
             throw new StorageException();
         }
+    }
+
+    private String getPathFileWithFolder(String pathOfFIle) {
+        return this.folderName + "/" + pathOfFIle;
     }
 }
