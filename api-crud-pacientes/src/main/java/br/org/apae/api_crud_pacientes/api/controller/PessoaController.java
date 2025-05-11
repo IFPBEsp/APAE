@@ -24,42 +24,43 @@ public class PessoaController {
     }
 
     @PostMapping
-    public ResponseEntity<PessoaResponse> criarPessoa(
+    public ResponseEntity<PessoaResponse> create(
             @RequestBody PessoaRequest request,
             UriComponentsBuilder uriBuilder) {
 
-        PessoaResponse response = pessoaService.criarPessoa(request);
+        PessoaResponse response = pessoaService.create(request);
         URI uri = uriBuilder.path("/pessoas/{id}").buildAndExpand(response.getId()).toUri();
 
         return ResponseEntity.created(uri).body(response);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<PessoaResponse> atualizarPessoa(@PathVariable UUID id,
+    public ResponseEntity<PessoaResponse> update(@PathVariable UUID id,
                                                           @RequestBody PessoaRequest request) {
-        PessoaResponse response = pessoaService.atualizarPessoa(id, request);
+        PessoaResponse response = pessoaService.update(id, request);
         return ResponseEntity.ok(response);
     }
 
     @GetMapping
-    public ResponseEntity<Page<PessoaResponse>> listarPessoas(
+    public ResponseEntity<Page<PessoaResponse>> getAll(
             @PageableDefault(size = 10) Pageable pageable,
             @RequestParam(required = false) String cpf,
             @RequestParam(required = false) String nome) {
 
-        Page<PessoaResponse> pessoas = pessoaService.listarPessoas(pageable, cpf, nome);
+        Page<PessoaResponse> pessoas = pessoaService.getALl(pageable, cpf, nome);
         return ResponseEntity.ok(pessoas);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<PessoaResponse> buscarPessoaPorId(@PathVariable UUID id) {
-        PessoaResponse response = pessoaService.buscarPorId(id);
+    public ResponseEntity<PessoaResponse> getById(@PathVariable UUID id) {
+        PessoaResponse response = pessoaService.getById(id);
         return ResponseEntity.ok(response);
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deletarPessoa(@PathVariable UUID id) {
-        pessoaService.deletarPorId(id);
+    public ResponseEntity<Void> delete(@PathVariable UUID id) {
+        pessoaService.delete(id);
         return ResponseEntity.noContent().build();
     }
+
 }

@@ -21,7 +21,7 @@ public class PessoaService {
         this.pessoaRepository = pessoaRepository;
     }
 
-    public PessoaResponse buscarPorId(UUID id) {
+    public PessoaResponse getById(UUID id) {
         Optional<Pessoa> optionalPaciente = pessoaRepository.findById(id);
         if(optionalPaciente.isEmpty()){
             throw new EntityNotFoundException("Pessoa não encontrada");
@@ -31,14 +31,14 @@ public class PessoaService {
         return new PessoaMapper().toResponse(pessoa);
     }
 
-    public PessoaResponse criarPessoa(PessoaRequest request) {
+    public PessoaResponse create(PessoaRequest request) {
         PessoaMapper mapper = new PessoaMapper();
         Pessoa pessoa = mapper.toEntity(request);
         Pessoa pessoaSalva = pessoaRepository.save(pessoa);
         return mapper.toResponse(pessoaSalva);
     }
 
-    public Page<PessoaResponse> listarPessoas(Pageable pageable, String cpf, String nome) {
+    public Page<PessoaResponse> getALl(Pageable pageable, String cpf, String nome) {
         PessoaMapper mapper = new PessoaMapper();
 
         if (cpf != null && nome != null) {
@@ -56,7 +56,7 @@ public class PessoaService {
         }
     }
 
-    public PessoaResponse atualizarPessoa(UUID id, PessoaRequest request) {
+    public PessoaResponse update(UUID id, PessoaRequest request) {
         Optional<Pessoa> optionalPessoa = pessoaRepository.findById(id);
         Pessoa pessoaExistente;
 
@@ -88,7 +88,7 @@ public class PessoaService {
 
 
 
-    public void deletarPorId(UUID id) {
+    public void delete(UUID id) {
         if(!pessoaRepository.existsById(id)){
             throw new EntityNotFoundException("Pessoa não encontrada.");
         }
