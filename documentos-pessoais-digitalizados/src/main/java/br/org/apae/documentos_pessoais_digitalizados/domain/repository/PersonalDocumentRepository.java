@@ -13,4 +13,5 @@ public interface PersonalDocumentRepository {
     Optional<PersonalDocument> findById(UUID id);
     List<PersonalDocument> findByPatient(UUID patientId);
     void delete (UUID id);
+    Optional<PersonalDocument> findByPathDocumentStorageAndPatient(String filename, UUID patient);
 }

@@ -2,6 +2,7 @@ package br.org.apae.documentos_pessoais_digitalizados.infrastructure.persistence
 
 import br.org.apae.documentos_pessoais_digitalizados.domain.model.PersonalDocument;
 import br.org.apae.documentos_pessoais_digitalizados.domain.repository.PersonalDocumentRepository;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -12,9 +13,11 @@ import java.util.UUID;
 public class PersonalDocumentRepositoryImpl implements PersonalDocumentRepository {
 
     private final DocumentJpaRepository personalDocumentJpaRepository;
+    private final String folderName;
 
-    public PersonalDocumentRepositoryImpl(DocumentJpaRepository personalDocumentJpaRepository) {
+    public PersonalDocumentRepositoryImpl(DocumentJpaRepository personalDocumentJpaRepository, @Value("${minio.folder.name}") String folderName) {
         this.personalDocumentJpaRepository = personalDocumentJpaRepository;
+        this.folderName = folderName;
     }
 
     @Override
@@ -35,5 +38,10 @@ public class PersonalDocumentRepositoryImpl implements PersonalDocumentRepositor
     @Override
     public void delete(UUID id) {
         this.personalDocumentJpaRepository.deleteById(id);
+    }
+
+    @Override
+    public Optional<PersonalDocument> findByPathDocumentStorageAndPatient(String filename, UUID patient) {
+        return this.personalDocumentJpaRepository.findByPathDocumentStorageAndPatient(this.folderName + "/" + filename, patient);
     }
 }
