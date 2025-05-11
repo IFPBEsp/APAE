@@ -6,7 +6,11 @@ settings:
 
 importers:
 
-  .: {}
+  .:
+    devDependencies:
+      eslint-config-next:
+        specifier: 15.3.1
+        version: 15.3.1(eslint@9.26.0(jiti@2.4.2))(typescript@5.8.3)
 
   apps/next-app:
     dependencies:
