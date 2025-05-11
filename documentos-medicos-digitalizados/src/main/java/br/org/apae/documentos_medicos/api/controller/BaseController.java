@@ -3,12 +3,14 @@ package br.org.apae.documentos_medicos.api.controller;
 import java.util.List;
 import java.util.UUID;
 
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
@@ -18,7 +20,8 @@ import br.org.apae.documentos_medicos.api.dto.requests.MedicalDocumentRequestDTO
 import br.org.apae.documentos_medicos.api.dto.responses.MedicalDocumentResponseDTO;
 import br.org.apae.documentos_medicos.domain.models.MedcialDocumentType;
 import jakarta.validation.Valid;
-@RestController("/api/pacientes/{pacienteId}/documentos-medicos")
+
+@RequestMapping("/api/pacientes/{pacienteId}/documentos-medicos")
 public interface BaseController {
 
     /*
@@ -31,13 +34,13 @@ public interface BaseController {
     * PATCH (/api/pacientes/{pacienteId}/documentos-medicos/{documentoId}) - Desativar documento.
     */
 
-    @PostMapping
+    @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     ResponseEntity<MedicalDocumentResponseDTO> anexarDocumentoMedico(@PathVariable UUID pacienteId, @Valid @RequestPart MedicalDocumentRequestDTO documentoAnexado, @RequestPart MultipartFile arquivo);
 
-    @GetMapping
+    @GetMapping(params = "!tipo")
     ResponseEntity<List<MedicalDocumentResponseDTO>> listarDocumentosMedicosPaciente(@PathVariable UUID pacienteId);
 
-    @GetMapping
+    @GetMapping(params = "tipo")
     ResponseEntity<List<MedicalDocumentResponseDTO>> filtrarPorTipoDocumento(@PathVariable UUID pacienteId, @RequestParam(required = false) MedcialDocumentType tipoDocumento);
 
     @GetMapping("/historico")

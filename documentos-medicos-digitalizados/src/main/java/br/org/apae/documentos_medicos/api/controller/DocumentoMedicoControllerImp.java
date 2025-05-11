@@ -1,5 +1,6 @@
 package br.org.apae.documentos_medicos.api.controller;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.UUID;
 
@@ -10,6 +11,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import br.org.apae.documentos_medicos.api.dto.requests.MedicalDocumentRequestDTO;
+import br.org.apae.documentos_medicos.api.dto.requests.MedicalDocumentUploadDTO;
 import br.org.apae.documentos_medicos.api.dto.responses.MedicalDocumentResponseDTO;
 import br.org.apae.documentos_medicos.application.MedicalDocumentService;
 import br.org.apae.documentos_medicos.domain.models.MedcialDocumentType;
@@ -38,37 +40,44 @@ public class DocumentoMedicoControllerImp implements BaseController {
     }
 
     @Override
-    public ResponseEntity<MedicalDocumentResponseDTO> anexarDocumentoMedico(UUID pacienteId,
-            @Valid MedicalDocumentRequestDTO documentoAnexado, MultipartFile arquivo) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'anexarDocumentoMedico'");
+    public ResponseEntity<MedicalDocumentResponseDTO> anexarDocumentoMedico( UUID pacienteId, 
+        @Valid MedicalDocumentRequestDTO documentoAnexado, 
+        MultipartFile arquivo) {
+        MedicalDocumentUploadDTO dto = new MedicalDocumentUploadDTO(
+            pacienteId.toString(),  
+            documentoAnexado.getDataReferencia().getYear(),
+            documentoAnexado.getTipo().name());
+
+        medicalDocumentService.saveFile(dto, arquivo);
+
+        return ResponseEntity.ok().build();
     }
+
 
     @Override
     public ResponseEntity<List<MedicalDocumentResponseDTO>> listarDocumentosMedicosPaciente(UUID pacienteId) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'listarDocumentosMedicosPaciente'");
+        MedicalDocumentResponseDTO response = medicalDocumentService.listMedicalDocument(pacienteId.toString(), LocalDate.now().getYear());
+        return ResponseEntity.ok(List.of(response));
     }
 
     @Override
     public ResponseEntity<List<MedicalDocumentResponseDTO>> filtrarPorTipoDocumento(UUID pacienteId,
             MedcialDocumentType tipoDocumento) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'filtrarPorTipoDocumento'");
+         MedicalDocumentResponseDTO response = medicalDocumentService.listMedicalDocumentByType(pacienteId.toString(), LocalDate.now().getYear(), tipoDocumento);
+        return ResponseEntity.ok(List.of(response));
     }
 
     @Override
     public ResponseEntity<List<MedicalDocumentResponseDTO>> historicoTipoDocumento(UUID pacienteId,
             MedcialDocumentType tipoDocumento) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'historicoTipoDocumento'");
+        MedicalDocumentResponseDTO response = medicalDocumentService.historicoTipoDocumento(pacienteId.toString(), tipoDocumento);
+        return ResponseEntity.ok(List.of(response));
     }
 
     @Override
-    public ResponseEntity<MedicalDocumentResponseDTO> visualizarDocumentoMedicosPaciente(UUID pacienteID,
+    public ResponseEntity<MedicalDocumentResponseDTO> visualizarDocumentoMedicosPaciente(UUID pacienteId,
             UUID documentoId) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'visualizarDocumentosMedicosPaciente'");
+        return ResponseEntity.ok(medicalDocumentService.visualizarDocumentosMedicosPaciente(pacienteId, documentoId));
     }
 
     @Override
@@ -79,8 +88,8 @@ public class DocumentoMedicoControllerImp implements BaseController {
 
     @Override
     public ResponseEntity<Void> desativarDocumento(UUID pacienteId, UUID documentoId) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'desativarDocumento'");
+        medicalDocumentService.desativarDocumento(pacienteId, documentoId);
+        return ResponseEntity.noContent().build();
     }
 
 
