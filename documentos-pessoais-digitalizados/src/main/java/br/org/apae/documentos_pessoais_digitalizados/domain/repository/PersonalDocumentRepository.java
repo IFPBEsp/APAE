@@ -11,6 +11,6 @@ import java.util.UUID;
 public interface PersonalDocumentRepository {
     PersonalDocument create(PersonalDocument personalDocument);
     Optional<PersonalDocument> findById(UUID id);
-    List<PersonalDocument> findAll();
+    List<PersonalDocument> findByPatient(UUID patientId);
     void delete (UUID id);
 }

@@ -17,7 +17,6 @@ public class PersonalDocumentRepositoryImpl implements PersonalDocumentRepositor
         this.personalDocumentJpaRepository = personalDocumentJpaRepository;
     }
 
-
     @Override
     public PersonalDocument create(PersonalDocument personalDocument) {
         return this.personalDocumentJpaRepository.save(personalDocument);
@@ -29,8 +28,8 @@ public class PersonalDocumentRepositoryImpl implements PersonalDocumentRepositor
     }
 
     @Override
-    public List<PersonalDocument> findAll() {
-        return this.personalDocumentJpaRepository.findAll();
+    public List<PersonalDocument> findByPatient(UUID patientId) {
+        return this.personalDocumentJpaRepository.findByPatient(patientId);
     }
 
     @Override
