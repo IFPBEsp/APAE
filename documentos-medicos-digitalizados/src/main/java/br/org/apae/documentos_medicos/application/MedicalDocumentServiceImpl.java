@@ -2,14 +2,12 @@ package br.org.apae.documentos_medicos.application;
 
 import java.io.IOException;
 import java.util.List;
-import java.util.UUID;
 import java.util.stream.Stream;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import br.org.apae.documentos_medicos.api.dto.requests.MedicalDocumentRequestDTO;
 import br.org.apae.documentos_medicos.api.dto.requests.MedicalDocumentUploadDTO;
 import br.org.apae.documentos_medicos.api.dto.responses.MedicalDocumentResponseDTO;
 import br.org.apae.documentos_medicos.domain.models.MedcialDocumentType;
@@ -100,7 +98,7 @@ public class MedicalDocumentServiceImpl implements MedicalDocumentService {
         
         
     @Override
-    public MedicalDocumentResponseDTO historicoTipoDocumento(String patientId, MedcialDocumentType type) {
+    public MedicalDocumentResponseDTO historyDocumentByType(String patientId, MedcialDocumentType type) {
         try {
             String prefix = FOLDER_NAME + "/";
             List<String> objectNames = minioMedicalDocumentStorage.listObject(patientId, prefix);
@@ -126,31 +124,31 @@ public class MedicalDocumentServiceImpl implements MedicalDocumentService {
     
     
     @Override
-    public MedicalDocumentResponseDTO visualizarDocumentosMedicosPaciente(UUID pacienteId, UUID documentoId) {
+    public MedicalDocumentResponseDTO viewPatientDocument(String patientId, String documentId) {
         try {
-            String objectName = FOLDER_NAME + "/" + pacienteId.toString() + "/" + documentoId.toString();
-            byte[] file = minioMedicalDocumentStorage.getMedicalDocumentByFileName(pacienteId.toString(), objectName);
+            String prefix = FOLDER_NAME + "/";
+            List<String> objectNames = minioMedicalDocumentStorage.listObject(patientId, prefix);
             
-            if (file == null || file.length == 0) {
-                throw new RuntimeException("Documento não encontrado.");
+            if (objectNames.isEmpty()) {
+                throw new RuntimeException("Nenhum documento encontrado para o paciente " + patientId + " com esse nome: " + documentId);
             }
             
-            /*return new MedicalDocumentResponseDTO(
-                documentoId,
-                objectName, 
-                "Documento médico", 
-                LocalDate.now().getYear(), 
-                "TIPO_DOCUMENTO",
-                LocalDate.now(),
-                List.of(objectName) 
-                );*/
-                return null;
+            Stream<String> stream = objectNames.stream().filter(ObjectName -> ObjectName.endsWith("/" + documentId));
+
+            List<String> presignedUrls = minioMedicalDocumentStorage.generatePresignedUrls(patientId, stream.toList(), 2);
+
+    
+            return new MedicalDocumentResponseDTO(
+                patientId, 
+                presignedUrls
+            );
+
             } catch (Exception e) {
             throw new RuntimeException("Erro ao visualizar o documento: " + e.getMessage(), e);
         }
     }
         @Override
-        public void desativarDocumento(UUID pacienteId, UUID documentoId) {
+        public void deleteDocument(String pacienteId, String documentoId) {
             
             //PRECISA VER SE É POSSÍVEL
             try {
@@ -176,5 +174,6 @@ public class MedicalDocumentServiceImpl implements MedicalDocumentService {
             throw new RuntimeException("Bucket não existe: " + bucket);
         }
     }
-    
+
+
 }

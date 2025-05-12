@@ -44,7 +44,7 @@ public interface BaseController {
     ResponseEntity<List<MedicalDocumentResponseDTO>> historicoTipoDocumento(@PathVariable String patientId, @RequestParam MedcialDocumentType tipoDocumento);
 
     @GetMapping("/{documentoId}")
-    ResponseEntity<MedicalDocumentResponseDTO> visualizarDocumentoMedicosPaciente(@PathVariable String patientId, @PathVariable UUID documentoId);
+    ResponseEntity<MedicalDocumentResponseDTO> visualizarDocumentoMedicosPaciente(@PathVariable String patientId, @PathVariable String documentoId);
 
     @PatchMapping("/{documentoId}")
     ResponseEntity<Void> deletarDocumento(@PathVariable String documentoId);

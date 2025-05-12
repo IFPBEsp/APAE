@@ -15,9 +15,9 @@ public interface MedicalDocumentService {
 
     MedicalDocumentResponseDTO listMedicalDocumentByType(String patientId, Integer year, MedcialDocumentType type);
 
-    MedicalDocumentResponseDTO historicoTipoDocumento(String patientId, MedcialDocumentType type);
+    MedicalDocumentResponseDTO historyDocumentByType(String patientId, MedcialDocumentType type);
 
-    MedicalDocumentResponseDTO visualizarDocumentosMedicosPaciente(UUID pacienteId, UUID documentoId);
+    MedicalDocumentResponseDTO viewPatientDocument(String pacienteId, String documentoId);
 
-    void desativarDocumento(UUID pacienteId, UUID documentoId);
+    void deleteDocument(String pacienteId, String documentoId);
 }
