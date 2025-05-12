@@ -2,10 +2,11 @@
 
 import { usePathname } from "next/navigation";
 import Image from "next/image";
-import Styles from "./page.module.css";
+import Styles from "./Header.module.css";
 import { AlignJustify } from "lucide-react";
 import { useState } from "react";
 import SwipeableDrawer from "@mui/material/SwipeableDrawer";
+import Link from "next/link";
 
 export default function Header() {
 	const pathname = usePathname();
@@ -18,21 +19,23 @@ export default function Header() {
 	return (
 		<>
 			<div className={Styles.header}>
-				<Image src="/logo.png" alt="Logo APAE" width={120} height={50} />
+				<Image src="/logo-apae.png" alt="Logo APAE" width={120} height={50} />
 				<div className={Styles.linksTelas}>
-					<span className={pathname == "/" ? Styles.linkAtivo : Styles.link}>
+					<Link href="/" className={pathname == "/" ? Styles.linkAtivo : Styles.link}>
 						Página Inicial
-					</span>
-					<span
-						className={pathname == "/30anos" ? Styles.pageLink : Styles.link}
+					</Link>
+					<Link
+						href="/pages/30anos"
+						className={pathname == "/pages/30anos" ? Styles.linkAtivo : Styles.link}
 					>
 						30 Anos
-					</span>
-					<span
-						className={pathname == "/contato" ? Styles.pageLink : Styles.link}
+					</Link>
+					<Link
+						href="/pages/contato"
+						className={pathname == "/pages/contato" ? Styles.linkAtivo : Styles.link}
 					>
 						Contato
-					</span>
+					</Link>
 				</div>
 				<button className={Styles.hamburguer} onClick={toggleMenu}>
 					<AlignJustify />
