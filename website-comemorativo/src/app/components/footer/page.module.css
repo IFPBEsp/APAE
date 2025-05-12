@@ -1,0 +1,38 @@
+.footer {
+  padding: 15px 30px;
+  width: 100%;
+  background-color: #165BAA;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-wrap: wrap;
+  border-top: 1px solid #ddd;
+  color: #fff;
+}
+
+.section {
+  flex: 1 1 30%;
+  padding: 10px;
+  margin-bottom: 20px;
+  text-align: center;
+  color: #fff;
+}
+
+.content {
+    margin-top: '5px'; 
+    color: '#fff';
+}
+
+/* Media Query para telas pequenas */
+@media (max-width: 768px) {
+  .footer {
+    padding: 15px 20px;
+    display: block;
+    text-align: center;
+  }
+
+  .section {
+    flex: 1 1 100%;
+    text-align: center;
+  }
+}

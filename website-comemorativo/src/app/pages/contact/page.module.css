@@ -1,0 +1,87 @@
+/* styles/Contato.module.css */
+.pageContainer {
+  background-color: #ffffff;
+  color: #000000;
+  padding: 10px;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+}
+
+.heading1 {
+  font-size: 60px;
+  color: #f28c38;
+  margin-bottom: 40px;
+}
+
+.contactContainer {
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+  flex-wrap: wrap;
+  margin-bottom: 40px;
+  width: 100%;
+  max-width: 1200px;
+}
+
+.contactSection {
+  flex: 1 1 250px;
+  max-width: 300px;
+  padding: 10px;
+  text-align: left;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.heading2 {
+  font-size: 18px;
+  margin: 0;
+}
+
+.link {
+  color: #000000;
+  text-decoration: none;
+  font-weight: bold;
+  font-size: 14px;
+}
+
+.flexRow {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+.icon {
+  color: #f28c38;
+  width: 40px;
+  height: 40px;
+}
+
+.centeredSection {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  margin-bottom: 20px;
+  width: 100%;
+  max-width: 1200px;
+}
+
+.mapContainer {
+  margin-top: 20px;
+}
+
+.mapContainer iframe {
+  border: 0;
+}
+
+.centeredSection {
+  margin-top: 40px;
+}
