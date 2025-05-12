@@ -13,7 +13,7 @@ import jakarta.persistence.Table;
 
 @Entity
 @Table(name = "pessoa_responsavel")
-public class Pessoa_Responsavel {
+public class PessoaResponsavel {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private UUID id;
@@ -125,7 +125,7 @@ public class Pessoa_Responsavel {
             return false;
         if (getClass() != obj.getClass())
             return false;
-        Pessoa_Responsavel other = (Pessoa_Responsavel) obj;
+        PessoaResponsavel other = (PessoaResponsavel) obj;
         if (id == null) {
             if (other.id != null)
                 return false;
