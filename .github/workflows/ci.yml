@@ -9,7 +9,33 @@ on:
       - "*"
 
 jobs:
+  # DOC detect_changes:
+  # detect_changes é reponsável por identificar em qual módulo houveram alterações no commit,
+  # para que apenas os tests e o build desse módulo específico sejam rodados.
+  #
+  # Para adicionar um novo módulo (ex: "demo2"), siga os passos:
+  #
+  # 1. Crie uma nova variável na seção de outputs do job:
+  #      demo3_changed: ${{ steps.set_output.outputs.demo2_changed }}
+  #
+  # 2. Crie uma nova flag de controle dentro do script detect_changes:
+  #      DEMO2_CHANGED=false
+  #
+  # 3. Adicione uma verificação de alteração usando grep:
+  #      if grep -q '^api/demo2/' changed_files.txt; then
+  #        DEMO2_CHANGED=true
+  #      fi
+  #
+  # 4. Exporte a flag como variável de ambiente:
+  #      echo "demo2_changed=$DEMO2_CHANGED" >> $GITHUB_ENV
+  #
+  # 5. Adicione a nova saída no passo 'Set outputs':
+  # echo "::set-output name=demo2_changed::${{ env.demo2_changed }}"
+  #
+  # 6. Adicione a condição de run ao job de test e build do novo modulo
+  # if: needs.detect_changes.outputs.demo2_changed == 'true'
   detect_changes:
+    name: Detect Changes
     runs-on: ubuntu-latest
     outputs:
       demo_changed: ${{ steps.set_output.outputs.demo_changed }}
