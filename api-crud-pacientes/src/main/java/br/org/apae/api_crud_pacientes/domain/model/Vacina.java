@@ -20,6 +20,7 @@ public class Vacina {
     @Column(name = "dataAplicacao", nullable = false)
     private LocalDate dataAplicacao;
 
+
     @ManyToOne
     @JoinColumn(name = "pessoa_id")
     private Pessoa pessoa;
@@ -42,6 +43,14 @@ public class Vacina {
 
     public void setDataAplicacao(LocalDate dataAplicacao) {
         this.dataAplicacao = dataAplicacao;
+    }
+
+    public Pessoa getPessoa() {
+        return pessoa;
+    }
+
+    public void setPessoa(Pessoa pessoa) {
+        this.pessoa = pessoa;
     }
 
     @Override
