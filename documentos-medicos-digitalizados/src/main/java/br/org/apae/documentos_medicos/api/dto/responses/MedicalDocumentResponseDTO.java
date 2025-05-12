@@ -4,6 +4,5 @@ import java.util.List;
 
 public record MedicalDocumentResponseDTO(
     String patientId,
-    Integer year,
     List<String> urls
 ) {}

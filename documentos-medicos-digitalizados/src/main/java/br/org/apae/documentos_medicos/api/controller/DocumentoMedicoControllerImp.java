@@ -5,20 +5,23 @@ import java.util.List;
 import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
-import br.org.apae.documentos_medicos.api.dto.requests.MedicalDocumentRequestDTO;
 import br.org.apae.documentos_medicos.api.dto.requests.MedicalDocumentUploadDTO;
 import br.org.apae.documentos_medicos.api.dto.responses.MedicalDocumentResponseDTO;
 import br.org.apae.documentos_medicos.application.MedicalDocumentService;
 import br.org.apae.documentos_medicos.domain.models.MedcialDocumentType;
-import jakarta.validation.Valid;
+
 
 @RestController
-@RequestMapping("/api/v1/documentos-medicos")
 public class DocumentoMedicoControllerImp implements BaseController {
 
 /*
@@ -40,57 +43,47 @@ public class DocumentoMedicoControllerImp implements BaseController {
     }
 
     @Override
-    public ResponseEntity<MedicalDocumentResponseDTO> anexarDocumentoMedico( UUID pacienteId, 
-        @Valid MedicalDocumentRequestDTO documentoAnexado, 
-        MultipartFile arquivo) {
-        MedicalDocumentUploadDTO dto = new MedicalDocumentUploadDTO(
-            pacienteId.toString(),  
-            documentoAnexado.getDataReferencia().getYear(),
-            documentoAnexado.getTipo().name());
-
-        medicalDocumentService.saveFile(dto, arquivo);
-
-        return ResponseEntity.ok().build();
+    @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<Void> anexarDocumentoMedico(@RequestPart String patientId, @RequestPart String year, @RequestPart String documentType, @RequestPart MultipartFile file) {
+        var data = new MedicalDocumentUploadDTO(patientId, Integer.parseInt(year), documentType);
+        medicalDocumentService.saveFile(data, file);
+        return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
 
     @Override
-    public ResponseEntity<List<MedicalDocumentResponseDTO>> listarDocumentosMedicosPaciente(UUID pacienteId) {
-        MedicalDocumentResponseDTO response = medicalDocumentService.listMedicalDocument(pacienteId.toString(), LocalDate.now().getYear());
-        return ResponseEntity.ok(List.of(response));
+    @GetMapping("/{patientId}/documentos/{year}")
+    public ResponseEntity<MedicalDocumentResponseDTO> listMedicalDocuments(@PathVariable String patientId, @PathVariable String year) {
+        var documents = medicalDocumentService.listMedicalDocument(patientId, Integer.parseInt(year));
+        if (documents.urls().isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
+        return ResponseEntity.ok().body(documents);
     }
 
     @Override
-    public ResponseEntity<List<MedicalDocumentResponseDTO>> filtrarPorTipoDocumento(UUID pacienteId,
-            MedcialDocumentType tipoDocumento) {
-         MedicalDocumentResponseDTO response = medicalDocumentService.listMedicalDocumentByType(pacienteId.toString(), LocalDate.now().getYear(), tipoDocumento);
-        return ResponseEntity.ok(List.of(response));
+    @GetMapping(params = "tipo")
+    public ResponseEntity<List<MedicalDocumentResponseDTO>> listMedicalDocumentByType(@PathVariable String patientId, MedcialDocumentType tipoDocumento) {
+        return null;
     }
 
     @Override
-    public ResponseEntity<List<MedicalDocumentResponseDTO>> historicoTipoDocumento(UUID pacienteId,
-            MedcialDocumentType tipoDocumento) {
-        MedicalDocumentResponseDTO response = medicalDocumentService.historicoTipoDocumento(pacienteId.toString(), tipoDocumento);
-        return ResponseEntity.ok(List.of(response));
+    public ResponseEntity<List<MedicalDocumentResponseDTO>> historicoTipoDocumento(@PathVariable String patientId, MedcialDocumentType tipoDocumento) {
+        return null;
     }
 
     @Override
-    public ResponseEntity<MedicalDocumentResponseDTO> visualizarDocumentoMedicosPaciente(UUID pacienteId,
-            UUID documentoId) {
-        return ResponseEntity.ok(medicalDocumentService.visualizarDocumentosMedicosPaciente(pacienteId, documentoId));
+    public ResponseEntity<MedicalDocumentResponseDTO> visualizarDocumentoMedicosPaciente(@PathVariable String patientId, UUID documentoId) {
+        return null;
     }
 
     @Override
-    public ResponseEntity<MedicalDocumentResponseDTO> atualizarDocumento(UUID pacienteId, UUID documentoId, MedicalDocumentRequestDTO documentoAtualizado) {
+    public ResponseEntity<Void> deletarDocumento(@PathVariable String documentoId) {
         // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'atualizarDocumento'");
+        throw new UnsupportedOperationException("Unimplemented method 'deletarDocumento'");
     }
 
-    @Override
-    public ResponseEntity<Void> desativarDocumento(UUID pacienteId, UUID documentoId) {
-        medicalDocumentService.desativarDocumento(pacienteId, documentoId);
-        return ResponseEntity.noContent().build();
-    }
+
 
 
 }

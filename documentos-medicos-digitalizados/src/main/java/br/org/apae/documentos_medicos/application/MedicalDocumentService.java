@@ -3,8 +3,6 @@ package br.org.apae.documentos_medicos.application;
 import java.util.UUID;
 
 import org.springframework.web.multipart.MultipartFile;
-
-import br.org.apae.documentos_medicos.api.dto.requests.MedicalDocumentRequestDTO;
 import br.org.apae.documentos_medicos.api.dto.requests.MedicalDocumentUploadDTO;
 import br.org.apae.documentos_medicos.api.dto.responses.MedicalDocumentResponseDTO;
 import br.org.apae.documentos_medicos.domain.models.MedcialDocumentType;
@@ -20,8 +18,6 @@ public interface MedicalDocumentService {
     MedicalDocumentResponseDTO historicoTipoDocumento(String patientId, MedcialDocumentType type);
 
     MedicalDocumentResponseDTO visualizarDocumentosMedicosPaciente(UUID pacienteId, UUID documentoId);
-
-    MedicalDocumentResponseDTO atualizarDocumento(UUID pacienteId, UUID documentoId, MedicalDocumentRequestDTO documentoAtualizado, MultipartFile novoArquivo);
 
     void desativarDocumento(UUID pacienteId, UUID documentoId);
 }

@@ -52,7 +52,7 @@ public class MinioMedicalDocumentStorageImpl implements MinioStorage {
             Iterable<Result<Item>> results = minioClient.listObjects(
                 ListObjectsArgs.builder()
                     .bucket(bucket)
-                    .prefix(prefix)
+                    .prefix(prefix) 
                     .recursive(true)
                     .build()
             );

@@ -3,7 +3,7 @@ package br.org.apae.documentos_medicos.application;
 import java.io.IOException;
 import java.util.List;
 import java.util.UUID;
-
+import java.util.stream.Stream;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -52,7 +52,7 @@ public class MedicalDocumentServiceImpl implements MedicalDocumentService {
     @Override
     public MedicalDocumentResponseDTO listMedicalDocument(String patientId, Integer year) {
         try {
-            String prefix = FOLDER_NAME + "/" + year + "/";
+            String prefix = FOLDER_NAME;
             List<String> objectNames = minioMedicalDocumentStorage.listObject(patientId, prefix);
 
             if (objectNames.isEmpty()) {
@@ -65,7 +65,6 @@ public class MedicalDocumentServiceImpl implements MedicalDocumentService {
 
             return new MedicalDocumentResponseDTO(
                 patientId, 
-                year, 
                 presignedUrls
             );
 
@@ -78,52 +77,51 @@ public class MedicalDocumentServiceImpl implements MedicalDocumentService {
     @Override
     public MedicalDocumentResponseDTO listMedicalDocumentByType(String patientId, Integer year, MedcialDocumentType type) {
         try {
-            String prefix = FOLDER_NAME + "/" + year + "/" + type.name() + "/";
+            String prefix = FOLDER_NAME + "/" + year + "/"+ type.getPrefix() + "/";
             List<String> objectNames = minioMedicalDocumentStorage.listObject(patientId, prefix);
 
             if (objectNames.isEmpty()) {
-                throw new RuntimeException("Nenhum documento encontrado para o paciente " + patientId + " no ano " + year + " e tipo " + type);
+                throw new RuntimeException("Nenhum documento encontrado para o paciente " + patientId + " do' tipo " + type);
             }
-            
-            /*return new MedicalDocumentResponseDTO(
-                UUID.randomUUID(), 
-                objectNames.get(0), 
-                "Descrição do Documento", 
-                year,
-                type.name(),
-                LocalDate.now(), 
-                objectNames 
-                );*/
-                return null;
+
+            List<String> presignedUrls = minioMedicalDocumentStorage.generatePresignedUrls(
+                patientId, objectNames, 
+                2);
+
+            return new MedicalDocumentResponseDTO(
+                patientId, 
+                presignedUrls
+            );
+
             } catch (Exception e) {
                 throw new RuntimeException("Erro ao listar documentos do tipo: " + e.getMessage(), e);
             }
         }
         
         
-        @Override
-        public MedicalDocumentResponseDTO historicoTipoDocumento(String patientId, MedcialDocumentType type) {
-            try {
-                String prefix = FOLDER_NAME + "/" + type.name() + "/";
-                List<String> objectNames = minioMedicalDocumentStorage.listObject(patientId, prefix);
+    @Override
+    public MedicalDocumentResponseDTO historicoTipoDocumento(String patientId, MedcialDocumentType type) {
+        try {
+            String prefix = FOLDER_NAME + "/";
+            List<String> objectNames = minioMedicalDocumentStorage.listObject(patientId, prefix);
                 
-                if (objectNames.isEmpty()) {
-                    throw new RuntimeException("Nenhum histórico encontrado para o paciente " + patientId + " e tipo " + type);
-                }
-                
-                /*return new MedicalDocumentResponseDTO(
-                    UUID.randomUUID(), 
-                    objectNames.get(0), 
-                    "Histórico do Documento", 
-                    LocalDate.now().getYear(), 
-                    type.name(),
-                    LocalDate.now(),
-                    objectNames 
-                    );*/
-                    return null;
-                } catch (Exception e) {
-                    throw new RuntimeException("Erro ao buscar histórico de documentos: " + e.getMessage(), e);
-        }
+            if (objectNames.isEmpty()) {
+                throw new RuntimeException("Nenhum histórico encontrado para o paciente " + patientId + " do tipo " + type);
+            }
+
+            Stream<String> stream = objectNames.stream().filter(ObjectName -> objectNames.contains(type.getPrefix()));
+
+            List<String> presignedUrls = minioMedicalDocumentStorage.generatePresignedUrls(patientId, stream.toList(), 2);
+
+    
+            return new MedicalDocumentResponseDTO(
+                patientId, 
+                presignedUrls
+            );
+    
+            } catch (Exception e) {
+                 throw new RuntimeException("Erro ao buscar histórico de documentos: " + e.getMessage(), e);
+            }
     }
     
     
@@ -151,38 +149,6 @@ public class MedicalDocumentServiceImpl implements MedicalDocumentService {
             throw new RuntimeException("Erro ao visualizar o documento: " + e.getMessage(), e);
         }
     }
-    
-    
-    @Override
-    public MedicalDocumentResponseDTO atualizarDocumento(UUID pacienteId, UUID documentoId, MedicalDocumentRequestDTO documentoAtualizado, MultipartFile novoArquivo) {
-        try {
-            // Exemplo de como gerar o caminho para o documento
-            String novoNomeArquivo = documentoId.toString() + "-" + novoArquivo.getOriginalFilename();
-            String novoCaminho = FOLDER_NAME + "/" +
-            documentoAtualizado.getTipo().getPrefix() + "/" +
-            documentoAtualizado.getDataReferencia().getYear() + "/" +
-            novoNomeArquivo;
-            
-            String bucket = pacienteId.toString();
-            
-            byte[] fileBytes = novoArquivo.getBytes();
-            minioMedicalDocumentStorage.uploadFile(bucket, novoCaminho, fileBytes);
-            
-            return null;
-            /*return new MedicalDocumentResponseDTO(
-                documentoId,
-                novoNomeArquivo,
-                documentoAtualizado.getDescricao(),
-                documentoAtualizado.getDataReferencia().getYear(),
-                documentoAtualizado.getTipo().name(),
-                LocalDate.now(),
-                List.of(novoCaminho) 
-                );*/
-            } catch (Exception e) {
-                throw new RuntimeException("Erro ao atualizar o documento: " + e.getMessage(), e);
-            }
-        }
-        
         @Override
         public void desativarDocumento(UUID pacienteId, UUID documentoId) {
             
