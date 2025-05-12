@@ -1,11 +1,11 @@
 ---
-extends: 
+extends:
   - "next/core-web-vitals"
   - "plugin:@next/next/recommended"
 
 rules:
   "@next/next/no-html-link-for-pages": "off"
 
-overrides: 
+overrides:
   - files: ["*.json"]
     parser: "jsonc-eslint-parser"
