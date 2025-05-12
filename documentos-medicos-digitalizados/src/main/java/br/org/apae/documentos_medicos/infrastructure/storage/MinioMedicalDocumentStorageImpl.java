@@ -10,10 +10,12 @@ import org.springframework.stereotype.Component;
 
 import br.org.apae.documentos_medicos.domain.ports.storage.MinioStorage;
 import io.minio.GetObjectArgs;
+import io.minio.GetPresignedObjectUrlArgs;
 import io.minio.ListObjectsArgs;
 import io.minio.MinioClient;
 import io.minio.PutObjectArgs;
 import io.minio.Result;
+import io.minio.http.Method;
 import io.minio.messages.Item;
 
 @Component
@@ -51,6 +53,7 @@ public class MinioMedicalDocumentStorageImpl implements MinioStorage {
                 ListObjectsArgs.builder()
                     .bucket(bucket)
                     .prefix(prefix)
+                    .recursive(true)
                     .build()
             );
 
@@ -77,6 +80,28 @@ public class MinioMedicalDocumentStorageImpl implements MinioStorage {
             return inputStream.readAllBytes();
         } catch (Exception e) {
             throw new RuntimeException("Erro ao obter o arquivo: " + e.getMessage(), e);
+        }
+    }
+
+    @Override
+    public List<String> generatePresignedUrls(String bucket, List<String> objectNames, int expirationTimeInHours) {
+        try {
+            List<String> urls = new ArrayList<>();
+            int expirationTimeInSeconds = expirationTimeInHours * 3600;
+            for (String objectName : objectNames) {
+                String url = minioClient.getPresignedObjectUrl(
+                    GetPresignedObjectUrlArgs.builder()
+                        .method(Method.GET)
+                        .bucket(bucket)
+                        .object(objectName)
+                        .expiry(expirationTimeInSeconds)
+                        .build()
+                );
+                urls.add(url);
+            }
+            return urls;
+        } catch (Exception e) {
+            throw new RuntimeException("Erro ao gerar URL pré-assinada: " + e.getMessage(), e);
         }
     }
 }    
