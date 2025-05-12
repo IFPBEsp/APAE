@@ -1,8 +1,5 @@
 package br.org.apae.documentos_medicos.api.controller;
 
-import java.util.List;
-
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -43,7 +40,7 @@ public class DocumentoMedicoControllerImp implements BaseController {
 
     @Override
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<Void> anexarDocumentoMedico(@RequestPart String patientId, @RequestPart String year, @RequestPart String documentType, @RequestPart MultipartFile file) {
+    public ResponseEntity<Void> uploadMedicalDocument(@RequestPart String patientId, @RequestPart String year, @RequestPart String documentType, @RequestPart MultipartFile file) {
         var data = new MedicalDocumentUploadDTO(patientId, Integer.parseInt(year), documentType);
         medicalDocumentService.saveFile(data, file);
         return ResponseEntity.status(HttpStatus.CREATED).build();
@@ -62,22 +59,26 @@ public class DocumentoMedicoControllerImp implements BaseController {
 
     @Override
     @GetMapping(params = "tipo")
-    public ResponseEntity<List<MedicalDocumentResponseDTO>> listMedicalDocumentByType(@PathVariable String patientId, MedcialDocumentType tipoDocumento) {
+    public ResponseEntity<MedicalDocumentResponseDTO> listMedicalDocumentByType(@PathVariable String patientId, @PathVariable Integer year , @PathVariable MedcialDocumentType type) {
+        var documents = medicalDocumentService.listMedicalDocumentByType(patientId, year, type);
+        if (documents.urls().isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
+        return ResponseEntity.ok().body(documents);
+    }
+
+    @Override
+    public ResponseEntity<MedicalDocumentResponseDTO> historyDocumentsByType(@PathVariable String patientId, MedcialDocumentType tipoDocumento) {
         return null;
     }
 
     @Override
-    public ResponseEntity<List<MedicalDocumentResponseDTO>> historicoTipoDocumento(@PathVariable String patientId, MedcialDocumentType tipoDocumento) {
+    public ResponseEntity<MedicalDocumentResponseDTO> viewPatientDocument(@PathVariable String patientId, String documentoId) {
         return null;
     }
 
     @Override
-    public ResponseEntity<MedicalDocumentResponseDTO> visualizarDocumentoMedicosPaciente(@PathVariable String patientId, String documentoId) {
-        return null;
-    }
-
-    @Override
-    public ResponseEntity<Void> deletarDocumento(@PathVariable String documentoId) {
+    public ResponseEntity<Void> deleteDocument(@PathVariable String documentoId) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'deletarDocumento'");
     }

@@ -1,14 +1,11 @@
 package br.org.apae.documentos_medicos.api.controller;
 
 import java.util.List;
-import java.util.UUID;
 
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RequestPart;
@@ -19,7 +16,7 @@ import org.springframework.web.multipart.MultipartFile;
 import br.org.apae.documentos_medicos.api.dto.responses.MedicalDocumentResponseDTO;
 import br.org.apae.documentos_medicos.domain.models.MedcialDocumentType;
 
-@RequestMapping("/api/v2/documentos-medicos")
+@RequestMapping("/api/v1/documentos-medicos")
 public interface BaseController {
 
     /*
@@ -31,21 +28,20 @@ public interface BaseController {
     * DELETE (/api/pacientes/{pacienteId}/documentos-medicos/{documentoId}) - Deletar documento.
     */
 
-    @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    ResponseEntity<Void> anexarDocumentoMedico(@RequestPart String patientId, @RequestPart String year, @RequestPart String documentType, @RequestPart MultipartFile file);
+    ResponseEntity<Void> uploadMedicalDocument(@RequestPart String patientId, @RequestPart String year, @RequestPart String documentType, @RequestPart MultipartFile file);
 
     @GetMapping(params = "!tipo")
     ResponseEntity<MedicalDocumentResponseDTO> listMedicalDocuments(@PathVariable String patientId, @PathVariable String year);
 
     @GetMapping(params = "tipo")
-    ResponseEntity<List<MedicalDocumentResponseDTO>> listMedicalDocumentByType(@PathVariable String patientId, @RequestParam(required = false) MedcialDocumentType tipoDocumento);
+    ResponseEntity<MedicalDocumentResponseDTO> listMedicalDocumentByType(@PathVariable String patientId, @PathVariable Integer year, @RequestParam(required = false) MedcialDocumentType tipoDocumento);
 
     @GetMapping("/historico")
-    ResponseEntity<List<MedicalDocumentResponseDTO>> historicoTipoDocumento(@PathVariable String patientId, @RequestParam MedcialDocumentType tipoDocumento);
+    ResponseEntity<MedicalDocumentResponseDTO> historyDocumentsByType(@PathVariable String patientId, @RequestParam MedcialDocumentType tipoDocumento);
 
     @GetMapping("/{documentoId}")
-    ResponseEntity<MedicalDocumentResponseDTO> visualizarDocumentoMedicosPaciente(@PathVariable String patientId, @PathVariable String documentoId);
+    ResponseEntity<MedicalDocumentResponseDTO> viewPatientDocument(@PathVariable String patientId, @PathVariable String documentoId);
 
     @PatchMapping("/{documentoId}")
-    ResponseEntity<Void> deletarDocumento(@PathVariable String documentoId);
+    ResponseEntity<Void> deleteDocument(@PathVariable String documentoId);
 }
