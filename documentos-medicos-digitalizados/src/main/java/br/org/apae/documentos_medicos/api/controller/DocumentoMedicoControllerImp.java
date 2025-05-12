@@ -68,8 +68,19 @@ public class DocumentoMedicoControllerImp implements BaseController {
     }
 
     @Override
-    public ResponseEntity<MedicalDocumentResponseDTO> historyDocumentsByType(@PathVariable String patientId, MedcialDocumentType tipoDocumento) {
-        return null;
+    public ResponseEntity<MedicalDocumentResponseDTO> historyDocumentsByType(@PathVariable String patientId, MedcialDocumentType type) {
+        try {
+            var documents = medicalDocumentService.historyDocumentByType(patientId, type);
+
+            if (documents.urls().isEmpty()) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+            }
+            return ResponseEntity.ok().body(documents);
+
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+
     }
 
     @Override
