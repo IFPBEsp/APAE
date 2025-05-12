@@ -147,25 +147,27 @@ public class MedicalDocumentServiceImpl implements MedicalDocumentService {
             throw new RuntimeException("Erro ao visualizar o documento: " + e.getMessage(), e);
         }
     }
-        @Override
-        public void deleteDocument(String pacienteId, String documentoId) {
+    @Override
+    public void deleteDocument(String patientId, String documentId) {
+        try {
+            String prefix = FOLDER_NAME + "/";
+            List<String> objectNames = minioMedicalDocumentStorage.listObject(patientId, prefix);
             
-            //PRECISA VER SE É POSSÍVEL
-            try {
-                String bucket = pacienteId.toString();
-                String caminhoAtivo = FOLDER_NAME + "/" + documentoId + ".pdf";
-                
-                String caminhoDesativado = FOLDER_NAME + "/inativos/" + documentoId + ".pdf";
-                byte[] file = minioMedicalDocumentStorage.getMedicalDocumentByFileName(bucket, caminhoAtivo);
-                
-                if (file == null || file.length == 0) {
-                    throw new RuntimeException("Documento não encontrado para desativar.");
-                }
-                
-                minioMedicalDocumentStorage.uploadFile(bucket, caminhoDesativado, file);
-                
+            if (objectNames.isEmpty()) {
+                throw new RuntimeException("Nenhum documento encontrado para o paciente " + patientId);
+            }
+            
+            List<String> stream = objectNames.stream().filter(ObjectName -> ObjectName.endsWith("/" + documentId)).toList();
+
+            if (stream.isEmpty()) {
+                throw new RuntimeException("O paciente " + patientId + " não possui nenhum documento " + documentId);
+            }
+
+            // Precisa fazer o método de remover para poder chamar nessa parte
+          //  minioMedicalDocumentStorage.deleteFile(patientId, stream);
+  
             } catch (Exception e) {
-            throw new RuntimeException("Erro ao desativar o documento: " + e.getMessage(), e);
+            throw new RuntimeException("Erro ao deletar o documento: " + e.getMessage(), e);
         }
     }
 
