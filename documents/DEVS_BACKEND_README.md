@@ -144,3 +144,7 @@ Podemos especificar qual sub-projeto que queremos executar e testar:
 ```bash
 ./gradlew :demo:tasks
 ```
+
+## **PARA MAIS INFORMAÇÕES ACESSE A DOCUMENTAÇÃO OFICIAL DA TECNOLOGIA:**
+
+Documentação gradle: https://docs.gradle.org/current/userguide/userguide.html
