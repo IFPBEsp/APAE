@@ -8,6 +8,7 @@
   box-shadow: 0px 2px 10px;
   justify-content: space-between;
   align-items: center;
+  z-index: 999;
 }
 
 .linksTelas {
@@ -33,7 +34,7 @@
   }
 
   .hamburguer {
-    display: flex;
+    display: block;
     background: none;
     border: none;
   }

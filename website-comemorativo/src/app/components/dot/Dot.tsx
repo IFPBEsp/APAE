@@ -12,7 +12,7 @@ export default function Dot ({ title, image, imageDescription }: IDotProps) {
     return (
         <div className={Styles.container}>
             <p>{title}</p>
-            <Image src={image} alt={imageDescription} width={100} height={50}/>
+            <Image src={image} alt={imageDescription} width={100} height={70} className={Styles.image} />
         </div>
     );
 }

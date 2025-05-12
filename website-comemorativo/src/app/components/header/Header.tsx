@@ -38,7 +38,7 @@ export default function Header() {
 					</Link>
 				</div>
 				<button className={Styles.hamburguer} onClick={toggleMenu}>
-					<AlignJustify />
+					<AlignJustify color="#0D4F97" />
 				</button>
 			</div>
 			<SwipeableDrawer
@@ -48,9 +48,15 @@ export default function Header() {
 				onOpen={() => 0}
 			>
 				<ul className={Styles.menu}>
-					<li>Página Inicial</li>
-					<li>30 Anos</li>
-					<li>Contato</li>
+					<li>
+						<Link href="/">Página Inicial</Link>
+					</li>
+					<li>
+						<Link href="/pages/30anos">30 Anos</Link>
+					</li>
+					<li>
+						<Link href="/pages/contato">Contato</Link>
+					</li>
 				</ul>
 			</SwipeableDrawer>
 		</>
