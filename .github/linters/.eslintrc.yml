@@ -4,3 +4,7 @@ extends:
 
 rules:
   "@next/next/no-html-link-for-pages": "off"
+
+overrides: 
+  - files: ["*.json"]
+    parser: "jsonc-eslint-parser"
