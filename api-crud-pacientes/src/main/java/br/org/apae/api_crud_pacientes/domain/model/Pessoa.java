@@ -62,6 +62,9 @@ public class Pessoa {
     @OneToMany(mappedBy = "pessoa", cascade = CascadeType.ALL)
     private List<Vacina> vacinacoes;
 
+    @OneToMany(mappedBy = "tipo_deficiencia")
+    private List<TipoDeficiencia> deficiencias;
+
 
     public UUID getId() {
         return id;
