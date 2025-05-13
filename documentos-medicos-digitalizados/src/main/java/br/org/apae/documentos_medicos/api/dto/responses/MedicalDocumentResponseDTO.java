@@ -4,5 +4,5 @@ import java.util.List;
 
 public record MedicalDocumentResponseDTO(
     String patientId,
-    List<String> urls
+    List<PatientPresignedUrlsDTO> urls
 ) {}
