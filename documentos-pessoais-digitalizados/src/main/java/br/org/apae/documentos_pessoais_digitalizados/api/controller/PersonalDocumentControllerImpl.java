@@ -27,12 +27,10 @@ import java.util.UUID;
 public class PersonalDocumentControllerImpl implements PersonalDocumentController {
 
     private final PersonalDocumentService personalDocumentService;
-    private final StorageService storageService;
 
     @Autowired
-    public PersonalDocumentControllerImpl(PersonalDocumentService personalDocumentService, StorageService storageService) {
+    public PersonalDocumentControllerImpl(PersonalDocumentService personalDocumentService) {
         this.personalDocumentService = personalDocumentService;
-        this.storageService = storageService;
     }
 
     @Operation(
