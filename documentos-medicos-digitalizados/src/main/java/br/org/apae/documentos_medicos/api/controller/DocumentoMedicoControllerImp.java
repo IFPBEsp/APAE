@@ -1,16 +1,11 @@
 package br.org.apae.documentos_medicos.api.controller;
 
-import java.io.FileNotFoundException;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestPart;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
 import org.springframework.web.multipart.MultipartFile;
 
 import br.org.apae.documentos_medicos.api.dto.requests.MedicalDocumentUploadDTO;
@@ -18,22 +13,11 @@ import br.org.apae.documentos_medicos.api.dto.responses.MedicalDocumentResponseD
 import br.org.apae.documentos_medicos.application.MedicalDocumentService;
 import br.org.apae.documentos_medicos.domain.models.MedcialDocumentType;
 
-
 @RestController
+@RequestMapping("/api/v1/documentos-medicos")
 public class DocumentoMedicoControllerImp implements BaseController {
 
-/*
-     * POST (/api/pacientes/{pacienteId}/documentos-medicos) - Anexar documentos médicos a um paciente.
-     * GET (/api/pacientes/{pacienteId}/documentos-medicos) - Listar todos os documentos associados a 1 paciente.
-     * GET (/api/pacientes/{pacienteId}/documentos-medicos?tipo=medico) - Filtrar por tipo de documento?
-     * GET (/api/pacientes/{pacienteId}/documentos-medicos/historico?tipo={tipo})- Visualizar histórico de um tipo de documento especifico da parte médica(Seja exames, laúdos ou encaminhamentos).
-     * GET (/api/pacientes/{pacienteId}/documentos-medicos/{documentoId}) - Visualizar todos os documentos médicos do paciente;
-     * PUT (/api/pacientes/{pacienteId}/documentos-medicos/{documentoId}) - Atualizar documento
-     * DELETE (/api/pacientes/{pacienteId}/documentos-medicos/{documentoId})- Deletar um documento específico
-     
-*/
-
-    private MedicalDocumentService medicalDocumentService;
+    private final MedicalDocumentService medicalDocumentService;
 
     @Autowired
     public DocumentoMedicoControllerImp(MedicalDocumentService medicalDocumentService) {
@@ -42,78 +26,68 @@ public class DocumentoMedicoControllerImp implements BaseController {
 
     @Override
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<Void> uploadMedicalDocument(@RequestPart String patientId, @RequestPart String year, @RequestPart String documentType, @RequestPart MultipartFile file) {
+    public ResponseEntity<Void> attachMedicalDocument(
+            @RequestPart String patientId,
+            @RequestPart String year,
+            @RequestPart String documentType,
+            @RequestPart MultipartFile file) {
+
         var data = new MedicalDocumentUploadDTO(patientId, Integer.parseInt(year), documentType);
         medicalDocumentService.saveFile(data, file);
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
-
     @Override
     @GetMapping("/{patientId}/documentos/{year}")
-    public ResponseEntity<MedicalDocumentResponseDTO> listMedicalDocuments(@PathVariable String patientId, @PathVariable String year) {
+    public ResponseEntity<MedicalDocumentResponseDTO> listMedicalDocuments(
+            @PathVariable String patientId,
+            @PathVariable String year) {
+
         var documents = medicalDocumentService.listMedicalDocument(patientId, Integer.parseInt(year));
         if (documents.urls().isEmpty()) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
-        return ResponseEntity.ok().body(documents);
+        return ResponseEntity.ok(documents);
     }
 
     @Override
-    @GetMapping(params = "tipo")
-    public ResponseEntity<MedicalDocumentResponseDTO> listMedicalDocumentByType(@PathVariable String patientId, @PathVariable Integer year , @PathVariable MedcialDocumentType type) {
-        var documents = medicalDocumentService.listMedicalDocumentByType(patientId, year, type);
-        if (documents.urls().isEmpty()) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
-        }
-        return ResponseEntity.ok().body(documents);
+    @GetMapping(value = "/{patientId}/filtrar", params = {"ano", "tipo"})
+    public ResponseEntity<MedicalDocumentResponseDTO> listMedicalDocumentByType(
+            @PathVariable String patientId,
+            @RequestParam("ano") String year,
+            @RequestParam("tipo") String type) {
+
+        var result = medicalDocumentService.listMedicalDocumentByType(patientId, Integer.valueOf(year), MedcialDocumentType.valueOf(type.toUpperCase()));
+        return ResponseEntity.ok(result);
     }
 
     @Override
-    public ResponseEntity<MedicalDocumentResponseDTO> historyDocumentsByType(@PathVariable String patientId, MedcialDocumentType type) {
-        try {
-            var documents = medicalDocumentService.historyDocumentByType(patientId, type);
+    @GetMapping("/{patientId}/historico")
+    public ResponseEntity<MedicalDocumentResponseDTO> listDocumentHistoryByType(
+            @PathVariable String patientId,
+            @RequestParam("tipo") String type) {
 
-            if (documents.urls().isEmpty()) {
-                return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
-            }
-            return ResponseEntity.ok().body(documents);
-
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
-        }
-
+        var response = medicalDocumentService.getDocumentHistoryByType(patientId, MedcialDocumentType.valueOf(type.toUpperCase()));
+        return ResponseEntity.ok(response);
     }
 
     @Override
-    public ResponseEntity<MedicalDocumentResponseDTO> viewPatientDocument(@PathVariable String patientId, @PathVariable String documentoId) {
-        try {
-            var documents = medicalDocumentService.viewPatientDocument(patientId, documentoId);
+    @GetMapping(value = "/{patientId}/visualizar", produces = MediaType.IMAGE_PNG_VALUE)
+    public ResponseEntity<byte[]> viewPatientMedicalDocument(
+            @PathVariable String patientId,
+            @RequestParam String fileName) {
 
-            if (documents.urls().isEmpty()) {
-                return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
-            }
-            return ResponseEntity.ok(documents);
-
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
-        }
-
+        var response = medicalDocumentService.viewPatientMedicalDocuments(patientId, fileName);
+        return ResponseEntity.ok(response);
     }
 
     @Override
-    public ResponseEntity<Void> deleteDocument(String patientId, String documentId) {
-        try {
-            medicalDocumentService.deleteDocument(patientId, documentId);
+    @DeleteMapping("/{patientId}")
+    public ResponseEntity<Void> deleteDocument(
+            @PathVariable String patientId,
+            @RequestParam(required = true) String fileName) {
+
+            medicalDocumentService.deleteDocument(patientId, fileName);
             return ResponseEntity.noContent().build();
-        } catch (Exception e) {
-            if (e.getMessage().contains("O documento não foi encontrado")) {
-                return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
-            }
-
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
-        }
     }
-
 }
-
