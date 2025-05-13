@@ -4,6 +4,7 @@ import br.org.apae.api_crud_pacientes.api.dtos.contato.ContatoRequest;
 import br.org.apae.api_crud_pacientes.api.dtos.contato.ContatoResponse;
 import br.org.apae.api_crud_pacientes.application.contato.ContatoMapper;
 import br.org.apae.api_crud_pacientes.domain.model.Contato;
+import br.org.apae.api_crud_pacientes.domain.model.Pessoa;
 import br.org.apae.api_crud_pacientes.domain.repository.ContatoRepository;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.data.domain.Page;
@@ -31,11 +32,11 @@ public class ContatoService {
         return new ContatoMapper().toResponse(contato);
     }
 
-    public ContatoResponse create(ContatoRequest request) {
+    public Contato create(ContatoRequest request, Pessoa pessoa) {
         ContatoMapper mapper = new ContatoMapper();
         Contato contato = mapper.toEntity(request);
-        Contato contatoSalvo = contatoRepository.save(contato);
-        return mapper.toResponse(contatoSalvo);
+        contato.setPessoa(pessoa);
+        return contatoRepository.save(contato);
     }
 
     public Page<ContatoResponse> getAll(Pageable pageable, String endereco) {

@@ -3,6 +3,7 @@ package br.org.apae.api_crud_pacientes.domain.service;
 import br.org.apae.api_crud_pacientes.api.dtos.pessoa.PessoaRequest;
 import br.org.apae.api_crud_pacientes.api.dtos.pessoa.PessoaResponse;
 import br.org.apae.api_crud_pacientes.application.pessoa.PessoaMapper;
+import br.org.apae.api_crud_pacientes.domain.model.Contato;
 import br.org.apae.api_crud_pacientes.domain.model.Pessoa;
 import br.org.apae.api_crud_pacientes.domain.repository.PessoaRepository;
 import jakarta.persistence.EntityNotFoundException;
@@ -16,9 +17,11 @@ import java.util.UUID;
 @Service
 public class PessoaService {
     private final PessoaRepository pessoaRepository;
+    private final ContatoService contatoService;
 
-    public PessoaService(PessoaRepository pessoaRepository) {
+    public PessoaService(PessoaRepository pessoaRepository, ContatoService contatoService) {
         this.pessoaRepository = pessoaRepository;
+        this.contatoService = contatoService;
     }
 
     public PessoaResponse getById(UUID id) {
@@ -35,6 +38,14 @@ public class PessoaService {
         PessoaMapper mapper = new PessoaMapper();
         Pessoa pessoa = mapper.toEntity(request);
         Pessoa pessoaSalva = pessoaRepository.save(pessoa);
+
+        if (request.getContatoRequest() != null) {
+            Contato contatoSalvo = contatoService.create(request.getContatoRequest(), pessoa);
+            pessoaSalva.setContato(contatoSalvo);
+            //salva de novo porque foi feito o vínculo depois de salvar a entidade
+            pessoaSalva = pessoaRepository.save(pessoaSalva);
+        }
+
         return mapper.toResponse(pessoaSalva);
     }
 
