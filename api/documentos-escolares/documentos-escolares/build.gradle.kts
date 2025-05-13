@@ -34,6 +34,7 @@ dependencies {
 	testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 	implementation("io.minio:minio:8.5.17")
 	implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.8.6")
+	implementation("org.flywaydb:flyway-core")
 }
 
 tasks.withType<Test> {
