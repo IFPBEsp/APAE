@@ -107,7 +107,7 @@ public class PersonalDocumentControllerImpl implements PersonalDocumentControlle
     })
     @Override
     @DeleteMapping("/{id}")
-    public ResponseEntity<PersonalDocumentResUrlDTO> delete(@PathVariable UUID id) {
+    public ResponseEntity<Void> delete(@PathVariable UUID id) {
         this.personalDocumentService.delete(id);
         return ResponseEntity.noContent().build();
     }
