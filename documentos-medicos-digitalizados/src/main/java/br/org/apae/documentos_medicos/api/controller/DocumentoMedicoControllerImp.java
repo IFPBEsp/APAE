@@ -84,8 +84,19 @@ public class DocumentoMedicoControllerImp implements BaseController {
     }
 
     @Override
-    public ResponseEntity<MedicalDocumentResponseDTO> viewPatientDocument(@PathVariable String patientId, String documentoId) {
-        return null;
+    public ResponseEntity<MedicalDocumentResponseDTO> viewPatientDocument(@PathVariable String patientId, @PathVariable String documentoId) {
+        try {
+            var documents = medicalDocumentService.viewPatientDocument(patientId, documentoId);
+
+            if (documents.urls().isEmpty()) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+            }
+            return ResponseEntity.ok(documents);
+
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+
     }
 
     @Override
