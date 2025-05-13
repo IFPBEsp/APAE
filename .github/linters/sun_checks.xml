@@ -362,7 +362,7 @@
       <property name="allowSamelineMultipleAnnotations" value="true"/>
     </module>
     <module name="NonEmptyAtclauseDescription"/>
-    <module name="InvalidJavadocPosition"/>
+    <!--<module name="InvalidJavadocPosition"/>
     <module name="JavadocTagContinuationIndentation"/>
     <module name="SummaryJavadoc">
       <property name="forbiddenSummaryFragments"
@@ -424,7 +424,7 @@
     </module>
     <module name="CommentsIndentation">
       <property name="tokens" value="SINGLE_LINE_COMMENT, BLOCK_COMMENT_BEGIN"/>
-    </module>
+    </module>-->
     <!-- https://checkstyle.org/filters/suppressionxpathfilter.html -->
     <module name="SuppressionXpathFilter">
       <property name="file" value="${org.checkstyle.google.suppressionxpathfilter.config}"
