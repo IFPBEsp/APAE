@@ -32,7 +32,11 @@ public class DocumentoMedicoControllerImp implements BaseController {
             @RequestPart String documentType,
             @RequestPart MultipartFile file) {
 
-        var data = new MedicalDocumentUploadDTO(patientId, Integer.parseInt(year), documentType);
+        var data = new MedicalDocumentUploadDTO(
+            patientId, 
+            Integer.parseInt(year), 
+            documentType.toUpperCase()
+        );
         medicalDocumentService.saveFile(data, file);
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
@@ -44,9 +48,6 @@ public class DocumentoMedicoControllerImp implements BaseController {
             @PathVariable String year) {
 
         var documents = medicalDocumentService.listMedicalDocument(patientId, Integer.parseInt(year));
-        if (documents.urls().isEmpty()) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
-        }
         return ResponseEntity.ok(documents);
     }
 
@@ -57,7 +58,11 @@ public class DocumentoMedicoControllerImp implements BaseController {
             @RequestParam("ano") String year,
             @RequestParam("tipo") String type) {
 
-        var result = medicalDocumentService.listMedicalDocumentByType(patientId, Integer.valueOf(year), MedcialDocumentType.valueOf(type.toUpperCase()));
+        var result = medicalDocumentService.listMedicalDocumentByType(
+            patientId, 
+            Integer.valueOf(year), 
+            MedcialDocumentType.valueOf(type.toUpperCase())
+        );
         return ResponseEntity.ok(result);
     }
 
@@ -67,7 +72,10 @@ public class DocumentoMedicoControllerImp implements BaseController {
             @PathVariable String patientId,
             @RequestParam("tipo") String type) {
 
-        var response = medicalDocumentService.getDocumentHistoryByType(patientId, MedcialDocumentType.valueOf(type.toUpperCase()));
+        var response = medicalDocumentService.getDocumentHistoryByType(
+            patientId, 
+            MedcialDocumentType.valueOf(type.toUpperCase())
+        );
         return ResponseEntity.ok(response);
     }
 
