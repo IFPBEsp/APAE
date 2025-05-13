@@ -43,5 +43,5 @@ public interface BaseController {
     ResponseEntity<MedicalDocumentResponseDTO> viewPatientDocument(@PathVariable String patientId, @PathVariable String documentoId);
 
     @PatchMapping("/{documentoId}")
-    ResponseEntity<Void> deleteDocument(@PathVariable String documentoId);
+    ResponseEntity<Void> deleteDocument(@PathVariable String patientId, @PathVariable String documentId);
 }

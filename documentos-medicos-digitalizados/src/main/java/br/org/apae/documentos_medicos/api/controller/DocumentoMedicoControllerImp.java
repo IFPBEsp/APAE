@@ -1,5 +1,7 @@
 package br.org.apae.documentos_medicos.api.controller;
 
+import java.io.FileNotFoundException;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -27,7 +29,7 @@ public class DocumentoMedicoControllerImp implements BaseController {
      * GET (/api/pacientes/{pacienteId}/documentos-medicos/historico?tipo={tipo})- Visualizar histórico de um tipo de documento especifico da parte médica(Seja exames, laúdos ou encaminhamentos).
      * GET (/api/pacientes/{pacienteId}/documentos-medicos/{documentoId}) - Visualizar todos os documentos médicos do paciente;
      * PUT (/api/pacientes/{pacienteId}/documentos-medicos/{documentoId}) - Atualizar documento
-     * DELETE (/api/pacientes/{pacienteId}/documentos-medicos/{documentoId})- Desativar documento
+     * DELETE (/api/pacientes/{pacienteId}/documentos-medicos/{documentoId})- Deletar um documento específico
      
 */
 
@@ -100,13 +102,18 @@ public class DocumentoMedicoControllerImp implements BaseController {
     }
 
     @Override
-    public ResponseEntity<Void> deleteDocument(@PathVariable String documentoId) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'deletarDocumento'");
+    public ResponseEntity<Void> deleteDocument(String patientId, String documentId) {
+        try {
+            medicalDocumentService.deleteDocument(patientId, documentId);
+            return ResponseEntity.noContent().build();
+        } catch (Exception e) {
+            if (e.getMessage().contains("O documento não foi encontrado")) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+            }
+
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
     }
-
-
-
 
 }
 
