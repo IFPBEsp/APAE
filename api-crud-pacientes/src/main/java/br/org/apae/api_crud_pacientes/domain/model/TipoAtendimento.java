@@ -2,11 +2,7 @@ package br.org.apae.api_crud_pacientes.domain.model;
 
 import java.util.UUID;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 
 @Entity
 @Table(name = "tipo_deficiencia")
@@ -17,6 +13,10 @@ public class TipoAtendimento {
 
     @Column(name = "descricao", nullable = false)
     private String descricao;
+
+    @ManyToOne
+    @JoinColumn(name = "pessoa_id")
+    private Pessoa pessoa;
 
     public UUID getId() {
         return id;
@@ -32,6 +32,14 @@ public class TipoAtendimento {
 
     public void setDescricao(String descricao) {
         this.descricao = descricao;
+    }
+
+    public Pessoa getPessoa() {
+        return pessoa;
+    }
+
+    public void setPessoa(Pessoa pessoa) {
+        this.pessoa = pessoa;
     }
 
     @Override

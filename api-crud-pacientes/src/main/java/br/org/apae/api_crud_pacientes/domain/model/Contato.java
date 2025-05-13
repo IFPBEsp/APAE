@@ -2,17 +2,16 @@ package br.org.apae.api_crud_pacientes.domain.model;
 
 import java.util.UUID;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 
 @Entity
 @Table(name = "contato")
 public class Contato {
-    
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    private UUID id;
+
     @Column(name = "endereco_ativo", nullable = false)
     private String endereco_ativo;
     
@@ -36,10 +35,11 @@ public class Contato {
     
     @Column(name = "naturalidade", nullable = false)
     private String naturalidade;
-    
-    @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    private UUID id;
+
+    @OneToOne
+    @JoinColumn(name = "pessoa_id")
+    private Pessoa pessoa;
+
 
     public String getEndereco_ativo() {
         return endereco_ativo;
@@ -55,6 +55,14 @@ public class Contato {
 
     public void setComprovante_residencia(String comprovante_residencia) {
         this.comprovante_residencia = comprovante_residencia;
+    }
+
+    public UUID getId() {
+        return id;
+    }
+
+    public void setId(UUID id) {
+        this.id = id;
     }
 
     public String getEndereco() {
@@ -105,12 +113,12 @@ public class Contato {
         this.naturalidade = naturalidade;
     }
 
-    public UUID getId() {
-        return id;
+    public Pessoa getPessoa() {
+        return pessoa;
     }
 
-    public void setId(UUID id) {
-        this.id = id;
+    public void setPessoa(Pessoa pessoa) {
+        this.pessoa = pessoa;
     }
 
     @Override

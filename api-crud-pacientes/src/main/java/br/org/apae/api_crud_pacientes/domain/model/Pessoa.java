@@ -62,8 +62,14 @@ public class Pessoa {
     @OneToMany(mappedBy = "pessoa", cascade = CascadeType.ALL)
     private List<Vacina> vacinacoes;
 
-    @OneToMany(mappedBy = "tipo_deficiencia")
+    @OneToMany(mappedBy = "pessoa", cascade = CascadeType.ALL)
     private List<TipoDeficiencia> deficiencias;
+
+    @OneToMany(mappedBy = "pessoa", cascade = CascadeType.ALL)
+    private List<TipoAtendimento> tiposAtendimentos;
+
+    @OneToOne(mappedBy = "pessoa", cascade = CascadeType.ALL)
+    private Contato contato;
 
 
     public UUID getId() {
@@ -174,6 +180,54 @@ public class Pessoa {
         this.data_cadastramento = data_cadastramento;
     }
 
+    public List<PessoaResponsavel> getResponsaveis() {
+        return responsaveis;
+    }
+
+    public void setResponsaveis(List<PessoaResponsavel> responsaveis) {
+        this.responsaveis = responsaveis;
+    }
+
+    public List<CadastroAnual> getCadastrosAnuais() {
+        return cadastrosAnuais;
+    }
+
+    public void setCadastrosAnuais(List<CadastroAnual> cadastrosAnuais) {
+        this.cadastrosAnuais = cadastrosAnuais;
+    }
+
+    public List<Vacina> getVacinacoes() {
+        return vacinacoes;
+    }
+
+    public void setVacinacoes(List<Vacina> vacinacoes) {
+        this.vacinacoes = vacinacoes;
+    }
+
+    public List<TipoDeficiencia> getDeficiencias() {
+        return deficiencias;
+    }
+
+    public void setDeficiencias(List<TipoDeficiencia> deficiencias) {
+        this.deficiencias = deficiencias;
+    }
+
+    public List<TipoAtendimento> getTiposAtendimentos() {
+        return tiposAtendimentos;
+    }
+
+    public void setTiposAtendimentos(List<TipoAtendimento> tiposAtendimentos) {
+        this.tiposAtendimentos = tiposAtendimentos;
+    }
+
+    public Contato getContato() {
+        return contato;
+    }
+
+    public void setContato(Contato contato) {
+        this.contato = contato;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (o == null || getClass() != o.getClass()) return false;
@@ -205,4 +259,6 @@ public class Pessoa {
                 ", nis='" + nis + '\'' +
                 '}';
     }
+
+
 }
