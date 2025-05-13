@@ -1,6 +1,14 @@
 package br.org.apae.api_crud_pacientes.api.dtos.pessoa;
 
+import br.org.apae.api_crud_pacientes.api.dtos.cadastro_anual.CadastroAnualResponse;
+import br.org.apae.api_crud_pacientes.api.dtos.contato.ContatoResponse;
+import br.org.apae.api_crud_pacientes.api.dtos.pessoa_responsavel.PessoaResponsavelResponse;
+import br.org.apae.api_crud_pacientes.api.dtos.tipo_atendimento.TipoAtendimentoResponse;
+import br.org.apae.api_crud_pacientes.api.dtos.tipo_deficiencia.TipoDeficienciaResponse;
+import br.org.apae.api_crud_pacientes.api.dtos.vacina.VacinaResponse;
+
 import java.time.LocalDate;
+import java.util.List;
 import java.util.UUID;
 
 public class PessoaResponse {
@@ -19,6 +27,13 @@ public class PessoaResponse {
     private String cns;
     private String nis;
     private LocalDate data_cadastramento;
+
+    private ContatoResponse contatoResponse;
+    private List<VacinaResponse> vacinasResponses;
+    private List<TipoDeficienciaResponse> deficienciasResponses;
+    private List<TipoAtendimentoResponse> atendimentosResponses;
+    private List<PessoaResponsavelResponse> responsaveisResponses;
+    private List<CadastroAnualResponse> cadastrosAnuaisResponses;
 
     public PessoaResponse() {}
 
@@ -134,5 +149,53 @@ public class PessoaResponse {
 
     public void setData_cadastramento(LocalDate data_cadastramento) {
         this.data_cadastramento = data_cadastramento;
+    }
+
+    public ContatoResponse getContatoResponse() {
+        return contatoResponse;
+    }
+
+    public void setContatoResponse(ContatoResponse contatoResponse) {
+        this.contatoResponse = contatoResponse;
+    }
+
+    public List<VacinaResponse> getVacinasResponses() {
+        return vacinasResponses;
+    }
+
+    public void setVacinasResponses(List<VacinaResponse> vacinasResponses) {
+        this.vacinasResponses = vacinasResponses;
+    }
+
+    public List<TipoDeficienciaResponse> getDeficienciasResponses() {
+        return deficienciasResponses;
+    }
+
+    public void setDeficienciasResponses(List<TipoDeficienciaResponse> deficienciasResponses) {
+        this.deficienciasResponses = deficienciasResponses;
+    }
+
+    public List<TipoAtendimentoResponse> getAtendimentosResponses() {
+        return atendimentosResponses;
+    }
+
+    public void setAtendimentosResponses(List<TipoAtendimentoResponse> atendimentosResponses) {
+        this.atendimentosResponses = atendimentosResponses;
+    }
+
+    public List<PessoaResponsavelResponse> getResponsaveisResponses() {
+        return responsaveisResponses;
+    }
+
+    public void setResponsaveisResponses(List<PessoaResponsavelResponse> responsaveisResponses) {
+        this.responsaveisResponses = responsaveisResponses;
+    }
+
+    public List<CadastroAnualResponse> getCadastrosAnuaisResponses() {
+        return cadastrosAnuaisResponses;
+    }
+
+    public void setCadastrosAnuaisResponses(List<CadastroAnualResponse> cadastrosAnuaisResponses) {
+        this.cadastrosAnuaisResponses = cadastrosAnuaisResponses;
     }
 }

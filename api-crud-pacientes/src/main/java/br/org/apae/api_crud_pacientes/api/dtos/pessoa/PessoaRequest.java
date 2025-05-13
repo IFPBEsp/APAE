@@ -1,6 +1,14 @@
 package br.org.apae.api_crud_pacientes.api.dtos.pessoa;
 
+import br.org.apae.api_crud_pacientes.api.dtos.cadastro_anual.CadastroAnualRequest;
+import br.org.apae.api_crud_pacientes.api.dtos.contato.ContatoRequest;
+import br.org.apae.api_crud_pacientes.api.dtos.pessoa_responsavel.PessoaResponsavelRequest;
+import br.org.apae.api_crud_pacientes.api.dtos.tipo_atendimento.TipoAtendimentoRequest;
+import br.org.apae.api_crud_pacientes.api.dtos.tipo_deficiencia.TipoDeficienciaRequest;
+import br.org.apae.api_crud_pacientes.api.dtos.vacina.VacinaRequest;
+
 import java.time.LocalDate;
+import java.util.List;
 
 public class PessoaRequest {
     private String nome_completo;
@@ -16,6 +24,14 @@ public class PessoaRequest {
     private String cns;
     private String nis;
     private LocalDate data_cadastramento;
+
+    private ContatoRequest contatoRequest;
+    private List<VacinaRequest> vacinacoesRequests;
+    private List<TipoDeficienciaRequest> deficienciasRequests;
+    private List<TipoAtendimentoRequest> atendimentosRequests;
+    private List<PessoaResponsavelRequest> responsaveisRequests;
+    private List<CadastroAnualRequest> cadastrosAnuaisRequests;
+
 
     public String getNome_completo() {
         return nome_completo;
@@ -119,5 +135,53 @@ public class PessoaRequest {
 
     public void setData_cadastramento(LocalDate data_cadastramento) {
         this.data_cadastramento = data_cadastramento;
+    }
+
+    public ContatoRequest getContatoRequest() {
+        return contatoRequest;
+    }
+
+    public void setContatoRequest(ContatoRequest contatoRequest) {
+        this.contatoRequest = contatoRequest;
+    }
+
+    public List<VacinaRequest> getVacinacoesRequests() {
+        return vacinacoesRequests;
+    }
+
+    public void setVacinacoesRequests(List<VacinaRequest> vacinacoesRequests) {
+        this.vacinacoesRequests = vacinacoesRequests;
+    }
+
+    public List<TipoDeficienciaRequest> getDeficienciasRequests() {
+        return deficienciasRequests;
+    }
+
+    public void setDeficienciasRequests(List<TipoDeficienciaRequest> deficienciasRequests) {
+        this.deficienciasRequests = deficienciasRequests;
+    }
+
+    public List<TipoAtendimentoRequest> getAtendimentosRequests() {
+        return atendimentosRequests;
+    }
+
+    public void setAtendimentosRequests(List<TipoAtendimentoRequest> atendimentosRequests) {
+        this.atendimentosRequests = atendimentosRequests;
+    }
+
+    public List<PessoaResponsavelRequest> getResponsaveisRequests() {
+        return responsaveisRequests;
+    }
+
+    public void setResponsaveisRequests(List<PessoaResponsavelRequest> responsaveisRequests) {
+        this.responsaveisRequests = responsaveisRequests;
+    }
+
+    public List<CadastroAnualRequest> getCadastrosAnuaisRequests() {
+        return cadastrosAnuaisRequests;
+    }
+
+    public void setCadastrosAnuaisRequests(List<CadastroAnualRequest> cadastrosAnuaisRequests) {
+        this.cadastrosAnuaisRequests = cadastrosAnuaisRequests;
     }
 }
