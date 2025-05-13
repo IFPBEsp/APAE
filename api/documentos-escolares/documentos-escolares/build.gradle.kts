@@ -35,6 +35,7 @@ dependencies {
 	implementation("io.minio:minio:8.5.17")
 	implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.8.6")
 	implementation("org.flywaydb:flyway-core")
+	runtimeOnly("com.h2database:h2")
 }
 
 tasks.withType<Test> {
