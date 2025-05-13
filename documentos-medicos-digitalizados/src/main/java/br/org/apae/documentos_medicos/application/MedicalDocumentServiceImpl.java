@@ -12,6 +12,7 @@ import br.org.apae.documentos_medicos.api.dto.responses.MedicalDocumentResponseD
 import br.org.apae.documentos_medicos.api.dto.responses.PatientPresignedUrlsDTO;
 import br.org.apae.documentos_medicos.application.exceptions.BucketNotFoundException;
 import br.org.apae.documentos_medicos.application.exceptions.DocumentNotFoundException;
+import br.org.apae.documentos_medicos.application.exceptions.FileIsEmptyException;
 import br.org.apae.documentos_medicos.application.exceptions.MedicalDocumentServiceException;
 import br.org.apae.documentos_medicos.domain.models.MedcialDocumentType;
 import br.org.apae.documentos_medicos.domain.ports.storage.MinioStorage;
@@ -23,6 +24,7 @@ public class MedicalDocumentServiceImpl implements MedicalDocumentService {
     private MinioStorage minioMedicalDocumentStorage;
     private StorageClient storageClient;
     private static final String FOLDER_NAME = "documentos-medicos";
+    private static final int EXPIRATION_TIME_HOURS = 2;
 
     @Autowired
     public MedicalDocumentServiceImpl(MinioStorage minioMedicalDocumentStorage, StorageClient storageClient) {
@@ -32,7 +34,11 @@ public class MedicalDocumentServiceImpl implements MedicalDocumentService {
 
     @Override
     public void saveFile(MedicalDocumentUploadDTO dtoObject, MultipartFile multipartFile) {
-        // validateBucket(dtoObject.patientId());
+        validateBucket(dtoObject.getPatientId());
+
+        if (multipartFile.isEmpty()) {
+            throw new FileIsEmptyException("Não é possivel fazer upload de um arquivo vazio.");
+        }
 
         try {
             String bucket = dtoObject.getPatientId();
@@ -46,23 +52,28 @@ public class MedicalDocumentServiceImpl implements MedicalDocumentService {
             minioMedicalDocumentStorage.uploadFile(bucket, path, file);
 
         } catch (IOException e) {
-            throw new MedicalDocumentServiceException("Erro ao processar o arquivo: " + e.getMessage());
+            throw new MedicalDocumentServiceException(
+                "Erro ao processar o arquivo: " + e.getMessage()
+            );
         }
     }
 
     @Override
     public MedicalDocumentResponseDTO listMedicalDocument(String patientId, Integer year) {
+        validateBucket(patientId);
         try {
             String prefix = FOLDER_NAME;
             List<String> objectNames = minioMedicalDocumentStorage.listObject(patientId, prefix);
 
             if (objectNames.isEmpty()) {
-                throw new DocumentNotFoundException("Nenhum documento encontrado para o paciente " + patientId + " no ano " + year);
+                throw new DocumentNotFoundException(
+                    "Nenhum documento encontrado para o paciente " + patientId + " no ano " + year
+                );
             }
 
             List<String> presignedUrls = minioMedicalDocumentStorage.generatePresignedUrls(
                 patientId, objectNames, 
-                2);
+                EXPIRATION_TIME_HOURS);
 
             List<PatientPresignedUrlsDTO> files = getPatientPresignedUrlsDto(objectNames, presignedUrls);
 
@@ -71,23 +82,28 @@ public class MedicalDocumentServiceImpl implements MedicalDocumentService {
                 files
             );
         } catch (Exception e) {
-            throw new MedicalDocumentServiceException("Erro ao listar documentos: " + e.getMessage());
+            throw new MedicalDocumentServiceException(
+                "Erro ao listar documentos: " + e.getMessage()
+            );
         }
     }
     
     @Override
     public MedicalDocumentResponseDTO listMedicalDocumentByType(String patientId, Integer year, MedcialDocumentType type) {
+        validateBucket(patientId);
         try {
             String prefix = FOLDER_NAME + "/" + year + "/"+ type.getPrefix() + "/";
             List<String> objectNames = minioMedicalDocumentStorage.listObject(patientId, prefix);
             
             if (objectNames.isEmpty()) {
-                throw new DocumentNotFoundException("Nenhum documento encontrado para o paciente " + patientId + " do' tipo " + type);
+                throw new DocumentNotFoundException(
+                    "Nenhum documento encontrado para o paciente " + patientId + " do' tipo " + type
+                );
             }
             
             List<String> presignedUrls = minioMedicalDocumentStorage.generatePresignedUrls(
                 patientId, objectNames, 
-                2);
+                EXPIRATION_TIME_HOURS);
 
             List<PatientPresignedUrlsDTO> files = getPatientPresignedUrlsDto(objectNames, presignedUrls);
 
@@ -96,40 +112,53 @@ public class MedicalDocumentServiceImpl implements MedicalDocumentService {
                 files
             );      
         } catch (Exception e) {
-            throw new MedicalDocumentServiceException("Erro ao listar documentos do tipo: " + e.getMessage());
+            throw new MedicalDocumentServiceException(
+                "Erro ao listar documentos do tipo: " + e.getMessage()
+            );
         }
     }
             
     @Override
     public MedicalDocumentResponseDTO getDocumentHistoryByType(String patientId, MedcialDocumentType type) {
+        validateBucket(patientId);
         try {
             String prefix = FOLDER_NAME + "/";
             List<String> objectNames = minioMedicalDocumentStorage.listObject(patientId, prefix);
             
             if (objectNames.isEmpty()) {
-                throw new DocumentNotFoundException("Nenhum histórico encontrado para o paciente " + patientId + " do tipo " + type);
+                throw new DocumentNotFoundException(
+                    "Nenhum histórico encontrado para o paciente " + patientId + " do tipo " + type
+                );
             }
                     
             List<String> filteredObjectNames = objectNames.stream()
             .filter(objectName -> objectName.contains(type.getPrefix()))
             .toList();
                     
-            List<String> presignedUrls = minioMedicalDocumentStorage.generatePresignedUrls(patientId, filteredObjectNames, 2);
+            List<String> presignedUrls = minioMedicalDocumentStorage.generatePresignedUrls(
+                patientId, 
+                filteredObjectNames, 
+                EXPIRATION_TIME_HOURS);
                     
-            List<PatientPresignedUrlsDTO> files = getPatientPresignedUrlsDto(filteredObjectNames, presignedUrls);
+            List<PatientPresignedUrlsDTO> files = getPatientPresignedUrlsDto(
+                filteredObjectNames, 
+                presignedUrls);
 
             return new MedicalDocumentResponseDTO(
                 patientId, 
                 files
             );   
         } catch (Exception e) {
-            throw new MedicalDocumentServiceException("Erro ao buscar histórico de documentos: " + e.getMessage());
+            throw new MedicalDocumentServiceException(
+                "Erro ao buscar histórico de documentos: " + e.getMessage()
+            );
         }
     }
         
         
     @Override
     public byte[] viewPatientMedicalDocuments(String patientId, String path) {
+        validateBucket(patientId);
         try {
             byte[] file = minioMedicalDocumentStorage.getMedicalDocumentByFileName(patientId, path);
             
@@ -139,12 +168,15 @@ public class MedicalDocumentServiceImpl implements MedicalDocumentService {
             
             return file;
         } catch (Exception e) {
-            throw new MedicalDocumentServiceException("Erro ao visualizar o documento: " + e.getMessage());
+            throw new MedicalDocumentServiceException(
+                "Erro ao visualizar o documento: " + e.getMessage()
+            );
         }
     }
     
     @Override
     public void deleteDocument(String patientId, String fileName) {
+        validateBucket(patientId);
         minioMedicalDocumentStorage.deleteFile(patientId, fileName);   
     }
 
