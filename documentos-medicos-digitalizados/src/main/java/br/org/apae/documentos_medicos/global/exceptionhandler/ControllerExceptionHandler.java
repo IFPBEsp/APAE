@@ -2,6 +2,7 @@ package br.org.apae.documentos_medicos.global.exceptionhandler;
 
 import br.org.apae.documentos_medicos.application.exceptions.BucketNotFoundException;
 import br.org.apae.documentos_medicos.application.exceptions.DocumentNotFoundException;
+import br.org.apae.documentos_medicos.application.exceptions.FileIsEmptyException;
 import br.org.apae.documentos_medicos.application.exceptions.MedicalDocumentServiceException;
 import br.org.apae.documentos_medicos.infrastructure.storage.exceptions.MedicalDocumentStorageException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -9,6 +10,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.multipart.support.MissingServletRequestPartException;
 
 import java.time.Instant;
 
@@ -24,6 +26,51 @@ public class ControllerExceptionHandler {
                 Instant.now(),
                 status.value(),
                 "Documento não encontrado",
+                e.getMessage(),
+                request.getRequestURI()
+        );
+        return ResponseEntity.status(status).body(err);
+    }
+
+    @ExceptionHandler(MissingServletRequestPartException.class)
+    public ResponseEntity<StandardError> handleMissingPart(
+            MissingServletRequestPartException e, HttpServletRequest request) {
+
+        HttpStatus status = HttpStatus.BAD_REQUEST;
+        StandardError err = new StandardError(
+                Instant.now(),
+                status.value(),
+                "Parte do pedido ausente",
+                e.getMessage(),
+                request.getRequestURI()
+        );
+        return ResponseEntity.status(status).body(err);
+    }
+
+    @ExceptionHandler(FileIsEmptyException.class)
+    public ResponseEntity<StandardError> handleFileIsEmpty(
+            FileIsEmptyException e, HttpServletRequest request) {
+
+        HttpStatus status = HttpStatus.BAD_REQUEST;
+        StandardError err = new StandardError(
+                Instant.now(),
+                status.value(),
+                "Arquivo vazio",
+                e.getMessage(),
+                request.getRequestURI()
+        );
+        return ResponseEntity.status(status).body(err);
+    }
+
+    @ExceptionHandler(NumberFormatException.class)
+    public ResponseEntity<StandardError> handleNumberFormat(
+            NumberFormatException e, HttpServletRequest request) {
+
+        HttpStatus status = HttpStatus.BAD_REQUEST;
+        StandardError err = new StandardError(
+                Instant.now(),
+                status.value(),
+                "Formato de número inválido",
                 e.getMessage(),
                 request.getRequestURI()
         );
