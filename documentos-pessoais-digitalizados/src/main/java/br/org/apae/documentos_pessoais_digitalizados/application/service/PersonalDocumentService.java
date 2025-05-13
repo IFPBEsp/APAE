@@ -3,6 +3,7 @@ package br.org.apae.documentos_pessoais_digitalizados.application.service;
 import br.org.apae.documentos_pessoais_digitalizados.api.dto.req.PersonalDocumentFileReqDTO;
 import br.org.apae.documentos_pessoais_digitalizados.api.dto.req.PersonalDocumentReqDTO;
 import br.org.apae.documentos_pessoais_digitalizados.api.dto.res.PersonalDocumentResUrlDTO;
+import br.org.apae.documentos_pessoais_digitalizados.domain.model.PersonalDocumentType;
 import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
@@ -17,4 +18,5 @@ public interface PersonalDocumentService {
     List<PersonalDocumentResUrlDTO> findAll(UUID patientId);
     PersonalDocumentResUrlDTO findById(UUID id);
     HashMap<String, byte[]> findFileByDocumentId(UUID id);
+    List<PersonalDocumentResUrlDTO> findByDocumentTag(PersonalDocumentType documentType, UUID patient);
 }

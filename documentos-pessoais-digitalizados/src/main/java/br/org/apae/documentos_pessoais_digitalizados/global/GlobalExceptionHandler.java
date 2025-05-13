@@ -28,11 +28,6 @@ public class GlobalExceptionHandler {
         return buildResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR, ex.getMessage(), request.getDescription(false));
     }
 
-    @ExceptionHandler(Exception.class)
-    public ResponseEntity<Object> handleAllUncaughtExceptions(Exception ex, WebRequest request) {
-        return buildResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR, "Ocorreu um erro inesperado.", request.getDescription(false));
-    }
-
     @ExceptionHandler(FileExistException.class)
     public ResponseEntity<Object> handleFileExistException(FileExistException ex, WebRequest request) {
         return buildResponseEntity(HttpStatus.CONFLICT, ex.getMessage(), request.getDescription(false));

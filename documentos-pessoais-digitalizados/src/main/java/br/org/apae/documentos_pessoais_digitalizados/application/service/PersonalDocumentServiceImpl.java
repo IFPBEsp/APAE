@@ -6,6 +6,7 @@ import br.org.apae.documentos_pessoais_digitalizados.api.dto.res.PersonalDocumen
 import br.org.apae.documentos_pessoais_digitalizados.application.exception.DocumentNotFoundException;
 import br.org.apae.documentos_pessoais_digitalizados.application.exception.FileExistException;
 import br.org.apae.documentos_pessoais_digitalizados.domain.model.PersonalDocument;
+import br.org.apae.documentos_pessoais_digitalizados.domain.model.PersonalDocumentType;
 import br.org.apae.documentos_pessoais_digitalizados.domain.repository.PersonalDocumentRepository;
 import br.org.apae.documentos_pessoais_digitalizados.infrastructure.client.StorageClient;
 import br.org.apae.documentos_pessoais_digitalizados.infrastructure.mapper.PersonalDocumentMapper;
@@ -82,6 +83,14 @@ public class PersonalDocumentServiceImpl implements PersonalDocumentService{
         HashMap<String, byte[]> result = new HashMap<>();
         result.put(contentType, file);
         return result;
+    }
+
+    @Override
+    public List<PersonalDocumentResUrlDTO> findByDocumentTag(PersonalDocumentType documentType, UUID patient) {
+        List<PersonalDocument> personalDocuments = this.personalDocumentRepository.findByPersonalDocumentTypeAndPatient(documentType, patient);
+        return personalDocuments.stream()
+                .map(this.personalDocumentMapper::toDTO)
+                .toList();
     }
 
     private PersonalDocument createPersonalDocumentAndSaveFileStorage(UUID patientId, PersonalDocumentFileReqDTO personalDocumentFileReqDTO) {

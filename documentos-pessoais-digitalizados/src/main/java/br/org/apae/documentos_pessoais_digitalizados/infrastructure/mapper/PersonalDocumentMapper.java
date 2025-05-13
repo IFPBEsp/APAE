@@ -18,7 +18,7 @@ public class PersonalDocumentMapper {
 
     public PersonalDocumentResUrlDTO toDTO(PersonalDocument personalDocument) {
         String url = domainUri + "/api/documents/" + personalDocument.getId() + "/file";
-        return new PersonalDocumentResUrlDTO(url, personalDocument.getPersonalDocumentType());
+        return new PersonalDocumentResUrlDTO(url, personalDocument.getPersonalDocumentType(), personalDocument.getPathDocumentStorage());
     }
 
 }
