@@ -36,8 +36,13 @@ out/
 ### VS Code ###
 .vscode/
 <<<<<<< HEAD
+<<<<<<< HEAD
 data/
 docker-compose.yml
 =======
 data/
 >>>>>>> fd48471 (feat[gitignore]: Adicionando a pasta data referente aos arquivos do MinIO)
+=======
+data/
+docker-compose.yml
+>>>>>>> b55507f (feat[gitnore]: Adicionando o docker-compose no gitIgnore)
