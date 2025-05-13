@@ -11,7 +11,7 @@ public class MedicalDocumentUploadDTO {
     @NotBlank(message = "O ano é obrigatório")
     private Integer year;
 
-    @NotNull(message = "O tipo do documento é obrigatório")
+    @NotBlank(message = "O tipo do documento é obrigatório")
     private String documentType;
 
     public MedicalDocumentUploadDTO(String patientId, Integer year, String documentType) {
