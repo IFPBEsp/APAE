@@ -120,4 +120,5 @@ public class MinioMedicalDocumentStorageImpl implements MinioStorage {
             throw new MedicalDocumentStorageException("Erro ao deletar o arquivo: " + e.getMessage());
         }
     }
+    
 }    
