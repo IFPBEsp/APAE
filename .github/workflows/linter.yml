@@ -2,41 +2,109 @@
 name: Lint Code Base
 
 on:
-  push:
-    branches: ["**"]
-     
-  pull_request:
-    branches: ["**"]
+  push: null
+  pull_request: null
+
+permissions:
+  contents: none
 
 jobs:
   lint:
-    name: Lint code base
+    name: Lint Code Base
     runs-on: ubuntu-latest
+
+    permissions:
+      contents: read
+      packages: read
+      statuses: write
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node.js and pnpm
+        uses: pnpm/action-setup@v2
+        with:
+          version: 10
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "pnpm"
+
+      - name: Load super-linter configuration
+        run: grep -v '^#' .github/super-linter.env >> "$GITHUB_ENV"
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
 
       - name: Run Super-Linter
-        uses: github/super-linter@v5
+        uses: super-linter/super-linter@v7.3.0
         env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  fix-lint-issues:
+    name: Fix Lint Issues
+    permissions:
+      contents: write
+      statuses: write
+
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node.js and pnpm
+        uses: pnpm/action-setup@v2
+        with:
+          version: 10
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "pnpm"
+
+      - name: Load super-linter configuration
+        run: grep -v '^#' .github/super-linter.env >> "$GITHUB_ENV"
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+
+      - name: Super-Linter
+        uses: super-linter/super-linter@v7.3.0
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+          FIX_CSS: true
+          FIX_CSS_PRETTIER: true
+          FIX_GOOGLE_JAVA_FORMAT: true
+          FIX_HTML_PRETTIER: true
+          FIX_JAVASCRIPT_ES: true
+          FIX_JAVASCRIPT_PRETTIER: true
+          FIX_JSON_PRETTIER: true
+          FIX_JSX: true
+          FIX_JSX_PRETTIER: true
+          FIX_TSX: true
+          FIX_TYPESCRIPT_ES: true
+          FIX_TYPESCRIPT_PRETTIER: true
           FIX_YAML_PRETTIER: true
 
-          VALIDATE_CSS: true
-          VALIDATE_CSS_PRETTIER: true
-          VALIDATE_GITHUB_ACTIONS: true
-          VALIDATE_HTML: true
-          VALIDATE_HTML_PRETTIER: true
-          VALIDATE_JAVASCRIPT_ES: true
-          VALIDATE_JAVASCRIPT_PRETTIER: true
-          VALIDATE_JSON: true
-          VALIDATE_JSON_PRETTIER: true
-          VALIDATE_JSX: true
-          VALIDATE_JSX_PRETTIER: true
-          VALIDATE_TSX: true
-          VALIDATE_TYPESCRIPT_ES: true
-          VALIDATE_TYPESCRIPT_PRETTIER: true
-          VALIDATE_YAML: true
-          VALIDATE_YAML_PRETTIER: true
-          VALIDATE_JAVA: true
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Commit and push linting fixes
+
+        # Run only on:
+        # - Pull requests
+        # - Not on the default branch
+        if: >
+          github.event_name == 'pull_request' &&
+          github.ref_name != github.event.repository.default_branch
+        uses: stefanzweifel/git-auto-commit-action@v5
+        with:
+          branch: ${{ github.event.pull_request.head.ref
+            || github.head_ref
+            || github.ref }}
+          commit_message: "chore: fix linting issues"
+          commit_user_name: super-linter
+          commit_user_email: super-linter@super-linter.dev

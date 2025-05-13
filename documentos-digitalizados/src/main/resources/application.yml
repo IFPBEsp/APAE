@@ -1,0 +1,25 @@
+spring:
+  application:
+    name: documentos-digitalizados
+  datasource:
+    url: jdbc:h2:mem:documentosDigitalizadosDB
+    username: sa
+    password:
+    driver-class-name: org.h2.Driver
+  h2:
+    console:
+      enabled: true
+      path: /h2-console
+  jpa:
+    hibernate:
+      ddl-auto: none
+    database-platform: org.hibernate.dialect.H2Dialect
+
+minio:
+  endpoint: http://localhost:9000
+  accessKey: minioadmin
+  secretKey: minioadmin
+  buckets:
+    pessoal: pessoal
+    medico: medico
+    escolar: escolar
