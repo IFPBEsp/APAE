@@ -6,6 +6,7 @@ import br.org.apae.documentos_pessoais_digitalizados.api.dto.res.PersonalDocumen
 import br.org.apae.documentos_pessoais_digitalizados.domain.model.PersonalDocument;
 import org.springframework.stereotype.Service;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.UUID;
 
@@ -16,5 +17,5 @@ public interface PersonalDocumentService {
     PersonalDocumentResUrlDTO update(UUID id, PersonalDocumentFileReqDTO personalDocumentFileReqDTO);
     List<PersonalDocumentResUrlDTO> findAll(UUID patientId);
     PersonalDocumentResUrlDTO findById(UUID id);
-    PersonalDocument findFileByDocumentId(UUID id);
+    HashMap<String, byte[]> findFileByDocumentId(UUID id);
 }

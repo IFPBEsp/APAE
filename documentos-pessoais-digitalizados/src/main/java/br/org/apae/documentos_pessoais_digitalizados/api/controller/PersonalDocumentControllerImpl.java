@@ -17,6 +17,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.UUID;
 
@@ -124,9 +125,13 @@ public class PersonalDocumentControllerImpl implements PersonalDocumentControlle
     @Override
     @GetMapping("/{id}/file")
     public ResponseEntity<byte[]> findFileByDocumentId(@PathVariable UUID id) {
-        PersonalDocument personalDocument = this.personalDocumentService.findFileByDocumentId(id);
-        byte[] file = this.storageService.findDocumentByFileName(personalDocument.getPathDocumentStorage(), personalDocument.getPatient().toString());
-        String contentType = personalDocument.getContentType();
+        HashMap<String, byte[]> result = this.personalDocumentService.findFileByDocumentId(id);
+
+        String contentType = result.keySet()
+                .iterator()
+                .next();
+        byte[] file = result.get(contentType);
+
         return ResponseEntity.ok()
                 .contentType(MediaType.valueOf(contentType))
                 .body(file);

@@ -12,7 +12,9 @@ import br.org.apae.documentos_pessoais_digitalizados.infrastructure.mapper.Perso
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 @Service
@@ -73,8 +75,14 @@ public class PersonalDocumentServiceImpl implements PersonalDocumentService{
     }
 
     @Override
-    public PersonalDocument findFileByDocumentId(UUID id) {
-        return this.personalDocumentRepository.findById(id).orElseThrow(DocumentNotFoundException::new);
+    public HashMap<String, byte[]> findFileByDocumentId(UUID id) {
+        PersonalDocument personalDocument = this.personalDocumentRepository.findById(id).orElseThrow(DocumentNotFoundException::new);
+        byte[] file = this.storageService.findDocumentByFileName(personalDocument.getPathDocumentStorage(), personalDocument.getPatient().toString());
+        String contentType = personalDocument.getContentType();
+
+        HashMap<String, byte[]> result = new HashMap<>();
+        result.put(contentType, file);
+        return result;
     }
 
     private PersonalDocument createPersonalDocumentAndSaveFileStorage(UUID patientId, PersonalDocumentFileReqDTO personalDocumentFileReqDTO) {
