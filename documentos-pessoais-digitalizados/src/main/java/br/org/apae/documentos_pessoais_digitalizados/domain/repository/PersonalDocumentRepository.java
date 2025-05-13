@@ -1,6 +1,7 @@
 package br.org.apae.documentos_pessoais_digitalizados.domain.repository;
 
 import br.org.apae.documentos_pessoais_digitalizados.domain.model.PersonalDocument;
+import br.org.apae.documentos_pessoais_digitalizados.domain.model.PersonalDocumentType;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -14,4 +15,5 @@ public interface PersonalDocumentRepository {
     List<PersonalDocument> findByPatient(UUID patientId);
     void delete (UUID id);
     Optional<PersonalDocument> findByPathDocumentStorageAndPatient(String filename, UUID patient);
+    List<PersonalDocument> findByPersonalDocumentTypeAndPatient(PersonalDocumentType documentType, UUID patient);
 }

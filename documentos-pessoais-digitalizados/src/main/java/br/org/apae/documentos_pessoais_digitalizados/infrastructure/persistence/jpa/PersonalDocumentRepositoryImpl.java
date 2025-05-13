@@ -1,6 +1,7 @@
 package br.org.apae.documentos_pessoais_digitalizados.infrastructure.persistence.jpa;
 
 import br.org.apae.documentos_pessoais_digitalizados.domain.model.PersonalDocument;
+import br.org.apae.documentos_pessoais_digitalizados.domain.model.PersonalDocumentType;
 import br.org.apae.documentos_pessoais_digitalizados.domain.repository.PersonalDocumentRepository;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Repository;
@@ -43,5 +44,10 @@ public class PersonalDocumentRepositoryImpl implements PersonalDocumentRepositor
     @Override
     public Optional<PersonalDocument> findByPathDocumentStorageAndPatient(String filename, UUID patient) {
         return this.personalDocumentJpaRepository.findByPathDocumentStorageAndPatient(this.folderName + "/" + filename, patient);
+    }
+
+    @Override
+    public List<PersonalDocument> findByPersonalDocumentTypeAndPatient(PersonalDocumentType documentType, UUID patient) {
+        return this.personalDocumentJpaRepository.findByPersonalDocumentTypeAndPatient(documentType, patient);
     }
 }
