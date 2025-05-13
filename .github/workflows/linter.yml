@@ -79,6 +79,7 @@ jobs:
 
           FIX_CSS: true
           FIX_CSS_PRETTIER: true
+          FIX_GOOGLE_JAVA_FORMAT: true
           FIX_HTML_PRETTIER: true
           FIX_JAVASCRIPT_ES: true
           FIX_JAVASCRIPT_PRETTIER: true
