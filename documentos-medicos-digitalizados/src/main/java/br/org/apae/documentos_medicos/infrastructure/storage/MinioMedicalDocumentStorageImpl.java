@@ -9,11 +9,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import br.org.apae.documentos_medicos.domain.ports.storage.MinioStorage;
+import br.org.apae.documentos_medicos.infrastructure.storage.exceptions.MedicalDocumentStorageException;
 import io.minio.GetObjectArgs;
 import io.minio.GetPresignedObjectUrlArgs;
 import io.minio.ListObjectsArgs;
 import io.minio.MinioClient;
 import io.minio.PutObjectArgs;
+import io.minio.RemoveObjectArgs;
 import io.minio.Result;
 import io.minio.http.Method;
 import io.minio.messages.Item;
@@ -41,7 +43,7 @@ public class MinioMedicalDocumentStorageImpl implements MinioStorage {
                     .build()
             );
         } catch (Exception e) {
-            throw new RuntimeException("Erro ao fazer upload do arquivo: " + e.getMessage(), e);
+            throw new MedicalDocumentStorageException("Erro ao fazer upload do arquivo: " + e.getMessage());
         }
     }
 
@@ -62,7 +64,7 @@ public class MinioMedicalDocumentStorageImpl implements MinioStorage {
                 objectNames.add(item.objectName());
             }
         } catch (Exception e) {
-            throw new RuntimeException("Erro ao listar objetos: " + e.getMessage(), e);
+            throw new MedicalDocumentStorageException("Erro ao listar objetos: " + e.getMessage());
         }
         return objectNames;
     }
@@ -79,7 +81,7 @@ public class MinioMedicalDocumentStorageImpl implements MinioStorage {
 
             return inputStream.readAllBytes();
         } catch (Exception e) {
-            throw new RuntimeException("Erro ao obter o arquivo: " + e.getMessage(), e);
+            throw new MedicalDocumentStorageException("Erro ao obter o arquivo: " + e.getMessage());
         }
     }
 
@@ -101,7 +103,21 @@ public class MinioMedicalDocumentStorageImpl implements MinioStorage {
             }
             return urls;
         } catch (Exception e) {
-            throw new RuntimeException("Erro ao gerar URL pré-assinada: " + e.getMessage(), e);
+            throw new MedicalDocumentStorageException("Erro ao gerar URL pré-assinada: " + e.getMessage());
+        }
+    }
+
+    @Override
+    public void deleteFile(String bucket, String objectName) {
+        try {
+            minioClient.removeObject(
+                RemoveObjectArgs.builder()
+                    .bucket(bucket)
+                    .object(objectName)
+                    .build()
+            );
+        } catch (Exception e) {
+            throw new MedicalDocumentStorageException("Erro ao deletar o arquivo: " + e.getMessage());
         }
     }
 }    

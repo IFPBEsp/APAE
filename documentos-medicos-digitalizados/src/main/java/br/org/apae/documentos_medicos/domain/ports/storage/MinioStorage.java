@@ -7,4 +7,5 @@ public interface MinioStorage {
     List<String> listObject(String bucket, String prefix);
     byte[] getMedicalDocumentByFileName(String bucket, String objectName);
     List<String> generatePresignedUrls(String bucket, List<String> objectNames, int expirationTimeInHours);
+    void deleteFile(String bucket, String objectName);
 }

@@ -1,6 +1,5 @@
 package br.org.apae.documentos_medicos.application;
 
-
 import org.springframework.web.multipart.MultipartFile;
 import br.org.apae.documentos_medicos.api.dto.requests.MedicalDocumentUploadDTO;
 import br.org.apae.documentos_medicos.api.dto.responses.MedicalDocumentResponseDTO;
@@ -14,9 +13,9 @@ public interface MedicalDocumentService {
 
     MedicalDocumentResponseDTO listMedicalDocumentByType(String patientId, Integer year, MedcialDocumentType type);
 
-    MedicalDocumentResponseDTO historyDocumentByType(String patientId, MedcialDocumentType type);
+    MedicalDocumentResponseDTO getDocumentHistoryByType(String patientId, MedcialDocumentType type);
 
-    MedicalDocumentResponseDTO viewPatientDocument(String pacienteId, String documentoId);
+    byte[] viewPatientMedicalDocuments(String patientId, String path);
 
-    void deleteDocument(String pacienteId, String documentoId);
+    void deleteDocument(String patientId, String fileName);
 }
