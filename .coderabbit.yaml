@@ -8,7 +8,7 @@ reviews:
   poem: false
   review_status: true
   collapse_walkthrough: true
-  high_level_summary_in_walkthrough boolean: true
+  high_level_summary_in_walkthrough: true
   auto_review:
     enabled: true
     drafts: false
