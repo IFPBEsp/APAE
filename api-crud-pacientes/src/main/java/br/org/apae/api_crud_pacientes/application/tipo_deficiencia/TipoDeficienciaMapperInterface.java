@@ -5,6 +5,6 @@ import br.org.apae.api_crud_pacientes.api.dtos.tipo_deficiencia.TipoDeficienciaR
 import br.org.apae.api_crud_pacientes.domain.model.TipoDeficiencia;
 
 public interface TipoDeficienciaMapperInterface {
-    TipoDeficiencia toEntity(TipoDeficienciaRequest tipoDeficienciaDTO);
+    TipoDeficiencia toEntity(TipoDeficienciaRequest tipoDeficiencia);
     TipoDeficienciaResponse toResponse(TipoDeficiencia tipoDeficiencia);
 }
