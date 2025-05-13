@@ -72,6 +72,7 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
+
       - name: Super-Linter
         uses: super-linter/super-linter@v7.3.0
         env:
