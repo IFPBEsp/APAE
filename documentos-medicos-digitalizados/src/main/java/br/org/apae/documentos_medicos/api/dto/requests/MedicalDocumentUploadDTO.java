@@ -1,9 +1,17 @@
 package br.org.apae.documentos_medicos.api.dto.requests;
 
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+
 public class MedicalDocumentUploadDTO {
 
+    @NotNull(message = "O ID é obrigatório.")
     private String patientId;
+
+    @NotBlank(message = "O ano é obrigatório")
     private Integer year;
+
+    @NotNull(message = "O tipo do documento é obrigatório")
     private String documentType;
 
     public MedicalDocumentUploadDTO(String patientId, Integer year, String documentType) {
