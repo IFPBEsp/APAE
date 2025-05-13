@@ -47,7 +47,7 @@ jobs:
           fetch-depth: 0
 
       - name: Get base branch
-        run: echo "BASE_BRANCH=${{ github.event.pull_request.base.ref || 'dev' }}" >> $GITHUB_ENV
+        run: echo "BASE_BRANCH=${{ github.event.pull_request.base.ref || 'dev' }}" >> "$GITHUB_ENV"
 
       - name: Fetch base branch
         run: git fetch origin ${{ env.BASE_BRANCH }}
@@ -56,8 +56,8 @@ jobs:
         id: detect_changes
         run: |
           BASE=$(git merge-base HEAD origin/${{ env.BASE_BRANCH }})
-          echo "Comparing with base commit: $BASE"
-          git diff --name-only $BASE HEAD > changed_files.txt
+          echo "Comparing with base commit: \"$BASE\""
+          git diff --name-only "$BASE" HEAD > changed_files.txt
 
           DEMO_CHANGED=false
           DOCUMENTOS_DIGITALIZADOS_CHANGED=false
@@ -70,17 +70,17 @@ jobs:
             DOCUMENTOS_DIGITALIZADOS_CHANGED=true
           fi
 
-          echo "demo_changed=$DEMO_CHANGED" >> $GITHUB_ENV
-          echo "documentos_digitalizados_changed=$DOCUMENTOS_DIGITALIZADOS_CHANGED" >> $GITHUB_ENV
+          echo "demo_changed=\"$DEMO_CHANGED\"" >> "$GITHUB_ENV"
+          echo "documentos_digitalizados_changed=\"$DOCUMENTOS_DIGITALIZADOS_CHANGED\"" >> "$GITHUB_ENV"
 
-          echo "demo_changed=$DOCUMENTOS_DIGITALIZADOS_CHANGED" >> $GITHUB_OUTPUT
-          echo "documentos_digitalizados_changed=$DOCUMENTOS_DIGITALIZADOS_CHANGED" >> $GITHUB_OUTPUT
+          echo "demo_changed=\"$DOCUMENTOS_DIGITALIZADOS_CHANGED\"" >> "$GITHUB_OUTPUT"
+          echo "documentos_digitalizados_changed=\"$DOCUMENTOS_DIGITALIZADOS_CHANGED\"" >> "$GITHUB_OUTPUT"
 
       - name: Set output
         id: set_output
         run: |
-          echo "demo_changed=${{ env.demo_changed }}" >> $GITHUB_OUTPUT
-          echo "documentos_digitalizados_changed=${{ env.documentos_digitalizados_changed }}" >> $GITHUB_OUTPUT
+          echo "demo_changed=${{ env.demo_changed }}" >> "$GITHUB_OUTPUT"
+          echo "documentos_digitalizados_changed=${{ env.documentos_digitalizados_changed }}" >> "$GITHUB_OUTPUT"
 
   demo-testes:
     name: Run Backend Tests - Demo
