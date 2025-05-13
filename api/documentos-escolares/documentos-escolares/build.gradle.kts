@@ -32,6 +32,8 @@ dependencies {
 	annotationProcessor("org.projectlombok:lombok")
 	testImplementation("org.springframework.boot:spring-boot-starter-test")
 	testRuntimeOnly("org.junit.platform:junit-platform-launcher")
+	implementation("io.minio:minio:8.5.17")
+	implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.8.6")
 }
 
 tasks.withType<Test> {
