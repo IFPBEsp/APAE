@@ -8,6 +8,8 @@ import io.minio.MinioClient;
 
 @Configuration
 public class MinioConfig {
+    @Value("${minio.url}")
+    private String url;
     @Value("${minio.access-key}")
     private String accessKey;
     @Value("${minio.secret-key}")
@@ -16,7 +18,7 @@ public class MinioConfig {
     @Bean
     public MinioClient minioClient() {
         return MinioClient.builder()
-                .endpoint("http://localhost:9000")
+                .endpoint(url)
                 .credentials(accessKey , secretKey)
                 .build();
     }
