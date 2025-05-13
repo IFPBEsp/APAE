@@ -1,0 +1,9 @@
+spring:
+  application:
+    name: documentos-digitalizados
+
+minio:
+  endpoint: http://localhost:9000
+  accessKey: minioadmin
+  secretKey: minioadmin
+
