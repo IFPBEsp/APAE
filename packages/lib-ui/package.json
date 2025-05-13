@@ -3,9 +3,7 @@
   "version": "1.0.0",
   "description": "lib for next-app",
   "main": "dist/index.js",
-  "files": [
-    "dist"
-  ],
+  "files": ["dist"],
   "scripts": {
     "build": "rm -rf dist && tsc"
   },
