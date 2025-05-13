@@ -164,4 +164,5 @@ Obs. Ainda em desenvolvimento...
 (Incluir as instruções de como configurar o ambiente de desenvolvimento, instalar dependências, rodar o projeto, etc.)
 
 ---
-teste
+
+![CodeRabbit Pull Request Reviews](https://img.shields.io/coderabbit/prs/github/IFPBEsp/APAE?utm_source=oss&utm_medium=github&utm_campaign=IFPBEsp%2FAPAE&labelColor=171717&color=FF570A&link=https%3A%2F%2Fcoderabbit.ai&label=CodeRabbit+Reviews)
