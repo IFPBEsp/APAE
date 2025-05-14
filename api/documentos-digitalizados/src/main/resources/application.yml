@@ -7,3 +7,5 @@ minio:
   accessKey: minioadmin
   secretKey: minioadmin
 
+server:
+  port: 8081

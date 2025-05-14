@@ -4,7 +4,6 @@ import br.org.apae.documentos_digitalizados.api.dto.BucketResponseDTO;
 import br.org.apae.documentos_digitalizados.api.dto.ListagemBucketResponseDTO;
 import br.org.apae.documentos_digitalizados.application.service.MinioStorageService;
 import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import lombok.RequiredArgsConstructor;
