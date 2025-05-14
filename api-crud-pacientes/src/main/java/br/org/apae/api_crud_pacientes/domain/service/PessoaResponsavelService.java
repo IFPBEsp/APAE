@@ -3,6 +3,7 @@ package br.org.apae.api_crud_pacientes.domain.service;
 import java.util.Optional;
 import java.util.UUID;
 
+import br.org.apae.api_crud_pacientes.domain.model.Pessoa;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -22,11 +23,11 @@ public class PessoaResponsavelService {
         this.repository = repository;
     }
 
-    public PessoaResponsavelResponse create(PessoaResponsavelRequest pessoaReponsavelRequest) {
+    public PessoaResponsavel create(PessoaResponsavelRequest pessoaReponsavelRequest, Pessoa pessoa) {
         PessoaResponsavelMapper mapper = new PessoaResponsavelMapper();
-        PessoaResponsavel pessoaResponsavel = mapper.toEntity(pessoaReponsavelRequest);
-        PessoaResponsavel pessoaResponsavelSalva = repository.save(pessoaResponsavel);
-        return mapper.toResponse(pessoaResponsavelSalva);
+        PessoaResponsavel pessoaResponsavel = mapper.toEntity(pessoaReponsavelRequest, pessoa);
+        return repository.save(pessoaResponsavel);
+
     }
 
     public PessoaResponsavelResponse update(UUID id, PessoaResponsavelRequest request) {

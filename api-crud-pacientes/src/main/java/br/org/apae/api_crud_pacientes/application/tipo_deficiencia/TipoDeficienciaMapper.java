@@ -2,14 +2,16 @@ package br.org.apae.api_crud_pacientes.application.tipo_deficiencia;
 
 import br.org.apae.api_crud_pacientes.api.dtos.tipo_deficiencia.TipoDeficienciaRequest;
 import br.org.apae.api_crud_pacientes.api.dtos.tipo_deficiencia.TipoDeficienciaResponse;
+import br.org.apae.api_crud_pacientes.domain.model.Pessoa;
 import br.org.apae.api_crud_pacientes.domain.model.TipoDeficiencia;
 
 public class TipoDeficienciaMapper implements TipoDeficienciaMapperInterface {
 
     @Override
-    public TipoDeficiencia toEntity(TipoDeficienciaRequest tipoDeficienciaDTO) {
+    public TipoDeficiencia toEntity(TipoDeficienciaRequest tipoDeficienciaDTO, Pessoa pessoa) {
         TipoDeficiencia tipoDeficiencia = new TipoDeficiencia();
         tipoDeficiencia.setDescricao(tipoDeficienciaDTO.getDescricao());
+        tipoDeficiencia.setPessoa(pessoa);
         return tipoDeficiencia;
     }
 

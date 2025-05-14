@@ -3,6 +3,7 @@ package br.org.apae.api_crud_pacientes.domain.service;
 import br.org.apae.api_crud_pacientes.api.dtos.tipo_atendimento.TipoAtendimentoRequest;
 import br.org.apae.api_crud_pacientes.api.dtos.tipo_atendimento.TipoAtendimentoResponse;
 import br.org.apae.api_crud_pacientes.application.tipo_atendimento.TipoAtendimentoMapper;
+import br.org.apae.api_crud_pacientes.domain.model.Pessoa;
 import br.org.apae.api_crud_pacientes.domain.model.TipoAtendimento;
 import br.org.apae.api_crud_pacientes.domain.repository.TipoAtendimentoRepository;
 import jakarta.persistence.EntityNotFoundException;
@@ -31,11 +32,10 @@ public class TipoAtendimentoService {
         return new TipoAtendimentoMapper().toResponse(tipoAtendimento);
     }
 
-    public TipoAtendimentoResponse create(TipoAtendimentoRequest request) {
+    public TipoAtendimento create(TipoAtendimentoRequest request, Pessoa pessoa) {
         TipoAtendimentoMapper mapper = new TipoAtendimentoMapper();
-        TipoAtendimento tipoAtendimento = mapper.toEntity(request);
-        TipoAtendimento tipoAtendimentoSalvo = tipoAtendimentoRepository.save(tipoAtendimento);
-        return mapper.toResponse(tipoAtendimentoSalvo);
+        TipoAtendimento tipoAtendimento = mapper.toEntity(request, pessoa);
+        return tipoAtendimentoRepository.save(tipoAtendimento);
     }
 
     public Page<TipoAtendimentoResponse> getAll(Pageable pageable, String descricao) {

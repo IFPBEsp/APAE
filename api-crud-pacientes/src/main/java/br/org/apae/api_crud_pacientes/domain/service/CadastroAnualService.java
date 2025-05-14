@@ -28,13 +28,10 @@ public class CadastroAnualService {
         this.mapper = mapper;
     }
 
-    public CadastroAnualResponse create(CadastroAnualRequest dto) {
-        Pessoa pessoa = pessoaRepository.findById(dto.getPessoaId())
-                .orElseThrow(() -> new EntityNotFoundException("Pessoa não encontrada"));
-
+    public CadastroAnual create(CadastroAnualRequest dto, Pessoa pessoa) {
         CadastroAnual cadastro = mapper.toEntity(dto, pessoa);
-        repository.save(cadastro);
-        return mapper.toDTO(cadastro);
+        return repository.save(cadastro);
+
     }
 
     public CadastroAnualResponse findById(Long id) {

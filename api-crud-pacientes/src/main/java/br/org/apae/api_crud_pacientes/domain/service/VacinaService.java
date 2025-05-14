@@ -28,16 +28,9 @@ public class VacinaService {
         this.vacinaMapper = vacinaMapper;
     }
 
-    public VacinaResponse create(VacinaRequest vacinaRequest) {
-        Optional<Pessoa> pessoaOptional = pessoaRepository.findById(vacinaRequest.getPessoaId());
-
-        if(pessoaOptional.isEmpty()) {
-            throw new EntityNotFoundException("Pessoa não encontrada.");
-        }
-
-        Vacina vacina = vacinaMapper.toEntity(vacinaRequest, pessoaOptional.get());
-        Vacina vacinaSalva = vacinaRepository.save(vacina);
-        return vacinaMapper.toResponse(vacinaSalva);
+    public Vacina create(VacinaRequest vacinaRequest, Pessoa pessoa) {
+        Vacina vacina = vacinaMapper.toEntity(vacinaRequest, pessoa);
+        return vacinaRepository.save(vacina);
     }
 
     public VacinaResponse getById(UUID id) {

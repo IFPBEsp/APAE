@@ -3,11 +3,12 @@ package br.org.apae.api_crud_pacientes.application.contato;
 import br.org.apae.api_crud_pacientes.api.dtos.contato.ContatoRequest;
 import br.org.apae.api_crud_pacientes.api.dtos.contato.ContatoResponse;
 import br.org.apae.api_crud_pacientes.domain.model.Contato;
+import br.org.apae.api_crud_pacientes.domain.model.Pessoa;
 
 public class ContatoMapper implements ContatoMapperInterface {
 
     @Override
-    public Contato toEntity(ContatoRequest request) {
+    public Contato toEntity(ContatoRequest request, Pessoa pessoa) {
         Contato contato = new Contato();
 
         contato.setEndereco_ativo(request.getEndereco_ativo());
@@ -18,6 +19,8 @@ public class ContatoMapper implements ContatoMapperInterface {
         contato.setEstado(request.getEstado());
         contato.setCep(request.getCep());
         contato.setNaturalidade(request.getNaturalidade());
+
+        contato.setPessoa(pessoa);
 
         return contato;
     }

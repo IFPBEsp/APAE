@@ -100,6 +100,14 @@ public class PessoaResponsavel {
         this.emergencia = emergencia;
     }
 
+    public Pessoa getPessoa() {
+        return pessoa;
+    }
+
+    public void setPessoa(Pessoa pessoa) {
+        this.pessoa = pessoa;
+    }
+
     @Override
     public int hashCode() {
         final int prime = 31;

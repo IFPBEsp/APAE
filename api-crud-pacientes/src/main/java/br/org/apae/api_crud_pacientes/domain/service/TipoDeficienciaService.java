@@ -3,6 +3,7 @@ package br.org.apae.api_crud_pacientes.domain.service;
 import br.org.apae.api_crud_pacientes.api.dtos.tipo_deficiencia.TipoDeficienciaRequest;
 import br.org.apae.api_crud_pacientes.api.dtos.tipo_deficiencia.TipoDeficienciaResponse;
 import br.org.apae.api_crud_pacientes.application.tipo_deficiencia.TipoDeficienciaMapper;
+import br.org.apae.api_crud_pacientes.domain.model.Pessoa;
 import br.org.apae.api_crud_pacientes.domain.model.TipoDeficiencia;
 import br.org.apae.api_crud_pacientes.domain.repository.TipoDeficienciaRepository;
 import jakarta.persistence.EntityNotFoundException;
@@ -31,11 +32,10 @@ public class TipoDeficienciaService {
         return new TipoDeficienciaMapper().toResponse(tipoDeficiencia);
     }
 
-    public TipoDeficienciaResponse create(TipoDeficienciaRequest request) {
+    public TipoDeficiencia create(TipoDeficienciaRequest request, Pessoa pessoa) {
         TipoDeficienciaMapper mapper = new TipoDeficienciaMapper();
-        TipoDeficiencia tipoDeficiencia = mapper.toEntity(request);
-        TipoDeficiencia tipoDeficienciaSalvo = tipoDeficienciaRepository.save(tipoDeficiencia);
-        return mapper.toResponse(tipoDeficienciaSalvo);
+        TipoDeficiencia tipoDeficiencia = mapper.toEntity(request, pessoa);
+        return tipoDeficienciaRepository.save(tipoDeficiencia);
     }
 
     public Page<TipoDeficienciaResponse> getAll(Pageable pageable, String descricao) {

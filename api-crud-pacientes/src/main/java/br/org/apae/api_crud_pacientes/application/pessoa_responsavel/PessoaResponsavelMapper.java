@@ -2,11 +2,12 @@ package br.org.apae.api_crud_pacientes.application.pessoa_responsavel;
 
 import br.org.apae.api_crud_pacientes.api.dtos.pessoa_responsavel.PessoaResponsavelRequest;
 import br.org.apae.api_crud_pacientes.api.dtos.pessoa_responsavel.PessoaResponsavelResponse;
+import br.org.apae.api_crud_pacientes.domain.model.Pessoa;
 import br.org.apae.api_crud_pacientes.domain.model.PessoaResponsavel;
 
 public class PessoaResponsavelMapper implements PessoaResponsavelInterface {
     @Override
-    public PessoaResponsavel toEntity(PessoaResponsavelRequest request) {
+    public PessoaResponsavel toEntity(PessoaResponsavelRequest request, Pessoa pessoa) {
         PessoaResponsavel pessoa_Responsavel = new PessoaResponsavel();
 
         pessoa_Responsavel.setOnde_Procurar(request.getOnde_Procurar());
@@ -15,6 +16,7 @@ public class PessoaResponsavelMapper implements PessoaResponsavelInterface {
         pessoa_Responsavel.setRg(request.getRg());
         pessoa_Responsavel.setCpf(request.getCpf());
         pessoa_Responsavel.setEmergencia(request.getEmergencia());
+        pessoa_Responsavel.setPessoa(pessoa);
 
         return pessoa_Responsavel;
     }

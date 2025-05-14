@@ -34,8 +34,7 @@ public class ContatoService {
 
     public Contato create(ContatoRequest request, Pessoa pessoa) {
         ContatoMapper mapper = new ContatoMapper();
-        Contato contato = mapper.toEntity(request);
-        contato.setPessoa(pessoa);
+        Contato contato = mapper.toEntity(request, pessoa);
         return contatoRepository.save(contato);
     }
 
