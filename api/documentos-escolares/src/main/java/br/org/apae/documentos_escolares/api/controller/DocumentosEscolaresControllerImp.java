@@ -66,6 +66,12 @@ public class DocumentosEscolaresControllerImp implements DocumentosEscolaresCont
         return ResponseEntity.status(HttpStatus.OK).body(responseDTO);
     }
 
+    @Operation(summary = "Retorna o documento de um paciênte para visualizar ou fazer download", description = "Recebe por parâmetro o UUID do paciênte e o nome do documento")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Documento encontrado com sucesso"),
+            @ApiResponse(responseCode = "404", description = "Paciênte não encontrado ou documento não encontrado"),
+            @ApiResponse(responseCode = "500", description = "Erro interno do minIO")
+    })
     @Override
     public ResponseEntity<byte[]> visualizarDocumentoEscolar(UUID pacienteId, String nomeArquivo) {
         byte[] response = documentosEscolaresService.visualizarDocumentoEscolar(pacienteId, nomeArquivo);
