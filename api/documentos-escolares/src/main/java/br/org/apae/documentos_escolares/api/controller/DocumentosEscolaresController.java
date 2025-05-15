@@ -23,7 +23,7 @@ public interface DocumentosEscolaresController {
     );
 
     @GetMapping("/{pacienteId}/historico")
-    ResponseEntity<DocumentoEscolarResponseDTO> historicoDocumentoEscolares(
+    ResponseEntity<DocumentoEscolarResponseDTO> historicoDocumentosEscolares(
             @PathVariable("pacienteId") UUID pacienteId
     );
 

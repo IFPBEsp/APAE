@@ -39,8 +39,10 @@ public class DocumentosEscolaresControllerImp implements DocumentosEscolaresCont
     }
 
     @Override
-    public ResponseEntity<DocumentoEscolarResponseDTO> historicoDocumentoEscolares(UUID pacienteId) {
-        return null;
+    public ResponseEntity<DocumentoEscolarResponseDTO> historicoDocumentosEscolares(UUID pacienteId) {
+        DocumentoEscolarResponseDTO responseDTO = documentosEscolaresService.historicoDocumentosEscolares(pacienteId);
+
+        return ResponseEntity.status(HttpStatus.OK).body(responseDTO);
     }
 
     @Override
