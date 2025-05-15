@@ -3,6 +3,9 @@ package br.org.apae.documentos_escolares.api.controller;
 import br.org.apae.documentos_escolares.api.dto.request.DocumentoEscolarUploadRequestDTO;
 import br.org.apae.documentos_escolares.api.dto.response.DocumentoEscolarResponseDTO;
 import br.org.apae.documentos_escolares.application.service.DocumentosEscolaresService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -21,6 +24,12 @@ public class DocumentosEscolaresControllerImp implements DocumentosEscolaresCont
 
     private final DocumentosEscolaresService documentosEscolaresService;
 
+    @Operation(summary = "Anexa o documento no bucket/documentos-escolar/ano", description = "Recebe por parâmetro o UUID do paciênte e o documento")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "201", description = "Arquivo anexado com sucesso"),
+            @ApiResponse(responseCode = "400", description = "Erro ao anexar documento"),
+            @ApiResponse(responseCode = "500", description = "Arquivo não anexado por erro do minIO")
+    })
     @Override
     public ResponseEntity<Void> anexarDocumentoEscolar(DocumentoEscolarUploadRequestDTO dto, MultipartFile arquivo) {
         documentosEscolaresService.salvarArquivo(dto, arquivo);
