@@ -26,9 +26,9 @@ public class DocumentosEscolaresControllerImp implements DocumentosEscolaresCont
 
     @Operation(summary = "Anexa o documento no bucket/documentos-escolar/ano", description = "Recebe por parâmetro o UUID do paciênte e o documento")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "201", description = "Arquivo anexado com sucesso"),
+            @ApiResponse(responseCode = "201", description = "Documento anexado com sucesso"),
             @ApiResponse(responseCode = "400", description = "Erro ao anexar documento"),
-            @ApiResponse(responseCode = "500", description = "Arquivo não anexado por erro do minIO")
+            @ApiResponse(responseCode = "500", description = "Documento não anexado por erro do minIO")
     })
     @Override
     public ResponseEntity<Void> anexarDocumentoEscolar(DocumentoEscolarUploadRequestDTO dto, MultipartFile arquivo) {
@@ -37,6 +37,12 @@ public class DocumentosEscolaresControllerImp implements DocumentosEscolaresCont
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
+    @Operation(summary = "Retorna listagem de todos ou por ano documentos de um paciênte", description = "Recebe por parâmetro o UUID do paciênte e um parâmetro opcional \"ano\"")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Documentos listados com sucesso"),
+            @ApiResponse(responseCode = "404", description = "Paciênte não encontrado"),
+            @ApiResponse(responseCode = "500", description = "Erro interno do minIO")
+    })
     @Override
     public ResponseEntity<DocumentoEscolarResponseDTO> listarDocumentosEscolares(UUID pacienteId, Integer ano) {
         DocumentoEscolarResponseDTO responseDTO = documentosEscolaresService.listarDocumentosEscolares(pacienteId);
