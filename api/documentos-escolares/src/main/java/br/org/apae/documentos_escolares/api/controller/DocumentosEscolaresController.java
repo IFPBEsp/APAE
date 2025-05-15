@@ -17,7 +17,7 @@ public interface DocumentosEscolaresController {
     );
 
     @GetMapping("/{pacienteId}/filtrar")
-    ResponseEntity<String> listarDocumentosEscolares(
+    ResponseEntity<DocumentoEscolarResponseDTO> listarDocumentosEscolares(
             @PathVariable("pacienteId") UUID pacienteId,
             @RequestParam(value = "ano", required = false) Integer ano
     );

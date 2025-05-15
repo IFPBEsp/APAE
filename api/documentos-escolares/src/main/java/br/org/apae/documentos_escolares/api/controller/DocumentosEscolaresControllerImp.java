@@ -10,6 +10,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 @RequiredArgsConstructor
@@ -27,8 +29,13 @@ public class DocumentosEscolaresControllerImp implements DocumentosEscolaresCont
     }
 
     @Override
-    public ResponseEntity<String> listarDocumentosEscolares(UUID pacienteId, Integer ano) {
-        return null;
+    public ResponseEntity<DocumentoEscolarResponseDTO> listarDocumentosEscolares(UUID pacienteId, Integer ano) {
+        DocumentoEscolarResponseDTO listaDocumentosEscolares = documentosEscolaresService.listarDocumentosEscolares(pacienteId);
+        if (ano != null) {
+            listaDocumentosEscolares = documentosEscolaresService.listarDocumentosEscolaresAno(pacienteId, ano);
+        }
+
+        return ResponseEntity.status(HttpStatus.OK).body(listaDocumentosEscolares);
     }
 
     @Override
