@@ -2,7 +2,6 @@ package br.org.apae.documentos_escolares.api.controller;
 
 import br.org.apae.documentos_escolares.api.dto.request.DocumentoEscolarUploadRequestDTO;
 import br.org.apae.documentos_escolares.api.dto.response.DocumentoEscolarResponseDTO;
-import br.org.apae.documentos_escolares.api.dto.response.VisualizacaoDocumentoEscolarResponseDTO;
 import br.org.apae.documentos_escolares.application.service.DocumentosEscolaresService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
@@ -13,8 +12,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.UUID;
 
 @RequiredArgsConstructor
@@ -62,7 +59,9 @@ public class DocumentosEscolaresControllerImp implements DocumentosEscolaresCont
 
     @Override
     public ResponseEntity<Void> deletarDocumentoEscolar(UUID pacienteId, String nomeArquivo) {
-        return null;
+        documentosEscolaresService.deletarDocumentoEscolar(pacienteId, nomeArquivo);
+
+        return ResponseEntity.noContent().build();
     }
 
     private MediaType getContentType(String fileName) {
