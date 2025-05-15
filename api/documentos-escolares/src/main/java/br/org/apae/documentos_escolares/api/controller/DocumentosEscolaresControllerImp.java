@@ -84,6 +84,12 @@ public class DocumentosEscolaresControllerImp implements DocumentosEscolaresCont
                 .body(response);
     }
 
+    @Operation(summary = "Remove documento de um paciênte", description = "Recebe por parâmetro o UUID do paciênte e o nome do documento")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Documento removido com sucesso"),
+            @ApiResponse(responseCode = "404", description = "Paciênte não encontrado ou documento não encontrado"),
+            @ApiResponse(responseCode = "500", description = "Erro interno do minIO")
+    })
     @Override
     public ResponseEntity<Void> deletarDocumentoEscolar(UUID pacienteId, String nomeArquivo) {
         documentosEscolaresService.deletarDocumentoEscolar(pacienteId, nomeArquivo);
