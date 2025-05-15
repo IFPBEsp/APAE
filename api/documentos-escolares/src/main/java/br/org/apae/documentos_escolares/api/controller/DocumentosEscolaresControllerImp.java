@@ -30,12 +30,12 @@ public class DocumentosEscolaresControllerImp implements DocumentosEscolaresCont
 
     @Override
     public ResponseEntity<DocumentoEscolarResponseDTO> listarDocumentosEscolares(UUID pacienteId, Integer ano) {
-        DocumentoEscolarResponseDTO listaDocumentosEscolares = documentosEscolaresService.listarDocumentosEscolares(pacienteId);
+        DocumentoEscolarResponseDTO responseDTO = documentosEscolaresService.listarDocumentosEscolares(pacienteId);
         if (ano != null) {
-            listaDocumentosEscolares = documentosEscolaresService.listarDocumentosEscolaresAno(pacienteId, ano);
+            responseDTO = documentosEscolaresService.listarDocumentosEscolaresAno(pacienteId, ano);
         }
 
-        return ResponseEntity.status(HttpStatus.OK).body(listaDocumentosEscolares);
+        return ResponseEntity.status(HttpStatus.OK).body(responseDTO);
     }
 
     @Override
