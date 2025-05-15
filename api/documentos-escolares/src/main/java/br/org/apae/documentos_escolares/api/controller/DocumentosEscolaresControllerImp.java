@@ -53,6 +53,12 @@ public class DocumentosEscolaresControllerImp implements DocumentosEscolaresCont
         return ResponseEntity.status(HttpStatus.OK).body(responseDTO);
     }
 
+    @Operation(summary = "Retorna o histórico de documentos de um paciênte", description = "Recebe por parâmetro o UUID do paciênte")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Histórico dos documentos listados com sucesso"),
+            @ApiResponse(responseCode = "404", description = "Paciênte não encontrado"),
+            @ApiResponse(responseCode = "500", description = "Erro interno do minIO")
+    })
     @Override
     public ResponseEntity<DocumentoEscolarResponseDTO> historicoDocumentosEscolares(UUID pacienteId) {
         DocumentoEscolarResponseDTO responseDTO = documentosEscolaresService.historicoDocumentosEscolares(pacienteId);
