@@ -1,5 +1,5 @@
 plugins {
-	java
+	id("buildlogic.java-application-conventions")
 	id("org.springframework.boot") version "3.4.5"
 	id("io.spring.dependency-management") version "1.1.7"
 }
@@ -7,20 +7,10 @@ plugins {
 group = "br.org.apae"
 version = "0.0.1-SNAPSHOT"
 
-java {
-	toolchain {
-		languageVersion = JavaLanguageVersion.of(21)
-	}
-}
-
 configurations {
 	compileOnly {
 		extendsFrom(configurations.annotationProcessor.get())
 	}
-}
-
-repositories {
-	mavenCentral()
 }
 
 dependencies {
@@ -36,8 +26,4 @@ dependencies {
 	implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.8.6")
 	implementation("org.flywaydb:flyway-core")
 	runtimeOnly("com.h2database:h2")
-}
-
-tasks.withType<Test> {
-	useJUnitPlatform()
 }
