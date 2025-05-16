@@ -1,4 +1,4 @@
-package br.org.apae.documentos_escolares.application.service;
+package br.org.apae.documentos_escolares.application.service.minio;
 
 import br.org.apae.documentos_escolares.api.dto.request.DocumentoEscolarUploadRequestDTO;
 import br.org.apae.documentos_escolares.api.dto.response.DocumentoEscolarResponseDTO;
