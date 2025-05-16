@@ -2,6 +2,7 @@ package br.org.apae.api_crud_pacientes.api.controller;
 
 import br.org.apae.api_crud_pacientes.api.dtos.pessoa.PessoaRequest;
 import br.org.apae.api_crud_pacientes.api.dtos.pessoa.PessoaResponse;
+import br.org.apae.api_crud_pacientes.domain.model.Pessoa;
 import br.org.apae.api_crud_pacientes.domain.service.PessoaService;
 
 import org.springframework.data.domain.Page;
@@ -28,9 +29,10 @@ public class PessoaController {
             @RequestBody PessoaRequest request,
             UriComponentsBuilder uriBuilder) {
 
-        PessoaResponse response = pessoaService.create(request);
-        URI uri = uriBuilder.path("/pessoas/{id}").buildAndExpand(response.getId()).toUri();
+        Pessoa pessoa = pessoaService.create(request);
+        URI uri = uriBuilder.path("/pessoas/{id}").buildAndExpand(pessoa.getId()).toUri();
 
+        PessoaResponse response = pessoaService.getById(pessoa.getId());
         return ResponseEntity.created(uri).body(response);
     }
 
@@ -47,7 +49,7 @@ public class PessoaController {
             @RequestParam(required = false) String cpf,
             @RequestParam(required = false) String nome) {
 
-        Page<PessoaResponse> pessoas = pessoaService.getALl(pageable, cpf, nome);
+        Page<PessoaResponse> pessoas = pessoaService.getAll(pageable, cpf, nome);
         return ResponseEntity.ok(pessoas);
     }
 

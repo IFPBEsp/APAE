@@ -39,7 +39,7 @@ public class PessoaService {
 
     }
 
-    public Page<PessoaResponse> getALl(Pageable pageable, String cpf, String nome) {
+    public Page<PessoaResponse> getAll(Pageable pageable, String cpf, String nome) {
 
         if (cpf != null && nome != null) {
             return pessoaRepository.findByCpfContainingAndNomeCompletoContainingIgnoreCase(cpf, nome, pageable)
@@ -85,8 +85,6 @@ public class PessoaService {
             throw new EntityNotFoundException("Pessoa não encontrada");
         }
     }
-
-
 
     public void delete(UUID id) {
         if(!pessoaRepository.existsById(id)){
