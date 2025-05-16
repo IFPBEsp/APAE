@@ -20,3 +20,8 @@ minio:
   endpoint: http://localhost:9000
   accessKey: minioadmin
   secretKey: minioadmin
+
+client:
+  storage:
+    endpoint:
+      url: http://localhost:8080/bucket
