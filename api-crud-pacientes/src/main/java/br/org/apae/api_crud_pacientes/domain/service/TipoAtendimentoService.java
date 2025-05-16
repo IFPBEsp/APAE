@@ -17,9 +17,11 @@ import java.util.UUID;
 @Service
 public class TipoAtendimentoService {
     private final TipoAtendimentoRepository tipoAtendimentoRepository;
+    private final TipoAtendimentoMapper tipoAtendimentoMapper;
 
-    public TipoAtendimentoService(TipoAtendimentoRepository tipoAtendimentoRepository) {
+    public TipoAtendimentoService(TipoAtendimentoRepository tipoAtendimentoRepository, TipoAtendimentoMapper tipoAtendimentoMapper) {
         this.tipoAtendimentoRepository = tipoAtendimentoRepository;
+        this.tipoAtendimentoMapper = tipoAtendimentoMapper;
     }
 
     public TipoAtendimentoResponse getById(UUID id) {
@@ -29,24 +31,22 @@ public class TipoAtendimentoService {
         }
 
         TipoAtendimento tipoAtendimento = optionalTipoAtendimento.get();
-        return new TipoAtendimentoMapper().toResponse(tipoAtendimento);
+        return tipoAtendimentoMapper.toResponse(tipoAtendimento);
     }
 
     public TipoAtendimento create(TipoAtendimentoRequest request, Pessoa pessoa) {
-        TipoAtendimentoMapper mapper = new TipoAtendimentoMapper();
-        TipoAtendimento tipoAtendimento = mapper.toEntity(request, pessoa);
+        TipoAtendimento tipoAtendimento = tipoAtendimentoMapper.toEntity(request, pessoa);
         return tipoAtendimentoRepository.save(tipoAtendimento);
     }
 
     public Page<TipoAtendimentoResponse> getAll(Pageable pageable, String descricao) {
-        TipoAtendimentoMapper mapper = new TipoAtendimentoMapper();
 
         if (descricao != null) {
             return tipoAtendimentoRepository.findByDescricaoContainingIgnoreCase(descricao, pageable)
-                    .map(mapper::toResponse);
+                    .map(tipoAtendimentoMapper::toResponse);
         } else {
             return tipoAtendimentoRepository.findAll(pageable)
-                    .map(mapper::toResponse);
+                    .map(tipoAtendimentoMapper::toResponse);
         }
     }
 
@@ -61,7 +61,7 @@ public class TipoAtendimentoService {
             tipoAtendimentoExistente.setDescricao(request.getDescricao());
 
             TipoAtendimento tipoAtendimentoAtualizado = tipoAtendimentoRepository.save(tipoAtendimentoExistente);
-            return new TipoAtendimentoMapper().toResponse(tipoAtendimentoAtualizado);
+            return tipoAtendimentoMapper.toResponse(tipoAtendimentoAtualizado);
 
         } else {
             throw new EntityNotFoundException("Tipo de Atendimento não encontrado");

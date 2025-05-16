@@ -4,7 +4,9 @@ import br.org.apae.api_crud_pacientes.api.dtos.contato.ContatoRequest;
 import br.org.apae.api_crud_pacientes.api.dtos.contato.ContatoResponse;
 import br.org.apae.api_crud_pacientes.domain.model.Contato;
 import br.org.apae.api_crud_pacientes.domain.model.Pessoa;
+import org.springframework.stereotype.Component;
 
+@Component
 public class ContatoMapper implements ContatoMapperInterface {
 
     @Override

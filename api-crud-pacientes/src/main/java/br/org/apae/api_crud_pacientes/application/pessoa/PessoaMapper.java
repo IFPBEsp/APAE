@@ -3,7 +3,10 @@ package br.org.apae.api_crud_pacientes.application.pessoa;
 import br.org.apae.api_crud_pacientes.api.dtos.pessoa.PessoaRequest;
 import br.org.apae.api_crud_pacientes.api.dtos.pessoa.PessoaResponse;
 import br.org.apae.api_crud_pacientes.domain.model.Pessoa;
+import org.springframework.stereotype.Component;
 
+
+@Component
 public class PessoaMapper implements PessoaMapperInterface {
     @Override
     public Pessoa toEntity(PessoaRequest request) {

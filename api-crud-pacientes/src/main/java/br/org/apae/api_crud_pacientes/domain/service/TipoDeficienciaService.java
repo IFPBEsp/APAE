@@ -17,9 +17,11 @@ import java.util.UUID;
 @Service
 public class TipoDeficienciaService {
     private final TipoDeficienciaRepository tipoDeficienciaRepository;
+    private final TipoDeficienciaMapper tipoDeficienciaMapper;
 
-    public TipoDeficienciaService(TipoDeficienciaRepository tipoDeficienciaRepository) {
+    public TipoDeficienciaService(TipoDeficienciaRepository tipoDeficienciaRepository, TipoDeficienciaMapper tipoDeficienciaMapper) {
         this.tipoDeficienciaRepository = tipoDeficienciaRepository;
+        this.tipoDeficienciaMapper = tipoDeficienciaMapper;
     }
 
     public TipoDeficienciaResponse getById(UUID id) {
@@ -29,24 +31,22 @@ public class TipoDeficienciaService {
         }
 
         TipoDeficiencia tipoDeficiencia = optionalTipoDeficiencia.get();
-        return new TipoDeficienciaMapper().toResponse(tipoDeficiencia);
+        return tipoDeficienciaMapper.toResponse(tipoDeficiencia);
     }
 
     public TipoDeficiencia create(TipoDeficienciaRequest request, Pessoa pessoa) {
-        TipoDeficienciaMapper mapper = new TipoDeficienciaMapper();
-        TipoDeficiencia tipoDeficiencia = mapper.toEntity(request, pessoa);
+        TipoDeficiencia tipoDeficiencia = tipoDeficienciaMapper.toEntity(request, pessoa);
         return tipoDeficienciaRepository.save(tipoDeficiencia);
     }
 
     public Page<TipoDeficienciaResponse> getAll(Pageable pageable, String descricao) {
-        TipoDeficienciaMapper mapper = new TipoDeficienciaMapper();
 
         if (descricao != null) {
             return tipoDeficienciaRepository.findByDescricaoContainingIgnoreCase(descricao, pageable)
-                    .map(mapper::toResponse);
+                    .map(tipoDeficienciaMapper::toResponse);
         } else {
             return tipoDeficienciaRepository.findAll(pageable)
-                    .map(mapper::toResponse);
+                    .map(tipoDeficienciaMapper::toResponse);
         }
     }
 
@@ -61,7 +61,7 @@ public class TipoDeficienciaService {
             tipoDeficienciaExistente.setDescricao(request.getDescricao());
 
             TipoDeficiencia tipoDeficienciaAtualizado = tipoDeficienciaRepository.save(tipoDeficienciaExistente);
-            return new TipoDeficienciaMapper().toResponse(tipoDeficienciaAtualizado);
+            return tipoDeficienciaMapper.toResponse(tipoDeficienciaAtualizado);
 
         } else {
             throw new EntityNotFoundException("Tipo de Deficiência não encontrado");

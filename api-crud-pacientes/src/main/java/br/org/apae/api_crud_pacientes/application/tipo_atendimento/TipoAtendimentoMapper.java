@@ -4,7 +4,9 @@ import br.org.apae.api_crud_pacientes.api.dtos.tipo_atendimento.TipoAtendimentoR
 import br.org.apae.api_crud_pacientes.api.dtos.tipo_atendimento.TipoAtendimentoResponse;
 import br.org.apae.api_crud_pacientes.domain.model.Pessoa;
 import br.org.apae.api_crud_pacientes.domain.model.TipoAtendimento;
+import org.springframework.stereotype.Component;
 
+@Component
 public class TipoAtendimentoMapper implements TipoAntendimentoMapperInterface {
     @Override
     public TipoAtendimento toEntity(TipoAtendimentoRequest tipoAtendimentoRequest, Pessoa pessoa) {

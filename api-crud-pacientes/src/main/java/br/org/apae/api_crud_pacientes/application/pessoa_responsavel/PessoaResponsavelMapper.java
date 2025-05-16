@@ -4,7 +4,9 @@ import br.org.apae.api_crud_pacientes.api.dtos.pessoa_responsavel.PessoaResponsa
 import br.org.apae.api_crud_pacientes.api.dtos.pessoa_responsavel.PessoaResponsavelResponse;
 import br.org.apae.api_crud_pacientes.domain.model.Pessoa;
 import br.org.apae.api_crud_pacientes.domain.model.PessoaResponsavel;
+import org.springframework.stereotype.Component;
 
+@Component
 public class PessoaResponsavelMapper implements PessoaResponsavelInterface {
     @Override
     public PessoaResponsavel toEntity(PessoaResponsavelRequest request, Pessoa pessoa) {

@@ -4,7 +4,9 @@ import br.org.apae.api_crud_pacientes.api.dtos.tipo_deficiencia.TipoDeficienciaR
 import br.org.apae.api_crud_pacientes.api.dtos.tipo_deficiencia.TipoDeficienciaResponse;
 import br.org.apae.api_crud_pacientes.domain.model.Pessoa;
 import br.org.apae.api_crud_pacientes.domain.model.TipoDeficiencia;
+import org.springframework.stereotype.Component;
 
+@Component
 public class TipoDeficienciaMapper implements TipoDeficienciaMapperInterface {
 
     @Override

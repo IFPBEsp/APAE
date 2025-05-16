@@ -17,9 +17,11 @@ import java.util.UUID;
 @Service
 public class ContatoService {
     private final ContatoRepository contatoRepository;
+    private final ContatoMapper contatoMapper;
 
-    public ContatoService(ContatoRepository contatoRepository) {
+    public ContatoService(ContatoRepository contatoRepository, ContatoMapper contatoMapper) {
         this.contatoRepository = contatoRepository;
+        this.contatoMapper = contatoMapper;
     }
 
     public ContatoResponse getById(UUID id) {
@@ -29,24 +31,22 @@ public class ContatoService {
         }
 
         Contato contato = optionalContato.get();
-        return new ContatoMapper().toResponse(contato);
+        return contatoMapper.toResponse(contato);
     }
 
     public Contato create(ContatoRequest request, Pessoa pessoa) {
-        ContatoMapper mapper = new ContatoMapper();
-        Contato contato = mapper.toEntity(request, pessoa);
+        Contato contato = contatoMapper.toEntity(request, pessoa);
         return contatoRepository.save(contato);
     }
 
     public Page<ContatoResponse> getAll(Pageable pageable, String endereco) {
-        ContatoMapper mapper = new ContatoMapper();
 
         if (endereco != null) {
             return contatoRepository.findByEnderecoIgnoreCase(endereco, pageable)
-                    .map(mapper::toResponse);
+                    .map(contatoMapper::toResponse);
         } else {
             return contatoRepository.findAll(pageable)
-                    .map(mapper::toResponse);
+                    .map(contatoMapper::toResponse);
         }
     }
 
@@ -68,7 +68,7 @@ public class ContatoService {
             contatoExistente.setNaturalidade(request.getNaturalidade());
 
             Contato contatoAtualizado = contatoRepository.save(contatoExistente);
-            return new ContatoMapper().toResponse(contatoAtualizado);
+            return contatoMapper.toResponse(contatoAtualizado);
 
         } else {
             throw new EntityNotFoundException("Contato não encontrado");

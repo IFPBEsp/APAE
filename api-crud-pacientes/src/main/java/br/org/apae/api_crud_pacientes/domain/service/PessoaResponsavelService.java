@@ -18,14 +18,15 @@ import jakarta.persistence.EntityNotFoundException;
 @Service
 public class PessoaResponsavelService {
     private final PessoaResponsavelRepository repository;
+    private final PessoaResponsavelMapper pessoaResponsavelMapper;
 
-    public PessoaResponsavelService(PessoaResponsavelRepository repository) {
+    public PessoaResponsavelService(PessoaResponsavelRepository repository, PessoaResponsavelMapper pessoaResponsavelMapper) {
         this.repository = repository;
+        this.pessoaResponsavelMapper = pessoaResponsavelMapper;
     }
 
     public PessoaResponsavel create(PessoaResponsavelRequest pessoaReponsavelRequest, Pessoa pessoa) {
-        PessoaResponsavelMapper mapper = new PessoaResponsavelMapper();
-        PessoaResponsavel pessoaResponsavel = mapper.toEntity(pessoaReponsavelRequest, pessoa);
+        PessoaResponsavel pessoaResponsavel = pessoaResponsavelMapper.toEntity(pessoaReponsavelRequest, pessoa);
         return repository.save(pessoaResponsavel);
 
     }
@@ -45,7 +46,7 @@ public class PessoaResponsavelService {
             pessoaResponsavelExistente.setVivo(request.isVivo());
 
             PessoaResponsavel pessoaResponsavelAtualizada = repository.save(pessoaResponsavelExistente);
-            return new PessoaResponsavelMapper().toResponse(pessoaResponsavelAtualizada);
+            return pessoaResponsavelMapper.toResponse(pessoaResponsavelAtualizada);
         } else {
             throw new EntityNotFoundException("Pessoa Responsável não encontrada.");
         }
@@ -64,15 +65,14 @@ public class PessoaResponsavelService {
             throw new EntityNotFoundException("Pessoa responsável não encontrada."); 
         }
         PessoaResponsavel pessoaResponsavel = optionalPessoaResponsavel.get();
-        return new PessoaResponsavelMapper().toResponse(pessoaResponsavel);
+        return pessoaResponsavelMapper.toResponse(pessoaResponsavel);
     }
 
     public Page<PessoaResponsavelResponse> getAll(Pageable pageable, String cpf) {
-        PessoaResponsavelMapper mapper = new PessoaResponsavelMapper();
         if (cpf != null) {
-            return repository.findByCpfContaining(cpf, pageable).map(mapper::toResponse);
+            return repository.findByCpfContaining(cpf, pageable).map(pessoaResponsavelMapper::toResponse);
         }
         // Mais conficionais com mais atríbutos relevantes
-        return repository.findByCpfContaining(cpf, pageable).map(mapper::toResponse);
+        return repository.findByCpfContaining(cpf, pageable).map(pessoaResponsavelMapper::toResponse);
     }
 }
