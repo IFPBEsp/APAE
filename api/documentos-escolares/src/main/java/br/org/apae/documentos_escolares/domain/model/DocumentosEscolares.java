@@ -29,8 +29,6 @@ public class DocumentosEscolares {
     @Column(nullable = false)
     private String nomeArquivo;
 
-    private String tipoArquivo;
-
     private String caminhoArquivo;
 
     private LocalDateTime dataUpload;
