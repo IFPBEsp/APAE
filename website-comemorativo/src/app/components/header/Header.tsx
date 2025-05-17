@@ -21,7 +21,7 @@ export default function Header() {
 			<div className={Styles.header}>
 				<Image src="/logo-apae.png" alt="Logo APAE" width={120} height={50} />
 				<div className={Styles.linksTelas}>
-					<Link href="/" className={pathname == "/" ? Styles.linkAtivo : Styles.link}>
+					<Link href="/pages/TelaInicial" className={pathname == "/pages/TelaInicial" ? Styles.linkAtivo : Styles.link}>
 						Página Inicial
 					</Link>
 					<Link
@@ -49,7 +49,7 @@ export default function Header() {
 			>
 				<ul className={Styles.menu}>
 					<li>
-						<Link href="/">Página Inicial</Link>
+						<Link href="/pages/TelaInicial">Página Inicial</Link>
 					</li>
 					<li>
 						<Link href="/pages/30anos">30 Anos</Link>
