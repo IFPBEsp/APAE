@@ -2,8 +2,6 @@ package br.org.apae.documentos_escolares.domain.model;
 
 import jakarta.persistence.Entity;
 
-package br.org.apae.documentos_escolares.domain.model;
-
 import jakarta.persistence.*;
 import lombok.*;
 import java.time.LocalDateTime;
