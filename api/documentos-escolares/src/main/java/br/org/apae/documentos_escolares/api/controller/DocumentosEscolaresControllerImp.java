@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.UUID;
 
 @RequiredArgsConstructor
@@ -31,7 +32,7 @@ public class DocumentosEscolaresControllerImp implements DocumentosEscolaresCont
             @ApiResponse(responseCode = "500", description = "Documento não anexado por erro do minIO")
     })
     @Override
-    public ResponseEntity<Void> anexarDocumentoEscolar(DocumentoEscolarUploadRequestDTO dto, MultipartFile arquivo) {
+    public ResponseEntity<Void> anexarDocumentoEscolar(DocumentoEscolarUploadRequestDTO dto, MultipartFile arquivo)  {
         documentosEscolaresService.salvarArquivo(dto, arquivo);
 
         return ResponseEntity.status(HttpStatus.CREATED).build();
