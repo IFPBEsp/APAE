@@ -1,19 +1,19 @@
 package br.org.apae.documentos_escolares.domain.repository;
 
-import br.org.apae.documentos_escolares.domain.model.DocumentoEscolar;
+import br.org.apae.documentos_escolares.domain.model.DocumentosEscolares;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
-public interface DocumentosEscolaresRepository extends JpaRepository<DocumentoEscolar, UUID> {
+public interface DocumentosEscolaresRepository extends JpaRepository<DocumentosEscolares, UUID> {
 
-    List<DocumentoEscolar> findByPacienteId(UUID pacienteId);
+    List<DocumentosEscolares> findByPacienteId(UUID pacienteId);
 
-    List<DocumentoEscolar> findByPacienteIdAndAno(UUID pacienteId, Integer ano);
+    List<DocumentosEscolares> findByPacienteIdAndAno(UUID pacienteId, Integer ano);
 
-    Optional<DocumentoEscolar> findByPacienteIdAndNomeArquivo(UUID pacienteId, String nomeArquivo);
+    Optional<DocumentosEscolares> findByPacienteIdAndNomeArquivo(UUID pacienteId, String nomeArquivo);
 
     void deleteByPacienteIdAndNomeArquivo(UUID pacienteId, String nomeArquivo);
 }
