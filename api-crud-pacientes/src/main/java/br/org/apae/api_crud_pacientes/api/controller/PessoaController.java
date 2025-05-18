@@ -2,6 +2,7 @@ package br.org.apae.api_crud_pacientes.api.controller;
 
 import br.org.apae.api_crud_pacientes.api.dtos.pessoa.PessoaRequest;
 import br.org.apae.api_crud_pacientes.api.dtos.pessoa.PessoaResponse;
+import br.org.apae.api_crud_pacientes.application.pessoa.PessoaMapper;
 import br.org.apae.api_crud_pacientes.domain.model.Pessoa;
 import br.org.apae.api_crud_pacientes.domain.service.PessoaService;
 
@@ -19,9 +20,11 @@ import java.util.UUID;
 @RequestMapping("/pessoas")
 public class PessoaController {
     private final PessoaService pessoaService;
+    private final PessoaMapper pessoaMapper;
 
-    public PessoaController(PessoaService pessoaService) {
+    public PessoaController(PessoaService pessoaService, PessoaMapper pessoaMapper) {
         this.pessoaService = pessoaService;
+        this.pessoaMapper = pessoaMapper;
     }
 
     @PostMapping
@@ -32,7 +35,7 @@ public class PessoaController {
         Pessoa pessoa = pessoaService.create(request);
         URI uri = uriBuilder.path("/pessoas/{id}").buildAndExpand(pessoa.getId()).toUri();
 
-        PessoaResponse response = pessoaService.getById(pessoa.getId());
+        PessoaResponse response = pessoaMapper.toResponse(pessoaService.getById(pessoa.getId()));
         return ResponseEntity.created(uri).body(response);
     }
 
@@ -55,7 +58,7 @@ public class PessoaController {
 
     @GetMapping("/{id}")
     public ResponseEntity<PessoaResponse> getById(@PathVariable UUID id) {
-        PessoaResponse response = pessoaService.getById(id);
+        PessoaResponse response = pessoaMapper.toResponse(pessoaService.getById(id));
         return ResponseEntity.ok(response);
     }
 

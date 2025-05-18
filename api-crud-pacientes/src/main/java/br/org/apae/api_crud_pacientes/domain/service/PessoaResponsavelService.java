@@ -19,15 +19,18 @@ import jakarta.persistence.EntityNotFoundException;
 public class PessoaResponsavelService {
     private final PessoaResponsavelRepository repository;
     private final PessoaResponsavelMapper pessoaResponsavelMapper;
+    private final PessoaService pessoaService;
 
-    public PessoaResponsavelService(PessoaResponsavelRepository repository, PessoaResponsavelMapper pessoaResponsavelMapper) {
+    public PessoaResponsavelService(PessoaResponsavelRepository repository, PessoaResponsavelMapper pessoaResponsavelMapper, PessoaService pessoaService) {
         this.repository = repository;
         this.pessoaResponsavelMapper = pessoaResponsavelMapper;
+        this.pessoaService = pessoaService;
     }
 
-    public PessoaResponsavel create(PessoaResponsavelRequest pessoaReponsavelRequest, Pessoa pessoa) {
-        PessoaResponsavel pessoaResponsavel = pessoaResponsavelMapper.toEntity(pessoaReponsavelRequest, pessoa);
-        return repository.save(pessoaResponsavel);
+    public PessoaResponsavelResponse create(PessoaResponsavelRequest pessoaReponsavelRequest, UUID pessoaId) {
+        Pessoa pessoaExistente = pessoaService.getById(pessoaId);
+        PessoaResponsavel pessoaResponsavel = pessoaResponsavelMapper.toEntity(pessoaReponsavelRequest, pessoaExistente);
+        return pessoaResponsavelMapper.toResponse(repository.save(pessoaResponsavel));
 
     }
 

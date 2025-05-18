@@ -3,6 +3,7 @@ package br.org.apae.api_crud_pacientes.domain.service;
 import br.org.apae.api_crud_pacientes.api.dtos.contato.ContatoRequest;
 import br.org.apae.api_crud_pacientes.api.dtos.contato.ContatoResponse;
 import br.org.apae.api_crud_pacientes.application.contato.ContatoMapper;
+import br.org.apae.api_crud_pacientes.application.pessoa.PessoaMapper;
 import br.org.apae.api_crud_pacientes.domain.model.Contato;
 import br.org.apae.api_crud_pacientes.domain.model.Pessoa;
 import br.org.apae.api_crud_pacientes.domain.repository.ContatoRepository;
@@ -18,10 +19,12 @@ import java.util.UUID;
 public class ContatoService {
     private final ContatoRepository contatoRepository;
     private final ContatoMapper contatoMapper;
+    private final PessoaService pessoaService;
 
-    public ContatoService(ContatoRepository contatoRepository, ContatoMapper contatoMapper) {
+    public ContatoService(ContatoRepository contatoRepository, ContatoMapper contatoMapper, PessoaService pessoaService) {
         this.contatoRepository = contatoRepository;
         this.contatoMapper = contatoMapper;
+        this.pessoaService = pessoaService;
     }
 
     public ContatoResponse getById(UUID id) {
@@ -34,9 +37,10 @@ public class ContatoService {
         return contatoMapper.toResponse(contato);
     }
 
-    public Contato create(ContatoRequest request, Pessoa pessoa) {
-        Contato contato = contatoMapper.toEntity(request, pessoa);
-        return contatoRepository.save(contato);
+    public ContatoResponse create(ContatoRequest request, UUID pessoaId) {
+        Pessoa pessoaExistente = pessoaService.getById(pessoaId);
+        Contato contato = contatoMapper.toEntity(request, pessoaExistente);
+        return contatoMapper.toResponse(contatoRepository.save(contato));
     }
 
     public Page<ContatoResponse> getAll(Pageable pageable, String endereco) {

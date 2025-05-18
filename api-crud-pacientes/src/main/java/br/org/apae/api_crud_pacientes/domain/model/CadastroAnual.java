@@ -9,27 +9,27 @@ import java.util.UUID;
 public class CadastroAnual {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private UUID id;
 
+    @Column(name = "beneficio_de_prestacao_continuada")
     private Boolean beneficioDePrestacaoContinuada;
 
+    @Column(name = "historicos_alergias")
     private String historicosAlergias;
 
+    @Column(name = "medicacoes_continuas")
     private String medicacoesContinuas;
 
+    @Column(name = "historico_doencas")
     private String historicoDoencas;
 
+    @Column(name = "renda_familiar")
     private Double rendaFamiliar;
 
     @ManyToOne
     @JoinColumn(name = "pessoa_id", nullable = false)
     private Pessoa pessoa;
-
-    // @ManyToOne
-    // @JoinColumn(name = "tipo_atendimento_id")
-    // private TipoAtendimento tipoAtendimento;
-
 
     public UUID getId() {
         return id;

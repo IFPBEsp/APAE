@@ -23,14 +23,14 @@ public class PessoaService {
         this.pessoaMapper = pessoaMapper;
     }
 
-    public PessoaResponse getById(UUID id) {
+    public Pessoa getById(UUID id) {
         Optional<Pessoa> optionalPaciente = pessoaRepository.findById(id);
         if(optionalPaciente.isEmpty()){
             throw new EntityNotFoundException("Pessoa não encontrada");
         }
 
         Pessoa pessoa = optionalPaciente.get();
-        return pessoaMapper.toResponse(pessoa);
+        return pessoa;
     }
 
     public Pessoa create(PessoaRequest pessoaRequest) {

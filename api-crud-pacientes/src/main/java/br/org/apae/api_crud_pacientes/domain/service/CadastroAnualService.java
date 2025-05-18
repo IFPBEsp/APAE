@@ -11,6 +11,7 @@ import jakarta.persistence.EntityNotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service
@@ -28,13 +29,12 @@ public class CadastroAnualService {
         this.mapper = mapper;
     }
 
-    public CadastroAnual create(CadastroAnualRequest dto, Pessoa pessoa) {
-        CadastroAnual cadastro = mapper.toEntity(dto, pessoa);
+    public CadastroAnual create(CadastroAnualRequest dto) {
+        CadastroAnual cadastro = mapper.toEntity(dto);
         return repository.save(cadastro);
-
     }
 
-    public CadastroAnualResponse findById(Long id) {
+    public CadastroAnualResponse findById(UUID id) {
         CadastroAnual cadastro = repository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Cadastro não encontrado"));
         return mapper.toDTO(cadastro);
@@ -47,7 +47,7 @@ public class CadastroAnualService {
                 .collect(Collectors.toList());
     }
 
-    public CadastroAnualResponse update(Long id, CadastroAnualRequest dto) {
+    public CadastroAnualResponse update(UUID id, CadastroAnualRequest dto) {
         CadastroAnual cadastro = repository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Cadastro não encontrado"));
 
@@ -65,7 +65,7 @@ public class CadastroAnualService {
         return mapper.toDTO(cadastro);
     }
 
-    public void delete(Long id) {
+    public void delete(UUID id) {
         CadastroAnual cadastro = repository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Cadastro não encontrado"));
         repository.delete(cadastro);

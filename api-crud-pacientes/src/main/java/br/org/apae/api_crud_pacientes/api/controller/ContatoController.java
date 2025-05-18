@@ -2,6 +2,7 @@ package br.org.apae.api_crud_pacientes.api.controller;
 
 import br.org.apae.api_crud_pacientes.api.dtos.contato.ContatoRequest;
 import br.org.apae.api_crud_pacientes.api.dtos.contato.ContatoResponse;
+import br.org.apae.api_crud_pacientes.domain.model.Contato;
 import br.org.apae.api_crud_pacientes.domain.service.ContatoService;
 
 import org.springframework.data.domain.Page;
@@ -25,10 +26,10 @@ public class ContatoController {
 
     @PostMapping
     public ResponseEntity<ContatoResponse> create(
-            @RequestBody ContatoRequest request,
+            @RequestBody ContatoRequest request, @RequestParam UUID pessoaId, // Parâmetro do ID pessoa
             UriComponentsBuilder uriBuilder) {
 
-        ContatoResponse response = contatoService.create(request);
+        ContatoResponse response = contatoService.create(request, pessoaId);
         URI uri = uriBuilder.path("/contatos/{id}").buildAndExpand(response.getId()).toUri();
 
         return ResponseEntity.created(uri).body(response);

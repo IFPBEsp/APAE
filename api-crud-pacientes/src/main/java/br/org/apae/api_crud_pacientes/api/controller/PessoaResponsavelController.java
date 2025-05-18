@@ -26,9 +26,10 @@ public class PessoaResponsavelController {
     @PostMapping
     public ResponseEntity<PessoaResponsavelResponse> create(
             @RequestBody PessoaResponsavelRequest request,
+            @RequestParam UUID pessoaId,
             UriComponentsBuilder uriBuilder) {
 
-        PessoaResponsavelResponse response = pessoaResponsavelService.create(request);
+        PessoaResponsavelResponse response = pessoaResponsavelService.create(request, pessoaId);
         URI uri = uriBuilder.path("/pessoa_responsavel/{id}").buildAndExpand(response.getId()).toUri();
 
         return ResponseEntity.created(uri).body(response);

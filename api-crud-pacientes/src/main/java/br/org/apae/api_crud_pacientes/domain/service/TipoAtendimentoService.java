@@ -18,10 +18,12 @@ import java.util.UUID;
 public class TipoAtendimentoService {
     private final TipoAtendimentoRepository tipoAtendimentoRepository;
     private final TipoAtendimentoMapper tipoAtendimentoMapper;
+    private final PessoaService pessoaService;
 
-    public TipoAtendimentoService(TipoAtendimentoRepository tipoAtendimentoRepository, TipoAtendimentoMapper tipoAtendimentoMapper) {
+    public TipoAtendimentoService(TipoAtendimentoRepository tipoAtendimentoRepository, TipoAtendimentoMapper tipoAtendimentoMapper, PessoaService pessoaService) {
         this.tipoAtendimentoRepository = tipoAtendimentoRepository;
         this.tipoAtendimentoMapper = tipoAtendimentoMapper;
+        this.pessoaService = pessoaService;
     }
 
     public TipoAtendimentoResponse getById(UUID id) {
@@ -34,9 +36,10 @@ public class TipoAtendimentoService {
         return tipoAtendimentoMapper.toResponse(tipoAtendimento);
     }
 
-    public TipoAtendimento create(TipoAtendimentoRequest request, Pessoa pessoa) {
-        TipoAtendimento tipoAtendimento = tipoAtendimentoMapper.toEntity(request, pessoa);
-        return tipoAtendimentoRepository.save(tipoAtendimento);
+    public TipoAtendimentoResponse create(TipoAtendimentoRequest request, UUID pessoa) {
+        Pessoa pessoaExistente = pessoaService.getById(pessoa);
+        TipoAtendimento tipoAtendimento = tipoAtendimentoMapper.toEntity(request, pessoaExistente);
+        return tipoAtendimentoMapper.toResponse(tipoAtendimentoRepository.save(tipoAtendimento));
     }
 
     public Page<TipoAtendimentoResponse> getAll(Pageable pageable, String descricao) {

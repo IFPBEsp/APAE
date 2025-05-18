@@ -3,20 +3,18 @@ package br.org.apae.api_crud_pacientes.application.cadastro_anual;
 import br.org.apae.api_crud_pacientes.api.dtos.cadastro_anual.CadastroAnualRequest;
 import br.org.apae.api_crud_pacientes.api.dtos.cadastro_anual.CadastroAnualResponse;
 import br.org.apae.api_crud_pacientes.domain.model.CadastroAnual;
-import br.org.apae.api_crud_pacientes.domain.model.Pessoa;
 import org.springframework.stereotype.Component;
 
 @Component
 public class CadastroAnualMapper {
 
-    public CadastroAnual toEntity(CadastroAnualRequest dto, Pessoa pessoa) {
+    public CadastroAnual toEntity(CadastroAnualRequest dto) {
         CadastroAnual cadastro = new CadastroAnual();
         cadastro.setBeneficioDePrestacaoContinuada(dto.getBeneficioDePrestacaoContinuada());
         cadastro.setHistoricosAlergias(dto.getHistoricosAlergias());
         cadastro.setMedicacoesContinuas(dto.getMedicacoesContinuas());
         cadastro.setHistoricoDoencas(dto.getHistoricoDoencas());
         cadastro.setRendaFamiliar(dto.getRendaFamiliar());
-        cadastro.setPessoa(pessoa);
         return cadastro;
     }
 

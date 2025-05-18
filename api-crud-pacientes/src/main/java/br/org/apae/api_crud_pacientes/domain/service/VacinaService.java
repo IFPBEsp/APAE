@@ -18,19 +18,22 @@ import java.util.UUID;
 @Service
 public class VacinaService {
 
-    private VacinaRepository vacinaRepository;
-    private PessoaRepository pessoaRepository;
-    private VacinaMapperInterface vacinaMapper;
+    private final VacinaRepository vacinaRepository;
+    private final PessoaRepository pessoaRepository;
+    private final VacinaMapperInterface vacinaMapper;
+    private final PessoaService pessoaService;
 
-    public VacinaService(VacinaRepository vacinaRepository, PessoaRepository pessoaRepository, VacinaMapperInterface vacinaMapper) {
+    public VacinaService(VacinaRepository vacinaRepository, PessoaRepository pessoaRepository, VacinaMapperInterface vacinaMapper, PessoaService pessoaService) {
         this.vacinaRepository = vacinaRepository;
         this.pessoaRepository = pessoaRepository;
         this.vacinaMapper = vacinaMapper;
+        this.pessoaService = pessoaService;
     }
 
-    public Vacina create(VacinaRequest vacinaRequest, Pessoa pessoa) {
-        Vacina vacina = vacinaMapper.toEntity(vacinaRequest, pessoa);
-        return vacinaRepository.save(vacina);
+    public VacinaResponse create(VacinaRequest vacinaRequest, UUID pessoaId) {
+        Pessoa pessoaExistente = pessoaService.getById(pessoaId);
+        Vacina vacina = vacinaMapper.toEntity(vacinaRequest, pessoaExistente);
+        return vacinaMapper.toResponse(vacinaRepository.save(vacina));
     }
 
     public VacinaResponse getById(UUID id) {
