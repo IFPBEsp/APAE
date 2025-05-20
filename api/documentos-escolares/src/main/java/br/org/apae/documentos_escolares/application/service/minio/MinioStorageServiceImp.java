@@ -1,6 +1,8 @@
 package br.org.apae.documentos_escolares.application.service.minio;
 
+import br.org.apae.documentos_escolares.api.dto.request.DocumentoEscolarUpdateRequestDTO;
 import br.org.apae.documentos_escolares.api.dto.request.DocumentoEscolarUploadRequestDTO;
+import br.org.apae.documentos_escolares.api.dto.response.DocumentoEscolarResponseDTO;
 import br.org.apae.documentos_escolares.domain.exception.ArquivoVazioException;
 import br.org.apae.documentos_escolares.domain.exception.BucketNaoExisteException;
 import br.org.apae.documentos_escolares.domain.exception.DocumentoEscolarException;
@@ -15,6 +17,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.UUID;
 
 @RequiredArgsConstructor
 @Service
@@ -47,6 +50,36 @@ public class MinioStorageServiceImp implements MinioStorageService {
         } catch (Exception e) {
             throw new UploadDocumentoException("Erro ao fazer upload do documento: " + e.getMessage());
         }
+    }
+
+    @Override
+    public DocumentoEscolarResponseDTO listarDocumentosEscolares(UUID pacienteId) {
+        return null;
+    }
+
+    @Override
+    public DocumentoEscolarResponseDTO listarDocumentosEscolaresAno(UUID pacienteId, Integer ano) {
+        return null;
+    }
+
+    @Override
+    public DocumentoEscolarResponseDTO historicoDocumentosEscolares(UUID pacienteId) {
+        return null;
+    }
+
+    @Override
+    public byte[] visualizarDocumentoEscolar(UUID pacienteId, String nomeArquivo) {
+        return new byte[0];
+    }
+
+    @Override
+    public void atualizarDocumento(DocumentoEscolarUpdateRequestDTO dto, MultipartFile arquivo) {
+
+    }
+
+    @Override
+    public void deletarDocumentoEscolar(UUID pacienteId, String nomeArquivo) {
+
     }
 
     private void validarBucket(String bucketNome) {

@@ -1,5 +1,6 @@
 package br.org.apae.documentos_escolares.application.service.minio;
 
+import br.org.apae.documentos_escolares.api.dto.request.DocumentoEscolarUpdateRequestDTO;
 import br.org.apae.documentos_escolares.api.dto.request.DocumentoEscolarUploadRequestDTO;
 import br.org.apae.documentos_escolares.api.dto.response.DocumentoEscolarResponseDTO;
 import org.springframework.web.multipart.MultipartFile;
@@ -12,5 +13,6 @@ public interface MinioStorageService {
     DocumentoEscolarResponseDTO listarDocumentosEscolaresAno(UUID pacienteId, Integer ano);
     DocumentoEscolarResponseDTO historicoDocumentosEscolares(UUID pacienteId);
     byte[] visualizarDocumentoEscolar(UUID pacienteId, String nomeArquivo);
+    void atualizarDocumento(DocumentoEscolarUpdateRequestDTO dto, MultipartFile arquivo);
     void deletarDocumentoEscolar(UUID pacienteId, String nomeArquivo);
 }
