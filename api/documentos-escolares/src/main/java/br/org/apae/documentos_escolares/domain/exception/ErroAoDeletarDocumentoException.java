@@ -1,4 +1,4 @@
-package br.org.apae.documentos_escolares.application.service.exceptions;
+package br.org.apae.documentos_escolares.domain.exception;
 
 public class ErroAoDeletarDocumentoException extends RuntimeException {
     public ErroAoDeletarDocumentoException(String message) {
