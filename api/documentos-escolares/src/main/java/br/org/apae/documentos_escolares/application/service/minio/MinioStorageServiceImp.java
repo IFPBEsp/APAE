@@ -136,12 +136,6 @@ public class MinioStorageServiceImp implements MinioStorageService {
         }
     }
 
-//    @Override
-//    public void atualizarDocumento(DocumentoEscolarUpdateRequestDTO dto, MultipartFile arquivo) {
-//        deletarDocumentoEscolar(dto.pacienteId(), dto.documentoNome());
-//        DocumentoEscolarUploadRequestDTO uploadDto = new DocumentoEscolarUploadRequestDTO(dto.pacienteId(), dto.ano());
-//        salvarArquivo(uploadDto, arquivo);
-//    }
 
     @Override
     public void atualizarDocumento(DocumentoEscolarUpdateRequestDTO dto, MultipartFile arquivo) {
