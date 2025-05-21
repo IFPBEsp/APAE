@@ -49,6 +49,7 @@ public class MinioStorageServiceImp implements MinioStorageService {
                             .contentType(arquivo.getContentType() != null ? arquivo.getContentType() : "application/octet-stream")
                             .build()
             );
+
         } catch (IOException e) {
             throw new DocumentoEscolarException("Erro ao processar o arquivo: " + e.getMessage());
         } catch (MinioException e) {
@@ -82,7 +83,6 @@ public class MinioStorageServiceImp implements MinioStorageService {
                                 .expiry(60 * 60)
                                 .build()
                 );
-
                 urls.add(new UrlPreAssinadaResponseDTO(fileName, link));
             }
         } catch (MinioException e) {
@@ -136,12 +136,41 @@ public class MinioStorageServiceImp implements MinioStorageService {
         }
     }
 
+//    @Override
+//    public void atualizarDocumento(DocumentoEscolarUpdateRequestDTO dto, MultipartFile arquivo) {
+//        deletarDocumentoEscolar(dto.pacienteId(), dto.documentoNome());
+//        DocumentoEscolarUploadRequestDTO uploadDto = new DocumentoEscolarUploadRequestDTO(dto.pacienteId(), dto.ano());
+//        salvarArquivo(uploadDto, arquivo);
+//    }
+
     @Override
     public void atualizarDocumento(DocumentoEscolarUpdateRequestDTO dto, MultipartFile arquivo) {
+        validarBucket(dto.pacienteId().toString());
+        validarArquivo(arquivo);
+
         deletarDocumentoEscolar(dto.pacienteId(), dto.documentoNome());
-        DocumentoEscolarUploadRequestDTO uploadDto = new DocumentoEscolarUploadRequestDTO(dto.pacienteId(), dto.ano());
-        salvarArquivo(uploadDto, arquivo);
+
+        String caminho = PASTA_DOCUMENTOS + "/" + dto.ano() + "/" + dto.novoNome();
+
+        try (InputStream arquivoInputStream = arquivo.getInputStream()) {
+            minioClient.putObject(
+                    PutObjectArgs.builder()
+                            .bucket(dto.pacienteId().toString())
+                            .object(caminho)
+                            .stream(arquivoInputStream, arquivo.getSize(), -1)
+                            .contentType(arquivo.getContentType() != null ? arquivo.getContentType() : "application/octet-stream")
+                            .build()
+            );
+        } catch (IOException e) {
+            throw new DocumentoEscolarException("Erro ao processar o arquivo: " + e.getMessage());
+        } catch (MinioException e) {
+            throw new UploadDocumentoException("Erro ao fazer upload do documento: " + e.getMessage());
+        } catch (Exception e) {
+            throw new DocumentoEscolarException("Erro inesperado ao atualizar arquivo: " + e.getMessage());
+        }
     }
+
+
 
     @Override
     public void deletarDocumentoEscolar(UUID pacienteId, String nomeArquivo) {
