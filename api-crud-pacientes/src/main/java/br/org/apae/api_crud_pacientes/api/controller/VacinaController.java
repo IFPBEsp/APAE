@@ -23,8 +23,8 @@ public class VacinaController {
 
     @PostMapping
     public ResponseEntity<VacinaResponse> create(@RequestBody VacinaRequest request,
-    @RequestParam UUID pessoaId, UriComponentsBuilder uriBuilder) {
-        VacinaResponse response = vacinaService.create(request, pessoaId);
+    UriComponentsBuilder uriBuilder) {
+        VacinaResponse response = vacinaService.create(request);
         URI uri = uriBuilder.path("/vacinas/{id}").buildAndExpand(response.getId()).toUri();
         return ResponseEntity.created(uri).body(response);
     }

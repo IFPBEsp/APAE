@@ -30,8 +30,8 @@ public class VacinaService {
         this.pessoaService = pessoaService;
     }
 
-    public VacinaResponse create(VacinaRequest vacinaRequest, UUID pessoaId) {
-        Pessoa pessoaExistente = pessoaService.getById(pessoaId);
+    public VacinaResponse create(VacinaRequest vacinaRequest) {
+        Pessoa pessoaExistente = pessoaService.getById(vacinaRequest.getPessoaId());
         Vacina vacina = vacinaMapper.toEntity(vacinaRequest, pessoaExistente);
         return vacinaMapper.toResponse(vacinaRepository.save(vacina));
     }

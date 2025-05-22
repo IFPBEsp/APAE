@@ -26,10 +26,9 @@ public class CadastroAnualController {
     @PostMapping
     public ResponseEntity<CadastroAnualResponse> create(
             @Valid @RequestBody CadastroAnualRequest dto,
-            @RequestParam UUID pessoaId,
             UriComponentsBuilder uriBuilder) {
 
-        CadastroAnualResponse response = service.create(dto, pessoaId);
+        CadastroAnualResponse response = service.create(dto);
         URI uri = uriBuilder.path("/api/cadastros-anual/{id}").buildAndExpand(response.getId()).toUri();
         CadastroAnualResponse cadastroAnualResponse = service.getById(response.getId());
         return ResponseEntity.created(uri).body(cadastroAnualResponse);

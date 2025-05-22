@@ -37,8 +37,8 @@ public class ContatoService {
         return contatoMapper.toResponse(contato);
     }
 
-    public ContatoResponse create(ContatoRequest request, UUID pessoaId) {
-        Pessoa pessoaExistente = pessoaService.getById(pessoaId);
+    public ContatoResponse create(ContatoRequest request) {
+        Pessoa pessoaExistente = pessoaService.getById(request.getPessoaId());
         Contato contato = contatoMapper.toEntity(request, pessoaExistente);
         return contatoMapper.toResponse(contatoRepository.save(contato));
     }

@@ -33,8 +33,8 @@ public class CadastroAnualService {
         this.pessoaService = pessoaService;
     }
 
-    public CadastroAnualResponse create(CadastroAnualRequest request, UUID pessoaId) {
-        Pessoa pessoa = pessoaService.getById(pessoaId);
+    public CadastroAnualResponse create(CadastroAnualRequest request) {
+        Pessoa pessoa = pessoaService.getById(request.getPessoaId());
         CadastroAnual cadastro = cadastroMapper.toEntity(request, pessoa);
         return cadastroMapper.toResponse(cadastroRepository.save(cadastro));
     }

@@ -27,9 +27,9 @@ public class PessoaResponsavel {
     private String cpf;
 
     @Column(name = "emergencia", nullable = false)
-    private String emergencia; // Contato?
+    private String emergencia;
 
-    private enum tipo_responsavel {
+    public enum tipo_responsavel {
         MAE,
         PAI,
         RESPONSAVEL_LEGAL,
@@ -37,12 +37,28 @@ public class PessoaResponsavel {
     }
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "tipo_responsavel", nullable = false)
+    @Column(name = "tipo_responsavel")
     private tipo_responsavel tipoResponsavel;
 
     @ManyToOne
     @JoinColumn(name = "pessoa_id")
     private Pessoa pessoa;
+
+    public String getOnde_procurar() {
+        return onde_procurar;
+    }
+
+    public void setOnde_procurar(String onde_procurar) {
+        this.onde_procurar = onde_procurar;
+    }
+
+    public tipo_responsavel getTipoResponsavel() {
+        return tipoResponsavel;
+    }
+
+    public void setTipoResponsavel(tipo_responsavel tipoResponsavel) {
+        this.tipoResponsavel = tipoResponsavel;
+    }
 
     public UUID getId() {
         return id;

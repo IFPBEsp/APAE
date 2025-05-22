@@ -36,8 +36,8 @@ public class TipoAtendimentoService {
         return tipoAtendimentoMapper.toResponse(tipoAtendimento);
     }
 
-    public TipoAtendimentoResponse create(TipoAtendimentoRequest request, UUID pessoa) {
-        Pessoa pessoaExistente = pessoaService.getById(pessoa);
+    public TipoAtendimentoResponse create(TipoAtendimentoRequest request) {
+        Pessoa pessoaExistente = pessoaService.getById(request.getPessoaId());
         TipoAtendimento tipoAtendimento = tipoAtendimentoMapper.toEntity(request, pessoaExistente);
         return tipoAtendimentoMapper.toResponse(tipoAtendimentoRepository.save(tipoAtendimento));
     }

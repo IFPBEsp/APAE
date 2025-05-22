@@ -87,15 +87,6 @@ public class CadastroAnual {
         this.pessoa = pessoa;
     }
 
-    // public TipoAtendimento getTipoAtendimento() {
-    //     return tipoAtendimento;
-    // }
-
-    // public void setTipoAtendimento(TipoAtendimento tipoAtendimento) {
-    //     this.tipoAtendimento = tipoAtendimento;
-    // }
-
-
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

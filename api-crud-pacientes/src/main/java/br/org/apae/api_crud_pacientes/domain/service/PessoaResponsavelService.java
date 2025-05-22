@@ -27,8 +27,8 @@ public class PessoaResponsavelService {
         this.pessoaService = pessoaService;
     }
 
-    public PessoaResponsavelResponse create(PessoaResponsavelRequest pessoaReponsavelRequest, UUID pessoaId) {
-        Pessoa pessoaExistente = pessoaService.getById(pessoaId);
+    public PessoaResponsavelResponse create(PessoaResponsavelRequest pessoaReponsavelRequest) {
+        Pessoa pessoaExistente = pessoaService.getById(pessoaReponsavelRequest.getPessoaId());
         PessoaResponsavel pessoaResponsavel = pessoaResponsavelMapper.toEntity(pessoaReponsavelRequest, pessoaExistente);
         return pessoaResponsavelMapper.toResponse(repository.save(pessoaResponsavel));
 

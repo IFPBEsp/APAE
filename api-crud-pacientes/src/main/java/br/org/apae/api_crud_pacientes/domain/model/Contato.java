@@ -36,7 +36,7 @@ public class Contato {
     @Column(name = "naturalidade", nullable = false)
     private String naturalidade;
 
-    @OneToOne
+    @OneToOne // Contato único para cada pessoa
     @JoinColumn(name = "pessoa_id")
     private Pessoa pessoa;
 

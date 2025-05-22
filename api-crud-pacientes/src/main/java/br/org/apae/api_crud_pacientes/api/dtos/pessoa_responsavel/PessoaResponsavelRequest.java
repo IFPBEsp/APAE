@@ -1,5 +1,7 @@
 package br.org.apae.api_crud_pacientes.api.dtos.pessoa_responsavel;
 
+import java.util.UUID;
+
 public class PessoaResponsavelRequest {
     private String ondeProcurar;
     private boolean vivo;
@@ -8,6 +10,23 @@ public class PessoaResponsavelRequest {
     private String cpf;
     private String emergencia;
     private String tipoResponsavel; // Enum as String
+    private UUID pessoaId;
+
+    public String getOndeProcurar() {
+        return ondeProcurar;
+    }
+
+    public void setOndeProcurar(String ondeProcurar) {
+        this.ondeProcurar = ondeProcurar;
+    }
+
+    public UUID getPessoaId() {
+        return pessoaId;
+    }
+
+    public void setPessoaId(UUID pessoaId) {
+        this.pessoaId = pessoaId;
+    }
 
     public String getOnde_Procurar() {
         return ondeProcurar;

@@ -1,5 +1,7 @@
 package br.org.apae.api_crud_pacientes.api.dtos.contato;
 
+import java.util.UUID;
+
 public class ContatoRequest {
     private String endereco_ativo;
     private String comprovante_residencia;
@@ -9,7 +11,16 @@ public class ContatoRequest {
     private String estado;
     private String cep;
     private String naturalidade;
+    private UUID pessoaId;
 
+
+    public UUID getPessoaId() {
+        return pessoaId;
+    }
+
+    public void setPessoaId(UUID pessoaId) {
+        this.pessoaId = pessoaId;
+    }
 
     public String getEndereco_ativo() {
         return endereco_ativo;

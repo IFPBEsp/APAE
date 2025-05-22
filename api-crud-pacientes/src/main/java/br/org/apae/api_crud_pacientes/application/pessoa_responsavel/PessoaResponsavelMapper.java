@@ -19,6 +19,13 @@ public class PessoaResponsavelMapper implements PessoaResponsavelInterface {
         pessoa_Responsavel.setCpf(request.getCpf());
         pessoa_Responsavel.setEmergencia(request.getEmergencia());
         pessoa_Responsavel.setPessoa(pessoa);
+        if (request.getTipoResponsavel() != null && !request.getTipoResponsavel().isEmpty()) {
+            pessoa_Responsavel.setTipoResponsavel(
+                PessoaResponsavel.tipo_responsavel.valueOf(request.getTipoResponsavel())
+            );
+        } else {
+            pessoa_Responsavel.setTipoResponsavel(null);
+        }
 
         return pessoa_Responsavel;
     }

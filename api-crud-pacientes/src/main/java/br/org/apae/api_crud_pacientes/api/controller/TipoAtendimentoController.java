@@ -26,10 +26,9 @@ public class TipoAtendimentoController {
     @PostMapping
     public ResponseEntity<TipoAtendimentoResponse> create(
             @RequestBody TipoAtendimentoRequest request,
-            @RequestParam UUID pessoaId,
             UriComponentsBuilder uriBuilder) {
 
-        TipoAtendimentoResponse response = tipoAtendimentoService.create(request, pessoaId);
+        TipoAtendimentoResponse response = tipoAtendimentoService.create(request);
         URI uri = uriBuilder.path("/tipo_atendimento/{id}").buildAndExpand(response.getId()).toUri();
 
         return ResponseEntity.created(uri).body(response);

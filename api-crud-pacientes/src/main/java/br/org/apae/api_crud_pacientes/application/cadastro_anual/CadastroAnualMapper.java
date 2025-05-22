@@ -17,6 +17,7 @@ public class CadastroAnualMapper implements CadastroAnualMapperInterface {
         cadastro.setMedicacoesContinuas(request.getMedicacoesContinuas());
         cadastro.setHistoricoDoencas(request.getHistoricoDoencas());
         cadastro.setRendaFamiliar(request.getRendaFamiliar());
+        cadastro.setPessoa(pessoa);
         return cadastro;
     }
 
