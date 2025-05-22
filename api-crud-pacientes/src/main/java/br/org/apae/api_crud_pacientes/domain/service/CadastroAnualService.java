@@ -11,44 +11,51 @@ import jakarta.persistence.EntityNotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service
 public class CadastroAnualService {
 
-    private final CadastroAnualRepository repository;
+    private final CadastroAnualRepository cadastroRepository;
     private final PessoaRepository pessoaRepository;
-    private final CadastroAnualMapper mapper;
+    private final CadastroAnualMapper cadastroMapper;
+    private final PessoaService pessoaService;
 
     public CadastroAnualService(CadastroAnualRepository repository,
                                 PessoaRepository pessoaRepository,
-                                CadastroAnualMapper mapper) {
-        this.repository = repository;
+                                CadastroAnualMapper mapper,
+                                PessoaService pessoaService) {
+        this.cadastroRepository = repository;
         this.pessoaRepository = pessoaRepository;
-        this.mapper = mapper;
+        this.cadastroMapper = mapper;
+        this.pessoaService = pessoaService;
     }
 
-    public CadastroAnual create(CadastroAnualRequest dto) {
-        CadastroAnual cadastro = mapper.toEntity(dto);
-        return repository.save(cadastro);
+    public CadastroAnualResponse create(CadastroAnualRequest request, UUID pessoaId) {
+        Pessoa pessoa = pessoaService.getById(pessoaId);
+        CadastroAnual cadastro = cadastroMapper.toEntity(request, pessoa);
+        return cadastroMapper.toResponse(cadastroRepository.save(cadastro));
     }
 
-    public CadastroAnualResponse findById(UUID id) {
-        CadastroAnual cadastro = repository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("Cadastro não encontrado"));
-        return mapper.toDTO(cadastro);
+    public CadastroAnualResponse getById(UUID id) {
+        Optional<CadastroAnual> cadastroOptional = cadastroRepository.findById(id);
+        if (cadastroOptional.isEmpty()) {
+            throw new EntityNotFoundException("Cadastro Anual não encontrado.");
+        }
+        return cadastroMapper.toResponse(cadastroOptional.get());
     }
 
-    public List<CadastroAnualResponse> findAll() {
-        return repository.findAll()
+    public List<CadastroAnualResponse> getAll() {
+        return cadastroRepository.findAll()
                 .stream()
-                .map(mapper::toDTO)
+                .map(cadastroMapper::toResponse)
                 .collect(Collectors.toList());
     }
 
     public CadastroAnualResponse update(UUID id, CadastroAnualRequest dto) {
-        CadastroAnual cadastro = repository.findById(id)
+        CadastroAnual cadastro = cadastroRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Cadastro não encontrado"));
 
         Pessoa pessoa = pessoaRepository.findById(dto.getPessoaId())
@@ -61,13 +68,13 @@ public class CadastroAnualService {
         cadastro.setRendaFamiliar(dto.getRendaFamiliar());
         cadastro.setPessoa(pessoa);
 
-        repository.save(cadastro);
-        return mapper.toDTO(cadastro);
+        cadastroRepository.save(cadastro);
+        return cadastroMapper.toResponse(cadastro);
     }
 
     public void delete(UUID id) {
-        CadastroAnual cadastro = repository.findById(id)
+        CadastroAnual cadastro = cadastroRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Cadastro não encontrado"));
-        repository.delete(cadastro);
+        cadastroRepository.delete(cadastro);
     }
 }

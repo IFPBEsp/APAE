@@ -10,6 +10,7 @@ public class ContatoRequest {
     private String cep;
     private String naturalidade;
 
+
     public String getEndereco_ativo() {
         return endereco_ativo;
     }

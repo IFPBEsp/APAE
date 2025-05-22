@@ -22,7 +22,7 @@ public class VacinaController {
     }
 
     @PostMapping
-    public ResponseEntity<VacinaResponse> criar(@RequestBody VacinaRequest request, 
+    public ResponseEntity<VacinaResponse> create(@RequestBody VacinaRequest request,
     @RequestParam UUID pessoaId, UriComponentsBuilder uriBuilder) {
         VacinaResponse response = vacinaService.create(request, pessoaId);
         URI uri = uriBuilder.path("/vacinas/{id}").buildAndExpand(response.getId()).toUri();
@@ -30,25 +30,25 @@ public class VacinaController {
     }
 
     @GetMapping
-    public ResponseEntity<List<VacinaResponse>> listarTodas() {
+    public ResponseEntity<List<VacinaResponse>> getAll() {
         List<VacinaResponse> vacinas = vacinaService.getAll();
         return ResponseEntity.ok(vacinas);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<VacinaResponse> buscarPorId(@PathVariable UUID id) {
+    public ResponseEntity<VacinaResponse> getById(@PathVariable UUID id) {
         VacinaResponse response = vacinaService.getById(id);
         return ResponseEntity.ok(response);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<VacinaResponse> atualizar(@PathVariable UUID id, @RequestBody VacinaRequest request) {
+    public ResponseEntity<VacinaResponse> update(@PathVariable UUID id, @RequestBody VacinaRequest request) {
         VacinaResponse response = vacinaService.update(id, request);
         return ResponseEntity.ok(response);
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deletar(@PathVariable UUID id) {
+    public ResponseEntity<Void> delete(@PathVariable UUID id) {
         vacinaService.delete(id);
         return ResponseEntity.noContent().build();
     }

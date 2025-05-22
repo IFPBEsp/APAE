@@ -11,10 +11,4 @@ import java.util.UUID;
 public interface PessoaResponsavelInterface {
     PessoaResponsavel toEntity(PessoaResponsavelRequest request, Pessoa pessoa);
     PessoaResponsavelResponse toResponse(PessoaResponsavel request);
-    // PessoaResponsavelResponse buscarPorId(UUID id);
-    // PessoaResponsavelResponse buscarPorNome(String nome);
-    // PessoaResponsavelResponse buscarPorCPF(String cpf);
-    // List<PessoaResponsavelResponse> listarTodos();
-    // PessoaResponsavelResponse atualizar(UUID id, PessoaResponsavelRequest request);
-    // void deletar(UUID id);
 }

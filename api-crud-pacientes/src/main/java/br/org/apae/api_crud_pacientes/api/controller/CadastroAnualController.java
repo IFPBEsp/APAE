@@ -26,23 +26,24 @@ public class CadastroAnualController {
     @PostMapping
     public ResponseEntity<CadastroAnualResponse> create(
             @Valid @RequestBody CadastroAnualRequest dto,
+            @RequestParam UUID pessoaId,
             UriComponentsBuilder uriBuilder) {
 
-        CadastroAnual response = service.create(dto);
+        CadastroAnualResponse response = service.create(dto, pessoaId);
         URI uri = uriBuilder.path("/api/cadastros-anual/{id}").buildAndExpand(response.getId()).toUri();
-        CadastroAnualResponse cadastroAnualResponse = service.findById(response.getId());
+        CadastroAnualResponse cadastroAnualResponse = service.getById(response.getId());
         return ResponseEntity.created(uri).body(cadastroAnualResponse);
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<CadastroAnualResponse> getById(@PathVariable UUID id) {
-        CadastroAnualResponse response = service.findById(id);
+        CadastroAnualResponse response = service.getById(id);
         return ResponseEntity.ok(response);
     }
 
     @GetMapping
     public ResponseEntity<List<CadastroAnualResponse>> getAll() {
-        List<CadastroAnualResponse> responses = service.findAll();
+        List<CadastroAnualResponse> responses = service.getAll();
         return ResponseEntity.ok(responses);
     }
 
