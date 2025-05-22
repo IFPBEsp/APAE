@@ -1,4 +1,4 @@
-package br.org.apae.documentos_pessoais_digitalizados.infrastructure.configuration;
+package br.org.apae.documentos_pessoais_digitalizados.infrastructure.config;
 
 import io.minio.MinioClient;
 import org.springframework.beans.factory.annotation.Value;
