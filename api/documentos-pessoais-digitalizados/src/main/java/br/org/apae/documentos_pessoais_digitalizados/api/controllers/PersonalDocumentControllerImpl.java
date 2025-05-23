@@ -10,7 +10,9 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 
 @RestController
 @RequestMapping("api/v1/documentos-pessoais")
@@ -24,9 +26,18 @@ public class PersonalDocumentControllerImpl implements PersonalDocumentControlle
     }
 
     @Override
+    @Operation(
+        summary = "Anexa um documento pessoal",
+        description = "Permite anexar um documento pessoal ao paciente usando um arquivo Multipart e o tipo de documento."
+    )
+    @ApiResponses({
+        @ApiResponse(responseCode = "201", description = "Documento criado com sucesso"),
+        @ApiResponse(responseCode = "400", description = "Requisição inválida"),
+        @ApiResponse(responseCode = "500", description = "Erro interno do servidor")
+    })
     @PostMapping(value = "/{patientId}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<Void> attachPersonalDocument(
-            @PathVariable  String patientId,
+            @PathVariable String patientId,
             @RequestPart String documentType,
             @RequestPart MultipartFile file
     ) {
@@ -36,6 +47,15 @@ public class PersonalDocumentControllerImpl implements PersonalDocumentControlle
     }
 
     @Override
+    @Operation(
+        summary = "Lista todos os documentos pessoais do paciente",
+        description = "Retorna todos os documentos associados a um paciente específico."
+    )
+    @ApiResponses({
+        @ApiResponse(responseCode = "200", description = "Documentos retornados com sucesso"),
+        @ApiResponse(responseCode = "404", description = "Paciente não encontrado"),
+        @ApiResponse(responseCode = "500", description = "Erro interno do servidor")
+    })
     @GetMapping("/{patientId}/documentos")
     public ResponseEntity<PersonalDocumentResDTO> listPersonalDocuments(@PathVariable String patientId) {
         PersonalDocumentResDTO documentsDTO = this.personalDocumentService.listPersonalDocument(patientId);
@@ -43,23 +63,60 @@ public class PersonalDocumentControllerImpl implements PersonalDocumentControlle
     }
 
     @Override
+    @Operation(
+        summary = "Lista documento pessoal por tipo",
+        description = "Retorna o documento de um paciente filtrado pelo tipo de documento."
+    )
+    @ApiResponses({
+        @ApiResponse(responseCode = "200", description = "Documento retornado com sucesso"),
+        @ApiResponse(responseCode = "404", description = "Documento ou paciente não encontrado"),
+        @ApiResponse(responseCode = "500", description = "Erro interno do servidor")
+    })
     @GetMapping("/{patientId}")
-    public ResponseEntity<PersonalDocumentResDTO> listPersonalDocumentByType(@PathVariable String patientId, @RequestParam("tipo") String documentTpe) {
+    public ResponseEntity<PersonalDocumentResDTO> listPersonalDocumentByType(
+            @PathVariable String patientId,
+            @RequestParam("tipo") String documentTpe
+    ) {
         PersonalDocumentResDTO resDTO = this.personalDocumentService.listPersonalDocumentByType(patientId, PersonalDocumentType.valueOf(documentTpe));
         return ResponseEntity.ok(resDTO);
     }
 
     @Override
+    @Operation(
+        summary = "Visualiza um documento pessoal",
+        description = "Retorna o arquivo de imagem do documento pessoal do paciente para visualização."
+    )
+    @ApiResponses({
+        @ApiResponse(responseCode = "200", description = "Documento retornado com sucesso"),
+        @ApiResponse(responseCode = "404", description = "Documento não encontrado"),
+        @ApiResponse(responseCode = "500", description = "Erro interno do servidor")
+    })
     @GetMapping(value = "/{patientId}/vizualizar", produces = MediaType.IMAGE_PNG_VALUE)
-    public ResponseEntity<byte[]> viewPatientPersonalDocument(@PathVariable String patientId, @RequestParam String fileName) {
+    public ResponseEntity<byte[]> viewPatientPersonalDocument(
+            @PathVariable String patientId,
+            @RequestParam String fileName
+    ) {
         byte[] file = this.personalDocumentService.viewPatientPersonalDocuments(patientId, fileName);
         return ResponseEntity.ok(file);
     }
 
     @Override
+    @Operation(
+        summary = "Deleta um documento pessoal",
+        description = "Remove permanentemente um documento pessoal de um paciente com base no nome do arquivo."
+    )
+    @ApiResponses({
+        @ApiResponse(responseCode = "204", description = "Documento deletado com sucesso"),
+        @ApiResponse(responseCode = "404", description = "Documento ou paciente não encontrado"),
+        @ApiResponse(responseCode = "500", description = "Erro interno do servidor")
+    })
     @DeleteMapping("/{patientId}")
-    public ResponseEntity<Void> deleteDocument(@PathVariable String patientId, @RequestParam String fileName) {
+    public ResponseEntity<Void> deleteDocument(
+            @PathVariable String patientId,
+            @RequestParam String fileName
+    ) {
         this.personalDocumentService.deleteDocument(patientId, fileName);
         return ResponseEntity.noContent().build();
     }
 }
+
