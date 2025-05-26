@@ -1,7 +1,7 @@
 package br.org.apae.api_crud_pacientes.api.controller;
 
-import br.org.apae.api_crud_pacientes.api.dtos.contato.ContatoRequest;
-import br.org.apae.api_crud_pacientes.api.dtos.contato.ContatoResponse;
+import br.org.apae.api_crud_pacientes.api.dtos.request.ContatoRequest;
+import br.org.apae.api_crud_pacientes.api.dtos.response.ContatoResponse;
 import br.org.apae.api_crud_pacientes.domain.service.ContatoService;
 
 import org.springframework.data.domain.Page;

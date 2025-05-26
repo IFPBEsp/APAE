@@ -1,264 +1,120 @@
 package br.org.apae.api_crud_pacientes.domain.model;
 
-import jakarta.persistence.*;
 import java.time.LocalDate;
 import java.util.List;
-import java.util.Objects;
 import java.util.UUID;
 
-@Entity
-@Table(name = "pessoas")
 public class Pessoa {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
     private UUID id;
-
-    @Column(name = "nome_completo", nullable = false)
-    private String nome_completo;
-
-    @Column(name = "data_nascimento", nullable = false)
-    private LocalDate data_nascimento;
-
-    @Column(name = "num_registro_nasc", nullable = false)
-    private String num_registro_nasc;
-
-    @Column(name = "FLS", nullable = false)
+    private String nomeCompleto;
+    private LocalDate dataNascimento;
+    private String numRegistroNasc;
     private String fls;
-
-    @Column(name = "livro", nullable = false)
     private String livro;
-
-    @Column(name = "cartorio", nullable = false)
     private String cartorio;
-
-    @Column(name = "CPF", nullable = false)
     private String cpf;
-
-    @Column(name = "RG", nullable = false)
     private String rg;
-
-    @Column(name = "data_emissão_rg", nullable = false)
-    private LocalDate data_emissao_rg;
-
-    @Column(name = "orgao_emissor_rg", nullable = false)
-    private String orgao_emissor_rg;
-
-    @Column(name = "CNS", nullable = false)
+    private LocalDate dataEmissaoRg;
+    private String orgaoEmissorRg;
     private String cns;
-
-    @Column(name = "NIS", nullable = false)
     private String nis;
-
-    @Column(name = "data_cadastramento", nullable = false)
-    private LocalDate data_cadastramento;
-
-    @OneToMany(mappedBy = "pessoa", cascade = CascadeType.ALL)
+    private LocalDate dataCadastramento;
     private List<PessoaResponsavel> responsaveis;
-
-    @OneToMany(mappedBy = "pessoa", cascade = CascadeType.ALL)
     private List<CadastroAnual> cadastrosAnuais;
-
-    @OneToMany(mappedBy = "pessoa", cascade = CascadeType.ALL)
     private List<Vacina> vacinacoes;
-
-    @OneToMany(mappedBy = "pessoa", cascade = CascadeType.ALL)
     private List<TipoDeficiencia> deficiencias;
-
-    @OneToMany(mappedBy = "pessoa", cascade = CascadeType.ALL)
     private List<TipoAtendimento> tiposAtendimentos;
-
-    @OneToOne(mappedBy = "pessoa", cascade = CascadeType.ALL)
     private Contato contato;
 
+    public Pessoa() {}
 
-    public UUID getId() {
-        return id;
-    }
-
-    public String getNome_completo() {
-        return nome_completo;
-    }
-
-    public void setNome_completo(String nome_completo) {
-        this.nome_completo = nome_completo;
-    }
-
-    public LocalDate getData_nascimento() {
-        return data_nascimento;
-    }
-
-    public void setData_nascimento(LocalDate data_nascimento) {
-        this.data_nascimento = data_nascimento;
-    }
-
-    public String getNum_registro_nasc() {
-        return num_registro_nasc;
-    }
-
-    public void setNum_registro_nasc(String num_registro_nasc) {
-        this.num_registro_nasc = num_registro_nasc;
-    }
-
-    public String getFls() {
-        return fls;
-    }
-
-    public void setFls(String fls) {
+    public Pessoa(UUID id, String nomeCompleto, LocalDate dataNascimento, String numRegistroNasc, String fls, String livro, String cartorio, String cpf, String rg, LocalDate dataEmissaoRg, String orgaoEmissorRg, String cns, String nis, LocalDate dataCadastramento, List<PessoaResponsavel> responsaveis, List<CadastroAnual> cadastrosAnuais, List<Vacina> vacinacoes, List<TipoDeficiencia> deficiencias, List<TipoAtendimento> tiposAtendimentos, Contato contato) {
+        this.id = id;
+        this.nomeCompleto = nomeCompleto;
+        this.dataNascimento = dataNascimento;
+        this.numRegistroNasc = numRegistroNasc;
         this.fls = fls;
-    }
-
-    public String getLivro() {
-        return livro;
-    }
-
-    public void setLivro(String livro) {
         this.livro = livro;
-    }
-
-    public String getCartorio() {
-        return cartorio;
-    }
-
-    public void setCartorio(String cartorio) {
         this.cartorio = cartorio;
-    }
-
-    public String getCpf() {
-        return cpf;
-    }
-
-    public void setCpf(String cpf) {
         this.cpf = cpf;
-    }
-
-    public String getRg() {
-        return rg;
-    }
-
-    public void setRg(String rg) {
         this.rg = rg;
-    }
-
-    public LocalDate getData_emissao_rg() {
-        return data_emissao_rg;
-    }
-
-    public void setData_emissao_rg(LocalDate data_emissao_rg) {
-        this.data_emissao_rg = data_emissao_rg;
-    }
-
-    public String getOrgao_emissor_rg() {
-        return orgao_emissor_rg;
-    }
-
-    public void setOrgao_emissor_rg(String orgao_emissor_rg) {
-        this.orgao_emissor_rg = orgao_emissor_rg;
-    }
-
-    public String getCns() {
-        return cns;
-    }
-
-    public void setCns(String cns) {
+        this.dataEmissaoRg = dataEmissaoRg;
+        this.orgaoEmissorRg = orgaoEmissorRg;
         this.cns = cns;
-    }
-
-    public String getNis() {
-        return nis;
-    }
-
-    public void setNis(String nis) {
         this.nis = nis;
-    }
-
-    public LocalDate getData_cadastramento() {
-        return data_cadastramento;
-    }
-
-    public void setData_cadastramento(LocalDate data_cadastramento) {
-        this.data_cadastramento = data_cadastramento;
-    }
-
-    public List<PessoaResponsavel> getResponsaveis() {
-        return responsaveis;
-    }
-
-    public void setResponsaveis(List<PessoaResponsavel> responsaveis) {
+        this.dataCadastramento = dataCadastramento;
         this.responsaveis = responsaveis;
-    }
-
-    public List<CadastroAnual> getCadastrosAnuais() {
-        return cadastrosAnuais;
-    }
-
-    public void setCadastrosAnuais(List<CadastroAnual> cadastrosAnuais) {
         this.cadastrosAnuais = cadastrosAnuais;
-    }
-
-    public List<Vacina> getVacinacoes() {
-        return vacinacoes;
-    }
-
-    public void setVacinacoes(List<Vacina> vacinacoes) {
         this.vacinacoes = vacinacoes;
-    }
-
-    public List<TipoDeficiencia> getDeficiencias() {
-        return deficiencias;
-    }
-
-    public void setDeficiencias(List<TipoDeficiencia> deficiencias) {
         this.deficiencias = deficiencias;
-    }
-
-    public List<TipoAtendimento> getTiposAtendimentos() {
-        return tiposAtendimentos;
-    }
-
-    public void setTiposAtendimentos(List<TipoAtendimento> tiposAtendimentos) {
         this.tiposAtendimentos = tiposAtendimentos;
-    }
-
-    public Contato getContato() {
-        return contato;
-    }
-
-    public void setContato(Contato contato) {
         this.contato = contato;
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (o == null || getClass() != o.getClass()) return false;
-        Pessoa pessoa = (Pessoa) o;
-        return Objects.equals(id, pessoa.id)
-                && Objects.equals(nome_completo, pessoa.nome_completo)
-                && Objects.equals(data_nascimento, pessoa.data_nascimento)
-                && Objects.equals(num_registro_nasc, pessoa.num_registro_nasc)
-                && Objects.equals(cpf, pessoa.cpf)
-                && Objects.equals(rg, pessoa.rg)
-                && Objects.equals(cns, pessoa.cns)
-                && Objects.equals(nis, pessoa.nis);
+    public Pessoa(String nomeCompleto, LocalDate dataNascimento, String cpf) {
+        this.nomeCompleto = nomeCompleto;
+        this.dataNascimento = dataNascimento;
+        this.cpf = cpf;
     }
 
-    @Override
-    public int hashCode() {
-        return Objects.hash(id, nome_completo, data_nascimento, num_registro_nasc, cpf, rg, cns, nis);
-    }
+    public UUID getId() { return id; }
+    public void setId(UUID id) { this.id = id; }
 
-    @Override
-    public String toString() {
-        return "Pessoa{" +
-                ", nome_completo='" + nome_completo + '\'' +
-                ", data_nascimento=" + data_nascimento +
-                ", num_registro_nasc='" + num_registro_nasc + '\'' +
-                ", cpf='" + cpf + '\'' +
-                ", rg='" + rg + '\'' +
-                ", cns='" + cns + '\'' +
-                ", nis='" + nis + '\'' +
-                '}';
-    }
+    public String getNomeCompleto() { return nomeCompleto; }
+    public void setNomeCompleto(String nomeCompleto) { this.nomeCompleto = nomeCompleto; }
 
+    public LocalDate getDataNascimento() { return dataNascimento; }
+    public void setDataNascimento(LocalDate dataNascimento) { this.dataNascimento = dataNascimento; }
 
+    public String getNumRegistroNasc() { return numRegistroNasc; }
+    public void setNumRegistroNasc(String numRegistroNasc) { this.numRegistroNasc = numRegistroNasc; }
+
+    public String getFls() { return fls; }
+    public void setFls(String fls) { this.fls = fls; }
+
+    public String getLivro() { return livro; }
+    public void setLivro(String livro) { this.livro = livro; }
+
+    public String getCartorio() { return cartorio; }
+    public void setCartorio(String cartorio) { this.cartorio = cartorio; }
+
+    public String getCpf() { return cpf; }
+    public void setCpf(String cpf) { this.cpf = cpf; }
+
+    public String getRg() { return rg; }
+    public void setRg(String rg) { this.rg = rg; }
+
+    public LocalDate getDataEmissaoRg() { return dataEmissaoRg; }
+    public void setDataEmissaoRg(LocalDate dataEmissaoRg) { this.dataEmissaoRg = dataEmissaoRg; }
+
+    public String getOrgaoEmissorRg() { return orgaoEmissorRg; }
+    public void setOrgaoEmissorRg(String orgaoEmissorRg) { this.orgaoEmissorRg = orgaoEmissorRg; }
+
+    public String getCns() { return cns; }
+    public void setCns(String cns) { this.cns = cns; }
+
+    public String getNis() { return nis; }
+    public void setNis(String nis) { this.nis = nis; }
+
+    public LocalDate getDataCadastramento() { return dataCadastramento; }
+    public void setDataCadastramento(LocalDate dataCadastramento) { this.dataCadastramento = dataCadastramento; }
+
+    public List<PessoaResponsavel> getResponsaveis() { return responsaveis; }
+    public void setResponsaveis(List<PessoaResponsavel> responsaveis) { this.responsaveis = responsaveis; }
+
+    public List<CadastroAnual> getCadastrosAnuais() { return cadastrosAnuais; }
+    public void setCadastrosAnuais(List<CadastroAnual> cadastrosAnuais) { this.cadastrosAnuais = cadastrosAnuais; }
+
+    public List<Vacina> getVacinacoes() { return vacinacoes; }
+    public void setVacinacoes(List<Vacina> vacinacoes) { this.vacinacoes = vacinacoes; }
+
+    public List<TipoDeficiencia> getDeficiencias() { return deficiencias; }
+    public void setDeficiencias(List<TipoDeficiencia> deficiencias) { this.deficiencias = deficiencias; }
+
+    public List<TipoAtendimento> getTiposAtendimentos() { return tiposAtendimentos; }
+    public void setTiposAtendimentos(List<TipoAtendimento> tiposAtendimentos) { this.tiposAtendimentos = tiposAtendimentos; }
+
+    public Contato getContato() { return contato; }
+    public void setContato(Contato contato) { this.contato = contato; }
 }

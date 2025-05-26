@@ -1,29 +1,31 @@
-package br.org.apae.api_crud_pacientes.domain.service;
 
-import br.org.apae.api_crud_pacientes.api.dtos.vacina.VacinaRequest;
-import br.org.apae.api_crud_pacientes.api.dtos.vacina.VacinaResponse;
-import br.org.apae.api_crud_pacientes.application.vacina.VacinaMapperInterface;
-import br.org.apae.api_crud_pacientes.domain.model.Pessoa;
-import br.org.apae.api_crud_pacientes.domain.model.Vacina;
-import br.org.apae.api_crud_pacientes.domain.repository.PessoaRepository;
-import br.org.apae.api_crud_pacientes.domain.repository.VacinaRepository;
-import jakarta.persistence.EntityNotFoundException;
-import org.springframework.stereotype.Service;
+package br.org.apae.api_crud_pacientes.domain.service;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
+import org.springframework.stereotype.Service;
+
+import br.org.apae.api_crud_pacientes.api.dtos.request.VacinaRequest;
+import br.org.apae.api_crud_pacientes.api.dtos.response.VacinaResponse;
+import br.org.apae.api_crud_pacientes.infrastructure.entity.PessoaEntity;
+import br.org.apae.api_crud_pacientes.infrastructure.entity.VacinaEntity;
+import br.org.apae.api_crud_pacientes.infrastructure.mapper.impl.VacinaMapper;
+import br.org.apae.api_crud_pacientes.infrastructure.percistency.jpa.PessoaRepositoryJpa;
+import br.org.apae.api_crud_pacientes.infrastructure.percistency.jpa.VacinaRepositoryJpa;
+import jakarta.persistence.EntityNotFoundException;
+
 @Service
 public class VacinaService {
 
-    private final VacinaRepository vacinaRepository;
-    private final PessoaRepository pessoaRepository;
-    private final VacinaMapperInterface vacinaMapper;
+    private final VacinaRepositoryJpa vacinaRepository;
+    private final PessoaRepositoryJpa pessoaRepository;
+    private final VacinaMapper vacinaMapper;
     private final PessoaService pessoaService;
 
-    public VacinaService(VacinaRepository vacinaRepository, PessoaRepository pessoaRepository, VacinaMapperInterface vacinaMapper, PessoaService pessoaService) {
+    public VacinaService(VacinaRepositoryJpa vacinaRepository, PessoaRepositoryJpa pessoaRepository, VacinaMapper vacinaMapper, PessoaService pessoaService) {
         this.vacinaRepository = vacinaRepository;
         this.pessoaRepository = pessoaRepository;
         this.vacinaMapper = vacinaMapper;
@@ -31,13 +33,13 @@ public class VacinaService {
     }
 
     public VacinaResponse create(VacinaRequest vacinaRequest) {
-        Pessoa pessoaExistente = pessoaService.getById(vacinaRequest.getPessoaId());
-        Vacina vacina = vacinaMapper.toEntity(vacinaRequest, pessoaExistente);
+        PessoaEntity pessoaExistente = pessoaService.getById(vacinaRequest.getPessoaId());
+        VacinaEntity vacina = vacinaMapper.toEntity(vacinaRequest, pessoaExistente);
         return vacinaMapper.toResponse(vacinaRepository.save(vacina));
     }
 
     public VacinaResponse getById(UUID id) {
-        Optional<Vacina> vacinaOptional = vacinaRepository.findById(id);
+        Optional<VacinaEntity> vacinaOptional = vacinaRepository.findById(id);
 
         if(vacinaOptional.isEmpty()) {
             throw new EntityNotFoundException("Vacina não encontrada.");
@@ -48,10 +50,10 @@ public class VacinaService {
     }
 
     public List<VacinaResponse> getAll(){
-        List<Vacina> vacinas = vacinaRepository.findAll();
+        List<VacinaEntity> vacinas = vacinaRepository.findAll();
         List<VacinaResponse> responses = new ArrayList<>();
 
-        for(Vacina vacina : vacinas) {
+        for(VacinaEntity vacina : vacinas) {
             responses.add(vacinaMapper.toResponse(vacina));
         }
 
@@ -59,20 +61,20 @@ public class VacinaService {
     }
 
     public VacinaResponse update(UUID id, VacinaRequest vacinaRequest) {
-        Optional<Vacina> vacinaOptional = vacinaRepository.findById(id);
-        Optional<Pessoa> pessoaOptional = pessoaRepository.findById(vacinaRequest.getPessoaId());
+        Optional<VacinaEntity> vacinaOptional = vacinaRepository.findById(id);
+        Optional<PessoaEntity> pessoaOptional = pessoaRepository.findById(vacinaRequest.getPessoaId());
 
         if(pessoaOptional.isEmpty() || vacinaOptional.isEmpty()){
             throw new EntityNotFoundException("Vacina não encontrada.");
         }
 
-        Vacina vacina = vacinaOptional.get();
+        VacinaEntity vacina = vacinaOptional.get();
 
         vacina.setNome(vacinaRequest.getNome());
         vacina.setDataAplicacao(vacinaRequest.getDataAplicacao());
         vacina.setPessoa(pessoaOptional.get());
 
-        Vacina vacinaAtualizada = vacinaRepository.save(vacina);
+        VacinaEntity vacinaAtualizada = vacinaRepository.save(vacina);
         return vacinaMapper.toResponse(vacinaAtualizada);
 
     }

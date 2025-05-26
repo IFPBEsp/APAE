@@ -1,20 +1,28 @@
 package br.org.apae.api_crud_pacientes.api.controller;
 
-import br.org.apae.api_crud_pacientes.api.dtos.pessoa.PessoaRequest;
-import br.org.apae.api_crud_pacientes.api.dtos.pessoa.PessoaResponse;
-import br.org.apae.api_crud_pacientes.application.pessoa.PessoaMapper;
-import br.org.apae.api_crud_pacientes.domain.model.Pessoa;
-import br.org.apae.api_crud_pacientes.domain.service.PessoaService;
+import java.net.URI;
+import java.util.UUID;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.util.UriComponentsBuilder;
 
-import java.net.URI;
-import java.util.UUID;
+import br.org.apae.api_crud_pacientes.api.dtos.request.PessoaRequest;
+import br.org.apae.api_crud_pacientes.api.dtos.response.PessoaResponse;
+import br.org.apae.api_crud_pacientes.domain.service.PessoaService;
+import br.org.apae.api_crud_pacientes.infrastructure.entity.PessoaEntity;
+import br.org.apae.api_crud_pacientes.infrastructure.mapper.impl.PessoaMapper;
 
 @RestController
 @RequestMapping("/pessoas")
@@ -32,7 +40,7 @@ public class PessoaController {
             @RequestBody PessoaRequest request,
             UriComponentsBuilder uriBuilder) {
 
-        Pessoa pessoa = pessoaService.create(request);
+        PessoaEntity pessoa = pessoaService.create(request);
         URI uri = uriBuilder.path("/pessoas/{id}").buildAndExpand(pessoa.getId()).toUri();
 
         PessoaResponse response = pessoaMapper.toResponse(pessoaService.getById(pessoa.getId()));

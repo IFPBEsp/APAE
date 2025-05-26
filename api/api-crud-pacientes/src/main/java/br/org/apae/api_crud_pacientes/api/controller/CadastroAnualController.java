@@ -1,17 +1,24 @@
 package br.org.apae.api_crud_pacientes.api.controller;
 
-import br.org.apae.api_crud_pacientes.api.dtos.cadastro_anual.CadastroAnualRequest;
-import br.org.apae.api_crud_pacientes.api.dtos.cadastro_anual.CadastroAnualResponse;
-import br.org.apae.api_crud_pacientes.domain.model.CadastroAnual;
-import br.org.apae.api_crud_pacientes.domain.service.CadastroAnualService;
-import jakarta.validation.Valid;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
-import org.springframework.web.util.UriComponentsBuilder;
-
 import java.net.URI;
 import java.util.List;
 import java.util.UUID;
+
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.util.UriComponentsBuilder;
+
+import br.org.apae.api_crud_pacientes.api.dtos.request.CadastroAnualRequest;
+import br.org.apae.api_crud_pacientes.api.dtos.response.CadastroAnualResponse;
+import br.org.apae.api_crud_pacientes.domain.service.CadastroAnualService;
+import jakarta.validation.Valid;
 
 @RestController
 @RequestMapping("/api/cadastros-anual")

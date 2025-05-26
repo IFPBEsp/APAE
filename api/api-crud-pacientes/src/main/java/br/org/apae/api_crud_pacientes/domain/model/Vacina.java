@@ -1,76 +1,39 @@
 package br.org.apae.api_crud_pacientes.domain.model;
 
-import jakarta.persistence.*;
-
 import java.time.LocalDate;
-import java.util.Objects;
 import java.util.UUID;
 
-@Entity
-@Table(name = "vacinas")
 public class Vacina {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
     private UUID id;
-
-    @Column(name = "nome", nullable = false)
     private String nome;
-
-    @Column(name = "dataAplicacao", nullable = false)
     private LocalDate dataAplicacao;
-
-
-    @ManyToOne
-    @JoinColumn(name = "pessoa_id")
     private Pessoa pessoa;
 
-    public UUID getId() {
-        return id;
-    }
+    public Vacina() {}
 
-    public String getNome() {
-        return nome;
-    }
-
-    public void setNome(String nome) {
+    public Vacina(UUID id, String nome, LocalDate dataAplicacao, Pessoa pessoa) {
+        this.id = id;
         this.nome = nome;
-    }
-
-    public LocalDate getDataAplicacao() {
-        return dataAplicacao;
-    }
-
-    public void setDataAplicacao(LocalDate dataAplicacao) {
         this.dataAplicacao = dataAplicacao;
-    }
-
-    public Pessoa getPessoa() {
-        return pessoa;
-    }
-
-    public void setPessoa(Pessoa pessoa) {
         this.pessoa = pessoa;
     }
 
-    @Override
-    public String toString() {
-        return "Vacina{" +
-                "nome='" + nome + '\'' +
-                ", dataAplicacao=" + dataAplicacao +
-                ", pessoa=" + pessoa +
-                '}';
+    public Vacina(String nome, LocalDate dataAplicacao, Pessoa pessoa) {
+        this.nome = nome;
+        this.dataAplicacao = dataAplicacao;
+        this.pessoa = pessoa;
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (o == null || getClass() != o.getClass()) return false;
-        Vacina vacina = (Vacina) o;
-        return Objects.equals(id, vacina.id) && Objects.equals(nome, vacina.nome) && Objects.equals(dataAplicacao, vacina.dataAplicacao) && Objects.equals(pessoa, vacina.pessoa);
-    }
+    public UUID getId() { return id; }
+    public void setId(UUID id) { this.id = id; }
 
-    @Override
-    public int hashCode() {
-        return Objects.hash(id, nome, dataAplicacao, pessoa);
-    }
+    public String getNome() { return nome; }
+    public void setNome(String nome) { this.nome = nome; }
+
+    public LocalDate getDataAplicacao() { return dataAplicacao; }
+    public void setDataAplicacao(LocalDate dataAplicacao) { this.dataAplicacao = dataAplicacao; }
+
+    public Pessoa getPessoa() { return pessoa; }
+    public void setPessoa(Pessoa pessoa) { this.pessoa = pessoa; }
 }

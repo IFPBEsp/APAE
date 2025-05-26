@@ -1,15 +1,15 @@
 package br.org.apae.api_crud_pacientes.domain.repository;
 
-import java.util.UUID;
-
+import br.org.apae.api_crud_pacientes.domain.model.TipoDeficiencia;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.jpa.repository.JpaRepository;
+import java.util.UUID;
 
-import br.org.apae.api_crud_pacientes.domain.model.TipoDeficiencia;
-
-public interface TipoDeficienciaRepository extends JpaRepository<TipoDeficiencia, UUID> {
-
-    Page<TipoDeficiencia> findByDescricaoContainingIgnoreCase(String descricao, Pageable pageable);
-
+public interface TipoDeficienciaRepository {
+    TipoDeficiencia save(TipoDeficiencia tipoDeficiencia);
+    TipoDeficiencia findById(UUID id);
+    Page<TipoDeficiencia> findAll(Pageable pageable);
+    Page<TipoDeficiencia> findByDescricaoIgnoreCase(String descricao, Pageable pageable);
+    TipoDeficiencia update(TipoDeficiencia tipoDeficiencia);
+    void deleteById(UUID id);
 }

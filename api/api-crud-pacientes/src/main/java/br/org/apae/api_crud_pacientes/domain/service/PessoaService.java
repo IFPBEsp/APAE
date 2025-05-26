@@ -1,40 +1,41 @@
 package br.org.apae.api_crud_pacientes.domain.service;
 
-import br.org.apae.api_crud_pacientes.api.dtos.pessoa.PessoaRequest;
-import br.org.apae.api_crud_pacientes.api.dtos.pessoa.PessoaResponse;
-import br.org.apae.api_crud_pacientes.application.pessoa.PessoaMapper;
-import br.org.apae.api_crud_pacientes.domain.model.*;
-import br.org.apae.api_crud_pacientes.domain.repository.PessoaRepository;
-import jakarta.persistence.EntityNotFoundException;
+import java.util.Optional;
+import java.util.UUID;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import java.util.Optional;
-import java.util.UUID;
+import br.org.apae.api_crud_pacientes.api.dtos.request.PessoaRequest;
+import br.org.apae.api_crud_pacientes.api.dtos.response.PessoaResponse;
+import br.org.apae.api_crud_pacientes.infrastructure.entity.PessoaEntity;
+import br.org.apae.api_crud_pacientes.infrastructure.mapper.impl.PessoaMapper;
+import br.org.apae.api_crud_pacientes.infrastructure.percistency.jpa.PessoaRepositoryJpa;
+import jakarta.persistence.EntityNotFoundException;
 
 @Service
 public class PessoaService {
-    private final PessoaRepository pessoaRepository;
+    private final PessoaRepositoryJpa pessoaRepository;
     private final PessoaMapper pessoaMapper;
 
-    public PessoaService(PessoaRepository pessoaRepository, PessoaMapper pessoaMapper) {
+    public PessoaService(PessoaRepositoryJpa pessoaRepository, PessoaMapper pessoaMapper) {
         this.pessoaRepository = pessoaRepository;
         this.pessoaMapper = pessoaMapper;
     }
 
-    public Pessoa getById(UUID id) {
-        Optional<Pessoa> optionalPaciente = pessoaRepository.findById(id);
+    public PessoaEntity getById(UUID id) {
+        Optional<PessoaEntity> optionalPaciente = pessoaRepository.findById(id);
         if(optionalPaciente.isEmpty()){
             throw new EntityNotFoundException("Pessoa não encontrada");
         }
 
-        Pessoa pessoa = optionalPaciente.get();
+        PessoaEntity pessoa = optionalPaciente.get();
         return pessoa;
     }
 
-    public Pessoa create(PessoaRequest pessoaRequest) {
-        Pessoa pessoa = pessoaMapper.toEntity(pessoaRequest);
+    public PessoaEntity create(PessoaRequest pessoaRequest) {
+        PessoaEntity pessoa = pessoaMapper.toEntity(pessoaRequest);
         return pessoaRepository.save(pessoa);
 
     }
@@ -57,28 +58,28 @@ public class PessoaService {
     }
 
     public PessoaResponse update(UUID id, PessoaRequest request) {
-        Optional<Pessoa> optionalPessoa = pessoaRepository.findById(id);
-        Pessoa pessoaExistente;
+        Optional<PessoaEntity> optionalPessoa = pessoaRepository.findById(id);
+        PessoaEntity pessoaExistente;
 
         if (optionalPessoa.isPresent()) {
             pessoaExistente = optionalPessoa.get();
 
             // Atualiza os campos necessários
-            pessoaExistente.setNome_completo(request.getNome_completo());
+            pessoaExistente.setNomeCompleto(request.getNome_completo());
             pessoaExistente.setCpf(request.getCpf());
-            pessoaExistente.setData_nascimento(request.getData_nascimento());
-            pessoaExistente.setNum_registro_nasc(request.getNum_registro_nasc());
+            pessoaExistente.setDataNascimento(request.getData_nascimento());
+            pessoaExistente.setNumRegistroNasc(request.getNum_registro_nasc());
             pessoaExistente.setFls(request.getFls());
             pessoaExistente.setLivro(request.getLivro());
             pessoaExistente.setCartorio(request.getCartorio());
             pessoaExistente.setRg(request.getRg());
-            pessoaExistente.setData_emissao_rg(request.getData_emissao_rg());
-            pessoaExistente.setOrgao_emissor_rg(request.getOrgao_emissor_rg());
+            pessoaExistente.setDataEmissaoRg(request.getData_emissao_rg());
+            pessoaExistente.setOrgaoEmissorRg(request.getOrgao_emissor_rg());
             pessoaExistente.setCns(request.getCns());
             pessoaExistente.setNis(request.getNis());
-            pessoaExistente.setData_cadastramento(request.getData_cadastramento());
+            pessoaExistente.setDataCadastramento(request.getData_cadastramento());
 
-            Pessoa pessoaAtualizada = pessoaRepository.save(pessoaExistente);
+            PessoaEntity pessoaAtualizada = pessoaRepository.save(pessoaExistente);
             return pessoaMapper.toResponse(pessoaAtualizada);
 
         } else {

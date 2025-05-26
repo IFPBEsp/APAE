@@ -1,44 +1,45 @@
 package br.org.apae.api_crud_pacientes.domain.service;
 
-import br.org.apae.api_crud_pacientes.api.dtos.tipo_deficiencia.TipoDeficienciaRequest;
-import br.org.apae.api_crud_pacientes.api.dtos.tipo_deficiencia.TipoDeficienciaResponse;
-import br.org.apae.api_crud_pacientes.application.tipo_deficiencia.TipoDeficienciaMapper;
-import br.org.apae.api_crud_pacientes.domain.model.Pessoa;
-import br.org.apae.api_crud_pacientes.domain.model.TipoDeficiencia;
-import br.org.apae.api_crud_pacientes.domain.repository.TipoDeficienciaRepository;
-import jakarta.persistence.EntityNotFoundException;
+import java.util.Optional;
+import java.util.UUID;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import java.util.Optional;
-import java.util.UUID;
+import br.org.apae.api_crud_pacientes.api.dtos.request.TipoDeficienciaRequest;
+import br.org.apae.api_crud_pacientes.api.dtos.response.TipoDeficienciaResponse;
+import br.org.apae.api_crud_pacientes.infrastructure.entity.PessoaEntity;
+import br.org.apae.api_crud_pacientes.infrastructure.entity.TipoDeficienciaEntity;
+import br.org.apae.api_crud_pacientes.infrastructure.mapper.impl.TipoDeficienciaMapper;
+import br.org.apae.api_crud_pacientes.infrastructure.percistency.jpa.TipoDeficienciaRepositoryJpa;
+import jakarta.persistence.EntityNotFoundException;
 
 @Service
 public class TipoDeficienciaService {
-    private final TipoDeficienciaRepository tipoDeficienciaRepository;
+    private final TipoDeficienciaRepositoryJpa tipoDeficienciaRepository;
     private final TipoDeficienciaMapper tipoDeficienciaMapper;
     private final PessoaService pessoaService;
 
-    public TipoDeficienciaService(TipoDeficienciaRepository tipoDeficienciaRepository, TipoDeficienciaMapper tipoDeficienciaMapper, PessoaService pessoaService) {
+    public TipoDeficienciaService(TipoDeficienciaRepositoryJpa tipoDeficienciaRepository, TipoDeficienciaMapper tipoDeficienciaMapper, PessoaService pessoaService) {
         this.tipoDeficienciaRepository = tipoDeficienciaRepository;
         this.tipoDeficienciaMapper = tipoDeficienciaMapper;
         this.pessoaService = pessoaService;
     }
 
     public TipoDeficienciaResponse getById(UUID id) {
-        Optional<TipoDeficiencia> optionalTipoDeficiencia = tipoDeficienciaRepository.findById(id);
+        Optional<TipoDeficienciaEntity> optionalTipoDeficiencia = tipoDeficienciaRepository.findById(id);
         if (optionalTipoDeficiencia.isEmpty()) {
             throw new EntityNotFoundException("Tipo de Deficiência não encontrado");
         }
 
-        TipoDeficiencia tipoDeficiencia = optionalTipoDeficiencia.get();
+        TipoDeficienciaEntity tipoDeficiencia = optionalTipoDeficiencia.get();
         return tipoDeficienciaMapper.toResponse(tipoDeficiencia);
     }
 
     public TipoDeficienciaResponse create(TipoDeficienciaRequest request) {
-        Pessoa pessoaExistente = pessoaService.getById(request.getPessoaId());
-        TipoDeficiencia tipoDeficiencia = tipoDeficienciaMapper.toEntity(request, pessoaExistente);
+        PessoaEntity pessoaExistente = pessoaService.getById(request.getPessoaId());
+        TipoDeficienciaEntity tipoDeficiencia = tipoDeficienciaMapper.toEntity(request, pessoaExistente);
         return tipoDeficienciaMapper.toResponse(tipoDeficienciaRepository.save(tipoDeficiencia));
     }
 
@@ -54,8 +55,8 @@ public class TipoDeficienciaService {
     }
 
     public TipoDeficienciaResponse update(UUID id, TipoDeficienciaRequest request) {
-        Optional<TipoDeficiencia> optionalTipoDeficiencia = tipoDeficienciaRepository.findById(id);
-        TipoDeficiencia tipoDeficienciaExistente;
+        Optional<TipoDeficienciaEntity> optionalTipoDeficiencia = tipoDeficienciaRepository.findById(id);
+        TipoDeficienciaEntity tipoDeficienciaExistente;
 
         if (optionalTipoDeficiencia.isPresent()) {
             tipoDeficienciaExistente = optionalTipoDeficiencia.get();
@@ -63,7 +64,7 @@ public class TipoDeficienciaService {
             // Atualiza os campos necessários
             tipoDeficienciaExistente.setDescricao(request.getDescricao());
 
-            TipoDeficiencia tipoDeficienciaAtualizado = tipoDeficienciaRepository.save(tipoDeficienciaExistente);
+            TipoDeficienciaEntity tipoDeficienciaAtualizado = tipoDeficienciaRepository.save(tipoDeficienciaExistente);
             return tipoDeficienciaMapper.toResponse(tipoDeficienciaAtualizado);
 
         } else {
