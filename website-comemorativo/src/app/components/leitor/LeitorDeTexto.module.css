@@ -1,0 +1,78 @@
+.container {
+    padding: 20px;
+    font-family: Arial, sans-serif;
+}
+
+.buttonGroup {
+    margin-bottom: 10px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.button {
+    padding: 10px 20px;
+    font-size: 15px;
+    cursor: pointer;
+    border: none;
+    border-radius: 999px;
+    transition: background-color 0.3s ease, transform 0.1s ease;
+    color: white;
+    background-color: #165BAA;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 5px;
+}
+
+.button:hover {
+    background-color: #EB7616;
+    transform: scale(1.03);
+}
+
+.buttonActive:hover {
+    background-color: #13447D;
+    transform: scale(1.03);
+}
+
+.buttonActive {
+    background-color: #165BAA;
+}
+
+.buttonStop {
+    background-color: #FFE03E;
+
+}
+
+.buttonStop:hover {
+    background-color: #F5C800;
+    transform: scale(1.03);
+}
+
+.buttonPause {
+    background-color: #f4a261;
+}
+
+.buttonResume {
+    background-color: #165BAA;
+}
+
+.buttonResume:hover {
+    background-color: #13447D;
+    transform: scale(1.03);
+}
+
+.buttonVoice {
+    background-color: #f28c38;
+}
+
+.buttonVoiceActive {
+    background-color: #f28c38;
+    font-weight: bold;
+}
+
+.icon {
+  color: #fff;
+  width: 25px;
+  height: 25px;
+}

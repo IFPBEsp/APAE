@@ -1,11 +1,15 @@
 import React from 'react';
 import { Phone, Mail, Instagram, MapPin, Clock } from 'lucide-react';
 import Styles from './page.module.css';
+import LeitorDeTexto from '../../components/leitor/LeitorDeTexto';  
 
 const Contato: React.FC = () => {
   return (
     <div className={Styles.pageContainer}>
+       {/* Botão para ler o texto */}
       <h1 className={Styles.heading1}>Contato</h1>
+      <LeitorDeTexto texto="Título principal: Contato. Telefone: (83) 9 9383-3950, incluindo WhatsApp. Email: xxxxxx@gmail.com. Instagram: apaeesperanca_. 
+      Estamos localizados na Rua Santo Antonio, 491, bairro: Centro, cidade: Esperança. Horário de atendimento: Segunda à sexta, das 07:00h às 17:00h." />
       <div className={Styles.contactContainer}>
         <div className={Styles.contactSection}>
           <div className={Styles.flexRow}>
