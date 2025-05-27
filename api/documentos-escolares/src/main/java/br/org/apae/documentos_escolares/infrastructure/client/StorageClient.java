@@ -4,6 +4,8 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestClient;
 
+import java.util.UUID;
+
 @Component
 public class StorageClient {
 
@@ -15,7 +17,7 @@ public class StorageClient {
                 .build();
     }
 
-    public boolean existeBucket(String bucketNome) {
+    public boolean existeBucket(UUID bucketNome) {
         return Boolean.TRUE.equals(this.restClient.get()
                 .uri("/verificar/{bucketNome}", bucketNome)
                 .retrieve()
