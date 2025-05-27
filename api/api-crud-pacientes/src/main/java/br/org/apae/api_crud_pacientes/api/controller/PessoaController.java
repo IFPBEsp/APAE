@@ -1,12 +1,8 @@
 package br.org.apae.api_crud_pacientes.api.controller;
 
-import br.org.apae.api_crud_pacientes.api.dtos.request.PessoaRequest;
-import br.org.apae.api_crud_pacientes.api.dtos.response.PessoaResponse;
-import br.org.apae.api_crud_pacientes.domain.service.PessoaService;
-import br.org.apae.api_crud_pacientes.infrastructure.entity.PessoaEntity;
-import br.org.apae.api_crud_pacientes.infrastructure.mapper.impl.PessoaMapper;
 import java.net.URI;
 import java.util.UUID;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
@@ -18,9 +14,14 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.util.UriComponentsBuilder;
+
+import br.org.apae.api_crud_pacientes.api.dtos.request.PessoaRequest;
+import br.org.apae.api_crud_pacientes.api.dtos.response.PessoaResponse;
+import br.org.apae.api_crud_pacientes.domain.service.PessoaService;
+import br.org.apae.api_crud_pacientes.infrastructure.entity.PessoaEntity;
+import br.org.apae.api_crud_pacientes.infrastructure.mapper.impl.PessoaMapper;
 
 @RestController
 @RequestMapping("/pessoas")
@@ -53,11 +54,8 @@ public class PessoaController {
 
   @GetMapping
   public ResponseEntity<Page<PessoaResponse>> getAll(
-      @PageableDefault(size = 10) Pageable pageable,
-      @RequestParam(required = false) String cpf,
-      @RequestParam(required = false) String nome) {
-
-    Page<PessoaResponse> pessoas = pessoaService.getAll(pageable, cpf, nome);
+      @PageableDefault(size = 10) Pageable pageable) {
+    Page<PessoaResponse> pessoas = pessoaService.getAll(pageable);
     return ResponseEntity.ok(pessoas);
   }
 

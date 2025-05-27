@@ -13,14 +13,14 @@ public interface PessoaRepositoryJpa extends JpaRepository<PessoaEntity, UUID> {
   Page<PessoaEntity> findByCpfContaining(@Param("cpf") String cpf, Pageable pageable);
 
   @Query(
-      "SELECT p FROM PessoaEntity p WHERE LOWER(p.nome_completo) LIKE LOWER(CONCAT('%',"
-          + " :nome_completo, '%'))")
+      "SELECT p FROM PessoaEntity p WHERE LOWER(p.nomeCompleto) LIKE LOWER(CONCAT('%',"
+          + " :nomeCompleto, '%'))")
   Page<PessoaEntity> findByNomeCompletoContainingIgnoreCase(
-      @Param("nome_completo") String nome, Pageable pageable);
+      @Param("nomeCompleto") String nome, Pageable pageable);
 
   @Query(
-      "SELECT p FROM PessoaEntity p WHERE p.cpf LIKE %:cpf% AND LOWER(p.nome_completo) LIKE"
-          + " LOWER(CONCAT('%', :nome_completo, '%'))")
+      "SELECT p FROM PessoaEntity p WHERE p.cpf LIKE %:cpf% AND LOWER(p.nomeCompleto) LIKE"
+          + " LOWER(CONCAT('%', :nomeCompleto, '%'))")
   Page<PessoaEntity> findByCpfContainingAndNomeCompletoContainingIgnoreCase(
-      @Param("cpf") String cpf, @Param("nome_completo") String nome, Pageable pageable);
+      @Param("cpf") String cpf, @Param("nomeCompleto") String nome, Pageable pageable);
 }

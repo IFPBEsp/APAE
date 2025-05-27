@@ -37,21 +37,8 @@ public class PessoaService {
     return pessoaRepository.save(pessoa);
   }
 
-  public Page<PessoaResponse> getAll(Pageable pageable, String cpf, String nome) {
-
-    if (cpf != null && nome != null) {
-      return pessoaRepository
-          .findByCpfContainingAndNomeCompletoContainingIgnoreCase(cpf, nome, pageable)
-          .map(pessoaMapper::toResponse);
-    } else if (cpf != null) {
-      return pessoaRepository.findByCpfContaining(cpf, pageable).map(pessoaMapper::toResponse);
-    } else if (nome != null) {
-      return pessoaRepository
-          .findByNomeCompletoContainingIgnoreCase(nome, pageable)
-          .map(pessoaMapper::toResponse);
-    } else {
-      return pessoaRepository.findAll(pageable).map(pessoaMapper::toResponse);
-    }
+  public Page<PessoaResponse> getAll(Pageable pageable) {
+    return pessoaRepository.findAll(pageable).map(pessoaMapper::toResponse);
   }
 
   public PessoaResponse update(UUID id, PessoaRequest request) {

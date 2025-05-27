@@ -38,10 +38,10 @@ public class PessoaEntity {
   private String rg;
 
   @Column(name = "data_emissão_rg", nullable = false)
-  private LocalDate data_emissao_rg;
+  private LocalDate dataEmissaoRg;
 
   @Column(name = "orgao_emissor_rg", nullable = false)
-  private String orgao_emissor_rg;
+  private String orgaoEmissorRg;
 
   @Column(name = "CNS", nullable = false)
   private String cns;
@@ -50,7 +50,7 @@ public class PessoaEntity {
   private String nis;
 
   @Column(name = "data_cadastramento", nullable = false)
-  private LocalDate data_cadastramento;
+  private LocalDate dataCadastramento;
 
   @OneToMany(mappedBy = "pessoa", cascade = CascadeType.ALL)
   private List<PessoaResponsavelEntity> responsaveis;
@@ -74,19 +74,19 @@ public class PessoaEntity {
 
   public PessoaEntity(
       UUID id,
-      String nome_completo,
-      LocalDate data_nascimento,
-      String num_registro_nasc,
+      String nomeCompleto,
+      LocalDate dataNascimento,
+      String numRegistroNasc,
       String fls,
       String livro,
       String cartorio,
       String cpf,
       String rg,
-      LocalDate data_emissao_rg,
-      String orgao_emissor_rg,
+      LocalDate dataEmissaoRg,
+      String orgaoEmissorRg,
       String cns,
       String nis,
-      LocalDate data_cadastramento,
+      LocalDate dataCadastramento,
       List<PessoaResponsavelEntity> responsaveis,
       List<CadastroAnualEntity> cadastrosAnuais,
       List<VacinaEntity> vacinacoes,
@@ -94,19 +94,19 @@ public class PessoaEntity {
       List<TipoAtendimentoEntity> tiposAtendimentos,
       ContatoEntity contato) {
     this.id = id;
-    this.nomeCompleto = nome_completo;
-    this.dataNascimento = data_nascimento;
-    this.numRegistroNasc = num_registro_nasc;
+    this.nomeCompleto = nomeCompleto;
+    this.dataNascimento = dataNascimento;
+    this.numRegistroNasc = numRegistroNasc;
     this.fls = fls;
     this.livro = livro;
     this.cartorio = cartorio;
     this.cpf = cpf;
     this.rg = rg;
-    this.data_emissao_rg = data_emissao_rg;
-    this.orgao_emissor_rg = orgao_emissor_rg;
+    this.dataEmissaoRg = dataEmissaoRg;
+    this.orgaoEmissorRg = orgaoEmissorRg;
     this.cns = cns;
     this.nis = nis;
-    this.data_cadastramento = data_cadastramento;
+    this.dataCadastramento = dataCadastramento;
     this.responsaveis = responsaveis;
     this.cadastrosAnuais = cadastrosAnuais;
     this.vacinacoes = vacinacoes;
@@ -188,19 +188,19 @@ public class PessoaEntity {
   }
 
   public LocalDate getDataEmissaoRg() {
-    return data_emissao_rg;
+    return dataEmissaoRg;
   }
 
-  public void setDataEmissaoRg(LocalDate data_emissao_rg) {
-    this.data_emissao_rg = data_emissao_rg;
+  public void setDataEmissaoRg(LocalDate dataEmissaoRg) {
+    this.dataEmissaoRg = dataEmissaoRg;
   }
 
   public String getOrgaoEmissorRg() {
-    return orgao_emissor_rg;
+    return orgaoEmissorRg;
   }
 
-  public void setOrgaoEmissorRg(String orgao_emissor_rg) {
-    this.orgao_emissor_rg = orgao_emissor_rg;
+  public void setOrgaoEmissorRg(String orgaoEmissorRg) {
+    this.orgaoEmissorRg = orgaoEmissorRg;
   }
 
   public String getCns() {
@@ -220,11 +220,11 @@ public class PessoaEntity {
   }
 
   public LocalDate getDataCadastramento() {
-    return data_cadastramento;
+    return dataCadastramento;
   }
 
-  public void setDataCadastramento(LocalDate data_cadastramento) {
-    this.data_cadastramento = data_cadastramento;
+  public void setDataCadastramento(LocalDate dataCadastramento) {
+    this.dataCadastramento = dataCadastramento;
   }
 
   public List<PessoaResponsavelEntity> getResponsaveis() {
