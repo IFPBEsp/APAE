@@ -5,10 +5,10 @@
  */
 
 plugins {
-    id 'java-library'
-    id 'maven-publish'
-    id 'org.springframework.boot' version '3.1.4'
-    id 'io.spring.dependency-management' version '1.1.3'
+    `java-library`
+    `maven-publish`
+    id("org.springframework.boot") version "3.1.4"
+    id("io.spring.dependency-management") version "1.1.3"
 }
 
 repositories {
@@ -17,10 +17,10 @@ repositories {
 }
 
 dependencies {
-    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
-    implementation 'org.springframework.boot:spring-boot-starter-web'
-    implementation 'jakarta.validation:jakarta.validation-api:3.0.2'
-    runtimeOnly 'com.h2database:h2'
+    implementation("org.springframework.boot:spring-boot-starter-data-jpa")
+    implementation("org.springframework.boot:spring-boot-starter-web")
+    implementation("jakarta.validation:jakarta.validation-api:3.0.2")
+    runtimeOnly("com.h2database:h2")
     implementation("org.springframework.boot:spring-boot-starter-validation")
     compileOnly("org.projectlombok:lombok")
     annotationProcessor("org.projectlombok:lombok")
@@ -28,15 +28,13 @@ dependencies {
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
     implementation("io.minio:minio:8.5.17")
     implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.1.0")
-    implementation 'org.webjars:webjars-locator-core:0.52'
+    implementation("org.webjars:webjars-locator-core:0.52")
     implementation("org.springframework:spring-webmvc")
 }
 
-group = 'br.org.apae'
-version = '0.0.1-SNAPSHOT'
-description = 'api-crud-pacientes'
-
-
+group = "br.org.apae"
+version = "0.0.1-SNAPSHOT"
+description = "api-crud-pacientes"
 
 java {
     sourceCompatibility = JavaVersion.VERSION_21
@@ -45,16 +43,16 @@ java {
 
 publishing {
     publications {
-        maven(MavenPublication) {
-            from(components.java)
+        create<MavenPublication>("maven") {
+            from(components["java"])
         }
     }
 }
 
-tasks.withType(JavaCompile) {
-    options.encoding = 'UTF-8'
+tasks.withType<JavaCompile> {
+    options.encoding = "UTF-8"
 }
 
-tasks.withType(Javadoc) {
-    options.encoding = 'UTF-8'
+tasks.withType<Javadoc> {
+    options.encoding = "UTF-8"
 }
