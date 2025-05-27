@@ -4,10 +4,7 @@ import br.org.apae.documentos_escolares.api.dto.request.DocumentoEscolarUpdateRe
 import br.org.apae.documentos_escolares.api.dto.request.DocumentoEscolarUploadRequestDTO;
 import br.org.apae.documentos_escolares.api.dto.response.DocumentoEscolarResponseDTO;
 import br.org.apae.documentos_escolares.api.dto.response.UrlPreAssinadaResponseDTO;
-import br.org.apae.documentos_escolares.domain.exception.ArquivoVazioException;
-import br.org.apae.documentos_escolares.domain.exception.BucketNaoExisteException;
-import br.org.apae.documentos_escolares.domain.exception.DocumentoEscolarException;
-import br.org.apae.documentos_escolares.domain.exception.UploadDocumentoException;
+import br.org.apae.documentos_escolares.domain.exception.*;
 import br.org.apae.documentos_escolares.infrastructure.client.StorageClient;
 import io.minio.*;
 import io.minio.errors.MinioException;
@@ -35,28 +32,12 @@ public class MinioStorageServiceImp implements MinioStorageService {
 
     @Override
     public void salvarArquivo(DocumentoEscolarUploadRequestDTO dto, MultipartFile arquivo) {
-        validarBucket(dto.pacienteId().toString());
+        validarBucket(dto.pacienteId());
         validarArquivo(arquivo);
 
         String caminho = PASTA_DOCUMENTOS + "/" + dto.ano() + "/" + arquivo.getOriginalFilename();
 
-        try (InputStream arquivoInputStream = arquivo.getInputStream()) {
-            minioClient.putObject(
-                    PutObjectArgs.builder()
-                            .bucket(dto.pacienteId().toString())
-                            .object(caminho)
-                            .stream(arquivoInputStream, arquivo.getSize(), -1)
-                            .contentType(arquivo.getContentType() != null ? arquivo.getContentType() : "application/octet-stream")
-                            .build()
-            );
-
-        } catch (IOException e) {
-            throw new DocumentoEscolarException("Erro ao processar o arquivo: " + e.getMessage());
-        } catch (MinioException e) {
-            throw new UploadDocumentoException("Erro ao fazer upload do documento: " + e.getMessage());
-        } catch (Exception e) {
-            throw new DocumentoEscolarException("Erro inesperado ao salvar arquivo: " + e.getMessage());
-        }
+        uploadArquivo(caminho, dto.pacienteId().toString(), arquivo);
     }
 
     private DocumentoEscolarResponseDTO listarDocumentosComPrefixo(UUID pacienteId, String prefix) {
@@ -68,22 +49,29 @@ public class MinioStorageServiceImp implements MinioStorageService {
                     ListObjectsArgs.builder()
                             .bucket(bucket)
                             .prefix(prefix)
+                            .recursive(true)
                             .build()
             );
 
             for (Result<Item> result : objetos) {
                 Item item = result.get();
-                String fileName = item.objectName().substring(item.objectName().lastIndexOf('/') + 1);
 
-                String link = minioClient.getPresignedObjectUrl(
-                        GetPresignedObjectUrlArgs.builder()
-                                .bucket(bucket)
-                                .object(item.objectName())
-                                .method(Method.GET)
-                                .expiry(60 * 60)
-                                .build()
-                );
-                urls.add(new UrlPreAssinadaResponseDTO(fileName, link));
+                if (!item.isDir()) {
+                    String objectName = item.objectName();
+                    String fileName = objectName.substring(objectName.lastIndexOf('/') + 1);
+
+                    if (!fileName.isEmpty()){
+                        String link = minioClient.getPresignedObjectUrl(
+                                GetPresignedObjectUrlArgs.builder()
+                                        .bucket(bucket)
+                                        .object(item.objectName())
+                                        .method(Method.GET)
+                                        .expiry(60 * 60)
+                                        .build()
+                        );
+                        urls.add(new UrlPreAssinadaResponseDTO(fileName, link));
+                    }
+                }
             }
         } catch (MinioException e) {
             throw new DocumentoEscolarException("Erro ao listar documentos: " + e.getMessage());
@@ -96,18 +84,24 @@ public class MinioStorageServiceImp implements MinioStorageService {
 
     @Override
     public DocumentoEscolarResponseDTO listarDocumentosEscolares(UUID pacienteId) {
+        validarBucket(pacienteId);
+
         String prefix = PASTA_DOCUMENTOS + "/";
         return listarDocumentosComPrefixo(pacienteId, prefix);
     }
 
     @Override
     public DocumentoEscolarResponseDTO listarDocumentosEscolaresAno(UUID pacienteId, Integer ano) {
+        validarBucket(pacienteId);
+
         String prefix = PASTA_DOCUMENTOS + "/" + ano + "/";
         return listarDocumentosComPrefixo(pacienteId, prefix);
     }
 
     @Override
     public DocumentoEscolarResponseDTO historicoDocumentosEscolares(UUID pacienteId) {
+        validarBucket(pacienteId);
+
         String prefix = PASTA_DOCUMENTOS + "/";
         return listarDocumentosComPrefixo(pacienteId, prefix);
     }
@@ -115,67 +109,64 @@ public class MinioStorageServiceImp implements MinioStorageService {
 
     @Override
     public byte[] visualizarDocumentoEscolar(UUID pacienteId, String nomeArquivo) {
-        String bucket = pacienteId.toString();
-        String caminhoArquivo = PASTA_DOCUMENTOS + "/" + nomeArquivo;
+        validarBucket(pacienteId);
+
+        String prefix = PASTA_DOCUMENTOS + "/";
+        DocumentoEscolarResponseDTO documentos = listarDocumentosComPrefixo(pacienteId, prefix);
+
+        UrlPreAssinadaResponseDTO documentoEncontrado = documentos.urls().stream()
+                .filter(doc -> doc.fileName().equals(nomeArquivo))
+                .findFirst()
+                .orElseThrow(() -> new DocumentoEscolarNaoEncontradoException("Arquivo não encontrado: " + nomeArquivo));
+
+        String url = documentoEncontrado.link();
+        String objectName = extrairObjectNameDaUrl(url, pacienteId.toString());
 
         try (InputStream is = minioClient.getObject(
                 GetObjectArgs.builder()
-                        .bucket(bucket)
-                        .object(caminhoArquivo)
+                        .bucket(pacienteId.toString())
+                        .object(objectName)
                         .build())) {
-            if (is == null) {
-                throw new DocumentoEscolarException("Arquivo não encontrado: " + nomeArquivo);
-            }
             return is.readAllBytes();
-        } catch (Error | IOException e) {
-            throw new DocumentoEscolarException("Erro ao ler arquivo: " + e.getMessage());
         } catch (MinioException e) {
             throw new DocumentoEscolarException("Erro no serviço de armazenamento: " + e.getMessage());
-        } catch (NoSuchAlgorithmException | InvalidKeyException e) {
-            throw new RuntimeException(e);
+        } catch (IOException | NoSuchAlgorithmException | InvalidKeyException e) {
+            throw new DocumentoEscolarException("Erro ao ler arquivo: " + e.getMessage());
         }
     }
-
 
     @Override
     public void atualizarDocumento(DocumentoEscolarUpdateRequestDTO dto, MultipartFile arquivo) {
-        validarBucket(dto.pacienteId().toString());
+        validarBucket(dto.pacienteId());
         validarArquivo(arquivo);
 
-        deletarDocumentoEscolar(dto.pacienteId(), dto.documentoNome());
+        String caminho = PASTA_DOCUMENTOS + "/" + dto.ano() + "/" + dto.documentoNome();
+        validarArquivoExistente(caminho, dto.pacienteId().toString());
 
-        String caminho = PASTA_DOCUMENTOS + "/" + dto.ano() + "/" + dto.novoNome();
-
-        try (InputStream arquivoInputStream = arquivo.getInputStream()) {
-            minioClient.putObject(
-                    PutObjectArgs.builder()
-                            .bucket(dto.pacienteId().toString())
-                            .object(caminho)
-                            .stream(arquivoInputStream, arquivo.getSize(), -1)
-                            .contentType(arquivo.getContentType() != null ? arquivo.getContentType() : "application/octet-stream")
-                            .build()
-            );
-        } catch (IOException e) {
-            throw new DocumentoEscolarException("Erro ao processar o arquivo: " + e.getMessage());
-        } catch (MinioException e) {
-            throw new UploadDocumentoException("Erro ao fazer upload do documento: " + e.getMessage());
-        } catch (Exception e) {
-            throw new DocumentoEscolarException("Erro inesperado ao atualizar arquivo: " + e.getMessage());
-        }
+        uploadArquivo(caminho, dto.pacienteId().toString(), arquivo);
     }
-
-
 
     @Override
     public void deletarDocumentoEscolar(UUID pacienteId, String nomeArquivo) {
+        validarBucket(pacienteId);
+
         String bucket = pacienteId.toString();
-        String caminhoArquivo = PASTA_DOCUMENTOS + "/" + nomeArquivo;
+        String prefix = PASTA_DOCUMENTOS + "/";
+        DocumentoEscolarResponseDTO documentos = listarDocumentosComPrefixo(pacienteId, prefix);
+
+        UrlPreAssinadaResponseDTO documentoEncontrado = documentos.urls().stream()
+                .filter(doc -> doc.fileName().equals(nomeArquivo))
+                .findFirst()
+                .orElseThrow(() -> new DocumentoEscolarNaoEncontradoException("Arquivo não encontrado: " + nomeArquivo));
+
+        String url = documentoEncontrado.link();
+        String objectName = extrairObjectNameDaUrl(url, pacienteId.toString());
 
         try {
             minioClient.removeObject(
                     RemoveObjectArgs.builder()
                             .bucket(bucket)
-                            .object(caminhoArquivo)
+                            .object(objectName)
                             .build()
             );
         } catch (MinioException e) {
@@ -185,7 +176,27 @@ public class MinioStorageServiceImp implements MinioStorageService {
         }
     }
 
-    private void validarBucket(String bucketNome) {
+    private void uploadArquivo(String caminho, String bucketNome, MultipartFile arquivo) {
+        try (InputStream arquivoInputStream = arquivo.getInputStream()) {
+            minioClient.putObject(
+                    PutObjectArgs.builder()
+                            .bucket(bucketNome)
+                            .object(caminho)
+                            .stream(arquivoInputStream, arquivo.getSize(), -1)
+                            .contentType(getContentType(arquivo.toString()))
+                            .build()
+            );
+
+        } catch (IOException e) {
+            throw new DocumentoEscolarException("Erro ao processar o arquivo: " + e.getMessage());
+        } catch (MinioException e) {
+            throw new UploadDocumentoException("Erro ao fazer upload do documento: " + e.getMessage());
+        } catch (Exception e) {
+            throw new DocumentoEscolarException("Erro inesperado ao salvar arquivo: " + e.getMessage());
+        }
+    }
+
+    private void validarBucket(UUID bucketNome) {
         if (!storageClient.existeBucket(bucketNome)) {
             throw new BucketNaoExisteException("Bucket \"" + bucketNome + "\" não existe.");
         }
@@ -195,5 +206,45 @@ public class MinioStorageServiceImp implements MinioStorageService {
         if (arquivo.isEmpty()) {
             throw new ArquivoVazioException("Não é possível fazer upload de um arquivo vazio.");
         }
+    }
+
+    private void validarArquivoExistente(String caminho, String bucketNome) {
+        try {
+            minioClient.statObject(
+                    StatObjectArgs.builder()
+                            .bucket(bucketNome)
+                            .object(caminho)
+                            .build()
+            );
+        } catch (Exception e) {
+            throw new DocumentoEscolarNaoEncontradoException("Arquivo não encontrado");
+        }
+
+    }
+
+    private String getContentType(String fileName) {
+        if (fileName.endsWith(".pdf")) {
+            return "application/pdf";
+        } else if (fileName.endsWith(".png")) {
+            return "image/png";
+        } else if (fileName.endsWith(".jpg") || fileName.endsWith(".jpeg")) {
+            return "image/jpeg";
+        } else {
+            return "application/octet-stream";
+        }
+    }
+
+    private String extrairObjectNameDaUrl(String url, String bucket) {
+        String base = "/" + bucket + "/";
+        int start = url.indexOf(base);
+        if (start == -1) {
+            throw new DocumentoEscolarException("Não foi possível extrair o caminho do arquivo.");
+        }
+        start += base.length();
+        int end = url.indexOf("?", start);
+        if (end == -1) {
+            return url.substring(start);
+        }
+        return url.substring(start, end);
     }
 }
