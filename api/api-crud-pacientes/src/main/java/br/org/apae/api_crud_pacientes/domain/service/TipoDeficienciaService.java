@@ -58,23 +58,17 @@ public class TipoDeficienciaService {
   }
 
   public TipoDeficienciaResponse update(UUID id, TipoDeficienciaRequest request) {
-    Optional<TipoDeficienciaEntity> optionalTipoDeficiencia =
-        tipoDeficienciaRepository.findById(id);
-    TipoDeficienciaEntity tipoDeficienciaExistente;
+    TipoDeficienciaEntity tipoDeficienciaExistente = tipoDeficienciaRepository.findById(id)
+        .orElseThrow(() -> new EntityNotFoundException("Tipo de Deficiência não encontrado"));
 
-    if (optionalTipoDeficiencia.isPresent()) {
-      tipoDeficienciaExistente = optionalTipoDeficiencia.get();
+    atualizarCamposTipoDeficiencia(tipoDeficienciaExistente, request);
 
-      // Atualiza os campos necessários
-      tipoDeficienciaExistente.setDescricao(request.getDescricao());
+    TipoDeficienciaEntity tipoDeficienciaAtualizado = tipoDeficienciaRepository.save(tipoDeficienciaExistente);
+    return tipoDeficienciaMapper.toResponse(tipoDeficienciaAtualizado);
+  }
 
-      TipoDeficienciaEntity tipoDeficienciaAtualizado =
-          tipoDeficienciaRepository.save(tipoDeficienciaExistente);
-      return tipoDeficienciaMapper.toResponse(tipoDeficienciaAtualizado);
-
-    } else {
-      throw new EntityNotFoundException("Tipo de Deficiência não encontrado");
-    }
+  private void atualizarCamposTipoDeficiencia(TipoDeficienciaEntity entity, TipoDeficienciaRequest request) {
+      entity.setDescricao(request.getDescricao());
   }
 
   public void delete(UUID id) {

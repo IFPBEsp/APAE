@@ -29,8 +29,7 @@ public class TipoAtendimentoService {
   }
 
   public TipoAtendimentoResponse getById(UUID id) {
-    Optional<TipoAtendimentoEntity> optionalTipoAtendimento =
-        tipoAtendimentoRepository.findById(id);
+    Optional<TipoAtendimentoEntity> optionalTipoAtendimento = tipoAtendimentoRepository.findById(id);
     if (optionalTipoAtendimento.isEmpty()) {
       throw new EntityNotFoundException("Tipo de Atendimento não encontrado");
     }
@@ -41,8 +40,7 @@ public class TipoAtendimentoService {
 
   public TipoAtendimentoResponse create(TipoAtendimentoRequest request) {
     PessoaEntity pessoaExistente = pessoaService.getById(request.getPessoaId());
-    TipoAtendimentoEntity tipoAtendimento =
-        tipoAtendimentoMapper.toEntity(request, pessoaExistente);
+    TipoAtendimentoEntity tipoAtendimento = tipoAtendimentoMapper.toEntity(request, pessoaExistente);
     return tipoAtendimentoMapper.toResponse(tipoAtendimentoRepository.save(tipoAtendimento));
   }
 
@@ -58,23 +56,17 @@ public class TipoAtendimentoService {
   }
 
   public TipoAtendimentoResponse update(UUID id, TipoAtendimentoRequest request) {
-    Optional<TipoAtendimentoEntity> optionalTipoAtendimento =
-        tipoAtendimentoRepository.findById(id);
-    TipoAtendimentoEntity tipoAtendimentoExistente;
+    TipoAtendimentoEntity tipoAtendimentoExistente = tipoAtendimentoRepository.findById(id)
+        .orElseThrow(() -> new EntityNotFoundException("Tipo de Atendimento não encontrado"));
 
-    if (optionalTipoAtendimento.isPresent()) {
-      tipoAtendimentoExistente = optionalTipoAtendimento.get();
+    atualizarCamposTipoAtendimento(tipoAtendimentoExistente, request);
 
-      // Atualiza os campos necessários
-      tipoAtendimentoExistente.setDescricao(request.getDescricao());
+    TipoAtendimentoEntity tipoAtendimentoAtualizado = tipoAtendimentoRepository.save(tipoAtendimentoExistente);
+    return tipoAtendimentoMapper.toResponse(tipoAtendimentoAtualizado);
+  }
 
-      TipoAtendimentoEntity tipoAtendimentoAtualizado =
-          tipoAtendimentoRepository.save(tipoAtendimentoExistente);
-      return tipoAtendimentoMapper.toResponse(tipoAtendimentoAtualizado);
-
-    } else {
-      throw new EntityNotFoundException("Tipo de Atendimento não encontrado");
-    }
+  private void atualizarCamposTipoAtendimento(TipoAtendimentoEntity entity, TipoAtendimentoRequest request) {
+    entity.setDescricao(request.getDescricao());
   }
 
   public void delete(UUID id) {

@@ -55,17 +55,21 @@ public class ContatoService {
       throw new EntityNotFoundException("Contato não encontrado");
     }
 
-    contatoExistente.setEnderecoAtivo(request.getEnderecoAtivo());
-    contatoExistente.setComprovanteResidencia(request.getComprovanteResidencia());
-    contatoExistente.setEndereco(request.getEndereco());
-    contatoExistente.setBairro(request.getBairro());
-    contatoExistente.setCidade(request.getCidade());
-    contatoExistente.setEstado(request.getEstado());
-    contatoExistente.setCep(request.getCep());
-    contatoExistente.setNaturalidade(request.getNaturalidade());
+    atualizarCamposContato(contatoExistente, request);
 
     Contato contatoAtualizado = contatoRepository.save(contatoExistente);
     return mapper.toResponseFromDomain(contatoAtualizado);
+  }
+
+  private void atualizarCamposContato(Contato contato, ContatoRequest request) {
+    contato.setEnderecoAtivo(request.getEnderecoAtivo());
+    contato.setComprovanteResidencia(request.getComprovanteResidencia());
+    contato.setEndereco(request.getEndereco());
+    contato.setBairro(request.getBairro());
+    contato.setCidade(request.getCidade());
+    contato.setEstado(request.getEstado());
+    contato.setCep(request.getCep());
+    contato.setNaturalidade(request.getNaturalidade());
   }
 
   public void delete(UUID id) {

@@ -36,25 +36,22 @@ public class PessoaResponsavelService {
   }
 
   public PessoaResponsavelResponse update(UUID id, PessoaResponsavelRequest request) {
-    Optional<PessoaResponsavelEntity> optionalPessoaResponsavel = repository.findById(id);
-    PessoaResponsavelEntity pessoaResponsavelExistente;
+    PessoaResponsavelEntity pessoaResponsavelExistente = repository.findById(id)
+        .orElseThrow(() -> new EntityNotFoundException("Pessoa Responsável não encontrada."));
 
-    if (optionalPessoaResponsavel.isPresent()) {
-      pessoaResponsavelExistente = optionalPessoaResponsavel.get();
+    atualizarCamposPessoaResponsavel(pessoaResponsavelExistente, request);
 
-      pessoaResponsavelExistente.setCpf(request.getCpf());
-      pessoaResponsavelExistente.setEmergencia(request.getEmergencia());
-      pessoaResponsavelExistente.setOndeProcurar(request.getOndeProcurar());
-      pessoaResponsavelExistente.setProfissao(request.getProfissao());
-      pessoaResponsavelExistente.setRg(request.getRg());
-      pessoaResponsavelExistente.setVivo(request.isVivo());
+    PessoaResponsavelEntity pessoaResponsavelAtualizada = repository.save(pessoaResponsavelExistente);
+    return pessoaResponsavelMapper.toResponse(pessoaResponsavelAtualizada);
+  }
 
-      PessoaResponsavelEntity pessoaResponsavelAtualizada =
-          repository.save(pessoaResponsavelExistente);
-      return pessoaResponsavelMapper.toResponse(pessoaResponsavelAtualizada);
-    } else {
-      throw new EntityNotFoundException("Pessoa Responsável não encontrada.");
-    }
+  private void atualizarCamposPessoaResponsavel(PessoaResponsavelEntity entity, PessoaResponsavelRequest request) {
+    entity.setCpf(request.getCpf());
+    entity.setEmergencia(request.getEmergencia());
+    entity.setOndeProcurar(request.getOndeProcurar());
+    entity.setProfissao(request.getProfissao());
+    entity.setRg(request.getRg());
+    entity.setVivo(request.isVivo());
   }
 
   public void delete(UUID id) {

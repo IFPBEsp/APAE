@@ -61,21 +61,21 @@ public class VacinaService {
   }
 
   public VacinaResponse update(UUID id, VacinaRequest vacinaRequest) {
-    Optional<VacinaEntity> vacinaOptional = vacinaRepository.findById(id);
-    Optional<PessoaEntity> pessoaOptional = pessoaRepository.findById(vacinaRequest.getPessoaId());
+    VacinaEntity vacina = vacinaRepository.findById(id)
+        .orElseThrow(() -> new EntityNotFoundException("Vacina não encontrada."));
+    PessoaEntity pessoa = pessoaRepository.findById(vacinaRequest.getPessoaId())
+        .orElseThrow(() -> new EntityNotFoundException("Pessoa não encontrada."));
 
-    if (pessoaOptional.isEmpty() || vacinaOptional.isEmpty()) {
-      throw new EntityNotFoundException("Vacina não encontrada.");
-    }
-
-    VacinaEntity vacina = vacinaOptional.get();
-
-    vacina.setNome(vacinaRequest.getNome());
-    vacina.setDataAplicacao(vacinaRequest.getDataAplicacao());
-    vacina.setPessoa(pessoaOptional.get());
+    atualizarCamposVacina(vacina, vacinaRequest, pessoa);
 
     VacinaEntity vacinaAtualizada = vacinaRepository.save(vacina);
     return vacinaMapper.toResponse(vacinaAtualizada);
+  }
+
+  private void atualizarCamposVacina(VacinaEntity vacina, VacinaRequest request, PessoaEntity pessoa) {
+    vacina.setNome(request.getNome());
+    vacina.setDataAplicacao(request.getDataAplicacao());
+    vacina.setPessoa(pessoa);
   }
 
   public void delete(UUID id) {

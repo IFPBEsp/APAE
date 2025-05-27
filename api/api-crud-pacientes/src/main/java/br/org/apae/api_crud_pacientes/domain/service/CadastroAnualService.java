@@ -54,25 +54,25 @@ public class CadastroAnualService {
   }
 
   public CadastroAnualResponse update(UUID id, CadastroAnualRequest dto) {
-    CadastroAnualEntity cadastro =
-        cadastroRepository
-            .findById(id)
-            .orElseThrow(() -> new EntityNotFoundException("Cadastro não encontrado"));
+    CadastroAnualEntity cadastro = cadastroRepository.findById(id)
+        .orElseThrow(() -> new EntityNotFoundException("Cadastro não encontrado"));
 
-    PessoaEntity pessoa =
-        pessoaRepository
-            .findById(dto.getPessoaId())
-            .orElseThrow(() -> new EntityNotFoundException("Pessoa não encontrada"));
+    PessoaEntity pessoa = pessoaRepository.findById(dto.getPessoaId())
+        .orElseThrow(() -> new EntityNotFoundException("Pessoa não encontrada"));
 
+    atualizarCamposCadastroAnual(cadastro, dto, pessoa);
+
+    cadastroRepository.save(cadastro);
+    return cadastroMapper.toResponse(cadastro);
+  }
+
+  private void atualizarCamposCadastroAnual(CadastroAnualEntity cadastro, CadastroAnualRequest dto, PessoaEntity pessoa) {
     cadastro.setBeneficioDePrestacaoContinuada(dto.getBeneficioDePrestacaoContinuada());
     cadastro.setHistoricosAlergias(dto.getHistoricosAlergias());
     cadastro.setMedicacoesContinuas(dto.getMedicacoesContinuas());
     cadastro.setHistoricoDoencas(dto.getHistoricoDoencas());
     cadastro.setRendaFamiliar(dto.getRendaFamiliar());
     cadastro.setPessoa(pessoa);
-
-    cadastroRepository.save(cadastro);
-    return cadastroMapper.toResponse(cadastro);
   }
 
   public void delete(UUID id) {

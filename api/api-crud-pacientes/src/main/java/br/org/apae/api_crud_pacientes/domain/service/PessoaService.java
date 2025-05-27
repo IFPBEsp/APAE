@@ -42,33 +42,29 @@ public class PessoaService {
   }
 
   public PessoaResponse update(UUID id, PessoaRequest request) {
-    Optional<PessoaEntity> optionalPessoa = pessoaRepository.findById(id);
-    PessoaEntity pessoaExistente;
+    PessoaEntity pessoaExistente = pessoaRepository.findById(id)
+        .orElseThrow(() -> new EntityNotFoundException("Pessoa não encontrada"));
 
-    if (optionalPessoa.isPresent()) {
-      pessoaExistente = optionalPessoa.get();
+    atualizarCamposPessoa(pessoaExistente, request);
 
-      // Atualiza os campos necessários
-      pessoaExistente.setNomeCompleto(request.getNomeCompleto());
-      pessoaExistente.setCpf(request.getCpf());
-      pessoaExistente.setDataNascimento(request.getDataNascimento());
-      pessoaExistente.setNumRegistroNasc(request.getNumRegistroNasc());
-      pessoaExistente.setFls(request.getFls());
-      pessoaExistente.setLivro(request.getLivro());
-      pessoaExistente.setCartorio(request.getCartorio());
-      pessoaExistente.setRg(request.getRg());
-      pessoaExistente.setDataEmissaoRg(request.getDataEmissaoRg());
-      pessoaExistente.setOrgaoEmissorRg(request.getOrgaoEmissorRg());
-      pessoaExistente.setCns(request.getCns());
-      pessoaExistente.setNis(request.getNis());
-      pessoaExistente.setDataCadastramento(request.getDataCadastramento());
+    PessoaEntity pessoaAtualizada = pessoaRepository.save(pessoaExistente);
+    return pessoaMapper.toResponse(pessoaAtualizada);
+  }
 
-      PessoaEntity pessoaAtualizada = pessoaRepository.save(pessoaExistente);
-      return pessoaMapper.toResponse(pessoaAtualizada);
-
-    } else {
-      throw new EntityNotFoundException("Pessoa não encontrada");
-    }
+  private void atualizarCamposPessoa(PessoaEntity pessoa, PessoaRequest request) {
+    pessoa.setNomeCompleto(request.getNomeCompleto());
+    pessoa.setCpf(request.getCpf());
+    pessoa.setDataNascimento(request.getDataNascimento());
+    pessoa.setNumRegistroNasc(request.getNumRegistroNasc());
+    pessoa.setFls(request.getFls());
+    pessoa.setLivro(request.getLivro());
+    pessoa.setCartorio(request.getCartorio());
+    pessoa.setRg(request.getRg());
+    pessoa.setDataEmissaoRg(request.getDataEmissaoRg());
+    pessoa.setOrgaoEmissorRg(request.getOrgaoEmissorRg());
+    pessoa.setCns(request.getCns());
+    pessoa.setNis(request.getNis());
+    pessoa.setDataCadastramento(request.getDataCadastramento());
   }
 
   public void delete(UUID id) {
