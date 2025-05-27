@@ -1,0 +1,100 @@
+name: Demo Workflow
+
+on:
+  workflow_call:
+
+jobs:
+  demo-testes:
+    name: Run Backend Tests - Demo
+    runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres:16
+        ports:
+          - 5432:5432
+        env:
+          POSTGRES_DB: demo_db
+          POSTGRES_USER: admin
+          POSTGRES_PASSWORD: admin
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    defaults:
+      run:
+        working-directory: api
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/cache@v4
+        with:
+          path: |
+            ~/.gradle/caches
+            ~/.gradle/wrapper
+          key: gradle-${{ runner.os }}-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
+          restore-keys: gradle-${{ runner.os }}-
+
+      - uses: actions/setup-java@v4
+        with:
+          java-version: "21"
+          distribution: "temurin"
+
+      - run: chmod +x ./gradlew
+
+      - run: ./gradlew demo:test
+        env:
+          SPRING_DATASOURCE_URL: jdbc:postgresql://localhost:5432/demo_db
+          SPRING_DATASOURCE_USERNAME: admin
+          SPRING_DATASOURCE_PASSWORD: admin
+
+  demo-build:
+    name: Build Spring Boot Project - Demo
+    runs-on: ubuntu-latest
+    needs: demo-testes
+
+    services:
+      postgres:
+        image: postgres:16
+        ports:
+          - 5432:5432
+        env:
+          POSTGRES_DB: demo_db
+          POSTGRES_USER: admin
+          POSTGRES_PASSWORD: admin
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    defaults:
+      run:
+        working-directory: api
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/cache@v4
+        with:
+          path: |
+            ~/.gradle/caches
+            ~/.gradle/wrapper
+          key: gradle-${{ runner.os }}-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
+          restore-keys: gradle-${{ runner.os }}-
+
+      - uses: actions/setup-java@v4
+        with:
+          java-version: "21"
+          distribution: "temurin"
+
+      - run: chmod +x ./gradlew
+
+      - run: ./gradlew demo:build
+        env:
+          SPRING_DATASOURCE_URL: jdbc:postgresql://localhost:5432/demo_db
+          SPRING_DATASOURCE_USERNAME: admin
+          SPRING_DATASOURCE_PASSWORD: admin
