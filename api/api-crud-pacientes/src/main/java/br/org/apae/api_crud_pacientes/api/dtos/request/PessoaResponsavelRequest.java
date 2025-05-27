@@ -3,84 +3,76 @@ package br.org.apae.api_crud_pacientes.api.dtos.request;
 import java.util.UUID;
 
 public class PessoaResponsavelRequest {
-    private String ondeProcurar;
-    private boolean vivo;
-    private String profissao;
-    private String rg;
-    private String cpf;
-    private String emergencia;
-    private String tipoResponsavel; // Enum as String
-    private UUID pessoaId;
+  private String ondeProcurar;
+  private boolean vivo;
+  private String profissao;
+  private String rg;
+  private String cpf;
+  private String emergencia;
+  private String tipoResponsavel;
+  private UUID pessoaId;
 
-    public String getOndeProcurar() {
-        return ondeProcurar;
-    }
+  public String getOndeProcurar() {
+    return ondeProcurar;
+  }
 
-    public void setOndeProcurar(String ondeProcurar) {
-        this.ondeProcurar = ondeProcurar;
-    }
+  public void setOndeProcurar(String ondeProcurar) {
+    this.ondeProcurar = ondeProcurar;
+  }
 
-    public UUID getPessoaId() {
-        return pessoaId;
-    }
+  public UUID getPessoaId() {
+    return pessoaId;
+  }
 
-    public void setPessoaId(UUID pessoaId) {
-        this.pessoaId = pessoaId;
-    }
+  public void setPessoaId(UUID pessoaId) {
+    this.pessoaId = pessoaId;
+  }
 
-    public String getOnde_Procurar() {
-        return ondeProcurar;
-    }
+  public boolean isVivo() {
+    return vivo;
+  }
 
-    public void setOnde_Procurar(String ondeProcurar) {
-        this.ondeProcurar = ondeProcurar;
-    }
+  public void setVivo(boolean vivo) {
+    this.vivo = vivo;
+  }
 
-    public boolean isVivo() {
-        return vivo;
-    }
+  public String getProfissao() {
+    return profissao;
+  }
 
-    public void setVivo(boolean vivo) {
-        this.vivo = vivo;
-    }
+  public void setProfissao(String profissao) {
+    this.profissao = profissao;
+  }
 
-    public String getProfissao() {
-        return profissao;
-    }
+  public String getRg() {
+    return rg;
+  }
 
-    public void setProfissao(String profissao) {
-        this.profissao = profissao;
-    }
+  public void setRg(String rg) {
+    this.rg = rg;
+  }
 
-    public String getRg() {
-        return rg;
-    }
+  public String getCpf() {
+    return cpf;
+  }
 
-    public void setRg(String rg) {
-        this.rg = rg;
-    }
+  public void setCpf(String cpf) {
+    this.cpf = cpf;
+  }
 
-    public String getCpf() {
-        return cpf;
-    }
+  public String getEmergencia() {
+    return emergencia;
+  }
 
-    public void setCpf(String cpf) {
-        this.cpf = cpf;
-    }
+  public void setEmergencia(String emergencia) {
+    this.emergencia = emergencia;
+  }
 
-    public String getEmergencia() {
-        return emergencia;
-    }
+  public String getTipoResponsavel() {
+    return tipoResponsavel;
+  }
 
-    public void setEmergencia(String emergencia) {
-        this.emergencia = emergencia;
-    }
-
-    public String getTipoResponsavel() {
-        return tipoResponsavel;
-    }
-
-    public void setTipoResponsavel(String tipoResponsavel) {
-        this.tipoResponsavel = tipoResponsavel;
-    }
+  public void setTipoResponsavel(String tipoResponsavel) {
+    this.tipoResponsavel = tipoResponsavel;
+  }
 }

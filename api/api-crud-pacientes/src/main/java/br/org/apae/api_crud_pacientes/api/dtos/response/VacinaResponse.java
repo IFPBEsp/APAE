@@ -5,31 +5,31 @@ import java.util.UUID;
 
 public class VacinaResponse {
 
-    private UUID id;
-    private String nome;
-    private LocalDate dataAplicacao;
+  private UUID id;
+  private String nome;
+  private LocalDate dataAplicacao;
 
-    public UUID getId() {
-        return id;
-    }
+  public UUID getId() {
+    return id;
+  }
 
-    public void setId(UUID id) {
-        this.id = id;
-    }
+  public void setId(UUID id) {
+    this.id = id;
+  }
 
-    public String getNome() {
-        return nome;
-    }
+  public String getNome() {
+    return nome;
+  }
 
-    public void setNome(String nome) {
-        this.nome = nome;
-    }
+  public void setNome(String nome) {
+    this.nome = nome;
+  }
 
-    public LocalDate getDataAplicacao() {
-        return dataAplicacao;
-    }
+  public LocalDate getDataAplicacao() {
+    return dataAplicacao;
+  }
 
-    public void setDataAplicacao(LocalDate dataAplicacao) {
-        this.dataAplicacao = dataAplicacao;
-    }
+  public void setDataAplicacao(LocalDate dataAplicacao) {
+    this.dataAplicacao = dataAplicacao;
+  }
 }

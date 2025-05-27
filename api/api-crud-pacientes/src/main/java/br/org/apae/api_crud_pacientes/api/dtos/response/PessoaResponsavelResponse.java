@@ -3,76 +3,76 @@ package br.org.apae.api_crud_pacientes.api.dtos.response;
 import java.util.UUID;
 
 public class PessoaResponsavelResponse {
-    private UUID id;
-    private String ondeProcurar;
-    private boolean vivo;
-    private String profissao;
-    private String rg;
-    private String cpf;
-    private String emergencia;
-    private String tipoResponsavel;
+  private UUID id;
+  private String ondeProcurar;
+  private boolean vivo;
+  private String profissao;
+  private String rg;
+  private String cpf;
+  private String emergencia;
+  private String tipoResponsavel;
 
-    public UUID getId() {
-        return id;
-    }
+  public UUID getId() {
+    return id;
+  }
 
-    public void setId(UUID id) {
-        this.id = id;
-    }
+  public void setId(UUID id) {
+    this.id = id;
+  }
 
-    public String getOndeProcurar() {
-        return ondeProcurar;
-    }
+  public String getOndeProcurar() {
+    return ondeProcurar;
+  }
 
-    public void setOndeProcurar(String ondeProcurar) {
-        this.ondeProcurar = ondeProcurar;
-    }
+  public void setOndeProcurar(String ondeProcurar) {
+    this.ondeProcurar = ondeProcurar;
+  }
 
-    public boolean isVivo() {
-        return vivo;
-    }
+  public boolean isVivo() {
+    return vivo;
+  }
 
-    public void setVivo(boolean vivo) {
-        this.vivo = vivo;
-    }
+  public void setVivo(boolean vivo) {
+    this.vivo = vivo;
+  }
 
-    public String getProfissao() {
-        return profissao;
-    }
+  public String getProfissao() {
+    return profissao;
+  }
 
-    public void setProfissao(String profissao) {
-        this.profissao = profissao;
-    }
+  public void setProfissao(String profissao) {
+    this.profissao = profissao;
+  }
 
-    public String getRg() {
-        return rg;
-    }
+  public String getRg() {
+    return rg;
+  }
 
-    public void setRg(String rg) {
-        this.rg = rg;
-    }
+  public void setRg(String rg) {
+    this.rg = rg;
+  }
 
-    public String getCpf() {
-        return cpf;
-    }
+  public String getCpf() {
+    return cpf;
+  }
 
-    public void setCpf(String cpf) {
-        this.cpf = cpf;
-    }
+  public void setCpf(String cpf) {
+    this.cpf = cpf;
+  }
 
-    public String getEmergencia() {
-        return emergencia;
-    }
+  public String getEmergencia() {
+    return emergencia;
+  }
 
-    public void setEmergencia(String emergencia) {
-        this.emergencia = emergencia;
-    }
+  public void setEmergencia(String emergencia) {
+    this.emergencia = emergencia;
+  }
 
-    public String getTipoResponsavel() {
-        return tipoResponsavel;
-    }
+  public String getTipoResponsavel() {
+    return tipoResponsavel;
+  }
 
-    public void setTipoResponsavel(String tipoResponsavel) {
-        this.tipoResponsavel = tipoResponsavel;
-    }
+  public void setTipoResponsavel(String tipoResponsavel) {
+    this.tipoResponsavel = tipoResponsavel;
+  }
 }

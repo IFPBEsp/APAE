@@ -9,59 +9,86 @@ import java.util.UUID;
 @Table(name = "vacinas")
 public class VacinaEntity {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    private UUID id;
+  @Id
+  @GeneratedValue(strategy = GenerationType.AUTO)
+  private UUID id;
 
-    @Column(name = "nome", nullable = false)
-    private String nome;
+  @Column(name = "nome", nullable = false)
+  private String nome;
 
-    @Column(name = "dataAplicacao", nullable = false)
-    private LocalDate dataAplicacao;
+  @Column(name = "dataAplicacao", nullable = false)
+  private LocalDate dataAplicacao;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "pessoa_id")
-    private PessoaEntity pessoa;
+  @ManyToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "pessoa_id")
+  private PessoaEntity pessoa;
 
-    public VacinaEntity() {}
+  public VacinaEntity() {}
 
-    public VacinaEntity(UUID id, String nome, LocalDate dataAplicacao, PessoaEntity pessoa) {
-        this.id = id;
-        this.nome = nome;
-        this.dataAplicacao = dataAplicacao;
-        this.pessoa = pessoa;
-    }
+  public VacinaEntity(UUID id, String nome, LocalDate dataAplicacao, PessoaEntity pessoa) {
+    this.id = id;
+    this.nome = nome;
+    this.dataAplicacao = dataAplicacao;
+    this.pessoa = pessoa;
+  }
 
-    public UUID getId() { return id; }
-    public void setId(UUID id) { this.id = id; }
+  public UUID getId() {
+    return id;
+  }
 
-    public String getNome() { return nome; }
-    public void setNome(String nome) { this.nome = nome; }
+  public void setId(UUID id) {
+    this.id = id;
+  }
 
-    public LocalDate getDataAplicacao() { return dataAplicacao; }
-    public void setDataAplicacao(LocalDate dataAplicacao) { this.dataAplicacao = dataAplicacao; }
+  public String getNome() {
+    return nome;
+  }
 
-    public PessoaEntity getPessoa() { return pessoa; }
-    public void setPessoa(PessoaEntity pessoa) { this.pessoa = pessoa; }
+  public void setNome(String nome) {
+    this.nome = nome;
+  }
 
-    @Override
-    public String toString() {
-        return "Vacina{" +
-                "nome='" + nome + '\'' +
-                ", dataAplicacao=" + dataAplicacao +
-                ", pessoa=" + pessoa +
-                '}';
-    }
+  public LocalDate getDataAplicacao() {
+    return dataAplicacao;
+  }
 
-    @Override
-    public boolean equals(Object o) {
-        if (o == null || getClass() != o.getClass()) return false;
-        VacinaEntity vacina = (VacinaEntity) o;
-        return Objects.equals(id, vacina.id) && Objects.equals(nome, vacina.nome) && Objects.equals(dataAplicacao, vacina.dataAplicacao) && Objects.equals(pessoa, vacina.pessoa);
-    }
+  public void setDataAplicacao(LocalDate dataAplicacao) {
+    this.dataAplicacao = dataAplicacao;
+  }
 
-    @Override
-    public int hashCode() {
-        return Objects.hash(id, nome, dataAplicacao, pessoa);
-    }
+  public PessoaEntity getPessoa() {
+    return pessoa;
+  }
+
+  public void setPessoa(PessoaEntity pessoa) {
+    this.pessoa = pessoa;
+  }
+
+  @Override
+  public String toString() {
+    return "Vacina{"
+        + "nome='"
+        + nome
+        + '\''
+        + ", dataAplicacao="
+        + dataAplicacao
+        + ", pessoa="
+        + pessoa
+        + '}';
+  }
+
+  @Override
+  public boolean equals(Object o) {
+    if (o == null || getClass() != o.getClass()) return false;
+    VacinaEntity vacina = (VacinaEntity) o;
+    return Objects.equals(id, vacina.id)
+        && Objects.equals(nome, vacina.nome)
+        && Objects.equals(dataAplicacao, vacina.dataAplicacao)
+        && Objects.equals(pessoa, vacina.pessoa);
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash(id, nome, dataAplicacao, pessoa);
+  }
 }

@@ -1,34 +1,34 @@
 package br.org.apae.api_crud_pacientes.api.dtos.response;
 
+import br.org.apae.api_crud_pacientes.infrastructure.entity.PessoaEntity;
 import java.util.UUID;
 
-import br.org.apae.api_crud_pacientes.infrastructure.entity.PessoaEntity;
-
 public class TipoDeficienciaResponse {
-    private UUID id;
-    private String descricao;
-    private PessoaEntity pessoa;
-    public PessoaEntity getPessoa() {
-        return pessoa;
-    }
+  private UUID id;
+  private String descricao;
+  private PessoaEntity pessoa;
 
-    public void setPessoa(PessoaEntity pessoa) {
-        this.pessoa = pessoa;
-    }
+  public PessoaEntity getPessoa() {
+    return pessoa;
+  }
 
-    public UUID getId() {
-        return id;
-    }
+  public void setPessoa(PessoaEntity pessoa) {
+    this.pessoa = pessoa;
+  }
 
-    public void setId(UUID id) {
-        this.id = id;
-    }
+  public UUID getId() {
+    return id;
+  }
 
-    public String getDescricao() {
-        return descricao;
-    }
+  public void setId(UUID id) {
+    this.id = id;
+  }
 
-    public void setDescricao(String descricao) {
-        this.descricao = descricao;
-    }
+  public String getDescricao() {
+    return descricao;
+  }
+
+  public void setDescricao(String descricao) {
+    this.descricao = descricao;
+  }
 }

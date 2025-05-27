@@ -4,177 +4,176 @@ import java.time.LocalDate;
 import java.util.List;
 
 public class PessoaRequest {
-    private String nome_completo;
-    private LocalDate data_nascimento;
-    private  String num_registro_nasc;
-    private String fls;
-    private String livro;
-    private String cartorio;
-    private String cpf;
-    private String rg;
-    private LocalDate data_emissao_rg;
-    private String orgao_emissor_rg;
-    private String cns;
-    private String nis;
-    private LocalDate data_cadastramento;
+  private String nomeCompleto;
+  private LocalDate dataNascimento;
+  private String numRegistroNasc;
+  private String fls;
+  private String livro;
+  private String cartorio;
+  private String cpf;
+  private String rg;
+  private LocalDate dataEmissaoRg;
+  private String orgaoEmissorRg;
+  private String cns;
+  private String nis;
+  private LocalDate dataCadastramento;
 
-    private ContatoRequest contatoRequest;
-    private List<VacinaRequest> vacinacoesRequests;
-    private List<TipoDeficienciaRequest> deficienciasRequests;
-    private List<TipoAtendimentoRequest> atendimentosRequests;
-    private List<PessoaResponsavelRequest> responsaveisRequests;
-    private List<CadastroAnualRequest> cadastrosAnuaisRequests;
+  private ContatoRequest contatoRequest;
+  private List<VacinaRequest> vacinacoesRequests;
+  private List<TipoDeficienciaRequest> deficienciasRequests;
+  private List<TipoAtendimentoRequest> atendimentosRequests;
+  private List<PessoaResponsavelRequest> responsaveisRequests;
+  private List<CadastroAnualRequest> cadastrosAnuaisRequests;
 
+  public String getNomeCompleto() {
+    return nomeCompleto;
+  }
 
-    public String getNome_completo() {
-        return nome_completo;
-    }
+  public void setNomeCompleto(String nomeCompleto) {
+    this.nomeCompleto = nomeCompleto;
+  }
 
-    public void setNome_completo(String nome_completo) {
-        this.nome_completo = nome_completo;
-    }
+  public LocalDate getDataNascimento() {
+    return dataNascimento;
+  }
 
-    public LocalDate getData_nascimento() {
-        return data_nascimento;
-    }
+  public void setDataNascimento(LocalDate dataNascimento) {
+    this.dataNascimento = dataNascimento;
+  }
 
-    public void setData_nascimento(LocalDate data_nascimento) {
-        this.data_nascimento = data_nascimento;
-    }
+  public String getNumRegistroNasc() {
+    return numRegistroNasc;
+  }
 
-    public String getNum_registro_nasc() {
-        return num_registro_nasc;
-    }
+  public void setNumRegistroNasc(String numRegistroNasc) {
+    this.numRegistroNasc = numRegistroNasc;
+  }
 
-    public void setNum_registro_nasc(String num_registro_nasc) {
-        this.num_registro_nasc = num_registro_nasc;
-    }
+  public String getFls() {
+    return fls;
+  }
 
-    public String getFls() {
-        return fls;
-    }
+  public void setFls(String fls) {
+    this.fls = fls;
+  }
 
-    public void setFls(String fls) {
-        this.fls = fls;
-    }
+  public String getLivro() {
+    return livro;
+  }
 
-    public String getLivro() {
-        return livro;
-    }
+  public void setLivro(String livro) {
+    this.livro = livro;
+  }
 
-    public void setLivro(String livro) {
-        this.livro = livro;
-    }
+  public String getCartorio() {
+    return cartorio;
+  }
 
-    public String getCartorio() {
-        return cartorio;
-    }
+  public void setCartorio(String cartorio) {
+    this.cartorio = cartorio;
+  }
 
-    public void setCartorio(String cartorio) {
-        this.cartorio = cartorio;
-    }
+  public String getCpf() {
+    return cpf;
+  }
 
-    public String getCpf() {
-        return cpf;
-    }
+  public void setCpf(String cpf) {
+    this.cpf = cpf;
+  }
 
-    public void setCpf(String cpf) {
-        this.cpf = cpf;
-    }
+  public String getRg() {
+    return rg;
+  }
 
-    public String getRg() {
-        return rg;
-    }
+  public void setRg(String rg) {
+    this.rg = rg;
+  }
 
-    public void setRg(String rg) {
-        this.rg = rg;
-    }
+  public LocalDate getDataEmissaoRg() {
+    return dataEmissaoRg;
+  }
 
-    public LocalDate getData_emissao_rg() {
-        return data_emissao_rg;
-    }
+  public void setDataEmissaoRg(LocalDate dataEmissaoRg) {
+    this.dataEmissaoRg = dataEmissaoRg;
+  }
 
-    public void setData_emissao_rg(LocalDate data_emissao_rg) {
-        this.data_emissao_rg = data_emissao_rg;
-    }
+  public String getOrgaoEmissorRg() {
+    return orgaoEmissorRg;
+  }
 
-    public String getOrgao_emissor_rg() {
-        return orgao_emissor_rg;
-    }
+  public void setOrgaoEmissorRg(String orgaoEmissorRg) {
+    this.orgaoEmissorRg = orgaoEmissorRg;
+  }
 
-    public void setOrgao_emissor_rg(String orgao_emissor_rg) {
-        this.orgao_emissor_rg = orgao_emissor_rg;
-    }
+  public String getCns() {
+    return cns;
+  }
 
-    public String getCns() {
-        return cns;
-    }
+  public void setCns(String cns) {
+    this.cns = cns;
+  }
 
-    public void setCns(String cns) {
-        this.cns = cns;
-    }
+  public String getNis() {
+    return nis;
+  }
 
-    public String getNis() {
-        return nis;
-    }
+  public void setNis(String nis) {
+    this.nis = nis;
+  }
 
-    public void setNis(String nis) {
-        this.nis = nis;
-    }
+  public LocalDate getDataCadastramento() {
+    return dataCadastramento;
+  }
 
-    public LocalDate getData_cadastramento() {
-        return data_cadastramento;
-    }
+  public void setDataCadastramento(LocalDate dataCadastramento) {
+    this.dataCadastramento = dataCadastramento;
+  }
 
-    public void setData_cadastramento(LocalDate data_cadastramento) {
-        this.data_cadastramento = data_cadastramento;
-    }
+  public ContatoRequest getContatoRequest() {
+    return contatoRequest;
+  }
 
-    public ContatoRequest getContatoRequest() {
-        return contatoRequest;
-    }
+  public void setContatoRequest(ContatoRequest contatoRequest) {
+    this.contatoRequest = contatoRequest;
+  }
 
-    public void setContatoRequest(ContatoRequest contatoRequest) {
-        this.contatoRequest = contatoRequest;
-    }
+  public List<VacinaRequest> getVacinacoesRequests() {
+    return vacinacoesRequests;
+  }
 
-    public List<VacinaRequest> getVacinacoesRequests() {
-        return vacinacoesRequests;
-    }
+  public void setVacinacoesRequests(List<VacinaRequest> vacinacoesRequests) {
+    this.vacinacoesRequests = vacinacoesRequests;
+  }
 
-    public void setVacinacoesRequests(List<VacinaRequest> vacinacoesRequests) {
-        this.vacinacoesRequests = vacinacoesRequests;
-    }
+  public List<TipoDeficienciaRequest> getDeficienciasRequests() {
+    return deficienciasRequests;
+  }
 
-    public List<TipoDeficienciaRequest> getDeficienciasRequests() {
-        return deficienciasRequests;
-    }
+  public void setDeficienciasRequests(List<TipoDeficienciaRequest> deficienciasRequests) {
+    this.deficienciasRequests = deficienciasRequests;
+  }
 
-    public void setDeficienciasRequests(List<TipoDeficienciaRequest> deficienciasRequests) {
-        this.deficienciasRequests = deficienciasRequests;
-    }
+  public List<TipoAtendimentoRequest> getAtendimentosRequests() {
+    return atendimentosRequests;
+  }
 
-    public List<TipoAtendimentoRequest> getAtendimentosRequests() {
-        return atendimentosRequests;
-    }
+  public void setAtendimentosRequests(List<TipoAtendimentoRequest> atendimentosRequests) {
+    this.atendimentosRequests = atendimentosRequests;
+  }
 
-    public void setAtendimentosRequests(List<TipoAtendimentoRequest> atendimentosRequests) {
-        this.atendimentosRequests = atendimentosRequests;
-    }
+  public List<PessoaResponsavelRequest> getResponsaveisRequests() {
+    return responsaveisRequests;
+  }
 
-    public List<PessoaResponsavelRequest> getResponsaveisRequests() {
-        return responsaveisRequests;
-    }
+  public void setResponsaveisRequests(List<PessoaResponsavelRequest> responsaveisRequests) {
+    this.responsaveisRequests = responsaveisRequests;
+  }
 
-    public void setResponsaveisRequests(List<PessoaResponsavelRequest> responsaveisRequests) {
-        this.responsaveisRequests = responsaveisRequests;
-    }
+  public List<CadastroAnualRequest> getCadastrosAnuaisRequests() {
+    return cadastrosAnuaisRequests;
+  }
 
-    public List<CadastroAnualRequest> getCadastrosAnuaisRequests() {
-        return cadastrosAnuaisRequests;
-    }
-
-    public void setCadastrosAnuaisRequests(List<CadastroAnualRequest> cadastrosAnuaisRequests) {
-        this.cadastrosAnuaisRequests = cadastrosAnuaisRequests;
-    }
+  public void setCadastrosAnuaisRequests(List<CadastroAnualRequest> cadastrosAnuaisRequests) {
+    this.cadastrosAnuaisRequests = cadastrosAnuaisRequests;
+  }
 }
