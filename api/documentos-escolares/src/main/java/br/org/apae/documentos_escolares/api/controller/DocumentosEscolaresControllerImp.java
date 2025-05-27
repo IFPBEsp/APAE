@@ -23,7 +23,8 @@ public class DocumentosEscolaresControllerImp implements DocumentosEscolaresCont
     private final MinioStorageService minioStorageService;
 
     @Override
-    public ResponseEntity<Void> anexarDocumentoEscolar(DocumentoEscolarUploadRequestDTO dto, MultipartFile arquivo)  {
+    public ResponseEntity<Void> anexarDocumentoEscolar(UUID paciente, Integer ano, MultipartFile arquivo)  {
+        DocumentoEscolarUploadRequestDTO dto = new DocumentoEscolarUploadRequestDTO(paciente, ano);
         minioStorageService.salvarArquivo(dto, arquivo);
 
         return ResponseEntity.status(HttpStatus.CREATED).build();
@@ -59,7 +60,9 @@ public class DocumentosEscolaresControllerImp implements DocumentosEscolaresCont
     }
 
     @Override
-    public ResponseEntity<Void> atualizarDocumentoEscolar(DocumentoEscolarUpdateRequestDTO dto, MultipartFile arquivo) {
+    public ResponseEntity<Void> atualizarDocumentoEscolar(UUID paciente, Integer ano, String documentoNome, MultipartFile arquivo) {
+
+        DocumentoEscolarUpdateRequestDTO dto = new DocumentoEscolarUpdateRequestDTO(paciente, ano, documentoNome);
         minioStorageService.atualizarDocumento(dto, arquivo);
 
         return ResponseEntity.status(HttpStatus.CREATED).build();
