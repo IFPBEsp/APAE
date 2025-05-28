@@ -24,10 +24,31 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
+      <head>
+        <script
+          type="text/javascript"
+          src="https://vlibras.gov.br/app/vlibras-plugin.js"
+        ></script>
+      </head>
       <body className={`${nunito.className}`}>
         <Header />
         {children}
         <Footer />
+        <div
+          dangerouslySetInnerHTML={{
+            __html: `
+              <div vw class="enabled">
+                <div vw-access-button class="active"></div>
+                <div vw-plugin-wrapper>
+                  <div class="vw-plugin-top-wrapper"></div>
+                </div>
+              </div>
+              <script>
+                new window.VLibras.Widget('https://vlibras.gov.br/app');
+              </script>
+            `,
+          }}
+        />
       </body>
     </html>
   );
