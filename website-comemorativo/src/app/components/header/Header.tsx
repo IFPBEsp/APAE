@@ -15,7 +15,9 @@ export default function Header() {
 	const toggleMenu = () => {
 		setIsMenuOpen(!isMenuOpen);
 	};
-
+	const handleLinkClick = () => {
+    setIsMenuOpen(false); 
+  };
 	return (
 		<>
 			<div className={Styles.header}>
@@ -49,13 +51,13 @@ export default function Header() {
 			>
 				<ul className={Styles.menu}>
 					<li>
-						<Link href="/pages/TelaInicial">Página Inicial</Link>
+						<Link href="/pages/TelaInicial" onClick={handleLinkClick}>Página Inicial</Link>
 					</li>
 					<li>
-						<Link href="/pages/30anos">30 Anos</Link>
+						<Link href="/pages/30anos" onClick={handleLinkClick}>30 Anos</Link>
 					</li>
 					<li>
-						<Link href="/pages/contato">Contato</Link>
+						<Link href="/pages/contato" onClick={handleLinkClick}>Contato</Link>
 					</li>
 				</ul>
 			</SwipeableDrawer>
