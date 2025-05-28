@@ -3,7 +3,7 @@
 import { useEffect } from 'react';
 import { Timeline } from "antd";
 import Styles from './page.module.css';
-
+import LeitorDeTexto from '../../components/leitor/LeitorDeTexto'; 
 import Dot from '@/app/components/dot/Dot';
 
 const TrintaAnosPage: React.FC = () => {
@@ -32,9 +32,20 @@ const TrintaAnosPage: React.FC = () => {
             <div className={Styles.titleDiv}>
                 <img src="/logo-30anos.png" alt="APAE Logo" className={Styles.logo} />
                 <h1 className={Styles.title}>30 Anos Fazendo a Diferença</h1>
+                <LeitorDeTexto texto="Título principal: 30 Anos Fazendo a Diferença. 
+                A APAE (Associação de Pais e Amigos dos Excepcionais) de Esperança - PB celebra 30 anos de dedicação à assistência e inclusão social da comunidade. 
+                Ao longo dessas três décadas, a instituição tem transformado vidas, promovendo desenvolvimento e apoio, além de contar com a valiosa contribuição de voluntários e profissionais
+                comprometidos.
+                Imagem 1: 1995 - Construção da APAE em Esperança.
+                Imagem 2: 2000 - Início do atendimento na cidade.
+                Imagem 3: 2018 - Ampliação de serviços para distritos.
+                Imagem 4: 2025 - Comemoração dos 30 anos da APAE.
+                " />
             </div>
             <p className={Styles.text}>
-                A APAE (Associação de Pais e Amigos dos Excepcionais) de Esperança - PB celebra 30 anos de dedicação à assistência e inclusão social da comunidade. Ao longo dessas três décadas, a instituição tem transformado vidas, promovendo desenvolvimento e apoio, além de contar com a valiosa contribuição de voluntários e profissionais comprometidos.
+                A APAE (Associação de Pais e Amigos dos Excepcionais) de Esperança - PB celebra 30 anos de dedicação à assistência e inclusão social da comunidade.
+                Ao longo dessas três décadas, a instituição tem transformado vidas, promovendo desenvolvimento e apoio, além de contar com a valiosa contribuição de voluntários e profissionais
+                 comprometidos.
             </p>
             <Timeline items={timelineItems} mode='alternate' style={{ minWidth: "50%", wordWrap: "break-word", margin: "50px 0" }}/>
         </div>
