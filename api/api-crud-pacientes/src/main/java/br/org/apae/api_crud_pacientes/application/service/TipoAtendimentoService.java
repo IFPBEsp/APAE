@@ -1,4 +1,4 @@
-package br.org.apae.api_crud_pacientes.domain.service;
+package br.org.apae.api_crud_pacientes.application.service;
 
 import br.org.apae.api_crud_pacientes.api.dtos.request.TipoAtendimentoRequest;
 import br.org.apae.api_crud_pacientes.api.dtos.response.TipoAtendimentoResponse;

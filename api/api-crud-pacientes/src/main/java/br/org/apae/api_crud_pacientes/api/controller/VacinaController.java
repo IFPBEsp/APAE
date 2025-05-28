@@ -2,7 +2,8 @@ package br.org.apae.api_crud_pacientes.api.controller;
 
 import br.org.apae.api_crud_pacientes.api.dtos.request.VacinaRequest;
 import br.org.apae.api_crud_pacientes.api.dtos.response.VacinaResponse;
-import br.org.apae.api_crud_pacientes.domain.service.VacinaService;
+import br.org.apae.api_crud_pacientes.application.service.VacinaService;
+
 import java.net.URI;
 import java.util.List;
 import java.util.UUID;

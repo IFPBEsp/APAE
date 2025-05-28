@@ -1,4 +1,4 @@
-package br.org.apae.api_crud_pacientes.application;
+package br.org.apae.api_crud_pacientes.application.service;
 
 public class MinIOService {
   // Implementações de alto nível. Operações mais complexas que não se aplicam no contexto de

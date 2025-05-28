@@ -19,7 +19,7 @@ import org.springframework.web.util.UriComponentsBuilder;
 
 import br.org.apae.api_crud_pacientes.api.dtos.request.PessoaRequest;
 import br.org.apae.api_crud_pacientes.api.dtos.response.PessoaResponse;
-import br.org.apae.api_crud_pacientes.domain.service.PessoaService;
+import br.org.apae.api_crud_pacientes.application.service.PessoaService;
 import br.org.apae.api_crud_pacientes.infrastructure.entity.PessoaEntity;
 import br.org.apae.api_crud_pacientes.infrastructure.mapper.impl.PessoaMapper;
 

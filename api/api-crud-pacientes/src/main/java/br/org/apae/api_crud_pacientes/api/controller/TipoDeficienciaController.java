@@ -2,7 +2,8 @@ package br.org.apae.api_crud_pacientes.api.controller;
 
 import br.org.apae.api_crud_pacientes.api.dtos.request.TipoDeficienciaRequest;
 import br.org.apae.api_crud_pacientes.api.dtos.response.TipoDeficienciaResponse;
-import br.org.apae.api_crud_pacientes.domain.service.TipoDeficienciaService;
+import br.org.apae.api_crud_pacientes.application.service.TipoDeficienciaService;
+
 import java.net.URI;
 import java.util.UUID;
 import org.springframework.data.domain.Page;

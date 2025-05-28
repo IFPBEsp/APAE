@@ -2,7 +2,8 @@ package br.org.apae.api_crud_pacientes.api.controller;
 
 import br.org.apae.api_crud_pacientes.api.dtos.request.PessoaResponsavelRequest;
 import br.org.apae.api_crud_pacientes.api.dtos.response.PessoaResponsavelResponse;
-import br.org.apae.api_crud_pacientes.domain.service.PessoaResponsavelService;
+import br.org.apae.api_crud_pacientes.application.service.PessoaResponsavelService;
+
 import java.net.URI;
 import java.util.UUID;
 import org.springframework.data.domain.Page;

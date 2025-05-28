@@ -2,7 +2,8 @@ package br.org.apae.api_crud_pacientes.api.controller;
 
 import br.org.apae.api_crud_pacientes.api.dtos.request.TipoAtendimentoRequest;
 import br.org.apae.api_crud_pacientes.api.dtos.response.TipoAtendimentoResponse;
-import br.org.apae.api_crud_pacientes.domain.service.TipoAtendimentoService;
+import br.org.apae.api_crud_pacientes.application.service.TipoAtendimentoService;
+
 import java.net.URI;
 import java.util.UUID;
 import org.springframework.data.domain.Page;

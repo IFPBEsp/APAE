@@ -1,4 +1,10 @@
-package br.org.apae.api_crud_pacientes.domain.service;
+package br.org.apae.api_crud_pacientes.application.service;
+
+import java.util.UUID;
+
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.stereotype.Service;
 
 import br.org.apae.api_crud_pacientes.api.dtos.request.ContatoRequest;
 import br.org.apae.api_crud_pacientes.api.dtos.response.ContatoResponse;
@@ -6,10 +12,6 @@ import br.org.apae.api_crud_pacientes.domain.model.Contato;
 import br.org.apae.api_crud_pacientes.domain.repository.ContatoRepository;
 import br.org.apae.api_crud_pacientes.infrastructure.mapper.impl.ContatoMapper;
 import jakarta.persistence.EntityNotFoundException;
-import java.util.UUID;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-import org.springframework.stereotype.Service;
 
 @Service
 public class ContatoService {

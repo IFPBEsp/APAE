@@ -2,7 +2,7 @@ package br.org.apae.api_crud_pacientes.api.controller;
 
 import br.org.apae.api_crud_pacientes.api.dtos.request.CadastroAnualRequest;
 import br.org.apae.api_crud_pacientes.api.dtos.response.CadastroAnualResponse;
-import br.org.apae.api_crud_pacientes.domain.service.CadastroAnualService;
+import br.org.apae.api_crud_pacientes.application.service.CadastroAnualService;
 import jakarta.validation.Valid;
 import java.net.URI;
 import java.util.List;
