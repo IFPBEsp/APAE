@@ -37,9 +37,9 @@ public class PersonalDocumentControllerImpl implements PersonalDocumentControlle
     })
     @PostMapping(value = "/{patientId}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<Void> attachPersonalDocument(
-            @PathVariable String patientId,
-            @RequestPart String documentType,
-            @RequestPart MultipartFile file
+            @PathVariable("patientId") String patientId,
+            @RequestPart("documentType") String documentType,
+            @RequestPart("file") MultipartFile file
     ) {
         PersonalDocumentReqDTO dto = new PersonalDocumentReqDTO(patientId, documentType, file);
         this.personalDocumentService.saveFile(dto);
@@ -57,7 +57,7 @@ public class PersonalDocumentControllerImpl implements PersonalDocumentControlle
         @ApiResponse(responseCode = "500", description = "Erro interno do servidor")
     })
     @GetMapping("/{patientId}/documentos")
-    public ResponseEntity<PersonalDocumentResDTO> listPersonalDocuments(@PathVariable String patientId) {
+    public ResponseEntity<PersonalDocumentResDTO> listPersonalDocuments(@PathVariable("patientId") String patientId) {
         PersonalDocumentResDTO documentsDTO = this.personalDocumentService.listPersonalDocument(patientId);
         return ResponseEntity.ok(documentsDTO);
     }
@@ -74,10 +74,10 @@ public class PersonalDocumentControllerImpl implements PersonalDocumentControlle
     })
     @GetMapping("/{patientId}")
     public ResponseEntity<PersonalDocumentResDTO> listPersonalDocumentByType(
-            @PathVariable String patientId,
-            @RequestParam("tipo") String documentTpe
+            @PathVariable("patientId") String patientId,
+            @RequestParam("type") String documentType
     ) {
-        PersonalDocumentResDTO resDTO = this.personalDocumentService.listPersonalDocumentByType(patientId, PersonalDocumentType.valueOf(documentTpe));
+        PersonalDocumentResDTO resDTO = this.personalDocumentService.listPersonalDocumentByType(patientId, PersonalDocumentType.valueOf(documentType));
         return ResponseEntity.ok(resDTO);
     }
 
@@ -93,8 +93,8 @@ public class PersonalDocumentControllerImpl implements PersonalDocumentControlle
     })
     @GetMapping(value = "/{patientId}/vizualizar", produces = MediaType.IMAGE_PNG_VALUE)
     public ResponseEntity<byte[]> viewPatientPersonalDocument(
-            @PathVariable String patientId,
-            @RequestParam String fileName
+            @PathVariable("patientId") String patientId,
+            @RequestParam("fileName") String fileName
     ) {
         byte[] file = this.personalDocumentService.viewPatientPersonalDocuments(patientId, fileName);
         return ResponseEntity.ok(file);
@@ -112,8 +112,8 @@ public class PersonalDocumentControllerImpl implements PersonalDocumentControlle
     })
     @DeleteMapping("/{patientId}")
     public ResponseEntity<Void> deleteDocument(
-            @PathVariable String patientId,
-            @RequestParam String fileName
+            @PathVariable("patientId") String patientId,
+            @RequestParam("fileName") String fileName
     ) {
         this.personalDocumentService.deleteDocument(patientId, fileName);
         return ResponseEntity.noContent().build();
