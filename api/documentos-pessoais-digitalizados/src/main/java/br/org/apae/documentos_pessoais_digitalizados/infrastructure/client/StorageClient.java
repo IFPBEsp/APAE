@@ -9,21 +9,17 @@ public class StorageClient {
     private final RestClient restClient;
 
     public StorageClient(@Value("${client.storage.endpoint.url}") String url) {
-        this.restClient = RestClient.builder()
-                .baseUrl(url)
-                .build();
+        this.restClient = RestClient.builder().baseUrl(url).build();
     }
-
-    public void makeBucket(String bucketName) {
-        this.restClient.post()
-                .uri("/{bucketName}", bucketName);
-    }
-
 
     public boolean bucketExists(String bucketName) {
         return Boolean.TRUE.equals(this.restClient.get()
-                .uri("/verificar/{bucketName}", bucketName)
-                .retrieve()
-                .body(Boolean.class));
+                                                  .uri("/verificar/{bucketName}", bucketName)
+                                                  .retrieve()
+                                                  .body(Boolean.class));
+    }
+
+    public void makeBucket(String bucketName) {
+        this.restClient.post().uri("/{bucketName}", bucketName);
     }
 }

@@ -5,9 +5,14 @@ import br.org.apae.documentos_pessoais_digitalizados.api.dtos.res.PersonalDocume
 import br.org.apae.documentos_pessoais_digitalizados.domain.models.PersonalDocumentType;
 
 public interface PersonalDocumentService {
-    void saveFile(PersonalDocumentReqDTO personalDTO);
-    PersonalDocumentResDTO listPersonalDocument(String patientId);
-    PersonalDocumentResDTO listPersonalDocumentByType(String patientId, PersonalDocumentType type);
-    byte[] viewPatientPersonalDocuments(String patientId, String path);
     void deleteDocument(String patientId, String fileName);
+
+    PersonalDocumentResDTO listPersonalDocument(String patientId);
+
+    PersonalDocumentResDTO listPersonalDocumentByType(String patientId, PersonalDocumentType type);
+
+    void saveFile(PersonalDocumentReqDTO personalDTO);
+
+    byte[] viewPatientPersonalDocuments(String patientId, String path);
+
 }
