@@ -1,6 +1,6 @@
 plugins {
     id("buildlogic.java-application-conventions")
-    id("org.springframework.boot") version "3.5.0"
+    id("org.springframework.boot") version "3.4.5"
     id("io.spring.dependency-management") version "1.1.7"
 }
 
@@ -16,3 +16,6 @@ dependencies {
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 }
 
+application {
+    mainClass.set("br.org.apae.auth.AuthApplication")
+}
