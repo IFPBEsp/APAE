@@ -4,4 +4,4 @@ plugins {
 }
 
 rootProject.name = "api"
-include("demo", "documentos-digitalizados", "documentos-medicos-digitalizados", "documentos-pessoais-digitalizados", "api-crud-pacientes")
+include("demo", "documentos-digitalizados", "documentos-medicos-digitalizados", "documentos-pessoais-digitalizados", "api-crud-pacientes", "documentos-escolares")
