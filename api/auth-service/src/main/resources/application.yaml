@@ -13,13 +13,13 @@ spring:
     oauth2:
       client:
         registration:
-          keycloack:
+          keycloak:
             client-id: ${client_id}
             client-secret: ${client_secret}
             scope:
               - openid
         provider:
-          keycloack:
+          keycloak:
               issuer-uri: ${issuer_uri}
       resourceserver:
         jwt:
