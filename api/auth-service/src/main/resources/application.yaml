@@ -1,9 +1,9 @@
 server:
-  port: 9000
+  port: 8085
 
 url_login_token: http://localhost:8080/realms/org-apae/protocol/openid-connect/token
 client_id: client-apae
-client_secret: F2PF1PiHZ4uyy4T0yojEDH4D33fIoDnW
+client_secret: 18p6F64hHrSjxjTrzCElglkFiF1j5Bho
 issuer_uri: http://localhost:8080/realms/org-apae
 
 spring:
