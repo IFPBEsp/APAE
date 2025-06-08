@@ -1,60 +1,121 @@
 package br.org.apae.documentos_pessoais_digitalizados.global;
 
-import br.org.apae.documentos_pessoais_digitalizados.application.exception.DocumentNotFoundException;
-import br.org.apae.documentos_pessoais_digitalizados.application.exception.FileExistException;
-import br.org.apae.documentos_pessoais_digitalizados.application.exception.StorageException;
+import java.time.Instant;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.validation.FieldError;
-import org.springframework.web.bind.MethodArgumentNotValidException;
-import org.springframework.web.bind.annotation.*;
-import org.springframework.web.context.request.ServletWebRequest;
-import org.springframework.web.context.request.WebRequest;
+import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.multipart.support.MissingServletRequestPartException;
 
-import java.time.LocalDateTime;
-import java.util.LinkedHashMap;
-import java.util.Map;
+import br.org.apae.documentos_pessoais_digitalizados.application.exceptions.BucketNotFoundException;
+import br.org.apae.documentos_pessoais_digitalizados.application.exceptions.DocumentNotFoundException;
+import br.org.apae.documentos_pessoais_digitalizados.application.exceptions.FileIsEmptyException;
+import br.org.apae.documentos_pessoais_digitalizados.application.exceptions.PersonalDocumentServiceException;
+import br.org.apae.documentos_pessoais_digitalizados.infrastructure.storage.exceptions.PersonalDocumentStorageException;
+
+import jakarta.servlet.http.HttpServletRequest;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
+    @ExceptionHandler(BucketNotFoundException.class)
+    public ResponseEntity<StandardError> handleBucketNotFound(BucketNotFoundException e, HttpServletRequest request) {
+        HttpStatus    status = HttpStatus.NOT_FOUND;
+        StandardError err    = new StandardError(Instant.now(),
+                                                 status.value(),
+                                                 "Bucket não encontrado",
+                                                 e.getMessage(),
+                                                 request.getRequestURI());
+
+        return ResponseEntity.status(status).body(err);
+    }
 
     @ExceptionHandler(DocumentNotFoundException.class)
-    public ResponseEntity<Object> handleDocumentNotFound(DocumentNotFoundException ex, WebRequest request) {
-        return buildResponseEntity(HttpStatus.NOT_FOUND, ex.getMessage(), request.getDescription(false));
+    public ResponseEntity<StandardError> handleDocumentNotFound(DocumentNotFoundException e,
+                                                                HttpServletRequest request) {
+        HttpStatus    status = HttpStatus.NOT_FOUND;
+        StandardError err    = new StandardError(Instant.now(),
+                                                 status.value(),
+                                                 "Documento não encontrado",
+                                                 e.getMessage(),
+                                                 request.getRequestURI());
+
+        return ResponseEntity.status(status).body(err);
     }
 
-    @ExceptionHandler(StorageException.class)
-    public ResponseEntity<Object> handleStorageException(StorageException ex, WebRequest request) {
-        return buildResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR, ex.getMessage(), request.getDescription(false));
+    @ExceptionHandler(FileIsEmptyException.class)
+    public ResponseEntity<StandardError> handleFileIsEmpty(FileIsEmptyException e, HttpServletRequest request) {
+        HttpStatus    status = HttpStatus.BAD_REQUEST;
+        StandardError err    = new StandardError(Instant.now(),
+                                                 status.value(),
+                                                 "Arquivo vazio",
+                                                 e.getMessage(),
+                                                 request.getRequestURI());
+
+        return ResponseEntity.status(status).body(err);
     }
 
-    @ExceptionHandler(FileExistException.class)
-    public ResponseEntity<Object> handleFileExistException(FileExistException ex, WebRequest request) {
-        return buildResponseEntity(HttpStatus.CONFLICT, ex.getMessage(), request.getDescription(false));
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<StandardError> handleGenericException(Exception e, HttpServletRequest request) {
+        HttpStatus    status = HttpStatus.INTERNAL_SERVER_ERROR;
+        StandardError err    = new StandardError(Instant.now(),
+                                                 status.value(),
+                                                 "Erro inesperado",
+                                                 e.getMessage(),
+                                                 request.getRequestURI());
+
+        return ResponseEntity.status(status).body(err);
     }
 
-    @ExceptionHandler(MethodArgumentNotValidException.class)
-    protected ResponseEntity<Object> handleMethodArgumentNotValid(
-            MethodArgumentNotValidException ex,
-            WebRequest request
-    ) {
+    @ExceptionHandler(MissingServletRequestPartException.class)
+    public ResponseEntity<StandardError> handleMissingPart(MissingServletRequestPartException e,
+                                                           HttpServletRequest request) {
+        HttpStatus    status = HttpStatus.BAD_REQUEST;
+        StandardError err    = new StandardError(Instant.now(),
+                                                 status.value(),
+                                                 "Parte do pedido ausente",
+                                                 e.getMessage(),
+                                                 request.getRequestURI());
 
-        String path = ((ServletWebRequest) request).getRequest().getRequestURI();
-        String message = "Erro de validação nos campos: " + String.join(", ", ex.getBindingResult()
-                .getFieldErrors().stream()
-                .map(FieldError::getField)
-                .toList());
-
-        return buildResponseEntity(HttpStatus.BAD_REQUEST, message, path);
+        return ResponseEntity.status(status).body(err);
     }
 
-    private ResponseEntity<Object> buildResponseEntity(HttpStatus status, String message, String path) {
-        Map<String, Object> body = new LinkedHashMap<>();
-        body.put("timestamp", LocalDateTime.now());
-        body.put("status", status.value());
-        body.put("error", status.getReasonPhrase());
-        body.put("message", message);
-        body.put("path", path.replace("uri=", ""));
-        return new ResponseEntity<>(body, status);
+    @ExceptionHandler(NumberFormatException.class)
+    public ResponseEntity<StandardError> handleNumberFormat(NumberFormatException e, HttpServletRequest request) {
+        HttpStatus    status = HttpStatus.BAD_REQUEST;
+        StandardError err    = new StandardError(Instant.now(),
+                                                 status.value(),
+                                                 "Formato de número inválido",
+                                                 e.getMessage(),
+                                                 request.getRequestURI());
+
+        return ResponseEntity.status(status).body(err);
+    }
+
+    @ExceptionHandler(PersonalDocumentServiceException.class)
+    public ResponseEntity<StandardError> handleServiceException(PersonalDocumentServiceException e,
+                                                                HttpServletRequest request) {
+        HttpStatus    status = HttpStatus.INTERNAL_SERVER_ERROR;
+        StandardError err    = new StandardError(Instant.now(),
+                                                 status.value(),
+                                                 "Erro no serviço de documentos médicos",
+                                                 e.getMessage(),
+                                                 request.getRequestURI());
+
+        return ResponseEntity.status(status).body(err);
+    }
+
+    @ExceptionHandler(PersonalDocumentStorageException.class)
+    public ResponseEntity<StandardError> handleStorageException(PersonalDocumentStorageException e,
+                                                                HttpServletRequest request) {
+        HttpStatus    status = HttpStatus.INTERNAL_SERVER_ERROR;
+        StandardError err    = new StandardError(Instant.now(),
+                                                 status.value(),
+                                                 "Erro de armazenamento",
+                                                 e.getMessage(),
+                                                 request.getRequestURI());
+
+        return ResponseEntity.status(status).body(err);
     }
 }
+
