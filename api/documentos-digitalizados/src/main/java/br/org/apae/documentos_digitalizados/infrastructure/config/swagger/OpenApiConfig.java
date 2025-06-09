@@ -1,4 +1,4 @@
-package br.org.apae.documentos_digitalizados.infrastructure.config;
+package br.org.apae.documentos_digitalizados.infrastructure.config.swagger;
 
 import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.info.Info;
