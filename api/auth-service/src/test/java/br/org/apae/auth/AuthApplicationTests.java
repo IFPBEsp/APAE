@@ -1,9 +1,13 @@
-package br.org.apae.documentos_medicos;
+package br.org.apae.auth;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
-class DocumentosMedicosDigitalizadosApplicationTests {
+class AuthApplicationTests {
+
+    @Test
+    void contextLoads() {
+    }
 
 }

@@ -8,16 +8,14 @@ group = "br.org.apae"
 version = "0.0.1-SNAPSHOT"
 
 dependencies {
-    implementation("org.springframework.boot:spring-boot-starter-validation")
-    implementation("org.springframework.boot:spring-boot-starter-web")
     implementation("org.springframework.boot:spring-boot-starter-oauth2-resource-server")
     implementation("org.springframework.boot:spring-boot-starter-security")
-    implementation("io.minio:minio:8.5.17")
-    developmentOnly("org.springframework.boot:spring-boot-devtools")
+    implementation("org.springframework.boot:spring-boot-starter-web")
     testImplementation("org.springframework.boot:spring-boot-starter-test")
+    testImplementation("org.springframework.security:spring-security-test")
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 }
 
 application {
-    mainClass="br/org/apae/documentos_medicos/DocumentosMedicosDigitalizadosApplication"
+    mainClass.set("br.org.apae.auth.AuthApplication")
 }
