@@ -23,7 +23,7 @@ import io.minio.messages.Item;
 @Component
 public class MinioMedicalDocumentStorageImpl implements MinioStorage {
 
-    private final MinioClient minioClient;
+    private MinioClient minioClient;
 
     @Autowired
     public MinioMedicalDocumentStorageImpl(MinioClient minioClient) {
