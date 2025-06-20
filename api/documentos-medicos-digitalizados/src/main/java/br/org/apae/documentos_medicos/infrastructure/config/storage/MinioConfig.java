@@ -1,4 +1,4 @@
-package br.org.apae.documentos_pessoais_digitalizados.infrastructure.config;
+package br.org.apae.documentos_medicos.infrastructure.config.storage;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -8,8 +8,8 @@ import io.minio.MinioClient;
 
 @Configuration
 public class MinioConfig {
-    @Value("${minio.endpoint}")
-    private String endpoint;
+    @Value("${minio.url}")
+    private String url;
     @Value("${minio.access-key}")
     private String accessKey;
     @Value("${minio.secret-key}")
@@ -17,8 +17,9 @@ public class MinioConfig {
 
     @Bean
     public MinioClient minioClient() {
-        return MinioClient.builder().endpoint(this.endpoint).credentials(this.accessKey, this.secretKey).build();
+        return MinioClient.builder()
+                .endpoint(url)
+                .credentials(accessKey , secretKey)
+                .build();
     }
 }
-
-

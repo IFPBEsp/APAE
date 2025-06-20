@@ -7,21 +7,15 @@ plugins {
 group = "br.org.apae"
 version = "0.0.1-SNAPSHOT"
 
-configurations {
-    compileOnly {
-        extendsFrom(configurations.annotationProcessor.get())
-    }
-}
-
 dependencies {
-    implementation("org.springframework.boot:spring-boot-starter-validation")
-    implementation("org.springframework.boot:spring-boot-starter-web")
     implementation("org.springframework.boot:spring-boot-starter-oauth2-resource-server")
     implementation("org.springframework.boot:spring-boot-starter-security")
-    compileOnly("org.projectlombok:lombok")
-    annotationProcessor("org.projectlombok:lombok")
+    implementation("org.springframework.boot:spring-boot-starter-web")
     testImplementation("org.springframework.boot:spring-boot-starter-test")
+    testImplementation("org.springframework.security:spring-security-test")
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
-    implementation("io.minio:minio:8.5.17")
-    implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.8.6")
+}
+
+application {
+    mainClass.set("br.org.apae.auth.AuthApplication")
 }

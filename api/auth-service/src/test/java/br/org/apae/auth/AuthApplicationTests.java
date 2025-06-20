@@ -1,9 +1,13 @@
-package br.org.apae.documentos_pessoais_digitalizados;
+package br.org.apae.auth;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
-class DocumentosPessoaisDigitalizadosApplicationTests {
+class AuthApplicationTests {
+
+    @Test
+    void contextLoads() {
+    }
 
 }
