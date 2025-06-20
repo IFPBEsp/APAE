@@ -13,6 +13,8 @@ dependencies {
     implementation("io.minio:minio:8.5.17")
     developmentOnly("org.springframework.boot:spring-boot-devtools")
     testImplementation("org.springframework.boot:spring-boot-starter-test")
+    testImplementation("org.mockito:mockito-core:5.18.0")
+    testImplementation("org.mockito:mockito-junit-jupiter:5.18.0")
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 }
 
