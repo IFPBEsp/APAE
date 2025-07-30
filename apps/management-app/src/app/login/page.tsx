@@ -1,8 +1,14 @@
-import { GalleryVerticalEnd } from "lucide-react"
+import { GalleryVerticalEnd } from "lucide-react";
 
-import { LoginForm } from "@/components/login-form"
+import { LoginForm } from "@/components/login-form";
+import { IS_LOGGED_IN } from "@/constants/is-logged-in";
+import { redirect } from "next/navigation";
 
 export default function LoginPage() {
+  if (IS_LOGGED_IN) {
+    redirect("/");
+  }
+
   return (
     <div className="grid min-h-svh lg:grid-cols-2">
       <div className="flex flex-col gap-4 p-6 md:p-10">
@@ -28,5 +34,5 @@ export default function LoginPage() {
         />
       </div>
     </div>
-  )
+  );
 }
