@@ -1,7 +1,42 @@
+.sidebar {
+    
+}
+
+.header {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    margin-top: 10px;
+    margin-left: 10px;
+    margin-bottom: 10px;
+}
+
+.logo {
+    background-color: black;
+    border-radius: 20%;
+    padding: 5px;
+}
+
+.title {
+    font-weight: bold;
+}
+
+.subtitle {
+    color: grey;
+    font-size: 14px;
+}
+
 .listItem {
     display: flex; 
     flex-direction: row; 
     gap: 10px;
     padding-left: 10px;
     align-items: center;
+    padding: 5px;
+    border-radius: 5px;
+    margin: 0 10px;
+}
+
+.listItem:active {
+    background-color: rgb(209, 209, 209);
 }
