@@ -1,10 +1,19 @@
-import { IS_LOGGED_IN } from "@/constants/is-logged-in";
-import { redirect } from "next/navigation";
+"use client";
+
+import { Button } from "@/components/ui/button";
+import { logout } from "./actions";
 
 export default function Home() {
-  if (!IS_LOGGED_IN) {
-    redirect("/login");
-  }
-
-  return <h1>LOGGED PAGE - HELLO, WORLD!</h1>;
+  return (
+    <>
+      <h1>LOGGED PAGE - HELLO, WORLD!</h1>
+      <Button
+        onClick={async () => {
+          await logout();
+        }}
+      >
+        Log out
+      </Button>
+    </>
+  );
 }
