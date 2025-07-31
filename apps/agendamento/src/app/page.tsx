@@ -3,21 +3,15 @@
 import { useState } from "react"
 import { format } from "date-fns"
 import { ptBR } from "date-fns/locale"
-import { CalendarDays } from "lucide-react"
+import { CalendarDays, Users, CreditCard, Activity } from "lucide-react"  
 
 import { AppSidebar } from "@/components/sidebar/sidebar"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table"
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { Calendar } from "@/components/ui/calendar"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
+import { Badge } from "@/components/ui/badge" 
 
 export default function DashboardPage() {
   const [selectedDate, setSelectedDate] = useState<Date | undefined>(new Date())
@@ -44,11 +38,10 @@ export default function DashboardPage() {
       <AppSidebar />
 
       <main className="flex-1 p-6">
-        {/* Header */}
         <div className="flex justify-between items-center mb-4">
           <h1 className="text-2xl font-bold text-blue-800">Agendamentos de Hoje</h1>
           <div className="flex items-center gap-2">
-            {/* Date Picker */}
+
             <Popover>
               <PopoverTrigger asChild>
                 <Button
@@ -70,16 +63,26 @@ export default function DashboardPage() {
               </PopoverContent>
             </Popover>
 
-            <Button> Novo agendamento </Button>
+            <Button className="bg-blue-800 text-white hover:bg-blue-900">Novo agendamento</Button>
           </div>
         </div>
 
-        {/* Cards */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
           {cards.map((card, i) => (
             <Card key={i}>
-              <CardHeader>
-                <CardTitle className="text-sm text-muted-foreground">{card.title}</CardTitle>
+              <CardHeader className="flex justify-between items-center">
+                <CardTitle className="text-sm text-black">{card.title}</CardTitle>
+                {(card.title === "Agendados pra hoje" || card.title === "Todos os agendamentos") && (
+                  <Users className="h-7 w-7 text-black-600" />
+                )}
+
+                {card.title === "Sem justificativa" && (
+                  <CreditCard className="h-7 w-7 text-red-600" />
+                )}
+
+                {card.title === "Não confirmados" && (
+                  <Activity className="h-7 w-7 text-red-600" />
+                )}
               </CardHeader>
               <CardContent>
                 <div className="text-2xl font-bold">{card.value}</div>
@@ -89,7 +92,6 @@ export default function DashboardPage() {
           ))}
         </div>
 
-        {/* Tabela */}
         <Card>
           <CardContent>
             <Table>
@@ -106,12 +108,12 @@ export default function DashboardPage() {
                   <TableRow key={index}>
                     <TableCell>{item.name}</TableCell>
                     <TableCell>
-                      <span className={item.confirmed ? "text-green-600" : "text-red-500"}>
+                      <Badge variant="outline" className={item.confirmed ? "border-green-600 text-green-600" : "border-red-500 text-red-500"}>
                         {item.confirmed ? "Sim" : "Não"}
-                      </span>
+                      </Badge>
                     </TableCell>
                     <TableCell>{item.area}</TableCell>
-                    <TableCell className="text-blue-600 hover:underline cursor-pointer">
+                    <TableCell className="text-black-600 hover:underline cursor-pointer">
                       Detalhes
                     </TableCell>
                   </TableRow>
