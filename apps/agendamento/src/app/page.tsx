@@ -1,9 +1,13 @@
 'use client'
 
-import { AppSidebar } from "@/components/sidebar/sidebar"
+import { useState } from "react"
+import { format } from "date-fns"
+import { ptBR } from "date-fns/locale"
 import { CalendarDays } from "lucide-react"
+
+import { AppSidebar } from "@/components/sidebar/sidebar"
 import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import {
   Table,
   TableBody,
@@ -12,8 +16,12 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table"
+import { Calendar } from "@/components/ui/calendar"
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 
 export default function DashboardPage() {
+  const [selectedDate, setSelectedDate] = useState<Date | undefined>(new Date())
+
   const cards = [
     { title: "Agendados pra hoje", value: "6", subtitle: "5 confirmados, 1 pendente" },
     { title: "Todos os agendamentos", value: "25", subtitle: "+180.1% from last month" },
@@ -40,10 +48,28 @@ export default function DashboardPage() {
         <div className="flex justify-between items-center mb-4">
           <h1 className="text-2xl font-bold text-blue-800">Agendamentos de Hoje</h1>
           <div className="flex items-center gap-2">
-            <div className="flex items-center border rounded-md px-3 py-2 text-sm text-muted-foreground bg-white">
-              <CalendarDays className="mr-2 h-4 w-4" />
-              <span>Feb 10, 2025</span>
-            </div>
+            {/* Date Picker */}
+            <Popover>
+              <PopoverTrigger asChild>
+                <Button
+                  variant="outline"
+                  className="w-[220px] justify-start text-left font-normal bg-white"
+                >
+                  <CalendarDays className="mr-2 h-4 w-4" />
+                  {selectedDate ? format(selectedDate, "dd 'de' MMMM 'de' yyyy", { locale: ptBR }) : <span>Escolha uma data</span>}
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent className="w-auto p-0 bg-white">
+                <Calendar
+                  mode="single"
+                  selected={selectedDate}
+                  onSelect={setSelectedDate}
+                  initialFocus
+                  locale={ptBR}
+                />
+              </PopoverContent>
+            </Popover>
+
             <Button> Novo agendamento </Button>
           </div>
         </div>
