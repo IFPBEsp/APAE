@@ -1,0 +1,7 @@
+.listItem {
+    display: flex; 
+    flex-direction: row; 
+    gap: 10px;
+    padding-left: 10px;
+    align-items: center;
+}
