@@ -17,10 +17,10 @@ export default function DashboardPage() {
   const [selectedDate, setSelectedDate] = useState<Date | undefined>(new Date())
 
   const cards = [
-    { title: "Agendados pra hoje", value: "6", subtitle: "5 confirmados, 1 pendente" },
-    { title: "Todos os agendamentos", value: "25", subtitle: "+180.1% from last month" },
-    { title: "Sem justificativa", value: "3", subtitle: "+19% from last month" },
-    { title: "Não confirmados", value: "2", subtitle: "+201 since last hour" },
+    { title: "Agendados pra hoje", value: "6", subtitle: "5 confirmados, 2 pendente" },
+    { title: "Todos os agendamentos", value: "25", subtitle: "" },
+    { title: "Sem justificativa", value: "3", subtitle: "" },
+    { title: "Não confirmados", value: "2", subtitle: "" },
   ]
 
   const appointments = [
@@ -34,13 +34,11 @@ export default function DashboardPage() {
   ]
 
   return (
-    <div className="flex min-h-screen bg-muted text-sm">
-      <AppSidebar />
-
+    <div className="flex min-h-screen w-screen text-sm">
       <main className="flex-1 p-6">
-        <div className="flex justify-between items-center mb-4">
+        <div className="flex justify-between items-center mb-4 mainHeader">
           <h1 className="text-2xl font-bold text-blue-800">Agendamentos de Hoje</h1>
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 headerButtons">
 
             <Popover>
               <PopoverTrigger asChild>
@@ -67,24 +65,24 @@ export default function DashboardPage() {
           </div>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6 cardsDiv">
           {cards.map((card, i) => (
-            <Card key={i}>
-              <CardHeader className="flex justify-between items-center">
+            <Card key={i} className="cards">
+              <CardHeader className="flex justify-between items-center padding10">
                 <CardTitle className="text-sm text-black">{card.title}</CardTitle>
                 {(card.title === "Agendados pra hoje" || card.title === "Todos os agendamentos") && (
-                  <Users className="h-7 w-7 text-black-600" />
+                  <Users className="h-7 w-7 text-black-600 cardsIcons" />
                 )}
 
                 {card.title === "Sem justificativa" && (
-                  <CreditCard className="h-7 w-7 text-red-600" />
+                  <CreditCard className="h-7 w-7 text-red-600 cardsIcons" />
                 )}
 
                 {card.title === "Não confirmados" && (
-                  <Activity className="h-7 w-7 text-red-600" />
+                  <Activity className="h-7 w-7 text-red-600 cardsIcons" />
                 )}
               </CardHeader>
-              <CardContent>
+              <CardContent className="padding10">
                 <div className="text-2xl font-bold">{card.value}</div>
                 <div className="text-xs text-muted-foreground mt-1">{card.subtitle}</div>
               </CardContent>
@@ -113,7 +111,7 @@ export default function DashboardPage() {
                       </Badge>
                     </TableCell>
                     <TableCell>{item.area}</TableCell>
-                    <TableCell className="text-black-600 hover:underline cursor-pointer">
+                    <TableCell className="text-blue-800 hover:underline cursor-pointer underline">
                       Detalhes
                     </TableCell>
                   </TableRow>
