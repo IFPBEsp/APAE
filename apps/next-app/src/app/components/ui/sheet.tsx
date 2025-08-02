@@ -5,7 +5,6 @@ import * as SheetPrimitive from "@radix-ui/react-dialog";
 import { cva, type VariantProps } from "class-variance-authority";
 import { X } from "lucide-react";
 
-// Adicione esta função utilitária no início do arquivo
 const cn = (...classes: (string | undefined | boolean)[]) => {
   return classes.filter(Boolean).join(" ");
 };
