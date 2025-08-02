@@ -3,25 +3,35 @@
 import { useState } from "react"
 import { format } from "date-fns"
 import { ptBR } from "date-fns/locale"
-import { CalendarDays, Users, CreditCard, Activity } from "lucide-react"  
+import {
+  CalendarDays,
+  Users,
+  MessageCircleWarning,
+  CalendarX
+} from "lucide-react"
 
-import { AppSidebar } from "@/components/sidebar/sidebar"
 import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
+import { Card, CardContent } from "@/components/ui/card"
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow
+} from "@/components/ui/table"
 import { Calendar } from "@/components/ui/calendar"
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
-import { Badge } from "@/components/ui/badge" 
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger
+} from "@/components/ui/popover"
+import { Badge } from "@/components/ui/badge"
+
+import { InfoCard } from "@/components/shared/InfoCard"
 
 export default function DashboardPage() {
   const [selectedDate, setSelectedDate] = useState<Date | undefined>(new Date())
-
-  const cards = [
-    { title: "Agendados pra hoje", value: "6", subtitle: "5 confirmados, 2 pendente" },
-    { title: "Todos os agendamentos", value: "25", subtitle: "" },
-    { title: "Sem justificativa", value: "3", subtitle: "" },
-    { title: "Não confirmados", value: "2", subtitle: "" },
-  ]
 
   const appointments = [
     { name: "João Oliveira", confirmed: true, area: "Nutrição" },
@@ -34,20 +44,21 @@ export default function DashboardPage() {
   ]
 
   return (
-    <div className="flex min-h-screen w-screen text-sm">
-      <main className="flex-1 p-6">
-        <div className="flex justify-between items-center mb-4 mainHeader">
-          <h1 className="text-2xl font-bold text-blue-800">Agendamentos de Hoje</h1>
-          <div className="flex items-center gap-2 headerButtons">
-
+    <div className="min-h-screen w-full text-sm overflow-x-hidden">
+      <main className="flex-1 p-3 sm:p-6 max-w-[100vw] mx-auto">
+        <div className="mb-4 flex flex-col justify-between gap-3 sm:mb-6 sm:flex-row sm:items-center">
+          <h1 className="text-lg font-bold sm:text-2xl">Agendamentos de Hoje</h1>
+          <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
             <Popover>
               <PopoverTrigger asChild>
                 <Button
                   variant="outline"
-                  className="w-[220px] justify-start text-left font-normal bg-white"
+                  className="w-full justify-start bg-white text-left font-normal text-xs sm:w-[220px] sm:text-sm"
                 >
                   <CalendarDays className="mr-2 h-4 w-4" />
-                  {selectedDate ? format(selectedDate, "dd 'de' MMMM 'de' yyyy", { locale: ptBR }) : <span>Escolha uma data</span>}
+                  {selectedDate
+                    ? format(selectedDate, "dd 'de' MMMM 'de' yyyy", { locale: ptBR })
+                    : <span>Escolha uma data</span>}
                 </Button>
               </PopoverTrigger>
               <PopoverContent className="w-auto p-0 bg-white">
@@ -60,59 +71,67 @@ export default function DashboardPage() {
                 />
               </PopoverContent>
             </Popover>
-
-            <Button className="bg-blue-800 text-white hover:bg-blue-900">Novo agendamento</Button>
+            <Button className="w-full bg-blue-800 text-white hover:bg-blue-900 text-xs sm:w-auto sm:text-sm">
+              Novo agendamento
+            </Button>
           </div>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6 cardsDiv">
-          {cards.map((card, i) => (
-            <Card key={i} className="cards">
-              <CardHeader className="flex justify-between items-center padding10">
-                <CardTitle className="text-sm text-black">{card.title}</CardTitle>
-                {(card.title === "Agendados pra hoje" || card.title === "Todos os agendamentos") && (
-                  <Users className="h-7 w-7 text-black-600 cardsIcons" />
-                )}
-
-                {card.title === "Sem justificativa" && (
-                  <CreditCard className="h-7 w-7 text-red-600 cardsIcons" />
-                )}
-
-                {card.title === "Não confirmados" && (
-                  <Activity className="h-7 w-7 text-red-600 cardsIcons" />
-                )}
-              </CardHeader>
-              <CardContent className="padding10">
-                <div className="text-2xl font-bold">{card.value}</div>
-                <div className="text-xs text-muted-foreground mt-1">{card.subtitle}</div>
-              </CardContent>
-            </Card>
-          ))}
+        <div className="mb-4 grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
+          <InfoCard
+            title="Agendados pra hoje"
+            icon={Users}
+            value={6}
+            subtitle="5 confirmados, 2 pendentes"
+          />
+          <InfoCard
+            title="Todos os agendamentos"
+            icon={Users}
+            value={25}
+          />
+          <InfoCard
+            title="Sem justificativa"
+            icon={MessageCircleWarning}
+            value={3}
+            iconColor="text-red-400"
+            subtitle="Pacientes que não justificaram suas faltas"
+          />
+          <InfoCard
+            title="Não confirmados"
+            icon={CalendarX}
+            value={2}
+            subtitle="Pacientes que não confirmaram presença"
+          />
         </div>
 
         <Card>
-          <CardContent>
+          <CardContent className="p-0">
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead>Paciente</TableHead>
-                  <TableHead>Confirmado</TableHead>
-                  <TableHead>Área de atendimento</TableHead>
-                  <TableHead>Ações</TableHead>
+                  <TableHead className="px-3 py-2 text-xs sm:px-4 sm:py-3 sm:text-sm">Paciente</TableHead>
+                  <TableHead className="px-3 py-2 text-xs sm:px-4 sm:py-3 sm:text-sm">Confirmado</TableHead>
+                  <TableHead className="px-3 py-2 text-xs sm:px-4 sm:py-3 sm:text-sm">Área</TableHead>
+                  <TableHead className="px-3 py-2 text-xs sm:px-4 sm:py-3 sm:text-sm">Ações</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {appointments.map((item, index) => (
                   <TableRow key={index}>
-                    <TableCell>{item.name}</TableCell>
-                    <TableCell>
-                      <Badge variant="outline" className={item.confirmed ? "border-green-600 text-green-600" : "border-red-500 text-red-500"}>
+                    <TableCell className="px-3 py-2 text-xs sm:px-4 sm:py-3 sm:text-sm">{item.name}</TableCell>
+                    <TableCell className="px-3 py-2">
+                      <Badge
+                        variant="outline"
+                        className={`text-xs ${item.confirmed ? "text-green-400" : "text-red-400"} sm:text-sm`}
+                      >
                         {item.confirmed ? "Sim" : "Não"}
                       </Badge>
                     </TableCell>
-                    <TableCell>{item.area}</TableCell>
-                    <TableCell className="text-blue-800 hover:underline cursor-pointer underline">
-                      Detalhes
+                    <TableCell className="px-3 py-2 text-xs sm:px-4 sm:py-3 sm:text-sm">{item.area}</TableCell>
+                    <TableCell className="px-3 py-2">
+                      <span className="cursor-pointer text-xs text-blue-800 underline hover:underline sm:text-sm">
+                        Detalhes
+                      </span>
                     </TableCell>
                   </TableRow>
                 ))}
