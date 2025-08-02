@@ -100,7 +100,7 @@ export default function DashboardPage() {
             title="Não confirmados"
             icon={CalendarX}
             value={2}
-            subtitle="Pacientes que não confirmaram presença"
+            subtitle="Consultas que não foram confirmadas"
           />
         </div>
 
@@ -110,7 +110,7 @@ export default function DashboardPage() {
               <TableHeader>
                 <TableRow>
                   <TableHead className="px-3 py-2 text-xs sm:px-4 sm:py-3 sm:text-sm">Paciente</TableHead>
-                  <TableHead className="px-3 py-2 text-xs sm:px-4 sm:py-3 sm:text-sm">Confirmado</TableHead>
+                  <TableHead className="px-3 py-2 text-xs sm:px-4 sm:py-3 sm:text-sm">Confirmou Presença</TableHead>
                   <TableHead className="px-3 py-2 text-xs sm:px-4 sm:py-3 sm:text-sm">Área</TableHead>
                   <TableHead className="px-3 py-2 text-xs sm:px-4 sm:py-3 sm:text-sm">Ações</TableHead>
                 </TableRow>

@@ -1,45 +1,66 @@
 "use client";
-
 import {
     Sidebar,
     SidebarContent,
     SidebarFooter,
     SidebarGroup,
+    SidebarGroupLabel,
     SidebarHeader,
+    SidebarMenu,
+    SidebarMenuButton,
+    SidebarMenuItem
 } from "@/components/ui/sidebar";
-import { HomeIcon, TasklistIcon, CalendarIcon } from '@primer/octicons-react';
+import { ClockIcon, TasklistIcon, CalendarIcon, ChevronDownIcon } from '@primer/octicons-react';
 import styles from "./sidebar.module.css";
 import Image from "next/image";
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "../ui/collapsible";
 
 export function AppSidebar() {
     return (
         <Sidebar className={styles.sidebar}>
             <SidebarHeader className={styles.header}>
-                <Image className={styles.logo} src={require("../../assets/APAE-logo.svg")} width={35} height={35} alt="Logo da APAE" />
+                <Image
+                    className={styles.logo}
+                    src={require("../../assets/APAE-logo.svg")}
+                    width={35}
+                    height={35}
+                    alt="Logo da APAE"
+                />
                 <div>
                     <div className={styles.title}>APAE</div>
                     <div className={styles.subtitle}>Agendamento</div>
                 </div>
             </SidebarHeader>
             <SidebarContent>
-            <div>
-                <button className={styles.listItem}>
-                <HomeIcon size={20} />
-                <span>Agendamentos</span>
-                </button>
-                <div className="ml-8 mt-1 flex flex-col gap-1 text-sm text-gray-700">
-                <button className={`${styles.listItem} pl-6`}>
-                    <TasklistIcon size={16} />
-                    <span>Todos os agendamentos</span>
-                </button>
-                <button className={`${styles.listItem} pl-6`}>
-                    <CalendarIcon size={16} />
-                    <span>Calendário</span>
-                </button>
-                </div>
-            </div>
+                <Collapsible defaultOpen={false} className="group/collapsible">
+                    <SidebarGroup>
+                        <SidebarGroupLabel asChild>
+                            <CollapsibleTrigger className={'font-base gap-2'}>
+                                <ClockIcon size={20} />
+                                <span className="text-base">Agendamentos</span>
+                                <ChevronDownIcon size={16} className="ml-auto transition-transform group-data-[state=open]/collapsible:rotate-180" />
+                            </CollapsibleTrigger>
+                        </SidebarGroupLabel>
+                        <CollapsibleContent>
+                            <SidebarMenu>
+                                <SidebarMenuItem>
+                                    <SidebarMenuButton className={'pl-8'}>
+                                        <TasklistIcon size={16} />
+                                        <span className="text-base">Todos os agendamentos</span>
+                                    </SidebarMenuButton>
+                                </SidebarMenuItem>
+                                <SidebarMenuItem>
+                                    <SidebarMenuButton className={'pl-8'}>
+                                        <CalendarIcon size={16} />
+                                        <span className="text-base">Calendário</span>
+                                    </SidebarMenuButton>
+                                </SidebarMenuItem>
+                            </SidebarMenu>
+                        </CollapsibleContent>
+                    </SidebarGroup>
+                </Collapsible>
             </SidebarContent>
             <SidebarFooter />
         </Sidebar>
-    )
+    );
 }
