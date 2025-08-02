@@ -16,7 +16,7 @@ export default function Sidebar() {
 
   return (
     <>
-      {/* Mobile Header com logo e botão abrir sidebar */}
+      {}
       <header className="flex items-center justify-between p-4 bg-[#B2D7EC] text-[#0D4F97] md:hidden">
         <button
           aria-label="Abrir menu"
@@ -37,7 +37,7 @@ export default function Sidebar() {
         <div className="w-6" />
       </header>
 
-      {/* Sidebar mobile: Drawer / Sheet */}
+      {}
       <Sheet open={sheetOpen} onOpenChange={setSheetOpen}>
         <SheetTrigger asChild>
         </SheetTrigger>
@@ -45,7 +45,7 @@ export default function Sidebar() {
           side="left"
           className="w-64 bg-[#B2D7EC] rounded-tr-[60px] p-6 flex flex-col justify-between h-full border-none"
         >
-          {/* Logo no topo */}
+          {}
           <div className="flex justify-center mb-8">
             <Image
               src="/apae-logo.png"
@@ -56,7 +56,7 @@ export default function Sidebar() {
             />
           </div>
 
-          {/* Menu - Botões sem fundo */}
+          {}
           <nav className="flex flex-col gap-2">
             {menuItems.map(({ id, label, icon: Icon }) => (
               <button
@@ -77,7 +77,7 @@ export default function Sidebar() {
             ))}
           </nav>
 
-          {/* Botão Sair - Sem fundo */}
+          {}
           <button
             className="mt-auto flex items-center gap-2 text-[#0D4F97] hover:underline border-none outline-none bg-transparent px-4 py-2"
             onClick={() => alert("Sair clicado")}
@@ -88,9 +88,9 @@ export default function Sidebar() {
         </SheetContent>
       </Sheet>
 
-      {/* Sidebar desktop fixa */}
+      {}
       <aside className="hidden md:flex flex-col bg-[#B2D7EC] rounded-tr-[60px] w-64 h-screen p-6 justify-between sticky top-0 border-none">
-        {/* Logo */}
+        {}
         <div className="flex justify-center mb-8">
           <Image
             src="/apae-logo.png"
@@ -101,7 +101,7 @@ export default function Sidebar() {
           />
         </div>
 
-        {/* Menu - Botões sem fundo */}
+        {}
         <nav className="flex flex-col gap-2">
           {menuItems.map(({ id, label, icon: Icon }) => (
             <button
@@ -119,7 +119,7 @@ export default function Sidebar() {
           ))}
         </nav>
 
-        {/* Botão Sair - Sem fundo */}
+        {}
         <button
           className="mt-auto flex items-center gap-2 text-[#0D4F97] hover:underline border-none outline-none bg-transparent px-4 py-2"
           onClick={() => alert("Sair clicado")}
