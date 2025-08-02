@@ -22,18 +22,22 @@ export function AppSidebar() {
                 </div>
             </SidebarHeader>
             <SidebarContent>
+            <div>
                 <button className={styles.listItem}>
-                    <HomeIcon size={20} />
-                    <span>Tela inicial</span>
+                <HomeIcon size={20} />
+                <span>Agendamentos</span>
                 </button>
-                <button className={styles.listItem}>
-                    <TasklistIcon size={20} />
+                <div className="ml-8 mt-1 flex flex-col gap-1 text-sm text-gray-700">
+                <button className={`${styles.listItem} pl-6`}>
+                    <TasklistIcon size={16} />
                     <span>Todos os agendamentos</span>
                 </button>
-                <button className={styles.listItem}>
-                    <CalendarIcon size={20} />
+                <button className={`${styles.listItem} pl-6`}>
+                    <CalendarIcon size={16} />
                     <span>Calendário</span>
                 </button>
+                </div>
+            </div>
             </SidebarContent>
             <SidebarFooter />
         </Sidebar>

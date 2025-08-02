@@ -40,3 +40,7 @@
 .listItem:active {
     background-color: rgb(209, 209, 209);
 }
+
+.listItem:hover {
+  background-color: #f1f1f1;
+}
