@@ -37,8 +37,8 @@ export default async function VisualizarAgendamento({ params } : PageProps) {
             horario: "10:30",
             areaDeAtendimento: "teste",
             confirmado: false,
-            descricao: "aaaaaaaaaaaaaaaaaaaaaaa aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
-            justificativa: "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+            descricao: "aaaaaaaaaaaaa aaaaaaaaaaaaa aaaaaaaaaaaaa aaaaaaaaaaaaa aaaaaaaaaaaaa aaaaaaaaaaaaa aaaaaaaaaaaaa aaaaaaaaaaaaa aaaaaaaaaaaaa aaaaaaaaaaaaa ",
+            justificativa: "aaaaaaaaaaaaa aaaaaaaaaaaaa aaaaaaaaaaaaa aaaaaaaaaaaaa aaaaaaaaaaaaa aaaaaaaaaaaaa aaaaaaaaaaaaa aaaaaaaaaaaaa aaaaaaaaaaaaa aaaaaaaaaaaaa "
         },
         profissionalDaSaude : {
             nome: "asasdfa",
@@ -86,8 +86,8 @@ export default async function VisualizarAgendamento({ params } : PageProps) {
                     {statusInfo.text}
                 </Badge>
             </header>
-            <main className={"mt-7"}>
-                <Card className={"text-[#0D4F97]"}>
+            <main className={"mt-7 mb-15"}>
+                <Card className={"text-[#0D4F97]  mb-7"}>
                     <CardHeader>
                         <CardTitle className={"font-bold text-center text-lg md:text-xl"}>Agendamento</CardTitle>
                         <CardAction>
@@ -120,16 +120,136 @@ export default async function VisualizarAgendamento({ params } : PageProps) {
                             <p>{agendamento.agendamentoMarcado.confirmado ? "Sim" : "Não"}</p>
                         </div>
                         <div className={"mb-2"}>
-                            <p className={"font-medium mr-2"}>Descrição: </p>
+                            <p className={"font-medium mb-1"}>Descrição: </p>
                             <p className={"break-words whitespace-pre-wrap"}>{agendamento.agendamentoMarcado.descricao}</p>
                         </div>
-                        <div className={"mb-5"}>
-                            <p className={"font-medium mr-2"}>Justificativa: </p>
+                        <div className={"mb-3"}>
+                            <p className={"font-medium mb-1"}>Justificativa: </p>
                             <p className={"break-words whitespace-pre-wrap"}>{agendamento.agendamentoMarcado.justificativa}</p>
+                        </div>
+                    </CardContent>
+                </Card>
+                <Card className={"text-[#0D4F97]  mb-7"}>
+                    <CardHeader>
+                        <CardTitle className={"font-bold text-center text-lg md:text-xl"}>Profissional da Saúde</CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                        <div className={"flex mb-2"}>
+                            <p className={"font-medium mr-2"}>Nome: </p>
+                            <p>{agendamento.profissionalDaSaude.nome}</p>
+                        </div>
+                        <div className={"flex mb-2"}>
+                            <p className={"font-medium mr-2"}>Email: </p>
+                            <p>{agendamento.profissionalDaSaude.email}</p>
+                        </div>
+                        <div className={"flex mb-3"}>
+                            <p className={"font-medium mr-2"}>Telefone: </p>
+                            <p>{agendamento.profissionalDaSaude.telefone}</p>
+                        </div>
+                    </CardContent>
+                </Card>
+                <Card className={"text-[#0D4F97]  mb-7"}>
+                    <CardHeader>
+                        <CardTitle className={"font-bold text-center text-lg md:text-xl"}>Dados Pessoais do Paciente</CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                        <div className={"flex mb-2"}>
+                            <p className={"font-medium mr-2"}>Contato: </p>
+                            <p>{agendamento.dadosPaciente.contato}</p>
+                        </div>
+                        <div className={"flex mb-2"}>
+                            <p className={"font-medium mr-2"}>Data de Nascimento: </p>
+                            <p>{agendamento.dadosPaciente.dataDeNascimento}</p>
+                        </div>
+                        <div className={"flex mb-3"}>
+                            <p className={"font-medium mr-2"}>CPF: </p>
+                            <p>{agendamento.dadosPaciente.cpf}</p>
+                        </div>
+                        <div className={"flex mb-3"}>
+                            <p className={"font-medium mr-2"}>RG: </p>
+                            <p>{agendamento.dadosPaciente.rg}</p>
+                        </div>
+                        <CardTitle className={"font-bold text-center text-lg md:text-xl"}>
+                            Dados Residenciais do Paciente
+                        </CardTitle>
+                        <div className={"flex mb-3"}>
+                            <p className={"font-medium mr-2"}>Endereço: </p>
+                            <p>{agendamento.dadosResidenciais.endereco}</p>
+                        </div>
+                        <div className={"flex mb-3"}>
+                            <p className={"font-medium mr-2"}>Bairro: </p>
+                            <p>{agendamento.dadosResidenciais.bairro}</p>
+                        </div>
+                        <div className={"flex mb-3"}>
+                            <p className={"font-medium mr-2"}>Cidade: </p>
+                            <p>{agendamento.dadosResidenciais.cidade}</p>
+                        </div>
+                        <div className={"flex mb-3"}>
+                            <p className={"font-medium mr-2"}>Estado: </p>
+                            <p>{agendamento.dadosResidenciais.estado}</p>
+                        </div>
+                        <div className={"flex mb-3"}>
+                            <p className={"font-medium mr-2"}>CEP: </p>
+                            <p>{agendamento.dadosResidenciais.cep}</p>
+                        </div>
+                    </CardContent>
+                </Card>
+                <Card className={"text-[#0D4F97] mb-7"}>
+                    <CardHeader>
+                        <CardTitle className={"font-bold text-center text-lg md:text-xl"}>Informações de Saúde do Paciente</CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                        <div className={"flex flex-col mb-2"}>
+                            <p className={"font-medium mb-1"}>Vacinas que tomou: </p>
+                            <div className={"flex flex-wrap gap-2 justify-evenly"}>
+                                {
+                                    agendamento.informacoesSaudePaciente.vacinas.map((vacina) => (
+                                        <p>{vacina}</p>
+                                    ))
+                                }
+                            </div>
+                        </div>
+                        <div className={"flex flex-col mb-2"}>
+                            <p className={"font-medium mr-2"}>Doenças que já teve: </p>
+                            <div className={"flex flex-wrap gap-2 justify-evenly"}>
+                                {
+                                    agendamento.informacoesSaudePaciente.doencas.map((doencas) => (
+                                        <p>{doencas}</p>
+                                    ))
+                                }
+                            </div>
+                        </div>
+                        <div className={"flex flex-col mb-2"}>
+                            <p className={"font-medium mr-2"}>Alergias: </p>
+                            <div className={"flex flex-wrap gap-2 justify-evenly"}>
+                                {
+                                    agendamento.informacoesSaudePaciente.alergias.map((alergias) => (
+                                        <p>{alergias}</p>
+                                    ))
+                                }
+                            </div>
+                        </div>
+                        <div className={"flex flex-col mb-2"}>
+                            <p className={"font-medium mr-2"}>Tipo de medicação que toma: </p>
+                            <div className={"flex flex-wrap gap-2 justify-evenly"}>
+                                {
+                                    agendamento.informacoesSaudePaciente.medicacoes.map((medicacoes) => (
+                                        <p>{medicacoes}</p>
+                                    ))
+                                }
+                            </div>
+                        </div>
+                        <div className={"flex mb-3"}>
+                            <p className={"font-medium mr-2"}>Tipo de deficiência: </p>
+                            <p>{agendamento.informacoesSaudePaciente.deficiencia}</p>
+                        </div>
+                        <div className={"flex mb-3"}>
+                            <p className={"font-medium mr-2"}>Tipo de atendimento: </p>
+                            <p>{agendamento.informacoesSaudePaciente.atendimento}</p>
                         </div>
                     </CardContent>
                 </Card>
             </main>
         </div>
-);
+    );
 }
