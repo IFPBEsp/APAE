@@ -1,4 +1,5 @@
 import {Avatar, AvatarFallback, AvatarImage} from "@/components/ui/avatar";
+import { Badge } from "@/components/ui/badge"
 
 // export default function Avatar() {
 //     return(
@@ -26,6 +27,8 @@ function getStatusStyle(status: string) {
             return { class: 'bg-[#970D0D]', text: "Consulta Não Realizada" };
         case 'pendente':
             return { class: 'bg-[#0D4F97]', text: "Consulta Pendente" };
+        default:
+            return {class: 'bg-gray-200', text: "Sem Status"}
     }
 }
 
@@ -36,7 +39,7 @@ export default async function VisualizarAgendamento({ params } : PageProps) {
         id,
         imagem: "adfaf",
         nome: "Lucas Matheus Gomes de Lima",
-        consulta: "pendente",
+        consulta: "realizada",
         agendamentoMarcado : {
             data: "03-08-2025",
             periodo: "asdasd",
@@ -86,14 +89,12 @@ export default async function VisualizarAgendamento({ params } : PageProps) {
                             <AvatarFallback>{agendamento.nome.at(0)}</AvatarFallback>
                         </Avatar>
                     </div>
-                        <h1 className={"ml-10 text-[#0D4F97] text-xl md:text-2xl font-bold mr-5"}>{agendamento.nome}</h1>
-                    </div>
-                    <div>
-                        <p className={`${statusInfo.class} text-white py-1 px-2 rounded-md text-xs cursor-pointer font-medium text-center mr-3`}>{statusInfo.text}</p>
-                    </div>
+                    <h1 className={"ml-10 text-[#0D4F97] text-xl md:text-2xl font-bold mr-5"}>{agendamento.nome}</h1>
                 </div>
+                <Badge className={`${statusInfo.class} text-white py-1 px-2 rounded-md text-xs cursor-default font-medium text-center mr-5`}>
+                    {statusInfo.text}
+                </Badge>
             </div>
-            );
-            }
-
-            //
+        </div>
+    );
+}
