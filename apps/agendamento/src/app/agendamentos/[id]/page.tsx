@@ -1,7 +1,20 @@
+import Avatar from "@/components/ui/avatar";
+
 interface PageProps {
     params: {
         id: string;
     };
+}
+
+function getStatusStyle(status: string) {
+    switch(status) {
+        case 'realizada':
+            return { class: 'bg-[#0D9767]', text: "Consulta Realizada" };
+        case 'nao-realizada':
+            return { class: 'bg-[#970D0D]', text: "Consulta Não Realizada" };
+        case 'pendente':
+            return { class: 'bg-[#0D4F97]', text: "Consulta Pendente" };
+    }
 }
 
 export default async function VisualizarAgendamento({ params } : PageProps) {
@@ -10,7 +23,7 @@ export default async function VisualizarAgendamento({ params } : PageProps) {
     const agendamento = {
         id,
         nome: "Lucas Matheus Gomes de Lima",
-        consulta: "realizada",
+        consulta: "pendente",
         agendamentoMarcado : {
             data: "03-08-2025",
             periodo: "asdasd",
@@ -48,9 +61,19 @@ export default async function VisualizarAgendamento({ params } : PageProps) {
         }
     }
 
+    const statusInfo = getStatusStyle(agendamento.consulta);
+
     return (
-        <div>
-            <h1>Hello world</h1>
+        <div className={"mt-20 px-4 w-full"}>
+            <div className={"flex flex-row items-center justify-between"}>
+                <div className={"flex items-center"}>
+                    <Avatar />
+                    <h1 className={"ml-10 text-[#0D4F97] text-xl md:text-2xl font-bold mr-5"}>{agendamento.nome}</h1>
+                </div>
+                <div>
+                    <p className={`${statusInfo.class} text-white py-1 px-2 rounded-md text-xs cursor-pointer font-medium text-center mr-3`}>{statusInfo.text}</p>
+                </div>
+            </div>
         </div>
     );
 }
