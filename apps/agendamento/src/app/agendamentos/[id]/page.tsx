@@ -1,17 +1,8 @@
 import {Avatar, AvatarFallback, AvatarImage} from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge"
-
-// export default function Avatar() {
-//     return(
-//         <div className={"bg-gray-200 rounded-full p-5 flex items-center justify-center"}>
-//             <svg className={"w-12 h-12 md:w-25 md:h-25"} viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
-//                 <path
-//                     d="m 8 1 c -1.65625 0 -3 1.34375 -3 3 s 1.34375 3 3 3 s 3 -1.34375 3 -3 s -1.34375 -3 -3 -3 z m -1.5 7 c -2.492188 0 -4.5 2.007812 -4.5 4.5 v 0.5 c 0 1.109375 0.890625 2 2 2 h 8 c 1.109375 0 2 -0.890625 2 -2 v -0.5 c 0 -2.492188 -2.007812 -4.5 -4.5 -4.5 z m 0 0"
-//                     fill="#2e3436"/>
-//             </svg>
-//         </div>
-//     );
-// }
+import {Card, CardAction, CardContent, CardHeader, CardTitle} from "@/components/ui/card";
+import { SquareArrowOutUpRight } from 'lucide-react';
+import {Button} from "@/components/ui/button";
 
 interface PageProps {
     params: {
@@ -45,9 +36,9 @@ export default async function VisualizarAgendamento({ params } : PageProps) {
             periodo: "asdasd",
             horario: "10:30",
             areaDeAtendimento: "teste",
-            confirmado: true,
-            descricao: "asfafafaf",
-            justificativa: "afasfafafa"
+            confirmado: false,
+            descricao: "aaaaaaaaaaaaaaaaaaaaaaa aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+            justificativa: "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
         },
         profissionalDaSaude : {
             nome: "asasdfa",
@@ -80,8 +71,8 @@ export default async function VisualizarAgendamento({ params } : PageProps) {
     const statusInfo = getStatusStyle(agendamento.consulta);
 
     return (
-        <div className={"mt-20 px-4 w-full"}>
-            <div className={"flex flex-row items-center justify-between"}>
+        <div className={"mt-20 w-full mr-17 ml-10"}>
+            <header className={"flex flex-row items-center justify-between"}>
                 <div className={"flex items-center"}>
                     <div className={"bg-gray-200 rounded-full w-17 h-17 md:w-23 md:h-23"}>
                         <Avatar className={"p-5 w-17 h-17 md:w-23 md:h-23"}>
@@ -91,10 +82,54 @@ export default async function VisualizarAgendamento({ params } : PageProps) {
                     </div>
                     <h1 className={"ml-10 text-[#0D4F97] text-xl md:text-2xl font-bold mr-5"}>{agendamento.nome}</h1>
                 </div>
-                <Badge className={`${statusInfo.class} text-white py-1 px-2 rounded-md text-xs cursor-default font-medium text-center mr-5`}>
+                <Badge className={`${statusInfo.class} text-white py-1 px-2 rounded-md text-xs cursor-default font-medium text-center`}>
                     {statusInfo.text}
                 </Badge>
-            </div>
+            </header>
+            <main className={"mt-7"}>
+                <Card className={"text-[#0D4F97]"}>
+                    <CardHeader>
+                        <CardTitle className={"font-bold text-center text-lg md:text-xl"}>Agendamento</CardTitle>
+                        <CardAction>
+                            <Button className={"bg-transparent cursor-pointer text-[#0D4F97] hover:text-[#0d4f55] active:text-[#0d4ffe] hover:bg-transparent transition-colors"}>
+                                <SquareArrowOutUpRight />
+                            </Button>
+                        </CardAction>
+                    </CardHeader>
+                    <CardContent>
+                        <div className={"flex justify-between mb-2"}>
+                            <div className={"flex"}>
+                                <p className={"font-medium mr-2"}>Data: </p>
+                                <p>{agendamento.agendamentoMarcado.data}</p>
+                            </div>
+                            <div className={"flex"}>
+                                <p className={"font-medium mr-2"}>Período: </p>
+                                <p>{agendamento.agendamentoMarcado.periodo}</p>
+                            </div>
+                        </div>
+                        <div className={"flex mb-2"}>
+                            <p className={"font-medium mr-2"}>Horário: </p>
+                            <p>{agendamento.agendamentoMarcado.horario}</p>
+                        </div>
+                        <div className={"flex mb-2"}>
+                            <p className={"font-medium mr-2"}>Área de atendimento: </p>
+                            <p>{agendamento.agendamentoMarcado.areaDeAtendimento}</p>
+                        </div>
+                        <div className={"flex mb-2"}>
+                            <p className={"font-medium mr-2"}>Confirmada: </p>
+                            <p>{agendamento.agendamentoMarcado.confirmado ? "Sim" : "Não"}</p>
+                        </div>
+                        <div className={"mb-2"}>
+                            <p className={"font-medium mr-2"}>Descrição: </p>
+                            <p className={"break-words whitespace-pre-wrap"}>{agendamento.agendamentoMarcado.descricao}</p>
+                        </div>
+                        <div className={"mb-5"}>
+                            <p className={"font-medium mr-2"}>Justificativa: </p>
+                            <p className={"break-words whitespace-pre-wrap"}>{agendamento.agendamentoMarcado.justificativa}</p>
+                        </div>
+                    </CardContent>
+                </Card>
+            </main>
         </div>
-    );
+);
 }
