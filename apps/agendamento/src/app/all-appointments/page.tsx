@@ -8,7 +8,6 @@ import {
   MessageCircleWarning,
   CalendarX,
   SearchIcon,
-  ChevronDown
 } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
@@ -38,16 +37,15 @@ export default function AllApointments() {
   const [selectedDate, setSelectedDate] = useState<Date | undefined>(new Date())
   const [selectedArea, setSelectedArea] = useState('')
 
-
   const areas = [
     { id: 1, name: "Cardiologia" },
-    { id: 2, name: "Pediatria" },
-    { id: 3, name: "Neurologia" },
-    { id: 4, name: "Fisioterapia" },
+    { id: 2, name: "Psicologia" },
+    { id: 3, name: "Nutrição" },
+    { id: 4, name: "Psiquiatria" },
   ]
 
   const appointments = [
-    { name: "João Oliveira", confirmed: true, area: "Nutrição" },
+    { name: "João Oliveira", confirmed: true, area: "Cardiologia" },
     { name: "Maria Silva", confirmed: true, area: "Psicologia" },
     { name: "João Henrique", confirmed: true, area: "Psiquiatria" },
     { name: "Lucas Ferreira", confirmed: false, area: "Nutrição" },
@@ -55,6 +53,14 @@ export default function AllApointments() {
     { name: "Ana Beatriz", confirmed: true, area: "Nutrição" },
     { name: "Júlia Fernandes", confirmed: true, area: "Psicologia" },
   ]
+
+  const filteredAppointments = appointments.filter((appointment) =>
+    selectedArea ? appointment.area === selectedArea : true
+  );
+
+  const clearFilter = () => {
+    setSelectedArea('');
+  }
 
   return (
     <div className="min-h-screen w-full text-sm overflow-x-hidden">
@@ -106,28 +112,36 @@ export default function AllApointments() {
           />
         </div>
 
-       <div className="flex items-center gap-2 mb-4">
-            <div className="relative w-full">
-                <SearchIcon className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-                <Input
-                placeholder="Buscar paciente..."
-                className="pl-10 pr-3"
-                />
-            </div>
+        <div className="flex items-center gap-2 mb-4">
+          <div className="relative w-full">
+            <SearchIcon className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+            <Input placeholder="Buscar paciente..." className="pl-10 pr-3" />
+          </div>
 
-            <Select>
-              <SelectTrigger className="data-[placeholder]:text-black">
-                  <SelectValue placeholder='Área da Saúde' />
-              </SelectTrigger>
-              <SelectContent>
-                 <SelectGroup>
-                    <SelectLabel>Áreas da saúde</SelectLabel>
-                    {areas.map((area) => (
-                       <SelectItem key={area.id} value={area.name} onClick={() => setSelectedArea(area.name)}>{area.name}</SelectItem>
-                    ))}
-                 </SelectGroup>
-              </SelectContent>
-            </Select>
+          <Select onValueChange={(value) => setSelectedArea(value)}>
+            <SelectTrigger className="data-[placeholder]:text-black">
+              <SelectValue placeholder="Área da Saúde" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectGroup>
+                <SelectLabel>Áreas da saúde</SelectLabel>
+                {areas.map((area) => (
+                  <SelectItem key={area.id} value={area.name}>
+                    {area.name}
+                  </SelectItem>
+                ))}
+              </SelectGroup>
+            </SelectContent>
+          </Select>
+          {selectedArea && (
+            <Button
+              variant="outline"
+              onClick={clearFilter}
+              className="w-auto text-xs sm:text-sm text-red-600 hover:bg-red-50"
+            >
+              Limpar Filtro
+            </Button>
+          )}
         </div>
 
         <Card>
@@ -142,7 +156,7 @@ export default function AllApointments() {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {appointments.map((item, index) => (
+                {filteredAppointments.map((item, index) => (
                   <TableRow key={index}>
                     <TableCell className="px-3 py-2 text-xs sm:px-4 sm:py-3 sm:text-sm">{item.name}</TableCell>
                     <TableCell className="px-3 py-2">
