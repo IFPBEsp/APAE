@@ -10,16 +10,14 @@ interface PageProps {
     };
 }
 
-function getStatusStyle(status: string) {
-    switch(status) {
-        case 'realizada':
-            return { class: 'bg-[#0D9767]', text: "Consulta Realizada" };
-        case 'nao-realizada':
-            return { class: 'bg-[#970D0D]', text: "Consulta Não Realizada" };
-        case 'pendente':
-            return { class: 'bg-[#0D4F97]', text: "Consulta Pendente" };
-        default:
-            return {class: 'bg-gray-200', text: "Sem Status"}
+function getStatusStyle(status: boolean, data: Date) {
+    const dataAtual = new Date();
+    if (status) {
+        return { class: 'bg-[#0D9767]', text: "Consulta Realizada" }
+    } else if (data > dataAtual) {
+        return { class: 'bg-[#0D4F97]', text: "Consulta Pendente" };
+    } else {
+        return { class: 'bg-[#970D0D]', text: "Consulta Não Realizada" };
     }
 }
 
@@ -30,11 +28,10 @@ export default async function VisualizarAgendamento({ params } : PageProps) {
         id,
         imagem: "adfaf",
         nome: "Lucas Matheus Gomes de Lima",
-        consulta: "realizada",
+        consulta: false,
         agendamentoMarcado : {
-            data: "03-08-2025",
+            dataHora: new Date("2025-08-03T22:30"),
             periodo: "asdasd",
-            horario: "10:30",
             areaDeAtendimento: "teste",
             confirmado: false,
             descricao: "aaaaaaaaaaaaa aaaaaaaaaaaaa aaaaaaaaaaaaa aaaaaaaaaaaaa aaaaaaaaaaaaa aaaaaaaaaaaaa aaaaaaaaaaaaa aaaaaaaaaaaaa aaaaaaaaaaaaa aaaaaaaaaaaaa ",
@@ -68,7 +65,7 @@ export default async function VisualizarAgendamento({ params } : PageProps) {
         }
     }
 
-    const statusInfo = getStatusStyle(agendamento.consulta);
+    const statusInfo = getStatusStyle(agendamento.consulta, agendamento.agendamentoMarcado.dataHora);
 
     return (
         <div className={"mt-20 w-full mr-17 ml-10"}>
@@ -100,7 +97,7 @@ export default async function VisualizarAgendamento({ params } : PageProps) {
                         <div className={"flex justify-between mb-2"}>
                             <div className={"flex"}>
                                 <p className={"font-medium mr-2"}>Data: </p>
-                                <p>{agendamento.agendamentoMarcado.data}</p>
+                                <p>{new Intl.DateTimeFormat("pt-BR").format(agendamento.agendamentoMarcado.dataHora)}</p>
                             </div>
                             <div className={"flex"}>
                                 <p className={"font-medium mr-2"}>Período: </p>
@@ -109,7 +106,7 @@ export default async function VisualizarAgendamento({ params } : PageProps) {
                         </div>
                         <div className={"flex mb-2"}>
                             <p className={"font-medium mr-2"}>Horário: </p>
-                            <p>{agendamento.agendamentoMarcado.horario}</p>
+                            <p>{agendamento.agendamentoMarcado.dataHora.toLocaleString("pt-BR", {hour: "2-digit", minute: "2-digit"})}</p>
                         </div>
                         <div className={"flex mb-2"}>
                             <p className={"font-medium mr-2"}>Área de atendimento: </p>
