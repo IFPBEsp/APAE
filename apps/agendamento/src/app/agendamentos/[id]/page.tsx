@@ -208,32 +208,29 @@ export default async function VisualizarAgendamento({ params } : PageProps) {
                         </div>
                         <div className={"flex flex-col mb-2"}>
                             <p className={"font-medium mr-2"}>Doenças que já teve: </p>
-                            <div className={"flex flex-wrap gap-2 justify-evenly"}>
-                                {
-                                    agendamento.informacoesSaudePaciente.doencas.map((doencas) => (
-                                        <p>{doencas}</p>
-                                    ))
-                                }
+                            <div className={"flex flex-wrap gap-2 justify-start"}>
+                                {agendamento.informacoesSaudePaciente.doencas.map((doenca, index, array) => (
+                                    <p key={index}>
+                                        {doenca}
+                                        {index < array.length - 1 ? ',' : '.'}
+                                    </p>
+                                ))}
                             </div>
                         </div>
                         <div className={"flex flex-col mb-2"}>
                             <p className={"font-medium mr-2"}>Alergias: </p>
-                            <div className={"flex flex-wrap gap-2 justify-evenly"}>
-                                {
-                                    agendamento.informacoesSaudePaciente.alergias.map((alergias) => (
-                                        <p>{alergias}</p>
-                                    ))
-                                }
+                            <div className={"flex flex-wrap gap-2 justify-start"}>
+                                {agendamento.informacoesSaudePaciente.alergias.map((alergias, index, array) => (
+                                    <p key={index}>{alergias}{index < array.length - 1 ? ',' : '.'}</p>
+                                ))}
                             </div>
                         </div>
                         <div className={"flex flex-col mb-2"}>
                             <p className={"font-medium mr-2"}>Tipo de medicação que toma: </p>
-                            <div className={"flex flex-wrap gap-2 justify-evenly"}>
-                                {
-                                    agendamento.informacoesSaudePaciente.medicacoes.map((medicacoes) => (
-                                        <p>{medicacoes}</p>
-                                    ))
-                                }
+                            <div className={"flex flex-wrap gap-2 justify-start"}>
+                                {agendamento.informacoesSaudePaciente.medicacoes.map((medicacoes, index, array) => (
+                                    <p key={index}>{medicacoes}{index < array.length - 1 ? ',': '.'}</p>
+                                ))}
                             </div>
                         </div>
                         <div className={"flex mb-3"}>
