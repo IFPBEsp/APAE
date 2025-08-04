@@ -36,6 +36,7 @@ import { SelectContent, SelectGroup, SelectLabel, SelectTrigger, SelectValue } f
 export default function AllApointments() {
   const [selectedDate, setSelectedDate] = useState<Date | undefined>(new Date())
   const [selectedArea, setSelectedArea] = useState('')
+  const [searchName, setSearchName] = useState('')
 
   const areas = [
     { id: 1, name: "Cardiologia" },
@@ -54,12 +55,15 @@ export default function AllApointments() {
     { name: "Júlia Fernandes", confirmed: true, area: "Psicologia" },
   ]
 
-  const filteredAppointments = appointments.filter((appointment) =>
-    selectedArea ? appointment.area === selectedArea : true
-  );
+  const filteredAppointments = appointments.filter((appointment) => {
+    const matchesArea = selectedArea ? appointment.area === selectedArea : true;
+    const matchesName = appointment.name.toLowerCase().includes(searchName.trim().toLowerCase());
+    return matchesArea && matchesName;
+  });
 
   const clearFilter = () => {
     setSelectedArea('');
+    setSearchName('')
   }
 
   return (
@@ -115,7 +119,7 @@ export default function AllApointments() {
         <div className="flex items-center gap-2 mb-4">
           <div className="relative w-full">
             <SearchIcon className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-            <Input placeholder="Buscar paciente..." className="pl-10 pr-3" />
+            <Input placeholder="Buscar paciente..." className="pl-10 pr-3" value={searchName} onChange={(e) => setSearchName(e.target.value)}/>
           </div>
 
           <Select onValueChange={(value) => setSelectedArea(value)}>
