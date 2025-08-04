@@ -5,7 +5,6 @@ import { format } from "date-fns"
 import { ptBR } from "date-fns/locale"
 import {
   CalendarDays,
-  Users,
   MessageCircleWarning,
   CalendarX,
   SearchIcon,
@@ -32,19 +31,20 @@ import { Badge } from "@/components/ui/badge"
 
 import { InfoCard } from "@/components/shared/InfoCard"
 import { Input } from "@/components/ui/input"
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
-
-const areas = [
-  'Área da Saúde',
-  'Cardiologia',
-  'Pediatria',
-  'Neurologia',
-  'Fisioterapia',
-]
+import { Select, SelectItem } from "@/components/ui/select"
+import { SelectContent, SelectGroup, SelectLabel, SelectTrigger, SelectValue } from "@/components/ui/select"
 
 export default function AllApointments() {
   const [selectedDate, setSelectedDate] = useState<Date | undefined>(new Date())
-  const [selectedArea, setSelectedArea] = useState('Área da Saúde')
+  const [selectedArea, setSelectedArea] = useState('')
+
+
+  const areas = [
+    { id: 1, name: "Cardiologia" },
+    { id: 2, name: "Pediatria" },
+    { id: 3, name: "Neurologia" },
+    { id: 4, name: "Fisioterapia" },
+  ]
 
   const appointments = [
     { name: "João Oliveira", confirmed: true, area: "Nutrição" },
@@ -114,24 +114,20 @@ export default function AllApointments() {
                 className="pl-10 pr-3"
                 />
             </div>
-            <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                <Button variant="outline" className="whitespace-nowrap">
-                    {selectedArea}
-                    <ChevronDown className="ml-2 h-4 w-4" />
-                </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="end">
-                {areas.map((area) => (
-                    <DropdownMenuItem
-                    key={area}
-                    onClick={() => setSelectedArea(area)}
-                    >
-                    {area}
-                    </DropdownMenuItem>
-                ))}
-                </DropdownMenuContent>
-            </DropdownMenu>
+
+            <Select>
+              <SelectTrigger className="data-[placeholder]:text-black">
+                  <SelectValue placeholder='Área da Saúde' />
+              </SelectTrigger>
+              <SelectContent>
+                 <SelectGroup>
+                    <SelectLabel>Áreas da saúde</SelectLabel>
+                    {areas.map((area) => (
+                       <SelectItem key={area.id} value={area.name} onClick={() => setSelectedArea(area.name)}>{area.name}</SelectItem>
+                    ))}
+                 </SelectGroup>
+              </SelectContent>
+            </Select>
         </div>
 
         <Card>
