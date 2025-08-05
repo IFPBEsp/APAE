@@ -1,4 +1,4 @@
-package br.org.apae.documentos_medicos.global.exceptionhandler;
+package br.org.apae.auth.global.exceptionhandler;
 
 import java.io.Serializable;
 import java.time.Instant;
