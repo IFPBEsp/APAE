@@ -1,7 +1,7 @@
-import ButtonWrapper from './components/ButtonWrapper';
+import { PatientsAndStudentsScreen } from './components/patients-and-students-screen';
 
 export default function Home() {
   return (
-      <ButtonWrapper />
+      <PatientsAndStudentsScreen />
   );
 }
