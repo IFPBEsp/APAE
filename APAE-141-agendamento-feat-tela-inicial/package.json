@@ -1,0 +1,8 @@
+{
+  "name": "demoMonorepo",
+  "version": "1.0.0",
+  "description": "demo pnpm workspace monorepo",
+  "workspaces": ["apps/*", "packages/*"],
+  "license": "ISC",
+  "packageManager": "pnpm@10.10.0"
+}

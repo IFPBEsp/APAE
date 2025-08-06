@@ -1,0 +1,26 @@
+server:
+  port: 9000
+
+url_login_token: http://localhost:8080/realms/org-apae/protocol/openid-connect/token
+client_id: client-apae
+client_secret: F2PF1PiHZ4uyy4T0yojEDH4D33fIoDnW
+issuer_uri: http://localhost:8080/realms/org-apae
+
+spring:
+  application:
+    name: auth
+  security:
+    oauth2:
+      client:
+        registration:
+          keycloak:
+            client-id: ${client_id}
+            client-secret: ${client_secret}
+            scope:
+              - openid
+        provider:
+          keycloak:
+              issuer-uri: ${issuer_uri}
+      resourceserver:
+        jwt:
+          issuer-uri: ${issuer_uri}
