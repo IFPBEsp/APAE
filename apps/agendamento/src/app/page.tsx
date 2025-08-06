@@ -28,7 +28,6 @@ import {
 } from "@/components/ui/popover"
 import { Badge } from "@/components/ui/badge"
 
-// 💡 Importe o componente Dialog e seus subcomponentes
 import {
   Dialog,
   DialogContent,
