@@ -8,8 +8,11 @@ import {
     SidebarHeader,
     SidebarMenu,
     SidebarMenuButton,
+    
     SidebarMenuItem
 } from "@/components/ui/sidebar";
+import { GiHealthNormal } from "react-icons/gi";
+import { FaUserMd, FaUserCog  } from "react-icons/fa";
 import { ClockIcon, TasklistIcon, CalendarIcon, ChevronDownIcon } from '@primer/octicons-react';
 import styles from "./sidebar.module.css";
 import Image from "next/image";
@@ -34,6 +37,30 @@ export function AppSidebar() {
             <SidebarContent>
                 <Collapsible defaultOpen={false} className="group/collapsible">
                     <SidebarGroup>
+                        <SidebarGroupLabel asChild>
+                            <CollapsibleTrigger className={'font-base gap-2'}>
+                                <GiHealthNormal size={20} />
+                                <span className="text-base">Profissional de Saúde</span>
+                                <ChevronDownIcon size={16} className="ml-auto transition-transform group-data-[state=open]/collapsible:rotate-180" />
+                            </CollapsibleTrigger>
+                        </SidebarGroupLabel>
+                        <CollapsibleContent>
+                            <SidebarMenu>
+                                <SidebarMenuItem>
+                                    <SidebarMenuButton className={'pl-8'}>
+                                        <FaUserMd size={16} />
+                                        <span className="text-base">Cadastrar Profissional</span>
+                                    </SidebarMenuButton>
+                                </SidebarMenuItem>
+                                <SidebarMenuItem>
+                                    <SidebarMenuButton className={'pl-8'}>
+                                        <FaUserCog size={16} />
+                                        <span className="text-base">Atualizar Profissional</span>
+                                    </SidebarMenuButton>
+                                </SidebarMenuItem>
+                            </SidebarMenu>
+                        </CollapsibleContent>
+
                         <SidebarGroupLabel asChild>
                             <CollapsibleTrigger className={'font-base gap-2'}>
                                 <ClockIcon size={20} />
