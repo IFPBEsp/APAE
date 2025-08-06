@@ -11,5 +11,6 @@ include(
     "documentos-pessoais-digitalizados",
     "api-crud-pacientes",
     "documentos-escolares",
-    "auth-service"
+    "auth-service",
+    "profissional-da-saude"
 )
