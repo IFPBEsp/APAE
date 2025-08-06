@@ -26,7 +26,6 @@ import {
   PopoverContent,
   PopoverTrigger
 } from "@/components/ui/popover"
-import { Badge } from "@/components/ui/badge"
 
 import { InfoCard } from "@/components/shared/InfoCard"
 import { Input } from "@/components/ui/input"
@@ -34,7 +33,7 @@ import { Select, SelectItem } from "@/components/ui/select"
 import { SelectContent, SelectGroup, SelectLabel, SelectTrigger, SelectValue } from "@/components/ui/select"
 
 export default function AllApointments() {
-  const [selectedDate, setSelectedDate] = useState<Date | undefined>(new Date())
+  const [selectedDate, setSelectedDate] = useState<Date | undefined>(undefined)
   const [selectedArea, setSelectedArea] = useState('')
   const [searchName, setSearchName] = useState('')
 
@@ -58,12 +57,16 @@ export default function AllApointments() {
   const filteredAppointments = appointments.filter((appointment) => {
     const matchesArea = selectedArea ? appointment.area === selectedArea : true;
     const matchesName = appointment.name.toLowerCase().includes(searchName.trim().toLowerCase());
-    return matchesArea && matchesName;
+    const matchesDate = selectedDate
+      ? appointment.nextAppointment.toDateString() === selectedDate.toDateString()
+      : true;
+    return matchesArea && matchesName && matchesDate;
   });
 
   const clearFilter = () => {
     setSelectedArea('');
-    setSearchName('')
+    setSearchName('');
+    setSelectedDate(undefined);
   }
 
   return (
@@ -137,7 +140,7 @@ export default function AllApointments() {
               </SelectGroup>
             </SelectContent>
           </Select>
-          {selectedArea && (
+          {( selectedArea || selectedDate || searchName ) && (
             <Button
               variant="outline"
               onClick={clearFilter}
@@ -164,7 +167,7 @@ export default function AllApointments() {
                   <TableRow key={index}>
                     <TableCell className="px-3 py-2 text-xs sm:px-4 sm:py-3 sm:text-sm">{item.name}</TableCell>
                     <TableCell className="px-3 py-2 text-xs sm:px-4 sm:py-3 sm:text-sm text-gray-800">
-                      {format(new Date(item.nextAppointment), "dd 'de' MMMM 'de' yyyy", { locale: ptBR })}
+                        {format(new Date(item.nextAppointment), "dd 'de' MMMM 'de' yyyy", { locale: ptBR })}
                     </TableCell>
                     <TableCell className="px-3 py-2 text-xs sm:px-4 sm:py-3 sm:text-sm">{item.area}</TableCell>
                     <TableCell className="px-3 py-2">
