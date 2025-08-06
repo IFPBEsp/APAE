@@ -26,16 +26,15 @@ export default function AuthLayout({
 
       <div className="relative z-10 relative flex items-center justify-center p-4">
         <div
-          className="absolute top-[0] sm:top-[-4vh] lg:top-[-4vh] left-1/2 transform -translate-x-1/2 z-[10]
-            sm:w-[6rem] sm:h-[6rem] sm:w-[8rem] sm:h-[8rem] lg:w-[10rem] lg:h-[10rem]
-                bg-white rounded-t-full flex items-center justify-center overflow-auto"
+          className="absolute top-[-2vh] left-1/2 transform -translate-x-1/2 z-[10]
+                w-18 sm:w-18 md:w-20 lg:w-22
+                bg-white rounded-t-full flex items-center justify-center overflow-hidden"
         >
-          {/* Group 3 e Image 5 - Imagem centralizada */}
-          <div className="relative w-[55px] h-[80px] md:w-[75px] md:h-[105px] lg:w-[85px] lg:h-[115px]">
+          <div className="relative w-full">
             <img
               src={Logo.src}
               alt="Logo"
-              className=" object-cover w-[55px] h-[77px] md:w-[75px] md:h-[105px] lg:w-[105px] lg:h-[117px]"
+              className="w-full h-auto object-contain"
             />
           </div>
         </div>
