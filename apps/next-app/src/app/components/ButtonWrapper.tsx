@@ -1,6 +1,6 @@
 "use client";
 
-import { Button } from "lib-ui";
+import { Button } from "@/components/ui/button";
 
 export default function MyButtonWrapper() {
   const handleClick = () => {
@@ -12,7 +12,7 @@ export default function MyButtonWrapper() {
       <Button
         onClick={handleClick}
       >
-        button from lib
+        button from Shadcn
       </Button>
     </div>
   );
