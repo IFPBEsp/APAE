@@ -1,0 +1,147 @@
+.appContainer {
+  display: flex;
+  min-height: 100vh;
+  font-family: Arial, sans-serif;
+}
+
+.mainContent {
+  flex: 1;
+  padding: 20px;
+}
+
+.header {
+  margin-bottom: 30px;
+}
+
+.header h1 {
+  color: #000000;
+  font-size: 2rem;
+  padding-bottom: 10px;
+  font-weight: bold;
+}
+
+.form {
+  max-width: 100%;
+  margin: 0 auto;
+}
+
+
+.formSection h2 {
+  color: #000000;
+  margin-bottom: 20px;
+  font-size: 1.5rem;
+  font-weight: bold;
+}
+
+.formGroup {
+  margin-bottom: 15px;
+  
+}
+
+.formGroup label {
+  display: block;
+  margin-bottom: 5px;
+  font-weight: bold;
+  color: #000000;
+}
+
+.formGroup input,
+.formGroup select {
+  width: 100%;
+  padding: 10px;
+  border: 0.5px solid #D4D8EC;
+  border-radius: 8px;
+  font-size: 16px;
+}
+
+.formActions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 20px;
+}
+
+.cancelButton,
+.saveButton {
+  padding: 10px 20px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 16px;
+}
+
+.cancelButton {
+    background-color: transparent; /* Fundo transparente */
+    border: 1px solid #B2B9DE; /* Borda com a cor desejada */
+    color:#B2B9DE ;
+}
+
+.saveButton {
+    background-color: black; /* Fundo transparente */
+    color:white ;
+}
+
+.cancelButton:hover {
+  background-color: #B2B9DE;
+  color: white;
+}
+
+.saveButton:hover {
+  background-color: rgb(40, 40, 40);
+  
+}
+
+/* Adicione estas classes no seu arquivo CSS */
+.rowContainer {
+  display: flex;
+  gap: 20px;
+  width: 100%;
+}
+
+.rowItem {
+  flex: 1;
+  min-width: 0;
+}
+
+
+
+.fieldsRow {
+  display: flex;
+  gap: 20px;
+  width: 100%;
+}
+
+/* Cada coluna na linha */
+.fieldColumn {
+  flex: 1;
+  min-width: 0; /* Previne overflow */
+}
+
+/* Adicione ao seu arquivo page.module.css */
+::placeholder {
+  color: #999;
+  font-size: 0.9em;
+  opacity: 1; /* Necessário para Firefox */
+}
+
+:-ms-input-placeholder { /* Internet Explorer */
+  color: #999;
+}
+
+::-ms-input-placeholder { /* Microsoft Edge */
+  color: #999;
+}
+
+/* Responsividade - empilha em telas pequenas */
+@media (max-width: 768px) {
+  .fieldsRow {
+    flex-direction: column;
+    gap: 15px;
+  }
+
+  .rowContainer {
+    flex-direction: column;
+    gap: 15px;
+  }
+  
+}
