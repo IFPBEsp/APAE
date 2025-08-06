@@ -46,13 +46,13 @@ export default function AllApointments() {
   ]
 
   const appointments = [
-    { name: "João Oliveira", confirmed: true, area: "Cardiologia" },
-    { name: "Maria Silva", confirmed: true, area: "Psicologia" },
-    { name: "João Henrique", confirmed: true, area: "Psiquiatria" },
-    { name: "Lucas Ferreira", confirmed: false, area: "Nutrição" },
-    { name: "Rafael Andrade", confirmed: true, area: "Psiquiatria" },
-    { name: "Ana Beatriz", confirmed: true, area: "Nutrição" },
-    { name: "Júlia Fernandes", confirmed: true, area: "Psicologia" },
+    { name: "João Oliveira", nextAppointment: new Date(2025, 0, 25), area: "Cardiologia" },
+    { name: "Maria Silva", nextAppointment: new Date(2025, 1, 12), area: "Psicologia" },
+    { name: "João Henrique", nextAppointment: new Date(2025, 2, 21), area: "Psiquiatria" },
+    { name: "Lucas Ferreira", nextAppointment: new Date(2025, 3, 28), area: "Nutrição" },
+    { name: "Rafael Andrade", nextAppointment: new Date(2025, 4, 25), area: "Psiquiatria" },
+    { name: "Ana Beatriz", nextAppointment: new Date(2025, 5, 2), area: "Nutrição" },
+    { name: "Júlia Fernandes", nextAppointment: new Date(2025, 6, 29), area: "Psicologia" },
   ]
 
   const filteredAppointments = appointments.filter((appointment) => {
@@ -154,7 +154,7 @@ export default function AllApointments() {
               <TableHeader>
                 <TableRow>
                   <TableHead className="px-3 py-2 text-xs sm:px-4 sm:py-3 sm:text-sm">Paciente</TableHead>
-                  <TableHead className="px-3 py-2 text-xs sm:px-4 sm:py-3 sm:text-sm">Confirmou Presença</TableHead>
+                  <TableHead className="px-3 py-2 text-xs sm:px-4 sm:py-3 sm:text-sm">Próxima Consulta</TableHead>
                   <TableHead className="px-3 py-2 text-xs sm:px-4 sm:py-3 sm:text-sm">Área</TableHead>
                   <TableHead className="px-3 py-2 text-xs sm:px-4 sm:py-3 sm:text-sm">Ações</TableHead>
                 </TableRow>
@@ -163,13 +163,8 @@ export default function AllApointments() {
                 {filteredAppointments.map((item, index) => (
                   <TableRow key={index}>
                     <TableCell className="px-3 py-2 text-xs sm:px-4 sm:py-3 sm:text-sm">{item.name}</TableCell>
-                    <TableCell className="px-3 py-2">
-                      <Badge
-                        variant="outline"
-                        className={`text-xs ${item.confirmed ? "text-green-400" : "text-red-400"} sm:text-sm`}
-                      >
-                        {item.confirmed ? "Sim" : "Não"}
-                      </Badge>
+                    <TableCell className="px-3 py-2 text-xs sm:px-4 sm:py-3 sm:text-sm text-gray-800">
+                      {format(new Date(item.nextAppointment), "dd 'de' MMMM 'de' yyyy", { locale: ptBR })}
                     </TableCell>
                     <TableCell className="px-3 py-2 text-xs sm:px-4 sm:py-3 sm:text-sm">{item.area}</TableCell>
                     <TableCell className="px-3 py-2">
