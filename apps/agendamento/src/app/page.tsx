@@ -28,6 +28,17 @@ import {
 } from "@/components/ui/popover"
 import { Badge } from "@/components/ui/badge"
 
+// 💡 Importe o componente Dialog e seus subcomponentes
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+  DialogDescription,
+} from "@/components/ui/dialog"
+
+import { AppointmentForm } from "@/components/forms/AppointmentForm"
 import { InfoCard } from "@/components/shared/InfoCard"
 
 export default function DashboardPage() {
@@ -71,9 +82,24 @@ export default function DashboardPage() {
                 />
               </PopoverContent>
             </Popover>
-            <Button className="w-full bg-blue-800 text-white hover:bg-blue-900 text-xs sm:w-auto sm:text-sm">
-              Novo agendamento
-            </Button>
+            
+            <Dialog>
+              <DialogTrigger asChild>
+                <Button className="w-full bg-blue-800 text-white hover:bg-blue-900 text-xs sm:w-auto sm:text-sm">
+                  Novo agendamento
+                </Button>
+              </DialogTrigger>
+              <DialogContent className="w-full sm:max-w-[425px]">
+                <DialogHeader>
+                  <DialogTitle>Cadastrar Novo Agendamento</DialogTitle>
+                  <DialogDescription>
+                    Preencha os detalhes abaixo para agendar uma consulta.
+                  </DialogDescription>
+                </DialogHeader>
+                <AppointmentForm />
+              </DialogContent>
+            </Dialog>
+
           </div>
         </div>
 

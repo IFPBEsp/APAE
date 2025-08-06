@@ -7,12 +7,7 @@ import { format } from "date-fns"
 import { Button } from "@/components/ui/button"
 import { Calendar } from "@/components/ui/calendar"
 import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover"
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 
 interface DateTimePickerProps {
   value?: Date;
@@ -60,19 +55,16 @@ export function DateTimePicker({ value, onChange }: DateTimePickerProps) {
   }, [value]);
 
   return (
-    <div className="flex gap-4">
+    <div className="flex gap-2">
       <div className="flex flex-col gap-3">
-        <Label htmlFor="date-picker" className="px-1">
-          Date
-        </Label>
         <Popover>
           <PopoverTrigger asChild>
             <Button
               variant="outline"
               id="date-picker"
-              className="w-32 justify-between font-normal"
+              className="w-full justify-between font-normal"
             >
-              {dateTime ? format(dateTime, "PPP") : "Select date"}
+              {dateTime ? format(dateTime, "PPP") : "Selecione"}
               <ChevronDownIcon className="size-4" />
             </Button>
           </PopoverTrigger>
@@ -87,15 +79,13 @@ export function DateTimePicker({ value, onChange }: DateTimePickerProps) {
         </Popover>
       </div>
       <div className="flex flex-col gap-3">
-        <Label htmlFor="time-picker" className="px-1">
-          Time
-        </Label>
         <Input
           type="time"
           id="time-picker"
           defaultValue={dateTime ? format(dateTime, "HH:mm") : "12:00"}
           onChange={handleTimeChange}
-          className="bg-background appearance-none [&::-webkit-calendar-picker-indicator]:hidden [&::-webkit-calendar-picker-indicator]:appearance-none"
+                    className="bg-background appearance-none [&::-webkit-calendar-picker-indicator]:hidden [&::-webkit-calendar-picker-indicator]:appearance-none  px-3 py-2 text-sm border border-input rounded-md w-28"
+
         />
       </div>
     </div>
