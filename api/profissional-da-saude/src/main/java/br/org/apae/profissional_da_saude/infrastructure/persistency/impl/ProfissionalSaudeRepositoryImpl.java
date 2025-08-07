@@ -54,4 +54,15 @@ public class ProfissionalSaudeRepositoryImpl implements ProfissionalSaudeReposit
   public void deleteById(UUID id) {
     repositoryJpa.deleteById(id);
   }
+
+  @Override
+  public boolean existsByEmail(String email) {
+    return repositoryJpa.existsByEmail(email);
+  }
+
+  @Override
+  public boolean existsByDocProfissional(String docProfissional) {
+    return repositoryJpa.existsByDocProfissional(docProfissional);
+  }
+
 }

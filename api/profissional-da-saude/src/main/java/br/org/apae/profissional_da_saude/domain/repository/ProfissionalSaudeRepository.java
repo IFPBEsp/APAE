@@ -12,13 +12,15 @@ public interface ProfissionalSaudeRepository {
   ProfissionalSaude save(ProfissionalSaude profissionalSaude);
 
   Page<ProfissionalSaude> findAll(Pageable pageable);
-  
-  //TODO
+
   Optional<ProfissionalSaude> findById(UUID id);
-  
-  //TODO
+
   ProfissionalSaude update(ProfissionalSaude profissionalSaude);
-  
-  //TODO
+
   void deleteById(UUID id);
+
+  boolean existsByEmail(String email);
+
+  boolean existsByDocProfissional(String docProfissional);
+
 }
