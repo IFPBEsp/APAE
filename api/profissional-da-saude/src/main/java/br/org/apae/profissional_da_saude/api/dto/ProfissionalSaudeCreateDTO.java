@@ -3,6 +3,7 @@ package br.org.apae.profissional_da_saude.api.dto;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 
+
 public class ProfissionalSaudeCreateDTO {
 
     @NotBlank
@@ -15,6 +16,7 @@ public class ProfissionalSaudeCreateDTO {
     private String docProfissional;
 
     @Email
+    @NotBlank
     private String email;
 
     @NotBlank

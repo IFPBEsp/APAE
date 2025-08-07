@@ -11,7 +11,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Optional;
 import java.util.UUID;
 
 @RestController
@@ -41,8 +40,10 @@ public class ProfissionalSaudeController {
     return ResponseEntity.noContent().build();
   }
   @GetMapping("/{id}")
-  public ResponseEntity<Optional<ProfissionalSaudeResponseDTO>> findById(@PathVariable UUID id){
-    return ResponseEntity.ok(this.service.findById(id));
+  public ResponseEntity<ProfissionalSaudeResponseDTO> findById(@PathVariable UUID id){
+    return service.findById(id)
+            .map(ResponseEntity::ok)
+            .orElse(ResponseEntity.notFound().build());
   }
 
 }
