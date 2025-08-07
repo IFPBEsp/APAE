@@ -1,5 +1,8 @@
 package br.org.apae.profissional_da_saude.domain.model;
 
+import br.org.apae.profissional_da_saude.domain.exception.DadosInvalidosException;
+import br.org.apae.profissional_da_saude.domain.exception.ValidacaoNegocioException;
+
 import java.util.UUID;
 import java.util.regex.Pattern;
 
@@ -36,19 +39,22 @@ public class ProfissionalSaude {
   }
 
   private void validar(String areaDaSaude, String telefone, String docProfissional, String email, String nome) {
-    if (isNullOrEmpty(areaDaSaude)) throw new IllegalArgumentException("Área da saúde é obrigatória.");
-    if (isNullOrEmpty(telefone)) throw new IllegalArgumentException("Telefone é obrigatório.");
-    if (isNullOrEmpty(docProfissional)) throw new IllegalArgumentException("Documento profissional é obrigatório.");
-    if (isNullOrEmpty(email) || !EMAIL_REGEX.matcher(email).matches()) {
-      throw new IllegalArgumentException("E-mail inválido.");
+    if (areaDaSaude == null || areaDaSaude.trim().isEmpty()) {
+      throw new ValidacaoNegocioException("Área da saúde é obrigatória.");
     }
-    if (isNullOrEmpty(nome)) throw new IllegalArgumentException("Nome é obrigatório.");
+    if (telefone == null || telefone.trim().isEmpty()) {
+      throw new DadosInvalidosException("Telefone é obrigatório.");
+    }
+    if (docProfissional == null || docProfissional.trim().isEmpty()) {
+      throw new DadosInvalidosException("Documento profissional é obrigatório.");
+    }
+    if (email == null || email.trim().isEmpty() || !EMAIL_REGEX.matcher(email).matches()) {
+      throw new DadosInvalidosException("E-mail inválido.");
+    }
+    if (nome == null || nome.trim().isEmpty()) {
+      throw new DadosInvalidosException("Nome é obrigatório.");
+    }
   }
-
-  private boolean isNullOrEmpty(String value) {
-    return value == null || value.trim().isEmpty();
-  }
-
   public UUID getId() {
     return id;
   }
