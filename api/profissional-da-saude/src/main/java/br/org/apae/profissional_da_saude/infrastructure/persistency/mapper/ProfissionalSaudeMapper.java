@@ -5,7 +5,9 @@ import br.org.apae.profissional_da_saude.api.dto.ProfissionalSaudeResponseDTO;
 import br.org.apae.profissional_da_saude.domain.model.ProfissionalSaude;
 import br.org.apae.profissional_da_saude.infrastructure.entity.ProfissionalSaudeEntity;
 
-public class ProfissionalSaudeMapper {
+public final class ProfissionalSaudeMapper {
+
+  private ProfissionalSaudeMapper() {}
 
   public static ProfissionalSaudeEntity toEntity(ProfissionalSaude model) {
     return ProfissionalSaudeEntity.builder()
