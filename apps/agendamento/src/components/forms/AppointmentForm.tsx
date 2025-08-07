@@ -60,7 +60,7 @@ export function AppointmentForm() {
   return (
     <Card className="w-full mx-auto border-none shadow-none">
       <form onSubmit={handleSubmit}>
-        <CardContent className="space-y-6">
+        <CardContent className="space-y-5">
           
           <div className="space-y-2">
             <Label htmlFor="data-hora">
