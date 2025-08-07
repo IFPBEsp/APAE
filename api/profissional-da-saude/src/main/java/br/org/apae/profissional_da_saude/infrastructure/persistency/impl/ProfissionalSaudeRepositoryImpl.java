@@ -1,5 +1,6 @@
 package br.org.apae.profissional_da_saude.infrastructure.persistency.impl;
 
+import java.util.Optional;
 import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,6 +13,9 @@ import br.org.apae.profissional_da_saude.domain.repository.ProfissionalSaudeRepo
 import br.org.apae.profissional_da_saude.infrastructure.persistency.jpa.ProfissionalSaudeRepositoryJpa;
 import br.org.apae.profissional_da_saude.infrastructure.persistency.mapper.ProfissionalSaudeMapper;
 
+import static br.org.apae.profissional_da_saude.infrastructure.persistency.mapper.ProfissionalSaudeMapper.toEntity;
+import static br.org.apae.profissional_da_saude.infrastructure.persistency.mapper.ProfissionalSaudeMapper.toModel;
+
 @Repository
 public class ProfissionalSaudeRepositoryImpl implements ProfissionalSaudeRepository {
   private final ProfissionalSaudeRepositoryJpa repositoryJpa;
@@ -23,18 +27,21 @@ public class ProfissionalSaudeRepositoryImpl implements ProfissionalSaudeReposit
 
   @Override
   public ProfissionalSaude save(ProfissionalSaude profissionalSaude) {
-    return ProfissionalSaudeMapper.toModel(repositoryJpa.save(ProfissionalSaudeMapper.toEntity(profissionalSaude)));
+    return toModel(
+            repositoryJpa.save(
+                    toEntity(profissionalSaude)));
   }
 
   @Override
   public Page<ProfissionalSaude> findAll(Pageable pageable) {
-    return repositoryJpa.findAll(pageable).map(ProfissionalSaudeMapper::toModel);
+    return repositoryJpa.findAll(pageable)
+            .map(ProfissionalSaudeMapper::toModel);
   }
 
   @Override
-  public ProfissionalSaude findById(UUID id) {
-    // TODO: Implementar método
-    return null;
+  public Optional<ProfissionalSaude> findById(UUID id) {
+    return repositoryJpa.findById(id)
+            .map(ProfissionalSaudeMapper::toModel);
   }
 
   @Override
@@ -45,7 +52,6 @@ public class ProfissionalSaudeRepositoryImpl implements ProfissionalSaudeReposit
 
   @Override
   public void deleteById(UUID id) {
-    // TODO: Implementar método
-    return;
+    repositoryJpa.deleteById(id);
   }
 }

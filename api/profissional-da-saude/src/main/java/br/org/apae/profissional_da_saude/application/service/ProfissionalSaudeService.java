@@ -11,6 +11,9 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.util.Optional;
+import java.util.UUID;
+
 @Service
 public class ProfissionalSaudeService {
 
@@ -30,5 +33,13 @@ public class ProfissionalSaudeService {
   public Page<ProfissionalSaudeResponseDTO> findAll(Pageable pageable) {
     return repository.findAll(pageable)
         .map(ProfissionalSaudeMapper::toResponseDTO);
+  }
+
+  public void delete(UUID id){
+    repository.deleteById(id);
+  }
+
+  public Optional<ProfissionalSaudeResponseDTO> findById(UUID id){
+    return repository.findById(id).map(ProfissionalSaudeMapper::toResponseDTO);
   }
 }

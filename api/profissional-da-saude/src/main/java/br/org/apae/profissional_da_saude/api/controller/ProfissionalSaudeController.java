@@ -11,6 +11,9 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Optional;
+import java.util.UUID;
+
 @RestController
 @RequestMapping("/profissionais")
 public class ProfissionalSaudeController {
@@ -24,11 +27,22 @@ public class ProfissionalSaudeController {
 
   @PostMapping
   public ResponseEntity<ProfissionalSaudeResponseDTO> create(@RequestBody @Valid ProfissionalSaudeCreateDTO dto) {
-    return ResponseEntity.ok(service.save(dto));
+    return ResponseEntity.ok(this.service.save(dto));
   }
 
   @GetMapping
   public ResponseEntity<Page<ProfissionalSaudeResponseDTO>> getAll(Pageable pageable) {
-    return ResponseEntity.ok(service.findAll(pageable));
+    return ResponseEntity.ok(this.service.findAll(pageable));
   }
+
+  @DeleteMapping("/{id}")
+  public ResponseEntity<Void> delete(@PathVariable UUID id){
+    this.service.delete(id);
+    return ResponseEntity.noContent().build();
+  }
+  @GetMapping("/{id}")
+  public ResponseEntity<Optional<ProfissionalSaudeResponseDTO>> findById(@PathVariable UUID id){
+    return ResponseEntity.ok(this.service.findById(id));
+  }
+
 }
