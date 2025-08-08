@@ -31,9 +31,10 @@ public class AgendamentoService {
         return AgendamentoMapper.toResponseDTO(agendamentoSaved);
     }
 
-    public Optional<AgendamentoResponseDTO> findById(UUID id) {
-        return this.repository.findById(id).
-                map(AgendamentoMapper::toResponseDTO);
+    public AgendamentoResponseDTO findById(UUID id) {
+        Agendamento agendamento = this.repository.findById(id)
+                .orElseThrow(AgendamentoNaoEncontradoException::new);
+        return AgendamentoMapper.toResponseDTO(agendamento);
     }
 
     public Page<AgendamentoResponseDTO> findAll(Pageable pageable) {
