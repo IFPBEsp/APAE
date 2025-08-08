@@ -24,8 +24,8 @@ import {
 
 const SIDEBAR_COOKIE_NAME = "sidebar_state"
 const SIDEBAR_COOKIE_MAX_AGE = 60 * 60 * 24 * 7
-const SIDEBAR_WIDTH = "16rem"
-const SIDEBAR_WIDTH_MOBILE = "18rem"
+const SIDEBAR_WIDTH = "15rem"
+const SIDEBAR_WIDTH_MOBILE = "15rem"
 const SIDEBAR_WIDTH_ICON = "3rem"
 const SIDEBAR_KEYBOARD_SHORTCUT = "b"
 
@@ -153,7 +153,7 @@ function Sidebar({
       <div
         data-sidebar="sidebar"
         className={cn(
-          "flex h-full w-[--sidebar-width] flex-col bg-[#B2D7EC] text-[#0D4F97] rounded-r-3xl overflow-hidden",
+          "flex h-full w-96 flex-col bg-[#B2D7EC] text-[#0D4F97] rounded-r-3xl",
           className
         )}
         {...props}
@@ -169,7 +169,7 @@ function Sidebar({
         <SheetContent
           data-sidebar="sidebar"
           data-mobile="true"
-          className="top-2 bottom-2 z-50 w-[--sidebar-width] bg-[#B2D7EC] p-0 text-[#0D4F97] rounded-r-3xl overflow-hidden [&>button]:hidden"
+          className="top-2 bottom-2 z-50 w-[var(--sidebar-width)] bg-[#B2D7EC] p-0 text-[#0D4F97] rounded-r-3xl overflow-hidden [&>button]:hidden"
           style={{ "--sidebar-width": SIDEBAR_WIDTH_MOBILE } as React.CSSProperties}
           side={side}
         >
@@ -198,7 +198,7 @@ function Sidebar({
       />
       <div
         className={cn(
-          "fixed inset-y-0 z-40 hidden h-svh w-[--sidebar-width] transition-[left,right,width] duration-200 ease-linear md:flex border-0",
+          "fixed inset-y-0 z-40 hidden h-svh w-[var(--sidebar-width)] transition-[left,right,width] duration-200 ease-linear md:flex border-0",
           side === "left"
             ? "left-0 group-data-[collapsible=offcanvas]:left-[calc(var(--sidebar-width)*-1)]"
             : "right-0 group-data-[collapsible=offcanvas]:right-[calc(var(--sidebar-width)*-1)]",
