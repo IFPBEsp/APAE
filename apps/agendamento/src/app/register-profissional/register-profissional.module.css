@@ -71,13 +71,13 @@
 }
 
 .cancelButton {
-    background-color: transparent; /* Fundo transparente */
-    border: 1px solid #B2B9DE; /* Borda com a cor desejada */
+    background-color: transparent;
+    border: 1px solid #B2B9DE; 
     color:#B2B9DE ;
 }
 
 .saveButton {
-    background-color: black; /* Fundo transparente */
+    background-color: black;
     color:white ;
 }
 
@@ -91,7 +91,6 @@
   
 }
 
-/* Adicione estas classes no seu arquivo CSS */
 .rowContainer {
   display: flex;
   gap: 20px;
@@ -111,28 +110,25 @@
   width: 100%;
 }
 
-/* Cada coluna na linha */
 .fieldColumn {
   flex: 1;
-  min-width: 0; /* Previne overflow */
+  min-width: 0; 
 }
 
-/* Adicione ao seu arquivo page.module.css */
 ::placeholder {
   color: #999;
   font-size: 0.9em;
-  opacity: 1; /* Necessário para Firefox */
+  opacity: 1; 
 }
 
-:-ms-input-placeholder { /* Internet Explorer */
+:-ms-input-placeholder {
   color: #999;
 }
 
-::-ms-input-placeholder { /* Microsoft Edge */
+::-ms-input-placeholder { 
   color: #999;
 }
 
-/* Responsividade - empilha em telas pequenas */
 @media (max-width: 768px) {
   .fieldsRow {
     flex-direction: column;
