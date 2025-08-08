@@ -5,9 +5,11 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.CreationTimestamp;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.UUID;
 
 @Entity
@@ -25,6 +27,8 @@ public class AgendamentoEntity {
     private UUID idPaciente;
     private UUID idProfissional;
     private Integer frequenciaDias;
-    private LocalDateTime proximaConsulta;
-    private LocalDate createAt;
+    private LocalDate proximaConsulta;
+    private LocalTime horaProximaConsulta;
+    @CreationTimestamp
+    private LocalDateTime dataCriacao;
 }

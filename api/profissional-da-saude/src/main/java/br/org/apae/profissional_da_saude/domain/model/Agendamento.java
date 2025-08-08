@@ -1,56 +1,32 @@
 package br.org.apae.profissional_da_saude.domain.model;
 
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.UUID;
 
+
+@Getter
+@AllArgsConstructor
 public class Agendamento {
 
     private UUID id;
     private UUID idPaciente;
     private UUID idProfissional;
     private Integer frequenciaDias;
-    private LocalDateTime proximaConsulta;
-    private LocalDate createAt;
+    private LocalDate proximaConsulta;
+    private LocalTime horaProximaConsulta;
+    private LocalDateTime dataCriacao;
 
-    public Agendamento(UUID id, UUID idPaciente, UUID idProfissional, Integer frequenciaDias, LocalDateTime proximaConsulta, LocalDate createAt) {
-        this.id = id;
+    public Agendamento(UUID idPaciente, UUID idProfissional, Integer frequenciaDias, LocalDate proximaConsulta, LocalTime horaProximaConsulta, LocalDateTime dataCriacao) {
         this.idPaciente = idPaciente;
         this.idProfissional = idProfissional;
         this.frequenciaDias = frequenciaDias;
         this.proximaConsulta = proximaConsulta;
-        this.createAt = createAt;
-    }
-
-    public Agendamento(UUID idPaciente, UUID idProfissional, Integer frequenciaDias, LocalDateTime proximaConsulta, LocalDate createAt) {
-        this.idPaciente = idPaciente;
-        this.idProfissional = idProfissional;
-        this.frequenciaDias = frequenciaDias;
-        this.proximaConsulta = proximaConsulta;
-        this.createAt = createAt;
-    }
-
-    public UUID getId() {
-        return id;
-    }
-
-    public UUID getIdPaciente() {
-        return idPaciente;
-    }
-
-    public UUID getIdProfissional() {
-        return idProfissional;
-    }
-
-    public Integer getFrequenciaDias() {
-        return frequenciaDias;
-    }
-
-    public LocalDateTime getProximaConsulta() {
-        return proximaConsulta;
-    }
-
-    public LocalDate getCreateAt() {
-        return createAt;
+        this.horaProximaConsulta = horaProximaConsulta;
+        this.dataCriacao = dataCriacao;
     }
 }

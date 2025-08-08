@@ -39,7 +39,8 @@ public class AgendamentoRepositoryImpl implements AgendamentoRepository {
 
     @Override
     public Agendamento update(Agendamento agendamento) {
-        return null;
+        AgendamentoEntity entity = AgendamentoMapper.toEntity(agendamento);
+        return AgendamentoMapper.toModel(this.repository.save(entity));
     }
 
     @Override

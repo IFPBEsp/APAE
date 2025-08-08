@@ -1,9 +1,8 @@
 package br.org.apae.profissional_da_saude.infrastructure.persistency.mapper;
 
+import br.org.apae.profissional_da_saude.api.dto.AgendamentoResponseDTO;
 import br.org.apae.profissional_da_saude.domain.model.Agendamento;
 import br.org.apae.profissional_da_saude.infrastructure.entity.AgendamentoEntity;
-
-import java.util.Optional;
 
 public class AgendamentoMapper {
 
@@ -24,7 +23,8 @@ public class AgendamentoMapper {
             agendamentoEntity.getIdProfissional(),
             agendamentoEntity.getFrequenciaDias(),
             agendamentoEntity.getProximaConsulta(),
-            agendamentoEntity.getCreateAt()
+            agendamentoEntity.getHoraProximaConsulta(),
+            agendamentoEntity.getDataCriacao()
         );
     }
 
@@ -35,9 +35,21 @@ public class AgendamentoMapper {
             agendamentoEntity.getIdProfissional(),
             agendamentoEntity.getFrequenciaDias(),
             agendamentoEntity.getProximaConsulta(),
-            agendamentoEntity.getCreateAt()
+            agendamentoEntity.getHoraProximaConsulta(),
+            agendamentoEntity.getDataCriacao()
         );
+    }
 
+    public static AgendamentoResponseDTO toResponseDTO(Agendamento agendamento) {
+        return AgendamentoResponseDTO.builder()
+            .id(agendamento.getId())
+            .idPaciente(agendamento.getIdPaciente())
+            .idProfissional(agendamento.getIdProfissional())
+            .frequenciaDias(agendamento.getFrequenciaDias())
+            .proximaConsulta(agendamento.getProximaConsulta())
+            .horaProximaConsulta(agendamento.getHoraProximaConsulta())
+            .dataCriacao(agendamento.getDataCriacao())
+            .build();
     }
 }
 
