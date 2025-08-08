@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
-import styles from "./page.module.css";
+import styles from "./register-profissional.module.css";
 
 const CadastroProfissional = () => {
   const [formData, setFormData] = useState({
@@ -31,7 +31,7 @@ const CadastroProfissional = () => {
     <div className={styles.appContainer}>
       <div className={styles.mainContent}>
         <header className={styles.header}>
-          <h1>Atualizar Profissional</h1>
+          <h1>Cadastrar Profissional</h1>
         </header>
 
         <form onSubmit={handleSubmit} className={styles.form}>
