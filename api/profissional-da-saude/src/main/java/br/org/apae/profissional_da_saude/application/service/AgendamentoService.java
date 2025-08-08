@@ -10,6 +10,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -29,11 +31,13 @@ public class AgendamentoService {
     }
 
     public Optional<AgendamentoResponseDTO> findById(UUID id) {
-        return this.repository.findById(id).map(AgendamentoMapper::toResponseDTO);
+        return this.repository.findById(id).
+                map(AgendamentoMapper::toResponseDTO);
     }
 
     public Page<AgendamentoResponseDTO> findAll(Pageable pageable) {
-        return this.repository.findAll(pageable).map(AgendamentoMapper::toResponseDTO);
+        return this.repository.findAll(pageable)
+                .map(AgendamentoMapper::toResponseDTO);
     }
 
     public AgendamentoResponseDTO update(UUID id, AgendamentoUpdateDTO dto) {
@@ -56,6 +60,15 @@ public class AgendamentoService {
 
         Agendamento agendamentoUpdated = this.repository.update(agendamentoSaved);
         return AgendamentoMapper.toResponseDTO(agendamentoUpdated);
+    }
+
+    public Page<AgendamentoResponseDTO> findByProximaConsulta(LocalDate data, Pageable pageable) {
+        return this.repository.findAllByProximaConsulta(data, pageable)
+                .map(AgendamentoMapper::toResponseDTO);
+    }
+
+    public Page<AgendamentoResponseDTO> findAllByProximaConsultaAndHoraProximaConsulta(LocalDate data, LocalTime hora, Pageable pageable) {
+        return  this.repository.findAllByProximaConsultaAndHoraProximaConsulta(data, hora, pageable).map(AgendamentoMapper::toResponseDTO);
     }
 
     public void remove(UUID id) {

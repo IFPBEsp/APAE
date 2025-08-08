@@ -9,6 +9,8 @@ import br.org.apae.profissional_da_saude.infrastructure.persistency.mapper.Agend
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
+import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -46,5 +48,15 @@ public class AgendamentoRepositoryImpl implements AgendamentoRepository {
     @Override
     public void deleteById(UUID id) {
         this.repository.deleteById(id);
+    }
+
+    @Override
+    public Page<Agendamento> findAllByProximaConsulta(LocalDate data, Pageable pageable) {
+        return this.repository.findAllByProximaConsulta(data, pageable);
+    }
+
+    @Override
+    public Page<Agendamento> findAllByProximaConsultaAndHoraProximaConsulta(LocalDate data, LocalTime hora, Pageable pageable) {
+        return this.repository.findAllByProximaConsultaAndHoraProximaConsulta(data, hora, pageable);
     }
 }
