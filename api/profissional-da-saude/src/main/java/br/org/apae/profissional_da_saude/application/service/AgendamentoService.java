@@ -3,6 +3,7 @@ package br.org.apae.profissional_da_saude.application.service;
 import br.org.apae.profissional_da_saude.api.dto.AgendamentoCreateDTO;
 import br.org.apae.profissional_da_saude.api.dto.AgendamentoResponseDTO;
 import br.org.apae.profissional_da_saude.api.dto.AgendamentoUpdateDTO;
+import br.org.apae.profissional_da_saude.application.service.exceptions.AgendamentoNaoEncontradoException;
 import br.org.apae.profissional_da_saude.domain.model.Agendamento;
 import br.org.apae.profissional_da_saude.domain.repository.AgendamentoRepository;
 import br.org.apae.profissional_da_saude.infrastructure.persistency.mapper.AgendamentoMapper;
@@ -41,7 +42,8 @@ public class AgendamentoService {
     }
 
     public AgendamentoResponseDTO update(UUID id, AgendamentoUpdateDTO dto) {
-        Agendamento agendamentoSaved = this.repository.findById(id).orElseThrow();
+        Agendamento agendamentoSaved = this.repository.findById(id)
+                .orElseThrow(AgendamentoNaoEncontradoException::new);
 
         Optional.ofNullable(dto.getIdPaciente())
                 .ifPresent(agendamentoSaved::setIdPaciente);

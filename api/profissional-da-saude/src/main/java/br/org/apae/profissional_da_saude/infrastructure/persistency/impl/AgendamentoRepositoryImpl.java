@@ -1,19 +1,20 @@
 package br.org.apae.profissional_da_saude.infrastructure.persistency.impl;
 
 import br.org.apae.profissional_da_saude.domain.model.Agendamento;
-import br.org.apae.profissional_da_saude.domain.model.ProfissionalSaude;
 import br.org.apae.profissional_da_saude.domain.repository.AgendamentoRepository;
 import br.org.apae.profissional_da_saude.infrastructure.entity.AgendamentoEntity;
 import br.org.apae.profissional_da_saude.infrastructure.persistency.jpa.AgendamentoRepositoryJpa;
 import br.org.apae.profissional_da_saude.infrastructure.persistency.mapper.AgendamentoMapper;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.stereotype.Repository;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.Optional;
 import java.util.UUID;
 
+@Repository
 public class AgendamentoRepositoryImpl implements AgendamentoRepository {
 
     private final AgendamentoRepositoryJpa repository;
