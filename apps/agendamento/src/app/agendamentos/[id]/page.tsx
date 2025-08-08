@@ -26,7 +26,6 @@ export default async function VisualizarAgendamento({ params } : PageProps) {
 
     const agendamento = {
         id,
-        imagem: "adfaf",
         nome: "Lucas Matheus Gomes de Lima",
         consulta: false,
         agendamentoMarcado : {
