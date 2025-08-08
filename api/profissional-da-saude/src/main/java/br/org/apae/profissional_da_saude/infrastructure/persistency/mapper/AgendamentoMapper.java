@@ -1,5 +1,6 @@
 package br.org.apae.profissional_da_saude.infrastructure.persistency.mapper;
 
+import br.org.apae.profissional_da_saude.api.dto.AgendamentoCreateDTO;
 import br.org.apae.profissional_da_saude.api.dto.AgendamentoResponseDTO;
 import br.org.apae.profissional_da_saude.domain.model.Agendamento;
 import br.org.apae.profissional_da_saude.infrastructure.entity.AgendamentoEntity;
@@ -29,14 +30,13 @@ public class AgendamentoMapper {
     }
 
 
-    public static Agendamento toDomain(AgendamentoEntity agendamentoEntity) {
+    public static Agendamento toDomain(AgendamentoCreateDTO dto) {
         return new Agendamento(
-            agendamentoEntity.getIdPaciente(),
-            agendamentoEntity.getIdProfissional(),
-            agendamentoEntity.getFrequenciaDias(),
-            agendamentoEntity.getProximaConsulta(),
-            agendamentoEntity.getHoraProximaConsulta(),
-            agendamentoEntity.getDataCriacao()
+            dto.getIdPaciente(),
+            dto.getIdProfissional(),
+            dto.getFrequenciaDias(),
+            dto.getProximaConsulta(),
+            dto.getHoraProximaConsulta()
         );
     }
 
