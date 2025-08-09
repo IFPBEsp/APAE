@@ -23,7 +23,7 @@ public class KeycloakRealmRoleConverter implements Converter<Jwt, Collection<Gra
         Collection<String> roles = (Collection<String>) realmAccess.get("roles");
 
         return roles.stream()
-                .map(role -> "ROLE_" + role.toUpperCase())
+                .map(role -> "ROLE_" + role)
                 .map(SimpleGrantedAuthority::new)
                 .collect(Collectors.toList());
     }
