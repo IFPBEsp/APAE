@@ -53,11 +53,11 @@ public class AgendamentoRepositoryImpl implements AgendamentoRepository {
 
     @Override
     public Page<Agendamento> findAllByProximaConsulta(LocalDate data, Pageable pageable) {
-        return this.repository.findAllByProximaConsulta(data, pageable);
+        return this.repository.findAllByProximaConsulta(data, pageable).map(AgendamentoMapper::toModel);
     }
 
     @Override
     public Page<Agendamento> findAllByProximaConsultaAndHoraProximaConsulta(LocalDate data, LocalTime hora, Pageable pageable) {
-        return this.repository.findAllByProximaConsultaAndHoraProximaConsulta(data, hora, pageable);
+        return this.repository.findAllByProximaConsultaAndHoraProximaConsulta(data, hora, pageable).map(AgendamentoMapper::toModel);
     }
 }

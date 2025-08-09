@@ -13,6 +13,7 @@ public class AgendamentoMapper {
             .idPaciente(agendamento.getIdPaciente())
             .idProfissional(agendamento.getIdProfissional())
             .proximaConsulta(agendamento.getProximaConsulta())
+            .horaProximaConsulta(agendamento.getHoraProximaConsulta())
             .frequenciaDias(agendamento.getFrequenciaDias())
             .build();
     }

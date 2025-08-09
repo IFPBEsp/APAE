@@ -12,6 +12,6 @@ import java.util.UUID;
 
 public interface AgendamentoRepositoryJpa extends JpaRepository<AgendamentoEntity, UUID> {
 
-    Page<Agendamento> findAllByProximaConsulta(LocalDate data, Pageable pageable);
-    Page<Agendamento> findAllByProximaConsultaAndHoraProximaConsulta(LocalDate data, LocalTime hora, Pageable pageable);
+    Page<AgendamentoEntity> findAllByProximaConsulta(LocalDate data, Pageable pageable);
+    Page<AgendamentoEntity> findAllByProximaConsultaAndHoraProximaConsulta(LocalDate data, LocalTime hora, Pageable pageable);
 }

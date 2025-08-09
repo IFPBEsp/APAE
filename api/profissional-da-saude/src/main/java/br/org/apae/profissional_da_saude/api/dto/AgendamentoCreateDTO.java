@@ -1,6 +1,7 @@
 package br.org.apae.profissional_da_saude.api.dto;
 
-import jakarta.validation.constraints.NotBlank;
+import com.fasterxml.jackson.annotation.JsonFormat;
+import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 
 import java.time.LocalDate;
@@ -10,14 +11,15 @@ import java.util.UUID;
 @Getter
 public class AgendamentoCreateDTO {
 
-    @NotBlank
+    @NotNull
     private UUID idPaciente;
-    @NotBlank
+    @NotNull
     private UUID idProfissional;
-    @NotBlank
+    @NotNull
     private Integer frequenciaDias;
-    @NotBlank
+    @NotNull
     private LocalDate proximaConsulta;
-    @NotBlank
+    @NotNull
+    @JsonFormat(pattern = "HH:mm:ss")
     private LocalTime horaProximaConsulta;
 }
