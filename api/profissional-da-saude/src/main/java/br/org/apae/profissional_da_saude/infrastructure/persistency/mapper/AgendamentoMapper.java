@@ -10,6 +10,7 @@ public class AgendamentoMapper {
 
     public static AgendamentoEntity toEntity(Agendamento agendamento) {
         return AgendamentoEntity.builder()
+            .id(agendamento.getId())
             .idPaciente(agendamento.getIdPaciente())
             .idProfissional(agendamento.getIdProfissional())
             .proximaConsulta(agendamento.getProximaConsulta())
