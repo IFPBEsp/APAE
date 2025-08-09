@@ -1,6 +1,15 @@
 import React, { useState, useEffect } from "react";
-import apae from "../images/apae.png";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Checkbox } from "@/components/ui/checkbox";
+import { PlusCircle, Trash2, ArrowRight } from 'lucide-react';
 
+// Assuming apae image is imported or available in the public folder
+import apae from '../images/apae.png';
+
+
+// --- Interface Definitions ---
 export interface VacinaRequest {
   nome: string;
   dataAplicacao: string;
@@ -26,16 +35,20 @@ export interface CadastroAnualRequest {
   pessoaId?: string;
   tipoAtendimentoId?: number;
 }
+
 interface CadastroDoisProps {
   onNext: () => void;
   onBack: () => void;
 }
+
 interface FormData {
   vacinacoesRequests: VacinaRequest[];
   deficienciasRequests: TipoDeficienciaRequest[];
   atendimentosRequests: TipoAtendimentoRequest[];
   cadastrosAnuaisRequests: CadastroAnualRequest[];
 }
+
+// --- Main Component ---
 export default function CadastroDois({ onNext, onBack }: CadastroDoisProps) {
   const [formData, setFormData] = useState<FormData>({
     vacinacoesRequests: [{ nome: "", dataAplicacao: "" }],
@@ -52,41 +65,30 @@ export default function CadastroDois({ onNext, onBack }: CadastroDoisProps) {
     ],
   });
 
+  // Effect to load data from localStorage
   useEffect(() => {
     const savedData = localStorage.getItem("cadastroData");
     if (savedData) {
       const fullData = JSON.parse(savedData);
+      const ensureArray = (arr: any[], defaultItem: any) =>
+        arr && arr.length > 0 ? arr : [defaultItem];
+
       setFormData({
-        vacinacoesRequests:
-          fullData.vacinacoesRequests && fullData.vacinacoesRequests.length > 0
-            ? fullData.vacinacoesRequests
-            : [{ nome: "", dataAplicacao: "" }],
-        deficienciasRequests:
-          fullData.deficienciasRequests &&
-          fullData.deficienciasRequests.length > 0
-            ? fullData.deficienciasRequests
-            : [{ descricao: "" }],
-        atendimentosRequests:
-          fullData.atendimentosRequests &&
-          fullData.atendimentosRequests.length > 0
-            ? fullData.atendimentosRequests
-            : [{ descricao: "" }],
-        cadastrosAnuaisRequests:
-          fullData.cadastrosAnuaisRequests &&
-          fullData.cadastrosAnuaisRequests.length > 0
-            ? fullData.cadastrosAnuaisRequests
-            : [
-                {
-                  beneficioDePrestacaoContinuada: false,
-                  historicosAlergias: "",
-                  medicacoesContinuas: "",
-                  historicoDoencas: "",
-                  rendaFamiliar: 0,
-                },
-              ],
+        vacinacoesRequests: ensureArray(fullData.vacinacoesRequests, { nome: "", dataAplicacao: "" }),
+        deficienciasRequests: ensureArray(fullData.deficienciasRequests, { descricao: "" }),
+        atendimentosRequests: ensureArray(fullData.atendimentosRequests, { descricao: "" }),
+        cadastrosAnuaisRequests: ensureArray(fullData.cadastrosAnuaisRequests, {
+          beneficioDePrestacaoContinuada: false,
+          historicosAlergias: "",
+          medicacoesContinuas: "",
+          historicoDoencas: "",
+          rendaFamiliar: 0,
+        }),
       });
     }
   }, []);
+
+  // Generic handler for array state changes
   const handleArrayChange = (
     category: keyof FormData,
     index: number,
@@ -95,15 +97,14 @@ export default function CadastroDois({ onNext, onBack }: CadastroDoisProps) {
   ) => {
     setFormData((prev) => {
       const updatedArray = [...prev[category]];
-      // Create a new object with the updated value, ensuring the type is correct
       const updatedItem = { ...updatedArray[index], [field]: value };
       updatedArray[index] = updatedItem;
       return { ...prev, [category]: updatedArray };
     });
   };
-  const addItem = (
-    category: keyof Omit<FormData, "cadastrosAnuaisRequests">
-  ) => {
+
+  // Function to add a new item to a dynamic list
+  const addItem = (category: keyof Omit<FormData, "cadastrosAnuaisRequests">) => {
     let newItem: any;
     switch (category) {
       case "vacinacoesRequests":
@@ -121,10 +122,21 @@ export default function CadastroDois({ onNext, onBack }: CadastroDoisProps) {
       [category]: [...prev[category], newItem],
     }));
   };
+  
+  // Function to remove an item from a dynamic list
+  const removeItem = (category: keyof Omit<FormData, "cadastrosAnuaisRequests">, index: number) => {
+    setFormData(prev => {
+        const currentArray = prev[category];
+        if (currentArray.length <= 1) return prev;
+        const updatedArray = currentArray.filter((_, i) => i !== index);
+        return { ...prev, [category]: updatedArray };
+    });
+  };
+
+  // Form submission handler
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     const step1Data = JSON.parse(localStorage.getItem("cadastroStep1") || "{}");
-    // Combine and save all data so far
     localStorage.setItem(
       "cadastroData",
       JSON.stringify({
@@ -136,302 +148,150 @@ export default function CadastroDois({ onNext, onBack }: CadastroDoisProps) {
   };
 
   return (
-    <div className="min-h-screen flex w-full items-center justify-center p-6">
-      <div className="flex rounded-xl shadow-lg w-full bg-white overflow-hidden">
-        <div className="relative bg-blue-900">
-          <img
-            src={apae.src}
-            alt="APAE"
-            className="absolute h-full w-full object-cover z-0"
-          />
-          <div className="relative z-10 flex flex-col justify-center items-center h-full px-8 text-center text-white">
-            <h2 className="font-extrabold text-3xl md:text-4xl mb-4 drop-shadow-lg tracking-wide uppercase">
-              Bem-vindo à APAE
-            </h2>
-            <p className="text-lg md:text-2xl max-w-md font-semibold mb-6 drop-shadow-md">
-              É um prazer receber você!
-              <br />
-              Preencha seus dados ao lado para fazer parte da nossa associação e
-              transformar vidas conosco.
-            </p>
-            <div className="mt-8 w-12 h-12" />
-          </div>
-        </div>
-        <div className="flex items-center justify-center w-full">
-          <form className="w-full p-10 space-y-8" onSubmit={handleSubmit}>
-            <h2 className="text-blue-900 font-bold text-2xl mb-8 text-center">
-              Cadastro de Assistido - Etapa 2
-            </h2>
-
-            {/* Vaccines Section */}
-            <fieldset className="mb-8">
-              <legend className="text-blue-500 font-semibold mb-4 text-lg w-full border-b border-blue-200 pb-2">
-                Vacinas
-              </legend>
-              {formData.vacinacoesRequests.map((vacina, idx) => (
-                <div
-                  key={idx}
-                  className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-4 p-4 border border-gray-200 rounded-lg"
-                >
-                  <div className="flex flex-col">
-                    <label className="text-black font-medium mb-1">
-                      Nome da Vacina
-                    </label>
-                    <input
-                      type="text"
-                      placeholder="Nome da Vacina"
-                      value={vacina.nome}
-                      onChange={(e) =>
-                        handleArrayChange(
-                          "vacinacoesRequests",
-                          idx,
-                          "nome",
-                          e.target.value
-                        )
-                      }
-                      className="border border-blue-300 p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 placeholder-gray-400 text-gray-700"
-                    />
-                  </div>
-                  <div className="flex flex-col">
-                    <label className="text-black font-medium mb-1">
-                      Data de Aplicação
-                    </label>
-                    <input
-                      type="date"
-                      placeholder="Data de Aplicação"
-                      value={vacina.dataAplicacao}
-                      onChange={(e) =>
-                        handleArrayChange(
-                          "vacinacoesRequests",
-                          idx,
-                          "dataAplicacao",
-                          e.target.value
-                        )
-                      }
-                      className="border border-blue-300 p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 placeholder-gray-400 text-gray-700"
-                    />
-                  </div>
-                </div>
-              ))}
-              <button
-                type="button"
-                onClick={() => addItem("vacinacoesRequests")}
-                className="bg-blue-100 text-blue-800 font-semibold px-4 py-2 rounded-lg hover:bg-blue-200 transition-colors"
-              >
-                Adicionar Vacina
-              </button>
-            </fieldset>
-
-            {/* Deficiencies Section */}
-            <fieldset className="mb-8">
-              <legend className="text-blue-500 font-semibold mb-4 text-lg w-full border-b border-blue-200 pb-2">
-                Deficiências
-              </legend>
-              {formData.deficienciasRequests.map((def, idx) => (
-                <div
-                  key={idx}
-                  className="mb-4 p-4 border border-gray-200 rounded-lg"
-                >
-                  <label className="text-black font-medium mb-1">
-                    Tipo de Deficiência
-                  </label>
-                  <input
-                    type="text"
-                    placeholder="Tipo de Deficiência"
-                    value={def.descricao}
-                    onChange={(e) =>
-                      handleArrayChange(
-                        "deficienciasRequests",
-                        idx,
-                        "descricao",
-                        e.target.value
-                      )
-                    }
-                    className="border border-blue-300 p-3 rounded-lg w-full focus:outline-none focus:ring-2 focus:ring-blue-500 placeholder-gray-400 text-gray-700"
-                  />
-                </div>
-              ))}
-              <button
-                type="button"
-                onClick={() => addItem("deficienciasRequests")}
-                className="bg-blue-100 text-blue-800 font-semibold px-4 py-2 rounded-lg hover:bg-blue-200 transition-colors"
-              >
-                Adicionar Deficiência
-              </button>
-            </fieldset>
-
-            {/* Services Section */}
-            <fieldset className="mb-8">
-              <legend className="text-blue-500 font-semibold mb-4 text-lg w-full border-b border-blue-200 pb-2">
-                Atendimentos
-              </legend>
-              {formData.atendimentosRequests.map((at, idx) => (
-                <div
-                  key={idx}
-                  className="mb-4 p-4 border border-gray-200 rounded-lg"
-                >
-                  <label className="text-black font-medium mb-1">
-                    Tipo de Atendimento
-                  </label>
-                  <input
-                    type="text"
-                    placeholder="Tipo de Atendimento"
-                    value={at.descricao}
-                    onChange={(e) =>
-                      handleArrayChange(
-                        "atendimentosRequests",
-                        idx,
-                        "descricao",
-                        e.target.value
-                      )
-                    }
-                    className="border border-blue-300 p-3 rounded-lg w-full focus:outline-none focus:ring-2 focus:ring-blue-500 placeholder-gray-400 text-gray-700"
-                  />
-                </div>
-              ))}
-              <button
-                type="button"
-                onClick={() => addItem("atendimentosRequests")}
-                className="bg-blue-100 text-blue-800 font-semibold px-4 py-2 rounded-lg hover:bg-blue-200 transition-colors"
-              >
-                Adicionar Atendimento
-              </button>
-            </fieldset>
-
-            {/* Annual Registration Section */}
-            <fieldset className="mb-8">
-              <legend className="text-blue-500 font-semibold mb-4 text-lg w-full border-b border-blue-200 pb-2">
-                Cadastro Anual
-              </legend>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div className="flex flex-col">
-                  <label className="text-black font-medium mb-1">
-                    Doenças que já teve
-                  </label>
-                  <input
-                    type="text"
-                    placeholder="Doenças que já teve"
-                    value={
-                      formData.cadastrosAnuaisRequests[0]?.historicoDoencas ||
-                      ""
-                    }
-                    onChange={(e) =>
-                      handleArrayChange(
-                        "cadastrosAnuaisRequests",
-                        0,
-                        "historicoDoencas",
-                        e.target.value
-                      )
-                    }
-                    className="border border-blue-300 p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 placeholder-gray-400 text-gray-700"
-                  />
-                </div>
-                <div className="flex flex-col">
-                  <label className="text-black font-medium mb-1">
-                    Tipo de medicação que toma
-                  </label>
-                  <input
-                    type="text"
-                    placeholder="Tipo de medicação que toma"
-                    value={
-                      formData.cadastrosAnuaisRequests[0]
-                        ?.medicacoesContinuas || ""
-                    }
-                    onChange={(e) =>
-                      handleArrayChange(
-                        "cadastrosAnuaisRequests",
-                        0,
-                        "medicacoesContinuas",
-                        e.target.value
-                      )
-                    }
-                    className="border border-blue-300 p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 placeholder-gray-400 text-gray-700"
-                  />
-                </div>
-                <div className="flex flex-col">
-                  <label className="text-black font-medium mb-1">
-                    Tem alergias? Quais?
-                  </label>
-                  <input
-                    type="text"
-                    placeholder="Tem alergias? Quais?"
-                    value={
-                      formData.cadastrosAnuaisRequests[0]?.historicosAlergias ||
-                      ""
-                    }
-                    onChange={(e) =>
-                      handleArrayChange(
-                        "cadastrosAnuaisRequests",
-                        0,
-                        "historicosAlergias",
-                        e.target.value
-                      )
-                    }
-                    className="border border-blue-300 p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 placeholder-gray-400 text-gray-700"
-                  />
-                </div>
-                <div className="flex flex-col">
-                  <label className="text-black font-medium mb-1">
-                    Renda Familiar
-                  </label>
-                  <input
-                    type="number"
-                    placeholder="Renda Familiar"
-                    value={
-                      formData.cadastrosAnuaisRequests[0]?.rendaFamiliar || ""
-                    }
-                    onChange={(e) =>
-                      handleArrayChange(
-                        "cadastrosAnuaisRequests",
-                        0,
-                        "rendaFamiliar",
-                        Number(e.target.value)
-                      )
-                    }
-                    className="border border-blue-300 p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 placeholder-gray-400 text-gray-700"
-                  />
-                </div>
-                <label className="flex items-center text-gray-700 md:col-span-2 mt-2">
-                  <input
-                    type="checkbox"
-                    checked={
-                      formData.cadastrosAnuaisRequests[0]
-                        ?.beneficioDePrestacaoContinuada || false
-                    }
-                    onChange={(e) =>
-                      handleArrayChange(
-                        "cadastrosAnuaisRequests",
-                        0,
-                        "beneficioDePrestacaoContinuada",
-                        e.target.checked
-                      )
-                    }
-                    className="mr-3 h-5 w-5 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
-                  />
-                  Benefício de Prestação Continuada
-                </label>
-              </div>
-            </fieldset>
-
-            {/* Navigation Buttons */}
-            <div className="flex justify-between items-center mt-10">
-              <button
-                type="button"
-                onClick={onBack}
-                className="bg-gray-300 text-gray-800 font-semibold py-3 px-8 rounded-lg hover:bg-gray-400 transition-colors"
-              >
-                Voltar
-              </button>
-              <button
-                type="submit"
-                className="bg-blue-800 text-white font-semibold py-3 px-8 rounded-lg hover:bg-blue-900 transition-colors"
-              >
-                Próximo
-              </button>
+    <div className="min-h-screen w-full lg:grid lg:grid-cols-12 font-sans overflow-hidden">
+        {/* Left Side: Welcome Message */}
+        <div className="hidden lg:col-span-5 lg:relative lg:flex">
+            <img
+                src={apae.src}
+                alt="Group of people"
+                className="absolute inset-0 h-full w-full object-cover"
+            />
+            <div className="relative z-10 flex w-full flex-col items-center justify-center bg-gradient-to-t from-white/30 to-transparent text-white space-y-6 text-center">
+                <h1 className="text-5xl font-bold tracking-tight">BEM-VINDO</h1>
+                <p className="text-xl max-w-sm">
+                    Informe seus dados ao lado para poder fazer parte da nossa associação.
+                </p>
             </div>
-          </form>
+            <div className="absolute z-20 top-1/2 -right-7 -translate-y-1/2">
+                <button className="h-14 w-14 bg-blue-700 rounded-full flex items-center justify-center text-white hover:bg-blue-800 transition-colors">
+                    <ArrowRight className="h-6 w-6" />
+                </button>
+            </div>
         </div>
-      </div>
+
+        {/* Right Side: Form */}
+        <div className="lg:col-span-7 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-16 bg-gray-50">
+            <div className="w-full max-w-3xl space-y-8">
+                <h2 className="text-2xl font-bold text-gray-800">Cadastro de pessoas - Etapa 2</h2>
+                <form onSubmit={handleSubmit} className="space-y-8">
+                    
+                    {/* --- Vaccines Section --- */}
+                    <div>
+                        <h3 className="text-lg font-semibold text-blue-600 mb-4">Vacinas</h3>
+                        <div className="space-y-4">
+                            {formData.vacinacoesRequests.map((vacina, idx) => (
+                                <div key={idx} className="p-4 border rounded-lg space-y-4 relative bg-white">
+                                    {formData.vacinacoesRequests.length > 1 && (
+                                        <Button variant="ghost" size="icon" className="absolute top-2 right-2 text-gray-400 hover:text-red-500" onClick={() => removeItem("vacinacoesRequests", idx)}>
+                                            <Trash2 className="h-4 w-4" />
+                                        </Button>
+                                    )}
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-6">
+                                        <div className="space-y-2">
+                                            <Label htmlFor={`vacina-nome-${idx}`}>Nome da Vacina</Label>
+                                            <Input id={`vacina-nome-${idx}`} type="text" placeholder="Ex: Febre Amarela" value={vacina.nome} onChange={(e) => handleArrayChange("vacinacoesRequests", idx, "nome", e.target.value)} />
+                                        </div>
+                                        <div className="space-y-2">
+                                            <Label htmlFor={`vacina-data-${idx}`}>Data de Aplicação</Label>
+                                            <Input id={`vacina-data-${idx}`} type="date" value={vacina.dataAplicacao} onChange={(e) => handleArrayChange("vacinacoesRequests", idx, "dataAplicacao", e.target.value)} />
+                                        </div>
+                                    </div>
+                                </div>
+                            ))}
+                            <Button type="button" variant="outline" onClick={() => addItem("vacinacoesRequests")}>
+                                <PlusCircle className="mr-2 h-4 w-4" /> Adicionar Vacina
+                            </Button>
+                        </div>
+                    </div>
+
+                    {/* --- Deficiencies Section --- */}
+                    <div>
+                        <h3 className="text-lg font-semibold text-blue-600 mb-4">Deficiências</h3>
+                        <div className="space-y-4">
+                            {formData.deficienciasRequests.map((def, idx) => (
+                                <div key={idx} className="p-4 border rounded-lg space-y-2 relative bg-white">
+                                    {formData.deficienciasRequests.length > 1 && (
+                                        <Button variant="ghost" size="icon" className="absolute top-2 right-2 text-gray-400 hover:text-red-500" onClick={() => removeItem("deficienciasRequests", idx)}>
+                                            <Trash2 className="h-4 w-4" />
+                                        </Button>
+                                    )}
+                                    <Label htmlFor={`deficiencia-desc-${idx}`}>Tipo de Deficiência</Label>
+                                    <div className="flex items-center gap-4">
+                                        <Input id={`deficiencia-desc-${idx}`} type="text" placeholder="Digite a deficiência" value={def.descricao} onChange={(e) => handleArrayChange("deficienciasRequests", idx, "descricao", e.target.value)} className="flex-1" />
+                                        <Button type="button" variant="secondary" className="flex-shrink-0">
+                                            Enviar Laudo
+                                        </Button>
+                                    </div>
+                                </div>
+                            ))}
+                            <Button type="button" variant="outline" onClick={() => addItem("deficienciasRequests")}>
+                                <PlusCircle className="mr-2 h-4 w-4" /> Adicionar Deficiência
+                            </Button>
+                        </div>
+                    </div>
+
+                    {/* --- Attendances Section --- */}
+                    <div>
+                        <h3 className="text-lg font-semibold text-blue-600 mb-4">Atendimentos</h3>
+                        <div className="space-y-4">
+                            {formData.atendimentosRequests.map((at, idx) => (
+                                <div key={idx} className="p-4 border rounded-lg space-y-2 relative bg-white">
+                                    {formData.atendimentosRequests.length > 1 && (
+                                        <Button variant="ghost" size="icon" className="absolute top-2 right-2 text-gray-400 hover:text-red-500" onClick={() => removeItem("atendimentosRequests", idx)}>
+                                            <Trash2 className="h-4 w-4" />
+                                        </Button>
+                                    )}
+                                    <Label htmlFor={`atendimento-desc-${idx}`}>Tipo de Atendimento</Label>
+                                    <Input id={`atendimento-desc-${idx}`} type="text" placeholder="Ex: Fisioterapia" value={at.descricao} onChange={(e) => handleArrayChange("atendimentosRequests", idx, "descricao", e.target.value)} />
+                                </div>
+                            ))}
+                            <Button type="button" variant="outline" onClick={() => addItem("atendimentosRequests")}>
+                                <PlusCircle className="mr-2 h-4 w-4" /> Adicionar Atendimento
+                            </Button>
+                        </div>
+                    </div>
+
+                    {/* --- Annual Registration Section --- */}
+                    <div>
+                        <h3 className="text-lg font-semibold text-blue-600 mb-4">Informações Adicionais</h3>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-6">
+                            <div className="space-y-2">
+                                <Label htmlFor="historico-doencas">Doenças que já teve</Label>
+                                <Input id="historico-doencas" placeholder="Ex: Catapora" value={formData.cadastrosAnuaisRequests[0]?.historicoDoencas || ""} onChange={(e) => handleArrayChange("cadastrosAnuaisRequests", 0, "historicoDoencas", e.target.value)} />
+                            </div>
+                            <div className="space-y-2">
+                                <Label htmlFor="medicacoes-continuas">Medicações de uso contínuo</Label>
+                                <Input id="medicacoes-continuas" placeholder="Ex: Losartana" value={formData.cadastrosAnuaisRequests[0]?.medicacoesContinuas || ""} onChange={(e) => handleArrayChange("cadastrosAnuaisRequests", 0, "medicacoesContinuas", e.target.value)} />
+                            </div>
+                            <div className="space-y-2">
+                                <Label htmlFor="historico-alergias">Alergias</Label>
+                                <Input id="historico-alergias" placeholder="Ex: Alergia a poeira" value={formData.cadastrosAnuaisRequests[0]?.historicosAlergias || ""} onChange={(e) => handleArrayChange("cadastrosAnuaisRequests", 0, "historicosAlergias", e.target.value)} />
+                            </div>
+                            <div className="space-y-2">
+                                <Label htmlFor="renda-familiar">Renda Familiar (R$)</Label>
+                                <Input id="renda-familiar" type="number" placeholder="Ex: 1500" value={formData.cadastrosAnuaisRequests[0]?.rendaFamiliar || ""} onChange={(e) => handleArrayChange("cadastrosAnuaisRequests", 0, "rendaFamiliar", Number(e.target.value))} />
+                            </div>
+                        </div>
+                        <div className="flex items-center space-x-2 pt-4">
+                            <Checkbox id="bpc" checked={formData.cadastrosAnuaisRequests[0]?.beneficioDePrestacaoContinuada || false} onCheckedChange={(checked) => handleArrayChange("cadastrosAnuaisRequests", 0, "beneficioDePrestacaoContinuada", !!checked)} />
+                            <Label htmlFor="bpc" className="font-medium">
+                                Recebe Benefício de Prestação Continuada (BPC)?
+                            </Label>
+                        </div>
+                    </div>
+
+                    {/* --- Navigation Buttons --- */}
+                    <div className="flex justify-between items-center pt-6">
+                        <Button type="button" variant="outline" className="px-8 py-6 text-base" onClick={onBack}>
+                            Voltar
+                        </Button>
+                        <Button type="submit" className="bg-yellow-400 text-black font-bold hover:bg-yellow-500 px-8 py-6 text-base">
+                            Próximo
+                        </Button>
+                    </div>
+                </form>
+            </div>
+        </div>
     </div>
   );
 }

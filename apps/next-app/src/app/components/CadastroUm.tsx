@@ -1,11 +1,48 @@
 import React, { useState, useEffect } from "react";
-import { PessoaRequest, ContatoRequest } from "../service/pessoaService";
-import apae from "../images/apae.png";
 
+// --- Shadcn UI & Icon Imports ---
+// Assuming these are installed in your project.
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { ArrowRight } from 'lucide-react';
+import apae from '../images/apae.png';
+
+// --- Mock Data Structures (for demonstration) ---
+export interface ContatoRequest {
+  enderecoAtivo: "S" | "N";
+  comprovanteResidencia: string;
+  endereco: string;
+  bairro: string;
+  cidade: string;
+  estado: string;
+  cep: string;
+  naturalidade: string;
+}
+
+export interface PessoaRequest {
+  nomeCompleto: string;
+  dataNascimento: string;
+  numRegistroNasc: string;
+  fls: string;
+  livro: string;
+  cartorio: string;
+  cpf: string;
+  rg: string;
+  dataEmissaoRg: string;
+  orgaoEmissorRg: string;
+  cns: string;
+  nis: string;
+  dataCadastramento: string;
+  contatoRequest?: ContatoRequest;
+}
+
+// --- Prop Types ---
 interface CadastroUmProps {
   onNext: () => void;
 }
 
+// --- Main Component ---
 export default function CadastroUm({ onNext }: CadastroUmProps) {
   const [formData, setFormData] = useState<Partial<PessoaRequest>>({
     nomeCompleto: "",
@@ -20,9 +57,7 @@ export default function CadastroUm({ onNext }: CadastroUmProps) {
     orgaoEmissorRg: "",
     cns: "",
     nis: "",
-
     dataCadastramento: new Date().toISOString().split("T")[0],
-
     contatoRequest: {
       enderecoAtivo: "S",
       comprovanteResidencia: "",
@@ -64,380 +99,136 @@ export default function CadastroUm({ onNext }: CadastroUmProps) {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-
     localStorage.setItem("cadastroStep1", JSON.stringify(formData));
     onNext();
   };
 
   return (
-    <div className="min-h-screen flex w-full items-center justify-center p-4 sm:p-6 font-sans">
-      <div className="flex rounded-2xl shadow-2xl w-full bg-white overflow-hidden">
-        <div className="relative bg-blue-900">
-          <img
+    <div className="min-h-screen w-full lg:grid lg:grid-cols-12 font-sans overflow-hidden">
+      {/* Left Side: Welcome Message */}
+      <div className="hidden lg:col-span-5 lg:relative lg:flex">
+        <img
             src={apae.src}
-            alt="APAE"
-            className="absolute h-full w-full object-cover z-0"
-          />
-          <div className="relative z-10 flex flex-col justify-center items-center h-full px-8 text-center text-white">
-            <h2 className="font-extrabold text-3xl md:text-4xl mb-4 drop-shadow-lg tracking-wide uppercase">
-              Bem-vindo à APAE
-            </h2>
-            <p className="text-lg md:text-2xl max-w-md font-semibold mb-6 drop-shadow-md">
-              É um prazer receber você!
-              <br />
-              Preencha seus dados ao lado para fazer parte da nossa associação e
-              transformar vidas conosco.
+            alt="Group of people"
+            className="absolute inset-0 h-full w-full object-cover"
+        />
+        <div className="relative z-10 flex w-full flex-col items-center justify-center bg-gradient-to-t from-white/30 to-transparent text-white space-y-6 text-center">
+            <h1 className="text-5xl font-bold tracking-tight">BEM-VINDO</h1>
+            <p className="text-xl max-w-sm">
+                Informe seus dados ao lado para poder fazer parte da nossa associação.
             </p>
-            <div className="mt-8 w-12 h-12" />
-          </div>
         </div>
+        <div className="absolute z-20 top-1/2 -right-7 -translate-y-1/2">
+            <button className="h-14 w-14 bg-blue-700 rounded-full flex items-center justify-center text-white hover:bg-blue-800 transition-colors">
+                <ArrowRight className="h-6 w-6" />
+            </button>
+        </div>
+      </div>
 
-        <div className="flex items-center justify-center w-full">
-          <form className="w-full p-10 space-y-8" onSubmit={handleSubmit}>
-            <h2 className="text-blue-900 font-bold text-2xl mb-6 text-center">
-              Cadastro de Assistido - Etapa 1
-            </h2>
+      {/* Right Side: Form */}
+      <div className="lg:col-span-7 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-16 bg-gray-50">
+        <div className="w-full max-w-3xl space-y-8">
+            <h2 className="text-2xl font-bold text-gray-800">Cadastro de pessoas</h2>
+            <form onSubmit={handleSubmit} className="space-y-8">
+                {/* Personal Data Section */}
+                <div>
+                    <h3 className="text-lg font-semibold text-blue-600 mb-4">Dados Pessoais</h3>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-6">
+                        <div className="space-y-2">
+                            <Label htmlFor="nomeCompleto">Nome Completo*</Label>
+                            <Input id="nomeCompleto" name="nomeCompleto" value={formData.nomeCompleto || ""} onChange={handleChange} required />
+                        </div>
+                        <div className="space-y-2">
+                            <Label htmlFor="cpf">CPF*</Label>
+                            <Input id="cpf" name="cpf" value={formData.cpf || ""} onChange={handleChange} required />
+                        </div>
+                        <div className="space-y-2">
+                            <Label htmlFor="dataNascimento">Data de Nascimento*</Label>
+                            <Input id="dataNascimento" name="dataNascimento" type="date" value={formData.dataNascimento || ""} onChange={handleChange} required />
+                        </div>
+                        <div className="space-y-2">
+                            <Label htmlFor="naturalidade">Naturalidade</Label>
+                            <Input id="naturalidade" name="contato.naturalidade" value={formData.contatoRequest?.naturalidade || ""} onChange={handleChange} />
+                        </div>
+                        <div className="space-y-2">
+                            <Label htmlFor="rg">RG*</Label>
+                            <Input id="rg" name="rg" value={formData.rg || ""} onChange={handleChange} />
+                        </div>
+                        <div className="space-y-2">
+                            <Label htmlFor="dataEmissaoRg">Data de Emissão*</Label>
+                            <Input id="dataEmissaoRg" name="dataEmissaoRg" type="date" value={formData.dataEmissaoRg || ""} onChange={handleChange} />
+                        </div>
+                         <div className="space-y-2">
+                            <Label htmlFor="orgaoEmissorRg">Órgão Emissor*</Label>
+                            <Input id="orgaoEmissorRg" name="orgaoEmissorRg" value={formData.orgaoEmissorRg || ""} onChange={handleChange} />
+                        </div>
+                        <div className="space-y-2">
+                            <Label htmlFor="cns">CNS</Label>
+                            <Input id="cns" name="cns" value={formData.cns || ""} onChange={handleChange} />
+                        </div>
+                        <div className="space-y-2">
+                            <Label htmlFor="nis">NIS</Label>
+                            <Input id="nis" name="nis" value={formData.nis || ""} onChange={handleChange} />
+                        </div>
+                    </div>
+                </div>
 
-            <fieldset>
-              <legend className="text-blue-600 font-semibold mb-4 text-lg w-full border-b border-blue-200 pb-2">
-                Dados Pessoais
-              </legend>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4">
-                <div className="flex flex-col md:col-span-2">
-                  <label
-                    className="text-gray-700 font-medium mb-1"
-                    htmlFor="nomeCompleto"
-                  >
-                    Nome Completo
-                  </label>
-                  <input
-                    id="nomeCompleto"
-                    type="text"
-                    name="nomeCompleto"
-                    placeholder="Nome Completo do Assistido"
-                    value={formData.nomeCompleto || ""}
-                    onChange={handleChange}
-                    className="border border-gray-300 p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-700"
-                    required
-                  />
+                {/* Birth Certificate Section */}
+                 <div>
+                    <h3 className="text-lg font-semibold text-blue-600 mb-4">Certidão de Nascimento</h3>
+                     <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-6">
+                        <div className="space-y-2">
+                            <Label htmlFor="numRegistroNasc">Registro de Nascimento*</Label>
+                            <Input id="numRegistroNasc" name="numRegistroNasc" value={formData.numRegistroNasc || ""} onChange={handleChange} />
+                        </div>
+                        <div className="space-y-2">
+                            <Label htmlFor="fls">Folha</Label>
+                            <Input id="fls" name="fls" value={formData.fls || ""} onChange={handleChange} />
+                        </div>
+                        <div className="space-y-2">
+                            <Label htmlFor="livro">Livro</Label>
+                            <Input id="livro" name="livro" value={formData.livro || ""} onChange={handleChange} />
+                        </div>
+                        <div className="space-y-2">
+                            <Label htmlFor="cartorio">Cartório</Label>
+                            <Input id="cartorio" name="cartorio" value={formData.cartorio || ""} onChange={handleChange} />
+                        </div>
+                    </div>
                 </div>
-                <div className="flex flex-col">
-                  <label
-                    className="text-gray-700 font-medium mb-1"
-                    htmlFor="dataNascimento"
-                  >
-                    Data de Nascimento
-                  </label>
-                  <input
-                    id="dataNascimento"
-                    type="date"
-                    name="dataNascimento"
-                    value={formData.dataNascimento || ""}
-                    onChange={handleChange}
-                    className="border border-gray-300 p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-700"
-                    required
-                  />
-                </div>
-                <div className="flex flex-col">
-                  <label
-                    className="text-gray-700 font-medium mb-1"
-                    htmlFor="naturalidade"
-                  >
-                    Naturalidade
-                  </label>
-                  <input
-                    id="naturalidade"
-                    type="text"
-                    name="contato.naturalidade"
-                    placeholder="Cidade de Nascimento"
-                    value={formData.contatoRequest?.naturalidade || ""}
-                    onChange={handleChange}
-                    className="border border-gray-300 p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-700"
-                  />
-                </div>
-                <div className="flex flex-col">
-                  <label
-                    className="text-gray-700 font-medium mb-1"
-                    htmlFor="cpf"
-                  >
-                    CPF
-                  </label>
-                  <input
-                    id="cpf"
-                    type="text"
-                    name="cpf"
-                    placeholder="000.000.000-00"
-                    value={formData.cpf || ""}
-                    onChange={handleChange}
-                    className="border border-gray-300 p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-700"
-                    required
-                  />
-                </div>
-                <div className="flex flex-col">
-                  <label
-                    className="text-gray-700 font-medium mb-1"
-                    htmlFor="rg"
-                  >
-                    RG
-                  </label>
-                  <input
-                    id="rg"
-                    type="text"
-                    name="rg"
-                    placeholder="Número do RG"
-                    value={formData.rg || ""}
-                    onChange={handleChange}
-                    className="border border-gray-300 p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-700"
-                  />
-                </div>
-                <div className="flex flex-col">
-                  <label
-                    className="text-gray-700 font-medium mb-1"
-                    htmlFor="dataEmissaoRg"
-                  >
-                    Data de Emissão do RG
-                  </label>
-                  <input
-                    id="dataEmissaoRg"
-                    type="date"
-                    name="dataEmissaoRg"
-                    value={formData.dataEmissaoRg || ""}
-                    onChange={handleChange}
-                    className="border border-gray-300 p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-700"
-                  />
-                </div>
-                <div className="flex flex-col">
-                  <label
-                    className="text-gray-700 font-medium mb-1"
-                    htmlFor="orgaoEmissorRg"
-                  >
-                    Órgão Emissor do RG
-                  </label>
-                  <input
-                    id="orgaoEmissorRg"
-                    type="text"
-                    name="orgaoEmissorRg"
-                    placeholder="Ex: SSP/SP"
-                    value={formData.orgaoEmissorRg || ""}
-                    onChange={handleChange}
-                    className="border border-gray-300 p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-700"
-                  />
-                </div>
-                <div className="flex flex-col">
-                  <label
-                    className="text-gray-700 font-medium mb-1"
-                    htmlFor="cns"
-                  >
-                    CNS
-                  </label>
-                  <input
-                    id="cns"
-                    type="text"
-                    name="cns"
-                    placeholder="Cartão Nacional de Saúde"
-                    value={formData.cns || ""}
-                    onChange={handleChange}
-                    className="border border-gray-300 p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-700"
-                  />
-                </div>
-                <div className="flex flex-col">
-                  <label
-                    className="text-gray-700 font-medium mb-1"
-                    htmlFor="nis"
-                  >
-                    NIS
-                  </label>
-                  <input
-                    id="nis"
-                    type="text"
-                    name="nis"
-                    placeholder="Número de Ident. Social"
-                    value={formData.nis || ""}
-                    onChange={handleChange}
-                    className="border border-gray-300 p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-700"
-                  />
-                </div>
-              </div>
-            </fieldset>
 
-            <fieldset>
-              <legend className="text-blue-600 font-semibold mb-4 text-lg w-full border-b border-blue-200 pb-2">
-                Certidão de Nascimento
-              </legend>
-              <div className="grid grid-cols-1 md:grid-cols-4 gap-x-6 gap-y-4">
-                <div className="flex flex-col md:col-span-2">
-                  <label
-                    className="text-gray-700 font-medium mb-1"
-                    htmlFor="numRegistroNasc"
-                  >
-                    Nº do Registro
-                  </label>
-                  <input
-                    id="numRegistroNasc"
-                    type="text"
-                    name="numRegistroNasc"
-                    placeholder="Número do Registro"
-                    value={formData.numRegistroNasc || ""}
-                    onChange={handleChange}
-                    className="border border-gray-300 p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-700"
-                  />
+                {/* Address Section */}
+                <div>
+                    <h3 className="text-lg font-semibold text-blue-600 mb-4">Endereço</h3>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-6">
+                        <div className="space-y-2">
+                            <Label htmlFor="endereco">Rua*</Label>
+                            <Input id="endereco" name="contato.endereco" value={formData.contatoRequest?.endereco || ""} onChange={handleChange} />
+                        </div>
+                        <div className="space-y-2">
+                            <Label htmlFor="cep">CEP*</Label>
+                            <Input id="cep" name="contato.cep" value={formData.contatoRequest?.cep || ""} onChange={handleChange} />
+                        </div>
+                        <div className="space-y-2">
+                            <Label htmlFor="bairro">Bairro*</Label>
+                            <Input id="bairro" name="contato.bairro" value={formData.contatoRequest?.bairro || ""} onChange={handleChange} />
+                        </div>
+                        <div className="space-y-2">
+                            <Label htmlFor="estado">Estado*</Label>
+                            <Input id="estado" name="contato.estado" value={formData.contatoRequest?.estado || ""} onChange={handleChange} />
+                        </div>
+                        <div className="space-y-2">
+                            <Label htmlFor="cidade">Cidade</Label>
+                            <Input id="cidade" name="contato.cidade" value={formData.contatoRequest?.cidade || ""} onChange={handleChange} />
+                        </div>
+                    </div>
                 </div>
-                <div className="flex flex-col">
-                  <label
-                    className="text-gray-700 font-medium mb-1"
-                    htmlFor="fls"
-                  >
-                    Folha
-                  </label>
-                  <input
-                    id="fls"
-                    type="text"
-                    name="fls"
-                    placeholder="Fls"
-                    value={formData.fls || ""}
-                    onChange={handleChange}
-                    className="border border-gray-300 p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-700"
-                  />
-                </div>
-                <div className="flex flex-col">
-                  <label
-                    className="text-gray-700 font-medium mb-1"
-                    htmlFor="livro"
-                  >
-                    Livro
-                  </label>
-                  <input
-                    id="livro"
-                    type="text"
-                    name="livro"
-                    placeholder="Livro"
-                    value={formData.livro || ""}
-                    onChange={handleChange}
-                    className="border border-gray-300 p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-700"
-                  />
-                </div>
-                <div className="flex flex-col md:col-span-4">
-                  <label
-                    className="text-gray-700 font-medium mb-1"
-                    htmlFor="cartorio"
-                  >
-                    Cartório
-                  </label>
-                  <input
-                    id="cartorio"
-                    type="text"
-                    name="cartorio"
-                    placeholder="Nome do Cartório"
-                    value={formData.cartorio || ""}
-                    onChange={handleChange}
-                    className="border border-gray-300 p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-700"
-                  />
-                </div>
-              </div>
-            </fieldset>
 
-            <fieldset>
-              <legend className="text-blue-600 font-semibold mb-4 text-lg w-full border-b border-blue-200 pb-2">
-                Endereço
-              </legend>
-              <div className="grid grid-cols-1 md:grid-cols-4 gap-x-6 gap-y-4">
-                <div className="flex flex-col md:col-span-3">
-                  <label
-                    className="text-gray-700 font-medium mb-1"
-                    htmlFor="endereco"
-                  >
-                    Endereço
-                  </label>
-                  <input
-                    id="endereco"
-                    type="text"
-                    name="contato.endereco"
-                    placeholder="Rua, Avenida, etc."
-                    value={formData.contatoRequest?.endereco || ""}
-                    onChange={handleChange}
-                    className="border border-gray-300 p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-700"
-                  />
+                <div className="flex justify-end pt-6">
+                    <Button type="submit" className="bg-yellow-400 text-black font-bold hover:bg-yellow-500 px-8 py-6 text-base">
+                        Próximo
+                    </Button>
                 </div>
-                <div className="flex flex-col md:col-span-1">
-                  <label
-                    className="text-gray-700 font-medium mb-1"
-                    htmlFor="cep"
-                  >
-                    CEP
-                  </label>
-                  <input
-                    id="cep"
-                    type="text"
-                    name="contato.cep"
-                    placeholder="00000-000"
-                    value={formData.contatoRequest?.cep || ""}
-                    onChange={handleChange}
-                    className="border border-gray-300 p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-700"
-                  />
-                </div>
-                <div className="flex flex-col md:col-span-2">
-                  <label
-                    className="text-gray-700 font-medium mb-1"
-                    htmlFor="bairro"
-                  >
-                    Bairro
-                  </label>
-                  <input
-                    id="bairro"
-                    type="text"
-                    name="contato.bairro"
-                    placeholder="Bairro"
-                    value={formData.contatoRequest?.bairro || ""}
-                    onChange={handleChange}
-                    className="border border-gray-300 p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-700"
-                  />
-                </div>
-                <div className="flex flex-col">
-                  <label
-                    className="text-gray-700 font-medium mb-1"
-                    htmlFor="cidade"
-                  >
-                    Cidade
-                  </label>
-                  <input
-                    id="cidade"
-                    type="text"
-                    name="contato.cidade"
-                    placeholder="Cidade"
-                    value={formData.contatoRequest?.cidade || ""}
-                    onChange={handleChange}
-                    className="border border-gray-300 p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-700"
-                  />
-                </div>
-                <div className="flex flex-col">
-                  <label
-                    className="text-gray-700 font-medium mb-1"
-                    htmlFor="estado"
-                  >
-                    Estado
-                  </label>
-                  <input
-                    id="estado"
-                    type="text"
-                    name="contato.estado"
-                    placeholder="Estado"
-                    value={formData.contatoRequest?.estado || ""}
-                    onChange={handleChange}
-                    className="border border-gray-300 p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-700"
-                  />
-                </div>
-              </div>
-            </fieldset>
-
-            <div className="flex justify-end items-center pt-4">
-              <button
-                type="submit"
-                className="bg-blue-800 text-white font-semibold py-3 px-8 rounded-lg hover:bg-blue-900 transition-colors shadow-md hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-700"
-              >
-                Próximo
-              </button>
-            </div>
-          </form>
+            </form>
         </div>
       </div>
     </div>

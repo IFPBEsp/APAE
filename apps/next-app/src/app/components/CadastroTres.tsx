@@ -1,17 +1,26 @@
 import React, { useState, useEffect } from "react";
-import apae from "../images/apae.png";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Checkbox } from "@/components/ui/checkbox";
+import { PlusCircle, Trash2, ArrowRight } from 'lucide-react';
+import apae from '../images/apae.png';
 import {
   criarPessoa,
   PessoaRequest,
   PessoaResponsavelRequest,
 } from "../service/pessoaService";
 
+// --- Prop Types ---
 interface CadastroTresProps {
   onBack: () => void;
 }
+
 interface FormData {
   responsaveisRequests: PessoaResponsavelRequest[];
 }
+
+// --- Modal Component ---
 const Modal = ({
   message,
   onClose,
@@ -45,6 +54,7 @@ const Modal = ({
   </div>
 );
 
+// --- Main Component ---
 export default function CadastroTres({ onBack }: CadastroTresProps) {
   const [formData, setFormData] = useState<FormData>({
     responsaveisRequests: [
@@ -113,6 +123,14 @@ export default function CadastroTres({ onBack }: CadastroTresProps) {
     }));
   };
 
+  const removeResponsavel = (index: number) => {
+    setFormData(prev => {
+        if (prev.responsaveisRequests.length <= 1) return prev;
+        const updatedResponsaveis = prev.responsaveisRequests.filter((_, i) => i !== index);
+        return { ...prev, responsaveisRequests: updatedResponsaveis };
+    });
+  };
+
   const handleFinalSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
@@ -149,177 +167,99 @@ export default function CadastroTres({ onBack }: CadastroTresProps) {
   };
 
   return (
-    <div className="min-h-screen flex w-full items-center justify-center p-6">
-      <div className="flex rounded-xl shadow-lg w-full bg-white overflow-hidden">
-        <div className="relative bg-blue-900">
-          <img
-            src={apae.src}
-            alt="APAE"
-            className="absolute h-full w-full object-cover z-0"
-          />
-          <div className="relative z-10 flex flex-col justify-center items-center h-full px-8 text-center text-white">
-            <h2 className="font-extrabold text-3xl md:text-4xl mb-4 drop-shadow-lg tracking-wide uppercase">
-              Bem-vindo à APAE
-            </h2>
-            <p className="text-lg md:text-2xl max-w-md font-semibold mb-6 drop-shadow-md">
-              É um prazer receber você!
-              <br />
-              Preencha seus dados ao lado para fazer parte da nossa associação e
-              transformar vidas conosco.
-            </p>
-            <div className="mt-8 w-12 h-12" />
-          </div>
-        </div>
-        <div className="flex items-center justify-center w-full">
-          <form className="w-full p-10 space-y-8" onSubmit={handleFinalSubmit}>
-            <h2 className="text-blue-900 font-bold text-2xl mb-8 text-center">
-              Cadastro de Assistido - Etapa Final
-            </h2>
-            <fieldset className="mb-8">
-              <legend className="text-blue-500 font-semibold mb-4 text-lg w-full border-b border-blue-200 pb-2">
-                Responsáveis
-              </legend>
-              {formData.responsaveisRequests.map((resp, idx) => (
-                <div
-                  key={idx}
-                  className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6 p-4 border border-gray-200 rounded-lg"
-                >
-                  <div className="flex flex-col">
-                    <label className="text-black font-medium mb-1">
-                      Nome do Responsável
-                    </label>
-                    <input
-                      type="text"
-                      placeholder="Ex: João da Silva"
-                      value={resp.nome || ""}
-                      onChange={(e) =>
-                        handleChange(idx, "nome", e.target.value)
-                      }
-                      required
-                      className="border border-blue-300 p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 placeholder-gray-400"
-                    />
-                  </div>
-                  <div className="flex flex-col">
-                    <label className="text-black font-medium mb-1">CPF</label>
-                    <input
-                      type="text"
-                      placeholder="Ex: 123.456.789-00"
-                      value={resp.cpf || ""}
-                      onChange={(e) => handleChange(idx, "cpf", e.target.value)}
-                      required
-                      className="border border-blue-300 p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 placeholder-gray-400"
-                    />
-                  </div>
-                  <div className="flex flex-col">
-                    <label className="text-black font-medium mb-1">RG</label>
-                    <input
-                      type="text"
-                      placeholder="Ex: 12.345.678-9"
-                      value={resp.rg || ""}
-                      onChange={(e) => handleChange(idx, "rg", e.target.value)}
-                      required
-                      className="border border-blue-300 p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 placeholder-gray-400"
-                    />
-                  </div>
-                  <div className="flex flex-col">
-                    <label className="text-black font-medium mb-1">
-                      Profissão
-                    </label>
-                    <input
-                      type="text"
-                      placeholder="Ex: Professor"
-                      value={resp.profissao || ""}
-                      onChange={(e) =>
-                        handleChange(idx, "profissao", e.target.value)
-                      }
-                      className="border border-blue-300 p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 placeholder-gray-400"
-                    />
-                  </div>
-                  <div className="flex flex-col">
-                    <label className="text-black font-medium mb-1">
-                      Contato de Emergência
-                    </label>
-                    <input
-                      type="text"
-                      placeholder="Ex: (83) 99999-9999"
-                      value={resp.emergencia || ""}
-                      onChange={(e) =>
-                        handleChange(idx, "emergencia", e.target.value)
-                      }
-                      required
-                      className="border border-blue-300 p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 placeholder-gray-400"
-                    />
-                  </div>
-                  <div className="flex flex-col">
-                    <label className="text-black font-medium mb-1">
-                      Tipo de Responsável
-                    </label>
-                    <input
-                      type="text"
-                      placeholder="Ex: Pai, Mãe"
-                      value={resp.tipoResponsavel || ""}
-                      onChange={(e) =>
-                        handleChange(idx, "tipoResponsavel", e.target.value)
-                      }
-                      required
-                      className="border border-blue-300 p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 placeholder-gray-400"
-                    />
-                  </div>
-                  <div className="flex flex-col md:col-span-2">
-                    <label className="text-black font-medium mb-1">
-                      Onde procurar (endereço, etc.)
-                    </label>
-                    <input
-                      type="text"
-                      placeholder="Ex: Rua das Flores, 123"
-                      value={resp.ondeProcurar || ""}
-                      onChange={(e) =>
-                        handleChange(idx, "ondeProcurar", e.target.value)
-                      }
-                      className="border border-blue-300 p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 placeholder-gray-400"
-                    />
-                  </div>
-                  <label className="flex items-center text-gray-700">
-                    <input
-                      type="checkbox"
-                      checked={resp.vivo}
-                      onChange={(e) =>
-                        handleChange(idx, "vivo", e.target.checked)
-                      }
-                      className="mr-3 h-5 w-5 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
-                    />
-                    Vivo
-                  </label>
-                </div>
-              ))}
-              <button
-                type="button"
-                onClick={addResponsavel}
-                className="bg-blue-100 text-blue-800 font-semibold px-4 py-2 rounded-lg hover:bg-blue-200 transition-colors"
-              >
-                Adicionar Responsável
-              </button>
-            </fieldset>
-            <div className="flex justify-between items-center mt-10">
-              <button
-                type="button"
-                onClick={onBack}
-                disabled={isLoading}
-                className="bg-gray-300 text-gray-800 font-semibold py-3 px-8 rounded-lg hover:bg-gray-400 transition-colors disabled:opacity-50"
-              >
-                Voltar
-              </button>
-              <button
-                type="submit"
-                disabled={isLoading}
-                className="bg-green-600 text-white font-semibold py-3 px-8 rounded-lg hover:bg-green-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                {isLoading ? "Salvando..." : "Salvar Cadastro"}
-              </button>
+    <div className="min-h-screen w-full lg:grid lg:grid-cols-12 font-sans overflow-hidden">
+        {modalInfo && <Modal {...modalInfo} onClose={() => setModalInfo(null)} />}
+        {/* Left Side: Welcome Message */}
+        <div className="hidden lg:col-span-5 lg:relative lg:flex">
+            <img
+                src={apae.src}
+                alt="Group of people"
+                className="absolute inset-0 h-full w-full object-cover"
+            />
+            <div className="relative z-10 flex w-full flex-col items-center justify-center bg-gradient-to-t from-white/30 to-transparent text-white space-y-6 text-center">
+                <h1 className="text-5xl font-bold tracking-tight">BEM-VINDO</h1>
+                <p className="text-xl max-w-sm">
+                    Informe seus dados ao lado para poder fazer parte da nossa associação.
+                </p>
             </div>
-          </form>
+            <div className="absolute z-20 top-1/2 -right-7 -translate-y-1/2">
+                <button className="h-14 w-14 bg-blue-700 rounded-full flex items-center justify-center text-white hover:bg-blue-800 transition-colors">
+                    <ArrowRight className="h-6 w-6" />
+                </button>
+            </div>
         </div>
-      </div>
+
+        {/* Right Side: Form */}
+        <div className="lg:col-span-7 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-16 bg-gray-50">
+            <div className="w-full max-w-3xl space-y-8">
+                <h2 className="text-2xl font-bold text-gray-800">Cadastro de pessoas - Etapa Final</h2>
+                <form onSubmit={handleFinalSubmit} className="space-y-8">
+                    
+                    {/* --- Responsibles Section --- */}
+                    <div>
+                        <h3 className="text-lg font-semibold text-blue-600 mb-4">Responsáveis</h3>
+                        <div className="space-y-6">
+                            {formData.responsaveisRequests.map((resp, idx) => (
+                                <div key={idx} className="p-4 border rounded-lg space-y-6 relative bg-white">
+                                    {formData.responsaveisRequests.length > 1 && (
+                                        <Button variant="ghost" size="icon" className="absolute top-2 right-2 text-gray-400 hover:text-red-500" onClick={() => removeResponsavel(idx)}>
+                                            <Trash2 className="h-4 w-4" />
+                                        </Button>
+                                    )}
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-6">
+                                        <div className="space-y-2">
+                                            <Label htmlFor={`resp-nome-${idx}`}>Nome do Responsável</Label>
+                                            <Input id={`resp-nome-${idx}`} placeholder="Ex: João da Silva" value={resp.nome || ""} onChange={(e) => handleChange(idx, "nome", e.target.value)} required />
+                                        </div>
+                                        <div className="space-y-2">
+                                            <Label htmlFor={`resp-cpf-${idx}`}>CPF</Label>
+                                            <Input id={`resp-cpf-${idx}`} placeholder="Ex: 123.456.789-00" value={resp.cpf || ""} onChange={(e) => handleChange(idx, "cpf", e.target.value)} required />
+                                        </div>
+                                        <div className="space-y-2">
+                                            <Label htmlFor={`resp-rg-${idx}`}>RG</Label>
+                                            <Input id={`resp-rg-${idx}`} placeholder="Ex: 12.345.678-9" value={resp.rg || ""} onChange={(e) => handleChange(idx, "rg", e.target.value)} required />
+                                        </div>
+                                        <div className="space-y-2">
+                                            <Label htmlFor={`resp-profissao-${idx}`}>Profissão</Label>
+                                            <Input id={`resp-profissao-${idx}`} placeholder="Ex: Professor" value={resp.profissao || ""} onChange={(e) => handleChange(idx, "profissao", e.target.value)} />
+                                        </div>
+                                        <div className="space-y-2">
+                                            <Label htmlFor={`resp-emergencia-${idx}`}>Contato de Emergência</Label>
+                                            <Input id={`resp-emergencia-${idx}`} placeholder="Ex: (83) 99999-9999" value={resp.emergencia || ""} onChange={(e) => handleChange(idx, "emergencia", e.target.value)} required />
+                                        </div>
+                                        <div className="space-y-2">
+                                            <Label htmlFor={`resp-tipo-${idx}`}>Tipo de Responsável</Label>
+                                            <Input id={`resp-tipo-${idx}`} placeholder="Ex: Pai, Mãe" value={resp.tipoResponsavel || ""} onChange={(e) => handleChange(idx, "tipoResponsavel", e.target.value)} required />
+                                        </div>
+                                        <div className="space-y-2 md:col-span-2">
+                                            <Label htmlFor={`resp-onde-${idx}`}>Onde procurar (endereço, etc.)</Label>
+                                            <Input id={`resp-onde-${idx}`} placeholder="Ex: Rua das Flores, 123" value={resp.ondeProcurar || ""} onChange={(e) => handleChange(idx, "ondeProcurar", e.target.value)} />
+                                        </div>
+                                        <div className="flex items-center space-x-2 pt-2">
+                                            <Checkbox id={`resp-vivo-${idx}`} checked={resp.vivo} onCheckedChange={(checked) => handleChange(idx, "vivo", !!checked)} />
+                                            <Label htmlFor={`resp-vivo-${idx}`} className="font-medium">Vivo</Label>
+                                        </div>
+                                    </div>
+                                </div>
+                            ))}
+                            <Button type="button" variant="outline" onClick={addResponsavel}>
+                                <PlusCircle className="mr-2 h-4 w-4" /> Adicionar Responsável
+                            </Button>
+                        </div>
+                    </div>
+
+                    {/* --- Navigation Buttons --- */}
+                    <div className="flex justify-between items-center pt-6">
+                        <Button type="button" variant="outline" className="px-8 py-6 text-base" onClick={onBack} disabled={isLoading}>
+                            Voltar
+                        </Button>
+                        <Button type="submit" className="bg-yellow-400 text-black font-bold hover:bg-yellow-500 px-8 py-6 text-base" disabled={isLoading}>
+                            {isLoading ? "Salvando..." : "Salvar Cadastro"}
+                        </Button>
+                    </div>
+                </form>
+            </div>
+        </div>
     </div>
   );
 }
