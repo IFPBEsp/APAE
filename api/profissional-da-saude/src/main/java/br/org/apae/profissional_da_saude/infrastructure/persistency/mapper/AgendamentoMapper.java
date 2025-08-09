@@ -16,6 +16,7 @@ public class AgendamentoMapper {
             .proximaConsulta(agendamento.getProximaConsulta())
             .horaProximaConsulta(agendamento.getHoraProximaConsulta())
             .frequenciaDias(agendamento.getFrequenciaDias())
+            .dataCriacao(agendamento.getDataCriacao())
             .build();
     }
 
