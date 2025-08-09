@@ -216,9 +216,10 @@ export default function CadastroDois({ onNext, onBack }: CadastroDoisProps) {
                                         </Button>
                                     )}
                                     <Label htmlFor={`deficiencia-desc-${idx}`}>Tipo de Deficiência</Label>
-                                    <div className="flex items-center gap-4">
-                                        <Input id={`deficiencia-desc-${idx}`} type="text" placeholder="Digite a deficiência" value={def.descricao} onChange={(e) => handleArrayChange("deficienciasRequests", idx, "descricao", e.target.value)} className="flex-1" />
-                                        <Button type="button" variant="secondary" className="flex-shrink-0">
+                                    {/* --- MODIFIED LINE BELOW --- */}
+                                    <div className="flex flex-wrap items-center gap-4">
+                                        <Input id={`deficiencia-desc-${idx}`} type="text" placeholder="Digite a deficiência" value={def.descricao} onChange={(e) => handleArrayChange("deficienciasRequests", idx, "descricao", e.target.value)} className="w-full md:flex-1" />
+                                        <Button type="button" variant="secondary" className="bg-blue-900 text-white w-full md:w-48 justify-center">
                                             Enviar Laudo
                                         </Button>
                                     </div>
@@ -242,7 +243,13 @@ export default function CadastroDois({ onNext, onBack }: CadastroDoisProps) {
                                         </Button>
                                     )}
                                     <Label htmlFor={`atendimento-desc-${idx}`}>Tipo de Atendimento</Label>
-                                    <Input id={`atendimento-desc-${idx}`} type="text" placeholder="Ex: Fisioterapia" value={at.descricao} onChange={(e) => handleArrayChange("atendimentosRequests", idx, "descricao", e.target.value)} />
+                                    {/* --- MODIFIED LINE BELOW --- */}
+                                    <div className="flex flex-wrap items-center gap-4">
+                                        <Input id={`atendimento-desc-${idx}`} type="text" placeholder="Ex: Fisioterapia" value={at.descricao} onChange={(e) => handleArrayChange("atendimentosRequests", idx, "descricao", e.target.value)} className="w-full md:flex-1" />
+                                        <Button type="button" variant="secondary" className="bg-blue-900 text-white w-full md:w-48 justify-center">
+                                            Enviar Encaminhamento
+                                        </Button>
+                                    </div>
                                 </div>
                             ))}
                             <Button type="button" variant="outline" onClick={() => addItem("atendimentosRequests")}>
