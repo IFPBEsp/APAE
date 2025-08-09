@@ -1,6 +1,7 @@
 package br.org.apae.profissional_da_saude.api.controller;
 
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,9 +33,15 @@ public class AgendamentoController {
   }
 
   @GetMapping
-  public ResponseEntity<Page<AgendamentoResponseDTO>> getAll( @RequestParam(required = false) LocalDate data, Pageable pageable) {
-    if (data != null) {
+  public ResponseEntity<Page<AgendamentoResponseDTO>> getAll(
+          @RequestParam(required = false) LocalDate data,
+          @RequestParam(required = false) LocalTime hora,
+          Pageable pageable
+  ) {
+    if (data != null && hora == null) {
         return ResponseEntity.ok(service.findByProximaConsulta(data, pageable));
+    } else if (data != null) {
+      return  ResponseEntity.ok(service.findAllByProximaConsultaAndHoraProximaConsulta(data, hora, pageable));
     }
     return ResponseEntity.ok(service.findAll(pageable));
   }
