@@ -1,4 +1,4 @@
-package br.org.apae.profissional_da_saude.api.handler;
+package br.org.apae.profissional_da_saude.api.advice;
 
 import br.org.apae.profissional_da_saude.application.service.exceptions.AgendamentoNaoEncontradoException;
 import org.springframework.http.HttpStatus;

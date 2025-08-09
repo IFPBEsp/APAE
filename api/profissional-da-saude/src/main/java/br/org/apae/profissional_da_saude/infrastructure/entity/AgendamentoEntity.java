@@ -24,11 +24,17 @@ public class AgendamentoEntity {
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
+    @Column(name = "paciente_id", nullable = false)
     private UUID idPaciente;
+    @Column(name = "profissional_id", nullable = false)
     private UUID idProfissional;
+    @Column(name = "frequencia_dias", nullable = false)
     private Integer frequenciaDias;
+    @Column(name = "proxima_consulta", nullable = false)
     private LocalDate proximaConsulta;
+    @Column(name = "hora_proxima_consulta", nullable = false)
     private LocalTime horaProximaConsulta;
     @CreationTimestamp
+    @Column(name = "data_criacao")
     private LocalDateTime dataCriacao;
 }
