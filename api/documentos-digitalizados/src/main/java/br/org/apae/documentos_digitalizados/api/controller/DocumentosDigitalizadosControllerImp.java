@@ -9,6 +9,9 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -29,7 +32,8 @@ public class DocumentosDigitalizadosControllerImp implements DocumentosDigitaliz
             @ApiResponse(responseCode = "500", description = "Bucket do paciênte não foi criado por erro do minIO")
     })
     @Override
-    public ResponseEntity<Void> criarBucket(UUID bucketNome) {
+    @PostMapping("/{bucketNome}")
+    public ResponseEntity<Void> criarBucket(@PathVariable UUID bucketNome) {
         minioStorageService.criarBucket(bucketNome);
 
         return ResponseEntity.status(HttpStatus.CREATED).build();
@@ -41,6 +45,7 @@ public class DocumentosDigitalizadosControllerImp implements DocumentosDigitaliz
             @ApiResponse(responseCode = "500", description = "Erro interno do minIO")
     })
     @Override
+    @GetMapping()
     public ResponseEntity<ListagemBucketResponseDTO> listarBuckets() {
         ListagemBucketResponseDTO dto = minioStorageService.listarBuckets();
 
@@ -54,7 +59,8 @@ public class DocumentosDigitalizadosControllerImp implements DocumentosDigitaliz
             @ApiResponse(responseCode = "500", description = "Erro interno do minIO")
     })
     @Override
-    public ResponseEntity<BucketResponseDTO> listarBucket(UUID bucketNome) {
+    @GetMapping("/{bucketNome}")
+    public ResponseEntity<BucketResponseDTO> listarBucket(@PathVariable UUID bucketNome) {
         BucketResponseDTO dto = minioStorageService.listarBucketPorNome(bucketNome.toString());
 
         return ResponseEntity.status(HttpStatus.OK).body(dto);
@@ -67,7 +73,7 @@ public class DocumentosDigitalizadosControllerImp implements DocumentosDigitaliz
             @ApiResponse(responseCode = "500", description = "Erro interno do minIO")
     })
     @Override
-    public ResponseEntity<Void> deletarBucket(UUID bucketNome) {
+    public ResponseEntity<Void> deletarBucket(@PathVariable UUID bucketNome) {
         minioStorageService.deletarBucket(bucketNome.toString());
 
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
@@ -79,7 +85,8 @@ public class DocumentosDigitalizadosControllerImp implements DocumentosDigitaliz
             @ApiResponse(responseCode = "500", description = "Erro interno do minIO")
     })
     @Override
-    public ResponseEntity<Boolean> verificarBucket(UUID bucketNome) {
+    @GetMapping("/{bucketNome}/verificar")
+    public ResponseEntity<Boolean> verificarBucket(@PathVariable UUID bucketNome) {
         boolean existeBucket = minioStorageService.existeBucket(bucketNome.toString());
 
         return ResponseEntity.status(HttpStatus.OK).body(existeBucket);

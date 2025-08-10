@@ -13,43 +13,43 @@ public class PessoaEntity {
   @GeneratedValue(strategy = GenerationType.AUTO)
   private UUID id;
 
-  @Column(name = "nome_completo", nullable = false)
+  @Column(name = "nome_completo", nullable = true)
   private String nomeCompleto;
 
-  @Column(name = "data_nascimento", nullable = false)
+  @Column(name = "data_nascimento", nullable = true)
   private LocalDate dataNascimento;
 
-  @Column(name = "num_registro_nasc", nullable = false)
+  @Column(name = "num_registro_nasc", nullable = true)
   private String numRegistroNasc;
 
-  @Column(name = "FLS", nullable = false)
+  @Column(name = "FLS", nullable = true)
   private String fls;
 
-  @Column(name = "livro", nullable = false)
+  @Column(name = "livro", nullable = true)
   private String livro;
 
-  @Column(name = "cartorio", nullable = false)
+  @Column(name = "cartorio", nullable = true)
   private String cartorio;
 
-  @Column(name = "CPF", nullable = false)
+  @Column(name = "CPF", nullable = true)
   private String cpf;
 
-  @Column(name = "RG", nullable = false)
+  @Column(name = "RG", nullable = true)
   private String rg;
 
-  @Column(name = "data_emissão_rg", nullable = false)
+  @Column(name = "data_emissão_rg", nullable = true)
   private LocalDate dataEmissaoRg;
 
-  @Column(name = "orgao_emissor_rg", nullable = false)
+  @Column(name = "orgao_emissor_rg", nullable = true)
   private String orgaoEmissorRg;
 
-  @Column(name = "CNS", nullable = false)
+  @Column(name = "CNS", nullable = true)
   private String cns;
 
-  @Column(name = "NIS", nullable = false)
+  @Column(name = "NIS", nullable = true)
   private String nis;
 
-  @Column(name = "data_cadastramento", nullable = false)
+  @Column(name = "data_cadastramento", nullable = true)
   private LocalDate dataCadastramento;
 
   @OneToMany(mappedBy = "pessoa", cascade = CascadeType.ALL)

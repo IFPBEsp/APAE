@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import CadastroUm from "../components/CadastroUm";
-import CadastroDois from "../components/CadastroDois";
+import CadastroDois, { FullFormData } from "../components/CadastroDois";
 import CadastroTres from "../components/CadastroTres";
 
 export default function CadastroPage() {
@@ -10,6 +10,32 @@ export default function CadastroPage() {
   const [etapa, setEtapa] = useState(1);
   const [token, setToken] = useState("");
   const [hasToken, setHasToken] = useState(false);
+  const [formData, setFormData] = useState<FullFormData>({
+    vacinacoesRequests: [{ nome: "", dataAplicacao: "" }],
+    deficienciasRequests: [{ descricao: "", file: undefined }],
+    atendimentosRequests: [{ descricao: "", file: undefined }],
+    cadastrosAnuaisRequests: [{
+      beneficioDePrestacaoContinuada: false,
+      historicosAlergias: "",
+      medicacoesContinuas: "",
+      historicoDoencas: "",
+      rendaFamiliar: 0
+    }],
+    responsaveisRequests: [
+      {
+        nome: "",
+        ondeProcurar: "",
+        vivo: true,
+        profissao: "",
+        rg: "",
+        cpf: "",
+        emergencia: "",
+        tipoResponsavel: "",
+      }
+    ]
+  });
+
+
 
   useEffect(() => {
     const storedToken = localStorage.getItem("authToken");
@@ -63,8 +89,8 @@ export default function CadastroPage() {
       ) : (
         <>
           {etapa === 1 && <CadastroUm onNext={proximaEtapa} />}
-          {etapa === 2 && <CadastroDois onNext={proximaEtapa} onBack={etapaAnterior} />}
-          {etapa === 3 && <CadastroTres onBack={etapaAnterior} />}
+          {etapa === 2 && <CadastroDois onNext={proximaEtapa} onBack={etapaAnterior} formData={formData} setFormData={setFormData} />}
+          {etapa === 3 && <CadastroTres onBack={etapaAnterior} formData={formData} />}
         </>
       )}
     </div>

@@ -10,9 +10,11 @@ spring:
         jwt:
           issuer-uri: ${issuer_uri}
           jwk_set_uri: ${jwk_set_uri}
+  mvc:
+    dispatch-options-request: true
 
 minio:
-  endpoint: http://localhost:9000
+  endpoint: http://localhost:9001
   accessKey: minioadmin
   secretKey: minioadmin
 

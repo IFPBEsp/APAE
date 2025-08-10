@@ -3,7 +3,7 @@ server:
 
 url_login_token: http://localhost:8080/realms/org-apae/protocol/openid-connect/token
 client_id: client-apae
-client_secret: F2PF1PiHZ4uyy4T0yojEDH4D33fIoDnW
+client_secret: d7CiQVy4dAtJynk9OQ5vEPkh9m5XEHyg
 issuer_uri: http://localhost:8080/realms/org-apae
 
 spring:
