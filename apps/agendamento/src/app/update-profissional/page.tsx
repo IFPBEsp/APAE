@@ -1,147 +1,166 @@
 "use client";
 
-import React, { useState } from "react";
-import styles from "./page.module.css";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
+import { useForm } from "react-hook-form";
 
-const CadastroProfissional = () => {
-  const [formData, setFormData] = useState({
-    nomeCompleto: "",
-    email: "",
-    areaSaude: "",
-    fiscalidade: "",
-    documentoProfissional: "",
-    cpf: "",
-    telefone: "",
+type FormData = {
+  nomeCompleto: string;
+  email: string;
+  documentoProfissional: string;
+  areaSaude: string;
+  cpf: string;
+  telefone: string;
+};
+
+export default function AtualizarProfissional() {
+  const form = useForm<FormData>({
+    defaultValues: {
+      nomeCompleto: "",
+      email: "",
+      documentoProfissional: "",
+      areaSaude: "",
+      cpf: "",
+      telefone: "",
+    },
   });
 
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
-  };
-
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    console.log("Dados salvos:", formData);
+  const onSubmit = (data: FormData) => {
+    console.log("Dados salvos:", data);
   };
 
   return (
-    <div className={styles.appContainer}>
-      <div className={styles.mainContent}>
-        <header className={styles.header}>
-          <h1>Atualizar Profissional</h1>
-        </header>
+    <div className="p-6">
+      <h1 className="text-2xl font-bold mb-6">Atualizar Profissional</h1>
 
-        <form onSubmit={handleSubmit} className={styles.form}>
-          <section className={styles.formSection}>
-            <h2>Dados gerais</h2>
+      <Form {...form}>
+        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6 max-w-2xl">
+          <FormField
+            control={form.control}
+            name="nomeCompleto"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Nome completo</FormLabel>
+                <FormControl>
+                  <Input placeholder="Ex: Maria da Silva" {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
 
-            <div className={styles.formGroup}>
-              <label htmlFor="nomeCompleto">Nome completo</label>
-              <input
-                type="text"
-                id="nomeCompleto"
-                name="nomeCompleto"
-                value={formData.nomeCompleto}
-                onChange={handleChange}
-                placeholder="Ex: Maria da Silva"
-                required
-              />
-            </div>
+          <FormField
+            control={form.control}
+            name="email"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Email</FormLabel>
+                <FormControl>
+                  <Input
+                    type="email"
+                    placeholder="profissional@exemplo.com"
+                    {...field}
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
 
-            <div className={styles.formGroup}>
-              <label htmlFor="email">Email</label>
-              <input
-                type="email"
-                id="email"
-                name="email"
-                value={formData.email}
-                onChange={handleChange}
-                placeholder="Ex: profissional@exemplo.com"
-                required
-              />
-            </div>
+          <div className="grid grid-cols-2 gap-4">
+            <FormField
+              control={form.control}
+              name="documentoProfissional"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Documento profissional</FormLabel>
+                  <FormControl>
+                    <Input placeholder="Ex: CRM/SP 123456" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
 
-            <div className={styles.rowContainer}>
-              <div className={`${styles.formGroup} ${styles.rowItem}`}>
-                <label htmlFor="documentoProfissional">
-                  Documento profissional
-                </label>
-                <input
-                  type="text"
-                  id="documentoProfissional"
-                  name="documentoProfissional"
-                  value={formData.documentoProfissional}
-                  onChange={handleChange}
-                  placeholder="Ex: CRM/SP 123456"
-                  required
-                />
-              </div>
+            <FormField
+              control={form.control}
+              name="areaSaude"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Área da saúde</FormLabel>
+                  <Select onValueChange={field.onChange} value={field.value}>
+                    <FormControl>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Selecione uma opção" />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      <SelectItem value="Medicina">Medicina</SelectItem>
+                      <SelectItem value="Enfermagem">Enfermagem</SelectItem>
+                      <SelectItem value="Fisioterapia">Fisioterapia</SelectItem>
+                      <SelectItem value="Psicologia">Psicologia</SelectItem>
+                      <SelectItem value="Nutrição">Nutrição</SelectItem>
+                    </SelectContent>
+                  </Select>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          </div>
 
-              <div
-                className={`${styles.formGroup} ${styles.rowItem} ${styles.areaSaudeGroup}`}
-              >
-                <label htmlFor="areaSaude">Área da saúde</label>
-                <select
-                  id="areaSaude"
-                  name="areaSaude"
-                  value={formData.areaSaude}
-                  onChange={handleChange}
-                  required
-                >
-                  <option value="">Selecione uma opção</option>
-                  <option value="Medicina">Medicina</option>
-                  <option value="Enfermagem">Enfermagem</option>
-                  <option value="Fisioterapia">Fisioterapia</option>
-                  <option value="Psicologia">Psicologia</option>
-                  <option value="Nutrição">Nutrição</option>
-                </select>
-              </div>
-            </div>
+          <div className="grid grid-cols-2 gap-4">
+            <FormField
+              control={form.control}
+              name="cpf"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>CPF</FormLabel>
+                  <FormControl>
+                    <Input placeholder="123.456.789-00" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
 
-            <div className={styles.fieldsRow}>
-              <div className={`${styles.formGroup} ${styles.fieldColumn}`}>
-                <label htmlFor="cpf">CPF</label>
-                <input
-                  type="text"
-                  id="cpf"
-                  name="cpf"
-                  value={formData.cpf}
-                  onChange={handleChange}
-                  placeholder="Ex: 123.456.789-00"
-                  required
-                />
-              </div>
+            <FormField
+              control={form.control}
+              name="telefone"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Telefone</FormLabel>
+                  <FormControl>
+                    <Input placeholder="(11) 98765-4321" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          </div>
 
-              <div className={`${styles.formGroup} ${styles.fieldColumn}`}>
-                <label htmlFor="telefone">Telefone</label>
-                <input
-                  type="tel"
-                  id="telefone"
-                  name="telefone"
-                  value={formData.telefone}
-                  onChange={handleChange}
-                  placeholder="Ex: (11) 98765-4321"
-                  required
-                />
-              </div>
-            </div>
-          </section>
-
-          <div className={styles.formActions}>
-            <button type="button" className={styles.cancelButton}>
+          <div className="flex justify-end gap-4">
+            <Button type="button" variant="outline">
               Cancelar
-            </button>
-            <button type="submit" className={styles.saveButton}>
-              Salvar
-            </button>
+            </Button>
+            <Button type="submit">Salvar</Button>
           </div>
         </form>
-      </div>
+      </Form>
     </div>
   );
-};
-
-export default CadastroProfissional;
+}
