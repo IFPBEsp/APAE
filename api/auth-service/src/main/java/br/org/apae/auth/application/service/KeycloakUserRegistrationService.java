@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import br.org.apae.auth.api.dto.UserRepresentationDTO;
+import br.org.apae.auth.application.service.exceptions.IncorrectLoginException;
 import br.org.apae.auth.application.service.interfaces.IKeycloakUserRegistrationService;
 import br.org.apae.auth.infrastructure.client.KeycloakAdminClient;
 
@@ -48,7 +49,7 @@ public class KeycloakUserRegistrationService implements IKeycloakUserRegistratio
     try {
       return keycloakClient.getAccessToken(username, password);
     } catch (Exception e) {
-      throw new IllegalArgumentException("Username or password is incorrect.");
+      throw new IncorrectLoginException("Username or password is incorrect.");
     }
   }
 

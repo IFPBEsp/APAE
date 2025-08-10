@@ -4,7 +4,7 @@ server:
 realms_name: master
 url_login_token: http://localhost:8080/realms/${realms_name}/protocol/openid-connect/token
 client_id: client-apae
-client_secret: 4zp5s4iuBv6SboJPhbBPwK9s1SdvIOux
+client_secret: Lr4oyj2p3bb0K0ZBAXWB9og0hphTcOGh
 issuer_uri: http://localhost:8080/realms/${realms_name}
 keycloak_admin_url: http://localhost:8080/admin/realms/${realms_name}
 default_role: admin
