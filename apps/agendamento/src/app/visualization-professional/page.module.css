@@ -305,15 +305,81 @@ body {
   background-color: var(--danger-hover-color);
 }
 
-@media (max-width: 768px) {
+/* "CELULAR" */
+@media (max-width: 600px) {
   .header {
     flex-direction: column;
     align-items: stretch;
+    gap: 0.75rem;
   }
-  
+
+  .primaryButton {
+    width: 100%;
+  }
+
   .controls {
     flex-direction: column;
-    align-items: stretch;
+  }
+
+  .searchWrapper,
+  .selectWrapper {
+    width: 100%;
+  }
+
+  .tableContainer {
+    overflow-x: auto;
+  }
+
+  .table th, 
+  .table td {
+    padding: 0.75rem;
+    font-size: 0.75rem;
+  }
+
+  .modal {
+    padding: 1rem;
+  }
+}
+
+/* "TABLET" */
+
+@media (min-width: 601px) and (max-width: 1024px) {
+  .header {
+    flex-direction: row;
+    flex-wrap: wrap;
+  }
+
+  .primaryButton {
+    padding: 0.5rem 1rem;
+    font-size: 0.85rem;
+  }
+
+  .controls {
+    flex-direction: row;
+    flex-wrap: wrap;
+  }
+
+  .searchWrapper {
+    flex: 1;
+    min-width: 250px;
+  }
+
+  .areaSelect {
+    font-size: 0.85rem;
+  }
+
+  .table th, 
+  .table td {
+    padding: 0.85rem 1rem;
+  }
+}
+
+/* DESKTOP */
+
+@media (min-width: 1025px) {
+  .contentWrapper {
+    max-width: 1400px;
+    margin: 0 auto;
   }
 }
 

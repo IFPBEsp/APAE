@@ -64,7 +64,7 @@ export function AppSidebar() {
                 </Collapsible>
 
                 <SidebarGroup>
-                    <Link href="/visualization-profissional" passHref>
+                    <Link href="/visualization-professional" passHref>
                         <SidebarMenuButton className={'font-base gap-2'}>
                             <IdBadgeIcon size={20} />
                             <span className="text-base">Profissionais da Saúde</span>
