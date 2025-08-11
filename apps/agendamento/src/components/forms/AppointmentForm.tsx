@@ -50,7 +50,6 @@ export function AppointmentForm() {
     setValidationErrors(errors);
 
     if (Object.values(errors).some(Boolean)) {
-      console.error("Por favor, preencha todos os campos obrigatórios.");
       return;
     }
 
