@@ -11,6 +11,7 @@ public final class ProfissionalSaudeMapper {
 
   public static ProfissionalSaudeEntity toEntity(ProfissionalSaude model) {
     return ProfissionalSaudeEntity.builder()
+        .id(model.getId())
         .areaDaSaude(model.getAreaDaSaude())
         .telefone(model.getTelefone())
         .docProfissional(model.getDocProfissional())

@@ -2,6 +2,7 @@ package br.org.apae.profissional_da_saude.api.controller;
 
 import br.org.apae.profissional_da_saude.api.dto.ProfissionalSaudeCreateDTO;
 import br.org.apae.profissional_da_saude.api.dto.ProfissionalSaudeResponseDTO;
+import br.org.apae.profissional_da_saude.api.dto.ProfissionalSaudeUpdateDTO;
 import br.org.apae.profissional_da_saude.application.service.ProfissionalSaudeService;
 import jakarta.validation.Valid;
 
@@ -45,5 +46,10 @@ public class ProfissionalSaudeController {
             .map(ResponseEntity::ok)
             .orElse(ResponseEntity.notFound().build());
   }
-
+  @PutMapping("/{id}")
+  public ResponseEntity<ProfissionalSaudeResponseDTO> update(
+          @PathVariable UUID id,
+          @RequestBody @Valid ProfissionalSaudeUpdateDTO dto) {
+    return ResponseEntity.ok(this.service.update(id, dto));
+  }
 }
