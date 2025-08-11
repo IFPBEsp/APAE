@@ -19,9 +19,9 @@ import * as z from "zod";
 import { useForm } from "react-hook-form";
 import React from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { PrimaryButton } from "@/app/components/ButtonPrimary";
-import { PasswordInput } from "@/app/components/PasswordInputs";
 import Link from "next/link";
+import { PrimaryButton } from "@/components/ButtonPrimary";
+import { PasswordInput } from "@/components/PasswordInputs";
 
 const schema = z
   .object({
