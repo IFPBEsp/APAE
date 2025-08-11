@@ -7,6 +7,6 @@ include(
     "demo",
     "api-crud-pacientes",
     "auth-service",
-    "documentos-digitalizados"
-    "profissional-da-saude"
+    "documentos-digitalizados",
+    "profissional-da-saude",
 )
