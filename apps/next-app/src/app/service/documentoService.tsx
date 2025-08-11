@@ -1,16 +1,43 @@
 import axios from "axios";
 
-const BUCKET_API_URL = "http://localhost:8084/bucket";
-const DOCUMENT_API_URL = "http://localhost:8081/api/v1/documentos-pessoais";
+const API_BASE_URL = "http://localhost:8081/api/documents";
+const TOKEN = process.env.NEXT_PUBLIC_JWT_TOKEN;
 
-const TOKEN =
-  "eyJhbGciOiJSUzI1NiIsInR5cCIgOiAiSldUIiwia2lkIiA6ICIyQ1pDcTd4LTFnTm9FaGlsdUQ2ZERaRWltSFlVaVhzeDExVEtzQ205VURvIn0.eyJleHAiOjE3NTQ4NDkwODEsImlhdCI6MTc1NDg0ODc4MSwianRpIjoib25ydHJvOjYwM2UzOWQ5LTI0MmQtYjY5MS1jODM1LThmNGM0MDljNzcyNSIsImlzcyI6Imh0dHA6Ly9sb2NhbGhvc3Q6ODA4MC9yZWFsbXMvb3JnLWFwYWUiLCJhdWQiOiJhY2NvdW50Iiwic3ViIjoiYzA5M2NiODUtNTUwNS00ZmNjLWJmMTgtMTllY2JmMDIzNTE1IiwidHlwIjoiQmVhcmVyIiwiYXpwIjoiY2xpZW50LWFwYWUiLCJzaWQiOiI3NjkyOGUxMy0wNmM0LTQ5NzMtOWU0Mi04Y2RhNTY1ZTRkNzAiLCJhY3IiOiIxIiwiYWxsb3dlZC1vcmlnaW5zIjpbIi8qIl0sInJlYWxtX2FjY2VzcyI6eyJyb2xlcyI6WyJkZWZhdWx0LXJvbGVzLW9yZy1hcGFlIiwib2ZmbGluZV9hY2Nlc3MiLCJ1bWFfYXV0aG9yaXphdGlvbiJdfSwicmVzb3VyY2VfYWNjZXNzIjp7ImFjY291bnQiOnsicm9sZXMiOlsibWFuYWdlLWFjY291bnQiLCJtYW5hZ2UtYWNjb3VudC1saW5rcyIsInZpZXctcHJvZmlsZSJdfX0sInNjb3BlIjoiZW1haWwgcHJvZmlsZSIsImVtYWlsX3ZlcmlmaWVkIjpmYWxzZSwibmFtZSI6IkpvaG4gRG9lIiwicHJlZmVycmVkX3VzZXJuYW1lIjoiZGVtb19hZG1pbiIsImdpdmVuX25hbWUiOiJKb2huIiwiZmFtaWx5X25hbWUiOiJEb2UiLCJlbWFpbCI6InRlc3RlQHRlc3RlLmNvbSJ9.a1vcEL1km6PmvmhW9oOueUq3WKbdDX3_eHGaGLfJq17B6rubB_MoWLUeJ0JPo77XeVNM1IgXLFF8gIiqPAhv3_QgZFvUV6fXEjSFWNfXvpr05tEhsXdyixfBfOKt9C2kG4Cof2SHoJ2xXeWNUVRM6j_evy32EkoIwPghUGhMYakxc6fmPGotFnQwmo7LFPVMu1wk4P59vRLrNvfBWITRQ09p26QbsQkP8QMS0jT7rnXNaRVi1qKiXHveUA_UgSoBfKmJqoJZ--zTM0EgU_WxPaUXV0FT4_HDEWHt8kHRq-7ruCXz2PFnRVXX0PeyrmadrfE7EJn-S7QPwUkLaQRZig";
+export interface DocumentObjectRequest {
+  patientId: string;
+  year: number;
+  documentCategory: string;
+  documentType: string;
+}
 
-const bucketApi = axios.create({
-  baseURL: BUCKET_API_URL,
+export interface UploadDocumentParams extends DocumentObjectRequest {
+  file: File;
+}
+
+export interface DocumentsResponse {
+  documents: Array<{
+    fileName: string;
+    url: string;
+    createdAt: string;
+  }>;
+}
+
+export interface ListDocumentsParams {
+  patientId: string;
+  category: string;
+  year: number;
+}
+
+export interface ListDocumentsByTypeParams extends ListDocumentsParams {
+  type: string;
+}
+
+
+const api = axios.create({
+  baseURL: API_BASE_URL,
 });
 
-bucketApi.interceptors.request.use(
+api.interceptors.request.use(
   (config) => {
     if (TOKEN) {
       config.headers.Authorization = `Bearer ${TOKEN}`;
@@ -20,53 +47,65 @@ bucketApi.interceptors.request.use(
   (error) => Promise.reject(error)
 );
 
-const documentApi = axios.create({
-  baseURL: DOCUMENT_API_URL,
-});
+export async function createBucket(patientId: string): Promise<void> {
+  await api.post(`/bucket/${patientId}`);
+}
 
-documentApi.interceptors.request.use(
-  (config) => {
-    if (TOKEN) {
-      config.headers.Authorization = `Bearer ${TOKEN}`;
-    }
-    return config;
-  },
-  (error) => Promise.reject(error)
-);
+export async function deleteBucket(patientId: string): Promise<void> {
+  await api.delete(`/bucket/${patientId}`);
+}
 
-/**
- * @param patientId
- * @returns
- */
-export async function verificarBucket(patientId: string): Promise<boolean> {
-  const response = await bucketApi.get<boolean>(`/${patientId}/verificar`);
+export async function uploadDocument(params: UploadDocumentParams): Promise<void> {
+  const { file, ...documentDto } = params;
+  const formData = new FormData();
+
+  const documentBlob = new Blob([JSON.stringify(documentDto)], {
+    type: "application/json",
+  });
+
+  formData.append("document", documentBlob);
+  formData.append("file", file, file.name);
+
+  await api.post("/upload", formData); // NÃO definir Content-Type aqui!
+}
+
+export async function listDocuments(params: ListDocumentsParams): Promise<DocumentsResponse> {
+  const { patientId, ...queryParams } = params;
+  const response = await api.get<DocumentsResponse>(`/${patientId}`, {
+    params: queryParams,
+  });
   return response.data;
 }
 
-/**
- * @param patientId
- */
-export async function criarBucket(patientId: string): Promise<void> {
-  await bucketApi.post(`${patientId}`);
+export async function listDocumentsByType(params: ListDocumentsByTypeParams): Promise<DocumentsResponse> {
+  const { patientId, ...queryParams } = params;
+  const response = await api.get<DocumentsResponse>(`/${patientId}/type`, {
+    params: queryParams,
+  });
+  return response.data;
 }
 
-/**
- * @param patientId
- * @param documentType
- * @param file
- */
-export async function anexarDocumento(
+export async function getDocumentHistory(
   patientId: string,
-  documentType: string,
-  file: File
-): Promise<void> {
-  const formData = new FormData();
-  formData.append("file", file);
-  formData.append("documentType", documentType);
+  category: string,
+  type: string
+): Promise<DocumentsResponse> {
+  const response = await api.get<DocumentsResponse>(`/${patientId}/history`, {
+    params: { category, type },
+  });
+  return response.data;
+}
 
-  await documentApi.post(`/${patientId}`, formData, {
-    headers: {
-      "Content-Type": "multipart/form-data",
-    },
+export async function viewDocumentAsImage(patientId: string, path: string): Promise<Blob> {
+  const response = await api.get(`/${patientId}/view`, {
+    params: { path },
+    responseType: 'blob',
+  });
+  return response.data;
+}
+
+export async function deleteDocument(patientId: string, fileName: string): Promise<void> {
+  await api.delete(`/${patientId}/delete`, {
+    params: { fileName },
   });
 }

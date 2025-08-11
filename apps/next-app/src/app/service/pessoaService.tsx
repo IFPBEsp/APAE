@@ -1,9 +1,8 @@
 import axios from "axios";
 
-const API_BASE_URL = "http://localhost:8086/pessoas";
+const API_BASE_URL = "http://localhost:8086/";
 
-const TOKEN =
-  "eyJhbGciOiJSUzI1NiIsInR5cCIgOiAiSldUIiwia2lkIiA6ICIyQ1pDcTd4LTFnTm9FaGlsdUQ2ZERaRWltSFlVaVhzeDExVEtzQ205VURvIn0.eyJleHAiOjE3NTQ4NDkwODEsImlhdCI6MTc1NDg0ODc4MSwianRpIjoib25ydHJvOjYwM2UzOWQ5LTI0MmQtYjY5MS1jODM1LThmNGM0MDljNzcyNSIsImlzcyI6Imh0dHA6Ly9sb2NhbGhvc3Q6ODA4MC9yZWFsbXMvb3JnLWFwYWUiLCJhdWQiOiJhY2NvdW50Iiwic3ViIjoiYzA5M2NiODUtNTUwNS00ZmNjLWJmMTgtMTllY2JmMDIzNTE1IiwidHlwIjoiQmVhcmVyIiwiYXpwIjoiY2xpZW50LWFwYWUiLCJzaWQiOiI3NjkyOGUxMy0wNmM0LTQ5NzMtOWU0Mi04Y2RhNTY1ZTRkNzAiLCJhY3IiOiIxIiwiYWxsb3dlZC1vcmlnaW5zIjpbIi8qIl0sInJlYWxtX2FjY2VzcyI6eyJyb2xlcyI6WyJkZWZhdWx0LXJvbGVzLW9yZy1hcGFlIiwib2ZmbGluZV9hY2Nlc3MiLCJ1bWFfYXV0aG9yaXphdGlvbiJdfSwicmVzb3VyY2VfYWNjZXNzIjp7ImFjY291bnQiOnsicm9sZXMiOlsibWFuYWdlLWFjY291bnQiLCJtYW5hZ2UtYWNjb3VudC1saW5rcyIsInZpZXctcHJvZmlsZSJdfX0sInNjb3BlIjoiZW1haWwgcHJvZmlsZSIsImVtYWlsX3ZlcmlmaWVkIjpmYWxzZSwibmFtZSI6IkpvaG4gRG9lIiwicHJlZmVycmVkX3VzZXJuYW1lIjoiZGVtb19hZG1pbiIsImdpdmVuX25hbWUiOiJKb2huIiwiZmFtaWx5X25hbWUiOiJEb2UiLCJlbWFpbCI6InRlc3RlQHRlc3RlLmNvbSJ9.a1vcEL1km6PmvmhW9oOueUq3WKbdDX3_eHGaGLfJq17B6rubB_MoWLUeJ0JPo77XeVNM1IgXLFF8gIiqPAhv3_QgZFvUV6fXEjSFWNfXvpr05tEhsXdyixfBfOKt9C2kG4Cof2SHoJ2xXeWNUVRM6j_evy32EkoIwPghUGhMYakxc6fmPGotFnQwmo7LFPVMu1wk4P59vRLrNvfBWITRQ09p26QbsQkP8QMS0jT7rnXNaRVi1qKiXHveUA_UgSoBfKmJqoJZ--zTM0EgU_WxPaUXV0FT4_HDEWHt8kHRq-7ruCXz2PFnRVXX0PeyrmadrfE7EJn-S7QPwUkLaQRZig";
+const TOKEN = process.env.NEXT_PUBLIC_JWT_TOKEN;
 
 const api = axios.create({
   baseURL: API_BASE_URL,
@@ -98,7 +97,7 @@ export interface PessoaResponse extends PessoaRequest {
 }
 
 export async function criarPessoa(data: PessoaRequest) {
-  const response = await api.post<PessoaResponse>("", data);
+  const response = await api.post<PessoaResponse>("/pessoas", data);
   return response.data;
 }
 
@@ -119,4 +118,40 @@ export async function atualizarPessoa(id: string, data: PessoaRequest) {
 
 export async function deletarPessoa(id: string) {
   await api.delete(`/${id}`);
+}
+
+// Contato
+export async function criarContato(data: ContatoRequest) {
+  const response = await api.post("/contatos", data);
+  return response.data;
+}
+
+// Vacina
+export async function criarVacina(data: VacinaRequest) {
+  const response = await api.post("/vacinas", data);
+  return response.data;
+}
+
+// Tipo Deficiencia
+export async function criarTipoDeficiencia(data: TipoDeficienciaRequest) {
+  const response = await api.post("/tipo_deficiencia", data);
+  return response.data;
+}
+
+// Tipo Atendimento
+export async function criarTipoAtendimento(data: TipoAtendimentoRequest) {
+  const response = await api.post("/tipo_atendimento", data);
+  return response.data;
+}
+
+// Pessoa Responsavel
+export async function criarPessoaResponsavel(data: PessoaResponsavelRequest) {
+  const response = await api.post("/pessoa_responsavel", data);
+  return response.data;
+}
+
+// Cadastro Anual
+export async function criarCadastroAnual(data: CadastroAnualRequest) {
+  const response = await api.post("/api/cadastros-anual", data);
+  return response.data;
 }

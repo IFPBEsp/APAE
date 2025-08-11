@@ -1,98 +1,182 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import { useState } from "react";
+import { criarCadastroAnual, criarContato, criarPessoa, criarPessoaResponsavel, criarTipoAtendimento, criarTipoDeficiencia, criarVacina, PessoaRequest } from "../service/pessoaService";
+import { createBucket, uploadDocument } from "../service/documentoService";
 import CadastroUm from "../components/CadastroUm";
-import CadastroDois, { FullFormData } from "../components/CadastroDois";
+import CadastroDois from "../components/CadastroDois";
 import CadastroTres from "../components/CadastroTres";
+import CadastroQuatro from "../components/CadastroQuatro";
+
+interface FileStore {
+  [key: string]: File;
+}
 
 export default function CadastroPage() {
+  const [step, setStep] = useState(1);
+  const [isLoading, setIsLoading] = useState(false);
+  const [filesToUpload, setFilesToUpload] = useState<FileStore>({});
 
-  const [etapa, setEtapa] = useState(1);
-  const [token, setToken] = useState("");
-  const [hasToken, setHasToken] = useState(false);
-  const [formData, setFormData] = useState<FullFormData>({
-    vacinacoesRequests: [{ nome: "", dataAplicacao: "" }],
-    deficienciasRequests: [{ descricao: "", file: undefined }],
-    atendimentosRequests: [{ descricao: "", file: undefined }],
-    cadastrosAnuaisRequests: [{
-      beneficioDePrestacaoContinuada: false,
-      historicosAlergias: "",
-      medicacoesContinuas: "",
-      historicoDoencas: "",
-      rendaFamiliar: 0
-    }],
-    responsaveisRequests: [
-      {
-        nome: "",
-        ondeProcurar: "",
-        vivo: true,
-        profissao: "",
-        rg: "",
-        cpf: "",
-        emergencia: "",
-        tipoResponsavel: "",
-      }
-    ]
+  const [pessoaData, setPessoaData] = useState<PessoaRequest>({
+    nomeCompleto: "",
+    dataNascimento: "",
+    numRegistroNasc: "",
+    fls: "",
+    livro: "",
+    cartorio: "",
+    cpf: "",
+    rg: "",
+    dataEmissaoRg: "",
+    orgaoEmissorRg: "",
+    cns: "",
+    nis: "",
+    dataCadastramento: new Date().toISOString().split("T")[0],
+    contatoRequest: {
+      enderecoAtivo: "S",
+      comprovanteResidencia: "",
+      endereco: "",
+      bairro: "",
+      cidade: "",
+      estado: "",
+      cep: "",
+      naturalidade: "",
+    },
+    vacinacoesRequests: [],
+    deficienciasRequests: [],
+    atendimentosRequests: [],
+    responsaveisRequests: [],
+    cadastrosAnuaisRequests: [],
   });
 
+  const nextStep = () => setStep((prev) => prev + 1);
+  const prevStep = () => setStep((prev) => prev - 1);
 
-
-  useEffect(() => {
-    const storedToken = localStorage.getItem("authToken");
-    if (storedToken) {
-      setToken(storedToken);
-      setHasToken(true);
-    }
-  }, []);
-
-  const handleTokenChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setToken(e.target.value);
+  const addFile = (key: string, file: File) => {
+    setFilesToUpload((prev) => ({ ...prev, [key]: file }));
   };
 
-  const handleTokenSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (token.trim()) {
-      localStorage.setItem("authToken", token.trim());
-      setHasToken(true);
+  const handleSubmit = async () => {
+    setIsLoading(true);
+    try {
+      // Criar pessoa
+      const createdPessoa = await criarPessoa(pessoaData);
+      const patientId = createdPessoa.id;
+      console.log(`Pessoa criada com ID: ${patientId}`);
+
+      // Criar contato
+      if (pessoaData.contatoRequest) {
+        await criarContato({ ...pessoaData.contatoRequest, pessoaId: patientId });
+        console.log("Contato criado");
+      }
+
+      // Criar vacinas
+      for (const vacina of pessoaData.vacinacoesRequests) {
+        await criarVacina({ ...vacina, pessoaId: patientId });
+      }
+      console.log("Vacinas criadas");
+
+      // Criar deficiências
+      for (const deficiencia of pessoaData.deficienciasRequests) {
+        await criarTipoDeficiencia({ ...deficiencia, pessoaId: patientId });
+      }
+      console.log("Deficiências criadas");
+
+      // Criar atendimentos
+      for (const atendimento of pessoaData.atendimentosRequests) {
+        await criarTipoAtendimento({ ...atendimento, pessoaId: patientId });
+      }
+      console.log("Atendimentos criados");
+
+      // Criar responsáveis
+      for (const responsavel of pessoaData.responsaveisRequests) {
+        await criarPessoaResponsavel({ ...responsavel, pessoaId: patientId });
+      }
+      console.log("Responsáveis criados");
+
+      // Criar cadastros anuais
+      for (const cadastroAnual of pessoaData.cadastrosAnuaisRequests) {
+        await criarCadastroAnual({ ...cadastroAnual, pessoaId: patientId });
+      }
+      console.log("Cadastros anuais criados");
+
+      // Criar bucket
+      await createBucket(patientId);
+      console.log(`Bucket criado para o paciente ${patientId}`);
+
+      // Fazer upload de arquivos
+      for (const key in filesToUpload) {
+        const file = filesToUpload[key];
+        await uploadDocument({
+          patientId,
+          year: new Date().getFullYear(),
+          documentCategory: "MEDICO",
+          documentType: "LAUDO",
+          file,
+        });
+        console.log(`Arquivo ${key} enviado com sucesso.`);
+      }
+
+      alert("Cadastro realizado com sucesso! ✅");
+      setStep(1);
+    } catch (error) {
+      console.error("Falha no processo de cadastro:", error);
+      alert("❌ Erro ao realizar o cadastro. Verifique o console para mais detalhes.");
+    } finally {
+      setIsLoading(false);
     }
   };
 
-  const proximaEtapa = () => setEtapa((prev) => prev + 1);
-  const etapaAnterior = () => setEtapa((prev) => prev - 1);
+
+  const renderStep = () => {
+    if (isLoading) return <div>Enviando...</div>;
+
+    switch (step) {
+      case 1:
+        return (
+          <CadastroUm
+            data={pessoaData}
+            setData={setPessoaData}
+            addFile={addFile}
+            nextStep={nextStep}
+          />
+        );
+      case 2:
+        return (
+          <CadastroDois
+            data={pessoaData}
+            setData={setPessoaData}
+            addFile={addFile}
+            nextStep={nextStep}
+            prevStep={prevStep}
+          />
+        );
+      case 3:
+        return (
+          <CadastroTres
+            data={pessoaData}
+            setData={setPessoaData}
+            nextStep={nextStep}
+            prevStep={prevStep}
+          />
+        );
+      case 4:
+        return (
+          <CadastroQuatro
+            data={pessoaData}
+            setData={setPessoaData}
+            prevStep={prevStep}
+            handleSubmit={handleSubmit}
+          />
+        );
+      default:
+        return <div>Passo inválido</div>;
+    }
+  };
 
   return (
-    <div className="min-h-screen bg-white p-6 flex flex-col items-center justify-center">
-      {!hasToken ? (
-        <form
-          onSubmit={handleTokenSubmit}
-          className="bg-gray-100 p-8 rounded-lg shadow-md max-w-sm w-full"
-        >
-          <h2 className="text-xl font-bold mb-4 text-center text-blue-900">
-            Informe seu Token de Acesso
-          </h2>
-          <input
-            type="text"
-            name="token"
-            placeholder="Token de acesso"
-            value={token}
-            onChange={handleTokenChange}
-            className="text-black w-full mb-4 p-3 border rounded-lg"
-            autoComplete="off"
-          />
-          <button
-            type="submit"
-            className="w-full bg-blue-800 text-white font-semibold py-3 rounded-lg hover:bg-blue-900"
-          >
-            Acessar
-          </button>
-        </form>
-      ) : (
-        <>
-          {etapa === 1 && <CadastroUm onNext={proximaEtapa} />}
-          {etapa === 2 && <CadastroDois onNext={proximaEtapa} onBack={etapaAnterior} formData={formData} setFormData={setFormData} />}
-          {etapa === 3 && <CadastroTres onBack={etapaAnterior} formData={formData} />}
-        </>
-      )}
+    <div style={{ fontFamily: "sans-serif", padding: "20px" }}>
+      <h1>Formulário de Cadastro em Múltiplas Etapas</h1>
+      {renderStep()}
     </div>
   );
 }
