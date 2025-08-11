@@ -120,3 +120,74 @@
     @apply bg-background text-foreground;
   }
 }
+
+@layer base {
+  :root {
+    --sidebar: oklch(0.985 0 0);
+    --sidebar-foreground: oklch(0.145 0 0);
+    --sidebar-primary: oklch(0.205 0 0);
+    --sidebar-primary-foreground: oklch(0.985 0 0);
+    --sidebar-accent: oklch(0.97 0 0);
+    --sidebar-accent-foreground: oklch(0.205 0 0);
+    --sidebar-border: oklch(0.922 0 0);
+    --sidebar-ring: oklch(0.708 0 0);
+  }
+
+  .dark {
+    --sidebar: oklch(0.205 0 0);
+    --sidebar-foreground: oklch(0.985 0 0);
+    --sidebar-primary: oklch(0.488 0.243 264.376);
+    --sidebar-primary-foreground: oklch(0.985 0 0);
+    --sidebar-accent: oklch(0.269 0 0);
+    --sidebar-accent-foreground: oklch(0.985 0 0);
+    --sidebar-border: oklch(1 0 0 / 10%);
+    --sidebar-ring: oklch(0.439 0 0);
+  }
+}
+
+@media (max-width: 900px) {
+  .mainHeader {
+    flex-direction: column;
+  }
+}
+
+@media (max-width: 550px) {
+  main {
+    padding-top: 40px;
+    padding-left: 5px
+  }
+
+  .mainHeader {
+    align-items: flex-start;
+  }
+
+  .headerButtons {
+    margin-top: 10px;
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .cardsDiv {
+    grid-template-columns: repeat(2, 0fr);
+    gap: 10px;
+  }
+
+  .cards {
+    width: 150px;
+    height: 150px;
+    padding: 4px;
+    justify-items: flex-start;
+    gap: 3px;
+  }
+
+  .cardsIcons {
+    max-width: 15px;
+    max-height: 15px;
+    min-width: 15px;
+    min-height: 15px;
+  }
+
+  .padding10 {
+    padding: 10px;
+  }
+}

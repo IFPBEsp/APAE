@@ -1,4 +1,4 @@
-package br.org.apae.auth.infrastructure.config;
+package br.org.apae.auth.infrastructure.config.security;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -20,14 +20,11 @@ public class SecurityConfig {
         http
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(authorize -> authorize
-                                .requestMatchers(HttpMethod.POST,"/api/auth").permitAll()
-                                .anyRequest().authenticated()
-                        )
-                .oauth2ResourceServer(oauth2 ->
-                        oauth2
-                        .jwt(jwt ->
-                                jwt.jwtAuthenticationConverter(jwtAuthenticationConverter()))
-                );
+                        .requestMatchers(HttpMethod.POST, "/api/auth/signin").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/api/auth/signup").hasAuthority("admin")
+                        .anyRequest().authenticated())
+                .oauth2ResourceServer(oauth2 -> oauth2
+                        .jwt(jwt -> jwt.jwtAuthenticationConverter(jwtAuthenticationConverter())));
         return http.build();
     }
 
