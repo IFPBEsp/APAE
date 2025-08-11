@@ -1,0 +1,57 @@
+package br.org.apae.profissional_da_saude.domain.model;
+
+import java.util.UUID;
+
+public class ProfissionalSaude {
+  private UUID id;
+  private String areaDaSaude;
+  private String telefone;
+  private String docProfissional;
+  private String email;
+  private String nome;
+
+  // TODO: add validação dos atributos
+  public ProfissionalSaude(UUID id, String areaDaSaude, String telefone, String docProfissional, String email,
+      String nome) {
+    this.id = id;
+    this.areaDaSaude = areaDaSaude;
+    this.telefone = telefone;
+    this.docProfissional = docProfissional;
+    this.email = email;
+    this.nome = nome;
+  }
+
+  // TODO: add validação dos atributos
+  public ProfissionalSaude(String areaDaSaude, String telefone, String docProfissional, String email,
+      String nome) {
+    this.areaDaSaude = areaDaSaude;
+    this.telefone = telefone;
+    this.docProfissional = docProfissional;
+    this.email = email;
+    this.nome = nome;
+  }
+
+  public UUID getId() {
+    return id;
+  }
+
+  public String getAreaDaSaude() {
+    return areaDaSaude;
+  }
+
+  public String getTelefone() {
+    return telefone;
+  }
+
+  public String getDocProfissional() {
+    return docProfissional;
+  }
+
+  public String getEmail() {
+    return email;
+  }
+
+  public String getNome() {
+    return nome;
+  }
+}
