@@ -1,11 +1,11 @@
-'use client'
+"use client";
 
-import { useState } from 'react'
-import { MoreHorizontal, Edit, Trash2 } from 'lucide-react'
-import { useRouter } from 'next/navigation'
+import { useState } from "react";
+import { MoreHorizontal, Edit, Trash2 } from "lucide-react";
+import { useRouter } from "next/navigation";
 
-import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import {
   Table,
   TableBody,
@@ -13,14 +13,14 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from '@/components/ui/table'
+} from "@/components/ui/table";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '@/components/ui/select'
+} from "@/components/ui/select";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -28,7 +28,7 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu'
+} from "@/components/ui/dropdown-menu";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -39,50 +39,84 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
   AlertDialogTrigger,
-} from '@/components/ui/alert-dialog'
+} from "@/components/ui/alert-dialog";
 
 interface Profissional {
-  id: string
-  nome: string
-  documento: string
-  area: string
-  telefone: string
+  id: string;
+  nome: string;
+  documento: string;
+  area: string;
+  telefone: string;
 }
 
 const mockData: Profissional[] = [
-  { id: '1', nome: 'João', documento: 'CRN: 10644 / CRN-6', area: 'Nutrição', telefone: '(12) 91234-5678' },
-  { id: '2', nome: 'Maria', documento: 'CREFITO: 87654 / SP', area: 'Fisioterapia', telefone: '(11) 98765-4321' },
-  { id: '3', nome: 'Carlos', documento: 'CRM: 54321 / RJ', area: 'Clínico Geral', telefone: '(21) 91234-5678' },
-  { id: '4', nome: 'Ana', documento: 'CRP: 06/12345', area: 'Psicologia', telefone: '(11) 95555-4444' },
-  { id: '5', nome: 'Pedro', documento: 'COREN: 98765 / BA', area: 'Enfermagem', telefone: '(71) 93333-2222' }
-]
+  {
+    id: "1",
+    nome: "João",
+    documento: "CRN: 10644 / CRN-6",
+    area: "Nutrição",
+    telefone: "(12) 91234-5678",
+  },
+  {
+    id: "2",
+    nome: "Maria",
+    documento: "CREFITO: 87654 / SP",
+    area: "Fisioterapia",
+    telefone: "(11) 98765-4321",
+  },
+  {
+    id: "3",
+    nome: "Carlos",
+    documento: "CRM: 54321 / RJ",
+    area: "Clínico Geral",
+    telefone: "(21) 91234-5678",
+  },
+  {
+    id: "4",
+    nome: "Ana",
+    documento: "CRP: 06/12345",
+    area: "Psicologia",
+    telefone: "(11) 95555-4444",
+  },
+  {
+    id: "5",
+    nome: "Pedro",
+    documento: "COREN: 98765 / BA",
+    area: "Enfermagem",
+    telefone: "(71) 93333-2222",
+  },
+];
 
 export default function VisualizationProfessionalPage() {
-  const [profissionais, setProfissionais] = useState<Profissional[]>(mockData)
-  const [searchTerm, setSearchTerm] = useState('')
-  const [areaFilter, setAreaFilter] = useState('all')
-  const router = useRouter()
+  const [profissionais, setProfissionais] = useState<Profissional[]>(mockData);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [areaFilter, setAreaFilter] = useState("all");
+  const router = useRouter();
 
   const handleAddNew = () => {
-    router.push('/agendamento/add-professional')  
-  }
+    // router.push(CAMINHO PARA TELA DE CADASTRO)
+  };
 
   const handleEdit = (id: string) => {
-    router.push(`/update-profissional/${id}`) 
-  }
+    router.push(`/update-profissional/${id}`);
+  };
 
   const handleDeleteConfirm = (id: string) => {
-    setProfissionais((prev) => prev.filter((p) => p.id !== id))
-  }
+    setProfissionais((prev) => prev.filter((p) => p.id !== id));
+  };
 
   const filteredProfissionais = profissionais.filter((prof) => {
-    const matchesSearch = prof.nome.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                          prof.documento.toLowerCase().includes(searchTerm.toLowerCase())
-    const matchesArea = areaFilter === 'all' || prof.area === areaFilter
-    return matchesSearch && matchesArea
-  })
+    const matchesSearch =
+      prof.nome.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      prof.documento.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesArea = areaFilter === "all" || prof.area === areaFilter;
+    return matchesSearch && matchesArea;
+  });
 
-  const uniqueAreas = ['all', ...Array.from(new Set(mockData.map((p) => p.area)))]
+  const uniqueAreas = [
+    "all",
+    ...Array.from(new Set(mockData.map((p) => p.area))),
+  ];
 
   return (
     <div className="w-full bg-background p-4 md:p-6 lg:p-8">
@@ -111,7 +145,7 @@ export default function VisualizationProfessionalPage() {
             <SelectContent>
               {uniqueAreas.map((area) => (
                 <SelectItem key={area} value={area}>
-                  {area === 'all' ? 'Todas as Áreas' : area}
+                  {area === "all" ? "Todas as Áreas" : area}
                 </SelectItem>
               ))}
             </SelectContent>
@@ -138,7 +172,9 @@ export default function VisualizationProfessionalPage() {
                     <TableCell className="font-medium">{prof.nome}</TableCell>
                     <TableCell>{prof.documento}</TableCell>
                     <TableCell>{prof.area}</TableCell>
-                    <TableCell className="hidden md:table-cell">{prof.telefone}</TableCell>
+                    <TableCell className="hidden md:table-cell">
+                      {prof.telefone}
+                    </TableCell>
                     <TableCell className="text-right">
                       <AlertDialog>
                         <DropdownMenu>
@@ -150,7 +186,9 @@ export default function VisualizationProfessionalPage() {
                           </DropdownMenuTrigger>
                           <DropdownMenuContent align="end">
                             <DropdownMenuLabel>Ações</DropdownMenuLabel>
-                            <DropdownMenuItem onClick={() => handleEdit(prof.id)}>
+                            <DropdownMenuItem
+                              onClick={() => handleEdit(prof.id)}
+                            >
                               <Edit className="mr-2 h-4 w-4" />
                               Editar
                             </DropdownMenuItem>
@@ -166,14 +204,23 @@ export default function VisualizationProfessionalPage() {
 
                         <AlertDialogContent>
                           <AlertDialogHeader>
-                            <AlertDialogTitle>Você tem certeza?</AlertDialogTitle>
+                            <AlertDialogTitle>
+                              Você tem certeza?
+                            </AlertDialogTitle>
                             <AlertDialogDescription>
-                              Esta ação não pode ser desfeita. Isso irá excluir permanentemente o profissional <strong className="font-medium">{prof.nome}</strong>.
+                              Esta ação não pode ser desfeita. Isso irá excluir
+                              permanentemente o profissional{" "}
+                              <strong className="font-medium">
+                                {prof.nome}
+                              </strong>
+                              .
                             </AlertDialogDescription>
                           </AlertDialogHeader>
                           <AlertDialogFooter>
                             <AlertDialogCancel>Cancelar</AlertDialogCancel>
-                            <AlertDialogAction onClick={() => handleDeleteConfirm(prof.id)}>
+                            <AlertDialogAction
+                              onClick={() => handleDeleteConfirm(prof.id)}
+                            >
                               Excluir
                             </AlertDialogAction>
                           </AlertDialogFooter>
@@ -194,5 +241,5 @@ export default function VisualizationProfessionalPage() {
         </div>
       </div>
     </div>
-  )
+  );
 }

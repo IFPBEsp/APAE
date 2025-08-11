@@ -30,10 +30,13 @@ export type FormData = {
 
 type Props = {
   dadosIniciais: FormData;
-  onCancel: () => void;  // Função para cancelar (ex: voltar para lista)
+  onCancel: () => void; // Função para cancelar (ex: voltar para lista)
 };
 
-export default function AtualizarProfissional({ dadosIniciais, onCancel }: Props) {
+export default function AtualizarProfissional({
+  dadosIniciais,
+  onCancel,
+}: Props) {
   const form = useForm<FormData>({
     defaultValues: dadosIniciais,
   });
@@ -48,7 +51,10 @@ export default function AtualizarProfissional({ dadosIniciais, onCancel }: Props
       <h1 className="text-2xl font-bold mb-6">Atualizar Profissional</h1>
 
       <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6 max-w-2xl">
+        <form
+          onSubmit={form.handleSubmit(onSubmit)}
+          className="space-y-6 max-w-2xl"
+        >
           <FormField
             control={form.control}
             name="nomeCompleto"
