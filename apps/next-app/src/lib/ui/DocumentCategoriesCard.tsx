@@ -22,7 +22,7 @@ const DocumentCategoriesCard: React.FC<DocumentCategoriesCardProps> = ({
   ],
 }) => {
   return (
-    <div className="rounded-4xl bg-[#0D4F97] p-6 text-white w-full max-w-[500px] mx-auto">
+    <div className="rounded-4xl bg-[#0D4F97] p-6 text-white w-full mx-auto">
       <h2 className="text-center text-2xl font-semibold mb-4">Documentos</h2>
 
       <div className="flex justify-around gap-2 flex-wrap">
