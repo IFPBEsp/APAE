@@ -2,6 +2,7 @@ package br.org.apae.auth.api.controller;
 
 import br.org.apae.auth.api.dto.LoginRequestDTO;
 import br.org.apae.auth.api.dto.SignUpRequestDTO;
+import br.org.apae.auth.api.dto.TokenResponseDTO;
 import br.org.apae.auth.application.service.interfaces.IKeycloakUserRegistrationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -16,34 +17,28 @@ public class AuthController {
     private final IKeycloakUserRegistrationService keycloakUserRegistrationService;
 
     @Autowired
-    public AuthController(
-            @Qualifier("keycloakUserRegistrationService") IKeycloakUserRegistrationService keycloakUserRegistrationService) {
+    public AuthController(@Qualifier("keycloakUserRegistrationService") IKeycloakUserRegistrationService keycloakUserRegistrationService) {
         this.keycloakUserRegistrationService = keycloakUserRegistrationService;
     }
 
     @PostMapping("/signin")
-    public ResponseEntity<String> login(@RequestBody LoginRequestDTO loginRequestDto) {
-        var obj = keycloakUserRegistrationService.login(
-                loginRequestDto.username(),
-                loginRequestDto.password()
-        );
+    public ResponseEntity<TokenResponseDTO> login(@RequestBody LoginRequestDTO loginRequestDto) {
+        TokenResponseDTO obj = keycloakUserRegistrationService.login(loginRequestDto);
 
-        return ResponseEntity.ok(obj);
+        return ResponseEntity.status(HttpStatus.OK).body(obj);
     }
 
     @PostMapping("/signup")
     public ResponseEntity<Void> signUp(
         @RequestBody SignUpRequestDTO signUpRequestDto,
-        @RequestHeader("Authorization") String authorizationHeader) {
-
+        @RequestHeader("Authorization") String authorizationHeader
+    ) {
         String token = authorizationHeader.replace("Bearer ", "");
 
         keycloakUserRegistrationService.registerUser(
-                signUpRequestDto.cpf(),
-                signUpRequestDto.password(),
-                signUpRequestDto.email(),
-                signUpRequestDto.fullName(),
-                token);
+            signUpRequestDto,
+            token
+        );
         
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }

@@ -8,4 +8,5 @@ include(
     "api-crud-pacientes",
     "auth-service",
     "documentos-digitalizados"
+    "profissional-da-saude"
 )
