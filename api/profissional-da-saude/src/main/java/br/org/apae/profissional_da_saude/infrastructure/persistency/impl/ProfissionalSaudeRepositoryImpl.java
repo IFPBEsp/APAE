@@ -28,41 +28,44 @@ public class ProfissionalSaudeRepositoryImpl implements ProfissionalSaudeReposit
   @Override
   public ProfissionalSaude save(ProfissionalSaude profissionalSaude) {
     return toModel(
-            repositoryJpa.save(
+            this.repositoryJpa.save(
                     toEntity(profissionalSaude)));
   }
 
   @Override
   public Page<ProfissionalSaude> findAll(Pageable pageable) {
-    return repositoryJpa.findAll(pageable)
+    return this.repositoryJpa.findAll(pageable)
             .map(ProfissionalSaudeMapper::toModel);
   }
 
   @Override
   public Optional<ProfissionalSaude> findById(UUID id) {
-    return repositoryJpa.findById(id)
+    return this.repositoryJpa.findById(id)
             .map(ProfissionalSaudeMapper::toModel);
   }
 
   @Override
   public ProfissionalSaude update(ProfissionalSaude profissionalSaude) {
-    // TODO: Implementar método
-    return null;
+    return ProfissionalSaudeMapper.toModel(
+           this.repositoryJpa.save(
+                    ProfissionalSaudeMapper.toEntity(profissionalSaude)
+            )
+    );
   }
 
   @Override
   public void deleteById(UUID id) {
-    repositoryJpa.deleteById(id);
+    this.repositoryJpa.deleteById(id);
   }
 
   @Override
   public boolean existsByEmail(String email) {
-    return repositoryJpa.existsByEmail(email);
+    return this.repositoryJpa.existsByEmail(email);
   }
 
   @Override
   public boolean existsByDocProfissional(String docProfissional) {
-    return repositoryJpa.existsByDocProfissional(docProfissional);
+    return this.repositoryJpa.existsByDocProfissional(docProfissional);
   }
 
 }
