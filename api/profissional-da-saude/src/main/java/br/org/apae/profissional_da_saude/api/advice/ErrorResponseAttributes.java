@@ -1,4 +1,4 @@
-package br.org.apae.profissional_da_saude.api.exception;
+package br.org.apae.profissional_da_saude.api.advice;
 
 public class ErrorResponseAttributes {
     private ErrorResponseAttributes() {
