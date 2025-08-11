@@ -12,6 +12,7 @@ import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestClient;
 
 import br.org.apae.auth.api.dto.RoleRepresentationDTO;
+import br.org.apae.auth.api.dto.TokenResponseDTO;
 import br.org.apae.auth.api.dto.UserRepresentationDTO;
 import br.org.apae.auth.infrastructure.util.RestClientExecutor;
 
@@ -28,7 +29,8 @@ public class KeycloakAdminClient {
       @Value("${keycloak_admin_url}") String keycloakAdminUrl,
       @Value("${client_id}") String clientId,
       @Value("${client_secret}") String clientSecret,
-      @Value("${url_login_token}") String urlLoginToken) {
+      @Value("${url_login_token}") String urlLoginToken
+  ) {
     this.restClient = restClient;
     this.keycloakAdminUrl = keycloakAdminUrl;
     this.urlLoginToken = urlLoginToken;
@@ -36,127 +38,173 @@ public class KeycloakAdminClient {
     this.clientSecret = clientSecret;
   }
 
-  public boolean userExistsByUsername(String username, String token) {
-    String url = String.format("%s/users?username=%s", keycloakAdminUrl, username);
+  private HttpHeaders getHeadersWithToken(String token) {
+    HttpHeaders headers = new HttpHeaders();
+    headers.setBearerAuth(token);
+    headers.setContentType(MediaType.APPLICATION_JSON);
+    return headers;
+  }
 
-    UserRepresentationDTO[] users = RestClientExecutor.execute(() ->
+  private UserRepresentationDTO[] getUsersByQuery(String query, String token) {
+    String url = String.format("%s/users?%s", keycloakAdminUrl, query);
+
+    return doGet(
+      url,
+      token,
+      UserRepresentationDTO[].class,
+      "Buscando usuários por query"
+    );
+  }
+
+  private <T> T doGet(String url, String token, Class<T> responseType, String action) {
+    return RestClientExecutor.execute(() ->
       restClient.get()
         .uri(url)
         .headers(h -> h.addAll(getHeadersWithToken(token)))
         .retrieve()
-        .body(UserRepresentationDTO[].class),
-        "Buscando usuário por username"
+        .body(responseType),
+        action
       );
-
-    return users != null && users.length > 0;
   }
 
-  public boolean userExistsByEmail(String email, String token) {
-    String url = String.format("%s/users?email=%s", keycloakAdminUrl, email);
-    UserRepresentationDTO[] users = RestClientExecutor.execute(() ->
-      restClient.get()
+  private <T> T doPost(String url, Object body, MediaType contentType, Class<T> responseType, String action) {
+    return RestClientExecutor.execute(() ->
+      restClient.post()
+        .uri(url)
+        .contentType(contentType)
+        .body(body)
+        .retrieve()
+        .body(responseType),
+        action
+      );
+  }
+
+  private <T> T doPostWithToken(String url, String token, Object body, MediaType contentType, Class<T> responseType, String action) {
+    return RestClientExecutor.execute(() ->
+      restClient.post()
         .uri(url)
         .headers(h -> h.addAll(getHeadersWithToken(token)))
+        .contentType(contentType)
+        .body(body)
         .retrieve()
-        .body(UserRepresentationDTO[].class),
-        "Buscando usuário por email"
-      );
-    return users != null && users.length > 0;
+        .body(responseType),
+        action
+    );
   }
 
-  public String createUser(UserRepresentationDTO user, String password, String token) {
-    String createUserUrl = keycloakAdminUrl + "/users";
-
+  private void doPostNoBody(String url, String token, Object body, String action) {
     RestClientExecutor.execute(() ->
       restClient.post()
-        .uri(createUserUrl)
-        .headers(h -> h.addAll(getHeadersWithToken(token)))
-        .body(user)
-        .retrieve()
-        .toBodilessEntity(),
-        "Criando usuário no Keycloak"
-    );
-
-    String url = keycloakAdminUrl + "/users?username=" + user.username();
-    UserRepresentationDTO[] foundUser = RestClientExecutor.execute(() ->
-      restClient.get()
-        .uri(url)
-        .headers(h -> h.addAll(getHeadersWithToken(token)))
-        .retrieve()
-        .body(UserRepresentationDTO[].class),
-        "Buscar usuário por username"
+      .uri(url)
+      .headers(h -> h.addAll(getHeadersWithToken(token)))
+      .body(body)
+      .retrieve()
+      .toBodilessEntity(),
+      action
       );
-
-      String userId = foundUser[0].id();
-
-      Map<String, Object> credentials = Map.of(
-          "type", "password",
-          "value", password,
-          "temporary", false
+  }
+  
+  private void doPutNoBody(String url, String token, Object body, String action) {
+    RestClientExecutor.execute(() ->
+      restClient.put()
+      .uri(url)
+      .headers(h -> h.addAll(getHeadersWithToken(token)))
+      .body(body)
+      .retrieve()
+      .toBodilessEntity(),
+      action
       );
-
-      RestClientExecutor.execute(() ->
-        restClient.put()
-          .uri(keycloakAdminUrl + "/users/" + userId + "/reset-password")
-          .headers(h -> h.addAll(getHeadersWithToken(token)))
-          .body(credentials)
-          .retrieve()
-          .toBodilessEntity(),
-          "Definindo senha do usuário"
-      );
-      
-    return userId;
   }
 
-  public String getAccessToken(String username, String password) {
+  private MultiValueMap<String, String> getFormData(String username, String password) {
     MultiValueMap<String, String> formData = new LinkedMultiValueMap<>();
     formData.add("grant_type", "password");
     formData.add("username", username);
     formData.add("password", password);
     formData.add("client_id", clientId);
     formData.add("client_secret", clientSecret);
+    return formData;
+  }
+  
+  public boolean userExistsByUsername(String username, String token) {
+    UserRepresentationDTO[] users = getUsersByQuery(
+      String.format("username=%s", username),
+      token
+    );
 
-    return RestClientExecutor.execute(() ->
-      restClient.post()
-        .uri(urlLoginToken)
-        .contentType(MediaType.APPLICATION_FORM_URLENCODED)
-        .body(formData)
-        .retrieve()
-        .body(String.class),
+    return users != null && users.length > 0;
+  }
+
+  public boolean userExistsByEmail(String email, String token) {
+    UserRepresentationDTO[] users = getUsersByQuery(
+      String.format("email=%s", email),
+      token
+    );
+    
+    return users != null && users.length > 0;
+  }
+
+  public String createUser(UserRepresentationDTO user, String password, String token) {
+    String createUserUrl = keycloakAdminUrl + "/users";
+
+    doPostNoBody(createUserUrl, token, user, "Criando usuário no Keycloak");
+
+    UserRepresentationDTO[] foundUser = getUsersByQuery(
+      String.format("username=%s", user.username()),
+      token
+    );
+
+    String userId = foundUser[0].id();
+
+    Map<String, Object> credentials = Map.of(
+        "type", "password",
+        "value", password,
+        "temporary", false
+    );
+
+    doPutNoBody(
+      String.format("%s/users/%s/reset-password",
+      keycloakAdminUrl, userId),
+      token,
+      credentials,
+      "Definindo senha do usuário"
+    );
+      
+    return userId;
+  }
+
+  public TokenResponseDTO getAccessToken(String username, String password) {
+    MultiValueMap<String, String> formData = getFormData(username, password);
+
+    return doPost(
+        urlLoginToken,
+        formData,
+        MediaType.APPLICATION_FORM_URLENCODED,
+        TokenResponseDTO.class,
         "Realizando login"
-      );
+    );
   }
 
   public void assignRealmRole(String userId, String roleName, String token) {
     String roleUrl = keycloakAdminUrl + "/roles/" + roleName;
 
-    RoleRepresentationDTO role = RestClientExecutor.execute(() ->
-      restClient.get()
-        .uri(roleUrl)
-        .headers(h -> h.addAll(getHeadersWithToken(token)))
-        .retrieve()
-        .body(RoleRepresentationDTO.class),
-        "Buscando role no Keycloak"
-      );
+    RoleRepresentationDTO role = doGet(
+      roleUrl,
+      token,
+      RoleRepresentationDTO.class,
+      "Buscando role no Keycloak"
+    );
 
     List<RoleRepresentationDTO> roles = List.of(role);
     String assignUrl = keycloakAdminUrl + "/users/" + userId + "/role-mappings/realm";
 
-    RestClientExecutor.execute(() ->
-      restClient.post()
-        .uri(assignUrl)
-        .headers(h -> h.addAll(getHeadersWithToken(token)))
-        .body(roles)
-        .retrieve()
-        .toBodilessEntity(),
-        "Atribuindo role ao usuário"
-      );
-  }
-
-  private HttpHeaders getHeadersWithToken(String token) {
-    HttpHeaders headers = new HttpHeaders();
-    headers.setBearerAuth(token);
-    headers.setContentType(MediaType.APPLICATION_JSON);
-    return headers;
+    doPostWithToken(
+      assignUrl,
+      token,
+      roles,
+      MediaType.APPLICATION_JSON,
+      Void.class,
+      "Atribuindo role ao usuário"
+    );
   }
 }
