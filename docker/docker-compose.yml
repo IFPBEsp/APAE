@@ -1,17 +1,20 @@
-# EXEMPLO PARA TESTES
+name: apae
 
 services:
-  demo_db:
+  db:
     image: postgres:15
-    container_name: demo_database
+    container_name: apae-pg
     environment:
-      POSTGRES_DB: demo_db
-      POSTGRES_USER: admin
-      POSTGRES_PASSWORD: admin
+      POSTGRES_DB: apae
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: pass
     ports:
       - "5200:5432"
     volumes:
-      - ./db_data:/var/lib/postgresql/data
+      - apae-pg-data:/var/lib/postgresql/data
+    networks:
+      - apae-network
+    restart: unless-stopped
 
   minio:
     image: quay.io/minio/minio
@@ -27,5 +30,19 @@ services:
     user: "${UID}:${GID}"
     command: server /data --console-address ":9001"
 
+  keycloak:
+    image: quay.io/keycloak/keycloak:22.0.5
+    container_name: keycloak
+    ports:
+      - "8080:8080"
+    environment:
+      - KEYCLOAK_ADMIN=admin
+      - KEYCLOAK_ADMIN_PASSWORD=admin
+    command: ["start-dev"]
+    
 volumes:
-  db_data:
+  apae-pg-data:
+
+networks:
+  apae-network:
+    driver: bridge

@@ -1,4 +1,4 @@
-package br.org.apae.auth.infrastructure.config;
+package br.org.apae.auth.infrastructure.config.security;
 
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.security.core.GrantedAuthority;
@@ -23,7 +23,6 @@ public class KeycloakRealmRoleConverter implements Converter<Jwt, Collection<Gra
         Collection<String> roles = (Collection<String>) realmAccess.get("roles");
 
         return roles.stream()
-                .map(role -> "ROLE_" + role.toUpperCase())
                 .map(SimpleGrantedAuthority::new)
                 .collect(Collectors.toList());
     }
