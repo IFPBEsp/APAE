@@ -1,18 +1,49 @@
-"use client"
+"use client";
 
-import type React from "react"
-
-import { useState } from "react"
+import type React from "react";
+import { useState } from "react";
+import { login } from "../service/loginService";
+import type { LoginPayload, LoginResponse } from "../service/interfaces";
 
 export default function LoginForm() {
-  const [email, setEmail] = useState("josemaria@gmail.com")
-  const [password, setPassword] = useState("••••••••••••")
-  const [showPassword, setShowPassword] = useState(false)
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault()
-    console.log("Login attempt:", { email, password })
-  }
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setError(null);
+    setIsLoading(true);
+
+    try {
+      if (!email || !password) {
+        setError("Por favor, preencha todos os campos.");
+        setIsLoading(false);
+        return;
+      }
+      
+      const payload: LoginPayload = {
+        username: email,
+        password: password,
+      };
+
+      const response: LoginResponse = await login(payload); 
+      console.log("Login bem-sucedido:", response);
+
+      alert("Login bem-sucedido! O token foi retornado.");
+    } catch (err) {
+      console.error("Erro no login:", err);
+      if (err instanceof Error) {
+        setError(err.message);
+      } else {
+        setError("Falha no login. Ocorreu um erro inesperado.");
+      }
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   return (
     <div className="relative z-10 w-full max-w-md mx-auto">
@@ -35,7 +66,7 @@ export default function LoginForm() {
               id="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="w-full px-4 py-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all duration-200"
+              className="w-full px-4 py-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all duration-200 placeholder-gray-400 text-gray-600"
               placeholder="Digite seu email ou CPF"
             />
           </div>
@@ -50,13 +81,13 @@ export default function LoginForm() {
                 id="password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className="w-full px-4 py-3 pr-12 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all duration-200"
+                className="w-full px-4 py-3 pr-12 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all duration-200 placeholder-gray-400 text-gray-600"
                 placeholder="Digite sua senha"
               />
               <button
                 type="button"
                 onClick={() => setShowPassword(!showPassword)}
-                className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-gray-700 transition-colors duration-200"
+                className="absolute right-3 top-1/2 transform -translate-y-1/2 text-black-500 hover:text-gray-700 transition-colors duration-200"
               >
                 {showPassword ? (
                   <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -93,11 +124,21 @@ export default function LoginForm() {
             </a>
           </div>
 
+          {error && (
+            <div className="text-red-500 text-sm text-center">
+              {error}
+            </div>
+          )}
+
           <button
             type="submit"
-            className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-4 rounded-lg transition-colors duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 transition-all duration-200"
+            disabled={isLoading}
+            className={`w-full font-semibold py-3 px-4 rounded-lg transition-colors duration-200 shadow-lg transform transition-all duration-200
+              ${isLoading 
+                ? "bg-blue-400 cursor-not-allowed" 
+                : "bg-blue-600 hover:bg-blue-700 text-white hover:shadow-xl hover:-translate-y-0.5"}`}
           >
-            ENTRAR
+            {isLoading ? "Entrando..." : "ENTRAR"}
           </button>
         </form>
 
@@ -111,5 +152,5 @@ export default function LoginForm() {
         </div>
       </div>
     </div>
-  )
+  );
 }
