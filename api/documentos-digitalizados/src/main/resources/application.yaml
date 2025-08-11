@@ -1,5 +1,6 @@
-issuer_uri: http://localhost:8080/realms/org-apae
-jwk_set_uri: http://localhost:8080/realms/org-apae/protocol/openid-connect/certs
+realms_name: master
+issuer_uri: http://localhost:8080/realms/${realms_name}
+jwk_set_uri: http://localhost:8080/realms/${realms_name}/protocol/openid-connect/certs
 
 spring:
   application:
