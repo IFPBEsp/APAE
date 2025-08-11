@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import { MoreHorizontal, Edit, Trash2 } from 'lucide-react'
+import { useRouter } from 'next/navigation'
 
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -49,26 +50,27 @@ interface Profissional {
 }
 
 const mockData: Profissional[] = [
-    { id: '1', nome: 'João', documento: 'CRN: 10644 / CRN-6', area: 'Nutrição', telefone: '(12) 91234-5678' },
-    { id: '2', nome: 'Maria', documento: 'CREFITO: 87654 / SP', area: 'Fisioterapia', telefone: '(11) 98765-4321' },
-    { id: '3', nome: 'Carlos', documento: 'CRM: 54321 / RJ', area: 'Clínico Geral', telefone: '(21) 91234-5678' },
-    { id: '4', nome: 'Ana', documento: 'CRP: 06/12345', area: 'Psicologia', telefone: '(11) 95555-4444' },
-    { id: '5', nome: 'Pedro', documento: 'COREN: 98765 / BA', area: 'Enfermagem', telefone: '(71) 93333-2222' }
+  { id: '1', nome: 'João', documento: 'CRN: 10644 / CRN-6', area: 'Nutrição', telefone: '(12) 91234-5678' },
+  { id: '2', nome: 'Maria', documento: 'CREFITO: 87654 / SP', area: 'Fisioterapia', telefone: '(11) 98765-4321' },
+  { id: '3', nome: 'Carlos', documento: 'CRM: 54321 / RJ', area: 'Clínico Geral', telefone: '(21) 91234-5678' },
+  { id: '4', nome: 'Ana', documento: 'CRP: 06/12345', area: 'Psicologia', telefone: '(11) 95555-4444' },
+  { id: '5', nome: 'Pedro', documento: 'COREN: 98765 / BA', area: 'Enfermagem', telefone: '(71) 93333-2222' }
 ]
 
 export default function VisualizationProfessionalPage() {
   const [profissionais, setProfissionais] = useState<Profissional[]>(mockData)
   const [searchTerm, setSearchTerm] = useState('')
   const [areaFilter, setAreaFilter] = useState('all')
+  const router = useRouter()
 
   const handleAddNew = () => {
-    console.log('Navegar para a página de adicionar novo profissional')
+    router.push('/agendamento/add-professional')  
   }
 
   const handleEdit = (id: string) => {
-    console.log(`Navegar para a página de edição do profissional ${id}`)
+    router.push(`/update-profissional/${id}`) 
   }
-  
+
   const handleDeleteConfirm = (id: string) => {
     setProfissionais((prev) => prev.filter((p) => p.id !== id))
   }
@@ -79,13 +81,12 @@ export default function VisualizationProfessionalPage() {
     const matchesArea = areaFilter === 'all' || prof.area === areaFilter
     return matchesSearch && matchesArea
   })
-  
+
   const uniqueAreas = ['all', ...Array.from(new Set(mockData.map((p) => p.area)))]
 
   return (
     <div className="w-full bg-background p-4 md:p-6 lg:p-8">
       <div className="mx-auto w-full max-w-[1400px]">
-        
         <header className="mb-8 flex flex-col items-stretch gap-4 md:flex-row md:items-center md:justify-between">
           <h1 className="text-2xl font-semibold text-foreground lg:text-3xl">
             Profissionais da Saúde

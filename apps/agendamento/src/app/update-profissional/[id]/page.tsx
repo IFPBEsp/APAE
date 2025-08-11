@@ -19,7 +19,7 @@ import {
 } from "@/components/ui/form";
 import { useForm } from "react-hook-form";
 
-type FormData = {
+export type FormData = {
   nomeCompleto: string;
   email: string;
   documentoProfissional: string;
@@ -28,20 +28,19 @@ type FormData = {
   telefone: string;
 };
 
-export default function AtualizarProfissional() {
+type Props = {
+  dadosIniciais: FormData;
+  onCancel: () => void;  // Função para cancelar (ex: voltar para lista)
+};
+
+export default function AtualizarProfissional({ dadosIniciais, onCancel }: Props) {
   const form = useForm<FormData>({
-    defaultValues: {
-      nomeCompleto: "",
-      email: "",
-      documentoProfissional: "",
-      areaSaude: "",
-      cpf: "",
-      telefone: "",
-    },
+    defaultValues: dadosIniciais,
   });
 
   const onSubmit = (data: FormData) => {
     console.log("Dados salvos:", data);
+    // Aqui você pode chamar uma API para atualizar os dados no backend
   };
 
   return (
@@ -154,7 +153,7 @@ export default function AtualizarProfissional() {
           </div>
 
           <div className="flex justify-end gap-4">
-            <Button type="button" variant="outline">
+            <Button type="button" variant="outline" onClick={onCancel}>
               Cancelar
             </Button>
             <Button type="submit">Salvar</Button>
