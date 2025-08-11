@@ -12,7 +12,7 @@ import {
 } from "@/components/ui/sidebar";
 import { GiHealthNormal } from "react-icons/gi";
 import { FaUserMd, FaUserCog } from "react-icons/fa";
-import { ClockIcon, TasklistIcon, CalendarIcon, ChevronDownIcon } from '@primer/octicons-react';
+import { ClockIcon, TasklistIcon, CalendarIcon, ChevronDownIcon, IdBadgeIcon } from '@primer/octicons-react';
 import styles from "./sidebar.module.css";
 import Image from "next/image";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "../ui/collapsible";
@@ -96,6 +96,16 @@ export function AppSidebar() {
                     </Collapsible>
 
                 </SidebarGroup>
+
+                <SidebarGroup>
+                    <Link href="/visualization-professional" passHref>
+                        <SidebarMenuButton className={'font-base gap-2'}>
+                            <IdBadgeIcon size={20} />
+                            <span className="text-base">Profissionais da Saúde</span>
+                        </SidebarMenuButton>
+                    </Link>
+                </SidebarGroup>
+
             </SidebarContent>
             <SidebarFooter />
         </Sidebar>
