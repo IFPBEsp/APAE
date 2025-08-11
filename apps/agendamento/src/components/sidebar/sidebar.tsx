@@ -8,11 +8,10 @@ import {
     SidebarHeader,
     SidebarMenu,
     SidebarMenuButton,
-    
     SidebarMenuItem
 } from "@/components/ui/sidebar";
 import { GiHealthNormal } from "react-icons/gi";
-import { FaUserMd, FaUserCog  } from "react-icons/fa";
+import { FaUserMd, FaUserCog } from "react-icons/fa";
 import { ClockIcon, TasklistIcon, CalendarIcon, ChevronDownIcon } from '@primer/octicons-react';
 import styles from "./sidebar.module.css";
 import Image from "next/image";
@@ -36,10 +35,12 @@ export function AppSidebar() {
                 </div>
             </SidebarHeader>
             <SidebarContent>
-                <Collapsible defaultOpen={false} className="group/collapsible">
-                    <SidebarGroup>
+                <SidebarGroup>
+                    
+                    {/* Profissional de Saúde */}
+                    <Collapsible defaultOpen={false} className="group/collapsible">
                         <SidebarGroupLabel asChild>
-                            <CollapsibleTrigger className={'font-base gap-2'}>
+                            <CollapsibleTrigger className="font-base gap-2">
                                 <GiHealthNormal size={20} />
                                 <span className="text-base">Profissional de Saúde</span>
                                 <ChevronDownIcon size={16} className="ml-auto transition-transform group-data-[state=open]/collapsible:rotate-180" />
@@ -49,24 +50,28 @@ export function AppSidebar() {
                             <SidebarMenu>
                                 <SidebarMenuItem>
                                     <Link href="/register-profissional">
-                                        <SidebarMenuButton className={'pl-8'}>
+                                        <SidebarMenuButton className="pl-8">
                                             <FaUserMd size={16} />
                                             <span className="text-base">Cadastrar Profissional</span>
                                         </SidebarMenuButton>
                                     </Link>
-                                    
                                 </SidebarMenuItem>
+                                <SidebarMenuItem>
                                     <Link href="/update-profissional">
-                                        <SidebarMenuButton className={'pl-8'}>
-                                        <FaUserCog size={16} />
-                                        <span className="text-base">Atualizar Profissional</span>
+                                        <SidebarMenuButton className="pl-8">
+                                            <FaUserCog size={16} />
+                                            <span className="text-base">Atualizar Profissional</span>
                                         </SidebarMenuButton>
                                     </Link>
+                                </SidebarMenuItem>
                             </SidebarMenu>
                         </CollapsibleContent>
+                    </Collapsible>
 
+                    {/* Agendamentos */}
+                    <Collapsible defaultOpen={false} className="group/collapsible">
                         <SidebarGroupLabel asChild>
-                            <CollapsibleTrigger className={'font-base gap-2'}>
+                            <CollapsibleTrigger className="font-base gap-2">
                                 <ClockIcon size={20} />
                                 <span className="text-base">Agendamentos</span>
                                 <ChevronDownIcon size={16} className="ml-auto transition-transform group-data-[state=open]/collapsible:rotate-180" />
@@ -75,21 +80,22 @@ export function AppSidebar() {
                         <CollapsibleContent>
                             <SidebarMenu>
                                 <SidebarMenuItem>
-                                    <SidebarMenuButton className={'pl-8'}>
+                                    <SidebarMenuButton className="pl-8">
                                         <TasklistIcon size={16} />
                                         <span className="text-base">Todos os agendamentos</span>
                                     </SidebarMenuButton>
                                 </SidebarMenuItem>
                                 <SidebarMenuItem>
-                                    <SidebarMenuButton className={'pl-8'}>
+                                    <SidebarMenuButton className="pl-8">
                                         <CalendarIcon size={16} />
                                         <span className="text-base">Calendário</span>
                                     </SidebarMenuButton>
                                 </SidebarMenuItem>
                             </SidebarMenu>
                         </CollapsibleContent>
-                    </SidebarGroup>
-                </Collapsible>
+                    </Collapsible>
+
+                </SidebarGroup>
             </SidebarContent>
             <SidebarFooter />
         </Sidebar>
