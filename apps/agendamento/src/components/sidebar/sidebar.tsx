@@ -37,7 +37,6 @@ export function AppSidebar() {
             <SidebarContent>
                 <SidebarGroup>
                     
-                    {/* Profissional de Saúde */}
                     <Collapsible defaultOpen={false} className="group/collapsible">
                         <SidebarGroupLabel asChild>
                             <CollapsibleTrigger className="font-base gap-2">
@@ -68,7 +67,6 @@ export function AppSidebar() {
                         </CollapsibleContent>
                     </Collapsible>
 
-                    {/* Agendamentos */}
                     <Collapsible defaultOpen={false} className="group/collapsible">
                         <SidebarGroupLabel asChild>
                             <CollapsibleTrigger className="font-base gap-2">
@@ -99,7 +97,7 @@ export function AppSidebar() {
 
                 <SidebarGroup>
                     <Link href="/visualization-professional" passHref>
-                        <SidebarMenuButton className={'font-base gap-2'}>
+                        <SidebarMenuButton className="font-base gap-2">
                             <IdBadgeIcon size={20} />
                             <span className="text-base">Profissionais da Saúde</span>
                         </SidebarMenuButton>
