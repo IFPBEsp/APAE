@@ -14,6 +14,7 @@ import { ClockIcon, TasklistIcon, CalendarIcon, ChevronDownIcon } from '@primer/
 import styles from "./sidebar.module.css";
 import Image from "next/image";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "../ui/collapsible";
+import Link from "next/link";
 
 export function AppSidebar() {
     return (
@@ -44,10 +45,12 @@ export function AppSidebar() {
                         <CollapsibleContent>
                             <SidebarMenu>
                                 <SidebarMenuItem>
-                                    <SidebarMenuButton className={'pl-8'}>
-                                        <TasklistIcon size={16} />
-                                        <span className="text-base">Todos os agendamentos</span>
-                                    </SidebarMenuButton>
+                                    <Link href='/all-appointments' passHref>
+                                        <SidebarMenuButton className={'pl-8'} >
+                                            <TasklistIcon size={16} />
+                                            <span className="text-base">Todos os agendamentos</span>
+                                        </SidebarMenuButton>
+                                    </Link>
                                 </SidebarMenuItem>
                                 <SidebarMenuItem>
                                     <SidebarMenuButton className={'pl-8'}>
