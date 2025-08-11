@@ -55,20 +55,9 @@ export function EditAppointmentForm() {
     setValidationErrors(errors);
 
     if (Object.values(errors).some(Boolean)) {
-      console.error("Por favor, preencha todos os campos obrigatórios.");
       return;
     }
 
-    console.log("Dados de Edição:", {
-      dataHora,
-      paciente,
-      area,
-      periodo,
-      descricao,
-      confirmada,
-      justificativa,
-      realizada
-    });
   };
 
   return (
