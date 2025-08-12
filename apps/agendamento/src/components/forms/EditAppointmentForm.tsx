@@ -11,6 +11,17 @@ import { Textarea } from "@/components/ui/textarea";
 import { Checkbox } from "@/components/ui/checkbox";
 import { cn } from "@/lib/utils";
 
+export interface Appointment {
+  dataHora?: Date;
+  paciente: string;
+  area: string;
+  periodo?: string;
+  descricao?: string;
+  confirmada: boolean;
+  justificativa?: string;
+  realizada: boolean;
+}
+
 const pacientes = [
   { value: "joao-oliveira", label: "João Oliveira" },
   { value: "maria-silva", label: "Maria Silva" },
@@ -23,15 +34,15 @@ const areasDeAtendimento = [
   { value: "fisioterapia", label: "Fisioterapia" },
 ];
 
-export function EditAppointmentForm() {
-  const [dataHora, setDataHora] = useState<Date | undefined>(undefined);
-  const [paciente, setPaciente] = useState<string>("");
-  const [area, setArea] = useState<string>("");
-  const [periodo, setPeriodo] = useState<string>("");
-  const [descricao, setDescricao] = useState<string>("");
-  const [confirmada, setConfirmada] = useState<boolean>(false);
-  const [justificativa, setJustificativa] = useState<string>("");
-  const [realizada, setRealizada] = useState<boolean>(false);
+export function EditAppointmentForm({ appointment }: { appointment?: Appointment }) {
+  const [dataHora, setDataHora] = useState<Date | undefined>(appointment?.dataHora);
+  const [paciente, setPaciente] = useState<string>(appointment?.paciente || "");
+  const [area, setArea] = useState<string>(appointment?.area || "");
+  const [periodo, setPeriodo] = useState<string>(appointment?.periodo || "");
+  const [descricao, setDescricao] = useState<string>(appointment?.descricao || "");
+  const [confirmada, setConfirmada] = useState<boolean>(appointment?.confirmada || false);
+  const [justificativa, setJustificativa] = useState<string>(appointment?.justificativa || "");
+  const [realizada, setRealizada] = useState<boolean>(appointment?.realizada || false);
 
   const [validationErrors, setValidationErrors] = useState({
     dataHora: false,
