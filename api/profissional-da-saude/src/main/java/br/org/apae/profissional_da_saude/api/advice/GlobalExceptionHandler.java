@@ -11,10 +11,6 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import br.org.apae.profissional_da_saude.application.service.exceptions.AgendamentoNaoEncontradoException;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.MethodArgumentNotValidException;
-import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
 import java.util.HashMap;
@@ -65,8 +61,7 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(AgendamentoNaoEncontradoException.class)
-    public ResponseEntity<Map<String, Object>> handleNotFound(AgendamentoNaoEncontradoException ex) {
+    public ResponseEntity<Object> handleNotFound(AgendamentoNaoEncontradoException ex) {
         return buildErrorResponse(ex.getMessage(), null, HttpStatus.NOT_FOUND);
     }
-
 }

@@ -45,41 +45,32 @@ public class ProfissionalSaudeService {
         .map(ProfissionalSaudeMapper::toResponseDTO);
   }
 
-  public void delete(UUID id){
+  public void delete(UUID id) {
     this.repository.deleteById(id);
   }
 
-  public Optional<ProfissionalSaudeResponseDTO> findById(UUID id){
+  public Optional<ProfissionalSaudeResponseDTO> findById(UUID id) {
     return this.repository.findById(id).map(ProfissionalSaudeMapper::toResponseDTO);
   }
+
   public ProfissionalSaudeResponseDTO update(UUID id, ProfissionalSaudeUpdateDTO dto) {
     ProfissionalSaude existente = this.repository.findById(id)
-            .orElseThrow(() -> new EntidadeNaoEncontradaException("Profissional não encontrado"));
-
-
-    if (!existente.getEmail().equals(dto.getEmail()) && this.repository.existsByEmail(dto.getEmail())) {
-      throw new ValidacaoNegocioException("E-mail já cadastrado.");
-    }
-
-    if (!existente.getDocProfissional().equals(dto.getDocProfissional())
-            && this.repository.existsByDocProfissional(dto.getDocProfissional())) {
-      throw new ValidacaoNegocioException("Documento profissional já cadastrado.");
-    }
+        .orElseThrow(() -> new EntidadeNaoEncontradaException("Profissional não encontrado"));
 
     Optional.ofNullable(dto.getAreaDaSaude())
-            .ifPresent(existente::setAreaDaSaude);
+        .ifPresent(existente::setAreaDaSaude);
 
     Optional.ofNullable(dto.getDocProfissional())
-            .ifPresent(existente::setDocProfissional);
+        .ifPresent(existente::setDocProfissional);
 
     Optional.ofNullable(dto.getNome())
-            .ifPresent(existente::setNome);
+        .ifPresent(existente::setNome);
 
     Optional.ofNullable(dto.getEmail())
-            .ifPresent(existente::setEmail);
+        .ifPresent(existente::setEmail);
 
     Optional.ofNullable(dto.getTelefone())
-            .ifPresent(existente::setTelefone);
+        .ifPresent(existente::setTelefone);
 
     ProfissionalSaude saved = this.repository.update(existente);
 

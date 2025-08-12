@@ -36,20 +36,22 @@ public class ProfissionalSaudeController {
   }
 
   @DeleteMapping("/{id}")
-  public ResponseEntity<Void> delete(@PathVariable UUID id){
+  public ResponseEntity<Void> delete(@PathVariable UUID id) {
     this.service.delete(id);
     return ResponseEntity.noContent().build();
   }
+
   @GetMapping("/{id}")
-  public ResponseEntity<ProfissionalSaudeResponseDTO> findById(@PathVariable UUID id){
+  public ResponseEntity<ProfissionalSaudeResponseDTO> findById(@PathVariable UUID id) {
     return service.findById(id)
-            .map(ResponseEntity::ok)
-            .orElse(ResponseEntity.notFound().build());
+        .map(ResponseEntity::ok)
+        .orElse(ResponseEntity.notFound().build());
   }
+
   @PutMapping("/{id}")
   public ResponseEntity<ProfissionalSaudeResponseDTO> update(
-          @PathVariable UUID id,
-          @RequestBody @Valid ProfissionalSaudeUpdateDTO dto) {
+      @PathVariable UUID id,
+      @RequestBody @Valid ProfissionalSaudeUpdateDTO dto) {
     return ResponseEntity.ok(this.service.update(id, dto));
   }
 }

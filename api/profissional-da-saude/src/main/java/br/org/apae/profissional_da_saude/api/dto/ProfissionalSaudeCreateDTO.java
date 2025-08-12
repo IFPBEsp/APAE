@@ -16,11 +16,11 @@ public class ProfissionalSaudeCreateDTO {
     private String areaDaSaude;
 
     @NotBlank
-    @Pattern(regexp = "^$|\\d{10,11}", message = "Telefone inválido")
+    @Pattern(regexp = "^\\(\\d{2}\\) \\d{5}-\\d{4}$", message = "Telefone inválido. Formato esperado: (xx) xxxxx-xxxx")
     private String telefone;
 
     @NotBlank
-    @Size(min = 3, max = 100)
+    @Pattern(regexp = "^(CRM|COREN|CREFITO|CRFa|CRP|CRESS)([-/][A-Z0-9]{1,2}|\\s\\d{2})?\\s?\\d{1,6}$|^[A-Za-z0-9./-]{3,100}$", message = "Documento profissional inválido")
     private String docProfissional;
 
     @Email(message = "E-mail inválido")
@@ -29,7 +29,6 @@ public class ProfissionalSaudeCreateDTO {
     private String email;
 
     @NotBlank
-    @Size(min = 3, max = 100)
+    @Pattern(regexp = "^[A-Za-zÀ-ÖØ-öø-ÿ ]{3,100}$", message = "Nome inválido. Não pode conter números e deve ter entre 3 e 100 caracteres")
     private String nome;
-
 }
