@@ -39,6 +39,7 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from '@/components/ui/alert-dialog'
+import Link from 'next/link'
 
 interface Profissional {
   id: string
@@ -90,9 +91,11 @@ export default function VisualizationProfessionalPage() {
           <h1 className="text-2xl font-semibold text-foreground lg:text-3xl">
             Profissionais da Saúde
           </h1>
-          <Button onClick={handleAddNew} className="md:w-auto bg-[#020617]">
-            Cadastrar Profissional
-          </Button>
+          <Link href="/register-profissional">
+            <Button className="md:w-auto bg-[#020617]">
+              Cadastrar Profissional
+            </Button>
+          </Link>
         </header>
 
         <div className="mb-6 flex flex-col gap-4 md:flex-row">
