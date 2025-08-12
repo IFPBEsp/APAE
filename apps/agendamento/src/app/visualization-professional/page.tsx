@@ -94,7 +94,7 @@ export default function VisualizationProfessionalPage() {
   const router = useRouter();
 
   const handleAddNew = () => {
-    // router.push(CAMINHO PARA TELA DE CADASTRO)
+    router.push("/register-profissional");
   };
 
   const handleEdit = (id: string) => {
@@ -125,7 +125,10 @@ export default function VisualizationProfessionalPage() {
           <h1 className="text-2xl font-semibold text-foreground lg:text-3xl">
             Profissionais da Saúde
           </h1>
-          <Button onClick={handleAddNew} className="md:w-auto bg-[#020617]">
+          <Button
+            className="md:w-auto bg-blue-800 hover:bg-blue-900"
+            onClick={handleAddNew}
+          >
             Cadastrar Profissional
           </Button>
         </header>

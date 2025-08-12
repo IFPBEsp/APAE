@@ -1,5 +1,6 @@
 "use client";
 
+import { useForm } from "react-hook-form";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -17,38 +18,33 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import { useForm } from "react-hook-form";
+import { useRouter } from "next/navigation";
 
-export type FormData = {
-  nomeCompleto: string;
-  email: string;
-  documentoProfissional: string;
-  areaSaude: string;
-  cpf: string;
-  telefone: string;
-};
+export default function CadastroProfissional() {
+  const router = useRouter();
 
-type Props = {
-  dadosIniciais: FormData;
-  onCancel: () => void; // Função para cancelar (ex: voltar para lista)
-};
-
-export default function AtualizarProfissional({
-  dadosIniciais,
-  onCancel,
-}: Props) {
-  const form = useForm<FormData>({
-    defaultValues: dadosIniciais,
+  const form = useForm({
+    defaultValues: {
+      nomeCompleto: "",
+      email: "",
+      documentoProfissional: "",
+      areaSaude: "",
+      cpf: "",
+      telefone: "",
+    },
   });
 
-  const onSubmit = (data: FormData) => {
-    console.log("Dados salvos:", data);
-    // Aqui você pode chamar uma API para atualizar os dados no backend
-  };
+  function onCancel() {
+    router.push("/visualization-professional");
+  }
+
+  function onSubmit(values: any) {
+    console.log("Dados salvos:", values);
+  }
 
   return (
     <div className="p-6">
-      <h1 className="text-2xl font-bold mb-6">Atualizar Profissional</h1>
+      <h1 className="text-2xl font-bold mb-6">Cadastrar Profissional</h1>
 
       <Form {...form}>
         <form
@@ -110,7 +106,7 @@ export default function AtualizarProfissional({
                   <FormLabel>Área da saúde</FormLabel>
                   <Select onValueChange={field.onChange} value={field.value}>
                     <FormControl>
-                      <SelectTrigger>
+                      <SelectTrigger className="w-full">
                         <SelectValue placeholder="Selecione uma opção" />
                       </SelectTrigger>
                     </FormControl>
@@ -163,7 +159,7 @@ export default function AtualizarProfissional({
               Cancelar
             </Button>
             <Button type="submit" className="bg-blue-800 hover:bg-blue-900">
-              Salvar
+              Cadastrar
             </Button>
           </div>
         </form>
