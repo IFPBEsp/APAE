@@ -5,12 +5,9 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import lombok.Getter;
-import lombok.Setter;
 
 @Getter
-@Setter
-public class ProfissionalSaudeCreateDTO {
-
+public class ProfissionalSaudeUpdateDTO {
     @NotBlank
     @Size(min = 3, max = 100)
     private String areaDaSaude;
@@ -20,7 +17,7 @@ public class ProfissionalSaudeCreateDTO {
     private String telefone;
 
     @NotBlank
-    @Pattern(regexp = "^(CRM|COREN|CREFITO|CRFa|CRP|CRESS)([-/][A-Z0-9]{1,2}|\\s\\d{2})?\\s?\\d{1,6}$|^[A-Za-z0-9./-]{3,100}$", message = "Documento profissional inválido")
+    @Pattern(regexp = "^(CRM|COREN|CREFITO|CRFa|CRP|CRESS)([-/][A-Z]{2}|\\s\\d{2})?\\s?\\d{1,6}$|^[A-Za-z0-9./-]{3,100}$", message = "Documento profissional inválido")
     private String docProfissional;
 
     @Email(message = "E-mail inválido")
