@@ -4,63 +4,65 @@ import { PessoaRequest } from '../service/pessoaService';
 interface Props {
     data: PessoaRequest;
     setData: React.Dispatch<React.SetStateAction<PessoaRequest>>;
+    addFile: (key: string, file: File) => void;
     handleSubmit: () => void;
     prevStep: () => void;
 }
 
-export default function CadastroQuatro({ data, setData, handleSubmit, prevStep }: Props) {
+export default function CadastroQuatro({ data, setData, addFile, handleSubmit, prevStep }: Props) {
+  const handleFuncaoChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    setData(prev => ({ ...prev, funcao: e.target.value as 'Aluno' | 'Paciente' | 'Ambos' }));
+  };
 
-    const handleCadastroAnualChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-        const { name, value, type } = e.target;
+  const handleDataCadastroChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setData(prev => ({ ...prev, dataCadastramento: e.target.value }));
+  };
+
+  return (
+    <div>
+      <h2>Passo 4: Informações Adicionais e Conclusão</h2>
+      <hr />
+      
+      <div>
+        <label>
+          <span>Data de Cadastro:</span>
+          <input
+            name="dataCadastramento"
+            type="date"
+            value={data.dataCadastramento}
+            onChange={handleDataCadastroChange}
+          />
+        </label>
         
-        let val: string | number | boolean = value;
-        if (type === 'number') val = parseFloat(value);
-        if (name === 'beneficioDePrestacaoContinuada') val = (e.target as HTMLInputElement).checked;
+        <label>
+          <span>Adicionar uma Foto:</span>
+          <input 
+            type="file" 
+            onChange={(e) => e.target.files && addFile('foto', e.target.files[0])} 
+          />
+        </label>
 
-        const updatedCadastros = [...(data.cadastrosAnuaisRequests || [])];
-        if (updatedCadastros.length === 0) {
-            updatedCadastros.push({
-                beneficioDePrestacaoContinuada: false,
-                historicosAlergias: '',
-                medicacoesContinuas: '',
-                historicoDoencas: '',
-                rendaFamiliar: 0,
-            });
-        }
-        (updatedCadastros[0] as any)[name] = val;
+        <label>
+          <span>Selecionar Função:</span>
+          <select 
+            name="funcao" 
+            value={data.funcao || ''} 
+            onChange={handleFuncaoChange}
+          >
+            <option value="">Selecione...</option>
+            <option value="Aluno">Aluno</option>
+            <option value="Paciente">Paciente</option>
+            <option value="Ambos">Ambos</option>
+          </select>
+        </label>
+      </div>
 
-        setData(prev => ({ ...prev, cadastrosAnuaisRequests: updatedCadastros }));
-    };
-    
-    const cadastroAnual = data.cadastrosAnuaisRequests?.[0] || {};
-
-    return (
-        <div>
-            <h2>Passo 4: Informações Adicionais e Conclusão</h2>
-            
-            <h3>Cadastro Anual</h3>
-            <label>
-                Benefício de Prestação Continuada (BPC): 
-                <input 
-                    name="beneficioDePrestacaoContinuada" 
-                    type="checkbox" 
-                    checked={!!cadastroAnual.beneficioDePrestacaoContinuada} 
-                    onChange={handleCadastroAnualChange} 
-                />
-            </label><br />
-            <label>Renda Familiar (R$): <input name="rendaFamiliar" type="number" value={cadastroAnual.rendaFamiliar || ''} onChange={handleCadastroAnualChange} /></label><br />
-            <label>Histórico de Alergias: <textarea name="historicosAlergias" value={cadastroAnual.historicosAlergias || ''} onChange={handleCadastroAnualChange}></textarea></label><br />
-            
-            <p>
-                Ao clicar em "Enviar Cadastro", você confirma que todas as informações
-                fornecidas estão corretas.
-            </p>
-            
-            <hr />
-            <button onClick={prevStep}>Anterior</button>
-            <button onClick={handleSubmit} style={{ fontWeight: 'bold' }}>
-                Enviar Cadastro
-            </button>
-        </div>
-    );
+      <div>
+        <button onClick={prevStep}>Anterior</button>
+        <button onClick={handleSubmit}>
+          Enviar Cadastro
+        </button>
+      </div>
+    </div>
+  );
 }

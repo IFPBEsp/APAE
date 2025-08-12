@@ -84,12 +84,14 @@ export interface PessoaRequest {
   cns: string;
   nis: string;
   dataCadastramento: string;
+  numeroTelefone: string;
   contatoRequest: ContatoRequest;
   vacinacoesRequests: VacinaRequest[];
   deficienciasRequests: TipoDeficienciaRequest[];
   atendimentosRequests: TipoAtendimentoRequest[];
   responsaveisRequests: PessoaResponsavelRequest[];
   cadastrosAnuaisRequests: CadastroAnualRequest[];
+  funcao?: 'Aluno' | 'Paciente' | 'Ambos' | '';
 }
 
 export interface PessoaResponse extends PessoaRequest {

@@ -33,6 +33,7 @@ export default function CadastroUm({ data, setData, addFile, nextStep }: Props) 
             <label>Nome Completo: <input name="nomeCompleto" value={data.nomeCompleto} onChange={handleChange} /></label><br />
             <label>Data de Nascimento: <input name="dataNascimento" type="date" value={data.dataNascimento} onChange={handleChange} /></label><br />
             <label>CPF: <input name="cpf" value={data.cpf} onChange={handleChange} /></label><br />
+            <label>Contato: <input name="numeroTelefone" value={data.numeroTelefone} onChange={handleChange} /></label><br />
             <label>RG: <input name="rg" value={data.rg} onChange={handleChange} /></label><br />
             <label>Data de Emissão do RG: <input name="dataEmissaoRg" type="date" value={data.dataEmissaoRg} onChange={handleChange} /></label><br />
             <label>Órgão Emissor do RG: <input name="orgaoEmissorRg" value={data.orgaoEmissorRg} onChange={handleChange} /></label><br />

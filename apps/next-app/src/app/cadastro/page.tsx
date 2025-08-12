@@ -31,6 +31,7 @@ export default function CadastroPage() {
     cns: "",
     nis: "",
     dataCadastramento: new Date().toISOString().split("T")[0],
+    numeroTelefone: "",
     contatoRequest: {
       enderecoAtivo: "S",
       comprovanteResidencia: "",
@@ -164,6 +165,7 @@ export default function CadastroPage() {
           <CadastroQuatro
             data={pessoaData}
             setData={setPessoaData}
+            addFile={addFile}
             prevStep={prevStep}
             handleSubmit={handleSubmit}
           />
