@@ -8,18 +8,38 @@ import FileFilter from "./fileViewing/fileFilter";
 import FileCard from "./fileViewing/fileCard";
 import { mockFiles, type FileItem } from "@/lib/mockFiles";
 
-export default function FileViewer() {
+interface FileViewerProps {
+  initialCategory: "pessoal" | "medico" | "escolar";
+}
+
+const documentCategory = {
+  pessoal: "Documentos pessoais",
+  medico: "Documentos médicos",
+  escolar: "Documentos escolares",
+};
+
+const typeDocument ={
+  pessoal:['rg','cpf', 'certidão de nascimento', 'comprovante de residência'],
+  medico:['laudo','encaminhamento'],
+  escolar:['historico','declaração de matrícula'],
+}
+
+export default function FileViewer({ initialCategory }: FileViewerProps) {
   const router = useRouter();
+  const [category, setCategory] = React.useState<"pessoal" | "medico" | "escolar">(initialCategory);
   const [yearFilter, setYearFilter] = React.useState<string | null>(null);
   const [typeFilter, setTypeFilter] = React.useState<string | null>(null);
 
+  const categoryTypes = typeDocument[category];
+
   const filteredFiles = React.useMemo(() => {
     return mockFiles.filter((file) => {
+      const matchesCategory = file.category === category;
       const matchesYear = !yearFilter || file.year === yearFilter;
-      const matchesType = !typeFilter || file.type === typeFilter;
-      return matchesYear && matchesType;
+      const matchesType = !typeFilter || file.type.toLowerCase() === typeFilter.toLowerCase();
+      return matchesCategory && matchesYear && matchesType;
     });
-  }, [yearFilter, typeFilter]);
+  }, [category, yearFilter, typeFilter]);
 
   const brandColor = "text-[#0d4f97]";
 
@@ -36,24 +56,24 @@ export default function FileViewer() {
 
       {/* Layout mobile */}
       <div className={`flex flex-col mt-6 md:hidden ${brandColor}`}>
-        <h1 className="text-xl font-bold mb-6">Documentos</h1>
+        <h1 className="text-xl font-bold mb-6">{documentCategory[category]}</h1>
         <FileFilter
           year={yearFilter}
           type={typeFilter}
           onYearChange={setYearFilter}
-          onTypeChange={setTypeFilter}
-        />
+          onTypeChange={setTypeFilter} 
+          categoryTypes={categoryTypes}        />
       </div>
 
       {/* Layout desktop */}
       <div className="hidden md:flex items-center justify-center bg-white rounded-4xl shadow-md py-3 px-8 max-w-4xl mx-auto mb-10 gap-12 border text-[#0d4f97]">
-        <h1 className="text-xl font-bold whitespace-nowrap">Documentos</h1>
+        <h1 className="text-xl font-bold whitespace-nowrap">{documentCategory[category]}</h1>
         <FileFilter
           year={yearFilter}
           type={typeFilter}
           onYearChange={setYearFilter}
-          onTypeChange={setTypeFilter}
-        />
+          onTypeChange={setTypeFilter} 
+          categoryTypes={categoryTypes}        />
       </div>
 
 

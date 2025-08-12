@@ -14,6 +14,7 @@ type FileFilterProps = {
   type: string | null;
   onYearChange: (year: string | null) => void;
   onTypeChange: (type: string | null) => void;
+  categoryTypes: string[];
 };
 
 const years = [2023, 2024, 2025];
@@ -26,11 +27,12 @@ const textColor = "text-[#0d4f97]";
 export default function FileFilter({
   onYearChange,
   onTypeChange,
+  categoryTypes,
 }: FileFilterProps) {
   return (
     <div className="flex justify-center gap-4 mb-4">
       {/* Filtro de ano */}
-      <Select onValueChange={onYearChange}>
+      <Select onValueChange={(value) => onYearChange(value === "all" ? null : value)}>
         <SelectTrigger className={`${selectStyle} ${textColor}`}>
           <SelectValue className={textColor} placeholder="Ano" />
         </SelectTrigger>
@@ -47,7 +49,7 @@ export default function FileFilter({
       </Select>
 
       {/* Filtro de tipo */}
-      <Select onValueChange={onTypeChange}>
+      <Select onValueChange={(value) => onTypeChange(value === "all" ? null : value)}>
         <SelectTrigger className={`${selectStyle} ${textColor}`}>
           <SelectValue className={textColor} placeholder="Tipo" />
         </SelectTrigger>
@@ -55,7 +57,7 @@ export default function FileFilter({
           <SelectItem value="all" className={textColor}>
             Tipo
           </SelectItem>
-          {types.map((t) => (
+          {categoryTypes.map((t) => (
             <SelectItem key={t} value={t} className={textColor}>
               {t.charAt(0).toUpperCase() + t.slice(1)}
             </SelectItem>
