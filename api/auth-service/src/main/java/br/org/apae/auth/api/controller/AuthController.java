@@ -1,43 +1,45 @@
 package br.org.apae.auth.api.controller;
 
 import br.org.apae.auth.api.dto.LoginRequestDTO;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.MediaType;
+import br.org.apae.auth.api.dto.SignUpRequestDTO;
+import br.org.apae.auth.api.dto.TokenResponseDTO;
+import br.org.apae.auth.application.service.interfaces.IKeycloakUserRegistrationService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.util.LinkedMultiValueMap;
-import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.client.RestTemplate;
 
 @RestController
 @RequestMapping("/api/auth")
 public class AuthController {
 
-    @Value("${url_login_token}")
-    private String url;
-    @Value("${client_id}")
-    private String clientId;
-    @Value("${client_secret}")
-    private String clientSecret;
+    private final IKeycloakUserRegistrationService keycloakUserRegistrationService;
 
-    private final RestTemplate restTemplate = new RestTemplate();
+    @Autowired
+    public AuthController(@Qualifier("keycloakUserRegistrationService") IKeycloakUserRegistrationService keycloakUserRegistrationService) {
+        this.keycloakUserRegistrationService = keycloakUserRegistrationService;
+    }
 
-    @PostMapping
-    public ResponseEntity<String> login(@RequestBody LoginRequestDTO loginRequestDto) {
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
+    @PostMapping("/signin")
+    public ResponseEntity<TokenResponseDTO> login(@RequestBody LoginRequestDTO loginRequestDto) {
+        TokenResponseDTO obj = keycloakUserRegistrationService.login(loginRequestDto);
 
-        MultiValueMap<String, String> map = new LinkedMultiValueMap<>();
-        map.add("grant_type", "password");
-        map.add("username", loginRequestDto.username());
-        map.add("password", loginRequestDto.password());
-        map.add("client_id", clientId);
-        map.add("client_secret", clientSecret);
+        return ResponseEntity.status(HttpStatus.OK).body(obj);
+    }
 
-        HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<>(map, headers);
+    @PostMapping("/signup")
+    public ResponseEntity<Void> signUp(
+        @RequestBody SignUpRequestDTO signUpRequestDto,
+        @RequestHeader("Authorization") String authorizationHeader
+    ) {
+        String token = authorizationHeader.replace("Bearer ", "");
 
-        return restTemplate.postForEntity(url, request, String.class);
+        keycloakUserRegistrationService.registerUser(
+            signUpRequestDto,
+            token
+        );
+        
+        return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 }
