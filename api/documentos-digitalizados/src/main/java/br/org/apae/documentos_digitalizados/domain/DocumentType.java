@@ -7,6 +7,7 @@ public enum DocumentType {
   IDENTIDADE(DocumentCategory.PESSOAL, "IDENTIDADE"),
   COMPROVANTE_RESIDENCIA(DocumentCategory.PESSOAL, "COMPROVANTE_RESIDENCIA"),
   CERTIDAO_NASCIMENTO(DocumentCategory.PESSOAL, "CERTIDAO_NASCIMENTO"),
+  FOTO(DocumentCategory.PESSOAL, "FOTO"),
 
   // -- DOCUMENTOS MÉDICOS --
   LAUDO(DocumentCategory.MEDICO, "LAUDO"),

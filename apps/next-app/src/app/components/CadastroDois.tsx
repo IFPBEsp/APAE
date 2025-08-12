@@ -4,7 +4,7 @@ import { PessoaRequest } from '../service/pessoaService';
 interface Props {
   data: PessoaRequest;
   setData: React.Dispatch<React.SetStateAction<PessoaRequest>>;
-  addFile: (key: string, file: File) => void;
+  addFile: (key: string, file: File, category: string, type: string) => void;
   nextStep: () => void;
   prevStep: () => void;
 }
@@ -17,6 +17,28 @@ export default function CadastroDois({ data, setData, addFile, nextStep, prevSte
       cadastrosAnuaisRequests: [{
         ...prev.cadastrosAnuaisRequests[0],
         [name]: value,
+        beneficioDePrestacaoContinuada: false
+      }],
+    }));
+  };
+
+  const handleBeneficioChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { checked } = e.target;
+    const updatedCadastros = data.cadastrosAnuaisRequests.length > 0
+      ? data.cadastrosAnuaisRequests
+      : [{
+          beneficioDePrestacaoContinuada: false,
+          historicosAlergias: '',
+          medicacoesContinuas: '',
+          historicoDoencas: '',
+          rendaFamiliar: 0,
+        }];
+
+    setData(prev => ({
+      ...prev,
+      cadastrosAnuaisRequests: [{
+        ...updatedCadastros[0],
+        beneficioDePrestacaoContinuada: checked,
       }],
     }));
   };
@@ -136,11 +158,20 @@ export default function CadastroDois({ data, setData, addFile, nextStep, prevSte
       <button type="button" onClick={handleAddAtendimento}>Adicionar Atendimento</button>
       <br /><br />
 
-      <h3>Documentos</h3>
-      <label>Enviar Laudo: <input type="file" onChange={(e) => e.target.files && addFile('laudo', e.target.files[0])} /></label><br />
-      <label>Enviar Encaminhamento: <input type="file" onChange={(e) => e.target.files && addFile('encaminhamento', e.target.files[0])} /></label><br />
+      <label>
+        <input
+          type="checkbox"
+          name="bpc"
+          checked={data.cadastrosAnuaisRequests[0].beneficioDePrestacaoContinuada}
+          onChange={(e) => handleBeneficioChange(e)}
+        />
+        <span>Possui benefício de prestação continuada?</span>
+      </label>
 
-      <hr />
+      <h3>Documentos</h3>
+      <label>Enviar Laudo: <input type="file" onChange={(e) => e.target.files && addFile('laudo', e.target.files[0], "MEDICO", "LAUDO")} /></label><br />
+      <label>Enviar Encaminhamento: <input type="file" onChange={(e) => e.target.files && addFile('encaminhamento', e.target.files[0], "MEDICO", "ENCAMINHAMENTO")} /></label><br />
+
       <button type="button" onClick={prevStep}>Anterior</button>
       <button type="button" onClick={nextStep}>Próximo</button>
     </div>

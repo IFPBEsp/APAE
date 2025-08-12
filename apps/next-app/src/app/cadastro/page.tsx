@@ -8,14 +8,16 @@ import CadastroDois from "../components/CadastroDois";
 import CadastroTres from "../components/CadastroTres";
 import CadastroQuatro from "../components/CadastroQuatro";
 
-interface FileStore {
-  [key: string]: File;
+interface DocumentUploadInfo {
+  file: File;
+  category: string;
+  type: string;
 }
 
 export default function CadastroPage() {
   const [step, setStep] = useState(1);
   const [isLoading, setIsLoading] = useState(false);
-  const [filesToUpload, setFilesToUpload] = useState<FileStore>({});
+  const [filesToUpload, setFilesToUpload] = useState<{ [key: string]: DocumentUploadInfo }>({});
 
   const [pessoaData, setPessoaData] = useState<PessoaRequest>({
     nomeCompleto: "",
@@ -52,8 +54,11 @@ export default function CadastroPage() {
   const nextStep = () => setStep((prev) => prev + 1);
   const prevStep = () => setStep((prev) => prev - 1);
 
-  const addFile = (key: string, file: File) => {
-    setFilesToUpload((prev) => ({ ...prev, [key]: file }));
+  const addFile = (key: string, file: File, category: string, type: string) => {
+    setFilesToUpload((prev) => ({
+      ...prev,
+      [key]: { file, category, type },
+    }));
   };
 
   const handleSubmit = async () => {
@@ -106,12 +111,14 @@ export default function CadastroPage() {
 
       // Fazer upload de arquivos
       for (const key in filesToUpload) {
-        const file = filesToUpload[key];
+        const { file, category, type } = filesToUpload[key];
+        console.log(category);
+        console.log(type);
         await uploadDocument({
           patientId,
           year: new Date().getFullYear(),
-          documentCategory: "MEDICO",
-          documentType: "LAUDO",
+          documentCategory: category,
+          documentType: type,
           file,
         });
         console.log(`Arquivo ${key} enviado com sucesso.`);

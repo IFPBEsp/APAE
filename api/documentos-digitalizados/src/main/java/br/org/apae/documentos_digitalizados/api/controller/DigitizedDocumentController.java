@@ -40,6 +40,12 @@ public class DigitizedDocumentController implements IDigitizedDocumentAPI{
     @RequestPart("document") DocumentObjectRequestDTO dto,
     @RequestPart("file") MultipartFile file
   ) {
+    System.out.println("DTO recebido: " + dto);
+    System.out.println("PatientId: " + dto.patientId());
+    System.out.println("Year: " + dto.year());
+    System.out.println("Category: " + dto.documentCategory());
+    System.out.println("Type: " + dto.documentType());
+    System.out.println("Arquivo: " + file.getOriginalFilename());
     documentService.saveFile(dto, file);
     return ResponseEntity.status(HttpStatus.CREATED).build();
   }

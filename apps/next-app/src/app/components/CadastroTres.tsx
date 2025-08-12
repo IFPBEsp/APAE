@@ -13,7 +13,7 @@ export default function CadastroTres({ data, setData, nextStep, prevStep }: Prop
     setData(prev => ({
       ...prev,
       responsaveisRequests: [...prev.responsaveisRequests, {
-        nome: '', ondeProcurar: '', vivo: true, profissao: '', rg: '', cpf: '', emergencia: '', tipoResponsavel: ''
+        nome: '', ondeProcurar: '', vivo: true, profissao: '', rg: '', cpf: '', emergencia: '', tipoResponsavel: '', bpc: false,
       }]
     }));
   };

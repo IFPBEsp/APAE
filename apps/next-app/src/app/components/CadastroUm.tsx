@@ -4,7 +4,7 @@ import { PessoaRequest } from '../service/pessoaService';
 interface Props {
     data: PessoaRequest;
     setData: React.Dispatch<React.SetStateAction<PessoaRequest>>;
-    addFile: (key: string, file: File) => void;
+    addFile: (key: string, file: File, category: string, type: string) => void;
     nextStep: () => void;
 }
 

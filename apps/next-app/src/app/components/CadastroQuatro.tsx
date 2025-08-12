@@ -4,7 +4,7 @@ import { PessoaRequest } from '../service/pessoaService';
 interface Props {
     data: PessoaRequest;
     setData: React.Dispatch<React.SetStateAction<PessoaRequest>>;
-    addFile: (key: string, file: File) => void;
+    addFile: (key: string, file: File, category: string, type: string) => void;
     handleSubmit: () => void;
     prevStep: () => void;
 }
@@ -38,7 +38,7 @@ export default function CadastroQuatro({ data, setData, addFile, handleSubmit, p
           <span>Adicionar uma Foto:</span>
           <input 
             type="file" 
-            onChange={(e) => e.target.files && addFile('foto', e.target.files[0])} 
+            onChange={(e) => e.target.files && addFile('foto', e.target.files[0], "PESSOAL", "FOTO")} 
           />
         </label>
 

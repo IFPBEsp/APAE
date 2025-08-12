@@ -13,6 +13,10 @@ spring:
           jwk_set_uri: ${jwk_set_uri}
   mvc:
     dispatch-options-request: true
+  servlet:
+    multipart:
+      max-file-size: 10MB
+      max-request-size: 10MB
 
 minio:
   endpoint: http://localhost:9001
