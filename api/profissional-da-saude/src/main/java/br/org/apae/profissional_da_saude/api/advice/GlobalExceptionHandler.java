@@ -1,9 +1,7 @@
 package br.org.apae.profissional_da_saude.api.advice;
 
-import br.org.apae.profissional_da_saude.domain.exception.DadosInvalidosException;
-import br.org.apae.profissional_da_saude.domain.exception.EntidadeNaoEncontradaException;
-import br.org.apae.profissional_da_saude.domain.exception.ValidacaoNegocioException;
-
+import br.org.apae.profissional_da_saude.application.service.exceptions.AgendamentoNaoEncontradoException;
+import br.org.apae.profissional_da_saude.application.service.exceptions.PacienteNaoEncontradoException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
@@ -35,6 +33,16 @@ public class GlobalExceptionHandler {
         return buildErrorResponse(ex.getMessage(), null, HttpStatus.BAD_REQUEST);
     }
 
+    @ExceptionHandler(PacienteNaoEncontradoException.class)
+    public ResponseEntity<Map<String, Object>> handlePacienteNotFound(PacienteNaoEncontradoException ex) {
+        Map<String, Object> body = new HashMap<>();
+        body.put("timestamp", LocalDateTime.now());
+        body.put("status", HttpStatus.NOT_FOUND.value());
+        body.put("error", ex.getMessage());
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(body);
+    }
+
+    // 400 - Validação (ex: campo inválido no DTO)
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<Object> handleMethodArgumentNotValid(MethodArgumentNotValidException ex) {
         Map<String, String> fieldErrors = new HashMap<>();
