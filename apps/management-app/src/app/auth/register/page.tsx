@@ -15,44 +15,20 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import * as z from "zod";
 import { useForm } from "react-hook-form";
 import React from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import Link from "next/link";
 import { PrimaryButton } from "@/components/ButtonPrimary";
 import { PasswordInput } from "@/components/PasswordInputs";
-
-const schema = z
-  .object({
-    nomeCompleto: z.string().min(1, {
-      message: "Nome completo é obrigatório",
-    }),
-    email: z
-      .email({ message: "Email inválido" })
-      .min(1, { message: "Email é obrigatório" }),
-    cpf: z
-      .string()
-      .trim()
-      .min(14, { message: "CPF deve ser formatado por XXX.XXX.XXX-XX" })
-      .regex(/^\d{3}\.\d{3}\.\d{3}-\d{2}$/),
-    senha: z
-      .string()
-      .min(6, { message: "Senha deve ter pelo menos 6 caracteres" }),
-    confirmarSenha: z
-      .string()
-      .min(6, { message: "Senha deve ter pelo menos 6 caracteres" }),
-  })
-  .refine((data) => data.senha === data.confirmarSenha, {
-    message: "As senhas não coincidem",
-    path: ["confirmarSenha"],
-  });
-
-type FormData = z.infer<typeof schema>;
+import { FormSignUp, signUpSchema } from "@/schemas/authSchema";
+import { signUp } from "../actions";
+import { toast } from "react-toastify";
+import { redirect } from "next/navigation";
 
 function Page() {
-  const form = useForm<FormData>({
-    resolver: zodResolver(schema),
+  const form = useForm<FormSignUp>({
+    resolver: zodResolver(signUpSchema),
     defaultValues: {
       nomeCompleto: "",
       email: "",
@@ -62,10 +38,6 @@ function Page() {
     },
     mode: "all",
   });
-
-  const onSubmit = async (data: FormData) => {
-    console.log("Dados a serem enviados: ", data);
-  };
 
   const formatCPF = (value: string) => {
     const numbers = value.replace(/\D/g, "");
@@ -80,6 +52,18 @@ function Page() {
       6,
       9
     )}-${numbers.slice(9, 11)}`;
+  };
+
+  const onSubmit = async (data: FormSignUp) => {
+    const response = await signUp(data);
+
+    if (response.status === "success") {
+      toast.success(response.message);
+      redirect("/auth/login");
+    } else {
+      console.error("Erro ao cadastrar usuário: ", response.message);
+      toast.error(response.message);
+    }
   };
 
   return (
