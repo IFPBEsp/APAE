@@ -162,7 +162,9 @@ export default function AtualizarProfissional({
             <Button type="button" variant="outline" onClick={onCancel}>
               Cancelar
             </Button>
-            <Button type="submit">Salvar</Button>
+            <Button type="submit" className="bg-blue-800 hover:bg-blue-900">
+              Salvar
+            </Button>
           </div>
         </form>
       </Form>
