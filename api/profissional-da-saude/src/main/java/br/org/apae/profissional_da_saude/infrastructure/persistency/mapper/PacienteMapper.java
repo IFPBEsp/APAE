@@ -1,5 +1,6 @@
 package br.org.apae.profissional_da_saude.infrastructure.persistency.mapper;
 
+import br.org.apae.profissional_da_saude.api.dto.PacienteResposeDto;
 import br.org.apae.profissional_da_saude.domain.model.Paciente;
 import br.org.apae.profissional_da_saude.infrastructure.entity.PacienteEntity;
 
@@ -43,5 +44,22 @@ public final class PacienteMapper {
         );
     }
 
+    public static PacienteResposeDto toResponseDto(Paciente paciente) {
+        return PacienteResposeDto.builder()
+                .id(paciente.getId())
+                .bairro(paciente.getBairro())
+                .cep(paciente.getCep())
+                .cidade(paciente.getCidade())
+                .cpf(paciente.getCpf())
+                .nome(paciente.getNome())
+                .estado(paciente.getEstado())
+                .telefone(paciente.getTelefone())
+                .email(paciente.getEmail())
+                .dateNascimento(paciente.getDateNascimento())
+                .endereco(paciente.getEndereco())
+                .rg(paciente.getRg())
+                .dataCriacao(paciente.getDataCriacao())
+                .build();
+    }
 
 }
