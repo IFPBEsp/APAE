@@ -22,7 +22,7 @@ import Link from "next/link";
 import { PrimaryButton } from "@/components/ButtonPrimary";
 import { PasswordInput } from "@/components/PasswordInputs";
 import { FormSignUp, signUpSchema } from "@/schemas/authSchema";
-import { signUp } from "../actions";
+import { signUp } from "../actions/actions";
 import { toast } from "react-toastify";
 import { redirect } from "next/navigation";
 
