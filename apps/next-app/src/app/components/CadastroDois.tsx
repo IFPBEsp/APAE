@@ -114,7 +114,7 @@ export default function CadastroDois({
   };
 
   return (
-    <Card className="w-full max-w-4xl mx-auto">
+    <Card className="w-full max-w-6xl mx-auto">
       <CardHeader>
         <CardTitle>Passo 2: Saúde e Documentos</CardTitle>
         <CardDescription>

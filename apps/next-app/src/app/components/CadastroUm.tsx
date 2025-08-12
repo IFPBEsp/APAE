@@ -30,8 +30,7 @@ export default function CadastroUm({ data, setData, addFile, nextStep }: Props) 
     };
 
     return (
-        // PASSO 2: Substituir o <div> por <Card> para uma melhor estrutura visual
-        <Card className="w-full max-w-2xl mx-auto">
+        <Card className="w-full max-w-6xl mx-auto">
             <CardHeader>
                 <CardTitle>Passo 1: Dados Pessoais e Endereço</CardTitle>
                 <CardDescription>Preencha as informações do assistido.</CardDescription>

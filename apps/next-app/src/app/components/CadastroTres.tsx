@@ -66,7 +66,7 @@ export default function CadastroTres({ data, setData, nextStep, prevStep }: Prop
     const rendaFamiliar = data.cadastrosAnuaisRequests?.[0]?.rendaFamiliar || 0;
 
     return (
-        <Card className="w-full max-w-4xl mx-auto">
+        <Card className="w-full max-w-6xl mx-auto">
             <CardHeader>
                 <CardTitle>Passo 3: Responsáveis e Renda Familiar</CardTitle>
                 <CardDescription>Adicione os responsáveis pelo assistido e informe a renda familiar.</CardDescription>

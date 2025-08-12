@@ -27,7 +27,7 @@ export default function CadastroQuatro({ data, setData, addFile, handleSubmit, p
     const today = new Date().toISOString().split('T')[0];
 
     return (
-        <Card className="w-full max-w-lg mx-auto">
+        <Card className="w-full max-w-6xl mx-auto">
             <CardHeader>
                 <CardTitle>Passo 4: Informações Adicionais e Conclusão</CardTitle>
                 <CardDescription>Revise os últimos detalhes e finalize o cadastro.</CardDescription>
