@@ -6,7 +6,16 @@ import { ArrowLeft } from "lucide-react";
 
 import FileFilter from "./fileViewing/fileFilter";
 import FileCard from "./fileViewing/fileCard";
-import { mockFiles, type FileItem } from "@/lib/mockFiles";
+import { listFilteredDocuments } from "@/service/fileViewingService";
+
+export interface FileItem {
+  id: string;
+  name: string;
+  category: "pessoal" | "medico" | "escolar";
+  type: string;
+  url: string;
+  year: string;
+}
 
 interface FileViewerProps {
   initialCategory: "pessoal" | "medico" | "escolar";
@@ -29,16 +38,38 @@ export default function FileViewer({ initialCategory }: FileViewerProps) {
   const [category, setCategory] = React.useState<"pessoal" | "medico" | "escolar">(initialCategory);
   const [yearFilter, setYearFilter] = React.useState<string | null>(null);
   const [typeFilter, setTypeFilter] = React.useState<string | null>(null);
+  const [files, setFiles] = React.useState<FileItem[]>([]);
 
   const categoryTypes = typeDocument[category];
 
-  const filteredFiles = React.useMemo(() => {
-    return mockFiles.filter((file) => {
-      const matchesCategory = file.category === category;
-      const matchesYear = !yearFilter || file.year === yearFilter;
-      const matchesType = !typeFilter || file.type.toLowerCase() === typeFilter.toLowerCase();
-      return matchesCategory && matchesYear && matchesType;
-    });
+React.useEffect(() => {
+    async function fetchDocuments() {
+      try {
+        if (!typeFilter || !yearFilter) return;
+
+        const response = await listFilteredDocuments(
+          "id-do-paciente-ou-pessoa",
+          category,
+          parseInt(yearFilter),
+          typeFilter
+        );
+
+        const converted = response.documents.map((doc, index) => ({
+          id: index.toString(),
+          name: doc.fileName,
+          url: doc.url,
+          year: new Date(doc.createdAt).getFullYear().toString(),
+          category,
+          type: typeFilter,
+        }));
+
+        setFiles(converted);
+      } catch (err) {
+        console.error("Erro ao buscar documentos:", err);
+      }
+    }
+
+    fetchDocuments();
   }, [category, yearFilter, typeFilter]);
 
   const brandColor = "text-[#0d4f97]";
@@ -78,11 +109,11 @@ export default function FileViewer({ initialCategory }: FileViewerProps) {
 
 
       <div className="grid grid-cols-2 lg:grid-cols-6 gap-4 mt-4">
-        {filteredFiles.length === 0 ? (
+        {files.length === 0 ? (
           <p>Nenhum arquivo encontrado.</p>
         ) : (
-          filteredFiles.map((file: FileItem) => (
-            <FileCard key={file.id} name={file.name} url={file.url} />
+          files.map((file: FileItem) => (
+            <FileCard key={file.id} name={file.name} url={file.url} patientId={"id-do-paciente"} />
           ))
         )}
       </div>
