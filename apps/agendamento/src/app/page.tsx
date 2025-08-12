@@ -39,20 +39,20 @@ import {
 
 import { AppointmentForm } from "@/components/forms/AppointmentForm"
 import { InfoCard } from "@/components/shared/InfoCard"
+import Link from "next/link";
 
 export default function DashboardPage() {
   const [selectedDate, setSelectedDate] = useState<Date | undefined>(new Date())
 
   const appointments = [
-    { name: "João Oliveira", confirmed: true, area: "Nutrição" },
-    { name: "Maria Silva", confirmed: true, area: "Psicologia" },
-    { name: "João Henrique", confirmed: true, area: "Psiquiatria" },
-    { name: "Lucas Ferreira", confirmed: false, area: "Nutrição" },
-    { name: "Rafael Andrade", confirmed: true, area: "Psiquiatria" },
-    { name: "Ana Beatriz", confirmed: true, area: "Nutrição" },
-    { name: "Júlia Fernandes", confirmed: true, area: "Psicologia" },
+    { id: 1, name: "João Oliveira", confirmed: true, area: "Nutrição" },
+    { id: 2, name: "Maria Silva", confirmed: true, area: "Psicologia" },
+    { id: 3, name: "João Henrique", confirmed: true, area: "Psiquiatria" },
+    { id: 4, name: "Lucas Ferreira", confirmed: false, area: "Nutrição" },
+    { id: 5, name: "Rafael Andrade", confirmed: true, area: "Psiquiatria" },
+    { id: 6, name: "Ana Beatriz", confirmed: true, area: "Nutrição" },
+    { id: 7, name: "Júlia Fernandes", confirmed: true, area: "Psicologia" },
   ]
-
   return (
     <div className="min-h-screen w-full text-sm overflow-x-hidden">
       <main className="flex-1 p-3 sm:p-6 max-w-[100vw] mx-auto">
@@ -154,9 +154,12 @@ export default function DashboardPage() {
                     </TableCell>
                     <TableCell className="px-3 py-2 text-xs sm:px-4 sm:py-3 sm:text-sm">{item.area}</TableCell>
                     <TableCell className="px-3 py-2">
-                      <span className="cursor-pointer text-xs text-blue-800 underline hover:underline sm:text-sm">
+                      <Link
+                          href={`/agendamentos/${item.id}`}
+                          className="cursor-pointer text-xs text-blue-800 underline hover:underline sm:text-sm"
+                      >
                         Detalhes
-                      </span>
+                      </Link>
                     </TableCell>
                   </TableRow>
                 ))}
