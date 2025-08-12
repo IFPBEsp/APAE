@@ -2,13 +2,16 @@ package br.org.apae.profissional_da_saude.api.advice;
 
 import br.org.apae.profissional_da_saude.application.service.exceptions.AgendamentoNaoEncontradoException;
 import br.org.apae.profissional_da_saude.application.service.exceptions.PacienteNaoEncontradoException;
+import br.org.apae.profissional_da_saude.domain.exception.DadosInvalidosException;
+import br.org.apae.profissional_da_saude.domain.exception.EntidadeNaoEncontradaException;
+import br.org.apae.profissional_da_saude.domain.exception.ValidacaoNegocioException;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
-import br.org.apae.profissional_da_saude.application.service.exceptions.AgendamentoNaoEncontradoException;
 
 import java.time.LocalDateTime;
 import java.util.HashMap;
@@ -16,7 +19,6 @@ import java.util.Map;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
-
 
     @ExceptionHandler(ValidacaoNegocioException.class)
     public ResponseEntity<Object> handleValidacaoNegocio(ValidacaoNegocioException ex) {
