@@ -162,7 +162,7 @@ export default function CadastroDois({ data, setData, addFile, nextStep, prevSte
         <input
           type="checkbox"
           name="bpc"
-          checked={data.cadastrosAnuaisRequests[0].beneficioDePrestacaoContinuada}
+          checked={data.cadastrosAnuaisRequests[0]?.beneficioDePrestacaoContinuada || false}
           onChange={(e) => handleBeneficioChange(e)}
         />
         <span>Possui benefício de prestação continuada?</span>
