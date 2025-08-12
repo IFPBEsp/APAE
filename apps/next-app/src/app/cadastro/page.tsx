@@ -43,6 +43,7 @@ export default function CadastroPage() {
       estado: "",
       cep: "",
       naturalidade: "",
+      numeroTelefone: "",
     },
     vacinacoesRequests: [],
     deficienciasRequests: [],
@@ -184,7 +185,6 @@ export default function CadastroPage() {
 
   return (
     <div style={{ fontFamily: "sans-serif", padding: "20px" }}>
-      <h1>Formulário de Cadastro em Múltiplas Etapas</h1>
       {renderStep()}
     </div>
   );

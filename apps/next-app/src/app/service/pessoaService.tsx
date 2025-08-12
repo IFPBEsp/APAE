@@ -29,6 +29,7 @@ export interface ContatoRequest {
   estado: string;
   cep: string;
   naturalidade: string;
+  numeroTelefone: string;
   pessoaId?: string;
 }
 

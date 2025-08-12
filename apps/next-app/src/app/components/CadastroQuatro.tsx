@@ -1,3 +1,9 @@
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+
 import React from 'react';
 import { PessoaRequest } from '../service/pessoaService';
 
@@ -10,59 +16,73 @@ interface Props {
 }
 
 export default function CadastroQuatro({ data, setData, addFile, handleSubmit, prevStep }: Props) {
-  const handleFuncaoChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    setData(prev => ({ ...prev, funcao: e.target.value as 'Aluno' | 'Paciente' | 'Ambos' }));
-  };
+    const handleFuncaoSelectChange = (value: string) => {
+        setData(prev => ({ ...prev, funcao: value as 'Aluno' | 'Paciente' | 'Ambos' }));
+    };
 
-  const handleDataCadastroChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setData(prev => ({ ...prev, dataCadastramento: e.target.value }));
-  };
+    const handleDataCadastroChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        setData(prev => ({ ...prev, dataCadastramento: e.target.value }));
+    };
 
-  return (
-    <div>
-      <h2>Passo 4: Informações Adicionais e Conclusão</h2>
-      <hr />
-      
-      <div>
-        <label>
-          <span>Data de Cadastro:</span>
-          <input
-            name="dataCadastramento"
-            type="date"
-            value={data.dataCadastramento}
-            onChange={handleDataCadastroChange}
-          />
-        </label>
-        
-        <label>
-          <span>Adicionar uma Foto:</span>
-          <input 
-            type="file" 
-            onChange={(e) => e.target.files && addFile('foto', e.target.files[0], "PESSOAL", "FOTO")} 
-          />
-        </label>
+    const today = new Date().toISOString().split('T')[0];
 
-        <label>
-          <span>Selecionar Função:</span>
-          <select 
-            name="funcao" 
-            value={data.funcao || ''} 
-            onChange={handleFuncaoChange}
-          >
-            <option value="">Selecione...</option>
-            <option value="Aluno">Aluno</option>
-            <option value="Paciente">Paciente</option>
-            <option value="Ambos">Ambos</option>
-          </select>
-        </label>
-      </div>
+    return (
+        <Card className="w-full max-w-lg mx-auto">
+            <CardHeader>
+                <CardTitle>Passo 4: Informações Adicionais e Conclusão</CardTitle>
+                <CardDescription>Revise os últimos detalhes e finalize o cadastro.</CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-8">
+                {/* Campos do Formulário */}
+                <div className="space-y-6">
+                    <div className="grid w-full items-center gap-1.5">
+                        <Label htmlFor="dataCadastramento">Data de Cadastro</Label>
+                        <Input
+                            id="dataCadastramento"
+                            name="dataCadastramento"
+                            type="date"
+                            // Usamos a data de hoje se nenhuma estiver definida
+                            value={data.dataCadastramento || today}
+                            onChange={handleDataCadastroChange}
+                        />
+                    </div>
+                    
+                    <div className="grid w-full items-center gap-1.5">
+                        <Label htmlFor="funcao">Função na Instituição</Label>
+                        <Select
+                            value={data.funcao || ''}
+                            onValueChange={handleFuncaoSelectChange}
+                        >
+                            <SelectTrigger id="funcao">
+                                <SelectValue placeholder="Selecione uma função..." />
+                            </SelectTrigger>
+                            <SelectContent>
+                                <SelectItem value="Aluno">Aluno</SelectItem>
+                                <SelectItem value="Paciente">Paciente</SelectItem>
+                                <SelectItem value="Ambos">Ambos</SelectItem>
+                            </SelectContent>
+                        </Select>
+                    </div>
 
-      <div>
-        <button onClick={prevStep}>Anterior</button>
-        <button onClick={handleSubmit}>
-          Enviar Cadastro
-        </button>
-      </div>
-    </div>
-  );
+                    <div className="grid w-full items-center gap-1.5">
+                        <Label htmlFor="foto">Adicionar uma Foto 3x4</Label>
+                        <Input
+                            id="foto"
+                            type="file"
+                            accept="image/*"
+                            onChange={(e) => e.target.files && addFile('foto', e.target.files[0], "PESSOAL", "FOTO")}
+                        />
+                    </div>
+                </div>
+
+                {/* Navegação */}
+                <div className="flex justify-between pt-6">
+                    <Button variant="outline" onClick={prevStep}>Anterior</Button>
+                    <Button onClick={handleSubmit}>
+                        Concluir e Enviar Cadastro
+                    </Button>
+                </div>
+            </CardContent>
+        </Card>
+    );
 }
