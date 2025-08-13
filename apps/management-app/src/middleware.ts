@@ -1,14 +1,33 @@
 import { NextRequest, NextResponse } from "next/server";
+import { removeSessionCookie } from "./lib/cookies";
 
-const PUBLIC_PATHS = ["/login", "/register"];
+const PUBLIC_PATHS = ["/auth/login", "/auth/register"];
 
 export function middleware(req: NextRequest) {
   const session = req.cookies.get("session")?.value;
-  console.log(session);
   const isPublic = PUBLIC_PATHS.includes(req.nextUrl.pathname);
 
   if (!session && !isPublic) {
-    return NextResponse.redirect(new URL("/login", req.url));
+    return NextResponse.redirect(new URL("/auth/login", req.url));
+  }
+
+  if (session && !isPublic) {
+    try {
+      const sessionData = JSON.parse(session);
+      const now = Date.now();
+      const tokenExpiry = now + (sessionData.expiresIn || 0);
+
+      if (tokenExpiry <= now) {
+        const response = NextResponse.redirect(new URL("/auth/login", req.url));
+        removeSessionCookie();
+        return response;
+      }
+    } catch (error) {
+      console.error("Cookie de sessão malformado:", error);
+      const response = NextResponse.redirect(new URL("/auth/login", req.url));
+      removeSessionCookie();
+      return response;
+    }
   }
 
   if (session && isPublic) {
