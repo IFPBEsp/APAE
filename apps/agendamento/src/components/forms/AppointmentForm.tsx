@@ -1,6 +1,6 @@
 "use client"
 
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
@@ -8,7 +8,12 @@ import { DateTimePicker } from "@/components/ui/date-time-picker";
 import { Input } from "@/components/ui/input";
 import { Combobox } from "@/components/ui/combobox";
 import { cn } from "@/lib/utils";
-import { saveAgendamento } from '@/app/services/agendamentoService';
+import { mockPacientes, Paciente, saveAgendamento } from '@/app/services/agendamentoService';
+
+type selectItem = {
+  value: string;
+  label: string;
+}
 
 const pacientes = [
   { value: "joao-oliveira", label: "João Oliveira" },
@@ -30,6 +35,15 @@ export function AppointmentForm() {
   const [paciente, setPaciente] = useState<string>("");
   const [area, setArea] = useState<string>("");
   const [periodo, setPeriodo] = useState<string>("");
+  const [listaPacientes, setListaPacientes] = useState<selectItem[]>([]);
+
+  useEffect(() => {
+    const fetchMockPacientes = async () => {
+      const mock = await mockPacientes();
+      setListaPacientes(mock.map(p => ({ value: p.cidade, label: p.nome } as selectItem)))
+    }
+    fetchMockPacientes();
+  }, []);
 
   const [validationErrors, setValidationErrors] = useState({
     dataHora: false,
@@ -78,7 +92,7 @@ export function AppointmentForm() {
 
     if(paciente && area && periodo && dataHora) {
       saveAgendamento({
-        idPaciente: "f5935abf-8bbf-4e44-b175-4743fa0145e7",
+        idPaciente: paciente,
         idProfissional: "d8c30ca9-5ea4-475e-a1b1-05caa378d6a6",
         frequenciaDias: parseInt(periodo),
         proximaConsulta: formatDate(calculateNextAppointment())[0],
@@ -129,7 +143,7 @@ export function AppointmentForm() {
               Paciente <span className="text-red-500">*</span>
             </Label>
             <Combobox
-              options={pacientes}
+              options={listaPacientes}
               value={paciente}
               onChange={setPaciente}
               placeholder="Pesquisar paciente"

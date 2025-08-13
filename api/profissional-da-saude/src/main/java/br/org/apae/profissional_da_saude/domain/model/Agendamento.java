@@ -112,7 +112,7 @@ public class Agendamento {
     public void setDataCriacao(LocalDateTime dataCriacao) {
         this.dataCriacao = dataCriacao;
     }
-
+    
     public Boolean getConfirmado() {
         return confirmado;
     }
@@ -120,4 +120,5 @@ public class Agendamento {
     public void setConfirmado(Boolean confirmado) {
         this.confirmado = confirmado;
     }
+
 }
