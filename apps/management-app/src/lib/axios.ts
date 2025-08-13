@@ -2,6 +2,7 @@
 
 import axios, {
   AxiosError,
+  AxiosInstance,
   AxiosResponse,
   InternalAxiosRequestConfig,
 } from "axios";
@@ -17,11 +18,7 @@ function createAxiosInstance(baseURL: string) {
   });
 }
 
-export const createAuthAPI = async () => {
-  const api = createAxiosInstance(
-    process.env.NEXT_PUBLIC_API_URL_AUTH || "http://localhost:8082/api/auth/"
-  );
-
+const makeInterceptors = (api: AxiosInstance) => {
   api.interceptors.request.use(
     async (config: InternalAxiosRequestConfig) => {
       const token = await getTokenFromCookie();
@@ -56,4 +53,12 @@ export const createAuthAPI = async () => {
   );
 
   return api;
+};
+
+export const createAuthAPI = async () => {
+  const api = createAxiosInstance(
+    process.env.NEXT_PUBLIC_API_URL_AUTH || "http://localhost:8082/api/auth/"
+  );
+
+  return makeInterceptors(api);
 };
