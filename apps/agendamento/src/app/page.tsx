@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { format } from "date-fns"
 import { ptBR } from "date-fns/locale"
 import {
@@ -40,19 +40,20 @@ import {
 import { AppointmentForm } from "@/components/forms/AppointmentForm"
 import { InfoCard } from "@/components/shared/InfoCard"
 import Link from "next/link";
+import { AgendamentoResponseDTO, getAgendamentos } from "./services/agendamentoService";
 
 export default function DashboardPage() {
-  const [selectedDate, setSelectedDate] = useState<Date | undefined>(new Date())
+  const [selectedDate, setSelectedDate] = useState<Date | undefined>(new Date());
+  const [appointments, setAppointments] = useState<AgendamentoResponseDTO[]>([]);
 
-  const appointments = [
-    { id: 1, name: "João Oliveira", confirmed: true, area: "Nutrição" },
-    { id: 2, name: "Maria Silva", confirmed: true, area: "Psicologia" },
-    { id: 3, name: "João Henrique", confirmed: true, area: "Psiquiatria" },
-    { id: 4, name: "Lucas Ferreira", confirmed: false, area: "Nutrição" },
-    { id: 5, name: "Rafael Andrade", confirmed: true, area: "Psiquiatria" },
-    { id: 6, name: "Ana Beatriz", confirmed: true, area: "Nutrição" },
-    { id: 7, name: "Júlia Fernandes", confirmed: true, area: "Psicologia" },
-  ]
+  useEffect(() => {
+    const fetchAppointments = async () => {
+      const response = await getAgendamentos();
+      setAppointments(response);
+    };
+    fetchAppointments();
+  }, []);
+
   return (
     <div className="min-h-screen w-full text-sm overflow-x-hidden">
       <main className="flex-1 p-3 sm:p-6 max-w-[100vw] mx-auto">
@@ -112,7 +113,7 @@ export default function DashboardPage() {
           <InfoCard
             title="Todos os agendamentos"
             icon={Users}
-            value={25}
+            value={appointments.length}
           />
           <InfoCard
             title="Sem justificativa"
@@ -124,7 +125,7 @@ export default function DashboardPage() {
           <InfoCard
             title="Não confirmados"
             icon={CalendarX}
-            value={2}
+            value={appointments.filter(appointment => !appointment.confirmado).length}
             subtitle="Consultas que não foram confirmadas"
           />
         </div>
@@ -143,16 +144,16 @@ export default function DashboardPage() {
               <TableBody>
                 {appointments.map((item, index) => (
                   <TableRow key={index}>
-                    <TableCell className="px-3 py-2 text-xs sm:px-4 sm:py-3 sm:text-sm">{item.name}</TableCell>
+                    <TableCell className="px-3 py-2 text-xs sm:px-4 sm:py-3 sm:text-sm">{item.idPaciente}</TableCell>
                     <TableCell className="px-3 py-2">
                       <Badge
                         variant="outline"
-                        className={`text-xs ${item.confirmed ? "text-green-400" : "text-red-400"} sm:text-sm`}
+                        className={`text-xs ${item.confirmado ? "text-green-400" : "text-red-400"} sm:text-sm`}
                       >
-                        {item.confirmed ? "Sim" : "Não"}
+                        {item.confirmado ? "Sim" : "Não"}
                       </Badge>
                     </TableCell>
-                    <TableCell className="px-3 py-2 text-xs sm:px-4 sm:py-3 sm:text-sm">{item.area}</TableCell>
+                    <TableCell className="px-3 py-2 text-xs sm:px-4 sm:py-3 sm:text-sm">{item.idProfissional}</TableCell>
                     <TableCell className="px-3 py-2">
                       <Link
                           href={`/agendamentos/${item.id}`}

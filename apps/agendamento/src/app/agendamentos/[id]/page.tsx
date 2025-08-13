@@ -29,13 +29,12 @@ function getStatusStyle(status: boolean, data: Date | null) {
 export default async function VisualizarAgendamento({ params }: PageProps) {
   const { id } = params;
 
-  // Busca os dados reais no backend
   const agendamento: AgendamentoResponseDTO = await getAgendamentoById(id);
 
-  const dataHoraStr = agendamento.agendamentoMarcado?.dataHora;
+  const dataHoraStr = agendamento?.proximaConsulta;
   const dataHoraDate = dataHoraStr ? new Date(dataHoraStr) : null;
 
-  const statusInfo = getStatusStyle(agendamento.consulta, dataHoraDate);
+  const statusInfo = getStatusStyle(agendamento.confirmado, dataHoraDate);
 
   return (
     <div className="mt-20 w-full mr-17 ml-10">
@@ -44,10 +43,10 @@ export default async function VisualizarAgendamento({ params }: PageProps) {
           <div className="bg-gray-200 rounded-full w-17 h-17 md:w-23 md:h-23">
             <Avatar className="p-5 w-17 h-17 md:w-23 md:h-23">
               <AvatarImage src="https://cdn-icons-png.flaticon.com/512/266/266033.png" alt="avatar" />
-              <AvatarFallback>{agendamento.nome?.at(0) || "?"}</AvatarFallback>
+              <AvatarFallback>{agendamento.idPaciente?.at(0) || "?"}</AvatarFallback>
             </Avatar>
           </div>
-          <h1 className="ml-10 text-[#0D4F97] text-xl md:text-2xl font-bold mr-5">{agendamento.nome}</h1>
+          <h1 className="ml-10 text-[#0D4F97] text-xl md:text-2xl font-bold mr-5">{agendamento.idPaciente}</h1>
         </div>
         <Badge className={`${statusInfo.class} text-white py-1 px-2 rounded-md text-xs cursor-default font-medium text-center`}>
           {statusInfo.text}
@@ -72,7 +71,7 @@ export default async function VisualizarAgendamento({ params }: PageProps) {
               </div>
               <div className="flex">
                 <p className="font-medium mr-2">Período: </p>
-                <p>{agendamento.agendamentoMarcado?.periodo || "—"}</p>
+                <p>{agendamento.frequenciaDias + " dias" || "—"}</p>
               </div>
             </div>
             <div className="flex mb-2">
@@ -81,19 +80,19 @@ export default async function VisualizarAgendamento({ params }: PageProps) {
             </div>
             <div className="flex mb-2">
               <p className="font-medium mr-2">Área de atendimento: </p>
-              <p>{agendamento.agendamentoMarcado?.areaDeAtendimento || "—"}</p>
+              <p>{agendamento.idProfissional || "—"}</p>
             </div>
             <div className="flex mb-2">
               <p className="font-medium mr-2">Confirmada: </p>
-              <p>{agendamento.agendamentoMarcado?.confirmado ? "Sim" : "Não"}</p>
+              <p>{agendamento.confirmado ? "Sim" : "Não"}</p>
             </div>
             <div className="mb-2">
               <p className="font-medium mb-1">Descrição: </p>
-              <p className="break-words whitespace-pre-wrap">{agendamento.agendamentoMarcado?.descricao || "—"}</p>
+              <p className="break-words whitespace-pre-wrap">{"—"}</p>
             </div>
             <div className="mb-3">
               <p className="font-medium mb-1">Justificativa: </p>
-              <p className="break-words whitespace-pre-wrap">{agendamento.agendamentoMarcado?.justificativa || "—"}</p>
+              <p className="break-words whitespace-pre-wrap">{"—"}</p>
             </div>
           </CardContent>
         </Card>

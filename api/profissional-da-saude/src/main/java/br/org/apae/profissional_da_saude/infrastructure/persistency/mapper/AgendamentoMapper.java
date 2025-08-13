@@ -16,6 +16,7 @@ public class AgendamentoMapper {
             .proximaConsulta(agendamento.getProximaConsulta())
             .horaProximaConsulta(agendamento.getHoraProximaConsulta())
             .frequenciaDias(agendamento.getFrequenciaDias())
+            .confirmado(agendamento.getConfirmado())
             .dataCriacao(agendamento.getDataCriacao())
             .build();
     }
@@ -28,7 +29,8 @@ public class AgendamentoMapper {
             agendamentoEntity.getFrequenciaDias(),
             agendamentoEntity.getProximaConsulta(),
             agendamentoEntity.getHoraProximaConsulta(),
-            agendamentoEntity.getDataCriacao()
+            agendamentoEntity.getDataCriacao(),
+            agendamentoEntity.getConfirmado()
         );
     }
 
@@ -39,7 +41,8 @@ public class AgendamentoMapper {
             dto.getIdProfissional(),
             dto.getFrequenciaDias(),
             dto.getProximaConsulta(),
-            dto.getHoraProximaConsulta()
+            dto.getHoraProximaConsulta(),
+            dto.getConfirmado()
         );
     }
 
@@ -51,6 +54,7 @@ public class AgendamentoMapper {
             .frequenciaDias(agendamento.getFrequenciaDias())
             .proximaConsulta(agendamento.getProximaConsulta())
             .horaProximaConsulta(agendamento.getHoraProximaConsulta())
+            .confirmado(agendamento.getConfirmado())
             .dataCriacao(agendamento.getDataCriacao())
             .build();
     }

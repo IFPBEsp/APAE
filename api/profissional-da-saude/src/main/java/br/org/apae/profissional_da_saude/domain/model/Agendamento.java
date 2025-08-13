@@ -14,6 +14,7 @@ public class Agendamento {
     private Integer frequenciaDias;
     private LocalDate proximaConsulta;
     private LocalTime horaProximaConsulta;
+    private Boolean confirmado;
     private LocalDateTime dataCriacao;
 
     public Agendamento(UUID idPaciente, UUID idProfissional, Integer frequenciaDias, LocalDate proximaConsulta, LocalTime horaProximaConsulta) {
@@ -22,6 +23,7 @@ public class Agendamento {
         this.frequenciaDias = frequenciaDias;
         this.proximaConsulta = proximaConsulta;
         this.horaProximaConsulta = horaProximaConsulta;
+        this.confirmado = false;
     }
 
     public Agendamento(UUID id, UUID idPaciente, UUID idProfissional, Integer frequenciaDias, LocalDate proximaConsulta, LocalTime horaProximaConsulta, LocalDateTime dataCriacao) {
@@ -32,6 +34,27 @@ public class Agendamento {
         this.proximaConsulta = proximaConsulta;
         this.horaProximaConsulta = horaProximaConsulta;
         this.dataCriacao = dataCriacao;
+        this.confirmado = false;
+    }
+
+    public Agendamento(UUID idPaciente, UUID idProfissional, Integer frequenciaDias, LocalDate proximaConsulta, LocalTime horaProximaConsulta, Boolean confirmado) {
+        this.idPaciente = idPaciente;
+        this.idProfissional = idProfissional;
+        this.frequenciaDias = frequenciaDias;
+        this.proximaConsulta = proximaConsulta;
+        this.horaProximaConsulta = horaProximaConsulta;
+        this.confirmado = confirmado;
+    }
+
+    public Agendamento(UUID id, UUID idPaciente, UUID idProfissional, Integer frequenciaDias, LocalDate proximaConsulta, LocalTime horaProximaConsulta, LocalDateTime dataCriacao, Boolean confirmado) {
+        this.id = id;
+        this.idPaciente = idPaciente;
+        this.idProfissional = idProfissional;
+        this.frequenciaDias = frequenciaDias;
+        this.proximaConsulta = proximaConsulta;
+        this.horaProximaConsulta = horaProximaConsulta;
+        this.dataCriacao = dataCriacao;
+        this.confirmado = confirmado;
     }
 
     public UUID getId() {
@@ -88,5 +111,13 @@ public class Agendamento {
 
     public void setDataCriacao(LocalDateTime dataCriacao) {
         this.dataCriacao = dataCriacao;
+    }
+
+    public Boolean getConfirmado() {
+        return confirmado;
+    }
+
+    public void setConfirmado(Boolean confirmado) {
+        this.confirmado = confirmado;
     }
 }
