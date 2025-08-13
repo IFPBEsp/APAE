@@ -1,10 +1,13 @@
 server:
-  port: 9000
+  port: 8082
 
-url_login_token: http://localhost:8080/realms/org-apae/protocol/openid-connect/token
+realms_name: master
+url_login_token: http://localhost:8080/realms/${realms_name}/protocol/openid-connect/token
 client_id: client-apae
-client_secret: F2PF1PiHZ4uyy4T0yojEDH4D33fIoDnW
-issuer_uri: http://localhost:8080/realms/org-apae
+client_secret: v4aLSXG5H4kwJDGf4ZBpMJKjZ0mhp1iX
+issuer_uri: http://localhost:8080/realms/${realms_name}
+keycloak_admin_url: http://localhost:8080/admin/realms/${realms_name}
+default_role: admin
 
 spring:
   application:
@@ -20,7 +23,7 @@ spring:
               - openid
         provider:
           keycloak:
-              issuer-uri: ${issuer_uri}
+            issuer-uri: ${issuer_uri}
       resourceserver:
         jwt:
           issuer-uri: ${issuer_uri}
