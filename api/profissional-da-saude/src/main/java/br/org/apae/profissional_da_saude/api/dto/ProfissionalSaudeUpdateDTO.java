@@ -17,7 +17,7 @@ public class ProfissionalSaudeUpdateDTO {
     private String telefone;
 
     @NotBlank
-    @Pattern(regexp = "^(CRM|COREN|CREFITO|CRFa|CRP|CRESS)([-/][A-Z]{2}|\\s\\d{2})?\\s?\\d{1,6}$|^[A-Za-z0-9./-]{3,100}$", message = "Documento profissional inválido")
+    @Pattern(regexp = "^(CRM|COREN|CREFITO|CRFa|CRP|CRESS)([-/][A-Z0-9]{1,2}|\\s\\d{2})?\\s?\\d{1,6}$|^[A-Za-z0-9./-]{3,100}$", message = "Documento profissional inválido")
     private String docProfissional;
 
     @Email(message = "E-mail inválido")
