@@ -19,7 +19,7 @@ function createAxiosInstance(baseURL: string) {
 
 export const createAuthAPI = async () => {
   const api = createAxiosInstance(
-    process.env.NEXT_PUBLIC_API_URL_AUTH || "http://localhost:9999/api/auth/"
+    process.env.NEXT_PUBLIC_API_URL_AUTH || "http://localhost:8082/api/auth/"
   );
 
   api.interceptors.request.use(

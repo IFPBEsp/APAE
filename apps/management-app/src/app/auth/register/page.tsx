@@ -22,11 +22,11 @@ import Link from "next/link";
 import { PrimaryButton } from "@/components/ButtonPrimary";
 import { PasswordInput } from "@/components/PasswordInputs";
 import { FormSignUp, signUpSchema } from "@/schemas/authSchema";
-import { signUp } from "../actions/actions";
 import { toast } from "react-toastify";
-import { redirect } from "next/navigation";
+import { useRouter } from "next/navigation";
 
 function Page() {
+  const router = useRouter();
   const form = useForm<FormSignUp>({
     resolver: zodResolver(signUpSchema),
     defaultValues: {
@@ -55,14 +55,24 @@ function Page() {
   };
 
   const onSubmit = async (data: FormSignUp) => {
-    const response = await signUp(data);
+    try {
+      const res = await fetch("/api/register", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data),
+      });
+      const responseData = await res.json();
 
-    if (response.status === "success") {
-      toast.success(response.message);
-      redirect("/auth/login");
-    } else {
-      console.error("Erro ao cadastrar usuário: ", response.message);
-      toast.error(response.message);
+      if (res.ok) {
+        toast.success(responseData.message);
+        router.push("/auth/login");
+      } else {
+        console.error("Erro ao cadastrar usuário:", responseData.message);
+        toast.error(responseData.message || "Erro ao cadastrar");
+      }
+    } catch (err) {
+      console.error(err);
+      toast.error("Erro inesperado");
     }
   };
 
