@@ -1,24 +1,48 @@
-package br.org.apae.profissional_da_saude.api.dto;
+export interface AgendamentoResponseDTO {
+  id: string;
+  idPaciente: string;
+  idProfissional: string;
+  frequenciaDias?: number;
+  proximaConsulta?: string; // formato ISO date, ex: "2025-08-12"
+  horaProximaConsulta?: string; // formato ISO time, ex: "14:30:00"
+  confirmado?: boolean;
+  dataCriacao?: string; // formato ISO datetime
 
-import lombok.Builder;
-import lombok.Getter;
-import lombok.Setter;
+  profissionalDaSaude?: ProfissionalSaudeDTO;
+  dadosPaciente?: DadosPacienteDTO;
+  dadosResidenciais?: DadosResidenciaisDTO;
+  informacoesSaudePaciente?: InformacoesSaudePacienteDTO;
+}
 
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.LocalTime;
-import java.util.UUID;
+export interface ProfissionalSaudeDTO {
+  id: string;
+  areaDaSaude?: string;
+  telefone?: string;
+  docProfissional?: string;
+  email?: string;
+  nome?: string;
+}
 
-@Getter
-@Setter
-@Builder
-public class AgendamentoResponseDTO {
-    private UUID id;
-    private UUID idPaciente;
-    private UUID idProfissional;
-    private Integer frequenciaDias;
-    private LocalDate proximaConsulta;
-    private LocalTime horaProximaConsulta;
-    private Boolean confirmado;
-    private LocalDateTime dataCriacao;
+export interface DadosPacienteDTO {
+  contato?: string;
+  dataDeNascimento?: string;
+  cpf?: string;
+  rg?: string;
+}
+
+export interface DadosResidenciaisDTO {
+  endereco?: string;
+  bairro?: string;
+  cidade?: string;
+  estado?: string;
+  cep?: string;
+}
+
+export interface InformacoesSaudePacienteDTO {
+  vacinas?: string[];
+  doencas?: string[];
+  alergias?: string[];
+  medicacoes?: string[];
+  deficiencia?: string;
+  atendimento?: string;
 }
