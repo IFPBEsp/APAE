@@ -20,7 +20,10 @@ import {
 } from "@/components/ui/form";
 import { useRouter } from "next/navigation";
 
+import { useCreateProfissional } from "@/hooks/profissional/use-create-profissional";
+
 export default function CadastroProfissional() {
+  const { create, loading, error, success } = useCreateProfissional();
   const router = useRouter();
 
   const form = useForm({
@@ -38,10 +41,21 @@ export default function CadastroProfissional() {
     router.push("/visualization-professional");
   }
 
-  function onSubmit(values: any) {
-    console.log("Dados salvos:", values);
-  }
+  async function onSubmit(values: any) {
+    try {
+      const payload = {
+        nome: values.nomeCompleto,
+        email: values.email,
+        docProfissional: values.documentoProfissional,
+        areaDaSaude: values.areaSaude,
+        telefone: values.telefone,
+      };
 
+      await create(payload);
+    } catch (e) {
+      console.error("Erro ao criar profissional", e);
+    }
+  }
   return (
     <div className="p-6">
       <h1 className="text-2xl font-bold mb-6">Cadastrar Profissional</h1>
@@ -83,21 +97,21 @@ export default function CadastroProfissional() {
             )}
           />
 
-          <div className="grid grid-cols-2 gap-4">
-            <FormField
-              control={form.control}
-              name="documentoProfissional"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Documento profissional</FormLabel>
-                  <FormControl>
-                    <Input placeholder="Ex: CRM/SP 123456" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+          <FormField
+            control={form.control}
+            name="documentoProfissional"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Documento profissional</FormLabel>
+                <FormControl>
+                  <Input placeholder="Ex: CRM/SP 123456" {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
 
+          <div className="grid grid-cols-2 gap-4">
             <FormField
               control={form.control}
               name="areaSaude"
@@ -122,22 +136,6 @@ export default function CadastroProfissional() {
                 </FormItem>
               )}
             />
-          </div>
-
-          <div className="grid grid-cols-2 gap-4">
-            <FormField
-              control={form.control}
-              name="cpf"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>CPF</FormLabel>
-                  <FormControl>
-                    <Input placeholder="123.456.789-00" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
 
             <FormField
               control={form.control}
@@ -154,11 +152,21 @@ export default function CadastroProfissional() {
             />
           </div>
 
+          {loading && <p className="text-blue-500">Salvando...</p>}
+          {error && <p className="text-red-500">Erro: {error}</p>}
+          {success && (
+            <p className="text-green-600">Profissional criado com sucesso!</p>
+          )}
+
           <div className="flex justify-end gap-4">
             <Button type="button" variant="outline" onClick={onCancel}>
               Cancelar
             </Button>
-            <Button type="submit" className="bg-blue-800 hover:bg-blue-900">
+            <Button
+              type="submit"
+              className="bg-blue-800 hover:bg-blue-900"
+              disabled={loading}
+            >
               Cadastrar
             </Button>
           </div>
