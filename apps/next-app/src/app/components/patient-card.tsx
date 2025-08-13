@@ -1,6 +1,7 @@
 "use client";
 
-import { Patient, PatientStatus } from "@/lib/mock-data";
+// 1. IMPORT CORRIGIDO: Agora usamos o tipo do nosso novo arquivo.
+import { Patient } from "@/lib/types";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -12,7 +13,8 @@ interface PatientCardProps {
   patient: Patient;
 }
 
-const statusTextStyles: Record<PatientStatus, string> = {
+// O tipo do status já está definido em `lib/types.ts`, então não precisamos mais de um tipo separado.
+const statusTextStyles = {
   Ativo: "text-[#468f71]",
   Inativo: "text-[#871d1e]",
   "Em Fila": "text-[#9f9e9e]",
@@ -44,8 +46,9 @@ export function PatientCard({ patient }: PatientCardProps) {
         <div className="flex items-center gap-4">
           <div className="flex flex-col items-center gap-2 flex-shrink-0">
             <Avatar className="h-20 w-20 border">
-              <AvatarImage src={patient.avatarUrl} alt={patient.name} />
-              <AvatarFallback>{patient.name.charAt(0)}</AvatarFallback>
+              {/* 2. PROPRIEDADES ATUALIZADAS */}
+              <AvatarImage src={patient.urlFoto} alt={patient.nome} />
+              <AvatarFallback>{patient.nome.charAt(0)}</AvatarFallback>
             </Avatar>
 
             <p className={cn("font-semibold text-sm", statusTextStyles[patient.status])}>
@@ -55,11 +58,12 @@ export function PatientCard({ patient }: PatientCardProps) {
 
           <div className="flex-1 flex flex-col h-full">
             <div>
-              <h3 className="text-base font-bold text-[#235d9b]">{patient.name}</h3>
+              {/* 2. PROPRIEDADES ATUALIZADAS */}
+              <h3 className="text-base font-bold text-[#235d9b]">{patient.nome}</h3>
               <div className="!text-[12px] text-[#235d9b] font-bold mt-1 space-y-0.5">
                 <p>CPF: {patient.cpf}</p>
-                <p>Contato: {patient.contact}</p>
-                <p>Cidade: {patient.city}</p>
+                <p>Contato: {patient.contato.telefone}</p>
+                <p>Cidade: {patient.cidade}</p>
               </div>
             </div>
 
