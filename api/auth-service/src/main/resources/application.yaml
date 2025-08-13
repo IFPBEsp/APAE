@@ -1,10 +1,10 @@
 server:
   port: 9000
-
+realm_name: "master"
 url_login_token: http://localhost:8080/realms/org-apae/protocol/openid-connect/token
 client_id: client-apae
-client_secret: F2PF1PiHZ4uyy4T0yojEDH4D33fIoDnW
-issuer_uri: http://localhost:8080/realms/org-apae
+client_secret: LeqRThncBPvVAoxnqrLcTUeXY6kLHQ8X
+issuer_uri: http://localhost:8080/realms/org-apae2
 
 spring:
   application:
