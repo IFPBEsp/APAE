@@ -18,6 +18,22 @@ export async function getTokenFromCookie(): Promise<string | null> {
   }
 }
 
+export async function getRefreshTokenFromCookie(): Promise<string | null> {
+  try {
+    const cookieStore = await cookies();
+    const sessionCookie = cookieStore.get("session");
+
+    if (sessionCookie?.value) {
+      const sessionData = JSON.parse(sessionCookie.value);
+      return sessionData.refreshToken || null;
+    }
+    return process.env.NEXT_PUBLIC_REFRESH_TOKEN || null;
+  } catch (error) {
+    console.error("Erro ao obter token do cookie:", error);
+    return null;
+  }
+}
+
 export async function removeSessionCookie(): Promise<void> {
   try {
     const cookieStore = await cookies();
@@ -30,6 +46,7 @@ export async function removeSessionCookie(): Promise<void> {
 export async function setSessionCookie(payload: {
   accessToken: string;
   expiresIn: number;
+  refreshToken: string;
 }): Promise<void> {
   try {
     const cookieStore = await cookies();

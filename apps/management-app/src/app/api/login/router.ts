@@ -3,10 +3,10 @@ import { createAuthAPI } from "@/lib/axios";
 import { AxiosError } from "axios";
 import { setSessionCookie } from "@/lib/cookies";
 
-export async function login(req: Request) {
-  const { email, password } = await req.json();
+export async function POST(req: Request) {
+  const { username, password } = await req.json();
 
-  if (!email || !password) {
+  if (!username || !password) {
     return NextResponse.json(
       { message: "Todos os campos são obrigatórios" },
       { status: 406 }
@@ -15,7 +15,7 @@ export async function login(req: Request) {
 
   try {
     const api = await createAuthAPI();
-    const response = await api.post("/signin", { email, password });
+    const response = await api.post("/signin", { username, password });
 
     if (!response.status || response.status !== 200) {
       return NextResponse.json(
@@ -27,6 +27,7 @@ export async function login(req: Request) {
     const payload = {
       accessToken: response.data.access_token,
       expiresIn: 60 * 1000,
+      refreshToken: response.data.refresh_token,
     };
 
     setSessionCookie(payload);
