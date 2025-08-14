@@ -21,7 +21,6 @@ import java.util.UUID;
 
 @RestController
 @RequestMapping("/pacientes")
-@CrossOrigin(origins = "http://localhost:3000")
 public class PacienteController {
 
     private final PacienteService service;

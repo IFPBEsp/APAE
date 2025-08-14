@@ -18,7 +18,7 @@ interface AgendamentoCreateDTO {
   horaProximaConsulta: string;
 }
 
-const API_BASE_URL = process.env.API_BASE_URL || "http://localhost:8080";
+const API_BASE_URL = process.env.API_BASE_URL || "http://localhost:8081";
 
 export async function saveAgendamento(
   novoAgendamento: AgendamentoCreateDTO
