@@ -1,32 +1,32 @@
-'use client'
+"use client";
 
-import { useEffect, useState } from "react"
-import { format } from "date-fns"
-import { ptBR } from "date-fns/locale"
+import { useEffect, useState } from "react";
+import { format } from "date-fns";
+import { ptBR } from "date-fns/locale";
 import {
   CalendarDays,
   Users,
   MessageCircleWarning,
-  CalendarX
-} from "lucide-react"
+  CalendarX,
+} from "lucide-react";
 
-import { Button } from "@/components/ui/button"
-import { Card, CardContent } from "@/components/ui/card"
+import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
 import {
   Table,
   TableBody,
   TableCell,
   TableHead,
   TableHeader,
-  TableRow
-} from "@/components/ui/table"
-import { Calendar } from "@/components/ui/calendar"
+  TableRow,
+} from "@/components/ui/table";
+import { Calendar } from "@/components/ui/calendar";
 import {
   Popover,
   PopoverContent,
-  PopoverTrigger
-} from "@/components/ui/popover"
-import { Badge } from "@/components/ui/badge"
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import { Badge } from "@/components/ui/badge";
 
 import {
   Dialog,
@@ -35,16 +35,18 @@ import {
   DialogTitle,
   DialogTrigger,
   DialogDescription,
-} from "@/components/ui/dialog"
+} from "@/components/ui/dialog";
 
-import { AppointmentForm } from "@/components/forms/AppointmentForm"
-import { InfoCard } from "@/components/shared/InfoCard"
+import { AppointmentForm } from "@/components/forms/AppointmentForm";
+import { InfoCard } from "@/components/shared/InfoCard";
 import Link from "next/link";
-import { AgendamentoResponseDTO, getAgendamentos } from "./services/agendamentoService";
+import { Agendamento, getAgendamentos } from "./services/agendamentoService";
 
 export default function DashboardPage() {
-  const [selectedDate, setSelectedDate] = useState<Date | undefined>(new Date());
-  const [appointments, setAppointments] = useState<AgendamentoResponseDTO[]>([]);
+  const [selectedDate, setSelectedDate] = useState<Date | undefined>(
+    new Date()
+  );
+  const [appointments, setAppointments] = useState<Agendamento[]>([]);
 
   useEffect(() => {
     const fetchAppointments = async () => {
@@ -58,7 +60,9 @@ export default function DashboardPage() {
     <div className="min-h-screen w-full text-sm overflow-x-hidden">
       <main className="flex-1 p-3 sm:p-6 max-w-[100vw] mx-auto">
         <div className="mb-4 flex flex-col justify-between gap-3 sm:mb-6 sm:flex-row sm:items-center">
-          <h1 className="text-lg font-bold sm:text-2xl">Agendamentos de Hoje</h1>
+          <h1 className="text-lg font-bold sm:text-2xl">
+            Agendamentos de Hoje
+          </h1>
           <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
             <Popover>
               <PopoverTrigger asChild>
@@ -67,9 +71,13 @@ export default function DashboardPage() {
                   className="w-full justify-start bg-white text-left font-normal text-xs sm:w-[220px] sm:text-sm"
                 >
                   <CalendarDays className="mr-2 h-4 w-4" />
-                  {selectedDate
-                    ? format(selectedDate, "dd 'de' MMMM 'de' yyyy", { locale: ptBR })
-                    : <span>Escolha uma data</span>}
+                  {selectedDate ? (
+                    format(selectedDate, "dd 'de' MMMM 'de' yyyy", {
+                      locale: ptBR,
+                    })
+                  ) : (
+                    <span>Escolha uma data</span>
+                  )}
                 </Button>
               </PopoverTrigger>
               <PopoverContent className="w-auto p-0 bg-white">
@@ -82,7 +90,7 @@ export default function DashboardPage() {
                 />
               </PopoverContent>
             </Popover>
-            
+
             <Dialog>
               <DialogTrigger asChild>
                 <Button className="w-full bg-blue-800 text-white hover:bg-blue-900 text-xs sm:w-auto sm:text-sm">
@@ -99,7 +107,6 @@ export default function DashboardPage() {
                 <AppointmentForm />
               </DialogContent>
             </Dialog>
-
           </div>
         </div>
 
@@ -125,7 +132,10 @@ export default function DashboardPage() {
           <InfoCard
             title="Não confirmados"
             icon={CalendarX}
-            value={appointments.filter(appointment => !appointment.confirmado).length}
+            value={
+              appointments.filter((appointment) => !appointment.confirmado)
+                .length
+            }
             subtitle="Consultas que não foram confirmadas"
           />
         </div>
@@ -135,29 +145,43 @@ export default function DashboardPage() {
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead className="px-3 py-2 text-xs sm:px-4 sm:py-3 sm:text-sm">Paciente</TableHead>
-                  <TableHead className="px-3 py-2 text-xs sm:px-4 sm:py-3 sm:text-sm">Confirmou Presença</TableHead>
-                  <TableHead className="px-3 py-2 text-xs sm:px-4 sm:py-3 sm:text-sm">Área</TableHead>
-                  <TableHead className="px-3 py-2 text-xs sm:px-4 sm:py-3 sm:text-sm">Ações</TableHead>
+                  <TableHead className="px-3 py-2 text-xs sm:px-4 sm:py-3 sm:text-sm">
+                    Paciente
+                  </TableHead>
+                  <TableHead className="px-3 py-2 text-xs sm:px-4 sm:py-3 sm:text-sm">
+                    Confirmou Presença
+                  </TableHead>
+                  <TableHead className="px-3 py-2 text-xs sm:px-4 sm:py-3 sm:text-sm">
+                    Profissional
+                  </TableHead>
+                  <TableHead className="px-3 py-2 text-xs sm:px-4 sm:py-3 sm:text-sm">
+                    Ações
+                  </TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {appointments.map((item, index) => (
                   <TableRow key={index}>
-                    <TableCell className="px-3 py-2 text-xs sm:px-4 sm:py-3 sm:text-sm">{item.idPaciente}</TableCell>
+                    <TableCell className="px-3 py-2 text-xs sm:px-4 sm:py-3 sm:text-sm">
+                      {item.paciente.nome}
+                    </TableCell>
                     <TableCell className="px-3 py-2">
                       <Badge
                         variant="outline"
-                        className={`text-xs ${item.confirmado ? "text-green-400" : "text-red-400"} sm:text-sm`}
+                        className={`text-xs ${
+                          item.confirmado ? "text-green-400" : "text-red-400"
+                        } sm:text-sm`}
                       >
                         {item.confirmado ? "Sim" : "Não"}
                       </Badge>
                     </TableCell>
-                    <TableCell className="px-3 py-2 text-xs sm:px-4 sm:py-3 sm:text-sm">{item.idProfissional}</TableCell>
+                    <TableCell className="px-3 py-2 text-xs sm:px-4 sm:py-3 sm:text-sm">
+                      {item.profissional.nome}
+                    </TableCell>
                     <TableCell className="px-3 py-2">
                       <Link
-                          href={`/agendamentos/${item.id}`}
-                          className="cursor-pointer text-xs text-blue-800 underline hover:underline sm:text-sm"
+                        href={`/agendamentos/${item.id}`}
+                        className="cursor-pointer text-xs text-blue-800 underline hover:underline sm:text-sm"
                       >
                         Detalhes
                       </Link>
@@ -170,5 +194,5 @@ export default function DashboardPage() {
         </Card>
       </main>
     </div>
-  )
+  );
 }

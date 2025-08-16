@@ -8,7 +8,7 @@ import { DateTimePicker } from "@/components/ui/date-time-picker";
 import { Input } from "@/components/ui/input";
 import { Combobox } from "@/components/ui/combobox";
 import { cn } from "@/lib/utils";
-import { mockPacientes, Paciente, saveAgendamento } from '@/app/services/agendamentoService';
+import { getPacientes, getProfissionaisDaSaude, Paciente, saveAgendamento } from '@/app/services/agendamentoService';
 
 type selectItem = {
   value: string;
@@ -36,13 +36,16 @@ export function AppointmentForm() {
   const [area, setArea] = useState<string>("");
   const [periodo, setPeriodo] = useState<string>("");
   const [listaPacientes, setListaPacientes] = useState<selectItem[]>([]);
+  const [listaProfissionais, setListaProfissionais] = useState<selectItem[]>([]);
 
   useEffect(() => {
-    const fetchMockPacientes = async () => {
-      const mock = await mockPacientes();
-      setListaPacientes(mock.map(p => ({ value: p.cidade, label: p.nome } as selectItem)))
+    const fetchPacientesEProfissionais = async () => {
+      const pacientesCadastrados = await getPacientes();
+      setListaPacientes(pacientesCadastrados.map(p => ({ value: p.id, label: p.nome } as selectItem)));
+      const profissionaisCadastrados = await getProfissionaisDaSaude();
+      setListaProfissionais(profissionaisCadastrados.map(p => ({ value: p.id, label: p.nome } as selectItem)));
     }
-    fetchMockPacientes();
+    fetchPacientesEProfissionais();
   }, []);
 
   const [validationErrors, setValidationErrors] = useState({
@@ -72,9 +75,9 @@ export function AppointmentForm() {
     const seconds = String(date.getSeconds()).padStart(2, '0');
     
     return [`${year}-${month}-${day}`, `${hours}:${minutes}:${seconds}`];
-};
+  };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
     const errors = {
@@ -91,14 +94,15 @@ export function AppointmentForm() {
     }
 
     if(paciente && area && periodo && dataHora) {
-      saveAgendamento({
+      await saveAgendamento({
         idPaciente: paciente,
-        idProfissional: "d8c30ca9-5ea4-475e-a1b1-05caa378d6a6",
+        idProfissional: area,
         frequenciaDias: parseInt(periodo),
         proximaConsulta: formatDate(calculateNextAppointment())[0],
         confirmado: false,
         horaProximaConsulta: formatDate(dataHora)[1]
-      })
+      });
+      window.location.reload();
     }
 
     console.log("Novo agendamento:", { dataHora, paciente, area, periodo });
@@ -159,7 +163,7 @@ export function AppointmentForm() {
               Área de Atendimento <span className="text-red-500">*</span>
             </Label>
             <Combobox
-              options={areasDeAtendimento}
+              options={listaProfissionais}
               value={area}
               onChange={setArea}
               placeholder="Pesquisar área de atendimento"

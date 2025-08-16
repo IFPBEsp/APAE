@@ -1,7 +1,9 @@
-export interface AgendamentoResponseDTO {
+const API_BASE_URL = process.env.API_BASE_URL || "http://localhost:8081";
+
+export interface Agendamento {
   id: string;
-  idPaciente: string;
-  idProfissional: string;
+  paciente: Paciente;
+  profissional: ProfissionalSaude;
   frequenciaDias: number;
   proximaConsulta: string;
   horaProximaConsulta: string;
@@ -18,57 +20,8 @@ interface AgendamentoCreateDTO {
   horaProximaConsulta: string;
 }
 
-const API_BASE_URL = process.env.API_BASE_URL || "http://localhost:8081";
-
-export async function saveAgendamento(
-  novoAgendamento: AgendamentoCreateDTO
-): Promise<AgendamentoResponseDTO> {
-  try {
-    const res = await fetch(`${API_BASE_URL}/agendamentos`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(novoAgendamento),
-    });
-    const data = await res.json();
-    return data as AgendamentoResponseDTO;
-  } catch (error) {
-    console.log(error);
-    throw error;
-  }
-}
-
-export async function getAgendamentos(): Promise<AgendamentoResponseDTO[]> {
-  try {
-    const response = await fetch(`${API_BASE_URL}/agendamentos`).then((res) =>
-      res.json()
-    );
-    console.log(response.content);
-    return response.content;
-  } catch (error) {
-    console.log(error);
-    throw error;
-  }
-}
-
-export async function getAgendamentoById(
-  id: string
-): Promise<AgendamentoResponseDTO> {
-  try {
-    const response = await fetch(`${API_BASE_URL}/agendamentos/${id}`).then(
-      (res) => res.json()
-    );
-    return response as AgendamentoResponseDTO;
-  } catch (error) {
-    console.log(error);
-    throw error;
-  }
-}
-
-/* MOCK PACIENTES */
-
 export interface Paciente {
+  id?: string;
   nome: string;
   email: string;
   telefone: string;
@@ -82,166 +35,333 @@ export interface Paciente {
   cep: string;
 }
 
-const pacientes = [
+export interface ProfissionalSaude {
+  id?: string;
+  areaDaSaude: string;
+  telefone: string;
+  docProfissional: string;
+  email: string;
+  nome: string;
+}
+
+const pacientes: Paciente[] = [
   {
     nome: "João Silva",
     email: "joao.silva@email.com",
     telefone: "(11) 91234-5678",
     dateNascimento: "1990-05-10",
-    cpf: "123.456.789-00",
+    cpf: "12345678900",
     rg: "12.345.678-9",
     endereco: "Rua A, 123",
     bairro: "Centro",
     cidade: "São Paulo",
     estado: "SP",
-    cep: "01000-000",
+    cep: "01000000",
   },
   {
     nome: "Maria Oliveira",
     email: "maria.oliveira@email.com",
     telefone: "(21) 98765-4321",
     dateNascimento: "1985-07-22",
-    cpf: "987.654.321-00",
+    cpf: "98765432100",
     rg: "98.765.432-1",
     endereco: "Rua B, 456",
     bairro: "Jardim Botânico",
     cidade: "Rio de Janeiro",
     estado: "RJ",
-    cep: "20000-000",
+    cep: "20000000",
   },
   {
     nome: "Carlos Santos",
     email: "carlos.santos@email.com",
     telefone: "(31) 93456-7890",
     dateNascimento: "1992-11-15",
-    cpf: "234.567.890-12",
+    cpf: "23456789012",
     rg: "23.456.789-0",
     endereco: "Avenida C, 789",
     bairro: "Funcionários",
     cidade: "Belo Horizonte",
     estado: "MG",
-    cep: "30123-456",
+    cep: "30123456",
   },
   {
     nome: "Ana Souza",
     email: "ana.souza@email.com",
     telefone: "(41) 98123-4567",
     dateNascimento: "1988-12-02",
-    cpf: "345.678.901-23",
+    cpf: "34567890123",
     rg: "34.567.890-1",
     endereco: "Rua D, 101",
     bairro: "Bigorrilho",
     cidade: "Curitiba",
     estado: "PR",
-    cep: "80210-100",
+    cep: "80210100",
   },
   {
     nome: "Felipe Pereira",
     email: "felipe.pereira@email.com",
     telefone: "(51) 93567-8912",
     dateNascimento: "1993-03-30",
-    cpf: "456.789.012-34",
+    cpf: "45678901234",
     rg: "45.678.901-2",
     endereco: "Rua E, 202",
     bairro: "Moinhos de Vento",
     cidade: "Porto Alegre",
     estado: "RS",
-    cep: "90035-200",
+    cep: "90035200",
   },
   {
     nome: "Patrícia Costa",
     email: "patricia.costa@email.com",
     telefone: "(61) 98123-0987",
     dateNascimento: "1995-09-10",
-    cpf: "567.890.123-45",
+    cpf: "56789012345",
     rg: "56.789.012-3",
     endereco: "Avenida F, 303",
     bairro: "Asa Sul",
     cidade: "Brasília",
     estado: "DF",
-    cep: "70070-100",
+    cep: "70070100",
   },
   {
     nome: "Lucas Almeida",
     email: "lucas.almeida@email.com",
     telefone: "(85) 99876-5432",
     dateNascimento: "1994-06-18",
-    cpf: "678.901.234-56",
+    cpf: "67890123456",
     rg: "67.890.123-4",
     endereco: "Rua G, 404",
     bairro: "Aldeota",
     cidade: "Fortaleza",
     estado: "CE",
-    cep: "60160-050",
+    cep: "60160050",
   },
   {
     nome: "Fernanda Rodrigues",
     email: "fernanda.rodrigues@email.com",
     telefone: "(11) 94321-8765",
     dateNascimento: "1991-02-25",
-    cpf: "789.012.345-67",
+    cpf: "78901234567",
     rg: "78.901.234-5",
     endereco: "Rua H, 505",
     bairro: "Vila Progredior",
     cidade: "São Paulo",
     estado: "SP",
-    cep: "02012-030",
+    cep: "02012030",
   },
   {
     nome: "Ricardo Martins",
     email: "ricardo.martins@email.com",
     telefone: "(41) 98765-4321",
     dateNascimento: "1987-10-05",
-    cpf: "890.123.456-78",
+    cpf: "89012345678",
     rg: "89.012.345-6",
     endereco: "Avenida I, 606",
     bairro: "Água Verde",
     cidade: "Curitiba",
     estado: "PR",
-    cep: "81050-210",
+    cep: "81050210",
   },
   {
     nome: "Juliana Rocha",
     email: "juliana.rocha@email.com",
     telefone: "(21) 96321-0987",
     dateNascimento: "1996-04-13",
-    cpf: "901.234.567-89",
+    cpf: "90123456789",
     rg: "90.123.456-7",
     endereco: "Rua J, 707",
     bairro: "Copacabana",
     cidade: "Rio de Janeiro",
     estado: "RJ",
-    cep: "22010-010",
+    cep: "22010010",
   },
 ];
 
-export async function mockPacientes(): Promise<Paciente[]> {
-  try {
-    const response = await fetch(`${API_BASE_URL}/pacientes?page=0&size=10`).then(res => res.json());
+const profissionais: ProfissionalSaude[] = [
+  {
+    areaDaSaude: "Fonoaudiologia",
+    telefone: "(11) 98765-4321",
+    docProfissional: "CRFa-1/12345",
+    email: "ana.fonou@email.com",
+    nome: "Ana Fonseca",
+  },
+  {
+    areaDaSaude: "Fisioterapia",
+    telefone: "(21) 91234-5678",
+    docProfissional: "CREFITO-2/54321-F",
+    email: "marcos.fisio@email.com",
+    nome: "Marcos Pereira",
+  },
+  {
+    areaDaSaude: "Psicologia",
+    telefone: "(31) 93456-7890",
+    docProfissional: "CRP-04/67890",
+    email: "juliana.psico@email.com",
+    nome: "Juliana Souza",
+  },
+  {
+    areaDaSaude: "Terapia Ocupacional",
+    telefone: "(41) 99876-1234",
+    docProfissional: "CREFITO-8/13579-TO",
+    email: "roberto.to@email.com",
+    nome: "Roberto Lima",
+  },
+  {
+    areaDaSaude: "Psicopedagogia",
+    telefone: "(61) 98123-4567",
+    docProfissional: "CRP-01/24680-PP",
+    email: "marcia.psi@email.com",
+    nome: "Márcia Andrade",
+  },
+  {
+    areaDaSaude: "Neurologia",
+    telefone: "(85) 98765-4321",
+    docProfissional: "CRM-CE/112233",
+    email: "dr.carlos.neuro@email.com",
+    nome: "Dr. Carlos Moreira",
+  },
+  {
+    areaDaSaude: "Psiquiatria",
+    telefone: "(11) 97654-3210",
+    docProfissional: "CRM-SP/445566",
+    email: "dra.luana.psi@email.com",
+    nome: "Dra. Luana Rocha",
+  },
+  {
+    areaDaSaude: "Enfermagem",
+    telefone: "(71) 92345-6789",
+    docProfissional: "COREN-BA/998877",
+    email: "fernando.enf@email.com",
+    nome: "Fernando Nogueira",
+  },
+  {
+    areaDaSaude: "Pediatria",
+    telefone: "(51) 93456-1234",
+    docProfissional: "CRM-RS/556677",
+    email: "dra.claudia.ped@email.com",
+    nome: "Dra. Cláudia Martins",
+  },
+  {
+    areaDaSaude: "Nutrição",
+    telefone: "(27) 91234-8765",
+    docProfissional: "CRN-4/332211",
+    email: "camila.nutri@email.com",
+    nome: "Camila Ribeiro",
+  },
+];
 
-    if(response.content.length) {
-      return response.content;
+export async function saveAgendamento(
+  novoAgendamento: AgendamentoCreateDTO
+): Promise<Agendamento> {
+  try {
+    const res = await fetch(`${API_BASE_URL}/agendamentos`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(novoAgendamento),
+    });
+    const data = await res.json();
+    return data as Agendamento;
+  } catch (error) {
+    console.log(error);
+    throw error;
+  }
+}
+
+export async function getAgendamentos(): Promise<Agendamento[]> {
+  try {
+    const response = await fetch(`${API_BASE_URL}/agendamentos`).then((res) =>
+      res.json()
+    );
+
+    const agendamentos: Agendamento[] = [];
+    for (let agendamento of response.content) {
+      const paciente = await fetch(
+      `${API_BASE_URL}/pacientes/${agendamento.idPaciente}`
+      ).then((res) => res.json());
+      const profissional = await fetch(
+        `${API_BASE_URL}/profissionais/${agendamento.idProfissional}`
+      ).then((res) => res.json());
+
+      console.log(profissional)
+
+      agendamentos.push({ ...agendamento, paciente, profissional });
     }
 
-    try {
-      const novosPacientes: Paciente[] = [];
-      for (const paciente of pacientes) {
-        const response = await fetch(`${API_BASE_URL}/pacientes/create`, {
+    return agendamentos;
+  } catch (error) {
+    console.log(error);
+    throw error;
+  }
+}
+
+export async function getAgendamentoById(id: string): Promise<Agendamento> {
+  try {
+    const response = await fetch(`${API_BASE_URL}/agendamentos/${id}`).then(
+      (res) => res.json()
+    );
+    return response;
+  } catch (error) {
+    console.log(error);
+    throw error;
+  }
+}
+
+export async function getPacientes(): Promise<Paciente[]> {
+  try {
+    const response = await fetch(
+      `${API_BASE_URL}/pacientes?page=0&size=100`
+    ).then((res) => res.json());
+
+    const existentes = new Set(response.content.map((p: Paciente) => p.cpf));
+
+    const novosPacientes: Paciente[] = response.content;
+
+    for (const paciente of pacientes) {
+      if (!existentes.has(paciente.cpf)) {
+        const res = await fetch(`${API_BASE_URL}/pacientes/create`, {
           method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
+          headers: { "Content-Type": "application/json" },
           body: JSON.stringify(paciente),
         }).then((res) => res.json());
 
-        novosPacientes.push(response as Paciente);
+        novosPacientes.push(res);
       }
-
-      return novosPacientes;
-    } catch (error) {
-      console.log(error);
-      throw error;
     }
+
+    return novosPacientes;
+  } catch (error) {
+    console.log(error);
+    throw error;
+  }
+}
+
+export async function getProfissionaisDaSaude(): Promise<ProfissionalSaude[]> {
+  try {
+    const response = await fetch(
+      `${API_BASE_URL}/profissionais?page=0&size=100`
+    ).then((res) => res.json());
+
+    const existentes = new Set(
+      response.content.map((p: ProfissionalSaude) => p.docProfissional)
+    );
+
+    const novosProfissionais: ProfissionalSaude[] = response.content;
+
+    for (const profissional of profissionais) {
+      if (!existentes.has(profissional.docProfissional)) {
+        const res = await fetch(`${API_BASE_URL}/profissionais`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(profissional),
+        }).then((res) => res.json());
+
+        novosProfissionais.push(res);
+      }
+    }
+
+    return novosProfissionais;
   } catch (error) {
     console.log(error);
     throw error;
