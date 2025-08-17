@@ -267,10 +267,10 @@ export async function saveAgendamento(
       `${API_BASE_URL}/agendamentos${id ? `/${id}` : ""}`,
       {
         method: id ? "PUT" : "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(novoAgendamento),
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(novoAgendamento),
       }
     );
     const data = await res.json();
@@ -290,13 +290,11 @@ export async function getAgendamentos(): Promise<Agendamento[]> {
     const agendamentos: Agendamento[] = [];
     for (let agendamento of response.content) {
       const paciente = await fetch(
-      `${API_BASE_URL}/pacientes/${agendamento.idPaciente}`
+        `${API_BASE_URL}/pacientes/${agendamento.idPaciente}`
       ).then((res) => res.json());
       const profissional = await fetch(
         `${API_BASE_URL}/profissionais/${agendamento.idProfissional}`
       ).then((res) => res.json());
-
-      console.log(profissional)
 
       agendamentos.push({ ...agendamento, paciente, profissional });
     }
@@ -310,10 +308,28 @@ export async function getAgendamentos(): Promise<Agendamento[]> {
 
 export async function getAgendamentoById(id: string): Promise<Agendamento> {
   try {
-    const response = await fetch(`${API_BASE_URL}/agendamentos/${id}`).then(
+    const agendamento = await fetch(`${API_BASE_URL}/agendamentos/${id}`).then(
       (res) => res.json()
     );
-    return response;
+    const paciente = await fetch(
+      `${API_BASE_URL}/pacientes/${agendamento.idPaciente}`
+    ).then((res) => res.json());
+    const profissional = await fetch(
+      `${API_BASE_URL}/profissionais/${agendamento.idProfissional}`
+    ).then((res) => res.json());
+
+    return { ...agendamento, paciente, profissional };
+  } catch (error) {
+    console.log(error);
+    throw error;
+  }
+}
+
+export async function deleteAgendamento(id: string): Promise<void> {
+  try {
+    await fetch(`${API_BASE_URL}/agendamentos/${id}`, {
+      method: "DELETE",
+    });
   } catch (error) {
     console.log(error);
     throw error;

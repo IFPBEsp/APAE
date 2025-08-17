@@ -1,5 +1,6 @@
 package br.org.apae.profissional_da_saude.infrastructure.persistency.impl;
 
+import java.util.Optional;
 import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,9 +33,8 @@ public class ProfissionalSaudeRepositoryImpl implements ProfissionalSaudeReposit
   }
 
   @Override
-  public ProfissionalSaude findById(UUID id) {
-    // TODO: Implementar método
-    return null;
+  public Optional<ProfissionalSaude> findById(UUID id) {
+    return repositoryJpa.findById(id).map(ProfissionalSaudeMapper::toModel);
   }
 
   @Override

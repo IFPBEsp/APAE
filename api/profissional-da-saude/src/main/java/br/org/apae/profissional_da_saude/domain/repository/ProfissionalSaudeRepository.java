@@ -1,5 +1,7 @@
 package br.org.apae.profissional_da_saude.domain.repository;
 
+import java.nio.file.OpenOption;
+import java.util.Optional;
 import java.util.UUID;
 
 import org.springframework.data.domain.Page;
@@ -12,8 +14,7 @@ public interface ProfissionalSaudeRepository {
 
   Page<ProfissionalSaude> findAll(Pageable pageable);
   
-  //TODO
-  ProfissionalSaude findById(UUID id);
+  Optional<ProfissionalSaude> findById(UUID id);
   
   //TODO
   ProfissionalSaude update(ProfissionalSaude profissionalSaude);

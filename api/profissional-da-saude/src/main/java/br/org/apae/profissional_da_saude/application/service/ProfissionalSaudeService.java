@@ -2,6 +2,7 @@ package br.org.apae.profissional_da_saude.application.service;
 
 import br.org.apae.profissional_da_saude.api.dto.ProfissionalSaudeCreateDTO;
 import br.org.apae.profissional_da_saude.api.dto.ProfissionalSaudeResponseDTO;
+import br.org.apae.profissional_da_saude.application.service.exceptions.ProfissionalNaoEncontradoException;
 import br.org.apae.profissional_da_saude.domain.model.ProfissionalSaude;
 import br.org.apae.profissional_da_saude.domain.repository.ProfissionalSaudeRepository;
 import br.org.apae.profissional_da_saude.infrastructure.persistency.mapper.ProfissionalSaudeMapper;
@@ -35,6 +36,7 @@ public class ProfissionalSaudeService {
   }
 
   public ProfissionalSaudeResponseDTO findById(UUID id) {
-    return ProfissionalSaudeMapper.toResponseDTO(repository.findById(id));
+    ProfissionalSaude profissionalEncontrado = repository.findById(id).orElseThrow(ProfissionalNaoEncontradoException::new);
+    return ProfissionalSaudeMapper.toResponseDTO(profissionalEncontrado);
   }
 }
