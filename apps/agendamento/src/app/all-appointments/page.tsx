@@ -1,79 +1,114 @@
-'use client'
+"use client";
 
-import { useState } from "react"
-import { format } from "date-fns"
-import { ptBR } from "date-fns/locale"
+import { useState, useEffect } from "react";
+import { format } from "date-fns";
+import { ptBR } from "date-fns/locale";
 import {
   CalendarDays,
   MessageCircleWarning,
   CalendarX,
   SearchIcon,
-} from "lucide-react"
+  Users,
+} from "lucide-react";
 
-import { Button } from "@/components/ui/button"
-import { Card, CardContent } from "@/components/ui/card"
+import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
 import {
   Table,
   TableBody,
   TableCell,
   TableHead,
   TableHeader,
-  TableRow
-} from "@/components/ui/table"
-import { Calendar } from "@/components/ui/calendar"
+  TableRow,
+} from "@/components/ui/table";
+import { Calendar } from "@/components/ui/calendar";
 import {
   Popover,
   PopoverContent,
-  PopoverTrigger
-} from "@/components/ui/popover"
+  PopoverTrigger,
+} from "@/components/ui/popover";
 
-import { InfoCard } from "@/components/shared/InfoCard"
-import { Input } from "@/components/ui/input"
-import { Select, SelectItem } from "@/components/ui/select"
-import { SelectContent, SelectGroup, SelectLabel, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { InfoCard } from "@/components/shared/InfoCard";
+import { Input } from "@/components/ui/input";
+import { Select, SelectItem } from "@/components/ui/select";
+import {
+  SelectContent,
+  SelectGroup,
+  SelectLabel,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Agendamento, getAgendamentos, getAreasDaSaude } from "../services/agendamentoService";
+import { separaETransformaEmNumero } from "@/lib/utils";
+import Link from "next/link";
+
+type Area = {
+  id: number;
+  name: string;
+}
 
 export default function AllApointments() {
-  const [selectedDate, setSelectedDate] = useState<Date | undefined>(undefined)
-  const [selectedArea, setSelectedArea] = useState('')
-  const [searchName, setSearchName] = useState('')
+  const [selectedDate, setSelectedDate] = useState<Date | undefined>(undefined);
+  const [selectedArea, setSelectedArea] = useState("");
+  const [searchName, setSearchName] = useState("");
+  const [areas, setAreas] = useState<Area[]>([]);
+  const [appointments, setAppointments] = useState<Agendamento[]>([]);
 
-  const areas = [
-    { id: 1, name: "Cardiologia" },
-    { id: 2, name: "Psicologia" },
-    { id: 3, name: "Nutrição" },
-    { id: 4, name: "Psiquiatria" },
-  ]
+  useEffect(() => {
+    const fetchAppointments = async () => {
+      const response = await getAgendamentos();
+      setAppointments(response);
+      const areasExistentes: Area[] = (await getAreasDaSaude()).map((area, index) => ({ id: index, name: area } as Area));
+      setAreas(areasExistentes);
+    };
+    fetchAppointments();
+  }, []);
 
-  const appointments = [
-    { name: "João Oliveira", nextAppointment: new Date(2025, 0, 25), area: "Cardiologia" },
-    { name: "Maria Silva", nextAppointment: new Date(2025, 1, 12), area: "Psicologia" },
-    { name: "João Henrique", nextAppointment: new Date(2025, 2, 21), area: "Psiquiatria" },
-    { name: "Lucas Ferreira", nextAppointment: new Date(2025, 3, 28), area: "Nutrição" },
-    { name: "Rafael Andrade", nextAppointment: new Date(2025, 4, 25), area: "Psiquiatria" },
-    { name: "Ana Beatriz", nextAppointment: new Date(2025, 5, 2), area: "Nutrição" },
-    { name: "Júlia Fernandes", nextAppointment: new Date(2025, 6, 29), area: "Psicologia" },
-  ]
+  useEffect(() => {
+    console.log(selectedArea);
+  }, [selectedArea]);
 
   const filteredAppointments = appointments.filter((appointment) => {
-    const matchesArea = selectedArea ? appointment.area === selectedArea : true;
-    const matchesName = appointment.name.toLowerCase().includes(searchName.trim().toLowerCase());
-    const matchesDate = selectedDate
-      ? appointment.nextAppointment.toDateString() === selectedDate.toDateString()
+    const matchesArea = selectedArea
+      ? appointment.profissional.areaDaSaude === selectedArea
       : true;
-    return matchesArea && matchesName && matchesDate;
+    const matchesPatientName = appointment.paciente.nome
+      .toLowerCase()
+      .includes(searchName.trim().toLowerCase());
+    const matchesProfessionalName = appointment.profissional.nome
+      .toLowerCase()
+      .includes(searchName.trim().toLowerCase());
+    const dateAppointment = separaETransformaEmNumero(
+      appointment.proximaConsulta,
+      "-"
+    );
+    const matchesDate = selectedDate
+      ? new Date(
+          dateAppointment[0],
+          dateAppointment[1],
+          dateAppointment[2]
+        ).toDateString() === selectedDate.toDateString()
+      : true;
+    return (
+      matchesArea &&
+      (matchesPatientName || matchesProfessionalName) &&
+      matchesDate
+    );
   });
 
   const clearFilter = () => {
-    setSelectedArea('');
-    setSearchName('');
+    setSelectedArea("");
+    setSearchName("");
     setSelectedDate(undefined);
-  }
+  };
 
   return (
     <div className="min-h-screen w-full text-sm overflow-x-hidden">
       <main className="flex-1 p-3 sm:p-6 w-full max-w-none">
         <div className="mb-4 flex flex-col justify-between gap-3 sm:mb-6 sm:flex-row sm:items-center">
-          <h1 className="text-lg font-bold sm:text-2xl">Todos os Agendamentos</h1>
+          <h1 className="text-lg font-bold sm:text-2xl">
+            Todos os Agendamentos
+          </h1>
           <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
             <Popover>
               <PopoverTrigger asChild>
@@ -82,9 +117,13 @@ export default function AllApointments() {
                   className="w-full justify-start bg-white text-left font-normal text-xs sm:w-[220px] sm:text-sm"
                 >
                   <CalendarDays className="mr-2 h-4 w-4" />
-                  {selectedDate
-                    ? format(selectedDate, "dd 'de' MMMM 'de' yyyy", { locale: ptBR })
-                    : <span>Escolha uma data</span>}
+                  {selectedDate ? (
+                    format(selectedDate, "dd 'de' MMMM 'de' yyyy", {
+                      locale: ptBR,
+                    })
+                  ) : (
+                    <span>Escolha uma data</span>
+                  )}
                 </Button>
               </PopoverTrigger>
               <PopoverContent className="w-auto p-0 bg-white">
@@ -105,16 +144,27 @@ export default function AllApointments() {
 
         <div className="mb-4 grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
           <InfoCard
+            title="Todos os agendamentos"
+            icon={Users}
+            value={appointments.length}
+          />
+          <InfoCard
             title="Sem justificativa"
             icon={MessageCircleWarning}
-            value={3}
+            value={
+              appointments.filter(
+                (appointment) =>
+                  !appointment.confirmado && !appointment.justificativa
+              ).length
+            }
             iconColor="text-red-400"
             subtitle="Pacientes que não justificaram suas faltas"
           />
           <InfoCard
             title="Não confirmados"
             icon={CalendarX}
-            value={2}
+            value={appointments.filter((appointment) => !appointment.confirmado)
+                .length}
             subtitle="Consultas que não foram confirmadas"
           />
         </div>
@@ -122,10 +172,15 @@ export default function AllApointments() {
         <div className="flex items-center gap-2 mb-4">
           <div className="relative w-full">
             <SearchIcon className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-            <Input placeholder="Buscar paciente..." className="pl-10 pr-3" value={searchName} onChange={(e) => setSearchName(e.target.value)}/>
+            <Input
+              placeholder="Buscar paciente ou profissional..."
+              className="pl-10 pr-3"
+              value={searchName}
+              onChange={(e) => setSearchName(e.target.value)}
+            />
           </div>
 
-          <Select onValueChange={(value) => setSelectedArea(value)}>
+          <Select onValueChange={setSelectedArea}>
             <SelectTrigger className="data-[placeholder]:text-black">
               <SelectValue placeholder="Área da Saúde" />
             </SelectTrigger>
@@ -140,7 +195,7 @@ export default function AllApointments() {
               </SelectGroup>
             </SelectContent>
           </Select>
-          {( selectedArea || selectedDate || searchName ) && (
+          {(selectedArea || selectedDate || searchName) && (
             <Button
               variant="outline"
               onClick={clearFilter}
@@ -156,32 +211,61 @@ export default function AllApointments() {
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead className="px-3 py-2 text-xs sm:px-4 sm:py-3 sm:text-sm">Paciente</TableHead>
-                  <TableHead className="px-3 py-2 text-xs sm:px-4 sm:py-3 sm:text-sm">Próxima Consulta</TableHead>
-                  <TableHead className="px-3 py-2 text-xs sm:px-4 sm:py-3 sm:text-sm">Área</TableHead>
-                  <TableHead className="px-3 py-2 text-xs sm:px-4 sm:py-3 sm:text-sm">Ações</TableHead>
+                  <TableHead className="px-3 py-2 text-xs sm:px-4 sm:py-3 sm:text-sm">
+                    Paciente
+                  </TableHead>
+                  <TableHead className="px-3 py-2 text-xs sm:px-4 sm:py-3 sm:text-sm">
+                    Próxima Consulta
+                  </TableHead>
+                  <TableHead className="px-3 py-2 text-xs sm:px-4 sm:py-3 sm:text-sm">
+                    Profissional
+                  </TableHead>
+                  <TableHead className="px-3 py-2 text-xs sm:px-4 sm:py-3 sm:text-sm">
+                    Ações
+                  </TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {filteredAppointments.map((item, index) => (
-                  <TableRow key={index}>
-                    <TableCell className="px-3 py-2 text-xs sm:px-4 sm:py-3 sm:text-sm">{item.name}</TableCell>
-                    <TableCell className="px-3 py-2 text-xs sm:px-4 sm:py-3 sm:text-sm text-gray-800">
-                        {format(new Date(item.nextAppointment), "dd 'de' MMMM 'de' yyyy", { locale: ptBR })}
-                    </TableCell>
-                    <TableCell className="px-3 py-2 text-xs sm:px-4 sm:py-3 sm:text-sm">{item.area}</TableCell>
-                    <TableCell className="px-3 py-2">
-                      <span className="cursor-pointer text-xs text-blue-800 underline hover:underline sm:text-sm">
-                        Detalhes
-                      </span>
-                    </TableCell>
-                  </TableRow>
-                ))}
+                {filteredAppointments.map((item, index) => {
+                  const dateAppointment = separaETransformaEmNumero(
+                    item.proximaConsulta,
+                    "-"
+                  );
+                  return (
+                    <TableRow key={index}>
+                      <TableCell className="px-3 py-2 text-xs sm:px-4 sm:py-3 sm:text-sm">
+                        {item.paciente.nome}
+                      </TableCell>
+                      <TableCell className="px-3 py-2 text-xs sm:px-4 sm:py-3 sm:text-sm text-gray-800">
+                        {format(
+                          new Date(
+                            dateAppointment[0],
+                            dateAppointment[1],
+                            dateAppointment[2]
+                          ),
+                          "dd 'de' MMMM 'de' yyyy",
+                          { locale: ptBR }
+                        )}
+                      </TableCell>
+                      <TableCell className="px-3 py-2 text-xs sm:px-4 sm:py-3 sm:text-sm">
+                        {item.profissional.nome}
+                      </TableCell>
+                      <TableCell className="px-3 py-2">
+                        <Link
+                          href={`/agendamentos/${item.id}`}
+                          className="cursor-pointer text-xs text-blue-800 underline hover:underline sm:text-sm"
+                        >
+                          Detalhes
+                        </Link>
+                      </TableCell>
+                    </TableRow>
+                  );
+                })}
               </TableBody>
             </Table>
           </CardContent>
         </Card>
       </main>
     </div>
-  )
+  );
 }

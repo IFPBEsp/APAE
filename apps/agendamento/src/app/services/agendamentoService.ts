@@ -13,7 +13,7 @@ export interface Agendamento {
   dataCriacao: string;
 }
 
-interface AgendamentoCreateDTO {
+export interface AgendamentoCreateDTO {
   idPaciente: string;
   idProfissional: string;
   frequenciaDias: number;
@@ -281,9 +281,11 @@ export async function saveAgendamento(
   }
 }
 
-export async function getAgendamentos(): Promise<Agendamento[]> {
+export async function getAgendamentos(data?: string, hora?: string): Promise<Agendamento[]> {
   try {
-    const response = await fetch(`${API_BASE_URL}/agendamentos`).then((res) =>
+    const response = await fetch(`${API_BASE_URL}/agendamentos${data ? `?data=${data}` : ""}${hora ? `&hora=${hora}` : ""}`, {
+      
+    }).then((res) =>
       res.json()
     );
 
@@ -390,6 +392,19 @@ export async function getProfissionaisDaSaude(): Promise<ProfissionalSaude[]> {
     }
 
     return novosProfissionais;
+  } catch (error) {
+    console.log(error);
+    throw error;
+  }
+}
+
+export async function getAreasDaSaude(): Promise<String[]> {
+  try {
+    const response = await fetch(
+      `${API_BASE_URL}/profissionais/areas`
+    ).then((res) => res.json());
+
+    return response.content;
   } catch (error) {
     console.log(error);
     throw error;

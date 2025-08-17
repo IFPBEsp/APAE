@@ -43,18 +43,21 @@ import Link from "next/link";
 import { Agendamento, getAgendamentos } from "./services/agendamentoService";
 
 export default function DashboardPage() {
-  const [selectedDate, setSelectedDate] = useState<Date | undefined>(
-    new Date()
-  );
+  const [selectedDate, setSelectedDate] = useState<Date>(new Date());
   const [appointments, setAppointments] = useState<Agendamento[]>([]);
+  const [allAppointments, setAllAppointments] = useState<Agendamento[]>([]);
 
   useEffect(() => {
     const fetchAppointments = async () => {
-      const response = await getAgendamentos();
-      setAppointments(response);
+      const todayAppointments = await getAgendamentos(
+        format(selectedDate, "yyyy-MM-dd")
+      );
+      const allExistingAppointments = await getAgendamentos();
+      setAppointments(todayAppointments);
+      setAllAppointments(allExistingAppointments);
     };
     fetchAppointments();
-  }, []);
+  }, [selectedDate]);
 
   return (
     <div className="min-h-screen w-full text-sm overflow-x-hidden">
@@ -87,6 +90,7 @@ export default function DashboardPage() {
                   onSelect={setSelectedDate}
                   initialFocus
                   locale={ptBR}
+                  required
                 />
               </PopoverContent>
             </Popover>
@@ -114,18 +118,29 @@ export default function DashboardPage() {
           <InfoCard
             title="Agendados pra hoje"
             icon={Users}
-            value={6}
-            subtitle="5 confirmados, 2 pendentes"
+            value={appointments.length}
+            subtitle={`${
+              appointments.filter((appointment) => appointment.confirmado)
+                .length
+            } confirmados, ${
+              appointments.filter((appointment) => !appointment.confirmado)
+                .length
+            } pendentes`}
           />
           <InfoCard
             title="Todos os agendamentos"
             icon={Users}
-            value={appointments.length}
+            value={allAppointments.length}
           />
           <InfoCard
             title="Sem justificativa"
             icon={MessageCircleWarning}
-            value={3}
+            value={
+              appointments.filter(
+                (appointment) =>
+                  !appointment.confirmado && !appointment.justificativa
+              ).length
+            }
             iconColor="text-red-400"
             subtitle="Pacientes que não justificaram suas faltas"
           />

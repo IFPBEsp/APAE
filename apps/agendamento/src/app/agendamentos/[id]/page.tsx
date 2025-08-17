@@ -7,13 +7,25 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { SquareArrowOutUpRight } from "lucide-react";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+  DialogDescription,
+} from "@/components/ui/dialog";
+import { Pencil } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 import {
   getAgendamentoById,
-  Agendamento,
+  Agendamento
 } from "@/app/services/agendamentoService";
+import { AppointmentForm } from "@/components/forms/AppointmentForm";
+import TrashButton from "@/components/buttons/trashButton";
+import ConfirmButton from "@/components/buttons/confirmButton";
+import { separaETransformaEmNumero } from "@/lib/utils";
 
 interface PageProps {
   params: {
@@ -26,25 +38,37 @@ function getStatusStyle(status: boolean | undefined, data: Date | null) {
     return { class: "bg-gray-400", text: "Data Inválida" };
   }
   const dataAtual = new Date();
-  if (status) {
+  if (status && data < dataAtual) {
     return { class: "bg-[#0D9767]", text: "Consulta Realizada" };
+  } else if (status) {
+    return { class: "bg-[#0D4F97]", text: "Consulta Confirmada" };
   } else if (data > dataAtual) {
-    return { class: "bg-[#0D4F97]", text: "Consulta Pendente" };
+    return { class: "bg-[#f0bc1f]", text: "Consulta Pendente" };
   } else {
     return { class: "bg-[#970D0D]", text: "Consulta Não Realizada" };
   }
 }
 
 export default async function VisualizarAgendamento({ params }: PageProps) {
-  const { id } = params;
-
+  const { id } = await params;
   const agendamento: Agendamento = await getAgendamentoById(id);
-
-  // proximaConsulta é LocalDate no backend, aqui converta para Date com cuidado:
-  const dataHoraDate = agendamento.proximaConsulta
-    ? new Date(agendamento.proximaConsulta)
-    : null;
-
+  const [ano, mes, dia] = separaETransformaEmNumero(
+    agendamento.proximaConsulta,
+    "-"
+  );
+  const [hora, minuto, segundo] = separaETransformaEmNumero(
+    agendamento.horaProximaConsulta,
+    ":"
+  );
+  const dataHoraDate =
+    !isNaN(ano) &&
+    !isNaN(mes) &&
+    !isNaN(dia) &&
+    !isNaN(hora) &&
+    !isNaN(minuto) &&
+    !isNaN(segundo)
+      ? new Date(ano, mes, dia, hora, minuto, segundo)
+      : null;
   const statusInfo = getStatusStyle(agendamento.confirmado, dataHoraDate);
 
   return (
@@ -57,14 +81,13 @@ export default async function VisualizarAgendamento({ params }: PageProps) {
                 src="https://cdn-icons-png.flaticon.com/512/266/266033.png"
                 alt="avatar"
               />
-              {/* UUID precisa ser convertido em string para pegar primeira letra */}
               <AvatarFallback>
-                {agendamento.idPaciente?.toString().charAt(0) || "?"}
+                {agendamento.paciente.nome.charAt(0) || "?"}
               </AvatarFallback>
             </Avatar>
           </div>
           <h1 className="ml-10 text-[#0D4F97] text-xl md:text-2xl font-bold mr-5">
-            {agendamento.idPaciente}
+            {agendamento.paciente.nome}
           </h1>
         </div>
         <Badge
@@ -82,9 +105,24 @@ export default async function VisualizarAgendamento({ params }: PageProps) {
               Agendamento
             </CardTitle>
             <CardAction>
-              <Button className="bg-transparent cursor-pointer text-[#0D4F97] hover:text-[#0d4f55] active:text-[#0d4ffe] hover:bg-transparent transition-colors">
-                <SquareArrowOutUpRight />
-              </Button>
+              <Dialog>
+                <DialogTrigger asChild>
+                  <Button className="bg-transparent cursor-pointer text-[#0D4F97] hover:text-[#0d4f55] active:text-[#0d4ffe] hover:bg-[rgba(0,0,0,0.1)] transition-colors">
+                    <Pencil />
+                  </Button>
+                </DialogTrigger>
+                <DialogContent className="w-full sm:max-w-[425px]">
+                  <DialogHeader>
+                    <DialogTitle>Editar Agendamento</DialogTitle>
+                    <DialogDescription>
+                      Edite os detalhes abaixo para agendar uma consulta.
+                    </DialogDescription>
+                  </DialogHeader>
+                  <AppointmentForm agendamentoAEditar={agendamento} />
+                </DialogContent>
+              </Dialog>
+              <TrashButton id={id} />
+              <ConfirmButton id={id} />
             </CardAction>
           </CardHeader>
           <CardContent>
@@ -119,7 +157,7 @@ export default async function VisualizarAgendamento({ params }: PageProps) {
             </div>
             <div className="flex mb-2">
               <p className="font-medium mr-2">Área de atendimento: </p>
-              <p>{agendamento.idProfissional || "—"}</p>
+              <p>{agendamento.profissional.areaDaSaude || "—"}</p>
             </div>
             <div className="flex mb-2">
               <p className="font-medium mr-2">Confirmada: </p>
@@ -127,11 +165,11 @@ export default async function VisualizarAgendamento({ params }: PageProps) {
             </div>
             <div className="mb-2">
               <p className="font-medium mb-1">Descrição: </p>
-              <p className="break-words whitespace-pre-wrap">{"—"}</p>
+              <p className="break-words whitespace-pre-wrap">{agendamento.descricao || "—"}</p>
             </div>
             <div className="mb-3">
               <p className="font-medium mb-1">Justificativa: </p>
-              <p className="break-words whitespace-pre-wrap">{"—"}</p>
+              <p className="break-words whitespace-pre-wrap">{agendamento.justificativa || "—"}</p>
             </div>
           </CardContent>
         </Card>
@@ -146,15 +184,15 @@ export default async function VisualizarAgendamento({ params }: PageProps) {
           <CardContent>
             <div className="flex mb-2">
               <p className="font-medium mr-2">Nome: </p>
-              <p>{agendamento.profissionalDaSaude?.nome || "—"}</p>
+              <p>{agendamento.profissional.nome || "—"}</p>
             </div>
             <div className="flex mb-2">
               <p className="font-medium mr-2">Email: </p>
-              <p>{agendamento.profissionalDaSaude?.email || "—"}</p>
+              <p>{agendamento.profissional.email || "—"}</p>
             </div>
             <div className="flex mb-3">
               <p className="font-medium mr-2">Telefone: </p>
-              <p>{agendamento.profissionalDaSaude?.telefone || "—"}</p>
+              <p>{agendamento.profissional.telefone || "—"}</p>
             </div>
           </CardContent>
         </Card>
@@ -169,19 +207,27 @@ export default async function VisualizarAgendamento({ params }: PageProps) {
           <CardContent>
             <div className="flex mb-2">
               <p className="font-medium mr-2">Contato: </p>
-              <p>{agendamento.dadosPaciente?.contato || "—"}</p>
+              <p>{agendamento.paciente.telefone || "—"}</p>
             </div>
             <div className="flex mb-2">
               <p className="font-medium mr-2">Data de Nascimento: </p>
-              <p>{agendamento.dadosPaciente?.dataDeNascimento || "—"}</p>
+              <p>
+                {separaETransformaEmNumero(
+                  agendamento.paciente.dateNascimento,
+                  "-"
+                )
+                  .map((n, i) => (i == 0 ? n : n.toString().padStart(2, "0")))
+                  .reverse()
+                  .join("/") || "—"}
+              </p>
             </div>
             <div className="flex mb-3">
               <p className="font-medium mr-2">CPF: </p>
-              <p>{agendamento.dadosPaciente?.cpf || "—"}</p>
+              <p>{agendamento.paciente.cpf || "—"}</p>
             </div>
             <div className="flex mb-3">
               <p className="font-medium mr-2">RG: </p>
-              <p>{agendamento.dadosPaciente?.rg || "—"}</p>
+              <p>{agendamento.paciente.rg || "—"}</p>
             </div>
 
             <CardTitle className="font-bold text-center text-lg md:text-xl">
@@ -190,23 +236,23 @@ export default async function VisualizarAgendamento({ params }: PageProps) {
 
             <div className="flex mb-3">
               <p className="font-medium mr-2">Endereço: </p>
-              <p>{agendamento.dadosResidenciais?.endereco || "—"}</p>
+              <p>{agendamento.paciente.endereco || "—"}</p>
             </div>
             <div className="flex mb-3">
               <p className="font-medium mr-2">Bairro: </p>
-              <p>{agendamento.dadosResidenciais?.bairro || "—"}</p>
+              <p>{agendamento.paciente.bairro || "—"}</p>
             </div>
             <div className="flex mb-3">
               <p className="font-medium mr-2">Cidade: </p>
-              <p>{agendamento.dadosResidenciais?.cidade || "—"}</p>
+              <p>{agendamento.paciente.cidade || "—"}</p>
             </div>
             <div className="flex mb-3">
               <p className="font-medium mr-2">Estado: </p>
-              <p>{agendamento.dadosResidenciais?.estado || "—"}</p>
+              <p>{agendamento.paciente.estado || "—"}</p>
             </div>
             <div className="flex mb-3">
               <p className="font-medium mr-2">CEP: </p>
-              <p>{agendamento.dadosResidenciais?.cep || "—"}</p>
+              <p>{agendamento.paciente.cep || "—"}</p>
             </div>
           </CardContent>
         </Card>
@@ -222,7 +268,7 @@ export default async function VisualizarAgendamento({ params }: PageProps) {
             <div className="flex flex-col mb-2">
               <p className="font-medium mb-1">Vacinas que tomou: </p>
               <div className="flex flex-wrap gap-2 justify-evenly">
-                {(agendamento.informacoesSaudePaciente?.vacinas || []).map(
+                {(agendamento.paciente.vacinacoes || []).map(
                   (vacina: string, i: number) => (
                     <p key={i}>{vacina}</p>
                   )
@@ -232,7 +278,7 @@ export default async function VisualizarAgendamento({ params }: PageProps) {
             <div className="flex flex-col mb-2">
               <p className="font-medium mr-2">Doenças que já teve: </p>
               <div className="flex flex-wrap gap-2 justify-start">
-                {(agendamento.informacoesSaudePaciente?.doencas || []).map(
+                {(agendamento.paciente?.doencas || []).map(
                   (doenca: string, index: number, array: string[]) => (
                     <p key={index}>
                       {doenca}
@@ -245,7 +291,7 @@ export default async function VisualizarAgendamento({ params }: PageProps) {
             <div className="flex flex-col mb-2">
               <p className="font-medium mr-2">Alergias: </p>
               <div className="flex flex-wrap gap-2 justify-start">
-                {(agendamento.informacoesSaudePaciente?.alergias || []).map(
+                {(agendamento.paciente?.alergias || []).map(
                   (alergia: string, index: number, array: string[]) => (
                     <p key={index}>
                       {alergia}
@@ -258,7 +304,7 @@ export default async function VisualizarAgendamento({ params }: PageProps) {
             <div className="flex flex-col mb-2">
               <p className="font-medium mr-2">Tipo de medicação que toma: </p>
               <div className="flex flex-wrap gap-2 justify-start">
-                {(agendamento.informacoesSaudePaciente?.medicacoes || []).map(
+                {(agendamento.paciente?.medicacoes || []).map(
                   (medicacao: string, index: number, array: string[]) => (
                     <p key={index}>
                       {medicacao}
@@ -270,11 +316,11 @@ export default async function VisualizarAgendamento({ params }: PageProps) {
             </div>
             <div className="flex mb-3">
               <p className="font-medium mr-2">Tipo de deficiência: </p>
-              <p>{agendamento.informacoesSaudePaciente?.deficiencia || "—"}</p>
+              <p>{agendamento.paciente?.deficiencias || "—"}</p>
             </div>
             <div className="flex mb-3">
               <p className="font-medium mr-2">Tipo de atendimento: </p>
-              <p>{agendamento.informacoesSaudePaciente?.atendimento || "—"}</p>
+              <p>{agendamento.paciente?.tiposAtendimentos || "—"}</p>
             </div>
           </CardContent>
         </Card>

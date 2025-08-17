@@ -13,6 +13,8 @@ public interface ProfissionalSaudeRepository {
   ProfissionalSaude save(ProfissionalSaude profissionalSaude);
 
   Page<ProfissionalSaude> findAll(Pageable pageable);
+
+  Page<String> findAllAreas(Pageable pageable);
   
   Optional<ProfissionalSaude> findById(UUID id);
   

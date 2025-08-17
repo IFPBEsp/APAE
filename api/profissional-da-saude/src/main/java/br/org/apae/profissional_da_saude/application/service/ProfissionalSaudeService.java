@@ -35,6 +35,10 @@ public class ProfissionalSaudeService {
         .map(ProfissionalSaudeMapper::toResponseDTO);
   }
 
+  public Page<String> findAllAreas(Pageable pageable) {
+    return repository.findAllAreas(pageable);
+  }
+
   public ProfissionalSaudeResponseDTO findById(UUID id) {
     ProfissionalSaude profissionalEncontrado = repository.findById(id).orElseThrow(ProfissionalNaoEncontradoException::new);
     return ProfissionalSaudeMapper.toResponseDTO(profissionalEncontrado);

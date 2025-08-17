@@ -34,6 +34,11 @@ public class ProfissionalSaudeController {
     return ResponseEntity.ok(service.findAll(pageable));
   }
 
+  @GetMapping("/areas")
+  public ResponseEntity<Page<String>> getAllAreas(Pageable pageable) {
+    return ResponseEntity.ok(service.findAllAreas(pageable));
+  }
+
   @GetMapping("/{id}")
   public ResponseEntity<ProfissionalSaudeResponseDTO> getAll(@PathVariable UUID id) {
     return ResponseEntity.ok(service.findById(id));

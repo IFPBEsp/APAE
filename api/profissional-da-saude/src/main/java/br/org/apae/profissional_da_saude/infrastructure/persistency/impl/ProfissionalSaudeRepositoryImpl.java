@@ -33,6 +33,11 @@ public class ProfissionalSaudeRepositoryImpl implements ProfissionalSaudeReposit
   }
 
   @Override
+  public Page<String> findAllAreas(Pageable pageable) {
+    return repositoryJpa.findAll(pageable).map(p -> p.getAreaDaSaude());
+  }
+
+  @Override
   public Optional<ProfissionalSaude> findById(UUID id) {
     return repositoryJpa.findById(id).map(ProfissionalSaudeMapper::toModel);
   }
