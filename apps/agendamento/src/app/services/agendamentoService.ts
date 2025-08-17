@@ -8,6 +8,8 @@ export interface Agendamento {
   proximaConsulta: string;
   horaProximaConsulta: string;
   confirmado: boolean;
+  descricao: string;
+  justificativa: string;
   dataCriacao: string;
 }
 
@@ -18,6 +20,8 @@ interface AgendamentoCreateDTO {
   proximaConsulta: string;
   confirmado: boolean;
   horaProximaConsulta: string;
+  descricao: string;
+  justificativa?: string;
 }
 
 export interface Paciente {
@@ -251,16 +255,24 @@ const profissionais: ProfissionalSaude[] = [
 ];
 
 export async function saveAgendamento(
-  novoAgendamento: AgendamentoCreateDTO
+  novoAgendamento: AgendamentoCreateDTO,
+  id?: string
 ): Promise<Agendamento> {
   try {
-    const res = await fetch(`${API_BASE_URL}/agendamentos`, {
-      method: "POST",
+    if(!id) {
+      delete novoAgendamento.justificativa;
+    }
+
+    const res = await fetch(
+      `${API_BASE_URL}/agendamentos${id ? `/${id}` : ""}`,
+      {
+        method: id ? "PUT" : "POST",
       headers: {
         "Content-Type": "application/json",
       },
       body: JSON.stringify(novoAgendamento),
-    });
+      }
+    );
     const data = await res.json();
     return data as Agendamento;
   } catch (error) {

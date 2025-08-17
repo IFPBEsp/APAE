@@ -15,6 +15,8 @@ public class Agendamento {
     private LocalDate proximaConsulta;
     private LocalTime horaProximaConsulta;
     private Boolean confirmado;
+    private String descricao;
+    private String justificativa;
     private LocalDateTime dataCriacao;
 
     public Agendamento(UUID idPaciente, UUID idProfissional, Integer frequenciaDias, LocalDate proximaConsulta, LocalTime horaProximaConsulta) {
@@ -37,24 +39,28 @@ public class Agendamento {
         this.confirmado = false;
     }
 
-    public Agendamento(UUID idPaciente, UUID idProfissional, Integer frequenciaDias, LocalDate proximaConsulta, LocalTime horaProximaConsulta, Boolean confirmado) {
+    public Agendamento(UUID idPaciente, UUID idProfissional, Integer frequenciaDias, LocalDate proximaConsulta, LocalTime horaProximaConsulta, Boolean confirmado, String descricao, String justificativa) {
         this.idPaciente = idPaciente;
         this.idProfissional = idProfissional;
         this.frequenciaDias = frequenciaDias;
         this.proximaConsulta = proximaConsulta;
         this.horaProximaConsulta = horaProximaConsulta;
         this.confirmado = confirmado;
+        this.descricao = descricao;
+        this.justificativa = justificativa;
     }
 
-    public Agendamento(UUID id, UUID idPaciente, UUID idProfissional, Integer frequenciaDias, LocalDate proximaConsulta, LocalTime horaProximaConsulta, LocalDateTime dataCriacao, Boolean confirmado) {
+    public Agendamento(UUID id, UUID idPaciente, UUID idProfissional, Integer frequenciaDias, LocalDate proximaConsulta, LocalTime horaProximaConsulta, Boolean confirmado, String descricao, String justificativa, LocalDateTime dataCriacao) {
         this.id = id;
         this.idPaciente = idPaciente;
         this.idProfissional = idProfissional;
         this.frequenciaDias = frequenciaDias;
         this.proximaConsulta = proximaConsulta;
         this.horaProximaConsulta = horaProximaConsulta;
-        this.dataCriacao = dataCriacao;
         this.confirmado = confirmado;
+        this.descricao = descricao;
+        this.justificativa = justificativa;
+        this.dataCriacao = dataCriacao;
     }
 
     public UUID getId() {
@@ -119,6 +125,22 @@ public class Agendamento {
 
     public void setConfirmado(Boolean confirmado) {
         this.confirmado = confirmado;
+    }
+    
+    public String getDescricao() {
+        return descricao;
+    }
+
+    public void setDescricao(String descricao) {
+        this.descricao = descricao;
+    }
+    
+    public String getJustificativa() {
+        return justificativa;
+    }
+
+    public void setJustificativa(String justificativa) {
+        this.justificativa = justificativa;
     }
 
 }

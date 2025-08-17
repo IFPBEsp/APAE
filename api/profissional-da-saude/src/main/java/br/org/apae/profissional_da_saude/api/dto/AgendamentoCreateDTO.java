@@ -27,6 +27,9 @@ public class AgendamentoCreateDTO {
     private Boolean confirmado;
 
     @NotNull
+    private String descricao;
+
+    @NotNull
     @JsonFormat(pattern = "HH:mm:ss")
     private LocalTime horaProximaConsulta;
 }

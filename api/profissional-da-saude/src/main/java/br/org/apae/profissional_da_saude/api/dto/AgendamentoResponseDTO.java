@@ -20,5 +20,7 @@ public class AgendamentoResponseDTO {
     private LocalDate proximaConsulta;
     private LocalTime horaProximaConsulta;
     private Boolean confirmado;
+    private String descricao;
+    private String justificativa;
     private LocalDateTime dataCriacao;
 }
