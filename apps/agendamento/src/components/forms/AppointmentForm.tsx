@@ -83,9 +83,7 @@ export function AppointmentForm({ agendamentoAEditar }: PageProps) {
   );
   const [realizada, setRealizada] = useState<boolean>(false);
   const [listaPacientes, setListaPacientes] = useState<selectItem[]>([]);
-  const [listaProfissionais, setListaProfissionais] = useState<selectItem[]>(
-    []
-  );
+  const [listaProfissionais, setListaProfissionais] = useState<selectItem[]>([]);
 
   useEffect(() => {
     const fetchPacientesEProfissionais = async () => {

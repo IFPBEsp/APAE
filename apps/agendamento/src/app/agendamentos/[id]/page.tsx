@@ -220,6 +220,15 @@ export default async function VisualizarAgendamento({ params }: PageProps) {
                   .reverse()
                   .join("/") || "—"}
               </p>
+              <p>
+                {separaETransformaEmNumero(
+                  agendamento.paciente.dateNascimento,
+                  "-"
+                )
+                  .map((n, i) => (i == 0 ? n : n.toString().padStart(2, "0")))
+                  .reverse()
+                  .join("/") || "—"}
+              </p>
             </div>
             <div className="flex mb-3">
               <p className="font-medium mr-2">CPF: </p>
