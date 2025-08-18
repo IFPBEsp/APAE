@@ -18,7 +18,7 @@ export async function GET(
         const type = searchParams.get("type");
 
         if (!year || !category) {
-            return NextResponse.json({ error: "Os parâmetros 'year' e 'category' obrigatórios faltando" }, { status: 400 });
+            return NextResponse.json({ error: "Os parâmetros 'year' e 'category' são obrigatórios e estão faltando" }, { status: 400 });
         }
 
         const endpoint = type

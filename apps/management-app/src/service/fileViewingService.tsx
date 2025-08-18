@@ -1,4 +1,6 @@
 import axios from "axios";
+import { AxiosRequestConfig } from "axios";
+
 //const TOKEN = process.env.NEXT_PUBLIC_JWT_TOKEN;
 
 const api = axios.create({
@@ -18,7 +20,14 @@ const api = axios.create({
 );
 */
 
+interface Document {
+  fileName: string;
+  url: string;
+  createdAt: string;
+}
+
 export interface DocumentsResponse {
+  documents: Document[];
   patientId: string;
   urls: Array<{
     fileName: string;
@@ -33,17 +42,25 @@ export async function listFilteredDocuments(
   type: string,
   token: string
 ): Promise<DocumentsResponse> {
-  const params: any = { category, year };
+  const params: Record<string, string | number> = { category, year };
   if (type) params.type = type;
 
   const endpoint = type ? `/${patientId}/type` : `/${patientId}`;
-  const response = await api.get<DocumentsResponse>(endpoint, {
+
+  const config: AxiosRequestConfig = {
     params,
     headers: {
       Authorization: `Bearer ${token}`,
     },
-  });
+  };
 
-  return response.data;
+  try {
+    const response = await api.get<DocumentsResponse>(endpoint, config);
+    return response.data;
+
+  } catch (error) {
+    console.error("Erro ao buscar documentos:", error);
+    throw new Error("Erro ao buscar documentos.");
+  }
 }
 

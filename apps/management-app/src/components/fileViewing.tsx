@@ -48,10 +48,11 @@ React.useEffect(() => {
         if (!typeFilter || !yearFilter) return;
 
         const response = await listFilteredDocuments(
-          "id-do-paciente-ou-pessoa",
+          "",
           category,
           parseInt(yearFilter),
-          typeFilter
+          typeFilter,
+          ""
         );
 
         const converted = response.documents.map((doc, index) => ({
@@ -113,7 +114,8 @@ React.useEffect(() => {
           <p>Nenhum arquivo encontrado.</p>
         ) : (
           files.map((file: FileItem) => (
-            <FileCard key={file.id} name={file.name} url={file.url} patientId={"id-do-paciente"} />
+            
+            <FileCard key={file.id} file={{fileName: file.name, link: file.url}} />
           ))
         )}
       </div>
