@@ -41,6 +41,8 @@ import {
 import { Agendamento, getAgendamentos, getAreasDaSaude } from "../services/agendamentoService";
 import { separaETransformaEmNumero } from "@/lib/utils";
 import Link from "next/link";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { AppointmentForm } from "@/components/forms/AppointmentForm";
 
 type Area = {
   id: number;
@@ -63,10 +65,6 @@ export default function AllApointments() {
     };
     fetchAppointments();
   }, []);
-
-  useEffect(() => {
-    console.log(selectedArea);
-  }, [selectedArea]);
 
   const filteredAppointments = appointments.filter((appointment) => {
     const matchesArea = selectedArea
@@ -136,9 +134,22 @@ export default function AllApointments() {
                 />
               </PopoverContent>
             </Popover>
-            <Button className="w-full bg-blue-800 text-white hover:bg-blue-900 text-xs sm:w-auto sm:text-sm">
-              Novo agendamento
-            </Button>
+            <Dialog>
+              <DialogTrigger asChild>
+                <Button className="w-full bg-blue-800 text-white hover:bg-blue-900 text-xs sm:w-auto sm:text-sm">
+                  Novo agendamento
+                </Button>
+              </DialogTrigger>
+              <DialogContent className="w-full sm:max-w-[425px]">
+                <DialogHeader>
+                  <DialogTitle>Cadastrar Novo Agendamento</DialogTitle>
+                  <DialogDescription>
+                    Preencha os detalhes abaixo para agendar uma consulta.
+                  </DialogDescription>
+                </DialogHeader>
+                <AppointmentForm />
+              </DialogContent>
+            </Dialog>
           </div>
         </div>
 
