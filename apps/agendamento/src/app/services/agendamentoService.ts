@@ -259,7 +259,7 @@ export async function saveAgendamento(
   id?: string
 ): Promise<Agendamento> {
   try {
-    if(!id) {
+    if (!id) {
       delete novoAgendamento.justificativa;
     }
 
@@ -281,13 +281,17 @@ export async function saveAgendamento(
   }
 }
 
-export async function getAgendamentos(data?: string, hora?: string): Promise<Agendamento[]> {
+export async function getAgendamentos(
+  data?: string,
+  hora?: string
+): Promise<Agendamento[]> {
   try {
-    const response = await fetch(`${API_BASE_URL}/agendamentos${data ? `?data=${data}` : ""}${hora ? `&hora=${hora}` : ""}`, {
-      
-    }).then((res) =>
-      res.json()
-    );
+    const response = await fetch(
+      `${API_BASE_URL}/agendamentos${data ? `?data=${data}` : ""}${
+        hora ? `&hora=${hora}` : ""
+      }`,
+      {}
+    ).then((res) => res.json());
 
     const agendamentos: Agendamento[] = [];
     for (let agendamento of response.content) {
@@ -343,24 +347,24 @@ export async function getPacientes(): Promise<Paciente[]> {
     const response = await fetch(
       `${API_BASE_URL}/pacientes?page=0&size=100`
     ).then((res) => res.json());
+    let pacientesRetornados: Paciente[] = response.content;
+    const existentes = new Set(pacientesRetornados.map((p: Paciente) => p.cpf));
 
-    const existentes = new Set(response.content.map((p: Paciente) => p.cpf));
+    if (!pacientesRetornados.length || !pacientes.some(p => !existentes.has(p.cpf))) {
+      for (const paciente of pacientes) {
+        if (!existentes.has(paciente.cpf)) {
+          const res = await fetch(`${API_BASE_URL}/pacientes/create`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(paciente),
+          }).then((res) => res.json());
 
-    const novosPacientes: Paciente[] = response.content;
-
-    for (const paciente of pacientes) {
-      if (!existentes.has(paciente.cpf)) {
-        const res = await fetch(`${API_BASE_URL}/pacientes/create`, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(paciente),
-        }).then((res) => res.json());
-
-        novosPacientes.push(res);
+          pacientesRetornados.push(res);
+        }
       }
     }
 
-    return novosPacientes;
+    return pacientesRetornados;
   } catch (error) {
     console.log(error);
     throw error;
@@ -373,12 +377,12 @@ export async function getProfissionaisDaSaude(): Promise<ProfissionalSaude[]> {
       `${API_BASE_URL}/profissionais?page=0&size=100`
     ).then((res) => res.json());
 
+    let profissionaisRetornados: ProfissionalSaude[] = response.content;
     const existentes = new Set(
-      response.content.map((p: ProfissionalSaude) => p.docProfissional)
+      profissionaisRetornados.map((p: ProfissionalSaude) => p.docProfissional)
     );
 
-    const novosProfissionais: ProfissionalSaude[] = response.content;
-
+    if (!profissionaisRetornados.length || profissionais.some(p => !existentes.has(p.docProfissional))) {
     for (const profissional of profissionais) {
       if (!existentes.has(profissional.docProfissional)) {
         const res = await fetch(`${API_BASE_URL}/profissionais`, {
@@ -387,24 +391,28 @@ export async function getProfissionaisDaSaude(): Promise<ProfissionalSaude[]> {
           body: JSON.stringify(profissional),
         }).then((res) => res.json());
 
-        novosProfissionais.push(res);
+        profissionaisRetornados.push(res);
       }
     }
+  }
 
-    return novosProfissionais;
+    return profissionaisRetornados;
   } catch (error) {
     console.log(error);
     throw error;
   }
 }
 
-export async function getAreasDaSaude(): Promise<String[]> {
-  try {
-    const response = await fetch(
-      `${API_BASE_URL}/profissionais/areas`
-    ).then((res) => res.json());
 
-    return response.content;
+export async function getAreasDaSaude(): Promise<string[]> {
+  try {
+    const response = await fetch(`${API_BASE_URL}/profissionais/areas`).then(
+      (res) => res.json()
+    );
+    const setList: string[] = [];
+    new Set(response.content).forEach(e => setList.push(e as string));
+
+    return setList;
   } catch (error) {
     console.log(error);
     throw error;
