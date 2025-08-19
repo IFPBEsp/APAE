@@ -9,26 +9,19 @@ export async function GET() {
     const response = await api.get("", {
       params: { size: 10, page: 0 }
     });
-
-    if (response.status !== 200) {
+    
+    if (!response.data || !response.data.content) {
       return NextResponse.json(
-        response.data.content.map((p: any) => ({
-          id: p.id,
-          nome: p.nomeCompleto,
-          cpf: p.cpf,
-          dataNascimento: p.dataNascimento
-        })),
-        { status: 200 }
+        { message: "Nenhum paciente encontrado" },
+        { status: 404 }
       );
     }
-
-    // route.ts - Modifique o mapeamento para garantir valores padrão
     return NextResponse.json(
       response.data.content.map((p: any) => ({
         id: p.id || '',
         nome: p.nomeCompleto || 'Nome não informado',
         cpf: p.cpf || 'Não informado',
-        status: 'Ativo', // Defina um valor padrão ou mapeie do backend
+        status: 'Ativo',
         urlFoto: '',
         contato: {
           telefone: p.contatoResponse?.telefone || 'Não informado'
