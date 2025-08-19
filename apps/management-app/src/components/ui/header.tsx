@@ -12,7 +12,7 @@ export default function Header() {
       </div>
 
       <div className="flex-1 flex items-center justify-center">
-        <img src="/apae-logo.png" alt="logo apae" className="h-8 w-8 mr-3" />
+        <img src="/apae-logo.png" alt="logo apae" className="h-10 w-8 mr-3" />
         <span className="text-white font-medium text-lg hidden md:block">Apae Esperança</span>
       </div>
 
