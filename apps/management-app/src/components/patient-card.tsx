@@ -22,7 +22,7 @@ export function PatientCard({ patient }: PatientCardProps) {
   return (
     <Card
       className={cn(
-        "overflow-hidden relative rounded-lg shadow",
+        "overflow-hidden relative rounded-lg shadow-md/30",
         {
           "border-2 border-[#871d1e]": patient.status === "Inativo",
           "border-2 border-[#1E7F5C]": patient.status === "Ativo",
