@@ -55,7 +55,7 @@ export default function PatientsAndStudentsScreen() {
   return (
     <div className="bg-slate-100 min-h-screen">
       <main className="container mx-auto p-4 md:p-6">
-        <section className="relative md:bg-white md:rounded-xl md:shadow-md md:border-2 md:border-[#003B93] md:p-6">
+        <section className="relative md:bg-white md:rounded-xl md:shadow-md md:border-2 md:p-6">
           <div className="hidden md:flex justify-between items-center mb-4">
             <h2 className="text-xl font-bold text-[#003B93]">
               Pacientes e Alunos
