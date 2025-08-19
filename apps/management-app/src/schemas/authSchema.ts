@@ -26,3 +26,14 @@ export const signUpSchema = z
   });
 
 export type FormSignUp = z.infer<typeof signUpSchema>;
+
+export const loginSchema = z.object({
+  username: z.string().min(1, {
+    message: "O campo de email ou CPF é obrigatório.",
+  }),
+  password: z.string().min(1, {
+    message: "A senha é obrigatória.",
+  }),
+});
+
+export type FormLogin = z.infer<typeof loginSchema>;
