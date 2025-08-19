@@ -1,30 +1,158 @@
-import { GalleryVerticalEnd } from "lucide-react";
+"use client";
 
-import { LoginForm } from "@/components/login-form";
+import React from "react";
+import {
+  Card,
+  CardContent,
+  CardFooter,
+  CardHeader,
+} from "@/components/ui/card";
+import {
+  Form,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormControl,
+  FormMessage,
+} from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import Link from "next/link";
+import { PrimaryButton } from "@/components/ButtonPrimary";
+import { PasswordInput } from "@/components/PasswordInputs";
+import { loginSchema, FormLogin } from "@/schemas/authSchema";
+import { toast } from "react-toastify";
+import { useRouter } from "next/navigation";
 
-export default function LoginPage() {
+function LoginPage() {
+  const router = useRouter();
+  const form = useForm<FormLogin>({
+    resolver: zodResolver(loginSchema),
+    defaultValues: {
+      username: "",
+      password: "",
+    },
+    mode: "all",
+  });
+
+  const onSubmit = async (data: FormLogin) => {
+    try {
+      const res = await fetch("/api/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data),
+      });
+
+      const responseData = await res.json();
+
+      if (res.ok) {
+        toast.success(responseData.message || "Login bem-sucedido!");
+        router.push("/dashboard");
+      } else {
+        console.error("Erro ao fazer login:", responseData.message);
+        toast.error(responseData.message || "Credenciais inválidas");
+      }
+    } catch (err) {
+      console.error(err);
+      toast.error("Erro inesperado. Tente novamente mais tarde.");
+    }
+  };
+
   return (
-    <div className="grid min-h-svh lg:grid-cols-2">
-      <div className="flex flex-col gap-4 p-6 md:p-10">
-        <div className="flex justify-center gap-2 md:justify-start">
-          <a href="#" className="flex items-center gap-2 font-medium">
-            <div className="bg-primary text-primary-foreground flex size-6 items-center justify-center rounded-md">
-              <GalleryVerticalEnd className="size-4" />
+    <Form {...form}>
+      <form onSubmit={form.handleSubmit(onSubmit)} className="w-full h-full">
+        <Card
+          className="min-w-[326px] w-[30vw] max-h-[90vh]
+                  bg-white rounded-[20px] overflow-hidden flex flex-col gap-y-1"
+          style={{ boxShadow: "4px 4px 10px rgba(0, 0, 0, 0.25)" }}
+        >
+          <CardHeader className="flex-shrink-0 pt-10 pb-4">
+            <div className="w-full flex justify-center">
+              <span className="font-baloo2 font-semibold text-[2.25rem] leading-normal mt-10 text-center text-blue-900">
+                Entrar
+              </span>
             </div>
-            Acme Inc.
-          </a>
-        </div>
-        <div className="flex flex-1 items-center justify-center">
-          <div className="w-full max-w-xs">{/* <LoginForm /> */}</div>
-        </div>
-      </div>
-      <div className="bg-muted relative hidden lg:block">
-        <img
-          src="/placeholder.svg"
-          alt="Image"
-          className="absolute inset-0 h-full w-full object-cover dark:brightness-[0.2] dark:grayscale"
-        />
-      </div>
-    </div>
+          </CardHeader>
+          <CardContent className="flex-grow overflow-y-auto px-6">
+            <div className="flex flex-col space-y-1 max-w-sm mx-auto">
+              <FormField
+                control={form.control}
+                name="username"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className="text-sm font-medium text-foreground">
+                      Email ou CPF
+                    </FormLabel>
+                    <FormControl>
+                      <Input
+                        {...field}
+                        placeholder="Digite seu email ou CPF"
+                        className="w-full bg-white border border-border rounded-md h-12 px-3"
+                      />
+                    </FormControl>
+                    <div className="min-h-[18px]">
+                      <FormMessage />
+                    </div>
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="password"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className="text-sm font-medium text-foreground">
+                      Senha
+                    </FormLabel>
+                    <FormControl>
+                      <PasswordInput
+                        {...field}
+                        placeholder="Digite sua senha"
+                        className="w-full bg-white border border-border rounded-md h-12 px-3"
+                      />
+                    </FormControl>
+                    <div className="min-h-[18px]">
+                      <FormMessage />
+                    </div>
+                  </FormItem>
+                )}
+              />
+            </div>
+            <div className="text-right mt-0">
+              {" "}
+              <Link
+                href="#"
+                className="text-sm text-gray-600 hover:text-blue-600 transition-colors duration-200"
+              >
+                Esqueceu a senha?
+              </Link>
+            </div>
+          </CardContent>
+          <CardFooter className="flex-shrink-0 w-full flex-col justify-center mt-1 py-0 border-gray-100">
+            <PrimaryButton
+              type="submit"
+              loading={form.formState.isSubmitting}
+              disabled={form.formState.isSubmitting}
+            >
+              Entrar
+            </PrimaryButton>
+            <div className="mt-2 font-baloo2 font-medium text-xs sm:text-sm leading-[150%] text-[#222222] text-center px-4">
+              {" "}
+              Não possui uma conta ainda?{" "}
+              <Link
+                href="/auth/register"
+                className="!text-[#F28C38] hover:!text-[#F28C38]/80 underline hover:no-underline font-medium transition-colors duration-200 focus:outline-none focus:ring-2 focus:!ring-[#F28C38]/50 focus:ring-offset-1 rounded-sm px-1 [&]:!text-[#F28C38] [&:hover]:!text-[#F28C38]/80"
+                style={{ color: "#F28C38 !important" }}
+              >
+                Criar uma conta
+              </Link>
+            </div>
+          </CardFooter>
+        </Card>
+      </form>
+    </Form>
   );
 }
+
+export default LoginPage;
