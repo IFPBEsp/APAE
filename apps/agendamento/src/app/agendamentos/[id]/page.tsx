@@ -1,8 +1,8 @@
-import {Avatar, AvatarFallback, AvatarImage} from "@/components/ui/avatar";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge"
-import {Card, CardAction, CardContent, CardHeader, CardTitle} from "@/components/ui/card";
+import { Card, CardAction, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { SquareArrowOutUpRight } from 'lucide-react';
-import {Button} from "@/components/ui/button";
+import { Button } from "@/components/ui/button";
 
 interface PageProps {
     params: {
@@ -21,14 +21,14 @@ function getStatusStyle(status: boolean, data: Date) {
     }
 }
 
-export default async function VisualizarAgendamento({ params } : PageProps) {
-    const {id} = params;
+export default async function VisualizarAgendamento({ params }: PageProps) {
+    const { id } = params;
 
     const agendamento = {
         id,
         nome: "Lucas Matheus Gomes de Lima",
         consulta: false,
-        agendamentoMarcado : {
+        agendamentoMarcado: {
             dataHora: new Date("2025-08-03T22:30"),
             periodo: "asdasd",
             areaDeAtendimento: "teste",
@@ -36,7 +36,7 @@ export default async function VisualizarAgendamento({ params } : PageProps) {
             descricao: "aaaaaaaaaaaaa aaaaaaaaaaaaa aaaaaaaaaaaaa aaaaaaaaaaaaa aaaaaaaaaaaaa aaaaaaaaaaaaa aaaaaaaaaaaaa aaaaaaaaaaaaa aaaaaaaaaaaaa aaaaaaaaaaaaa ",
             justificativa: "aaaaaaaaaaaaa aaaaaaaaaaaaa aaaaaaaaaaaaa aaaaaaaaaaaaa aaaaaaaaaaaaa aaaaaaaaaaaaa aaaaaaaaaaaaa aaaaaaaaaaaaa aaaaaaaaaaaaa aaaaaaaaaaaaa "
         },
-        profissionalDaSaude : {
+        profissionalDaSaude: {
             nome: "asasdfa",
             email: "afaa@gmail.com",
             telefone: "0123456789"
@@ -72,7 +72,7 @@ export default async function VisualizarAgendamento({ params } : PageProps) {
                 <div className={"flex items-center"}>
                     <div className={"bg-gray-200 rounded-full w-17 h-17 md:w-23 md:h-23"}>
                         <Avatar className={"p-5 w-17 h-17 md:w-23 md:h-23"}>
-                            <AvatarImage src="https://cdn-icons-png.flaticon.com/512/266/266033.png" alt="avatar"/>
+                            <AvatarImage src="https://cdn-icons-png.flaticon.com/512/266/266033.png" alt="avatar" />
                             <AvatarFallback>{agendamento.nome.at(0)}</AvatarFallback>
                         </Avatar>
                     </div>
@@ -105,7 +105,7 @@ export default async function VisualizarAgendamento({ params } : PageProps) {
                         </div>
                         <div className={"flex mb-2"}>
                             <p className={"font-medium mr-2"}>Horário: </p>
-                            <p>{agendamento.agendamentoMarcado.dataHora.toLocaleString("pt-BR", {hour: "2-digit", minute: "2-digit"})}</p>
+                            <p>{agendamento.agendamentoMarcado.dataHora.toLocaleString("pt-BR", { hour: "2-digit", minute: "2-digit" })}</p>
                         </div>
                         <div className={"flex mb-2"}>
                             <p className={"font-medium mr-2"}>Área de atendimento: </p>
@@ -200,7 +200,7 @@ export default async function VisualizarAgendamento({ params } : PageProps) {
                             <div className={"flex flex-wrap gap-2 justify-evenly"}>
                                 {
                                     agendamento.informacoesSaudePaciente.vacinas.map((vacina) => (
-                                        <p>{vacina}</p>
+                                        <p key={vacina}>{vacina}</p>
                                     ))
                                 }
                             </div>
@@ -228,7 +228,7 @@ export default async function VisualizarAgendamento({ params } : PageProps) {
                             <p className={"font-medium mr-2"}>Tipo de medicação que toma: </p>
                             <div className={"flex flex-wrap gap-2 justify-start"}>
                                 {agendamento.informacoesSaudePaciente.medicacoes.map((medicacoes, index, array) => (
-                                    <p key={index}>{medicacoes}{index < array.length - 1 ? ',': '.'}</p>
+                                    <p key={index}>{medicacoes}{index < array.length - 1 ? ',' : '.'}</p>
                                 ))}
                             </div>
                         </div>
