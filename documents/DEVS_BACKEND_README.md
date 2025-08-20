@@ -145,6 +145,21 @@ Podemos especificar qual sub-projeto que queremos executar e testar:
 ./gradlew :demo:tasks
 ```
 
+## COMO EXECUTAR
+
+- Para executar o projeto Backend, lembre-se de verificar se e o seu docker estar em executação:
+```bash
+docker-compose up
+```
+ou executar arquivo ``docker-compose.yml``
+
+E após, para verificar se o container está ativo: 
+````bash 
+docker ps
+````
+
+- Depois, pode executar normalmente o arquivo ``ProfissionalDaSaudeApplication.java`` e testar em uma ferramenta de sua preferência (Dbeaver, pgAdmin...)
+
 ## **PARA MAIS INFORMAÇÕES ACESSE A DOCUMENTAÇÃO OFICIAL DA TECNOLOGIA:**
 
 Documentação gradle: https://docs.gradle.org/current/userguide/userguide.html

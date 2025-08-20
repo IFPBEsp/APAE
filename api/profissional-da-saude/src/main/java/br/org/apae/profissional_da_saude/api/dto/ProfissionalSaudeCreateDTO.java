@@ -29,6 +29,37 @@ public class ProfissionalSaudeCreateDTO {
     private String email;
 
     @NotBlank
-    @Pattern(regexp = "^[A-Za-zÀ-ÖØ-öø-ÿ ]{3,100}$", message = "Nome inválido. Não pode conter números e deve ter entre 3 e 100 caracteres")
+    @Pattern(regexp = "^[A-Za-zÀ-ÖØ-öø-ÿ ]{3,100}$", message = "Nome inválido")
     private String nome;
+
+    @NotBlank
+    @Pattern(regexp = "^\\d{1,2}\\.?\\d{3}\\.?\\d{3}-?\\d{1}$", message = "RG inválido")
+    private String rg;
+
+    @NotBlank
+    @Pattern(regexp = "(^[A-Z]{2}$)", message = "Estado inválido. Formato esperado: XX")
+    private String estado;
+
+    @NotBlank
+    @Pattern(regexp = "(^[A-Za-zÀ-ÿ\\s]+$)", message = "Cidade inválida. Não pode conter números")
+    private String cidade;
+
+    @NotBlank
+    @Pattern(regexp = "(^[A-Za-zÀ-ÿ\\s]+$)", message = "Bairro inválido")
+    private String bairro;
+
+    @NotBlank
+    @Pattern(regexp = "(^[A-Za-zÀ-ÿ0-9\\s]+$)", message = "Rua inválida")
+    private String rua;
+
+    @NotBlank
+    @Pattern(regexp = "(^\\d+[A-Za-z]?$)", message = "Número inválido")
+    private String numero;
+
+    @NotBlank
+    @Pattern(regexp = "(^\\d{5}-\\d{3}$)", message = "CEP inválido. Formato esperado: XXXXX-XXX")
+    private String cep;
+
+    @Pattern(regexp = "(^[A-Za-zÀ-ÿ0-9\\s\\-\\/\\.]*$)") // Pode ser vazio também
+    private String complemento;
 }

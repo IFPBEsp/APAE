@@ -14,5 +14,13 @@ public class ProfissionalSaudeResponseDTO {
     private String docProfissional;
     private String email;
     private String nome;
-
+// Novas entidades
+    private String rg;
+    private String estado;
+    private String cidade;
+    private String bairro;
+    private String rua;
+    private String numero;
+    private String cep;
+    private String complemento;
 }
