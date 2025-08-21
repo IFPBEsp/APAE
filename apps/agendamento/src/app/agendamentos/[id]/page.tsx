@@ -7,27 +7,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { SquareArrowOutUpRight } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
-import { Label } from "@/components/ui/label";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import { AppointmentForm } from "@/components/forms/AppointmentForm";
+import { AppointmentDialog } from "@/components/ui/appointment-dialog";
 
 interface PageProps {
   params: {
@@ -51,12 +31,14 @@ export default async function VisualizarAgendamento({ params }: PageProps) {
 
   const agendamento = {
     id,
-    nome: "Lucas Matheus Gomes de Lima",
+    nome: "Maria Silva",
     consulta: false,
     agendamentoMarcado: {
       dataHora: new Date("2025-08-03T22:30"),
-      areaDeAtendimento: "Psiquiatria",
-      confirmado: false,
+      paciente: "maria-silva",
+      areaDeAtendimento: "psiquiatria",
+      confirmada: false,
+      realizada: false,
       descricao:
         "Descrição do agendamento. Aqui você pode colocar informações adicionais sobre o agendamento, como o motivo da consulta, histórico médico ou qualquer outra informação relevante.",
       justificativa:
@@ -136,22 +118,10 @@ export default async function VisualizarAgendamento({ params }: PageProps) {
               Agendamento
             </CardTitle>
             <CardAction>
-              <Dialog>
-                <DialogTrigger asChild>
-                  <Button className="bg-transparent cursor-pointer text-[#0D4F97] hover:text-[#0d4f55] hover:bg-transparent">
-                    <SquareArrowOutUpRight />
-                  </Button>
-                </DialogTrigger>
-                <DialogContent className="w-full sm:max-w-[425px]">
-                  <DialogHeader>
-                    <DialogTitle>Editar agendamento</DialogTitle>
-                    <DialogDescription>
-                      Preencha os detalhes abaixo para editar a consulta.
-                    </DialogDescription>
-                  </DialogHeader>
-                  <AppointmentForm mode="edit" />
-                </DialogContent>
-              </Dialog>
+              <AppointmentDialog
+                mode="edit"
+                appointment={agendamento.agendamentoMarcado}
+              />
             </CardAction>
           </CardHeader>
           <CardContent>
@@ -180,7 +150,7 @@ export default async function VisualizarAgendamento({ params }: PageProps) {
             </div>
             <div className={"flex mb-2"}>
               <p className={"font-medium mr-2"}>Confirmada: </p>
-              <p>{agendamento.agendamentoMarcado.confirmado ? "Sim" : "Não"}</p>
+              <p>{agendamento.agendamentoMarcado.confirmada ? "Sim" : "Não"}</p>
             </div>
             <div className={"mb-2"}>
               <p className={"font-medium mb-1"}>Descrição: </p>

@@ -27,19 +27,9 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { Badge } from "@/components/ui/badge";
-
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-  DialogDescription,
-} from "@/components/ui/dialog";
-
-import { AppointmentForm } from "@/components/forms/AppointmentForm";
 import { InfoCard } from "@/components/shared/InfoCard";
 import Link from "next/link";
+import { AppointmentDialog } from "@/components/ui/appointment-dialog";
 
 export default function DashboardPage() {
   const [selectedDate, setSelectedDate] = useState<Date | undefined>(
@@ -90,22 +80,14 @@ export default function DashboardPage() {
               </PopoverContent>
             </Popover>
 
-            <Dialog>
-              <DialogTrigger asChild>
-                <Button className="w-full bg-blue-800 text-white hover:bg-blue-900 text-xs sm:w-auto sm:text-sm">
-                  Novo agendamento
-                </Button>
-              </DialogTrigger>
-              <DialogContent className="w-full sm:max-w-[425px]">
-                <DialogHeader>
-                  <DialogTitle>Cadastrar novo agendamento</DialogTitle>
-                  <DialogDescription>
-                    Preencha os detalhes abaixo para agendar uma consulta.
-                  </DialogDescription>
-                </DialogHeader>
-                <AppointmentForm mode="create" />
-              </DialogContent>
-            </Dialog>
+            <AppointmentDialog
+              mode="create"
+              onSuccess={() => console.log("Agendamento criado!")}
+            >
+              <Button className="w-full bg-blue-800 text-white hover:bg-blue-900 text-xs sm:w-auto sm:text-sm">
+                Novo agendamento
+              </Button>
+            </AppointmentDialog>
           </div>
         </div>
 

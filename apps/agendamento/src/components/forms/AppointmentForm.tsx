@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
@@ -13,7 +13,7 @@ import { cn } from "@/lib/utils";
 export interface Appointment {
   dataHora?: Date;
   paciente: string;
-  area: string;
+  areaDeAtendimento: string;
   descricao?: string;
   confirmada: boolean;
   justificativa?: string;
@@ -38,14 +38,23 @@ const areasDeAtendimento = [
 interface AppointmentFormProps {
   mode: "create" | "edit";
   appointment?: Appointment;
+  onSave?: (appointment: Appointment) => void;
+  onSuccess?: () => void;
 }
 
-export function AppointmentForm({ mode, appointment }: AppointmentFormProps) {
+export function AppointmentForm({
+  mode,
+  appointment,
+  onSave,
+  onSuccess,
+}: AppointmentFormProps) {
   const [dataHora, setDataHora] = useState<Date | undefined>(
     appointment?.dataHora
   );
   const [paciente, setPaciente] = useState<string>(appointment?.paciente || "");
-  const [area, setArea] = useState<string>(appointment?.area || "");
+  const [area, setArea] = useState<string>(
+    appointment?.areaDeAtendimento || ""
+  );
   const [descricao, setDescricao] = useState<string>(
     appointment?.descricao || ""
   );
@@ -58,6 +67,18 @@ export function AppointmentForm({ mode, appointment }: AppointmentFormProps) {
   const [realizada, setRealizada] = useState<boolean>(
     appointment?.realizada || false
   );
+
+  useEffect(() => {
+    if (appointment) {
+      setDataHora(appointment.dataHora);
+      setPaciente(appointment.paciente || "");
+      setArea(appointment.areaDeAtendimento || "");
+      setDescricao(appointment.descricao || "");
+      setConfirmada(appointment.confirmada || false);
+      setJustificativa(appointment.justificativa || "");
+      setRealizada(appointment.realizada || false);
+    }
+  }, [appointment]);
 
   const [validationErrors, setValidationErrors] = useState({
     dataHora: false,
@@ -84,9 +105,9 @@ export function AppointmentForm({ mode, appointment }: AppointmentFormProps) {
     const payload: Appointment = {
       dataHora,
       paciente,
-      area,
-      descricao,
+      areaDeAtendimento: area,
       confirmada,
+      descricao,
       justificativa,
       realizada,
     };
@@ -95,10 +116,21 @@ export function AppointmentForm({ mode, appointment }: AppointmentFormProps) {
       mode === "create" ? "Novo agendamento:" : "Atualização do agendamento:",
       payload
     );
+
+    if (onSave) {
+      onSave(payload);
+    }
+
+    if (onSuccess) {
+      onSuccess();
+    }
   };
 
   return (
-    <Card className="w-full max-w-full sm:max-w-[450px] mx-auto border-none shadow-none p-4 sm:p-6">
+    <Card
+      className="w-full max-w-full sm:max-w-sm md:max-w-md lg:max-w-lg xl:max-w-xl mx-auto border-none shadow-none p-4 sm:p-6
+                 max-h-[70vh] overflow-auto"
+    >
       <form onSubmit={handleSubmit}>
         <CardContent className="space-y-4">
           <div className="space-y-2">
