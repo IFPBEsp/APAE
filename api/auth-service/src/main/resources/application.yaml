@@ -1,5 +1,5 @@
 server:
-  port: 9000
+  port: 8082
 
 realms_name: master
 url_login_token: http://localhost:8080/realms/${realms_name}/protocol/openid-connect/token

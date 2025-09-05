@@ -1,7 +1,11 @@
 package br.org.apae.auth.application.service.interfaces;
 
-public interface IKeycloakUserRegistrationService {
-  void registerUser(String cpf, String password, String email, String fullName, String token);
+import br.org.apae.auth.api.dto.LoginRequestDTO;
+import br.org.apae.auth.api.dto.SignUpRequestDTO;
+import br.org.apae.auth.api.dto.TokenResponseDTO;
 
-  String login(String username, String password);
+public interface IKeycloakUserRegistrationService {
+  void registerUser(SignUpRequestDTO signUpRequestDto, String token);
+
+  TokenResponseDTO login(LoginRequestDTO loginRequestDto);
 }

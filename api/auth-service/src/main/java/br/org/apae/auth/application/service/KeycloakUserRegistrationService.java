@@ -4,7 +4,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+import br.org.apae.auth.api.dto.LoginRequestDTO;
+import br.org.apae.auth.api.dto.SignUpRequestDTO;
+import br.org.apae.auth.api.dto.TokenResponseDTO;
 import br.org.apae.auth.api.dto.UserRepresentationDTO;
+import br.org.apae.auth.application.service.exceptions.IncorrectLoginException;
 import br.org.apae.auth.application.service.interfaces.IKeycloakUserRegistrationService;
 import br.org.apae.auth.infrastructure.client.KeycloakAdminClient;
 
@@ -20,50 +24,43 @@ public class KeycloakUserRegistrationService implements IKeycloakUserRegistratio
     this.keycloakClient = keycloakClient;
   }
 
-  @Override
-  public void registerUser(String cpf, String password, String email, String fullName, String token) {
-    validateAttributes(cpf, password, email, fullName);
+  private UserRepresentationDTO getUserRepresentation(SignUpRequestDTO objDto, String firstName, String lastName) {
+    UserRepresentationDTO user = new UserRepresentationDTO(
+        null,
+        objDto.cpf(),
+        objDto.email(),
+        firstName,
+        lastName,
+        true
+    );
+    return user;
+  }
 
-    if (keycloakClient.userExistsByUsername(cpf, token) || keycloakClient.userExistsByEmail(email, token)) {
+  @Override
+  public void registerUser(SignUpRequestDTO objDto, String token) {
+    objDto.validateAttributes();
+
+    if (keycloakClient.userExistsByUsername(objDto.cpf(), token) || keycloakClient.userExistsByEmail(objDto.email(), token)) {
       throw new IllegalArgumentException("CPF or Email already exists");
     }
 
-    String firstName = fullName.split(" ")[0];
-    String lastName = fullName.substring(firstName.length()).trim();
+    String[] splitedName = objDto.fullName().trim().split(" ", 2);
+    String firstName = splitedName[0];
+    String lastName = splitedName.length > 1 ? splitedName[1] : "";
 
-    UserRepresentationDTO user = new UserRepresentationDTO(
-        null,
-        cpf,
-        email,
-        firstName,
-        lastName,
-        true);
+    UserRepresentationDTO user = getUserRepresentation(objDto, firstName, lastName);
 
-    String userId = keycloakClient.createUser(user, password, token);
+    String userId = keycloakClient.createUser(user, objDto.password(), token);
     keycloakClient.assignRealmRole(userId, defaultRole, token);
   }
 
   @Override
-  public String login(String username, String password) {
+  public TokenResponseDTO login(LoginRequestDTO login) {
     try {
-      return keycloakClient.getAccessToken(username, password);
+      login.validateAttributes();
+      return keycloakClient.getAccessToken(login.username(), login.password());
     } catch (Exception e) {
-      throw new IllegalArgumentException("Username or password is incorrect.");
+      throw new IncorrectLoginException("Username or password is incorrect.");
     }
-  }
-
-
-  private void validateAttributes(String cpf, String password, String email, String fullName) {
-    if (cpf == null || cpf.isBlank())
-      throw new IllegalArgumentException("CPF cannot be empty");
-
-    if (password == null || password.isBlank() || password.length() < 8) {
-      throw new IllegalArgumentException("Password must be at least 8 characters");
-    }
-    if (email == null || email.isBlank())
-      throw new IllegalArgumentException("Email cannot be empty");
-
-    if (fullName == null || fullName.isBlank())
-      throw new IllegalArgumentException("Full name cannot be empty");
   }
 }

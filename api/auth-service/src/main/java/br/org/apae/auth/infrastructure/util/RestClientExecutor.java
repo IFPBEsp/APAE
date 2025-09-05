@@ -6,7 +6,7 @@ import org.springframework.web.client.RestClientException;
 
 import br.org.apae.auth.infrastructure.util.exceptions.ExternalServiceException;
 
-public class RestTemplateExecutor {
+public class RestClientExecutor {
   public static <T> T execute(Supplier<T> action, String description) {
     try {
       T result =  action.get();

@@ -1,0 +1,46 @@
+package br.org.apae.profissional_da_saude.application.service;
+
+import br.org.apae.profissional_da_saude.api.dto.ProfissionalSaudeCreateDTO;
+import br.org.apae.profissional_da_saude.api.dto.ProfissionalSaudeResponseDTO;
+import br.org.apae.profissional_da_saude.application.service.exceptions.ProfissionalNaoEncontradoException;
+import br.org.apae.profissional_da_saude.domain.model.ProfissionalSaude;
+import br.org.apae.profissional_da_saude.domain.repository.ProfissionalSaudeRepository;
+import br.org.apae.profissional_da_saude.infrastructure.persistency.mapper.ProfissionalSaudeMapper;
+
+import java.util.UUID;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.stereotype.Service;
+
+@Service
+public class ProfissionalSaudeService {
+
+  private final ProfissionalSaudeRepository repository;
+
+  @Autowired
+  public ProfissionalSaudeService(ProfissionalSaudeRepository repository) {
+    this.repository = repository;
+  }
+
+  public ProfissionalSaudeResponseDTO save(ProfissionalSaudeCreateDTO dto) {
+    ProfissionalSaude domain = ProfissionalSaudeMapper.toDomain(dto);
+    ProfissionalSaude saved = repository.save(domain);
+    return ProfissionalSaudeMapper.toResponseDTO(saved);
+  }
+
+  public Page<ProfissionalSaudeResponseDTO> findAll(Pageable pageable) {
+    return repository.findAll(pageable)
+        .map(ProfissionalSaudeMapper::toResponseDTO);
+  }
+
+  public Page<String> findAllAreas(Pageable pageable) {
+    return repository.findAllAreas(pageable);
+  }
+
+  public ProfissionalSaudeResponseDTO findById(UUID id) {
+    ProfissionalSaude profissionalEncontrado = repository.findById(id).orElseThrow(ProfissionalNaoEncontradoException::new);
+    return ProfissionalSaudeMapper.toResponseDTO(profissionalEncontrado);
+  }
+}
