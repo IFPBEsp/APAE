@@ -27,13 +27,25 @@ export const signUpSchema = z
 
 export type FormSignUp = z.infer<typeof signUpSchema>;
 
+const cpfRegex = /^\d{3}\.\d{3}\.\d{3}-\d{2}$/;
+
 export const loginSchema = z.object({
-  username: z.string().min(1, {
-    message: "O campo de email ou CPF é obrigatório.",
-  }),
-  password: z.string().min(1, {
-    message: "A senha é obrigatória.",
-  }),
+  username: z
+    .string()
+    .trim()
+    .refine(
+      (value) => {
+        const isEmail = z.email().safeParse(value).success;
+        const isCpf = cpfRegex.test(value);
+        return isEmail || isCpf;
+      },
+      {
+        message: "Digite um CPF (XXX.XXX.XXX-XX) ou email válido",
+      }
+    ),
+  password: z
+    .string()
+    .min(6, { message: "Senha deve ter pelo menos 6 caracteres" }),
 });
 
 export type FormLogin = z.infer<typeof loginSchema>;

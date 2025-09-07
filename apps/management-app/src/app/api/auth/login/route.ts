@@ -4,16 +4,15 @@ import { AxiosError } from "axios";
 import { setSessionCookie } from "@/lib/cookies";
 
 export async function POST(req: Request) {
-  const { username, password } = await req.json();
-
-  if (!username || !password) {
-    return NextResponse.json(
-      { message: "Todos os campos são obrigatórios" },
-      { status: 406 }
-    );
-  }
-
   try {
+    const { username, password } = await req.json();
+
+    if (!username || !password) {
+      return NextResponse.json(
+        { message: "Todos os campos são obrigatórios" },
+        { status: 406 }
+      );
+    }
     const api = await createAuthAPI();
     const response = await api.post("/signin", { username, password });
 

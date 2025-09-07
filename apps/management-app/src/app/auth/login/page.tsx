@@ -38,7 +38,7 @@ function LoginPage() {
 
   const onSubmit = async (data: FormLogin) => {
     try {
-      const res = await fetch("/api/login", {
+      const res = await fetch("/api/auth/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(data),
@@ -48,7 +48,7 @@ function LoginPage() {
 
       if (res.ok) {
         toast.success(responseData.message || "Login bem-sucedido!");
-        router.push("/dashboard");
+        router.push("/home");
       } else {
         console.error("Erro ao fazer login:", responseData.message);
         toast.error(responseData.message || "Credenciais inválidas");
@@ -120,7 +120,7 @@ function LoginPage() {
               />
             </div>
             <div className="text-right mt-0">
-              {" "}
+              {/* Precisa fazer */}
               <Link
                 href="#"
                 className="text-sm text-gray-600 hover:text-blue-600 transition-colors duration-200"
