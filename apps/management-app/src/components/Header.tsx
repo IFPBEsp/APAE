@@ -3,6 +3,7 @@
 import React from "react";
 import { User } from "lucide-react";
 import { SidebarTrigger } from "@/components/ui/sidebar";
+import Logo from "@/app/assets/logo.png";
 
 export default function Header() {
   return (
@@ -12,7 +13,7 @@ export default function Header() {
       </div>
 
       <div className="flex-1 flex items-center justify-center">
-        <img src="/apae-logo.png" alt="logo apae" className="h-10 w-8 mr-3" />
+        <img src={Logo.src} alt="logo apae" className="h-10 w-8 mr-3" />
         <span className="text-white font-medium text-lg hidden md:block">
           Apae Esperança
         </span>

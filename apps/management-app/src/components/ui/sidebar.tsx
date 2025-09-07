@@ -3,7 +3,7 @@
 import * as React from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { redirect, usePathname } from "next/navigation";
 import { Slot } from "@radix-ui/react-slot";
 import { cva, type VariantProps } from "class-variance-authority";
 import { PanelLeft, ChevronLeft, ArrowLeft, LogOut } from "lucide-react";
@@ -22,6 +22,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import { removeSessionCookie } from "@/lib/cookies";
 
 const SIDEBAR_COOKIE_NAME = "sidebar_state";
 const SIDEBAR_COOKIE_MAX_AGE = 60 * 60 * 24 * 7;
@@ -541,6 +542,10 @@ function AppSidebar() {
                 type="button"
                 aria-label="Sair"
                 className="flex items-center gap-2"
+                onClick={() => {
+                  removeSessionCookie();
+                  redirect("/");
+                }}
               >
                 <LogOut className="h-5 w-5" />
                 <span className="group-data-[collapsible=icon]:hidden">
