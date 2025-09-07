@@ -14,6 +14,7 @@ import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { Sheet, SheetContent } from "@/components/ui/sheet";
 import { NAV } from "@/lib/routes";
+import Logo from "@/app/assets/logo.png";
 
 import {
   Tooltip,
@@ -482,7 +483,7 @@ function AppSidebar() {
 
         <div className="flex items-center justify-center py-2">
           <Image
-            src="/apae-logo.png"
+            src={Logo.src}
             alt="Logo APAE"
             width={56}
             height={56}
