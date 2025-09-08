@@ -9,6 +9,8 @@ import br.org.apae.profissional_da_saude.domain.model.ProfissionalSaude;
 import br.org.apae.profissional_da_saude.domain.repository.ProfissionalSaudeRepository;
 import br.org.apae.profissional_da_saude.infrastructure.persistency.mapper.ProfissionalSaudeMapper;
 
+import java.util.UUID;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
