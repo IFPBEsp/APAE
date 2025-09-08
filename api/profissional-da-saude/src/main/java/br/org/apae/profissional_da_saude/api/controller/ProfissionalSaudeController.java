@@ -14,8 +14,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.UUID;
-
 @RestController
 @RequestMapping("/profissionais")
 @CrossOrigin(origins = "http://localhost:3000")
@@ -56,15 +54,5 @@ public class ProfissionalSaudeController {
       @PathVariable UUID id,
       @RequestBody @Valid ProfissionalSaudeUpdateDTO dto) {
     return ResponseEntity.ok(this.service.update(id, dto));
-  }
-
-  @GetMapping("/areas")
-  public ResponseEntity<Page<String>> getAllAreas(Pageable pageable) {
-    return ResponseEntity.ok(service.findAllAreas(pageable));
-  }
-
-  @GetMapping("/{id}")
-  public ResponseEntity<ProfissionalSaudeResponseDTO> getAll(@PathVariable UUID id) {
-    return ResponseEntity.ok(service.findById(id));
   }
 }
