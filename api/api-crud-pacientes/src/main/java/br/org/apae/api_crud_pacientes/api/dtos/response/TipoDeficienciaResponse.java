@@ -1,20 +1,10 @@
 package br.org.apae.api_crud_pacientes.api.dtos.response;
 
-import br.org.apae.api_crud_pacientes.infrastructure.entity.PessoaEntity;
 import java.util.UUID;
 
 public class TipoDeficienciaResponse {
   private UUID id;
   private String descricao;
-  private PessoaEntity pessoa;
-
-  public PessoaEntity getPessoa() {
-    return pessoa;
-  }
-
-  public void setPessoa(PessoaEntity pessoa) {
-    this.pessoa = pessoa;
-  }
 
   public UUID getId() {
     return id;

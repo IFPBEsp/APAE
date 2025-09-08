@@ -3,7 +3,7 @@ package br.org.apae.api_crud_pacientes.application.service;
 import br.org.apae.api_crud_pacientes.api.dtos.request.PessoaRequest;
 import br.org.apae.api_crud_pacientes.api.dtos.response.PessoaResponse;
 import br.org.apae.api_crud_pacientes.infrastructure.entity.PessoaEntity;
-import br.org.apae.api_crud_pacientes.infrastructure.mapper.impl.PessoaMapper;
+import br.org.apae.api_crud_pacientes.infrastructure.mapper.impl.pessoa.PessoaMapper;
 import br.org.apae.api_crud_pacientes.infrastructure.percistency.jpa.PessoaRepositoryJpa;
 import jakarta.persistence.EntityNotFoundException;
 import java.util.Optional;

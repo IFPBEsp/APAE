@@ -21,7 +21,7 @@ import br.org.apae.api_crud_pacientes.api.dtos.request.PessoaRequest;
 import br.org.apae.api_crud_pacientes.api.dtos.response.PessoaResponse;
 import br.org.apae.api_crud_pacientes.application.service.PessoaService;
 import br.org.apae.api_crud_pacientes.infrastructure.entity.PessoaEntity;
-import br.org.apae.api_crud_pacientes.infrastructure.mapper.impl.PessoaMapper;
+import br.org.apae.api_crud_pacientes.infrastructure.mapper.impl.pessoa.PessoaMapper;
 
 @RestController
 @RequestMapping("/pessoas")
