@@ -1,18 +1,6 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono, Baloo_2, Nunito } from "next/font/google";
+import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
-
-export const baloo2 = Baloo_2({
-  subsets: ["latin"],
-  weight: ["700"], // bold
-  variable: "--font-baloo2"
-});
-
-export const nunito = Nunito({
-  subsets: ["latin"],
-  weight: ["400", "600"], // regular e semi-bold
-  variable: "--font-nunito"
-});
 
 const geistSans = Geist({
   variable: "--font-geist-sans",

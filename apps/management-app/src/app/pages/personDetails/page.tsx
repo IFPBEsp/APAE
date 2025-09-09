@@ -6,18 +6,15 @@ import DocumentCategoriesCard from "@/lib/ui/DocumentCategoriesCard";
 import { SquarePen } from "lucide-react";
 import { useEffect, useState } from "react";
 
-export default function PersonDetails() {
+export default function PersonDetails({ id }: { id: string }) {
     const [pessoa, setPessoa] = useState<any>(null);
-    const [contato, setContato] = useState<any>(null);
-    const [cadastro, setCadastro] = useState<any>(null);
-    const [responsavel, setResponsavel] = useState<any>(null);
-    const [atendimento, setAtendimento] = useState<any>(null);
-    const [deficiencia, setDeficiencia] = useState<any>(null);
-    const [vacina, setVacina] = useState<any>(null);
 
     useEffect(() => {
-        // keycloak para acessar os dados
-    })
+        fetch(`/api/pessoas/${id}`)
+            .then((response) => response.json())
+            .then((data) => setPessoa(data))
+            .catch((err) => console.error(err));
+    }, [id]);
 
     const handleCategoriaClick = (tipo: string) => {
         alert(`Você clicou na categoria: ${tipo}`);
@@ -28,7 +25,7 @@ export default function PersonDetails() {
             <Avatar className="h-50 w-50">
                 <AvatarImage src="https://www.inspirali.com/app/uploads/elementor/thumbs/carreira-medica-qfi1h8l88d4mqwz9hh5787b2rmfbc72p06p4ro4d8g.jpeg" />
             </Avatar>
-            <h3 className="font-baloo font-bold text-[#0D4F97] text-[24px]">Maria Eduarda Souto da Costa</h3>
+            <h3 className="font-baloo font-bold text-[#0D4F97] text-[24px]">{pessoa?.nomeCompleto}</h3>
 
             <DocumentCategoriesCard onClickCategoria={handleCategoriaClick} />
 
