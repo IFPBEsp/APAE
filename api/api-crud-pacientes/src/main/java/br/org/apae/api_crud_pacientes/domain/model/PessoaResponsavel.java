@@ -19,7 +19,6 @@ public class PessoaResponsavel {
   private String cpf;
   private String emergencia;
   private TipoResponsavel tipoResponsavel;
-  private Pessoa pessoa;
 
   public PessoaResponsavel() {}
 
@@ -31,8 +30,7 @@ public class PessoaResponsavel {
       String rg,
       String cpf,
       String emergencia,
-      TipoResponsavel tipoResponsavel,
-      Pessoa pessoa) {
+      TipoResponsavel tipoResponsavel) {
     this.id = id;
     this.ondeProcurar = ondeProcurar;
     this.vivo = vivo;
@@ -41,15 +39,13 @@ public class PessoaResponsavel {
     this.cpf = cpf;
     this.emergencia = emergencia;
     this.tipoResponsavel = tipoResponsavel;
-    this.pessoa = pessoa;
   }
 
   public PessoaResponsavel(
-      String ondeProcurar, String cpf, TipoResponsavel tipoResponsavel, Pessoa pessoa) {
+      String ondeProcurar, String cpf, TipoResponsavel tipoResponsavel) {
     this.ondeProcurar = ondeProcurar;
     this.cpf = cpf;
     this.tipoResponsavel = tipoResponsavel;
-    this.pessoa = pessoa;
   }
 
   public UUID getId() {
@@ -114,13 +110,5 @@ public class PessoaResponsavel {
 
   public void setTipoResponsavel(TipoResponsavel tipoResponsavel) {
     this.tipoResponsavel = tipoResponsavel;
-  }
-
-  public Pessoa getPessoa() {
-    return pessoa;
-  }
-
-  public void setPessoa(Pessoa pessoa) {
-    this.pessoa = pessoa;
   }
 }

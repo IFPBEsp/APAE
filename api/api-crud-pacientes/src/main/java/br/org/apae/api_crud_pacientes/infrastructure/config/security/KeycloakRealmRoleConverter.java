@@ -1,4 +1,4 @@
-package br.org.apae.api_crud_pacientes.infrastructure.config.security;
+/*package br.org.apae.api_crud_pacientes.infrastructure.config.security;
 
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.security.core.GrantedAuthority;
@@ -27,4 +27,4 @@ public class KeycloakRealmRoleConverter implements Converter<Jwt, Collection<Gra
                 .collect(Collectors.toList());
     }
 
-}
+}*/
