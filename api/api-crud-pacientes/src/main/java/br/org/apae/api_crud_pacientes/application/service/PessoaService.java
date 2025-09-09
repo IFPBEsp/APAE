@@ -42,7 +42,7 @@ public class PessoaService {
   }
 
   @Transactional
-  public PessoaEntity create(PessoaRequest pessoaRequest, BasicInformationDocumentRequest dto, MultipartFile file) {
+  public PessoaEntity create(PessoaRequest pessoaRequest, BasicInformationDocumentRequest dto, MultipartFile file, String authorizationHeader) {
     PessoaEntity pessoa = pessoaMapper.toEntity(pessoaRequest);
     pessoa = pessoaRepository.save(pessoa);
 
@@ -53,8 +53,8 @@ public class PessoaService {
             dto.documentType()
     );
 
-    minIOService.createBucketByPessoaID(pessoa.getId());
-    minIOService.uploadDocument(document, file);
+    minIOService.createBucketByPessoaID(pessoa.getId(), authorizationHeader);
+    minIOService.uploadDocument(document, file, authorizationHeader);
     return pessoaRepository.save(pessoa);
   }
 

@@ -1,4 +1,4 @@
-/*package br.org.apae.api_crud_pacientes.infrastructure.config.security;
+package br.org.apae.api_crud_pacientes.infrastructure.config.security;
 
 import java.util.Arrays;
 
@@ -64,4 +64,3 @@ public class SecurityConfig {
         return converter;
     }
 }
-*/

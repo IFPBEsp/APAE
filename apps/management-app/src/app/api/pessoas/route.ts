@@ -13,17 +13,26 @@ export async function GET() {
       return NextResponse.json([], { status: 200 });
     }
 
-    const formattedData = response.data.content.map((p: any) => ({
-      id: p.id || '',
-      nome: p.nomeCompleto || 'Nome não informado',
-      cpf: p.cpf || 'Não informado',
-      status: p.status || 'Ativo',
-      urlFoto: p.urlFoto || '',
-      contato: {
-        telefone: p.contatoResponse?.telefone || 'Não informado',
-      },
-      cidade: p.enderecoResponse?.cidade || 'Não informada',
-    }));
+    console.log(response.data.content.contatoResponse)
+
+    const formattedData = response.data.content.map((p: any) => {
+  // Pega o primeiro contato do array, ou null se o array for vazio/nulo
+  const primeiroContato = p.contatoResponse && p.contatoResponse.length > 0
+    ? p.contatoResponse[0]
+    : null;
+
+  return {
+    id: p.id || '',
+    nome: p.nomeCompleto || 'Nome não informado',
+    cpf: p.cpf || 'Não informado',
+    status: p.status || 'Ativo',
+    urlFoto: p.urlFoto || '',
+    contato: {
+      telefone: primeiroContato?.cep || 'Não informado',
+    },
+    cidade: primeiroContato?.cidade || 'Não informada',
+  };
+});
 
     return NextResponse.json(formattedData, { status: 200 });
 
