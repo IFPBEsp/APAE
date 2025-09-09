@@ -52,8 +52,8 @@ public class AgendamentoService {
         Optional.ofNullable(dto.getFrequenciaDias())
                 .ifPresent(agendamentoSaved::setFrequenciaDias);
 
-        Optional.ofNullable(dto.getIdProfissional())
-                .ifPresent(agendamentoSaved::setIdProfissional);
+        Optional.ofNullable(dto.getIdAreaDaSaude())
+                .ifPresent(agendamentoSaved::setIdAreaDaSaude);
 
         Optional.ofNullable(dto.getProximaConsulta())
                 .ifPresent(agendamentoSaved::setProximaConsulta);

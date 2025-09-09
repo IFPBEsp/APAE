@@ -9,7 +9,7 @@ import java.util.UUID;
 @Getter
 public class AgendamentoUpdateDTO {
     private UUID idPaciente;
-    private UUID idProfissional;
+    private UUID idAreaDaSaude;
     private Integer frequenciaDias;
     private LocalDate proximaConsulta;
     private LocalTime horaProximaConsulta;

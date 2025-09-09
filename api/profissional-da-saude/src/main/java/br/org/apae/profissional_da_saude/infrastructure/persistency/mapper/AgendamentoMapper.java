@@ -7,12 +7,14 @@ import br.org.apae.profissional_da_saude.infrastructure.entity.AgendamentoEntity
 
 public class AgendamentoMapper {
 
+    private AgendamentoMapper() {
+    }
 
     public static AgendamentoEntity toEntity(Agendamento agendamento) {
         return AgendamentoEntity.builder()
             .id(agendamento.getId())
             .idPaciente(agendamento.getIdPaciente())
-            .idProfissional(agendamento.getIdProfissional())
+            .idAreaDaSaude(agendamento.getIdAreaDaSaude())
             .proximaConsulta(agendamento.getProximaConsulta())
             .horaProximaConsulta(agendamento.getHoraProximaConsulta())
             .frequenciaDias(agendamento.getFrequenciaDias())
@@ -27,7 +29,7 @@ public class AgendamentoMapper {
         return new Agendamento(
             agendamentoEntity.getId(),
             agendamentoEntity.getIdPaciente(),
-            agendamentoEntity.getIdProfissional(),
+            agendamentoEntity.getIdAreaDaSaude(),
             agendamentoEntity.getFrequenciaDias(),
             agendamentoEntity.getProximaConsulta(),
             agendamentoEntity.getHoraProximaConsulta(),
@@ -42,7 +44,7 @@ public class AgendamentoMapper {
     public static Agendamento toDomain(AgendamentoCreateDTO dto) {
         return new Agendamento(
             dto.getIdPaciente(),
-            dto.getIdProfissional(),
+            dto.getIdAreaDaSaude(),
             dto.getFrequenciaDias(),
             dto.getProximaConsulta(),
             dto.getHoraProximaConsulta(),
@@ -56,7 +58,7 @@ public class AgendamentoMapper {
         return AgendamentoResponseDTO.builder()
             .id(agendamento.getId())
             .idPaciente(agendamento.getIdPaciente())
-            .idProfissional(agendamento.getIdProfissional())
+            .idAreaDaSaude(agendamento.getIdAreaDaSaude())
             .frequenciaDias(agendamento.getFrequenciaDias())
             .proximaConsulta(agendamento.getProximaConsulta())
             .horaProximaConsulta(agendamento.getHoraProximaConsulta())

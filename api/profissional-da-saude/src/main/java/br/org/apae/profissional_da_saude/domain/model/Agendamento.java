@@ -10,7 +10,7 @@ public class Agendamento {
 
     private UUID id;
     private UUID idPaciente;
-    private UUID idProfissional;
+    private UUID idAreaDaSaude;
     private Integer frequenciaDias;
     private LocalDate proximaConsulta;
     private LocalTime horaProximaConsulta;
@@ -21,17 +21,17 @@ public class Agendamento {
 
     public Agendamento(UUID idPaciente, UUID idProfissional, Integer frequenciaDias, LocalDate proximaConsulta, LocalTime horaProximaConsulta) {
         this.idPaciente = idPaciente;
-        this.idProfissional = idProfissional;
+        this.idAreaDaSaude = idProfissional;
         this.frequenciaDias = frequenciaDias;
         this.proximaConsulta = proximaConsulta;
         this.horaProximaConsulta = horaProximaConsulta;
         this.confirmado = false;
     }
 
-    public Agendamento(UUID id, UUID idPaciente, UUID idProfissional, Integer frequenciaDias, LocalDate proximaConsulta, LocalTime horaProximaConsulta, LocalDateTime dataCriacao) {
+    public Agendamento(UUID id, UUID idPaciente, UUID idAreaDaSaude, Integer frequenciaDias, LocalDate proximaConsulta, LocalTime horaProximaConsulta, LocalDateTime dataCriacao) {
         this.id = id;
         this.idPaciente = idPaciente;
-        this.idProfissional = idProfissional;
+        this.idAreaDaSaude = idAreaDaSaude;
         this.frequenciaDias = frequenciaDias;
         this.proximaConsulta = proximaConsulta;
         this.horaProximaConsulta = horaProximaConsulta;
@@ -39,9 +39,9 @@ public class Agendamento {
         this.confirmado = false;
     }
 
-    public Agendamento(UUID idPaciente, UUID idProfissional, Integer frequenciaDias, LocalDate proximaConsulta, LocalTime horaProximaConsulta, Boolean confirmado, String descricao, String justificativa) {
+    public Agendamento(UUID idPaciente, UUID idAreaDaSaude, Integer frequenciaDias, LocalDate proximaConsulta, LocalTime horaProximaConsulta, Boolean confirmado, String descricao, String justificativa) {
         this.idPaciente = idPaciente;
-        this.idProfissional = idProfissional;
+        this.idAreaDaSaude = idAreaDaSaude;
         this.frequenciaDias = frequenciaDias;
         this.proximaConsulta = proximaConsulta;
         this.horaProximaConsulta = horaProximaConsulta;
@@ -50,10 +50,10 @@ public class Agendamento {
         this.justificativa = justificativa;
     }
 
-    public Agendamento(UUID id, UUID idPaciente, UUID idProfissional, Integer frequenciaDias, LocalDate proximaConsulta, LocalTime horaProximaConsulta, Boolean confirmado, String descricao, String justificativa, LocalDateTime dataCriacao) {
+    public Agendamento(UUID id, UUID idPaciente, UUID idAreaDaSaude, Integer frequenciaDias, LocalDate proximaConsulta, LocalTime horaProximaConsulta, Boolean confirmado, String descricao, String justificativa, LocalDateTime dataCriacao) {
         this.id = id;
         this.idPaciente = idPaciente;
-        this.idProfissional = idProfissional;
+        this.idAreaDaSaude = idAreaDaSaude;
         this.frequenciaDias = frequenciaDias;
         this.proximaConsulta = proximaConsulta;
         this.horaProximaConsulta = horaProximaConsulta;
@@ -79,12 +79,12 @@ public class Agendamento {
         this.idPaciente = idPaciente;
     }
 
-    public UUID getIdProfissional() {
-        return idProfissional;
+    public UUID getIdAreaDaSaude() {
+        return idAreaDaSaude;
     }
 
-    public void setIdProfissional(UUID idProfissional) {
-        this.idProfissional = idProfissional;
+    public void setIdAreaDaSaude(UUID idAreaDaSaude) {
+        this.idAreaDaSaude = idAreaDaSaude;
     }
 
     public Integer getFrequenciaDias() {

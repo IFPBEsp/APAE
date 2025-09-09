@@ -15,7 +15,7 @@ public class AgendamentoCreateDTO {
     private UUID idPaciente;
 
     @NotNull
-    private UUID idProfissional;
+    private UUID idAreaDaSaude;
 
     @NotNull
     private Integer frequenciaDias;

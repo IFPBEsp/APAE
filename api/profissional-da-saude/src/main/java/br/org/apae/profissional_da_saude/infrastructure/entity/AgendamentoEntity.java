@@ -26,8 +26,8 @@ public class AgendamentoEntity {
 
     @Column(name = "paciente_id", nullable = false)
     private UUID idPaciente;
-    @Column(name = "profissional_id", nullable = false)
-    private UUID idProfissional;
+    @Column(name = "area_da_saude_id", nullable = false)
+    private UUID idAreaDaSaude;
     @Column(name = "frequencia_dias", nullable = false)
     private Integer frequenciaDias;
     @Column(name = "proxima_consulta", nullable = false)
