@@ -14,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Component
 public class PessoaMapper implements PessoaMapperInterface<PessoaRequest, PessoaResponse, PessoaEntity, Pessoa> {
@@ -168,7 +169,8 @@ public class PessoaMapper implements PessoaMapperInterface<PessoaRequest, Pessoa
                         r.getCpf(),
                         r.getEmergencia(),
                         PessoaResponsavel.TipoResponsavel.valueOf(r.getTipoResponsavel().name())
-                )).toList();
+                )).collect(Collectors.toList());
+
     }
 
     private  List<CadastroAnual> extrairCadastrosAnuais(PessoaEntity entity) {
@@ -181,7 +183,8 @@ public class PessoaMapper implements PessoaMapperInterface<PessoaRequest, Pessoa
                         c.getMedicacoesContinuas(),
                         c.getHistoricoDoencas(),
                         c.getRendaFamiliar()
-                )).toList();
+                )).collect(Collectors.toList());
+
     }
 
     private  List<Vacina> extrairVacinacoes(PessoaEntity entity) {
@@ -192,7 +195,8 @@ public class PessoaMapper implements PessoaMapperInterface<PessoaRequest, Pessoa
                         v.getNome(),
                         v.getDataAplicacao()
                 ))
-                .toList();
+                .collect(Collectors.toList());
+
     }
 
     private  List<TipoDeficiencia> extrairDeficiencias(PessoaEntity entity) {
@@ -202,7 +206,8 @@ public class PessoaMapper implements PessoaMapperInterface<PessoaRequest, Pessoa
                         d.getId(),
                         d.getDescricao()
                 ))
-                .toList();
+                .collect(Collectors.toList());
+
     }
 
     private  List<TipoAtendimento> extrairTiposAtendimentos(PessoaEntity entity) {
@@ -211,7 +216,8 @@ public class PessoaMapper implements PessoaMapperInterface<PessoaRequest, Pessoa
                 .map(t -> new TipoAtendimento(
                         t.getId(),
                         t.getDescricao()
-                )).toList();
+                )).collect(Collectors.toList());
+
     }
 
     private  List<Contato> extrairContatos(PessoaEntity entity) {
@@ -227,7 +233,8 @@ public class PessoaMapper implements PessoaMapperInterface<PessoaRequest, Pessoa
                         c.getEstado(),
                         c.getCep(),
                         c.getNaturalidade()
-                )).toList();
+                )).collect(Collectors.toList());
+
     }
 
 }
