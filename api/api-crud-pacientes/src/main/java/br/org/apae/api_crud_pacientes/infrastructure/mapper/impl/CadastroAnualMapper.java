@@ -17,12 +17,6 @@ public class CadastroAnualMapper
         PessoaEntity,
         CadastroAnual> {
 
-  private final PessoaMapper pessoaMapper;
-
-  public CadastroAnualMapper(PessoaMapper pessoaMapper) {
-    this.pessoaMapper = pessoaMapper;
-  }
-
   @Override
   public CadastroAnualEntity toEntity(CadastroAnualRequest request, PessoaEntity pessoa) {
     CadastroAnualEntity cadastro = new CadastroAnualEntity();
@@ -57,7 +51,6 @@ public class CadastroAnualMapper
     domain.setMedicacoesContinuas(entity.getMedicacoesContinuas());
     domain.setHistoricoDoencas(entity.getHistoricoDoencas());
     domain.setRendaFamiliar(entity.getRendaFamiliar());
-    domain.setPessoa(pessoaMapper.toDomain(entity.getPessoa()));
     return domain;
   }
 
@@ -70,7 +63,6 @@ public class CadastroAnualMapper
     dto.setMedicacoesContinuas(domain.getMedicacoesContinuas());
     dto.setHistoricoDoencas(domain.getHistoricoDoencas());
     dto.setRendaFamiliar(domain.getRendaFamiliar());
-    dto.setPessoaId(domain.getPessoa().getId());
     return dto;
   }
 
@@ -83,7 +75,6 @@ public class CadastroAnualMapper
     entity.setMedicacoesContinuas(domain.getMedicacoesContinuas());
     entity.setHistoricoDoencas(domain.getHistoricoDoencas());
     entity.setRendaFamiliar(domain.getRendaFamiliar());
-    entity.setPessoa(pessoaMapper.toEntityFromDomain(domain.getPessoa()));
     return entity;
   }
 }
