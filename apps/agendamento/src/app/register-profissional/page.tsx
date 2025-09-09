@@ -13,14 +13,38 @@ import {
 import {
   Form,
   FormControl,
+  FormDescription,
   FormField,
   FormItem,
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import { Checkbox } from "@/components/ui/checkbox";
+
 import { useRouter } from "next/navigation";
 
 import { useCreateProfissional } from "@/hooks/profissional/use-create-profissional";
+
+const diasDaSemana = [
+  { id: "segunda", label: "Segunda" },
+  { id: "terca", label: "Terça" },
+  { id: "quarta", label: "Quarta" },
+  { id: "quinta", label: "Quinta" },
+  { id: "sexta", label: "Sexta" },
+];
+
+const turnos = [
+  { id: "manha", label: "Manhã" },
+  { id: "tarde", label: "Tarde" },
+];
 
 export default function CadastroProfissional() {
   const { create, loading, error, success } = useCreateProfissional();
@@ -34,6 +58,22 @@ export default function CadastroProfissional() {
       areaSaude: "",
       cpf: "",
       telefone: "",
+      disponibilidade: {
+        manha: {
+          segunda: false,
+          terca: false,
+          quarta: false,
+          quinta: false,
+          sexta: false,
+        },
+        tarde: {
+          segunda: false,
+          terca: false,
+          quarta: false,
+          quinta: false,
+          sexta: false,
+        },
+      },
     },
   });
 
@@ -43,12 +83,26 @@ export default function CadastroProfissional() {
 
   async function onSubmit(values: any) {
     try {
+      const disponibilidadePayload = [];
+      const { disponibilidade } = values;
+      for (const turno in disponibilidade) {
+        for (const dia in disponibilidade[turno]) {
+          if (disponibilidade[turno][dia]) {
+            disponibilidadePayload.push({
+              dia: dia.toUpperCase(), 
+              turno: turno.toUpperCase(),
+            });
+          }
+        }
+      }
+
       const payload = {
         nome: values.nomeCompleto,
         email: values.email,
         docProfissional: values.documentoProfissional,
         areaDaSaude: values.areaSaude,
         telefone: values.telefone,
+        disponibilidade: disponibilidadePayload 
       };
 
       await create(payload);
@@ -63,7 +117,7 @@ export default function CadastroProfissional() {
       <Form {...form}>
         <form
           onSubmit={form.handleSubmit(onSubmit)}
-          className="space-y-6 max-w-2xl"
+          className="space-y-8 max-w-4xl"
         >
           <FormField
             control={form.control}
@@ -111,7 +165,7 @@ export default function CadastroProfissional() {
             )}
           />
 
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <FormField
               control={form.control}
               name="areaSaude"
@@ -120,7 +174,7 @@ export default function CadastroProfissional() {
                   <FormLabel>Área da saúde</FormLabel>
                   <Select onValueChange={field.onChange} value={field.value}>
                     <FormControl>
-                      <SelectTrigger className="w-full">
+                      <SelectTrigger>
                         <SelectValue placeholder="Selecione uma opção" />
                       </SelectTrigger>
                     </FormControl>
@@ -152,13 +206,61 @@ export default function CadastroProfissional() {
             />
           </div>
 
+          <div className="space-y-4">
+            <FormLabel>Disponibilidade</FormLabel>
+            <FormDescription>
+              Marque os dias e turnos em que o profissional está disponível.
+            </FormDescription>
+            <div className="border rounded-md">
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead className="w-[100px]">Turno</TableHead>
+                    {diasDaSemana.map((dia) => (
+                      <TableHead key={dia.id} className="text-center">
+                        {dia.label}
+                      </TableHead>
+                    ))}
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {turnos.map((turno) => (
+                    <TableRow key={turno.id}>
+                      <TableCell className="font-medium">
+                        {turno.label}
+                      </TableCell>
+                      {diasDaSemana.map((dia) => (
+                        <TableCell key={dia.id} className="text-center">
+                          <FormField
+                            control={form.control}
+                            name={`disponibilidade.${turno.id}.${dia.id}`}
+                            render={({ field }) => (
+                              <FormItem className="flex items-center justify-center">
+                                <FormControl>
+                                  <Checkbox
+                                    checked={field.value}
+                                    onCheckedChange={field.onChange}
+                                  />
+                                </FormControl>
+                              </FormItem>
+                            )}
+                          />
+                        </TableCell>
+                      ))}
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </div>
+          </div>
+
           {loading && <p className="text-blue-500">Salvando...</p>}
           {error && <p className="text-red-500">Erro: {error}</p>}
           {success && (
             <p className="text-green-600">Profissional criado com sucesso!</p>
           )}
 
-          <div className="flex justify-end gap-4">
+          <div className="flex justify-end gap-4 pt-4">
             <Button type="button" variant="outline" onClick={onCancel}>
               Cancelar
             </Button>
@@ -175,3 +277,4 @@ export default function CadastroProfissional() {
     </div>
   );
 }
+
