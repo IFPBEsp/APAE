@@ -50,7 +50,7 @@ export async function setSessionCookie(payload: {
 }): Promise<void> {
   try {
     const cookieStore = await cookies();
-    const expires = new Date(Date.now() + payload.expiresIn);
+    const expires = new Date(Date.now() + payload.expiresIn * 1000);
 
     cookieStore.set("session", JSON.stringify(payload), {
       expires,

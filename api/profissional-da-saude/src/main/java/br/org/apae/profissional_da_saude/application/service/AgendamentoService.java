@@ -61,6 +61,15 @@ public class AgendamentoService {
         Optional.ofNullable(dto.getHoraProximaConsulta())
                 .ifPresent(agendamentoSaved::setHoraProximaConsulta);
 
+        Optional.ofNullable(dto.getConfirmado())
+                .ifPresent(agendamentoSaved::setConfirmado);
+
+        Optional.ofNullable(dto.getDescricao())
+                .ifPresent(agendamentoSaved::setDescricao);
+
+        Optional.ofNullable(dto.getJustificativa())
+                .ifPresent(agendamentoSaved::setJustificativa);
+
         Agendamento agendamentoUpdated = this.repository.update(agendamentoSaved);
         return AgendamentoMapper.toResponseDTO(agendamentoUpdated);
     }

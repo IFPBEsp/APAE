@@ -34,6 +34,12 @@ public class AgendamentoEntity {
     private LocalDate proximaConsulta;
     @Column(name = "hora_proxima_consulta", nullable = false)
     private LocalTime horaProximaConsulta;
+    @Column(name = "confirmado", nullable = false)
+    private Boolean confirmado;
+    @Column(name = "descricao")
+    private String descricao;
+    @Column(name = "justificativa")
+    private String justificativa;
     @CreationTimestamp
     @Column(name = "data_criacao")
     private LocalDateTime dataCriacao;

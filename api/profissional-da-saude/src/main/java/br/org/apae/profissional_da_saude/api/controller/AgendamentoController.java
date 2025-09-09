@@ -20,7 +20,7 @@ import jakarta.validation.Valid;
 @RequestMapping("/agendamentos")
 public class AgendamentoController {
     
-   private final AgendamentoService service;
+  private final AgendamentoService service;
 
   @Autowired
   public AgendamentoController(AgendamentoService service) {
