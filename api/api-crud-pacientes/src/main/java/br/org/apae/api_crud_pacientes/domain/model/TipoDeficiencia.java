@@ -1,24 +1,23 @@
 package br.org.apae.api_crud_pacientes.domain.model;
 
+import br.org.apae.api_crud_pacientes.domain.model.pessoa.Pessoa;
+
 import java.util.UUID;
 
 public class TipoDeficiencia {
 
   private UUID id;
   private String descricao;
-  private Pessoa pessoa;
 
   public TipoDeficiencia() {}
 
-  public TipoDeficiencia(UUID id, String descricao, Pessoa pessoa) {
+  public TipoDeficiencia(UUID id, String descricao) {
     this.id = id;
     this.descricao = descricao;
-    this.pessoa = pessoa;
   }
 
   public TipoDeficiencia(String descricao, Pessoa pessoa) {
     this.descricao = descricao;
-    this.pessoa = pessoa;
   }
 
   public UUID getId() {
@@ -37,11 +36,4 @@ public class TipoDeficiencia {
     this.descricao = descricao;
   }
 
-  public Pessoa getPessoa() {
-    return pessoa;
-  }
-
-  public void setPessoa(Pessoa pessoa) {
-    this.pessoa = pessoa;
-  }
 }

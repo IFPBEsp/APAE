@@ -71,6 +71,7 @@ button:hover {
     color: #0a0a0a;
   }
 }
+}
 
 :root {
   --radius: 0.625rem;
@@ -149,3 +150,4 @@ button:hover {
     @apply bg-background text-foreground;
   }
 }
+

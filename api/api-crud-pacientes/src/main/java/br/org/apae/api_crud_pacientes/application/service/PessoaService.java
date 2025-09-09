@@ -1,25 +1,34 @@
 package br.org.apae.api_crud_pacientes.application.service;
 
+import br.org.apae.api_crud_pacientes.api.dtos.request.BasicInformationDocumentRequest;
 import br.org.apae.api_crud_pacientes.api.dtos.request.PessoaRequest;
 import br.org.apae.api_crud_pacientes.api.dtos.response.PessoaResponse;
+import br.org.apae.api_crud_pacientes.infrastructure.client.documento_digitalizado.dtos.DocumentObjectRequestDTO;
 import br.org.apae.api_crud_pacientes.infrastructure.entity.PessoaEntity;
-import br.org.apae.api_crud_pacientes.infrastructure.mapper.impl.PessoaMapper;
+import br.org.apae.api_crud_pacientes.infrastructure.mapper.impl.pessoa.PessoaMapper;
 import br.org.apae.api_crud_pacientes.infrastructure.percistency.jpa.PessoaRepositoryJpa;
 import jakarta.persistence.EntityNotFoundException;
 import java.util.Optional;
 import java.util.UUID;
+
+import jakarta.transaction.Transactional;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 @Service
 public class PessoaService {
   private final PessoaRepositoryJpa pessoaRepository;
   private final PessoaMapper pessoaMapper;
+  private final MinIOService minIOService;
 
-  public PessoaService(PessoaRepositoryJpa pessoaRepository, PessoaMapper pessoaMapper) {
+  @Autowired
+  public PessoaService(PessoaRepositoryJpa pessoaRepository, PessoaMapper pessoaMapper, MinIOService minIOService) {
     this.pessoaRepository = pessoaRepository;
     this.pessoaMapper = pessoaMapper;
+    this.minIOService = minIOService;
   }
 
   public PessoaEntity getById(UUID id) {
@@ -32,8 +41,20 @@ public class PessoaService {
     return pessoa;
   }
 
-  public PessoaEntity create(PessoaRequest pessoaRequest) {
+  @Transactional
+  public PessoaEntity create(PessoaRequest pessoaRequest, BasicInformationDocumentRequest dto, MultipartFile file) {
     PessoaEntity pessoa = pessoaMapper.toEntity(pessoaRequest);
+    pessoa = pessoaRepository.save(pessoa);
+
+    DocumentObjectRequestDTO document = new DocumentObjectRequestDTO(
+            pessoa.getId().toString(),
+            dto.year(),
+            dto.documentCategory(),
+            dto.documentType()
+    );
+
+    minIOService.createBucketByPessoaID(pessoa.getId());
+    minIOService.uploadDocument(document, file);
     return pessoaRepository.save(pessoa);
   }
 

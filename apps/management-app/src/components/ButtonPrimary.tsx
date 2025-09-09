@@ -35,7 +35,7 @@ export function PrimaryButton({
 }: PrimaryButtonProps) {
   return (
     <div
-      className={cn("flex justify-center mt-8 sm:mt-12", fullWidth && "w-full")}
+      className={cn("flex justify-center mt-6 sm:mt-12", fullWidth && "w-full")}
     >
       <Button
         type={type}

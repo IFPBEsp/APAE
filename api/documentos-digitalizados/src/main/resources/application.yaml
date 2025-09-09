@@ -1,20 +1,20 @@
 issuer_uri: http://localhost:8080/realms/org-apae
 jwk_set_uri: http://localhost:8080/realms/org-apae/protocol/openid-connect/certs
 
-spring:
-  application:
-    name: documentos-digitalizados
-  security:
-    oauth2:
-      resourceserver:
-        jwt:
-          issuer-uri: ${issuer_uri}
-          jwk_set_uri: ${jwk_set_uri}
+#spring:
+#  application:
+#    name: documentos-digitalizados
+#  security:
+#    oauth2:
+#      resourceserver:
+#        jwt:
+#          issuer-uri: ${issuer_uri}
+#          jwk_set_uri: ${jwk_set_uri}
 
 minio:
   endpoint: http://localhost:9000
-  accessKey: oX601AD733Adz2LpKC2F
-  secretKey: 6qon9hYJM1yput1RcfGqxC9s8Y2LKAlvNV1VfY4l
+  accessKey: ROOTUSER
+  secretKey: CHANGEME123
 
 server:
   port: 8081

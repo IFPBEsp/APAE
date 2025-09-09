@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import Link from "next/link";
-import { login } from "@/app/auth/actions/actions";
+//import { login } from "@/app/auth/actions/actions";
 
 export function LoginForm({
   className,
@@ -11,7 +11,7 @@ export function LoginForm({
 }: React.ComponentProps<"form">) {
   return (
     <form
-      action={login}
+      //action={login}
       className={cn("flex flex-col gap-6", className)}
       {...props}
     >
