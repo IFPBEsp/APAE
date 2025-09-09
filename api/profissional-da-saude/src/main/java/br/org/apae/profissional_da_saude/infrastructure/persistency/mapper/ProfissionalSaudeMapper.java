@@ -17,6 +17,14 @@ public final class ProfissionalSaudeMapper {
         .docProfissional(model.getDocProfissional())
         .email(model.getEmail())
         .nome(model.getNome())
+        .rg(model.getRg())
+        .estado(model.getEstado())
+        .cidade(model.getCidade())
+        .bairro(model.getBairro())
+        .rua(model.getRua())
+        .numero(model.getNumero())
+        .cep(model.getCep())
+        .complemento(model.getComplemento())
         .build();
   }
 
@@ -27,7 +35,15 @@ public final class ProfissionalSaudeMapper {
         entity.getTelefone(),
         entity.getDocProfissional(),
         entity.getEmail(),
-        entity.getNome());
+        entity.getNome(),
+        entity.getRg(),
+        entity.getEstado(),
+        entity.getCidade(),
+        entity.getBairro(),
+        entity.getRua(),
+        entity.getNumero(),
+        entity.getCep(),
+        entity.getComplemento());
   }
 
   public static ProfissionalSaude toDomain(ProfissionalSaudeCreateDTO dto) {
@@ -36,7 +52,15 @@ public final class ProfissionalSaudeMapper {
         dto.getTelefone(),
         dto.getDocProfissional(),
         dto.getEmail(),
-        dto.getNome());
+        dto.getNome(),
+        dto.getRg(),
+        dto.getEstado(),
+        dto.getCidade(),
+        dto.getBairro(),
+        dto.getRua(),
+        dto.getNumero(),
+        dto.getCep(),
+        dto.getComplemento());
   }
 
   public static ProfissionalSaudeResponseDTO toResponseDTO(ProfissionalSaude model) {
@@ -47,6 +71,15 @@ public final class ProfissionalSaudeMapper {
     dto.setDocProfissional(model.getDocProfissional());
     dto.setEmail(model.getEmail());
     dto.setNome(model.getNome());
+    dto.setRg(model.getRg());
+    dto.setEstado(model.getEstado());
+    dto.setCidade(model.getCidade());
+    dto.setBairro(model.getBairro());
+    dto.setRua(model.getRua());
+    dto.setNumero(model.getNumero());
+    dto.setCep(model.getCep());
+    dto.setComplemento(model.getComplemento());
+
     return dto;
   }
 }
