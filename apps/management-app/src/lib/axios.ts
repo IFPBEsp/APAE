@@ -62,3 +62,4 @@ export const createAuthAPI = async () => {
 
   return makeInterceptors(api);
 };
+

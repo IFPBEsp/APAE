@@ -1,3 +1,5 @@
+import React from 'react';
+
 import FileViewer from "@/components/fileViewing";
 
 export default function FileViewerPage() {
