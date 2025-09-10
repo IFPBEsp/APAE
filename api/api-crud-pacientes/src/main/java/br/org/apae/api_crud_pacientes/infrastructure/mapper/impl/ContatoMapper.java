@@ -13,12 +13,6 @@ public class ContatoMapper
     implements GenericMapperInterface<
         ContatoRequest, ContatoResponse, ContatoEntity, PessoaEntity, Contato> {
 
-  private final PessoaMapper pessoaMapper;
-
-  public ContatoMapper(PessoaMapper pessoaMapper) {
-    this.pessoaMapper = pessoaMapper;
-  }
-
   @Override
   public ContatoEntity toEntity(ContatoRequest request, PessoaEntity pessoa) {
     ContatoEntity contato = new ContatoEntity();
@@ -48,7 +42,6 @@ public class ContatoMapper
     contatoEntity.setEstado(contato.getEstado());
     contatoEntity.setCep(contato.getCep());
     contatoEntity.setNaturalidade(contato.getNaturalidade());
-    contatoEntity.setPessoa(pessoaMapper.toEntityFromDomain(contato.getPessoa()));
 
     return contatoEntity;
   }
@@ -82,7 +75,6 @@ public class ContatoMapper
     contato.setEstado(contatoEntity.getEstado());
     contato.setCep(contatoEntity.getCep());
     contato.setNaturalidade(contatoEntity.getNaturalidade());
-    contato.setPessoa(pessoaMapper.toDomain(contatoEntity.getPessoa()));
 
     return contato;
   }

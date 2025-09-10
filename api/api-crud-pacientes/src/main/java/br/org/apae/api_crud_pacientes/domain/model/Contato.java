@@ -13,7 +13,6 @@ public class Contato {
   private String estado;
   private String cep;
   private String naturalidade;
-  private Pessoa pessoa;
 
   public Contato() {}
 
@@ -26,8 +25,7 @@ public class Contato {
       String cidade,
       String estado,
       String cep,
-      String naturalidade,
-      Pessoa pessoa) {
+      String naturalidade) {
     this.id = id;
     this.enderecoAtivo = enderecoAtivo;
     this.comprovanteResidencia = comprovanteResidencia;
@@ -37,14 +35,6 @@ public class Contato {
     this.estado = estado;
     this.cep = cep;
     this.naturalidade = naturalidade;
-    this.pessoa = pessoa;
-  }
-
-  public Contato(String endereco, String cidade, String estado, Pessoa pessoa) {
-    this.endereco = endereco;
-    this.cidade = cidade;
-    this.estado = estado;
-    this.pessoa = pessoa;
   }
 
   public UUID getId() {
@@ -117,13 +107,5 @@ public class Contato {
 
   public void setNaturalidade(String naturalidade) {
     this.naturalidade = naturalidade;
-  }
-
-  public Pessoa getPessoa() {
-    return pessoa;
-  }
-
-  public void setPessoa(Pessoa pessoa) {
-    this.pessoa = pessoa;
   }
 }
