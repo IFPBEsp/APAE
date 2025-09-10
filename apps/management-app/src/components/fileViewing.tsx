@@ -3,10 +3,10 @@
 import * as React from "react";
 import { useRouter } from "next/navigation";
 import { ArrowLeft } from "lucide-react";
+import { useParams } from "next/navigation";
 
 import FileFilter from "./fileViewing/fileFilter";
 import FileCard from "./fileViewing/fileCard";
-import { listFilteredDocuments } from "@/service/fileViewingService";
 
 export interface FileItem {
   id: string;
@@ -15,10 +15,6 @@ export interface FileItem {
   type: string;
   url: string;
   year: string;
-}
-
-interface FileViewerProps {
-  initialCategory: "pessoal" | "medico" | "escolar";
 }
 
 const documentCategory = {
@@ -33,9 +29,11 @@ const typeDocument ={
   escolar:['historico','declaração de matrícula'],
 }
 
-export default function FileViewer({ initialCategory }: FileViewerProps) {
+export default function FileViewer() {
   const router = useRouter();
-  const [category, setCategory] = React.useState<"pessoal" | "medico" | "escolar">(initialCategory);
+  const params = useParams();
+  const patientId = params?.patientId as string;
+  const category = params?.category as "pessoal" | "medico" | "escolar";
   const [yearFilter, setYearFilter] = React.useState<string | null>(null);
   const [typeFilter, setTypeFilter] = React.useState<string | null>(null);
   const [files, setFiles] = React.useState<FileItem[]>([]);
@@ -45,17 +43,22 @@ export default function FileViewer({ initialCategory }: FileViewerProps) {
 React.useEffect(() => {
     async function fetchDocuments() {
       try {
-        if (!typeFilter || !yearFilter) return;
+        if (!patientId || !typeFilter || !yearFilter) return;
 
-        const response = await listFilteredDocuments(
-          "",
+        const params = new URLSearchParams({
           category,
-          parseInt(yearFilter),
-          typeFilter,
-          ""
-        );
+          year: yearFilter,
+          ...(typeFilter && { type: typeFilter }),
+        });
 
-        const converted = response.documents.map((doc, index) => ({
+        const response = await fetch(`/api/documents/${patientId}?${params.toString()}`)
+        if (!response.ok) {
+          throw new Error("Erro ao buscar os documentos");
+        }
+
+        const data = await response.json();
+
+        const converted = data.documents.map((doc:any, index: number) => ({
           id: index.toString(),
           name: doc.fileName,
           url: doc.url,
@@ -65,16 +68,22 @@ React.useEffect(() => {
         }));
 
         setFiles(converted);
+
       } catch (err) {
         console.error("Erro ao buscar documentos:", err);
       }
     }
 
     fetchDocuments();
-  }, [category, yearFilter, typeFilter]);
+  }, [patientId, category, yearFilter, typeFilter]);
+
+
+
+  //Parte visual
 
   const brandColor = "text-[#0d4f97]";
 
+  //As categorias ainda estão "estáticas", a lógica precisa ser refeita mas deve funcionar por enquanto.
   return (
     <main className="pt-6 md:pt-12 px-4 py-6 max-w-7xl mx-auto font-baloo">
       
