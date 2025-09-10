@@ -2,7 +2,9 @@ package br.org.apae.profissional_da_saude.infrastructure.persistency.mapper;
 
 import br.org.apae.profissional_da_saude.api.dto.ProfissionalSaudeCreateDTO;
 import br.org.apae.profissional_da_saude.api.dto.ProfissionalSaudeResponseDTO;
+import br.org.apae.profissional_da_saude.domain.model.Endereco;
 import br.org.apae.profissional_da_saude.domain.model.ProfissionalSaude;
+import br.org.apae.profissional_da_saude.infrastructure.entity.EnderecoEntity;
 import br.org.apae.profissional_da_saude.infrastructure.entity.ProfissionalSaudeEntity;
 
 public final class ProfissionalSaudeMapper {
@@ -10,6 +12,7 @@ public final class ProfissionalSaudeMapper {
   private ProfissionalSaudeMapper() {}
 
   public static ProfissionalSaudeEntity toEntity(ProfissionalSaude model) {
+
     return ProfissionalSaudeEntity.builder()
         .id(model.getId())
         .areaDaSaude(model.getAreaDaSaude())
@@ -18,49 +21,60 @@ public final class ProfissionalSaudeMapper {
         .email(model.getEmail())
         .nome(model.getNome())
         .rg(model.getRg())
-        .estado(model.getEstado())
-        .cidade(model.getCidade())
-        .bairro(model.getBairro())
-        .rua(model.getRua())
-        .numero(model.getNumero())
-        .cep(model.getCep())
-        .complemento(model.getComplemento())
+        .endereco(new EnderecoEntity( model.getEndereco().getEstado(),
+                model.getEndereco().getCidade(),
+                model.getEndereco().getBairro(),
+                model.getEndereco().getRua(),
+                model.getEndereco().getNumero(),
+                model.getEndereco().getCep(),
+                model.getEndereco().getComplemento()))
         .build();
   }
 
   public static ProfissionalSaude toModel(ProfissionalSaudeEntity entity) {
+
+    Endereco endereco = new Endereco( entity.getEndereco().getEstado(),
+            entity.getEndereco().getCidade(),
+            entity.getEndereco().getBairro(),
+            entity.getEndereco().getRua(),
+            entity.getEndereco().getNumero(),
+            entity.getEndereco().getCep(),
+            entity.getEndereco().getComplemento());
+
     return new ProfissionalSaude(
-        entity.getId(),
-        entity.getAreaDaSaude(),
-        entity.getTelefone(),
-        entity.getDocProfissional(),
-        entity.getEmail(),
-        entity.getNome(),
-        entity.getRg(),
-        entity.getEstado(),
-        entity.getCidade(),
-        entity.getBairro(),
-        entity.getRua(),
-        entity.getNumero(),
-        entity.getCep(),
-        entity.getComplemento());
+            entity.getId(),
+            entity.getAreaDaSaude(),
+            entity.getTelefone(),
+            entity.getDocProfissional(),
+            entity.getEmail(),
+            entity.getNome(),
+            entity.getRg(),
+            endereco
+    );
   }
 
   public static ProfissionalSaude toDomain(ProfissionalSaudeCreateDTO dto) {
+
+    Endereco endereco = new Endereco(
+            dto.getEndereco().getEstado(),
+            dto.getEndereco().getCidade(),
+            dto.getEndereco().getBairro(),
+            dto.getEndereco().getRua(),
+            dto.getEndereco().getNumero(),
+            dto.getEndereco().getCep(),
+            dto.getEndereco().getComplemento()
+    );
+
+
     return new ProfissionalSaude(
-        dto.getAreaDaSaude(),
-        dto.getTelefone(),
-        dto.getDocProfissional(),
-        dto.getEmail(),
-        dto.getNome(),
-        dto.getRg(),
-        dto.getEstado(),
-        dto.getCidade(),
-        dto.getBairro(),
-        dto.getRua(),
-        dto.getNumero(),
-        dto.getCep(),
-        dto.getComplemento());
+            dto.getAreaDaSaude(),
+            dto.getTelefone(),
+            dto.getDocProfissional(),
+            dto.getEmail(),
+            dto.getNome(),
+            dto.getRg(),
+            endereco
+    );
   }
 
   public static ProfissionalSaudeResponseDTO toResponseDTO(ProfissionalSaude model) {
@@ -72,13 +86,17 @@ public final class ProfissionalSaudeMapper {
     dto.setEmail(model.getEmail());
     dto.setNome(model.getNome());
     dto.setRg(model.getRg());
-    dto.setEstado(model.getEstado());
-    dto.setCidade(model.getCidade());
-    dto.setBairro(model.getBairro());
-    dto.setRua(model.getRua());
-    dto.setNumero(model.getNumero());
-    dto.setCep(model.getCep());
-    dto.setComplemento(model.getComplemento());
+
+    Endereco endereco = new Endereco();
+    endereco.setEstado(model.getEndereco().getEstado());
+    endereco.setCidade(model.getEndereco().getCidade());
+    endereco.setBairro(model.getEndereco().getBairro());
+    endereco.setRua(model.getEndereco().getRua());
+    endereco.setNumero(model.getEndereco().getNumero());
+    endereco.setCep(model.getEndereco().getCep());
+    endereco.setComplemento(model.getEndereco().getComplemento());
+
+    dto.setEndereco(endereco);
 
     return dto;
   }
