@@ -2,10 +2,8 @@ package br.org.apae.profissional_da_saude.api.dto;
 
 import br.org.apae.profissional_da_saude.api.validation.RegexPatterns;
 import br.org.apae.profissional_da_saude.api.validation.ValidationMessages;
-import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Pattern;
-import jakarta.validation.constraints.Size;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.*;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -38,30 +36,7 @@ public class ProfissionalSaudeCreateDTO {
     @Pattern( regexp = RegexPatterns.RG, message = ValidationMessages.RG_INVALIDO )
     private String rg;
 
-    @NotBlank
-    @Pattern( regexp = RegexPatterns.ESTADO, message = ValidationMessages.ESTADO_INVALIDO )
-    private String estado;
-
-    @NotBlank
-    @Pattern( regexp = RegexPatterns.CIDADE, message = ValidationMessages.CIDADE_INVALIDA )
-    private String cidade;
-
-    @NotBlank
-    @Pattern( regexp = RegexPatterns.BAIRRO, message = ValidationMessages.BAIRRO_INVALIDO )
-    private String bairro;
-
-    @NotBlank
-    @Pattern( regexp = RegexPatterns.RUA, message = ValidationMessages.RUA_INVALIDA )
-    private String rua;
-
-    @NotBlank
-    @Pattern( regexp = RegexPatterns.NUMERO, message = ValidationMessages.NUMERO_INVALIDO )
-    private String numero;
-
-    @NotBlank
-    @Pattern( regexp = RegexPatterns.CEP, message = ValidationMessages.CEP_INVALIDO )
-    private String cep;
-
-    @Pattern( regexp = RegexPatterns.COMPLEMENTO, message = ValidationMessages.COMPLEMENTO_INVALIDO )
-    private String complemento;
+    @NotNull(message = "Endereço é obrigatório")
+    @Valid
+    private EnderecoDTO endereco;
 }
