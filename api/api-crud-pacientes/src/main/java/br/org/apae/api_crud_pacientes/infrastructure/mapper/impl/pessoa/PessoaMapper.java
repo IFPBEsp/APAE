@@ -232,7 +232,8 @@ public class PessoaMapper implements PessoaMapperInterface<PessoaRequest, Pessoa
                         c.getCidade(),
                         c.getEstado(),
                         c.getCep(),
-                        c.getNaturalidade()
+                        c.getNaturalidade(),
+                        c.getTelefone()
                 )).collect(Collectors.toList());
 
     }

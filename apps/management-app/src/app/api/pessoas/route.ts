@@ -16,7 +16,6 @@ export async function GET() {
     console.log(response.data.content.contatoResponse)
 
     const formattedData = response.data.content.map((p: any) => {
-  // Pega o primeiro contato do array, ou null se o array for vazio/nulo
   const primeiroContato = p.contatoResponse && p.contatoResponse.length > 0
     ? p.contatoResponse[0]
     : null;
@@ -28,7 +27,7 @@ export async function GET() {
     status: p.status || 'Ativo',
     urlFoto: p.urlFoto || '',
     contato: {
-      telefone: primeiroContato?.cep || 'Não informado',
+      telefone: primeiroContato?.telefone || 'Não informado',
     },
     cidade: primeiroContato?.cidade || 'Não informada',
   };
