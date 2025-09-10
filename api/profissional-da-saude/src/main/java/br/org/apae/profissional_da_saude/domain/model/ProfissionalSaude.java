@@ -10,20 +10,14 @@ public class ProfissionalSaude {
   private  String docProfissional;
   private  String email;
   private  String nome;
-
   private  String rg;
-  private  String estado;
-  private  String cidade;
-  private  String bairro;
-  private  String rua;
-  private  String numero;
-  private  String cep;
-  private  String complemento;
+
+  private Endereco endereco;
+
 
   public ProfissionalSaude(UUID id, String areaDaSaude, String telefone,
                            String docProfissional, String email, String nome,
-                           String rg, String estado, String cidade, String bairro,
-                           String rua, String numero, String cep, String complemento) {
+                           String rg, Endereco endereco) {
     this.id = id;
     this.areaDaSaude = areaDaSaude;
     this.telefone = telefone;
@@ -31,32 +25,19 @@ public class ProfissionalSaude {
     this.email = email;
     this.nome = nome;
     this.rg = rg;
-    this.estado = estado;
-    this.cidade = cidade;
-    this.bairro = bairro;
-    this.rua = rua;
-    this.numero = numero;
-    this.cep = cep;
-    this.complemento = complemento;
+    this.endereco = endereco;
   }
 
   public ProfissionalSaude(String areaDaSaude, String telefone, String docProfissional,
-                           String email, String nome, String rg,
-                           String estado, String cidade, String bairro,
-                           String rua, String numero, String cep, String complemento) {
+                           String email, String nome, String rg, Endereco endereco) {
     this.areaDaSaude = areaDaSaude;
     this.telefone = telefone;
     this.docProfissional = docProfissional;
     this.email = email;
     this.nome = nome;
     this.rg = rg;
-    this.estado = estado;
-    this.cidade = cidade;
-    this.bairro = bairro;
-    this.rua = rua;
-    this.numero = numero;
-    this.cep = cep;
-    this.complemento = complemento;
+    this.endereco = endereco;
+
   }
 
   public UUID getId() {
@@ -115,59 +96,11 @@ public class ProfissionalSaude {
     this.rg = rg;
   }
 
-  public String getEstado() {
-    return estado;
+  public Endereco getEndereco() {
+    return endereco;
   }
 
-  public void setEstado(String estado) {
-    this.estado = estado;
-  }
-
-  public String getCidade() {
-    return cidade;
-  }
-
-  public void setCidade(String cidade) {
-    this.cidade = cidade;
-  }
-
-  public String getBairro() {
-    return bairro;
-  }
-
-  public void setBairro(String bairro) {
-    this.bairro = bairro;
-  }
-
-  public String getRua() {
-    return rua;
-  }
-
-  public void setRua(String rua) {
-    this.rua = rua;
-  }
-
-  public String getNumero() {
-    return numero;
-  }
-
-  public void setNumero(String numero) {
-    this.numero = numero;
-  }
-
-  public String getCep() {
-    return cep;
-  }
-
-  public void setCep(String cep) {
-    this.cep = cep;
-  }
-
-  public String getComplemento() {
-    return complemento;
-  }
-
-  public void setComplemento(String complemento) {
-    this.complemento = complemento;
+  public void setEndereco(Endereco endereco) {
+    this.endereco = endereco;
   }
 }
