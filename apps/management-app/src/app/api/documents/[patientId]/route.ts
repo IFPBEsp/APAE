@@ -1,5 +1,4 @@
 import { NextRequest, NextResponse } from "next/server";
-import axios from "axios";
 import { createDocumentsAPI } from "@/lib/axios";
 
 // const BACKEND_URL = process.env.DOCUMENT_API_BASE_URL || "http://localhost:8081/api/documents";
@@ -18,7 +17,7 @@ export async function GET(
 
     try {
         const api = await createDocumentsAPI()
-        const response = await api.get(`/paciente/${params.patientId}`,{
+        const response = await api.get(`/paciente/${params.patientId}/type`,{
             params: { year, category, ...(type && { type }) },
         });
 
