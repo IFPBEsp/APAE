@@ -2,6 +2,7 @@
 
 import { useEffect } from "react";
 import { useForm } from "react-hook-form";
+import { useRouter } from "next/navigation";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -15,15 +16,37 @@ import {
 import {
   Form,
   FormControl,
+  FormDescription,
   FormField,
   FormItem,
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import { Checkbox } from "@/components/ui/checkbox";
 
 import { useGetByIdProfissional } from "@/hooks/profissional/use-get-by-id-profissional";
 import { useUpdateProfissional } from "@/hooks/profissional/use-update-profissional";
-import { useRouter } from "next/navigation";
+
+const diasDaSemana = [
+  { id: "segunda", label: "Segunda" },
+  { id: "terca", label: "Terça" },
+  { id: "quarta", label: "Quarta" },
+  { id: "quinta", label: "Quinta" },
+  { id: "sexta", label: "Sexta" },
+];
+
+const turnos = [
+  { id: "manha", label: "Manhã" },
+  { id: "tarde", label: "Tarde" },
+];
 
 export type FormData = {
   nome: string;
@@ -31,15 +54,17 @@ export type FormData = {
   docProfissional: string;
   areaDaSaude: string;
   telefone: string;
+  disponibilidade: {
+    [key: string]: {
+      [key: string]: boolean;
+    };
+  };
 };
 
 export default function AtualizarProfissional() {
   const router = useRouter();
-  const {
-    profissional,
-    loading: loadingProf,
-    error: errorProf,
-  } = useGetByIdProfissional();
+  const { profissional, loading: loadingProf, error: errorProf } =
+    useGetByIdProfissional();
   const { updateProfissional, loading, error, success } =
     useUpdateProfissional();
 
@@ -50,17 +75,64 @@ export default function AtualizarProfissional() {
       docProfissional: "",
       areaDaSaude: "",
       telefone: "",
+      disponibilidade: {
+        manha: {
+          segunda: false,
+          terca: false,
+          quarta: false,
+          quinta: false,
+          sexta: false,
+        },
+        tarde: {
+          segunda: false,
+          terca: false,
+          quarta: false,
+          quinta: false,
+          sexta: false,
+        },
+      },
     },
   });
 
   useEffect(() => {
     if (profissional) {
+      const disponibilidadeState = {
+        manha: {
+          segunda: false,
+          terca: false,
+          quarta: false,
+          quinta: false,
+          sexta: false,
+        },
+        tarde: {
+          segunda: false,
+          terca: false,
+          quarta: false,
+          quinta: false,
+          sexta: false,
+        },
+      };
+
+      if (profissional.disponibilidade && profissional.disponibilidade.length > 0) {
+        profissional.disponibilidade.forEach((item) => {
+          const dia = item.dia.toLowerCase();
+          const turno = item.turno.toLowerCase();
+          if (
+            disponibilidadeState[turno] &&
+            disponibilidadeState[turno][dia] !== undefined
+          ) {
+            disponibilidadeState[turno][dia] = true;
+          }
+        });
+      }
+
       form.reset({
         nome: profissional.nome,
         email: profissional.email,
         docProfissional: profissional.docProfissional,
         areaDaSaude: profissional.areaDaSaude,
         telefone: profissional.telefone,
+        disponibilidade: disponibilidadeState,
       });
     }
   }, [profissional, form]);
@@ -70,7 +142,30 @@ export default function AtualizarProfissional() {
       console.error("ID do profissional não encontrado");
       return;
     }
-    await updateProfissional(profissional.id, data);
+
+    const disponibilidadePayload = [];
+    const { disponibilidade } = data;
+    for (const turno in disponibilidade) {
+      for (const dia in disponibilidade[turno]) {
+        if (disponibilidade[turno][dia]) {
+          disponibilidadePayload.push({
+            dia: dia.toUpperCase(),
+            turno: turno.toUpperCase(),
+          });
+        }
+      }
+    }
+
+    const payload = {
+      nome: data.nome,
+      email: data.email,
+      docProfissional: data.docProfissional,
+      areaDaSaude: data.areaDaSaude,
+      telefone: data.telefone,
+      disponibilidade: disponibilidadePayload,
+    };
+
+    await updateProfissional(profissional.id, payload);
   }
 
   function onCancel() {
@@ -83,11 +178,10 @@ export default function AtualizarProfissional() {
   return (
     <div className="p-6">
       <h1 className="text-2xl font-bold mb-6">Atualizar Profissional</h1>
-
       <Form {...form}>
         <form
           onSubmit={form.handleSubmit(onSubmit)}
-          className="space-y-6 max-w-2xl"
+          className="space-y-8 max-w-4xl"
         >
           <FormField
             control={form.control}
@@ -96,7 +190,7 @@ export default function AtualizarProfissional() {
               <FormItem>
                 <FormLabel>Nome completo</FormLabel>
                 <FormControl>
-                  <Input placeholder="Ex: Maria da Silva" {...field} />
+                  <Input {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -110,11 +204,7 @@ export default function AtualizarProfissional() {
               <FormItem>
                 <FormLabel>Email</FormLabel>
                 <FormControl>
-                  <Input
-                    type="email"
-                    placeholder="profissional@exemplo.com"
-                    {...field}
-                  />
+                  <Input type="email" {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -128,34 +218,34 @@ export default function AtualizarProfissional() {
               <FormItem>
                 <FormLabel>Documento profissional</FormLabel>
                 <FormControl>
-                  <Input placeholder="Ex: CRM/SP 123456" {...field} />
+                  <Input {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
             )}
           />
 
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <FormField
               control={form.control}
               name="areaDaSaude"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Área da saúde</FormLabel>
-                  <Select onValueChange={field.onChange} value={field.value}>
-                    <FormControl>
-                      <SelectTrigger className="w-full">
+                  <FormControl>
+                    <Select onValueChange={field.onChange} value={field.value}>
+                      <SelectTrigger>
                         <SelectValue placeholder="Selecione uma opção" />
                       </SelectTrigger>
-                    </FormControl>
-                    <SelectContent>
-                      <SelectItem value="Medicina">Medicina</SelectItem>
-                      <SelectItem value="Enfermagem">Enfermagem</SelectItem>
-                      <SelectItem value="Fisioterapia">Fisioterapia</SelectItem>
-                      <SelectItem value="Psicologia">Psicologia</SelectItem>
-                      <SelectItem value="Nutrição">Nutrição</SelectItem>
-                    </SelectContent>
-                  </Select>
+                      <SelectContent>
+                        <SelectItem value="Medicina">Medicina</SelectItem>
+                        <SelectItem value="Enfermagem">Enfermagem</SelectItem>
+                        <SelectItem value="Fisioterapia">Fisioterapia</SelectItem>
+                        <SelectItem value="Psicologia">Psicologia</SelectItem>
+                        <SelectItem value="Nutrição">Nutrição</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </FormControl>
                   <FormMessage />
                 </FormItem>
               )}
@@ -168,12 +258,60 @@ export default function AtualizarProfissional() {
                 <FormItem>
                   <FormLabel>Telefone</FormLabel>
                   <FormControl>
-                    <Input placeholder="(11) 98765-4321" {...field} />
+                    <Input {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
               )}
             />
+          </div>
+          
+          <div className="space-y-4">
+            <FormLabel>Disponibilidade</FormLabel>
+            <FormDescription>
+              Marque os dias e turnos em que o profissional está disponível.
+            </FormDescription>
+            <div className="border rounded-md">
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead className="w-[100px]">Turno</TableHead>
+                    {diasDaSemana.map((dia) => (
+                      <TableHead key={dia.id} className="text-center">
+                        {dia.label}
+                      </TableHead>
+                    ))}
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {turnos.map((turno) => (
+                    <TableRow key={turno.id}>
+                      <TableCell className="font-medium">
+                        {turno.label}
+                      </TableCell>
+                      {diasDaSemana.map((dia) => (
+                        <TableCell key={dia.id} className="text-center">
+                          <FormField
+                            control={form.control}
+                            name={`disponibilidade.${turno.id}.${dia.id}`}
+                            render={({ field }) => (
+                              <FormItem className="flex items-center justify-center">
+                                <FormControl>
+                                  <Checkbox
+                                    checked={field.value}
+                                    onCheckedChange={field.onChange}
+                                  />
+                                </FormControl>
+                              </FormItem>
+                            )}
+                          />
+                        </TableCell>
+                      ))}
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </div>
           </div>
 
           {loading && <p className="text-blue-500">Salvando...</p>}
@@ -184,7 +322,7 @@ export default function AtualizarProfissional() {
             </p>
           )}
 
-          <div className="flex justify-end gap-4">
+          <div className="flex justify-end gap-4 pt-4">
             <Button type="button" variant="outline" onClick={onCancel}>
               Cancelar
             </Button>
