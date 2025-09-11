@@ -232,7 +232,7 @@ const initialState: MembersRegisterState = {
     householdIncome: "",
     emergencyContact: "",
   },
-  step: MembersRegisterStep.PROFILE,
+  step: MembersRegisterStep.PERSONAL,
   profile: {
     role: "patient",
     photo: undefined,
