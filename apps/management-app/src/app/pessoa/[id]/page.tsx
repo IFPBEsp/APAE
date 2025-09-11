@@ -6,15 +6,15 @@ import DocumentCategoriesCard from "@/lib/ui/DocumentCategoriesCard";
 import { SquarePen } from "lucide-react";
 import { useEffect, useState } from "react";
 
-export default function PersonDetails({ id }: { id: string }) {
+export default function PersonDetails({ params }: { params:{id: string} }) {
     const [pessoa, setPessoa] = useState<any>(null);
 
     useEffect(() => {
-        fetch(`/api/pessoas/${id}`)
+        fetch(`/api/pessoas/${params.id}`)
             .then((response) => response.json())
             .then((data) => setPessoa(data))
             .catch((err) => console.error(err));
-    }, [id]);
+    }, [params.id]);
 
     const handleCategoriaClick = (tipo: string) => {
         alert(`Você clicou na categoria: ${tipo}`);

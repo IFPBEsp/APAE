@@ -1,7 +1,7 @@
 import axios from "axios";
 import { NextRequest, NextResponse } from "next/server";
 
-const BACKEND_URL = "http://localhost:8086/pessoas";
+const BACKEND_URL = "http://localhost:8086/pessoas/{id}";
 
 export async function GET(
     req: NextRequest,
