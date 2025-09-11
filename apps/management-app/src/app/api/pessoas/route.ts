@@ -13,8 +13,6 @@ export async function GET() {
       return NextResponse.json([], { status: 200 });
     }
 
-    console.log(response.data.content.contatoResponse)
-
     const formattedData = response.data.content.map((p: any) => {
   const primeiroContato = p.contatoResponse && p.contatoResponse.length > 0
     ? p.contatoResponse[0]

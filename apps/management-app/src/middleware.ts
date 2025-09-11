@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { removeSessionCookie } from "./lib/cookies";
 
-const PUBLIC_PATHS = ["/auth/login", "/auth/register", "/patients"];
+const PUBLIC_PATHS = ["/auth/login", "/auth/register"];
 
 export function middleware(req: NextRequest) {
   const session = req.cookies.get("session")?.value;

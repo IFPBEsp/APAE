@@ -5,7 +5,7 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Plus } from "lucide-react";
 import { PatientCard } from "@/components/patient-card";
-import { Patient } from "@/lib/types";
+import { Patient } from "@/schemas/authSchema";
 import { SearchFilters } from "@/components/search-filters";
 
 
