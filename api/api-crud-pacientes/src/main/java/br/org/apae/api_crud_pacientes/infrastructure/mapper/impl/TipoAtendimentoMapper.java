@@ -17,12 +17,6 @@ public class TipoAtendimentoMapper
         PessoaEntity,
         TipoAtendimento> {
 
-  private final PessoaMapper pessoaMapper;
-
-  public TipoAtendimentoMapper(PessoaMapper pessoaMapper) {
-    this.pessoaMapper = pessoaMapper;
-  }
-
   @Override
   public TipoAtendimentoEntity toEntity(TipoAtendimentoRequest request, PessoaEntity pessoa) {
     TipoAtendimentoEntity entity = new TipoAtendimentoEntity();
@@ -36,7 +30,6 @@ public class TipoAtendimentoMapper
     TipoAtendimentoEntity entity = new TipoAtendimentoEntity();
     entity.setId(tipoAtendimento.getId());
     entity.setDescricao(tipoAtendimento.getDescricao());
-    entity.setPessoa(pessoaMapper.toEntityFromDomain(tipoAtendimento.getPessoa()));
     return entity;
   }
 
@@ -53,7 +46,6 @@ public class TipoAtendimentoMapper
     TipoAtendimento tipoAtendimento = new TipoAtendimento();
     tipoAtendimento.setId(entity.getId());
     tipoAtendimento.setDescricao(entity.getDescricao());
-    tipoAtendimento.setPessoa(pessoaMapper.toDomain(entity.getPessoa()));
     return tipoAtendimento;
   }
 

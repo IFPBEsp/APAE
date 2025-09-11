@@ -21,7 +21,7 @@ public class PessoaResponse {
   private String nis;
   private LocalDate dataCadastramento;
 
-  private ContatoResponse contatoResponse;
+  private List<ContatoResponse> contatoResponse;
   private List<VacinaResponse> vacinasResponses;
   private List<TipoDeficienciaResponse> deficienciasResponses;
   private List<TipoAtendimentoResponse> atendimentosResponses;
@@ -142,11 +142,11 @@ public class PessoaResponse {
     this.dataCadastramento = dataCadastramento;
   }
 
-  public ContatoResponse getContatoResponse() {
+  public List<ContatoResponse> getContatoResponse() {
     return contatoResponse;
   }
 
-  public void setContatoResponse(ContatoResponse contatoResponse) {
+  public void setContatoResponse(List<ContatoResponse> contatoResponse) {
     this.contatoResponse = contatoResponse;
   }
 

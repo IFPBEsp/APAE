@@ -1,6 +1,6 @@
 package br.org.apae.api_crud_pacientes.domain.repository;
 
-import br.org.apae.api_crud_pacientes.domain.model.Pessoa;
+import br.org.apae.api_crud_pacientes.domain.model.pessoa.Pessoa;
 import java.util.UUID;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;

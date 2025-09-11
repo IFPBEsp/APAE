@@ -13,6 +13,16 @@ public class ContatoResponse {
   private String cep;
   private String naturalidade;
 
+    public String getTelefone() {
+        return telefone;
+    }
+
+    public void setTelefone(String telefone) {
+        this.telefone = telefone;
+    }
+
+    private String telefone;
+
   public UUID getId() {
     return id;
   }
