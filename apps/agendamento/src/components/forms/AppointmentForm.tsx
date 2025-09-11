@@ -8,7 +8,7 @@ import { DateTimePicker } from "@/components/ui/date-time-picker";
 import { Combobox } from "@/components/ui/combobox";
 import { Textarea } from "@/components/ui/textarea";
 import { Checkbox } from "@/components/ui/checkbox";
-import { Input } from "@/components/ui/input"; // import do Input
+import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
 
 export interface Appointment {
@@ -132,7 +132,6 @@ export function AppointmentForm({
     >
       <form onSubmit={handleSubmit}>
         <CardContent className="space-y-4">
-          {/* Data e Hora */}
           <div className="space-y-2">
             <Label htmlFor="data-hora">
               Escolher Data e Horário <span className="text-red-500">*</span>
@@ -142,8 +141,6 @@ export function AppointmentForm({
               <p className="text-sm text-red-500">Este campo é obrigatório.</p>
             )}
           </div>
-
-          {/* Paciente */}
           <div className="space-y-2">
             <Label htmlFor="paciente">
               Paciente <span className="text-red-500">*</span>
@@ -173,8 +170,6 @@ export function AppointmentForm({
               <p className="text-sm text-red-500">Este campo é obrigatório.</p>
             )}
           </div>
-
-          {/* Área de Atendimento */}
           <div className="space-y-2">
             <Label htmlFor="area-atendimento">
               Área de Atendimento <span className="text-red-500">*</span>
@@ -193,8 +188,6 @@ export function AppointmentForm({
               <p className="text-sm text-red-500">Este campo é obrigatório.</p>
             )}
           </div>
-
-          {/* Somente no modo edição */}
           {mode === "edit" && (
             <>
               <div className="space-y-2">
@@ -241,7 +234,6 @@ export function AppointmentForm({
             </>
           )}
 
-          {/* Botão */}
           <div className="flex justify-end pt-6">
             <Button className="w-full bg-blue-800 text-white hover:bg-blue-900 text-xs sm:w-auto sm:text-sm">
               {mode === "create" ? "Cadastrar" : "Salvar Alterações"}
