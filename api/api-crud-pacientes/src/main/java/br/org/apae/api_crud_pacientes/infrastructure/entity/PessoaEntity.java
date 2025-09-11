@@ -67,8 +67,8 @@ public class PessoaEntity {
   @OneToMany(mappedBy = "pessoa", cascade = CascadeType.ALL)
   private List<TipoAtendimentoEntity> tiposAtendimentos;
 
-  @OneToOne(mappedBy = "pessoa", cascade = CascadeType.ALL)
-  private ContatoEntity contato;
+  @OneToMany(mappedBy = "pessoa", cascade = CascadeType.ALL, orphanRemoval = true)
+  private List<ContatoEntity> contatos;
 
   public PessoaEntity() {}
 
@@ -92,7 +92,7 @@ public class PessoaEntity {
       List<VacinaEntity> vacinacoes,
       List<TipoDeficienciaEntity> deficiencias,
       List<TipoAtendimentoEntity> tiposAtendimentos,
-      ContatoEntity contato) {
+      List<ContatoEntity> contatos) {
     this.id = id;
     this.nomeCompleto = nomeCompleto;
     this.dataNascimento = dataNascimento;
@@ -112,7 +112,7 @@ public class PessoaEntity {
     this.vacinacoes = vacinacoes;
     this.deficiencias = deficiencias;
     this.tiposAtendimentos = tiposAtendimentos;
-    this.contato = contato;
+    this.contatos = contatos;
   }
 
   public UUID getId() {
@@ -267,11 +267,11 @@ public class PessoaEntity {
     this.tiposAtendimentos = tiposAtendimentos;
   }
 
-  public ContatoEntity getContato() {
-    return contato;
+  public List<ContatoEntity> getContatos() {
+    return contatos;
   }
 
-  public void setContato(ContatoEntity contato) {
-    this.contato = contato;
+  public void setContatos(List<ContatoEntity> contatos) {
+    this.contatos = contatos;
   }
 }

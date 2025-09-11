@@ -44,19 +44,17 @@ public class SecurityConfig {
                 .toArray(AntPathRequestMatcher[]::new);
 
         http
-            // 1. Enable CORS in the security chain using your configuration below
-            .cors(cors -> cors.configurationSource(corsConfigurationSource()))
-            .csrf(AbstractHttpConfigurer::disable)
-            .headers(headers -> headers.frameOptions(FrameOptionsConfig::sameOrigin))
-            .authorizeHttpRequests(authorize -> authorize
-                .requestMatchers(new AntPathRequestMatcher("/h2-console/**")).permitAll()
-                // .requestMatchers(adminMatchers).hasAuthority("ROLE_ADMIN")
-                .requestMatchers(adminMatchers).authenticated()
-                .anyRequest().authenticated()
-            )
-            .oauth2ResourceServer(oauth2 ->
-                oauth2.jwt(jwt -> jwt.jwtAuthenticationConverter(jwtAuthenticationConverter()))
-            );
+        .csrf(AbstractHttpConfigurer::disable)
+        .authorizeHttpRequests(authorize -> authorize
+            .requestMatchers(adminMatchers).hasAuthority("admin")
+            .requestMatchers(new AntPathRequestMatcher("/h2-console/**")).permitAll()
+            .anyRequest().authenticated()
+        )
+        .oauth2ResourceServer(oauth2 ->
+            oauth2
+            .jwt(jwt ->
+                jwt.jwtAuthenticationConverter(jwtAuthenticationConverter()))
+        );
         return http.build();
     }
     

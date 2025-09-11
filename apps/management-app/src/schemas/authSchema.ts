@@ -1,18 +1,35 @@
 import z from "zod";
 
+const cpfRegex = /^\d{3}\.\d{3}\.\d{3}-\d{2}$/;
+const cpfSchema = z
+  .string()
+  .trim()
+  .regex(cpfRegex, { message: "CPF deve estar no formato XXX.XXX.XXX-XX" });
+
+export const patientSchema = z.object({
+  id: z.string().uuid(),
+  nome: z.string().min(1, "Nome é obrigatório").optional(),
+  cpf: cpfSchema,
+  status: z.enum(['Ativo', 'Inativo', 'Em Fila']),
+  urlFoto: z.string().url({ message: "URL da foto inválida" }).optional(),
+  contato: z.object({
+    telefone: z.string().min(10, { message: "Telefone inválido" }),
+  }),
+  cidade: z.string().optional(),
+});
+
+export type Patient = z.infer<typeof patientSchema>;
+
 export const signUpSchema = z
   .object({
     nomeCompleto: z.string().min(1, {
       message: "Nome completo é obrigatório",
     }),
     email: z
+      .string()
       .email({ message: "Email inválido" })
       .min(1, { message: "Email é obrigatório" }),
-    cpf: z
-      .string()
-      .trim()
-      .min(14, { message: "CPF deve ser formatado por XXX.XXX.XXX-XX" })
-      .regex(/^\d{3}\.\d{3}\.\d{3}-\d{2}$/),
+    cpf: cpfSchema,
     senha: z
       .string()
       .min(6, { message: "Senha deve ter pelo menos 6 caracteres" }),
@@ -26,3 +43,24 @@ export const signUpSchema = z
   });
 
 export type FormSignUp = z.infer<typeof signUpSchema>;
+
+export const loginSchema = z.object({
+  username: z
+    .string()
+    .trim()
+    .refine(
+      (value) => {
+        const isEmail = z.string().email().safeParse(value).success;
+        const isCpf = cpfRegex.test(value);
+        return isEmail || isCpf;
+      },
+      {
+        message: "Digite um CPF (XXX.XXX.XXX-XX) ou email válido",
+      }
+    ),
+  password: z
+    .string()
+    .min(6, { message: "Senha deve ter pelo menos 6 caracteres" }),
+});
+
+export type FormLogin = z.infer<typeof loginSchema>;
