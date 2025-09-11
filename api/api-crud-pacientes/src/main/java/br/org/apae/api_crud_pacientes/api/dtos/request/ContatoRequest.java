@@ -13,6 +13,16 @@ public class ContatoRequest {
   private String naturalidade;
   private UUID pessoaId;
 
+    public String getTelefone() {
+        return telefone;
+    }
+
+    public void setTelefone(String telefone) {
+        this.telefone = telefone;
+    }
+
+    private String telefone;
+
   public UUID getPessoaId() {
     return pessoaId;
   }

@@ -7,9 +7,9 @@ import org.springframework.web.multipart.MultipartFile;
 import java.util.UUID;
 
 public interface IScannedDocumentManager {
-    void createBucket(UUID patientId);
+    void createBucket(UUID patientId, String authorizationHeader);
     void removeBucket(UUID patientId);
-    void saveFile(DocumentObjectRequestDTO dto, MultipartFile file);
+    void saveFile(DocumentObjectRequestDTO dto, MultipartFile file,  String authorizationHeader);
     DocumentsResponseDTO listDocument(UUID patientId, String category, Integer year);
     DocumentsResponseDTO listDocumentByType(UUID patientId, Integer year, String category, String type);
     DocumentsResponseDTO getDocumentHistoryByType(UUID patientId, String category, String type);

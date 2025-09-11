@@ -12,11 +12,12 @@ public class Contato {
   private String cidade;
   private String estado;
   private String cep;
+  private String telefone;
   private String naturalidade;
 
   public Contato() {}
 
-  public Contato(
+    public Contato(
       UUID id,
       String enderecoAtivo,
       String comprovanteResidencia,
@@ -25,6 +26,7 @@ public class Contato {
       String cidade,
       String estado,
       String cep,
+      String telefone,
       String naturalidade) {
     this.id = id;
     this.enderecoAtivo = enderecoAtivo;
@@ -35,7 +37,16 @@ public class Contato {
     this.estado = estado;
     this.cep = cep;
     this.naturalidade = naturalidade;
+    this.telefone = telefone;
   }
+
+    public String getTelefone() {
+        return telefone;
+    }
+
+    public void setTelefone(String telefone) {
+        this.telefone = telefone;
+    }
 
   public UUID getId() {
     return id;

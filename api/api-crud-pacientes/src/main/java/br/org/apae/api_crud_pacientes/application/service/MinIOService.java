@@ -17,11 +17,11 @@ public class MinIOService {
         this.clientScannedDocumentManager = clientScannedDocumentManager;
     }
 
-    public void createBucketByPessoaID(UUID uuid) {
-      clientScannedDocumentManager.createBucket(uuid);
+    public void createBucketByPessoaID(UUID uuid, String authorizationHeader) {
+      clientScannedDocumentManager.createBucket(uuid, authorizationHeader);
     }
 
-    public void uploadDocument(DocumentObjectRequestDTO documentObjectRequestDTO, MultipartFile file) {
-      clientScannedDocumentManager.saveFile(documentObjectRequestDTO, file);
+    public void uploadDocument(DocumentObjectRequestDTO documentObjectRequestDTO, MultipartFile file, String authorizationHeader) {
+      clientScannedDocumentManager.saveFile(documentObjectRequestDTO, file, authorizationHeader);
     }
 }
