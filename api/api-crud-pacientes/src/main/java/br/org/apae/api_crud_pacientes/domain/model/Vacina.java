@@ -8,21 +8,13 @@ public class Vacina {
   private UUID id;
   private String nome;
   private LocalDate dataAplicacao;
-  private Pessoa pessoa;
 
   public Vacina() {}
 
-  public Vacina(UUID id, String nome, LocalDate dataAplicacao, Pessoa pessoa) {
+  public Vacina(UUID id, String nome, LocalDate dataAplicacao) {
     this.id = id;
     this.nome = nome;
     this.dataAplicacao = dataAplicacao;
-    this.pessoa = pessoa;
-  }
-
-  public Vacina(String nome, LocalDate dataAplicacao, Pessoa pessoa) {
-    this.nome = nome;
-    this.dataAplicacao = dataAplicacao;
-    this.pessoa = pessoa;
   }
 
   public UUID getId() {
@@ -49,11 +41,4 @@ public class Vacina {
     this.dataAplicacao = dataAplicacao;
   }
 
-  public Pessoa getPessoa() {
-    return pessoa;
-  }
-
-  public void setPessoa(Pessoa pessoa) {
-    this.pessoa = pessoa;
-  }
 }

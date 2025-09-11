@@ -10,7 +10,6 @@ public class CadastroAnual {
   private String medicacoesContinuas;
   private String historicoDoencas;
   private Double rendaFamiliar;
-  private Pessoa pessoa;
 
   public CadastroAnual() {}
 
@@ -20,20 +19,13 @@ public class CadastroAnual {
       String historicosAlergias,
       String medicacoesContinuas,
       String historicoDoencas,
-      Double rendaFamiliar,
-      Pessoa pessoa) {
+      Double rendaFamiliar) {
     this.id = id;
     this.beneficioDePrestacaoContinuada = beneficioDePrestacaoContinuada;
     this.historicosAlergias = historicosAlergias;
     this.medicacoesContinuas = medicacoesContinuas;
     this.historicoDoencas = historicoDoencas;
     this.rendaFamiliar = rendaFamiliar;
-    this.pessoa = pessoa;
-  }
-
-  public CadastroAnual(Boolean beneficioDePrestacaoContinuada, Pessoa pessoa) {
-    this.beneficioDePrestacaoContinuada = beneficioDePrestacaoContinuada;
-    this.pessoa = pessoa;
   }
 
   public UUID getId() {
@@ -82,13 +74,5 @@ public class CadastroAnual {
 
   public void setRendaFamiliar(Double rendaFamiliar) {
     this.rendaFamiliar = rendaFamiliar;
-  }
-
-  public Pessoa getPessoa() {
-    return pessoa;
-  }
-
-  public void setPessoa(Pessoa pessoa) {
-    this.pessoa = pessoa;
   }
 }

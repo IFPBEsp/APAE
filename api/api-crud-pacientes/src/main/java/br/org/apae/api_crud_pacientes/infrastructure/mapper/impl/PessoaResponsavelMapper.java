@@ -17,12 +17,6 @@ public class PessoaResponsavelMapper
         PessoaEntity,
         PessoaResponsavel> {
 
-  private final PessoaMapper pessoaMapper;
-
-  public PessoaResponsavelMapper(PessoaMapper pessoaMapper) {
-    this.pessoaMapper = pessoaMapper;
-  }
-
   @Override
   public PessoaResponsavelEntity toEntity(PessoaResponsavelRequest request, PessoaEntity pessoa) {
     PessoaResponsavelEntity entity = new PessoaResponsavelEntity();
@@ -74,9 +68,6 @@ public class PessoaResponsavelMapper
       domain.setTipoResponsavel(
           PessoaResponsavel.TipoResponsavel.valueOf(entity.getTipoResponsavel().name()));
     }
-    if (entity.getPessoa() != null) {
-      domain.setPessoa(pessoaMapper.toDomain(entity.getPessoa()));
-    }
     return domain;
   }
 
@@ -112,9 +103,6 @@ public class PessoaResponsavelMapper
           PessoaResponsavelEntity.TipoResponsavel.valueOf(domain.getTipoResponsavel().name()));
     } else {
       entity.setTipoResponsavel(null);
-    }
-    if (domain.getPessoa() != null) {
-      entity.setPessoa(pessoaMapper.toEntityFromDomain(domain.getPessoa()));
     }
     return entity;
   }
