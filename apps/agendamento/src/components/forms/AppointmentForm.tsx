@@ -8,6 +8,7 @@ import { DateTimePicker } from "@/components/ui/date-time-picker";
 import { Combobox } from "@/components/ui/combobox";
 import { Textarea } from "@/components/ui/textarea";
 import { Checkbox } from "@/components/ui/checkbox";
+import { Input } from "@/components/ui/input"; // import do Input
 import { cn } from "@/lib/utils";
 
 export interface Appointment {
@@ -84,7 +85,6 @@ export function AppointmentForm({
     dataHora: false,
     paciente: false,
     area: false,
-    justificativa: false,
   });
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -94,8 +94,7 @@ export function AppointmentForm({
       dataHora: !dataHora,
       paciente: !paciente,
       area: !area,
-      justificativa:
-        mode === "edit" && !confirmada && justificativa.trim() === "",
+      justificativa: false,
     };
 
     setValidationErrors(errors);
@@ -133,6 +132,7 @@ export function AppointmentForm({
     >
       <form onSubmit={handleSubmit}>
         <CardContent className="space-y-4">
+          {/* Data e Hora */}
           <div className="space-y-2">
             <Label htmlFor="data-hora">
               Escolher Data e Horário <span className="text-red-500">*</span>
@@ -143,25 +143,38 @@ export function AppointmentForm({
             )}
           </div>
 
+          {/* Paciente */}
           <div className="space-y-2">
             <Label htmlFor="paciente">
               Paciente <span className="text-red-500">*</span>
             </Label>
-            <Combobox
-              options={pacientes}
-              value={paciente}
-              onChange={setPaciente}
-              placeholder="Pesquisar paciente"
-              className={cn(
-                validationErrors.paciente && "border-red-500",
-                "font-normal text-gray-400"
-              )}
-            />
+
+            {mode === "create" ? (
+              <Combobox
+                options={pacientes}
+                value={paciente}
+                onChange={setPaciente}
+                placeholder="Pesquisar paciente"
+                className={cn(
+                  validationErrors.paciente && "border-red-500",
+                  "font-normal text-gray-400"
+                )}
+              />
+            ) : (
+              <Input
+                value={
+                  pacientes.find((p) => p.value === paciente)?.label || paciente
+                }
+                disabled
+              />
+            )}
+
             {validationErrors.paciente && (
               <p className="text-sm text-red-500">Este campo é obrigatório.</p>
             )}
           </div>
 
+          {/* Área de Atendimento */}
           <div className="space-y-2">
             <Label htmlFor="area-atendimento">
               Área de Atendimento <span className="text-red-500">*</span>
@@ -181,6 +194,7 @@ export function AppointmentForm({
             )}
           </div>
 
+          {/* Somente no modo edição */}
           {mode === "edit" && (
             <>
               <div className="space-y-2">
@@ -211,9 +225,6 @@ export function AppointmentForm({
                   placeholder="Informe sua justificativa"
                   value={justificativa}
                   onChange={(e) => setJustificativa(e.target.value)}
-                  className={cn(
-                    validationErrors.justificativa && "border-red-500"
-                  )}
                 />
               </div>
 
@@ -230,6 +241,7 @@ export function AppointmentForm({
             </>
           )}
 
+          {/* Botão */}
           <div className="flex justify-end pt-6">
             <Button className="w-full bg-blue-800 text-white hover:bg-blue-900 text-xs sm:w-auto sm:text-sm">
               {mode === "create" ? "Cadastrar" : "Salvar Alterações"}
