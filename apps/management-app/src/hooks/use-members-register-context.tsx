@@ -272,9 +272,89 @@ function MembersRegisterProvider({
   };
 
   const register = useCallback(async () => {
-    // Send form data by this
-    console.log(state);
-  }, [state]);
+    const { personal, address, additionals, guardians } = state;
+
+    const data = {
+      nomeCompleto: personal.name,
+      dataNascimento: personal.birth.date.toISOString().split("T")[0],
+      numRegistroNasc: personal.birth.certificate,
+      fls: "",
+      livro: "",
+      cartorio: "",
+      cpf: personal.cpf,
+      rg: personal.rg.number,
+      dataEmissaoRg: personal.rg.issuing.date.toISOString().split("T")[0],
+      orgaoEmissorRg: personal.rg.issuing.body,
+      cns: "",
+      nis: "",
+      dataCadastramento: new Date().toISOString().split("T")[0],
+      contatoRequest: [
+        {
+          enderecoAtivo: "S",
+          comprovanteResidencia: "",
+          endereco: address.street,
+          bairro: address.district,
+          cidade: "",
+          estado: address.state,
+          cep: address.cep,
+          naturalidade: "",
+          telefone: personal.phone,
+        },
+      ],
+      vacinacoesRequests: additionals.vaccines.split(",").map((vaccine) => ({
+        nome: vaccine,
+      })),
+
+      deficienciasRequests: [
+        {
+          descricao: additionals.disability.type,
+        },
+      ],
+      atendimentosRequests: [
+        {
+          descricao: additionals.care.type,
+        },
+      ],
+      cadastrosAnuaisRequests: [
+        {
+          beneficioDePrestacaoContinuada:
+            guardians.father.bpc || guardians.mother.bpc,
+          historicosAlergias: additionals.allergies,
+          medicacoesContinuas: additionals.medications,
+          historicoDoencas: additionals.diseases,
+          rendaFamiliar: Number(guardians.householdIncome) * 0.01,
+        },
+      ],
+      responsaveisRequests: [
+        {
+          nome: guardians.mother.name,
+          ondeProcurar: "",
+          vivo: guardians.mother.alive,
+          profissao: guardians.mother.occupation,
+          rg: guardians.mother.rg,
+          cpf: guardians.mother.cpf,
+          emergencia: guardians.emergencyContact,
+          tipoResponsavel: "MAE",
+        },
+        {
+          nome: guardians.father.name,
+          ondeProcurar: "",
+          vivo: guardians.father.alive,
+          profissao: guardians.father.occupation,
+          rg: guardians.father.rg,
+          cpf: guardians.father.cpf,
+          emergencia: guardians.emergencyContact,
+          tipoResponsavel: "PAI",
+        },
+      ],
+    };
+
+    await fetch("/api/pessoas", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(data),
+    });
+  }, []);
 
   return (
     <MembersRegisterContext.Provider
