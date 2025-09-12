@@ -1,8 +1,23 @@
 {
-  "name": "demoMonorepo",
+  "name": "@apae/source",
   "version": "1.0.0",
-  "description": "demo pnpm workspace monorepo",
-  "workspaces": ["apps/*", "packages/*"],
+  "description": "apae pnpm workspace monorepo",
+  "scripts": {
+    "dev": "./.scripts/run-app.sh all all",
+    "dev:backend": "./.scripts/run-app.sh all all backend",
+    "dev:frontend": "./.scripts/run-app.sh all all frontend",
+    "dev:profissional-agendamento": "./.scripts/run-app.sh profissional-da-saude agendamento",
+    "dev:management": "./.scripts/run-app.sh all management-app",
+    "docker:up": "docker compose -f docker/docker-compose.yml up -d",
+    "docker:down": "docker compose -f docker/docker-compose.yml down"
+  },
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
   "license": "ISC",
-  "packageManager": "pnpm@10.10.0"
+  "packageManager": "pnpm@10.10.0",
+  "devDependencies": {
+    "concurrently": "^9.2.1"
+  }
 }
