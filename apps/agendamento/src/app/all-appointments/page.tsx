@@ -38,29 +38,24 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Agendamento, getAgendamentos, getAreasDaSaude } from "../services/agendamentoService";
+import { Agendamento, AreaDaSaude, getAgendamentos, getAreasDaSaude } from "../services/agendamentoService";
 import { separaETransformaEmNumero } from "@/lib/utils";
 import Link from "next/link";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { AppointmentForm } from "@/components/forms/AppointmentForm";
 
-type Area = {
-  id: number;
-  name: string;
-}
-
 export default function AllApointments() {
   const [selectedDate, setSelectedDate] = useState<Date | undefined>(undefined);
   const [selectedArea, setSelectedArea] = useState("");
   const [searchName, setSearchName] = useState("");
-  const [areas, setAreas] = useState<Area[]>([]);
+  const [areas, setAreas] = useState<AreaDaSaude[]>([]);
   const [appointments, setAppointments] = useState<Agendamento[]>([]);
 
   useEffect(() => {
     const fetchAppointments = async () => {
       const response = await getAgendamentos();
       setAppointments(response);
-      const areasExistentes: Area[] = (await getAreasDaSaude()).map((area, index) => ({ id: index, name: area } as Area));
+      const areasExistentes: AreaDaSaude[] = await getAreasDaSaude();
       setAreas(areasExistentes);
     };
     fetchAppointments();
@@ -68,12 +63,9 @@ export default function AllApointments() {
 
   const filteredAppointments = appointments.filter((appointment) => {
     const matchesArea = selectedArea
-      ? appointment.profissional.areaDaSaude === selectedArea
+      ? appointment.areaDaSaude.name === selectedArea
       : true;
     const matchesPatientName = appointment.paciente.nome
-      .toLowerCase()
-      .includes(searchName.trim().toLowerCase());
-    const matchesProfessionalName = appointment.profissional.nome
       .toLowerCase()
       .includes(searchName.trim().toLowerCase());
     const dateAppointment = separaETransformaEmNumero(
@@ -89,7 +81,7 @@ export default function AllApointments() {
       : true;
     return (
       matchesArea &&
-      (matchesPatientName || matchesProfessionalName) &&
+      matchesPatientName &&
       matchesDate
     );
   });
@@ -229,7 +221,7 @@ export default function AllApointments() {
                     Próxima Consulta
                   </TableHead>
                   <TableHead className="px-3 py-2 text-xs sm:px-4 sm:py-3 sm:text-sm">
-                    Profissional
+                    Área da Saúde
                   </TableHead>
                   <TableHead className="px-3 py-2 text-xs sm:px-4 sm:py-3 sm:text-sm">
                     Ações
@@ -259,7 +251,7 @@ export default function AllApointments() {
                         )}
                       </TableCell>
                       <TableCell className="px-3 py-2 text-xs sm:px-4 sm:py-3 sm:text-sm">
-                        {item.profissional.nome}
+                        {item.areaDaSaude.name}
                       </TableCell>
                       <TableCell className="px-3 py-2">
                         <Link

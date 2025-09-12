@@ -157,7 +157,7 @@ export default async function VisualizarAgendamento({ params }: PageProps) {
             </div>
             <div className="flex mb-2">
               <p className="font-medium mr-2">Área de atendimento: </p>
-              <p>{agendamento.profissional.areaDaSaude || "—"}</p>
+              <p>{agendamento.areaDaSaude.name || "—"}</p>
             </div>
             <div className="flex mb-2">
               <p className="font-medium mr-2">Confirmada: </p>
@@ -170,29 +170,6 @@ export default async function VisualizarAgendamento({ params }: PageProps) {
             <div className="mb-3">
               <p className="font-medium mb-1">Justificativa: </p>
               <p className="break-words whitespace-pre-wrap">{agendamento.justificativa || "—"}</p>
-            </div>
-          </CardContent>
-        </Card>
-
-        {/* Card Profissional da Saúde */}
-        <Card className="text-[#0D4F97] mb-7">
-          <CardHeader>
-            <CardTitle className="font-bold text-center text-lg md:text-xl">
-              Profissional da Saúde
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="flex mb-2">
-              <p className="font-medium mr-2">Nome: </p>
-              <p>{agendamento.profissional.nome || "—"}</p>
-            </div>
-            <div className="flex mb-2">
-              <p className="font-medium mr-2">Email: </p>
-              <p>{agendamento.profissional.email || "—"}</p>
-            </div>
-            <div className="flex mb-3">
-              <p className="font-medium mr-2">Telefone: </p>
-              <p>{agendamento.profissional.telefone || "—"}</p>
             </div>
           </CardContent>
         </Card>

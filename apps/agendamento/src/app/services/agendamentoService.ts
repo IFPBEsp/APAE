@@ -3,7 +3,7 @@ const API_BASE_URL = process.env.API_BASE_URL || "http://localhost:8081";
 export interface Agendamento {
   id: string;
   paciente: Paciente;
-  profissional: ProfissionalSaude;
+  areaDaSaude: AreaDaSaude;
   frequenciaDias: number;
   proximaConsulta: string;
   horaProximaConsulta: string;
@@ -15,7 +15,7 @@ export interface Agendamento {
 
 export interface AgendamentoCreateDTO {
   idPaciente: string;
-  idProfissional: string;
+  idAreaDaSaude: string;
   frequenciaDias: number;
   proximaConsulta: string;
   confirmado: boolean;
@@ -47,6 +47,73 @@ export interface ProfissionalSaude {
   email: string;
   nome: string;
 }
+
+
+export interface AreaDaSaude {
+  id: string;
+  name: string;
+}
+
+const agendamentos: Agendamento[] = [{
+  id: "e4a2c1f8-d5b7-4a9e-8c6f-3b1a2c5d7e8f",
+  paciente: {
+    id: "f1a2b3c4-d5e6-7f8a-9b0c-1d2e3f4a5b6c",
+    nome: "Maria de Lourdes Silva",
+    email: "maria.lourdes@email.com",
+    telefone: "(83) 98765-4321",
+    dateNascimento: "1990-05-15",
+    cpf: "123.456.789-00",
+    rg: "987654321",
+    endereco: "Rua das Flores, 123",
+    bairro: "Centro",
+    cidade: "João Pessoa",
+    estado: "PB",
+    cep: "58000-000",
+  },
+  areaDaSaude: {
+    id: "f8b7d4e5-a3c2-4f1b-9e0a-6d5c8b9a0c1d",
+    name: "Cardiologia",
+  },
+  frequenciaDias: 30,
+  proximaConsulta: "2025-10-15",
+  horaProximaConsulta: "14:30",
+  confirmado: true,
+  descricao: "Consulta de rotina e acompanhamento cardiológico.",
+  justificativa: "Acompanhamento anual.",
+  dataCriacao: "2025-09-11T10:00:00Z",
+}];
+
+const areasDaSaude: AreaDaSaude[] = [
+  {
+    id: "f8b7d4e5-a3c2-4f1b-9e0a-6d5c8b9a0c1d",
+    name: "Cardiologia",
+  },
+  {
+    id: "a1c2b3d4-e5f6-7a8b-9c0d-1e2f3a4b5c6d",
+    name: "Dermatologia",
+  },
+  {
+    id: "b9e8d7c6-a5b4-3c2d-1e0f-9a8b7c6d5e4f",
+    name: "Ginecologia",
+  },
+  {
+    id: "c4d5e6f7-a8b9-c0d1-e2f3-a4b5c6d7e8f9",
+    name: "Pediatria",
+  },
+  {
+    id: "e0f1d2c3-b4a5-6e7d-8c9b-a0e1b2c3d4e5",
+    name: "Neurologia",
+  },
+  {
+    id: "f9e8d7c6-b5a4-3d2c-1b0a-9f8e7d6c5b4a",
+    name: "Ortopedia",
+  },
+  {
+    id: "a3b4c5d6-e7f8-9a0b-1c2d-3e4f5a6b7c8d",
+    name: "Oftalmologia",
+  },
+];
+
 
 const pacientes: Paciente[] = [
   {
@@ -293,7 +360,6 @@ export async function getAgendamentos(
       {}
     ).then((res) => res.json());
 
-    const agendamentos: Agendamento[] = [];
     for (let agendamento of response.content) {
       const paciente = await fetch(
         `${API_BASE_URL}/pacientes/${agendamento.idPaciente}`
@@ -404,15 +470,16 @@ export async function getProfissionaisDaSaude(): Promise<ProfissionalSaude[]> {
 }
 
 
-export async function getAreasDaSaude(): Promise<string[]> {
+export async function getAreasDaSaude(): Promise<AreaDaSaude[]> {
   try {
     const response = await fetch(`${API_BASE_URL}/profissionais/areas`).then(
       (res) => res.json()
     );
-    const setList: string[] = [];
-    new Set(response.content).forEach(e => setList.push(e as string));
 
-    return setList;
+    let areasRetornados: AreaDaSaude[] = response.content;
+    new Set(areasRetornados).forEach(e => areasDaSaude.push(e));
+
+    return areasDaSaude;
   } catch (error) {
     console.log(error);
     throw error;

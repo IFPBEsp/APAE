@@ -4,10 +4,6 @@ import React, { useEffect, useState } from "react";
 import {
   Card,
   CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
 } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
@@ -18,8 +14,7 @@ import { cn } from "@/lib/utils";
 import {
   Agendamento,
   getPacientes,
-  getProfissionaisDaSaude,
-  Paciente,
+  getAreasDaSaude,
   saveAgendamento,
 } from "@/app/services/agendamentoService";
 import { Textarea } from "../ui/textarea";
@@ -66,8 +61,8 @@ export function AppointmentForm({ agendamentoAEditar }: PageProps) {
   const [paciente, setPaciente] = useState<string>(
     agendamentoAEditar?.paciente.id || ""
   );
-  const [profissional, setProfissional] = useState<string>(
-    agendamentoAEditar?.profissional.id || ""
+  const [areaDaSaude, setAreaDaSaude] = useState<string>(
+    agendamentoAEditar?.areaDaSaude.id || ""
   );
   const [periodo, setPeriodo] = useState<string>(
     agendamentoAEditar?.frequenciaDias.toString() || ""
@@ -83,7 +78,7 @@ export function AppointmentForm({ agendamentoAEditar }: PageProps) {
   );
   const [realizada, setRealizada] = useState<boolean>(false);
   const [listaPacientes, setListaPacientes] = useState<selectItem[]>([]);
-  const [listaProfissionais, setListaProfissionais] = useState<selectItem[]>([]);
+  const [listaAreasDaSaude, setAreasDaSaude] = useState<selectItem[]>([]);
 
   useEffect(() => {
     const fetchPacientesEProfissionais = async () => {
@@ -93,10 +88,10 @@ export function AppointmentForm({ agendamentoAEditar }: PageProps) {
           (p) => ({ value: p.id, label: p.nome } as selectItem)
         )
       );
-      const profissionaisCadastrados = await getProfissionaisDaSaude();
-      setListaProfissionais(
-        profissionaisCadastrados.map(
-          (p) => ({ value: p.id, label: p.nome } as selectItem)
+      const areasDaSaudeCadastrados = await getAreasDaSaude();
+      setAreasDaSaude(
+        areasDaSaudeCadastrados.map(
+          (area) => ({ value: area.id, label: area.name} as selectItem)
         )
       );
     };
@@ -106,7 +101,7 @@ export function AppointmentForm({ agendamentoAEditar }: PageProps) {
   const [validationErrors, setValidationErrors] = useState({
     dataHora: false,
     paciente: false,
-    profissional: false,
+    areaDaSaude: false,
     periodo: false,
     justificativa: false,
   });
@@ -139,7 +134,7 @@ export function AppointmentForm({ agendamentoAEditar }: PageProps) {
     const errors = {
       dataHora: !dataHora,
       paciente: !paciente,
-      profissional: !profissional,
+      areaDaSaude: !areaDaSaude,
       periodo: !periodo || isNaN(parseInt(periodo)),
       justificativa: !!agendamentoAEditar && !confirmado && justificativa.trim() === "",
     };
@@ -150,11 +145,11 @@ export function AppointmentForm({ agendamentoAEditar }: PageProps) {
       return;
     }
 
-    if (paciente && profissional && periodo && dataHora) {
+    if (paciente && areaDaSaude && periodo && dataHora) {
       await saveAgendamento(
         {
           idPaciente: paciente,
-          idProfissional: profissional,
+          idAreaDaSaude: areaDaSaude,
           frequenciaDias: parseInt(periodo),
           proximaConsulta: formatDate(dataHora)[0],
           confirmado: confirmado,
@@ -170,7 +165,7 @@ export function AppointmentForm({ agendamentoAEditar }: PageProps) {
     console.log("Novo agendamento:", {
       dataHora,
       paciente,
-      profissional,
+      areaDaSaude,
       periodo,
     });
   };
@@ -235,20 +230,20 @@ export function AppointmentForm({ agendamentoAEditar }: PageProps) {
 
           <div className="space-y-2">
             <Label htmlFor="profissional">
-              Profissional da Saúde <span className="text-red-500">*</span>
+              Área da Saúde <span className="text-red-500">*</span>
             </Label>
             <Combobox
-              options={listaProfissionais}
-              value={profissional}
-              onChange={setProfissional}
-              placeholder="Pesquisar área de atendimento"
+              options={listaAreasDaSaude}
+              value={areaDaSaude}
+              onChange={setAreaDaSaude}
+              placeholder="Pesquisar área da saúde"
               className={cn(
-                validationErrors.profissional && "border-red-500",
+                validationErrors.areaDaSaude && "border-red-500",
                 "font-normal",
                 "text-gray-400"
               )}
             />
-            {validationErrors.profissional && (
+            {validationErrors.areaDaSaude && (
               <p className="text-sm text-red-500">Este campo é obrigatório.</p>
             )}
           </div>

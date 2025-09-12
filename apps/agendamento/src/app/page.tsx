@@ -167,7 +167,7 @@ export default function DashboardPage() {
                     Confirmou Presença
                   </TableHead>
                   <TableHead className="px-3 py-2 text-xs sm:px-4 sm:py-3 sm:text-sm">
-                    Profissional
+                    Área da Saúde
                   </TableHead>
                   <TableHead className="px-3 py-2 text-xs sm:px-4 sm:py-3 sm:text-sm">
                     Ações
@@ -191,7 +191,7 @@ export default function DashboardPage() {
                       </Badge>
                     </TableCell>
                     <TableCell className="px-3 py-2 text-xs sm:px-4 sm:py-3 sm:text-sm">
-                      {item.profissional.nome}
+                      {item.areaDaSaude.name}
                     </TableCell>
                     <TableCell className="px-3 py-2">
                       <Link
