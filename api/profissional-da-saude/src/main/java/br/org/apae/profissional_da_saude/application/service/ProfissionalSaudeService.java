@@ -70,7 +70,13 @@ public class ProfissionalSaudeService {
   }
 
   public Optional<ProfissionalSaudeResponseDTO> findById(UUID id) {
-    return this.repository.findById(id).map(ProfissionalSaudeMapper::toResponseDTO);
+    Optional<ProfissionalSaudeResponseDTO> dto = this.repository.findById(id)
+            .map(ProfissionalSaudeMapper::toResponseDTO);
+
+    if (dto.isEmpty()) {
+      throw new EntidadeNaoEncontradaException("Profissional de não encontrado.");
+    }
+    return dto;
   }
 
   public ProfissionalSaudeResponseDTO update(UUID id, ProfissionalSaudeUpdateDTO dto) {
