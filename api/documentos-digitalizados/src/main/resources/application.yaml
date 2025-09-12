@@ -17,4 +17,4 @@ minio:
   secretKey: 6qon9hYJM1yput1RcfGqxC9s8Y2LKAlvNV1VfY4l
 
 server:
-  port: 8081
+  port: 8092
