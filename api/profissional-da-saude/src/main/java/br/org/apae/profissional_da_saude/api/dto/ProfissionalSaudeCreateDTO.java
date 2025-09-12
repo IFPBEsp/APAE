@@ -1,9 +1,9 @@
 package br.org.apae.profissional_da_saude.api.dto;
 
-import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Pattern;
-import jakarta.validation.constraints.Size;
+import br.org.apae.profissional_da_saude.api.validation.RegexPatterns;
+import br.org.apae.profissional_da_saude.api.validation.ValidationMessages;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.*;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -16,19 +16,27 @@ public class ProfissionalSaudeCreateDTO {
     private String areaDaSaude;
 
     @NotBlank
-    @Pattern(regexp = "^\\(\\d{2}\\) \\d{5}-\\d{4}$", message = "Telefone inválido. Formato esperado: (xx) xxxxx-xxxx")
+    @Pattern( regexp = RegexPatterns.TELEFONE, message = ValidationMessages.TELEFONE_INVALIDO )
     private String telefone;
 
     @NotBlank
-    @Pattern(regexp = "^(CRM|COREN|CREFITO|CRFa|CRP|CRESS)([-/][A-Z0-9]{1,2}|\\s\\d{2})?\\s?\\d{1,6}$|^[A-Za-z0-9./-]{3,100}$", message = "Documento profissional inválido")
+    @Pattern( regexp = RegexPatterns.DOC_PROFISSIONAL, message = ValidationMessages.DOC_PROFISSIONAL_INVALIDO )
     private String docProfissional;
 
-    @Email(message = "E-mail inválido")
+    @Email(message = ValidationMessages.EMAIL_INVALIDO)
     @NotBlank
     @Size(max = 254)
     private String email;
 
     @NotBlank
-    @Pattern(regexp = "^[A-Za-zÀ-ÖØ-öø-ÿ ]{3,100}$", message = "Nome inválido. Não pode conter números e deve ter entre 3 e 100 caracteres")
+    @Pattern( regexp = RegexPatterns.NOME, message = ValidationMessages.NOME_INVALIDO )
     private String nome;
+
+    @NotBlank
+    @Pattern( regexp = RegexPatterns.RG, message = ValidationMessages.RG_INVALIDO )
+    private String rg;
+
+    @NotNull(message = "Endereço é obrigatório")
+    @Valid
+    private EnderecoDTO endereco;
 }
