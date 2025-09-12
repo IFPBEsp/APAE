@@ -1,9 +1,9 @@
 package br.org.apae.api_crud_pacientes.infrastructure.percistency.impl;
 
-import br.org.apae.api_crud_pacientes.domain.model.Pessoa;
+import br.org.apae.api_crud_pacientes.domain.model.pessoa.Pessoa;
 import br.org.apae.api_crud_pacientes.domain.repository.PessoaRepository;
 import br.org.apae.api_crud_pacientes.infrastructure.entity.PessoaEntity;
-import br.org.apae.api_crud_pacientes.infrastructure.mapper.impl.PessoaMapper;
+import br.org.apae.api_crud_pacientes.infrastructure.mapper.impl.pessoa.PessoaMapper;
 import br.org.apae.api_crud_pacientes.infrastructure.percistency.jpa.PessoaRepositoryJpa;
 import java.util.UUID;
 import org.springframework.beans.factory.annotation.Autowired;

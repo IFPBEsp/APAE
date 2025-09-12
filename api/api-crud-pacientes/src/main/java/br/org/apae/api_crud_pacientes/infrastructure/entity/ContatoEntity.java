@@ -1,161 +1,169 @@
 package br.org.apae.api_crud_pacientes.infrastructure.entity;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
+
 import java.util.UUID;
 
 @Entity
 @Table(name = "contato")
 public class ContatoEntity {
 
-  @Id
-  @GeneratedValue(strategy = GenerationType.AUTO)
-  private UUID id;
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    private UUID id;
 
-  @Column(name = "endereco_ativo")
-  private String enderecoAtivo;
+    @Column(name = "endereco_ativo")
+    private String enderecoAtivo;
 
-  @Column(name = "comprovante_residencia")
-  private String comprovanteResidencia;
+    @Column(name = "comprovante_residencia")
+    private String comprovanteResidencia;
 
-  @Column(name = "endereco")
-  private String endereco;
+    @Column(name = "endereco")
+    private String endereco;
 
-  @Column(name = "bairro")
-  private String bairro;
+    @Column(name = "bairro")
+    private String bairro;
 
-  @Column(name = "cidade")
-  private String cidade;
+    @Column(name = "cidade")
+    private String cidade;
 
-  @Column(name = "estado")
-  private String estado;
+    @Column(name = "estado")
+    private String estado;
 
-  @Column(name = "cep")
-  private String cep;
+    @Column(name = "cep")
+    private String cep;
 
-  @Column(name = "naturalidade")
-  private String naturalidade;
+    @Column(name = "naturalidade")
+    private String naturalidade;
 
-  @ManyToOne(fetch = FetchType.LAZY)
-  @JoinColumn(name = "pessoa_id")
-  private PessoaEntity pessoa;
+    @Column(name = "telefone")
+    private String telefone;
 
-  public ContatoEntity() {}
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "pessoa_id")
+    private PessoaEntity pessoa;
 
-  public ContatoEntity(
-      UUID id,
-      String enderecoAtivo,
-      String comprovanteResidencia,
-      String endereco,
-      String bairro,
-      String cidade,
-      String estado,
-      String cep,
-      String naturalidade,
-      PessoaEntity pessoa) {
-    this.id = id;
-    this.enderecoAtivo = enderecoAtivo;
-    this.comprovanteResidencia = comprovanteResidencia;
-    this.endereco = endereco;
-    this.bairro = bairro;
-    this.cidade = cidade;
-    this.estado = estado;
-    this.cep = cep;
-    this.naturalidade = naturalidade;
-    this.pessoa = pessoa;
-  }
+    public ContatoEntity() {
+    }
 
-  public ContatoEntity(String endereco, String cidade, String estado, PessoaEntity pessoa) {
-    this.endereco = endereco;
-    this.cidade = cidade;
-    this.estado = estado;
-    this.pessoa = pessoa;
-  }
+    public ContatoEntity(
+            UUID id,
+            String enderecoAtivo,
+            String comprovanteResidencia,
+            String endereco,
+            String bairro,
+            String cidade,
+            String estado,
+            String cep,
+            String naturalidade,
+            String telefone,
+            PessoaEntity pessoa) {
+        this.id = id;
+        this.enderecoAtivo = enderecoAtivo;
+        this.comprovanteResidencia = comprovanteResidencia;
+        this.endereco = endereco;
+        this.bairro = bairro;
+        this.cidade = cidade;
+        this.estado = estado;
+        this.cep = cep;
+        this.naturalidade = naturalidade;
+        this.pessoa = pessoa;
+        this.telefone = telefone;
+    }
 
-  public UUID getId() {
-    return id;
-  }
+    public ContatoEntity(String endereco, String cidade, String estado, PessoaEntity pessoa) {
+        this.endereco = endereco;
+        this.cidade = cidade;
+        this.estado = estado;
+        this.pessoa = pessoa;
+    }
 
-  public void setId(UUID id) {
-    this.id = id;
-  }
 
-  public String getEnderecoAtivo() {
-    return enderecoAtivo;
-  }
+    public String getTelefone() {
+        return telefone;
+    }
 
-  public void setEnderecoAtivo(String enderecoAtivo) {
-    this.enderecoAtivo = enderecoAtivo;
-  }
+    public void setTelefone(String telefone) {
+        this.telefone = telefone;
+    }
 
-  public String getComprovanteResidencia() {
-    return comprovanteResidencia;
-  }
+    public UUID getId() {
+        return id;
+    }
 
-  public void setComprovanteResidencia(String comprovanteResidencia) {
-    this.comprovanteResidencia = comprovanteResidencia;
-  }
+    public void setId(UUID id) {
+        this.id = id;
+    }
 
-  public String getEndereco() {
-    return endereco;
-  }
+    public String getEnderecoAtivo() {
+        return enderecoAtivo;
+    }
 
-  public void setEndereco(String endereco) {
-    this.endereco = endereco;
-  }
+    public void setEnderecoAtivo(String enderecoAtivo) {
+        this.enderecoAtivo = enderecoAtivo;
+    }
 
-  public String getBairro() {
-    return bairro;
-  }
+    public String getComprovanteResidencia() {
+        return comprovanteResidencia;
+    }
 
-  public void setBairro(String bairro) {
-    this.bairro = bairro;
-  }
+    public void setComprovanteResidencia(String comprovanteResidencia) {
+        this.comprovanteResidencia = comprovanteResidencia;
+    }
 
-  public String getCidade() {
-    return cidade;
-  }
+    public String getEndereco() {
+        return endereco;
+    }
 
-  public void setCidade(String cidade) {
-    this.cidade = cidade;
-  }
+    public void setEndereco(String endereco) {
+        this.endereco = endereco;
+    }
 
-  public String getEstado() {
-    return estado;
-  }
+    public String getBairro() {
+        return bairro;
+    }
 
-  public void setEstado(String estado) {
-    this.estado = estado;
-  }
+    public void setBairro(String bairro) {
+        this.bairro = bairro;
+    }
 
-  public String getCep() {
-    return cep;
-  }
+    public String getCidade() {
+        return cidade;
+    }
 
-  public void setCep(String cep) {
-    this.cep = cep;
-  }
+    public void setCidade(String cidade) {
+        this.cidade = cidade;
+    }
 
-  public String getNaturalidade() {
-    return naturalidade;
-  }
+    public String getEstado() {
+        return estado;
+    }
 
-  public void setNaturalidade(String naturalidade) {
-    this.naturalidade = naturalidade;
-  }
+    public void setEstado(String estado) {
+        this.estado = estado;
+    }
 
-  public PessoaEntity getPessoa() {
-    return pessoa;
-  }
+    public String getCep() {
+        return cep;
+    }
 
-  public void setPessoa(PessoaEntity pessoa) {
-    this.pessoa = pessoa;
-  }
+    public void setCep(String cep) {
+        this.cep = cep;
+    }
+
+    public String getNaturalidade() {
+        return naturalidade;
+    }
+
+    public void setNaturalidade(String naturalidade) {
+        this.naturalidade = naturalidade;
+    }
+
+    public PessoaEntity getPessoa() {
+        return pessoa;
+    }
+
+    public void setPessoa(PessoaEntity pessoa) {
+        this.pessoa = pessoa;
+    }
 }
