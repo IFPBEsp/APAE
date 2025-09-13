@@ -5,11 +5,9 @@ import br.org.apae.profissional_da_saude.api.validation.ValidationMessages;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.*;
 import lombok.Getter;
-import lombok.Setter;
 
 @Getter
-@Setter
-public class ProfissionalSaudeCreateDTO {
+public class ProfissionalSaudeUpdateDTO {
 
     @NotBlank
     @Size(min = 3, max = 100)
