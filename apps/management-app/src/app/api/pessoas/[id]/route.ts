@@ -1,5 +1,5 @@
 import { createPersonApi } from "@/lib/axios";
-import axios, { AxiosError } from "axios";
+import { AxiosError } from "axios";
 import { NextResponse } from "next/server";
 
 interface Params {
@@ -11,53 +11,103 @@ export async function GET(request: Request, { params }: Params) {
     const api = await createPersonApi();
     const response = await api.get(`/${params.id}`);
     const p = response.data;
-    
+
     const primeiroContato = p.contatoResponse && p.contatoResponse.length > 0 ? p.contatoResponse[0] : null;
 
-    const cadastroAnual = p.cadastrosAnuaisResponses && p.cadastrosAnuaisResponses.length > 0 ? p.cadastrosAnuaisResponses[0] : null;
-    
+    const mae = p.responsaveisResponses?.find((r: any) => r.tipoResponsavel === "MAE") || null;
+    const pai = p.responsaveisResponses?.find((r: any) => r.tipoResponsavel === "PAI") || null;
+    const outros = p.responsaveisResponses?.filter(
+      (r: any) => r.tipoResponsavel !== "PAI" && r.tipoResponsavel !== "MAE"
+    ) || [];
+
     const pessoa = {
-        //TUDO QUE FOR LISTA TEM QUE VER A MELHOR FORMA PARA ENVIAR E ACESSAR OS DADOS NO FRONT
-        //dados pessoais
-        id: p.id || "",
-        nomeCompleto: p.nomeCompleto || "Não informado",
-        dataNascimento: p.dataNascimento || "Não informado",
-        numRegistroNasc: p.numRegistroNasc || "Não informado",
-        fls: p.fls || "Não informado",
-        livro: p.livro || "Não informado",
-        cartorio: p.cartorio || "Não informado",
-        cpf: p.cpf || "Não informado",
-        rg: p.rg || "Não informado",
-        dataEmissaoRg: p.dataEmissaoRg || "Não informado",
-        orgaoEmissorRg: p.orgaoEmissorRg || "Não informado",
-        cns: p.cns || "Não informado",
-        nis: p.nis || "Não informado",
-        dataCadastramento: p.dataCadastramento || "Não informado",
-        //contato
-        enderecoAtivo: primeiroContato?.enderecoAtivo || "Não informado",
-        comprovanteResidencia: primeiroContato?.comprovanteResidencia || "",
-        endereco: primeiroContato?.endereco || "Não informado",
-        bairro: primeiroContato?.bairro || "Não informada",
-        cidade: primeiroContato?.cidade || "Não informada",
-        estado: primeiroContato?.estado || "Não informada",
-        cep: primeiroContato?.cep || "Não informada",
-        naturalidade: primeiroContato?.naturalidade || "Não informada",
-        telefone: primeiroContato?.telefone || "Não informado",
-        //responsáveis
-        responsaveis: p.responsaveisResponses || [],
-        //saúde
-        vacinas: p.vacinasResponses ?? [],
-        possuiBpc: cadastroAnual?.beneficioDePrestacaoContinuada ? "Sim" : "Não",
-        doencas: cadastroAnual?.historicoDoencas ?? [],
-        alergias: cadastroAnual?.historicosAlergias ?? [],
-        medicacao: cadastroAnual?.medicacoesContinuas ?? "Não informado",
-        rendaFamiliar: cadastroAnual?.rendaFamiliar ?? "Não informado",
-        deficiencias: p.deficienciasResponses ?? [],
-        atendimentos: p.atendimentosResponses ?? [],
-    }
+      // Dados pessoais
+      id: p.id || "",
+      nomeCompleto: p.nomeCompleto || "Não informado",
+      dataNascimento: p.dataNascimento || "Não informado",
+      numRegistroNasc: p.numRegistroNasc || "Não informado",
+      fls: p.fls || "Não informado",
+      livro: p.livro || "Não informado",
+      cartorio: p.cartorio || "Não informado",
+      cpf: p.cpf || "Não informado",
+      rg: p.rg || "Não informado",
+      dataEmissaoRg: p.dataEmissaoRg || "Não informado",
+      orgaoEmissorRg: p.orgaoEmissorRg || "Não informado",
+      cns: p.cns || "Não informado",
+      nis: p.nis || "Não informado",
+      dataCadastramento: p.dataCadastramento || "Não informado",
+      // Contato
+      enderecoAtivo: primeiroContato?.enderecoAtivo || "Não informado",
+      comprovanteResidencia: primeiroContato?.comprovanteResidencia || "",
+      endereco: primeiroContato?.endereco || "Não informado",
+      bairro: primeiroContato?.bairro || "Não informada",
+      cidade: primeiroContato?.cidade || "Não informada",
+      estado: primeiroContato?.estado || "Não informada",
+      cep: primeiroContato?.cep || "Não informada",
+      naturalidade: primeiroContato?.naturalidade || "Não informada",
+      telefone: primeiroContato?.telefone || "Não informado",
+      // Responsáveis
+      mae: mae
+        ? {
+            nome: mae.nome || "Não informado",
+            ondeProcurar: mae.ondeProcurar || "Não informado",
+            vivo: mae.vivo ? "Sim" : "Não",
+            profissao: mae.profissao || "Não informado",
+            rg: mae.rg || "Não informado",
+            cpf: mae.cpf || "Não informado",
+            emergencia: mae.emergencia || "Não informado",
+          }
+        : null,
+      pai: pai
+        ? {
+            nome: pai.nome || "Não informado",
+            ondeProcurar: pai.ondeProcurar || "Não informado",
+            vivo: pai.vivo ? "Sim" : "Não",
+            profissao: pai.profissao || "Não informado",
+            rg: pai.rg || "Não informado",
+            cpf: pai.cpf || "Não informado",
+            emergencia: pai.emergencia || "Não informado",
+          }
+        : null,
+      outrosResponsaveis: outros.map((r: any) => ({
+        nome: r.nome || "Não informado",
+        ondeProcurar: r.ondeProcurar || "Não informado",
+        vivo: r.vivo ? "Sim" : "Não",
+        profissao: r.profissao || "Não informado",
+        rg: r.rg || "Não informado",
+        cpf: r.cpf || "Não informado",
+        emergencia: r.emergencia || "Não informado",
+        tipo: r.tipoResponsavel,
+      })),
+      // Vacinas
+      vacinas: p.vacinasResponses?.map((v: any) => ({
+        id: v.id,
+        nome: v.nome || "Não informado",
+        dataAplicacao: v.dataAplicacao || "Não informado",
+      })) ?? [],
+      // Cadastro Anual
+      cadastroAnual: p.cadastrosAnuaisResponses?.[0]
+        ? {
+            possuiBpc: p.cadastrosAnuaisResponses[0].beneficioDePrestacaoContinuada ? "Sim" : "Não",
+            doencas: p.cadastrosAnuaisResponses[0].historicoDoencas || "Não informado",
+            alergias: p.cadastrosAnuaisResponses[0].historicosAlergias || "Não informado",
+            medicacao: p.cadastrosAnuaisResponses[0].medicacoesContinuas || "Não informado",
+            rendaFamiliar: p.cadastrosAnuaisResponses[0].rendaFamiliar || "Não informado",
+          }
+        : null,
+      // Deficiências
+      deficiencias: p.deficienciasResponses?.map((d: any) => ({
+        id: d.id,
+        descricao: d.descricao || "Não informado",
+      })) ?? [],
+      // Atendimentos
+      atendimentos: p.atendimentosResponses?.map((a: any) => ({
+        id: a.id,
+        descricao: a.descricao || "Não informado",
+      })) ?? [],
+    };
 
-    return NextResponse.json(pessoa, {status: 200});
-
+    return NextResponse.json(pessoa, { status: 200 });
   } catch (error) {
     console.error("Erro na API Route (/api/pessoas/[id]):", error);
 
@@ -68,9 +118,6 @@ export async function GET(request: Request, { params }: Params) {
       );
     }
 
-    return NextResponse.json(
-      { message: "Erro inesperado no servidor" },
-      { status: 500 }
-    );
+    return NextResponse.json({ message: "Erro inesperado no servidor" }, { status: 500 });
   }
 }
