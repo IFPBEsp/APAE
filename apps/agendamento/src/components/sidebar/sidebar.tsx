@@ -11,21 +11,20 @@ import {
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
 import {
-  ClockIcon,
-  TasklistIcon,
-  CalendarIcon,
-  ChevronDownIcon,
-  IdBadgeIcon,
   ChecklistIcon,
+  ChevronDownIcon,
+  ClockIcon,
+  IdBadgeIcon,
+  TasklistIcon
 } from "@primer/octicons-react";
-import styles from "./sidebar.module.css";
 import Image from "next/image";
+import Link from "next/link";
 import {
   Collapsible,
   CollapsibleContent,
   CollapsibleTrigger,
 } from "../ui/collapsible";
-import Link from "next/link";
+import styles from "./sidebar.module.css";
 
 export function AppSidebar() {
   return (
@@ -73,12 +72,6 @@ export function AppSidebar() {
                       <span className="text-base">Todos os agendamentos</span>
                     </SidebarMenuButton>
                   </Link>
-                </SidebarMenuItem>
-                <SidebarMenuItem>
-                  <SidebarMenuButton className={"pl-8"}>
-                    <CalendarIcon size={16} />
-                    <span className="text-base">Calendário</span>
-                  </SidebarMenuButton>
                 </SidebarMenuItem>
               </SidebarMenu>
             </CollapsibleContent>
