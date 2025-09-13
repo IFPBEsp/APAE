@@ -6,47 +6,12 @@ import { useRouter } from "next/navigation";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import {
-  Form,
-  FormControl,
-  FormDescription,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
-import { Checkbox } from "@/components/ui/checkbox";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage, FormDescription } from "@/components/ui/form";
 
 import { useGetByIdProfissional } from "@/hooks/profissional/use-get-by-id-profissional";
 import { useUpdateProfissional } from "@/hooks/profissional/use-update-profissional";
-
-const diasDaSemana = [
-  { id: "segunda", label: "Segunda" },
-  { id: "terca", label: "Terça" },
-  { id: "quarta", label: "Quarta" },
-  { id: "quinta", label: "Quinta" },
-  { id: "sexta", label: "Sexta" },
-];
-
-const turnos = [
-  { id: "manha", label: "Manhã" },
-  { id: "tarde", label: "Tarde" },
-];
+import Disponibilidade, { DisponibilidadeType, diasDaSemana, turnos } from "@/components/forms/DisponibilidadeForm";
 
 export type FormData = {
   nome: string;
@@ -54,19 +19,13 @@ export type FormData = {
   docProfissional: string;
   areaDaSaude: string;
   telefone: string;
-  disponibilidade: {
-    [key: string]: {
-      [key: string]: boolean;
-    };
-  };
+  disponibilidade: DisponibilidadeType[];
 };
 
 export default function AtualizarProfissional() {
   const router = useRouter();
-  const { profissional, loading: loadingProf, error: errorProf } =
-    useGetByIdProfissional();
-  const { updateProfissional, loading, error, success } =
-    useUpdateProfissional();
+  const { profissional, loading: loadingProf, error: errorProf } = useGetByIdProfissional();
+  const { updateProfissional, loading, error, success } = useUpdateProfissional();
 
   const form = useForm<FormData>({
     defaultValues: {
@@ -75,54 +34,32 @@ export default function AtualizarProfissional() {
       docProfissional: "",
       areaDaSaude: "",
       telefone: "",
-      disponibilidade: {
-        manha: {
-          segunda: false,
-          terca: false,
-          quarta: false,
-          quinta: false,
-          sexta: false,
-        },
-        tarde: {
-          segunda: false,
-          terca: false,
-          quarta: false,
-          quinta: false,
-          sexta: false,
-        },
-      },
+      disponibilidade: diasDaSemana.flatMap((dia) =>
+        turnos.map((turno) => ({
+          dia: dia.id,
+          turno: turno.id,
+          checked: false,
+        }))
+      ),
     },
   });
 
   useEffect(() => {
     if (profissional) {
-      const disponibilidadeState = {
-        manha: {
-          segunda: false,
-          terca: false,
-          quarta: false,
-          quinta: false,
-          sexta: false,
-        },
-        tarde: {
-          segunda: false,
-          terca: false,
-          quarta: false,
-          quinta: false,
-          sexta: false,
-        },
-      };
+      const disponibilidadeReset: DisponibilidadeType[] = diasDaSemana.flatMap(dia =>
+        turnos.map(turno => ({
+          dia: dia.id,
+          turno: turno.id,
+          checked: false,
+        }))
+      );
 
-      if (profissional.disponibilidade && profissional.disponibilidade.length > 0) {
-        profissional.disponibilidade.forEach((item) => {
-          const dia = item.dia.toLowerCase();
-          const turno = item.turno.toLowerCase();
-          if (
-            disponibilidadeState[turno] &&
-            disponibilidadeState[turno][dia] !== undefined
-          ) {
-            disponibilidadeState[turno][dia] = true;
-          }
+      if (profissional.disponibilidade) {
+        profissional.disponibilidade.forEach(item => {
+          const index = disponibilidadeReset.findIndex(
+            d => d.dia === item.dia.toLowerCase() && d.turno === item.turno.toLowerCase()
+          );
+          if (index >= 0) disponibilidadeReset[index].checked = true;
         });
       }
 
@@ -132,7 +69,7 @@ export default function AtualizarProfissional() {
         docProfissional: profissional.docProfissional,
         areaDaSaude: profissional.areaDaSaude,
         telefone: profissional.telefone,
-        disponibilidade: disponibilidadeState,
+        disponibilidade: disponibilidadeReset,
       });
     }
   }, [profissional, form]);
@@ -143,18 +80,12 @@ export default function AtualizarProfissional() {
       return;
     }
 
-    const disponibilidadePayload = [];
-    const { disponibilidade } = data;
-    for (const turno in disponibilidade) {
-      for (const dia in disponibilidade[turno]) {
-        if (disponibilidade[turno][dia]) {
-          disponibilidadePayload.push({
-            dia: dia.toUpperCase(),
-            turno: turno.toUpperCase(),
-          });
-        }
-      }
-    }
+    const disponibilidadePayload = data.disponibilidade
+      .filter((d: DisponibilidadeType) => d.checked)
+      .map((d: DisponibilidadeType) => ({
+        dia: d.dia.toUpperCase(),
+        turno: d.turno.toUpperCase(),
+      }));
 
     const payload = {
       nome: data.nome,
@@ -179,10 +110,7 @@ export default function AtualizarProfissional() {
     <div className="p-6">
       <h1 className="text-2xl font-bold mb-6">Atualizar Profissional</h1>
       <Form {...form}>
-        <form
-          onSubmit={form.handleSubmit(onSubmit)}
-          className="space-y-8 max-w-4xl"
-        >
+        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8 max-w-4xl">
           <FormField
             control={form.control}
             name="nome"
@@ -232,20 +160,20 @@ export default function AtualizarProfissional() {
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Área da saúde</FormLabel>
-                  <FormControl>
-                    <Select onValueChange={field.onChange} value={field.value}>
+                  <Select onValueChange={field.onChange} value={field.value}>
+                    <FormControl>
                       <SelectTrigger>
                         <SelectValue placeholder="Selecione uma opção" />
                       </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="Medicina">Medicina</SelectItem>
-                        <SelectItem value="Enfermagem">Enfermagem</SelectItem>
-                        <SelectItem value="Fisioterapia">Fisioterapia</SelectItem>
-                        <SelectItem value="Psicologia">Psicologia</SelectItem>
-                        <SelectItem value="Nutrição">Nutrição</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </FormControl>
+                    </FormControl>
+                    <SelectContent>
+                      <SelectItem value="Medicina">Medicina</SelectItem>
+                      <SelectItem value="Enfermagem">Enfermagem</SelectItem>
+                      <SelectItem value="Fisioterapia">Fisioterapia</SelectItem>
+                      <SelectItem value="Psicologia">Psicologia</SelectItem>
+                      <SelectItem value="Nutrição">Nutrição</SelectItem>
+                    </SelectContent>
+                  </Select>
                   <FormMessage />
                 </FormItem>
               )}
@@ -265,72 +193,18 @@ export default function AtualizarProfissional() {
               )}
             />
           </div>
-          
-          <div className="space-y-4">
-            <FormLabel>Disponibilidade</FormLabel>
-            <FormDescription>
-              Marque os dias e turnos em que o profissional está disponível.
-            </FormDescription>
-            <div className="border rounded-md">
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead className="w-[100px]">Turno</TableHead>
-                    {diasDaSemana.map((dia) => (
-                      <TableHead key={dia.id} className="text-center">
-                        {dia.label}
-                      </TableHead>
-                    ))}
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {turnos.map((turno) => (
-                    <TableRow key={turno.id}>
-                      <TableCell className="font-medium">
-                        {turno.label}
-                      </TableCell>
-                      {diasDaSemana.map((dia) => (
-                        <TableCell key={dia.id} className="text-center">
-                          <FormField
-                            control={form.control}
-                            name={`disponibilidade.${turno.id}.${dia.id}`}
-                            render={({ field }) => (
-                              <FormItem className="flex items-center justify-center">
-                                <FormControl>
-                                  <Checkbox
-                                    checked={field.value}
-                                    onCheckedChange={field.onChange}
-                                  />
-                                </FormControl>
-                              </FormItem>
-                            )}
-                          />
-                        </TableCell>
-                      ))}
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </div>
-          </div>
+
+          <Disponibilidade control={form.control} watch={form.watch} />
 
           {loading && <p className="text-blue-500">Salvando...</p>}
           {error && <p className="text-red-500">Erro: {error}</p>}
-          {success && (
-            <p className="text-green-600">
-              Profissional atualizado com sucesso!
-            </p>
-          )}
+          {success && <p className="text-green-600">Profissional atualizado com sucesso!</p>}
 
           <div className="flex justify-end gap-4 pt-4">
             <Button type="button" variant="outline" onClick={onCancel}>
               Cancelar
             </Button>
-            <Button
-              type="submit"
-              className="bg-blue-800 hover:bg-blue-900"
-              disabled={loading}
-            >
+            <Button type="submit" className="bg-blue-800 hover:bg-blue-900" disabled={loading}>
               Salvar
             </Button>
           </div>
