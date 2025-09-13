@@ -3,52 +3,11 @@
 import { useForm } from "react-hook-form";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import {
-  Form,
-  FormControl,
-  FormDescription,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
-import { Checkbox } from "@/components/ui/checkbox";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage, FormDescription } from "@/components/ui/form";
 import { useRouter } from "next/navigation";
 import { useCreateProfissional } from "@/hooks/profissional/use-create-profissional";
-
-const diasDaSemana = [
-  { id: "segunda", label: "Segunda" },
-  { id: "terca", label: "Terça" },
-  { id: "quarta", label: "Quarta" },
-  { id: "quinta", label: "Quinta" },
-  { id: "sexta", label: "Sexta" },
-];
-
-const turnos = [
-  { id: "manha", label: "Manhã" },
-  { id: "tarde", label: "Tarde" },
-];
-
-type Disponibilidade = {
-  dia: string;
-  turno: string;
-  checked: boolean;
-};
+import Disponibilidade, { DisponibilidadeType, diasDaSemana, turnos } from "@/components/forms/DisponibilidadeForm";
 
 export default function CadastroProfissional() {
   const { create, loading, error, success } = useCreateProfissional();
@@ -79,8 +38,8 @@ export default function CadastroProfissional() {
   async function onSubmit(values: any) {
     try {
       const disponibilidadePayload = values.disponibilidade
-        .filter((d: Disponibilidade) => d.checked)
-        .map((d: Disponibilidade) => ({
+        .filter((d: DisponibilidadeType) => d.checked)
+        .map((d: DisponibilidadeType) => ({
           dia: d.dia.toUpperCase(),
           turno: d.turno.toUpperCase(),
         }));
@@ -105,10 +64,7 @@ export default function CadastroProfissional() {
       <h1 className="text-2xl font-bold mb-6">Cadastrar Profissional</h1>
 
       <Form {...form}>
-        <form
-          onSubmit={form.handleSubmit(onSubmit)}
-          className="space-y-8 max-w-4xl"
-        >
+        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8 max-w-4xl">
           <FormField
             control={form.control}
             name="nomeCompleto"
@@ -130,11 +86,7 @@ export default function CadastroProfissional() {
               <FormItem>
                 <FormLabel>Email</FormLabel>
                 <FormControl>
-                  <Input
-                    type="email"
-                    placeholder="profissional@exemplo.com"
-                    {...field}
-                  />
+                  <Input type="email" placeholder="profissional@exemplo.com" {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -196,79 +148,17 @@ export default function CadastroProfissional() {
             />
           </div>
 
-          <div className="space-y-4">
-            <FormLabel>Disponibilidade</FormLabel>
-            <FormDescription>
-              Marque os dias e turnos em que o profissional está disponível.
-            </FormDescription>
-            <div className="border rounded-md">
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead className="w-[100px]">Turno</TableHead>
-                    {diasDaSemana.map((dia) => (
-                      <TableHead key={dia.id} className="text-center">
-                        {dia.label}
-                      </TableHead>
-                    ))}
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {turnos.map((turno) => (
-                    <TableRow key={turno.id}>
-                      <TableCell className="font-medium">
-                        {turno.label}
-                      </TableCell>
-                      {diasDaSemana.map((dia) => {
-                        const index = form
-                          .watch("disponibilidade")
-                          .findIndex(
-                            (d) => d.dia === dia.id && d.turno === turno.id
-                          );
-
-                        return (
-                          <TableCell key={dia.id} className="text-center">
-                            <FormField
-                              control={form.control}
-                              name={`disponibilidade.${index}.checked`}
-                              render={({ field }) => (
-                                <FormItem className="flex items-center justify-center">
-                                  <FormControl>
-                                    <Checkbox
-                                      checked={field.value}
-                                      onCheckedChange={field.onChange}
-                                    />
-                                  </FormControl>
-                                </FormItem>
-                              )}
-                            />
-                          </TableCell>
-                        );
-                      })}
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </div>
-          </div>
+          <Disponibilidade control={form.control} watch={form.watch} />
 
           {loading && <p className="text-blue-500">Salvando...</p>}
           {error && <p className="text-red-500">Erro: {error}</p>}
-          {success && (
-            <p className="text-green-600">
-              Profissional criado com sucesso!
-            </p>
-          )}
+          {success && <p className="text-green-600">Profissional criado com sucesso!</p>}
 
           <div className="flex justify-end gap-4 pt-4">
             <Button type="button" variant="outline" onClick={onCancel}>
               Cancelar
             </Button>
-            <Button
-              type="submit"
-              className="bg-blue-800 hover:bg-blue-900"
-              disabled={loading}
-            >
+            <Button type="submit" className="bg-blue-800 hover:bg-blue-900" disabled={loading}>
               Cadastrar
             </Button>
           </div>
