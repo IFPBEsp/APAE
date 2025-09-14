@@ -59,9 +59,7 @@ export default async function VisualizarAgendamento({ params }: PageProps) {
       return { class: "bg-gray-400", text: "Data Inválida" };
     }
     const dataAtual = new Date();
-    if (agendamento.realizado) {
-      return { class: "bg-[#0D9767]", text: "Consulta Realizada" };
-    } else if (status) {
+    if (status) {
       return { class: "bg-[#0D4F97]", text: "Consulta Confirmada" };
     } else if (data > dataAtual) {
       return { class: "bg-[#f0bc1f]", text: "Consulta Pendente" };
