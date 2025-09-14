@@ -1,12 +1,13 @@
 "use client";
 
+
+import React from "react";
 import { useForm, FormProvider } from "react-hook-form";
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
-
 import FormHealthProfessional from "@/components/forms/form-health-professional";
 import { useGetByIdProfissional } from "@/hooks/profissional/use-get-by-id-profissional";
 import { useUpdateProfissional } from "@/hooks/profissional/use-update-profissional";
+import { useEstadosECidades } from "@/hooks/profissional/use-estados-cidades";
 
 export default function AtualizarProfissional() {
   const router = useRouter();
@@ -32,39 +33,38 @@ export default function AtualizarProfissional() {
     },
   });
 
-  const [estados, setEstados] = useState<any[]>([]);
-  const [cidades, setCidades] = useState<any[]>([]);
+  const { estados, cidades } = useEstadosECidades(form);
 
-  useEffect(() => {
-    fetch("https://servicodados.ibge.gov.br/api/v1/localidades/estados?orderBy=nome")
-      .then((res) => res.json())
-      .then((data) => setEstados(data));
-  }, []);
-
-  useEffect(() => {
-    const estadoSelecionado = form.getValues("estado");
-    if (estadoSelecionado) {
-      fetch(`https://servicodados.ibge.gov.br/api/v1/localidades/estados/${estadoSelecionado}/municipios`)
-        .then((res) => res.json())
-        .then((data) => setCidades(data));
-    }
-  }, [form.watch("estado")]);
-
-  useEffect(() => {
+  React.useEffect(() => {
     if (profissional) {
       form.reset({
         nomeCompleto: profissional.nome ?? "",
         email: profissional.email ?? "",
         documentoProfissional: profissional.docProfissional ?? "",
-        areaSaude: profissional.areaDaSaude ?? "",
-        telefone: profissional.telefone ?? "",
+        areaSaude: profissional.areaDaSaude ?? ""
       });
     }
   }, [profissional, form]);
 
   async function onSubmit(values: any) {
     if (!profissional?.id) return;
-    await updateProfissional(profissional.id, values);
+
+    const payload = {
+      nome: values.nomeCompleto,
+      email: values.email,
+      docProfissional: values.documentoProfissional,
+      areaDaSaude: values.areaSaude,
+      cpf: values.cpf,
+      rg: values.rg,
+      estado: values.estado,
+      cidade: values.cidade,
+      endereco: values.endereco,
+      complemento: values.complemento,
+      telefone: values.telefone,
+      cep: values.cep,
+    };
+
+    await updateProfissional(profissional.id, payload);
   }
 
   function onCancel() {

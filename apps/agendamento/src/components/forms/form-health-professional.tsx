@@ -1,7 +1,7 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { useFormContext, Controller } from "react-hook-form";
+import { useState } from "react";
+import { useFormContext } from "react-hook-form";
 
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -20,15 +20,48 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+
+type Estado = {
+  id: number;
+  nome: string;
+  sigla: string;
+};
+
+type Cidade = {
+  id: number;
+  nome: string;
+};
+
+export type FormValues = {
+  nomeCompleto: string;
+  email: string;
+  documentoProfissional: string;
+  areaSaude: string;
+  cpf: string;
+  rg: string;
+  estado: string;
+  cidade: string;
+  endereco: string;
+  complemento?: string;
+  telefone: string;
+  cep: string;
+};
 
 type Props = {
-  estados: any[];
-  cidades: any[];
+  estados: Estado[];
+  cidades: Cidade[];
   loading?: boolean;
   error?: string | null;
   success?: boolean;
   onCancel: () => void;
-  onSubmit: (values: any) => void;
+  onSubmit: (values: FormValues) => void;
   submitLabel: string;
 };
 
@@ -42,14 +75,29 @@ export default function FormHealthProfessional({
   onSubmit,
   submitLabel,
 }: Props) {
-  const form = useFormContext();
+  const form = useFormContext<FormValues>();
+
+  const [areasSaude, setAreasSaude] = useState<string[]>([
+    "Fisioterapia",
+    "Nutrição",
+    "Psicologia",
+    "Psiquiatria",
+  ]);
+  const [novaArea, setNovaArea] = useState("");
+  const [dialogOpen, setDialogOpen] = useState(false);
+
+  const handleAddArea = () => {
+    if (novaArea && !areasSaude.includes(novaArea)) {
+      setAreasSaude([...areasSaude, novaArea]);
+      form.setValue("areaSaude", novaArea);
+      setNovaArea("");
+      setDialogOpen(false);
+    }
+  };
 
   return (
     <Form {...form}>
-      <form
-        onSubmit={form.handleSubmit(onSubmit)}
-        className="space-y-6 max-w-2xl"
-      >
+      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6 max-w-2xl">
         <FormField
           control={form.control}
           name="nomeCompleto"
@@ -71,11 +119,7 @@ export default function FormHealthProfessional({
             <FormItem>
               <FormLabel>Email</FormLabel>
               <FormControl>
-                <Input
-                  type="email"
-                  placeholder="profissional@exemplo.com"
-                  {...field}
-                />
+                <Input type="email" placeholder="profissional@exemplo.com" {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -100,15 +144,97 @@ export default function FormHealthProfessional({
           <FormField
             control={form.control}
             name="areaSaude"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Área da Saúde</FormLabel>
-                <FormControl>
-                  <Input placeholder="Digite uma área" {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
+            render={({ field }) => {
+              const [search, setSearch] = useState("");
+              const [isOpen, setIsOpen] = useState(false);
+
+              const filteredAreas = areasSaude.filter((area) =>
+                area.toLowerCase().includes(search.toLowerCase())
+              );
+
+              return (
+                <FormItem>
+                  <FormLabel>Área da Saúde</FormLabel>
+                  <FormControl>
+                    <Select
+                      onValueChange={field.onChange}
+                      value={field.value}
+                      open={isOpen}
+                      onOpenChange={setIsOpen}
+                    >
+                      <SelectTrigger className="w-full">
+                        <SelectValue placeholder="Selecione a Área" />
+                      </SelectTrigger>
+
+                      <SelectContent className="p-0">
+                        <div className="sticky top-0 z-10 bg-white p-3 border-b">
+                          <h3 className="font-medium text-sm text-gray-700 mb-2">
+                            Selecione a Área
+                          </h3>
+                          <Input
+                            placeholder="Encontre a área..."
+                            value={search}
+                            onChange={(e) => setSearch(e.target.value)}
+                            className="h-8"
+                          />
+                        </div>
+
+                        <div className="max-h-60 overflow-auto">
+                          {filteredAreas.length > 0 ? (
+                            filteredAreas.map((area) => (
+                              <SelectItem key={area} value={area} className="pl-3 py-2">
+                                {area}
+                              </SelectItem>
+                            ))
+                          ) : (
+                            <div className="py-3 px-3 text-sm text-gray-500 text-center">
+                              Nenhuma área encontrada
+                            </div>
+                          )}
+                        </div>
+
+                        <div className="border-t mt-1" />
+
+                        <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
+                          <DialogTrigger asChild>
+                            <button
+                              type="button"
+                              className="w-full text-left p-3 text-blue-600 hover:bg-blue-50 text-sm font-medium"
+                            >
+                              + Adicionar nova área
+                            </button>
+                          </DialogTrigger>
+                          <DialogContent>
+                            <DialogHeader>
+                              <DialogTitle>Adicione uma nova área da saúde</DialogTitle>
+                            </DialogHeader>
+                            <div className="space-y-4 py-4">
+                              <FormItem>
+                                <FormLabel>Título</FormLabel>
+                                <FormControl>
+                                  <Input
+                                    placeholder="Fisioterapia"
+                                    value={novaArea}
+                                    onChange={(e) => setNovaArea(e.target.value)}
+                                  />
+                                </FormControl>
+                              </FormItem>
+                              <Button
+                                onClick={handleAddArea}
+                                className="w-full bg-blue-800 hover:bg-blue-900"
+                              >
+                                Criar
+                              </Button>
+                            </div>
+                          </DialogContent>
+                        </Dialog>
+                      </SelectContent>
+                    </Select>
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              );
+            }}
           />
         </div>
 
@@ -126,7 +252,6 @@ export default function FormHealthProfessional({
               </FormItem>
             )}
           />
-
           <FormField
             control={form.control}
             name="rg"
@@ -149,49 +274,48 @@ export default function FormHealthProfessional({
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Estado</FormLabel>
-                <Select onValueChange={field.onChange} value={field.value}>
-                  <FormControl>
-                    <SelectTrigger className="w-full">
+                <FormControl>
+                  <Select onValueChange={field.onChange} value={field.value}>
+                    <SelectTrigger>
                       <SelectValue placeholder="Selecione um estado" />
                     </SelectTrigger>
-                  </FormControl>
-                  <SelectContent>
-                    {estados.map((estado) => (
-                      <SelectItem key={estado.id} value={estado.sigla}>
-                        {estado.nome}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+                    <SelectContent>
+                      {estados.map((estado) => (
+                        <SelectItem key={estado.id} value={estado.sigla}>
+                          {estado.nome}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </FormControl>
                 <FormMessage />
               </FormItem>
             )}
           />
-
           <FormField
             control={form.control}
             name="cidade"
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Cidade</FormLabel>
-                <Select
-                  onValueChange={field.onChange}
-                  value={field.value}
-                  disabled={!cidades.length}
-                >
-                  <FormControl>
-                    <SelectTrigger className="w-full">
+                <FormControl>
+                  <Select
+                    onValueChange={field.onChange}
+                    value={field.value}
+                    disabled={!cidades.length}
+                  >
+                    <SelectTrigger>
                       <SelectValue placeholder="Selecione uma cidade" />
                     </SelectTrigger>
-                  </FormControl>
-                  <SelectContent>
-                    {cidades.map((cidade) => (
-                      <SelectItem key={cidade.id} value={cidade.nome}>
-                        {cidade.nome}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+                    <SelectContent>
+                      {cidades.map((cidade) => (
+                        <SelectItem key={cidade.id} value={cidade.nome}>
+                          {cidade.nome}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </FormControl>
                 <FormMessage />
               </FormItem>
             )}
@@ -211,7 +335,6 @@ export default function FormHealthProfessional({
             </FormItem>
           )}
         />
-
         <FormField
           control={form.control}
           name="complemento"
@@ -240,7 +363,6 @@ export default function FormHealthProfessional({
               </FormItem>
             )}
           />
-
           <FormField
             control={form.control}
             name="cep"
@@ -258,19 +380,13 @@ export default function FormHealthProfessional({
 
         {loading && <p className="text-blue-500">Salvando...</p>}
         {error && <p className="text-red-500">Erro: {error}</p>}
-        {success && (
-          <p className="text-green-600">Operação realizada com sucesso!</p>
-        )}
+        {success && <p className="text-green-600">Operação realizada com sucesso!</p>}
 
         <div className="flex justify-end gap-4">
           <Button type="button" variant="outline" onClick={onCancel}>
             Cancelar
           </Button>
-          <Button
-            type="submit"
-            className="bg-blue-800 hover:bg-blue-900"
-            disabled={loading}
-          >
+          <Button type="submit" className="bg-blue-800 hover:bg-blue-900" disabled={loading}>
             {submitLabel}
           </Button>
         </div>

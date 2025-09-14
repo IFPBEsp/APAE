@@ -1,15 +1,14 @@
-"use client";
+"use client"; 
 
 import { useForm, FormProvider } from "react-hook-form";
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
-
 import FormHealthProfessional from "@/components/forms/form-health-professional";
+import { useEstadosECidades } from "@/hooks/profissional/use-estados-cidades";
 import { useCreateProfissional } from "@/hooks/profissional/use-create-profissional";
 
 export default function CadastroProfissional() {
-  const { create, loading, error, success } = useCreateProfissional();
   const router = useRouter();
+  const { create, loading, error, success } = useCreateProfissional();
 
   const form = useForm({
     defaultValues: {
@@ -28,23 +27,7 @@ export default function CadastroProfissional() {
     },
   });
 
-  const [estados, setEstados] = useState<any[]>([]);
-  const [cidades, setCidades] = useState<any[]>([]);
-
-  useEffect(() => {
-    fetch("https://servicodados.ibge.gov.br/api/v1/localidades/estados?orderBy=nome")
-      .then((res) => res.json())
-      .then((data) => setEstados(data));
-  }, []);
-
-  useEffect(() => {
-    const estadoSelecionado = form.getValues("estado");
-    if (estadoSelecionado) {
-      fetch(`https://servicodados.ibge.gov.br/api/v1/localidades/estados/${estadoSelecionado}/municipios`)
-        .then((res) => res.json())
-        .then((data) => setCidades(data));
-    }
-  }, [form.watch("estado")]);
+  const { estados, cidades } = useEstadosECidades(form);
 
   function onCancel() {
     router.push("/visualization-professional");
