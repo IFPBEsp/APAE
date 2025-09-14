@@ -65,6 +65,16 @@ export interface ProfissionalSaude {
   docProfissional: string;
   email: string;
   nome: string;
+  rg: string;
+  endereco: {
+    estado: string;
+    cidade: string;
+    bairro: string;
+    rua: string;
+    numero: string;
+    cep: string;
+    complemento: string;
+  }
 }
 
 const pacientes: Paciente[] = [
@@ -207,6 +217,16 @@ const profissionais: ProfissionalSaude[] = [
     docProfissional: "CRFa-1/12345",
     email: "ana.fonou@email.com",
     nome: "Ana Fonseca",
+    rg: "12.345.678-9",
+    endereco: {
+      estado: "São Paulo",
+      cidade: "São Paulo",
+      bairro: "Jardim Paulista",
+      rua: "Rua das Acácias",
+      numero: "123",
+      cep: "01020-030",
+      complemento: "Apto 45"
+    }
   },
   {
     areaDaSaude: "Fisioterapia",
@@ -214,6 +234,16 @@ const profissionais: ProfissionalSaude[] = [
     docProfissional: "CREFITO-2/54321-F",
     email: "marcos.fisio@email.com",
     nome: "Marcos Pereira",
+    rg: "98.765.432-1",
+    endereco: {
+      estado: "Rio de Janeiro",
+      cidade: "Rio de Janeiro",
+      bairro: "Centro",
+      rua: "Av. Rio Branco",
+      numero: "456",
+      cep: "20040-003",
+      complemento: "Sala 501"
+    }
   },
   {
     areaDaSaude: "Psicologia",
@@ -221,6 +251,16 @@ const profissionais: ProfissionalSaude[] = [
     docProfissional: "CRP-04/67890",
     email: "juliana.psico@email.com",
     nome: "Juliana Souza",
+    rg: "23.456.789-0",
+    endereco: {
+      estado: "Minas Gerais",
+      cidade: "Belo Horizonte",
+      bairro: "Funcionários",
+      rua: "Rua dos Três Irmãos",
+      numero: "789",
+      cep: "30110-050",
+      complemento: "Edifício Crystal"
+    }
   },
   {
     areaDaSaude: "Terapia Ocupacional",
@@ -228,6 +268,16 @@ const profissionais: ProfissionalSaude[] = [
     docProfissional: "CREFITO-8/13579-TO",
     email: "roberto.to@email.com",
     nome: "Roberto Lima",
+    rg: "34.567.890-1",
+    endereco: {
+      estado: "Paraná",
+      cidade: "Curitiba",
+      bairro: "Centro",
+      rua: "Rua Paraná",
+      numero: "234",
+      cep: "80010-120",
+      complemento: "Andar 7"
+    }
   },
   {
     areaDaSaude: "Psicopedagogia",
@@ -235,6 +285,16 @@ const profissionais: ProfissionalSaude[] = [
     docProfissional: "CRP-01/24680-PP",
     email: "marcia.psi@email.com",
     nome: "Márcia Andrade",
+    rg: "45.678.901-2",
+    endereco: {
+      estado: "Distrito Federal",
+      cidade: "Brasília",
+      bairro: "Asa Sul",
+      rua: "Quadra 10, Bloco 5",
+      numero: "100",
+      cep: "70010-010",
+      complemento: "Próximo à estação"
+    }
   },
   {
     areaDaSaude: "Neurologia",
@@ -242,6 +302,16 @@ const profissionais: ProfissionalSaude[] = [
     docProfissional: "CRM-CE/112233",
     email: "dr.carlos.neuro@email.com",
     nome: "Dr. Carlos Moreira",
+    rg: "56.789.012-3",
+    endereco: {
+      estado: "Ceará",
+      cidade: "Fortaleza",
+      bairro: "Beira Mar",
+      rua: "Av. Beira Mar",
+      numero: "500",
+      cep: "60165-121",
+      complemento: "Consultório 102"
+    }
   },
   {
     areaDaSaude: "Psiquiatria",
@@ -249,6 +319,16 @@ const profissionais: ProfissionalSaude[] = [
     docProfissional: "CRM-SP/445566",
     email: "dra.luana.psi@email.com",
     nome: "Dra. Luana Rocha",
+    rg: "67.890.123-4",
+    endereco: {
+      estado: "São Paulo",
+      cidade: "São Paulo",
+      bairro: "Vila Progredior",
+      rua: "Rua dos Três Corações",
+      numero: "300",
+      cep: "04085-020",
+      complemento: "Perto do metrô"
+    }
   },
   {
     areaDaSaude: "Enfermagem",
@@ -256,6 +336,16 @@ const profissionais: ProfissionalSaude[] = [
     docProfissional: "COREN-BA/998877",
     email: "fernando.enf@email.com",
     nome: "Fernando Nogueira",
+    rg: "78.901.234-5",
+    endereco: {
+      estado: "Bahia",
+      cidade: "Salvador",
+      bairro: "Pelourinho",
+      rua: "Rua da Bahia",
+      numero: "678",
+      cep: "40010-040",
+      complemento: "Próximo ao Mercado Modelo"
+    }
   },
   {
     areaDaSaude: "Pediatria",
@@ -263,6 +353,16 @@ const profissionais: ProfissionalSaude[] = [
     docProfissional: "CRM-RS/556677",
     email: "dra.claudia.ped@email.com",
     nome: "Dra. Cláudia Martins",
+    rg: "89.012.345-6",
+    endereco: {
+      estado: "Rio Grande do Sul",
+      cidade: "Porto Alegre",
+      bairro: "Centro Histórico",
+      rua: "Rua Padre Chagas",
+      numero: "123",
+      cep: "90010-000",
+      complemento: "Bloco 2"
+    }
   },
   {
     areaDaSaude: "Nutrição",
@@ -270,7 +370,17 @@ const profissionais: ProfissionalSaude[] = [
     docProfissional: "CRN-4/332211",
     email: "camila.nutri@email.com",
     nome: "Camila Ribeiro",
-  },
+    rg: "90.123.456-7",
+    endereco: {
+      estado: "Espírito Santo",
+      cidade: "Vitória",
+      bairro: "Centro",
+      rua: "Avenida Vitória",
+      numero: "987",
+      cep: "29010-100",
+      complemento: "Edifício Vitória"
+    }
+  }
 ];
 
 export async function saveAgendamento(
