@@ -58,6 +58,16 @@ export interface Paciente {
   cep: string;
 }
 
+export interface Endereco {
+  estado: string;
+  cidade: string;
+  bairro: string;
+  rua: string;
+  numero: string;
+  cep: string;
+  complemento?: string;
+}
+
 export interface ProfissionalSaude {
   id?: string;
   areaDaSaude: string;
@@ -214,7 +224,7 @@ const profissionais: ProfissionalSaude[] = [
   {
     areaDaSaude: "Fonoaudiologia",
     telefone: "(11) 98765-4321",
-    docProfissional: "CRFa-1/12345",
+    docProfissional: "CRFa 12345",
     email: "ana.fonou@email.com",
     nome: "Ana Fonseca",
     rg: "12.345.678-9",
@@ -231,7 +241,7 @@ const profissionais: ProfissionalSaude[] = [
   {
     areaDaSaude: "Fisioterapia",
     telefone: "(21) 91234-5678",
-    docProfissional: "CREFITO-2/54321-F",
+    docProfissional: "CREFITO 54321",
     email: "marcos.fisio@email.com",
     nome: "Marcos Pereira",
     rg: "98.765.432-1",
@@ -248,7 +258,7 @@ const profissionais: ProfissionalSaude[] = [
   {
     areaDaSaude: "Psicologia",
     telefone: "(31) 93456-7890",
-    docProfissional: "CRP-04/67890",
+    docProfissional: "CRP 67890",
     email: "juliana.psico@email.com",
     nome: "Juliana Souza",
     rg: "23.456.789-0",
@@ -265,7 +275,7 @@ const profissionais: ProfissionalSaude[] = [
   {
     areaDaSaude: "Terapia Ocupacional",
     telefone: "(41) 99876-1234",
-    docProfissional: "CREFITO-8/13579-TO",
+    docProfissional: "CREFITO 13579",
     email: "roberto.to@email.com",
     nome: "Roberto Lima",
     rg: "34.567.890-1",
@@ -282,7 +292,7 @@ const profissionais: ProfissionalSaude[] = [
   {
     areaDaSaude: "Psicopedagogia",
     telefone: "(61) 98123-4567",
-    docProfissional: "CRP-01/24680-PP",
+    docProfissional: "CRP 24680",
     email: "marcia.psi@email.com",
     nome: "Márcia Andrade",
     rg: "45.678.901-2",
@@ -333,7 +343,7 @@ const profissionais: ProfissionalSaude[] = [
   {
     areaDaSaude: "Enfermagem",
     telefone: "(71) 92345-6789",
-    docProfissional: "COREN-BA/998877",
+    docProfissional: "COREN 998877",
     email: "fernando.enf@email.com",
     nome: "Fernando Nogueira",
     rg: "78.901.234-5",
@@ -571,15 +581,13 @@ export async function getProfissionaisDaSaude(): Promise<ProfissionalSaude[]> {
     const response = await fetch(
       `${API_BASE_URL}/profissionais?page=0&size=100`
     ).then((res) => res.json());
-
-    let profissionaisRetornados: ProfissionalSaude[] = response.content;
+    let profissionaisRetornados: ProfissionalSaude[] = response.content || [];
     const existentes = new Set(
       profissionaisRetornados.map((p: ProfissionalSaude) => p.docProfissional)
     );
     const profissionaisNaoAdicionados = profissionais.filter(
       (p) => !existentes.has(p.docProfissional)
     );
-
     for (const profissional of profissionaisNaoAdicionados) {
       const res = await fetch(`${API_BASE_URL}/profissionais`, {
         method: "POST",
@@ -596,7 +604,7 @@ export async function getProfissionaisDaSaude(): Promise<ProfissionalSaude[]> {
       }
     );;
   } catch (error) {
-    console.log(error);
+    console.error("Error fetching professionals:", error);
     throw error;
   }
 }
