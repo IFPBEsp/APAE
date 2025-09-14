@@ -9,6 +9,8 @@ import lombok.Setter;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.util.UUID;
 
 @Entity
 @Table(name = "historico_consultas")
@@ -19,14 +21,17 @@ import java.time.LocalDateTime;
 public class HistoricoConsultaEntity {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    @GeneratedValue(strategy = GenerationType.UUID)
+    private UUID id;
 
     @Column(name = "id_agendamento", nullable = false)
-    private Long idAgendamento;
+    private UUID idAgendamento;
 
     @Column(name = "data_consulta", nullable = false)
     private LocalDate dataConsulta;
+
+    @Column(name = "hora_consulta", nullable = false)
+    private LocalTime horaConsulta;
 
     @Column(name = "foi_realizada", nullable = false)
     private boolean foiRealizada;
@@ -42,6 +47,7 @@ public class HistoricoConsultaEntity {
                 historico.getId(),
                 historico.getIdAgendamento(),
                 historico.getDataConsulta(),
+                historico.getHoraConsulta(),
                 historico.isFoiRealizada(),
                 historico.getJustificativa(),
                 historico.getDataCriacao()
@@ -53,6 +59,7 @@ public class HistoricoConsultaEntity {
                 this.id,
                 this.idAgendamento,
                 this.dataConsulta,
+                this.horaConsulta,
                 this.foiRealizada,
                 this.justificativa,
                 this.dataCriacao

@@ -11,6 +11,7 @@ export interface Agendamento {
   descricao: string;
   justificativa: string;
   dataCriacao: string;
+  realizado?: boolean;
 }
 
 export interface AgendamentoCreateDTO {
@@ -22,6 +23,24 @@ export interface AgendamentoCreateDTO {
   horaProximaConsulta: string;
   descricao: string;
   justificativa?: string;
+}
+
+export interface HistoricoConsultaCreateDTO {
+  idAgendamento: string;
+  dataConsulta: string;
+  horaConsulta: string;
+  foiRealizada: boolean;
+  justificativa?: string;
+}
+
+export interface HistoricoConsultaResponseDTO {
+  id: string;
+  idAgendamento: string;
+  dataConsulta: string;
+  horaConsulta: string;
+  foiRealizada: boolean;
+  justificativa?: string;
+  dataCriacao: string;
 }
 
 export interface Paciente {
@@ -281,6 +300,50 @@ export async function saveAgendamento(
   }
 }
 
+export async function saveAgendamentoRealizado(
+  agendamento: Agendamento
+): Promise<HistoricoConsultaResponseDTO> {
+  try {
+    const dto: HistoricoConsultaCreateDTO = {
+      idAgendamento: agendamento.id,
+      dataConsulta: agendamento.proximaConsulta,
+      horaConsulta: agendamento.horaProximaConsulta,
+      foiRealizada: true,
+      justificativa: agendamento.justificativa
+    };
+    const res = await fetch(`${API_BASE_URL}/historico-consultas`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(dto),
+    });
+    console.log(res);
+    const data = await res.json();
+
+    const [ano, mes, dia] = agendamento.proximaConsulta.split("-");
+    const emDate = new Date(parseInt(ano), parseInt(mes), parseInt(dia));
+    emDate.setDate(emDate.getDate() + 15);
+    const proximaConsulta = `${String(emDate.getFullYear()).padStart(2, '0')}-${String(emDate.getMonth()).padStart(2, '0')}-${String(emDate.getDate()).padStart(2, '0')}`;
+
+    agendamento.proximaConsulta = proximaConsulta;
+    if(agendamento.paciente?.id && agendamento.profissional?.id){
+      const { paciente, profissional, id, ...agendamentoDTO } = {
+        ...agendamento,
+        idPaciente: agendamento.paciente.id,
+        idProfissional: agendamento.profissional.id,
+      };
+      agendamentoDTO.confirmado = false;
+      await saveAgendamento(agendamentoDTO, agendamento.id);
+  }
+
+    return data as HistoricoConsultaResponseDTO;
+  } catch (error) {
+    console.log(error);
+    throw error;
+  }
+}
+
 export async function getAgendamentos(
   data?: string,
   hora?: string
@@ -331,9 +394,24 @@ export async function getAgendamentoById(id: string): Promise<Agendamento> {
   }
 }
 
-export async function deleteAgendamento(id: string): Promise<void> {
+export async function getAgendamentoRealizadoById(id: string): Promise<Agendamento> {
   try {
-    await fetch(`${API_BASE_URL}/agendamentos/${id}`, {
+    const agendamentoRealizado: HistoricoConsultaResponseDTO = await fetch(`${API_BASE_URL}/historico-consultas/${id}`).then(
+      (res) => res.json()
+    );
+    const agendamento: Agendamento = await getAgendamentoById(agendamentoRealizado.idAgendamento);
+    agendamento.proximaConsulta = agendamentoRealizado.dataConsulta;
+    agendamento.horaProximaConsulta = agendamentoRealizado.horaConsulta;
+    return agendamento;
+  } catch (error) {
+    console.log(error);
+    throw error;
+  }
+}
+
+export async function deleteAgendamento(id: string, realizado: boolean): Promise<void> {
+  try {
+    await fetch(`${API_BASE_URL}/${realizado? "historico-consultas" : "agendamentos"}/${id}`, {
       method: "DELETE",
     });
   } catch (error) {
@@ -349,22 +427,29 @@ export async function getPacientes(): Promise<Paciente[]> {
     ).then((res) => res.json());
     let pacientesRetornados: Paciente[] = response.content;
     const existentes = new Set(pacientesRetornados.map((p: Paciente) => p.cpf));
+    const pacientesNaoAdicionados = pacientes.filter(
+      (p) => !existentes.has(p.cpf)
+    );
 
-    if (!pacientesRetornados.length || !pacientes.some(p => !existentes.has(p.cpf))) {
-      for (const paciente of pacientes) {
-        if (!existentes.has(paciente.cpf)) {
-          const res = await fetch(`${API_BASE_URL}/pacientes/create`, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(paciente),
-          }).then((res) => res.json());
+    for (const paciente of pacientesNaoAdicionados) {
+      try {
+        const res = await fetch(`${API_BASE_URL}/pacientes/create`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(paciente),
+        }).then((res) => res.json());
 
-          pacientesRetornados.push(res);
-        }
+        pacientesRetornados.push(res);
+      } catch (e: unknown) {
+        console.log(e);
       }
     }
 
-    return pacientesRetornados;
+    return pacientesRetornados.filter(
+      (paciente, index, self) => {
+        return self.findIndex((p) => p.cpf === paciente.cpf) === index;
+      }
+    );;
   } catch (error) {
     console.log(error);
     throw error;
@@ -381,28 +466,30 @@ export async function getProfissionaisDaSaude(): Promise<ProfissionalSaude[]> {
     const existentes = new Set(
       profissionaisRetornados.map((p: ProfissionalSaude) => p.docProfissional)
     );
+    const profissionaisNaoAdicionados = profissionais.filter(
+      (p) => !existentes.has(p.docProfissional)
+    );
 
-    if (!profissionaisRetornados.length || profissionais.some(p => !existentes.has(p.docProfissional))) {
-    for (const profissional of profissionais) {
-      if (!existentes.has(profissional.docProfissional)) {
-        const res = await fetch(`${API_BASE_URL}/profissionais`, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(profissional),
-        }).then((res) => res.json());
+    for (const profissional of profissionaisNaoAdicionados) {
+      const res = await fetch(`${API_BASE_URL}/profissionais`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(profissional),
+      }).then((res) => res.json());
 
-        profissionaisRetornados.push(res);
-      }
+      profissionaisRetornados.push(res);
     }
-  }
 
-    return profissionaisRetornados;
+    return profissionaisRetornados.filter(
+      (profissional, index, self) => {
+        return self.findIndex((p) => p.docProfissional === profissional.docProfissional) === index;
+      }
+    );;
   } catch (error) {
     console.log(error);
     throw error;
   }
 }
-
 
 export async function getAreasDaSaude(): Promise<string[]> {
   try {
@@ -410,7 +497,7 @@ export async function getAreasDaSaude(): Promise<string[]> {
       (res) => res.json()
     );
     const setList: string[] = [];
-    new Set(response.content).forEach(e => setList.push(e as string));
+    new Set(response.content).forEach((e) => setList.push(e as string));
 
     return setList;
   } catch (error) {

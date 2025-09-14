@@ -8,23 +8,10 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-  DialogDescription,
-} from "@/components/ui/dialog";
-import { Pencil } from "lucide-react";
-import { Button } from "@/components/ui/button";
-
-import {
-  getAgendamentoById,
   Agendamento,
+  getAgendamentoRealizadoById,
 } from "@/app/services/agendamentoService";
-import { AppointmentForm } from "@/components/forms/AppointmentForm";
 import TrashButton from "@/components/buttons/trashButton";
-import ConfirmaRealizacaoButton from "@/components/buttons/ConfirmaRealizacaoButton";
 import { separaETransformaEmNumero } from "@/lib/utils";
 
 interface PageProps {
@@ -35,7 +22,8 @@ interface PageProps {
 
 export default async function VisualizarAgendamento({ params }: PageProps) {
   const { id } = await params;
-  const agendamento: Agendamento = await getAgendamentoById(id);
+  const agendamento: Agendamento = await getAgendamentoRealizadoById(id);
+  console.log(agendamento.proximaConsulta, agendamento.horaProximaConsulta);
   const [ano, mes, dia] = separaETransformaEmNumero(
     agendamento.proximaConsulta,
     "-"
@@ -53,23 +41,7 @@ export default async function VisualizarAgendamento({ params }: PageProps) {
     !isNaN(segundo)
       ? new Date(ano, mes, dia, hora, minuto, segundo)
       : null;
-
-  const getStatusStyle = (status: boolean | undefined, data: Date | null) => {
-    if (!data) {
-      return { class: "bg-gray-400", text: "Data Inválida" };
-    }
-    const dataAtual = new Date();
-    if (agendamento.realizado) {
-      return { class: "bg-[#0D9767]", text: "Consulta Realizada" };
-    } else if (status) {
-      return { class: "bg-[#0D4F97]", text: "Consulta Confirmada" };
-    } else if (data > dataAtual) {
-      return { class: "bg-[#f0bc1f]", text: "Consulta Pendente" };
-    } else {
-      return { class: "bg-[#970D0D]", text: "Consulta Não Realizada" };
-    }
-  };
-  const statusInfo = getStatusStyle(agendamento.confirmado, dataHoraDate);
+  const statusInfo = { class: "bg-[#0D9767]", text: "Consulta Realizada" };
 
   return (
     <div className="mt-20 w-full mr-17 ml-10">
@@ -105,24 +77,7 @@ export default async function VisualizarAgendamento({ params }: PageProps) {
               Agendamento
             </CardTitle>
             <CardAction>
-              <Dialog>
-                <DialogTrigger asChild>
-                  <Button className="bg-transparent cursor-pointer text-[#0D4F97] hover:text-[#0d4f55] active:text-[#0d4ffe] hover:bg-[rgba(0,0,0,0.1)] transition-colors">
-                    <Pencil />
-                  </Button>
-                </DialogTrigger>
-                <DialogContent className="w-full sm:max-w-[425px]">
-                  <DialogHeader>
-                    <DialogTitle>Editar Agendamento</DialogTitle>
-                    <DialogDescription>
-                      Edite os detalhes abaixo para agendar uma consulta.
-                    </DialogDescription>
-                  </DialogHeader>
-                  <AppointmentForm agendamentoAEditar={agendamento} />
-                </DialogContent>
-              </Dialog>
-              <TrashButton id={id} realizado={false} />
-              <ConfirmaRealizacaoButton id={id} />
+              <TrashButton id={id} realizado={true} />
             </CardAction>
           </CardHeader>
           <CardContent>
@@ -132,14 +87,6 @@ export default async function VisualizarAgendamento({ params }: PageProps) {
                 <p>
                   {dataHoraDate
                     ? new Intl.DateTimeFormat("pt-BR").format(dataHoraDate)
-                    : "—"}
-                </p>
-              </div>
-              <div className="flex">
-                <p className="font-medium mr-2">Período: </p>
-                <p>
-                  {agendamento.frequenciaDias !== undefined
-                    ? `${agendamento.frequenciaDias} dias`
                     : "—"}
                 </p>
               </div>
