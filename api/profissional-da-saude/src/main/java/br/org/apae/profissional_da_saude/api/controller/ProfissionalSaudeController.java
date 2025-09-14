@@ -6,13 +6,13 @@ import br.org.apae.profissional_da_saude.api.dto.ProfissionalSaudeUpdateDTO;
 import br.org.apae.profissional_da_saude.application.service.ProfissionalSaudeService;
 import jakarta.validation.Valid;
 
+import java.util.UUID;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.UUID;
 
 @RestController
 @RequestMapping("/profissionais")

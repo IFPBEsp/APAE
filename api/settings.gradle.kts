@@ -4,7 +4,6 @@ plugins {
 
 rootProject.name = "api"
 include(
-    "demo",
     "api-crud-pacientes",
     "auth-service",
     "documentos-digitalizados",

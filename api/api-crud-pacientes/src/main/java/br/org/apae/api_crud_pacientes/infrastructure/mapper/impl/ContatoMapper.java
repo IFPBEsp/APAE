@@ -13,12 +13,6 @@ public class ContatoMapper
     implements GenericMapperInterface<
         ContatoRequest, ContatoResponse, ContatoEntity, PessoaEntity, Contato> {
 
-  private final PessoaMapper pessoaMapper;
-
-  public ContatoMapper(PessoaMapper pessoaMapper) {
-    this.pessoaMapper = pessoaMapper;
-  }
-
   @Override
   public ContatoEntity toEntity(ContatoRequest request, PessoaEntity pessoa) {
     ContatoEntity contato = new ContatoEntity();
@@ -31,6 +25,7 @@ public class ContatoMapper
     contato.setEstado(request.getEstado());
     contato.setCep(request.getCep());
     contato.setNaturalidade(request.getNaturalidade());
+    contato.setTelefone(request.getTelefone());
     contato.setPessoa(pessoa);
 
     return contato;
@@ -47,8 +42,8 @@ public class ContatoMapper
     contatoEntity.setCidade(contato.getCidade());
     contatoEntity.setEstado(contato.getEstado());
     contatoEntity.setCep(contato.getCep());
+    contatoEntity.setTelefone(contato.getTelefone());
     contatoEntity.setNaturalidade(contato.getNaturalidade());
-    contatoEntity.setPessoa(pessoaMapper.toEntityFromDomain(contato.getPessoa()));
 
     return contatoEntity;
   }
@@ -65,6 +60,7 @@ public class ContatoMapper
     response.setCidade(contato.getCidade());
     response.setEstado(contato.getEstado());
     response.setCep(contato.getCep());
+    response.setTelefone(contato.getTelefone());
     response.setNaturalidade(contato.getNaturalidade());
 
     return response;
@@ -81,8 +77,8 @@ public class ContatoMapper
     contato.setCidade(contatoEntity.getCidade());
     contato.setEstado(contatoEntity.getEstado());
     contato.setCep(contatoEntity.getCep());
+    contato.setTelefone(contatoEntity.getTelefone());
     contato.setNaturalidade(contatoEntity.getNaturalidade());
-    contato.setPessoa(pessoaMapper.toDomain(contatoEntity.getPessoa()));
 
     return contato;
   }
@@ -98,6 +94,7 @@ public class ContatoMapper
     response.setCidade(contato.getCidade());
     response.setEstado(contato.getEstado());
     response.setCep(contato.getCep());
+    response.setTelefone(contato.getTelefone());
     response.setNaturalidade(contato.getNaturalidade());
     return response;
   }
