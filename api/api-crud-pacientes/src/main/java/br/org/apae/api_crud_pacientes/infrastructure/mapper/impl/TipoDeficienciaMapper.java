@@ -17,12 +17,6 @@ public class TipoDeficienciaMapper
         PessoaEntity,
         TipoDeficiencia> {
 
-  private final PessoaMapper pessoaMapper;
-
-  public TipoDeficienciaMapper(PessoaMapper pessoaMapper) {
-    this.pessoaMapper = pessoaMapper;
-  }
-
   @Override
   public TipoDeficienciaEntity toEntity(TipoDeficienciaRequest request, PessoaEntity pessoa) {
     TipoDeficienciaEntity entity = new TipoDeficienciaEntity();
@@ -36,7 +30,6 @@ public class TipoDeficienciaMapper
     TipoDeficienciaEntity entity = new TipoDeficienciaEntity();
     entity.setId(domain.getId());
     entity.setDescricao(domain.getDescricao());
-    entity.setPessoa(pessoaMapper.toEntityFromDomain(domain.getPessoa()));
     return entity;
   }
 
@@ -53,7 +46,6 @@ public class TipoDeficienciaMapper
     TipoDeficiencia domain = new TipoDeficiencia();
     domain.setId(entity.getId());
     domain.setDescricao(entity.getDescricao());
-    domain.setPessoa(pessoaMapper.toDomain(entity.getPessoa()));
     return domain;
   }
 

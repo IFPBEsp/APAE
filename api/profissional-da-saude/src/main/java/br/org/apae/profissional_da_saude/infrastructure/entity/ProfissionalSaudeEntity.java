@@ -35,4 +35,9 @@ public class ProfissionalSaudeEntity {
     @JoinColumn(name = "fk_profissional_id")
     @Builder.Default
     private List<DisponibilidadeEntity> disponibilidades = new ArrayList<>();
+    private  String rg;
+
+    @Embedded
+    private EnderecoEntity endereco;
+
 }

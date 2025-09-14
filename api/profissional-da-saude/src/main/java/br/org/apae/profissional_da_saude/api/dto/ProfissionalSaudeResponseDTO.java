@@ -1,5 +1,6 @@
 package br.org.apae.profissional_da_saude.api.dto;
 
+import br.org.apae.profissional_da_saude.domain.model.Endereco;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -16,4 +17,7 @@ public class ProfissionalSaudeResponseDTO {
     private String email;
     private String nome;
     private List<DisponibilidadeDTO> disponibilidades;
+    private  String rg;
+
+    private Endereco endereco;
 }

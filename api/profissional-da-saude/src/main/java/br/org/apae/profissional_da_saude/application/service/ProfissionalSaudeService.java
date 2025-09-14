@@ -6,6 +6,7 @@ import br.org.apae.profissional_da_saude.api.dto.ProfissionalSaudeResponseDTO;
 import br.org.apae.profissional_da_saude.api.dto.ProfissionalSaudeUpdateDTO;
 import br.org.apae.profissional_da_saude.domain.exception.EntidadeNaoEncontradaException;
 import br.org.apae.profissional_da_saude.domain.exception.ValidacaoNegocioException;
+import br.org.apae.profissional_da_saude.domain.model.Endereco;
 import br.org.apae.profissional_da_saude.domain.model.ProfissionalSaude;
 import br.org.apae.profissional_da_saude.domain.repository.DisponibilidadeRepository;
 import br.org.apae.profissional_da_saude.domain.repository.ProfissionalSaudeRepository;
@@ -81,6 +82,28 @@ public class ProfissionalSaudeService {
         return ProfissionalSaudeMapper.toResponseDTO(saved);
     }
 
+    ProfissionalSaude domain = new ProfissionalSaude(
+            dto.getAreaDaSaude(),
+            dto.getTelefone(),
+            dto.getDocProfissional(),
+            dto.getEmail(),
+            dto.getNome(),
+            dto.getRg(),
+            new Endereco(
+                    dto.getEndereco().getEstado(),
+                    dto.getEndereco().getCidade(),
+                    dto.getEndereco().getBairro(),
+                    dto.getEndereco().getRua(),
+                    dto.getEndereco().getNumero(),
+                    dto.getEndereco().getCep(),
+                    dto.getEndereco().getComplemento()
+            )
+    );
+
+    ProfissionalSaude saved = this.repository.save(domain);
+    return ProfissionalSaudeMapper.toResponseDTO(saved);
+  }
+
     @Transactional(readOnly = true)
     public Page<ProfissionalSaudeResponseDTO> findAll(Pageable pageable) {
         return this.repository.findAll(pageable)
@@ -93,9 +116,15 @@ public class ProfissionalSaudeService {
         this.repository.deleteById(id);
     }
 
-    @Transactional(readOnly = true)
-    public Optional<ProfissionalSaudeResponseDTO> findById(UUID id) {
-        Optional<ProfissionalSaude> profissional = this.repository.findById(id);
+  public Optional<ProfissionalSaudeResponseDTO> findById(UUID id) {
+    Optional<ProfissionalSaudeResponseDTO> dto = this.repository.findById(id)
+            .map(ProfissionalSaudeMapper::toResponseDTO);
+
+    if (dto.isEmpty()) {
+      throw new EntidadeNaoEncontradaException("Profissional de não encontrado.");
+    }
+    return dto;
+  }
 
         if (profissional.isPresent()) {
             ProfissionalSaude prof = profissional.get();
@@ -103,22 +132,21 @@ public class ProfissionalSaudeService {
             List<DisponibilidadeEntity> disponibilidades = disponibilidadeRepository.findByFkProfissionalId(id);
             prof.setDisponibilidades(disponibilidades);
 
-            return Optional.of(ProfissionalSaudeMapper.toResponseDTO(prof));
-        }
+    Optional.ofNullable(dto.getAreaDaSaude()).ifPresent(existente::setAreaDaSaude);
+    Optional.ofNullable(dto.getDocProfissional()).ifPresent(existente::setDocProfissional);
+    Optional.ofNullable(dto.getNome()).ifPresent(existente::setNome);
+    Optional.ofNullable(dto.getEmail()).ifPresent(existente::setEmail);
+    Optional.ofNullable(dto.getTelefone()).ifPresent(existente::setTelefone);
+    Optional.ofNullable(dto.getRg()).ifPresent(existente::setRg);
 
-        return Optional.empty();
-    }
 
-    public ProfissionalSaudeResponseDTO update(UUID id, ProfissionalSaudeUpdateDTO dto) {
-        ProfissionalSaude existente = this.repository.findById(id)
-                .orElseThrow(() -> new EntidadeNaoEncontradaException("Profissional não encontrado"));
-
-        // Atualizar dados básicos do profissional
-        Optional.ofNullable(dto.getAreaDaSaude())
-                .ifPresent(existente::setAreaDaSaude);
-
-        Optional.ofNullable(dto.getDocProfissional())
-                .ifPresent(existente::setDocProfissional);
+    Optional.ofNullable(dto.getEndereco().getEstado()).ifPresent(existente.getEndereco()::setEstado);
+    Optional.ofNullable(dto.getEndereco().getCidade()).ifPresent(existente.getEndereco()::setCidade);
+    Optional.ofNullable(dto.getEndereco().getBairro()).ifPresent(existente.getEndereco()::setBairro);
+    Optional.ofNullable(dto.getEndereco().getRua()).ifPresent(existente.getEndereco()::setRua);
+    Optional.ofNullable(dto.getEndereco().getNumero()).ifPresent(existente.getEndereco()::setNumero);
+    Optional.ofNullable(dto.getEndereco().getCep()).ifPresent(existente.getEndereco()::setCep);
+    Optional.ofNullable(dto.getEndereco().getComplemento()).ifPresent(existente.getEndereco()::setComplemento);
 
         Optional.ofNullable(dto.getNome())
                 .ifPresent(existente::setNome);
