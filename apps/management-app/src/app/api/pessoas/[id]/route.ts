@@ -25,7 +25,30 @@ export async function GET(request: Request, { params }: Params) {
       emergencia: r.emergencia || "Não informado",
       tipoResponsavel: r.tipoResponsavel,
     })) ?? [];
+
+    const vacinas = p.vacinasResponses?.map((v: any) => ({
+      id: v.id,
+      nome: v.nome || "Não informado",
+      dataAplicacao: v.dataAplicacao || "Não informado",
+    })) ?? [];
     
+    const deficiencias = p.deficienciasResponses?.map((d: any) => ({
+      id: d.id,
+      descricao: d.descricao || "Não informado",
+    })) ?? [];
+
+    const atendimentos = p.atendimentosResponses?.map((a: any) => ({
+      id: a.id,
+      descricao: a.descricao || "Não informado",
+    })) ?? [];
+
+    const cadastroAnual = p.cadastrosAnuaisResponses?.[0] ? {
+      possuiBpc: p.cadastrosAnuaisResponses[0].beneficioDePrestacaoContinuada ? "Sim" : "Não",
+      doencas: p.cadastrosAnuaisResponses[0].historicoDoencas || "Não informado",
+      alergias: p.cadastrosAnuaisResponses[0].historicosAlergias || "Não informado",
+      medicacao: p.cadastrosAnuaisResponses[0].medicacoesContinuas || "Não informado",
+      rendaFamiliar: p.cadastrosAnuaisResponses[0].rendaFamiliar || "Não informado",
+    } : null;
 
     const pessoa = {
       // Dados pessoais
@@ -56,31 +79,13 @@ export async function GET(request: Request, { params }: Params) {
       // Responsáveis
       responsaveis,
       // Vacinas
-      vacinas: p.vacinasResponses?.map((v: any) => ({
-        id: v.id,
-        nome: v.nome || "Não informado",
-        dataAplicacao: v.dataAplicacao || "Não informado",
-      })) ?? [],
+      vacinas,
       // Cadastro Anual
-      cadastroAnual: p.cadastrosAnuaisResponses?.[0]
-        ? {
-            possuiBpc: p.cadastrosAnuaisResponses[0].beneficioDePrestacaoContinuada ? "Sim" : "Não",
-            doencas: p.cadastrosAnuaisResponses[0].historicoDoencas || "Não informado",
-            alergias: p.cadastrosAnuaisResponses[0].historicosAlergias || "Não informado",
-            medicacao: p.cadastrosAnuaisResponses[0].medicacoesContinuas || "Não informado",
-            rendaFamiliar: p.cadastrosAnuaisResponses[0].rendaFamiliar || "Não informado",
-          }
-        : null,
+      cadastroAnual,
       // Deficiências
-      deficiencias: p.deficienciasResponses?.map((d: any) => ({
-        id: d.id,
-        descricao: d.descricao || "Não informado",
-      })) ?? [],
+      deficiencias,
       // Atendimentos
-      atendimentos: p.atendimentosResponses?.map((a: any) => ({
-        id: a.id,
-        descricao: a.descricao || "Não informado",
-      })) ?? [],
+      atendimentos,
     };
 
     return NextResponse.json(pessoa, { status: 200 });
