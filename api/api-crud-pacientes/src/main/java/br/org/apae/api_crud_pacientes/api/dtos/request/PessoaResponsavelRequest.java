@@ -3,6 +3,7 @@ package br.org.apae.api_crud_pacientes.api.dtos.request;
 import java.util.UUID;
 
 public class PessoaResponsavelRequest {
+  private String nome;
   private String ondeProcurar;
   private boolean vivo;
   private String profissao;
@@ -11,6 +12,14 @@ public class PessoaResponsavelRequest {
   private String emergencia;
   private String tipoResponsavel;
   private UUID pessoaId;
+
+  public String getNome() {
+    return nome;
+  }
+
+  public void setNome(String nome) {
+    this.nome = nome;
+  }
 
   public String getOndeProcurar() {
     return ondeProcurar;

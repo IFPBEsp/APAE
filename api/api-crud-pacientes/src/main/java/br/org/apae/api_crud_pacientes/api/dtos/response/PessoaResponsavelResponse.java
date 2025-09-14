@@ -4,6 +4,7 @@ import java.util.UUID;
 
 public class PessoaResponsavelResponse {
   private UUID id;
+  private String nome;
   private String ondeProcurar;
   private boolean vivo;
   private String profissao;
@@ -11,6 +12,14 @@ public class PessoaResponsavelResponse {
   private String cpf;
   private String emergencia;
   private String tipoResponsavel;
+
+  public String getNome() {
+    return nome;
+  }
+
+  public void setNome(String nome) {
+    this.nome = nome;
+  }
 
   public UUID getId() {
     return id;
