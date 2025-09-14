@@ -14,11 +14,18 @@ export async function GET(request: Request, { params }: Params) {
 
     const primeiroContato = p.contatoResponse && p.contatoResponse.length > 0 ? p.contatoResponse[0] : null;
 
-    const mae = p.responsaveisResponses?.find((r: any) => r.tipoResponsavel === "MAE") || null;
-    const pai = p.responsaveisResponses?.find((r: any) => r.tipoResponsavel === "PAI") || null;
-    const outros = p.responsaveisResponses?.filter(
-      (r: any) => r.tipoResponsavel !== "PAI" && r.tipoResponsavel !== "MAE"
-    ) || [];
+    const responsaveis = p.responsaveisResponses?.map((r: any) => ({
+      id: r.id,
+      nome: r.nome || "Não informado",
+      ondeProcurar: r.ondeProcurar || "Não informado",
+      vivo: r.vivo ? "Sim" : "Não",
+      profissao: r.profissao || "Não informado",
+      rg: r.rg || "Não informado",
+      cpf: r.cpf || "Não informado",
+      emergencia: r.emergencia || "Não informado",
+      tipoResponsavel: r.tipoResponsavel,
+    })) ?? [];
+    
 
     const pessoa = {
       // Dados pessoais
@@ -47,38 +54,7 @@ export async function GET(request: Request, { params }: Params) {
       naturalidade: primeiroContato?.naturalidade || "Não informada",
       telefone: primeiroContato?.telefone || "Não informado",
       // Responsáveis
-      mae: mae
-        ? {
-            nome: mae.nome || "Não informado",
-            ondeProcurar: mae.ondeProcurar || "Não informado",
-            vivo: mae.vivo ? "Sim" : "Não",
-            profissao: mae.profissao || "Não informado",
-            rg: mae.rg || "Não informado",
-            cpf: mae.cpf || "Não informado",
-            emergencia: mae.emergencia || "Não informado",
-          }
-        : null,
-      pai: pai
-        ? {
-            nome: pai.nome || "Não informado",
-            ondeProcurar: pai.ondeProcurar || "Não informado",
-            vivo: pai.vivo ? "Sim" : "Não",
-            profissao: pai.profissao || "Não informado",
-            rg: pai.rg || "Não informado",
-            cpf: pai.cpf || "Não informado",
-            emergencia: pai.emergencia || "Não informado",
-          }
-        : null,
-      outrosResponsaveis: outros.map((r: any) => ({
-        nome: r.nome || "Não informado",
-        ondeProcurar: r.ondeProcurar || "Não informado",
-        vivo: r.vivo ? "Sim" : "Não",
-        profissao: r.profissao || "Não informado",
-        rg: r.rg || "Não informado",
-        cpf: r.cpf || "Não informado",
-        emergencia: r.emergencia || "Não informado",
-        tipo: r.tipoResponsavel,
-      })),
+      responsaveis,
       // Vacinas
       vacinas: p.vacinasResponses?.map((v: any) => ({
         id: v.id,
