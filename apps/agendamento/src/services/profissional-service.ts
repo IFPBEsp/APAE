@@ -22,6 +22,7 @@ export async function createProfissional(data: any) {
     },
     body: JSON.stringify(data),
   });
+
   return response;
 }
 

@@ -1,72 +1,82 @@
 "use client";
 
-import { useForm } from "react-hook-form";
+import { useForm, Controller, type SubmitHandler, type Control, type Resolver } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";  
+import * as z from "zod";
+import { InputMask } from "@react-input/mask";
+
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { useRouter } from "next/navigation";
-
 import { useCreateProfissional } from "@/hooks/profissional/use-create-profissional";
+import { cadastroSchema } from "@/schemas/profissional.schema";
+import { HEALTH_AREAS } from "@/lib/health-areas";
+import { STATES } from "@/lib/states";
+import { JSX } from "react";
 
-export default function CadastroProfissional() {
+type CadastroFormValues = z.infer<typeof cadastroSchema>;
+
+export default function CadastroProfissional(): JSX.Element {
   const { create, loading, error, success } = useCreateProfissional();
   const router = useRouter();
 
-  const form = useForm({
-    defaultValues: {
-      nomeCompleto: "",
-      email: "",
-      documentoProfissional: "",
-      areaSaude: "",
-      cpf: "",
-      telefone: "",
-    },
-  });
+  const defaultValues: CadastroFormValues = {
+    nomeCompleto: "",
+    email: "",
+    documentoProfissional: "",
+    areaSaude: "",
+    telefone: "",
+    cpf: "",
+    rg: "",
+    estado: "",
+    cidade: "",
+    bairro: "",
+    rua: "",
+    numero: "",
+    complemento: "",
+    cep: "",
+  };
+
+  const resolver = zodResolver(cadastroSchema) as unknown as Resolver<CadastroFormValues>;
+  const form = useForm<CadastroFormValues>({ resolver, defaultValues });
+  const typedControl = form.control as unknown as Control<CadastroFormValues>;
 
   function onCancel() {
     router.push("/visualization-professional");
   }
 
-  async function onSubmit(values: any) {
-    try {
-      const payload = {
-        nome: values.nomeCompleto,
-        email: values.email,
-        docProfissional: values.documentoProfissional,
-        areaDaSaude: values.areaSaude,
-        telefone: values.telefone,
-      };
+  const onSubmit: SubmitHandler<CadastroFormValues> = async (values) => {
+    const payload = {
+      nome: values.nomeCompleto.trim(),
+      email: values.email.trim(),
+      docProfissional: values.documentoProfissional.trim(),
+      areaDaSaude: values.areaSaude,
+      telefone: values.telefone,
+      cpf: values.cpf,
+      rg: values.rg.trim(),
+      endereco: {
+        estado: values.estado,
+        cidade: values.cidade.trim(),
+        bairro: values.bairro.trim(),
+        rua: values.rua.trim(),
+        numero: values.numero?.trim(),
+        complemento: values.complemento?.trim(),
+        cep: values.cep,
+      },
+    };
+    
+    await create(payload);
+  };
 
-      await create(payload);
-    } catch (e) {
-      console.error("Erro ao criar profissional", e);
-    }
-  }
   return (
     <div className="p-6">
       <h1 className="text-2xl font-bold mb-6">Cadastrar Profissional</h1>
-
       <Form {...form}>
-        <form
-          onSubmit={form.handleSubmit(onSubmit)}
-          className="space-y-6 max-w-2xl"
-        >
+        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6 w-lg">
           <FormField
-            control={form.control}
+            control={typedControl}
             name="nomeCompleto"
             render={({ field }) => (
               <FormItem>
@@ -78,27 +88,21 @@ export default function CadastroProfissional() {
               </FormItem>
             )}
           />
-
           <FormField
-            control={form.control}
+            control={typedControl}
             name="email"
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Email</FormLabel>
                 <FormControl>
-                  <Input
-                    type="email"
-                    placeholder="profissional@exemplo.com"
-                    {...field}
-                  />
+                  <Input type="email" placeholder="profissional@exemplo.com" {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
             )}
           />
-
           <FormField
-            control={form.control}
+            control={typedControl}
             name="documentoProfissional"
             render={({ field }) => (
               <FormItem>
@@ -110,65 +114,205 @@ export default function CadastroProfissional() {
               </FormItem>
             )}
           />
-
           <div className="grid grid-cols-2 gap-4">
-            <FormField
-              control={form.control}
-              name="areaSaude"
-              render={({ field }) => (
+            <Controller
+              control={typedControl}
+              name="cpf"
+              render={({ field, fieldState }) => (
                 <FormItem>
-                  <FormLabel>Área da saúde</FormLabel>
-                  <Select onValueChange={field.onChange} value={field.value}>
-                    <FormControl>
-                      <SelectTrigger className="w-full">
-                        <SelectValue placeholder="Selecione uma opção" />
-                      </SelectTrigger>
-                    </FormControl>
-                    <SelectContent>
-                      <SelectItem value="Medicina">Medicina</SelectItem>
-                      <SelectItem value="Enfermagem">Enfermagem</SelectItem>
-                      <SelectItem value="Fisioterapia">Fisioterapia</SelectItem>
-                      <SelectItem value="Psicologia">Psicologia</SelectItem>
-                      <SelectItem value="Nutrição">Nutrição</SelectItem>
-                    </SelectContent>
-                  </Select>
-                  <FormMessage />
+                  <FormLabel>CPF</FormLabel>
+                  <FormControl className="w-full">
+                    <InputMask
+                      mask="___.___.___-__"
+                      replacement={{ _: /\d/ }}
+                      value={field.value ?? ""}
+                      onChange={(e) => field.onChange(e.target.value)}
+                      onBlur={field.onBlur}
+                      placeholder="123.456.789-00"
+                      className={`w-full rounded-md border px-3 py-1 ${fieldState.invalid ? "border-red-500" : "border-gray-300"}`}
+                    />
+                  </FormControl>
+                  <FormMessage>{fieldState.error?.message}</FormMessage>
                 </FormItem>
               )}
             />
-
             <FormField
-              control={form.control}
-              name="telefone"
+              control={typedControl}
+              name="rg"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Telefone</FormLabel>
+                  <FormLabel>RG</FormLabel>
                   <FormControl>
-                    <Input placeholder="(11) 98765-4321" {...field} />
+                    <Input placeholder="Ex: 1234567" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
               )}
             />
           </div>
-
+          <div className="grid grid-cols-2 gap-4">
+            <Controller
+              control={typedControl}
+              name="areaSaude"
+              render={({ field, fieldState }) => (
+                <FormItem>
+                  <FormLabel>Área da saúde</FormLabel>
+                  <FormControl>
+                    <Select onValueChange={field.onChange} value={field.value}>
+                      <SelectTrigger className={`w-full ${fieldState.invalid ? "border-red-500" : "border-gray-300"}`}>
+                        <SelectValue placeholder="Selecione uma opção" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {HEALTH_AREAS.map((a) => (
+                          <SelectItem key={a} value={a}>{a}</SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </FormControl>
+                  <FormMessage>{fieldState.error?.message}</FormMessage>
+                </FormItem>
+              )}
+            />
+            <Controller
+              control={typedControl}
+              name="telefone"
+              render={({ field, fieldState }) => (
+                <FormItem>
+                  <FormLabel>Telefone</FormLabel>
+                  <FormControl>
+                    <InputMask
+                      mask="(__) _____-____"
+                      replacement={{ _: /\d/ }}
+                      value={field.value ?? ""}
+                      onChange={(e) => field.onChange(e.target.value)}
+                      onBlur={field.onBlur}
+                      placeholder="(xx) xxxxx-xxxx"
+                      className="w-full rounded-md border px-3 py-2"
+                    />
+                  </FormControl>
+                  <FormMessage>{fieldState.error?.message}</FormMessage>
+                </FormItem>
+              )}
+            />
+          </div>
+          <div className="grid grid-cols-3 gap-4">
+            <Controller
+              control={typedControl}
+              name="estado"
+              render={({ field, fieldState }) => (
+                <FormItem>
+                  <FormLabel>Estado</FormLabel>
+                  <FormControl>
+                    <Select onValueChange={field.onChange} value={field.value}>
+                      <SelectTrigger className={`w-full ${fieldState.invalid ? "border-red-500" : "border-gray-300"}`}>
+                        <SelectValue placeholder="Selecione um estado" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {STATES.map((s) => (
+                          <SelectItem key={s} value={s}>{s}</SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </FormControl>
+                  <FormMessage>{fieldState.error?.message}</FormMessage>
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={typedControl}
+              name="cidade"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Cidade</FormLabel>
+                  <FormControl>
+                    <Input placeholder="Ex: João Pessoa" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={typedControl}
+              name="bairro"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Bairro</FormLabel>
+                  <FormControl>
+                    <Input placeholder="Ex: Centro" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          </div>
+          <div className="grid grid-cols-2 gap-4">
+            <FormField
+              control={typedControl}
+              name="rua"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Endereço</FormLabel>
+                  <FormControl>
+                    <Input placeholder="Ex: Rua das Flores" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={typedControl}
+              name="numero"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Número</FormLabel>
+                  <FormControl>
+                    <Input placeholder="Ex: 123" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          </div>
+          <FormField
+            control={typedControl}
+            name="complemento"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Complemento</FormLabel>
+                <FormControl>
+                  <Input placeholder="Ex: Apt 101" {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <Controller
+            control={typedControl}
+            name="cep"
+            render={({ field, fieldState }) => (
+              <FormItem>
+                <FormLabel>CEP</FormLabel>
+                <FormControl>
+                  <InputMask
+                    mask="_____-___"
+                    replacement={{ _: /\d/ }}
+                    value={field.value ?? ""}
+                    onChange={(e) => field.onChange(e.target.value)}
+                    onBlur={field.onBlur}
+                    placeholder="12345-678"
+                    className="w-full rounded-md border px-3 py-2"
+                  />
+                </FormControl>
+                <FormMessage>{fieldState.error?.message}</FormMessage>
+              </FormItem>
+            )}
+          />
           {loading && <p className="text-blue-500">Salvando...</p>}
-          {error && <p className="text-red-500">Erro: {error}</p>}
-          {success && (
-            <p className="text-green-600">Profissional criado com sucesso!</p>
-          )}
-
+          {error && <p className="text-red-500">{error}</p>}
+          {success && <p className="text-green-600">Profissional criado com sucesso!</p>}
           <div className="flex justify-end gap-4">
-            <Button type="button" variant="outline" onClick={onCancel}>
-              Cancelar
-            </Button>
-            <Button
-              type="submit"
-              className="bg-blue-800 hover:bg-blue-900"
-              disabled={loading}
-            >
-              Cadastrar
-            </Button>
+            <Button type="button" variant="outline" onClick={onCancel}>Cancelar</Button>
+            <Button type="submit" className="bg-blue-800 hover:bg-blue-900" disabled={form.formState.isSubmitting || loading}>Cadastrar</Button>
           </div>
         </form>
       </Form>
