@@ -5,12 +5,13 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import DocumentCategoriesCard from "@/lib/ui/DocumentCategoriesCard";
 import { SquarePen } from "lucide-react";
 import Link from "next/link";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
 export default function PersonDetails() {
     const params = useParams();
     const [pessoa, setPessoa] = useState<any>(null);
+    const router = useRouter();
     const primeiroResponsavelVivo = pessoa?.responsaveis?.find((r: any) => r.vivo === "Sim");
 
     useEffect(() => {
@@ -23,7 +24,15 @@ export default function PersonDetails() {
     }, [params?.id]);
 
     const handleCategoriaClick = (tipo: string) => {
-        alert(`Você clicou na categoria: ${tipo}`);
+        const rotas: Record<string, string> = {
+            pessoais: `/`,
+            medicos: `/`,
+            escolares: `/`
+        };
+
+        const rota = rotas[tipo];
+        rota ? router.push(rota) : alert(`O paciente não possui documentos do tipo ${tipo}`);
+
     };
 
     return (
