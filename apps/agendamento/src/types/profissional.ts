@@ -5,4 +5,11 @@ export interface Profissional {
   docProfissional: string;
   areaDaSaude: string;
   telefone: string;
+  cpf?: string;
+  rg?: string;
+  estadoSigla?: string;
+  cidade?: string;
+  endereco?: string;
+  complemento?: string;
+  cep?: string;
 }

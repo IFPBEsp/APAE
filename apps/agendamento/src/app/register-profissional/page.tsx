@@ -1,8 +1,8 @@
-"use client"; 
+"use client";
 
 import { useForm, FormProvider } from "react-hook-form";
 import { useRouter } from "next/navigation";
-import FormHealthProfessional from "@/components/forms/form-health-professional";
+import FormHealthProfessional, { FormValues } from "@/components/forms/form-health-professional";
 import { useEstadosECidades } from "@/hooks/profissional/use-estados-cidades";
 import { useCreateProfissional } from "@/hooks/profissional/use-create-profissional";
 
@@ -10,7 +10,7 @@ export default function CadastroProfissional() {
   const router = useRouter();
   const { create, loading, error, success } = useCreateProfissional();
 
-  const form = useForm({
+  const form = useForm<FormValues>({
     defaultValues: {
       nomeCompleto: "",
       email: "",
@@ -29,11 +29,13 @@ export default function CadastroProfissional() {
 
   const { estados, cidades } = useEstadosECidades(form);
 
-  function onCancel() {
+  const onCancel = () => {
     router.push("/visualization-professional");
-  }
+  };
 
-  async function onSubmit(values: any) {
+  const onSubmit = async (values: FormValues) => {
+    const estadoSelecionado = estados.find((e) => e.sigla === values.estado);
+
     const payload = {
       nome: values.nomeCompleto,
       email: values.email,
@@ -41,15 +43,16 @@ export default function CadastroProfissional() {
       areaDaSaude: values.areaSaude,
       cpf: values.cpf,
       rg: values.rg,
-      estado: values.estado,
+      estado: estadoSelecionado?.sigla,
       cidade: values.cidade,
       endereco: values.endereco,
       complemento: values.complemento,
       telefone: values.telefone,
       cep: values.cep,
     };
+
     await create(payload);
-  }
+  };
 
   return (
     <div className="p-6">
