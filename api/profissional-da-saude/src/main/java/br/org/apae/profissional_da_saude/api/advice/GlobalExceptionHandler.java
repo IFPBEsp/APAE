@@ -3,6 +3,7 @@ package br.org.apae.profissional_da_saude.api.advice;
 import br.org.apae.profissional_da_saude.application.service.exceptions.AgendamentoNaoEncontradoException;
 import br.org.apae.profissional_da_saude.application.service.exceptions.PacienteNaoEncontradoException;
 import br.org.apae.profissional_da_saude.domain.exception.DadosInvalidosException;
+import br.org.apae.profissional_da_saude.domain.exception.DisponibilidadeDuplicadaException;
 import br.org.apae.profissional_da_saude.domain.exception.EntidadeNaoEncontradaException;
 import br.org.apae.profissional_da_saude.domain.exception.ValidacaoNegocioException;
 
@@ -73,5 +74,10 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(AgendamentoNaoEncontradoException.class)
     public ResponseEntity<Object> handleNotFound(AgendamentoNaoEncontradoException ex) {
         return buildErrorResponse(ex.getMessage(), null, HttpStatus.NOT_FOUND);
+    }
+
+    @ExceptionHandler(DisponibilidadeDuplicadaException.class)
+    public ResponseEntity<String> handleDisponibilidadeDuplicada(DisponibilidadeDuplicadaException ex) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ex.getMessage());
     }
 }

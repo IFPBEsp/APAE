@@ -1,10 +1,13 @@
 package br.org.apae.profissional_da_saude.api.dto;
 
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import lombok.Getter;
+
+import java.util.List;
 
 @Getter
 public class ProfissionalSaudeUpdateDTO {
@@ -28,4 +31,7 @@ public class ProfissionalSaudeUpdateDTO {
     @NotBlank
     @Pattern(regexp = "^[A-Za-zÀ-ÖØ-öø-ÿ ]{3,100}$", message = "Nome inválido. Não pode conter números e deve ter entre 3 e 100 caracteres")
     private String nome;
+
+    @Valid
+    private List<DisponibilidadeDTO> disponibilidades;
 }

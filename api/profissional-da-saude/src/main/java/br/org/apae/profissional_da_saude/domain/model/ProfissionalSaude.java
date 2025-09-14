@@ -1,7 +1,10 @@
 package br.org.apae.profissional_da_saude.domain.model;
 
-import java.util.UUID;
+import br.org.apae.profissional_da_saude.infrastructure.entity.DisponibilidadeEntity;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
 
 public class ProfissionalSaude {
   private UUID id;
@@ -10,6 +13,7 @@ public class ProfissionalSaude {
   private  String docProfissional;
   private  String email;
   private  String nome;
+  private List<DisponibilidadeEntity> disponibilidades = new ArrayList<>();
 
   public ProfissionalSaude(UUID id, String areaDaSaude, String telefone, String docProfissional, String email,
       String nome) {
@@ -54,6 +58,10 @@ public class ProfissionalSaude {
     return nome;
   }
 
+  public List<DisponibilidadeEntity> getDisponibilidades() {
+      return disponibilidades;
+  }
+
   public void setId(UUID id) {
     this.id = id;
   }
@@ -76,5 +84,9 @@ public class ProfissionalSaude {
 
   public void setNome(String nome) {
     this.nome = nome;
+  }
+
+  public void setDisponibilidades(List<DisponibilidadeEntity> disponibilidades) {
+      this.disponibilidades = disponibilidades;
   }
 }
