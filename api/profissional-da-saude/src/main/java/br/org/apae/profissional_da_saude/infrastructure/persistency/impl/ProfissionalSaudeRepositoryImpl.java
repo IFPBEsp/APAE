@@ -13,6 +13,9 @@ import br.org.apae.profissional_da_saude.domain.repository.ProfissionalSaudeRepo
 import br.org.apae.profissional_da_saude.infrastructure.persistency.jpa.ProfissionalSaudeRepositoryJpa;
 import br.org.apae.profissional_da_saude.infrastructure.persistency.mapper.ProfissionalSaudeMapper;
 
+import static br.org.apae.profissional_da_saude.infrastructure.persistency.mapper.ProfissionalSaudeMapper.toEntity;
+import static br.org.apae.profissional_da_saude.infrastructure.persistency.mapper.ProfissionalSaudeMapper.toModel;
+
 @Repository
 public class ProfissionalSaudeRepositoryImpl implements ProfissionalSaudeRepository {
   private final ProfissionalSaudeRepositoryJpa repositoryJpa;
@@ -24,33 +27,45 @@ public class ProfissionalSaudeRepositoryImpl implements ProfissionalSaudeReposit
 
   @Override
   public ProfissionalSaude save(ProfissionalSaude profissionalSaude) {
-    return ProfissionalSaudeMapper.toModel(repositoryJpa.save(ProfissionalSaudeMapper.toEntity(profissionalSaude)));
+    return toModel(
+            this.repositoryJpa.save(
+                    toEntity(profissionalSaude)));
   }
 
   @Override
   public Page<ProfissionalSaude> findAll(Pageable pageable) {
-    return repositoryJpa.findAll(pageable).map(ProfissionalSaudeMapper::toModel);
-  }
-
-  @Override
-  public Page<String> findAllAreas(Pageable pageable) {
-    return repositoryJpa.findAll(pageable).map(p -> p.getAreaDaSaude());
+    return this.repositoryJpa.findAll(pageable)
+            .map(ProfissionalSaudeMapper::toModel);
   }
 
   @Override
   public Optional<ProfissionalSaude> findById(UUID id) {
-    return repositoryJpa.findById(id).map(ProfissionalSaudeMapper::toModel);
+    return this.repositoryJpa.findById(id)
+            .map(ProfissionalSaudeMapper::toModel);
   }
 
   @Override
   public ProfissionalSaude update(ProfissionalSaude profissionalSaude) {
-    // TODO: Implementar método
-    return null;
+    return ProfissionalSaudeMapper.toModel(
+           this.repositoryJpa.save(
+                    ProfissionalSaudeMapper.toEntity(profissionalSaude)
+            )
+    );
   }
 
   @Override
   public void deleteById(UUID id) {
-    // TODO: Implementar método
-    return;
+    this.repositoryJpa.deleteById(id);
   }
+
+  @Override
+  public boolean existsByEmail(String email) {
+    return this.repositoryJpa.existsByEmail(email);
+  }
+
+  @Override
+  public boolean existsByDocProfissional(String docProfissional) {
+    return this.repositoryJpa.existsByDocProfissional(docProfissional);
+  }
+
 }

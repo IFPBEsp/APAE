@@ -1,4 +1,4 @@
-const API_BASE_URL = process.env.API_BASE_URL || "http://localhost:8081";
+const API_BASE_URL = process.env.API_BASE_URL || "http://localhost:8093";
 
 export interface Agendamento {
   id: string;
