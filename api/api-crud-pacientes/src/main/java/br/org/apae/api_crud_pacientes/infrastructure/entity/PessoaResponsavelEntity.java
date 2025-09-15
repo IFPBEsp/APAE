@@ -11,6 +11,9 @@ public class PessoaResponsavelEntity {
   @GeneratedValue(strategy = GenerationType.AUTO)
   private UUID id;
 
+  @Column(name = "nome", nullable = false)
+  private String nome;
+
   @Column(name = "onde_procurar", nullable = false)
   private String ondeProcurar;
 
@@ -48,6 +51,7 @@ public class PessoaResponsavelEntity {
 
   public PessoaResponsavelEntity(
       UUID id,
+      String nome,
       String ondeProcurar,
       boolean vivo,
       String profissao,
@@ -57,6 +61,7 @@ public class PessoaResponsavelEntity {
       TipoResponsavel tipoResponsavel,
       PessoaEntity pessoa) {
     this.id = id;
+    this.nome = nome;
     this.ondeProcurar = ondeProcurar;
     this.vivo = vivo;
     this.profissao = profissao;
@@ -73,6 +78,14 @@ public class PessoaResponsavelEntity {
 
   public void setId(UUID id) {
     this.id = id;
+  }
+
+  public String getNome() {
+    return nome;
+  }
+
+  public void setNome(String nome) {
+    this.nome = nome;
   }
 
   public String getOndeProcurar() {

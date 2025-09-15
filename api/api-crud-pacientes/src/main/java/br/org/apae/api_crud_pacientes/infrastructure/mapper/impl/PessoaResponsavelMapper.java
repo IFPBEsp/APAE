@@ -20,6 +20,7 @@ public class PessoaResponsavelMapper
   @Override
   public PessoaResponsavelEntity toEntity(PessoaResponsavelRequest request, PessoaEntity pessoa) {
     PessoaResponsavelEntity entity = new PessoaResponsavelEntity();
+    entity.setNome(request.getNome());
     entity.setOndeProcurar(request.getOndeProcurar());
     entity.setVivo(request.isVivo());
     entity.setProfissao(request.getProfissao());
@@ -40,6 +41,7 @@ public class PessoaResponsavelMapper
   public PessoaResponsavelResponse toResponse(PessoaResponsavelEntity entity) {
     PessoaResponsavelResponse response = new PessoaResponsavelResponse();
     response.setId(entity.getId());
+    response.setNome(entity.getNome());
     response.setOndeProcurar(entity.getOndeProcurar());
     response.setVivo(entity.isVivo());
     response.setProfissao(entity.getProfissao());
@@ -58,6 +60,7 @@ public class PessoaResponsavelMapper
     if (entity == null) return null;
     PessoaResponsavel domain = new PessoaResponsavel();
     domain.setId(entity.getId());
+    domain.setNome(entity.getNome());
     domain.setOndeProcurar(entity.getOndeProcurar());
     domain.setVivo(entity.isVivo());
     domain.setProfissao(entity.getProfissao());
@@ -76,6 +79,7 @@ public class PessoaResponsavelMapper
     if (domain == null) return null;
     PessoaResponsavelResponse response = new PessoaResponsavelResponse();
     response.setId(domain.getId());
+    response.setNome(domain.getNome());
     response.setOndeProcurar(domain.getOndeProcurar());
     response.setVivo(domain.isVivo());
     response.setProfissao(domain.getProfissao());
@@ -92,6 +96,7 @@ public class PessoaResponsavelMapper
     if (domain == null) return null;
     PessoaResponsavelEntity entity = new PessoaResponsavelEntity();
     entity.setId(domain.getId());
+    entity.setNome(domain.getNome());
     entity.setOndeProcurar(domain.getOndeProcurar());
     entity.setVivo(domain.isVivo());
     entity.setProfissao(domain.getProfissao());
