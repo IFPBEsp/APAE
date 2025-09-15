@@ -1,5 +1,6 @@
 "use client";
 
+import { useRouter } from "next/navigation"
 import { useEffect, useState } from "react";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
@@ -30,6 +31,7 @@ import { Badge } from "@/components/ui/badge";
 
 import {
   Dialog,
+  DialogClose,
   DialogContent,
   DialogHeader,
   DialogTitle,
@@ -40,22 +42,26 @@ import {
 import { AppointmentForm } from "@/components/forms/AppointmentForm";
 import { InfoCard } from "@/components/shared/InfoCard";
 import Link from "next/link";
-import { Agendamento, getAgendamentos } from "./services/agendamentoService";
+import {Agendamento, getAgendamentos, updateAtendido} from "./services/agendamentoService";
+import { Checkbox } from "@/components/ui/checkbox";
+import ConfirmButton from "@/components/buttons/confirmButton";
 
 export default function DashboardPage() {
   const [selectedDate, setSelectedDate] = useState<Date>(new Date());
   const [appointments, setAppointments] = useState<Agendamento[]>([]);
   const [allAppointments, setAllAppointments] = useState<Agendamento[]>([]);
+  const [openDialogs, setOpenDialogs] = useState<Record<string, boolean>>({});
+
+  const fetchAppointments = async () => {
+    const todayAppointments = await getAgendamentos(
+        format(selectedDate, "yyyy-MM-dd")
+    );
+    const allExistingAppointments = await getAgendamentos();
+    setAppointments(todayAppointments);
+    setAllAppointments(allExistingAppointments);
+  };
 
   useEffect(() => {
-    const fetchAppointments = async () => {
-      const todayAppointments = await getAgendamentos(
-        format(selectedDate, "yyyy-MM-dd")
-      );
-      const allExistingAppointments = await getAgendamentos();
-      setAppointments(todayAppointments);
-      setAllAppointments(allExistingAppointments);
-    };
     fetchAppointments();
   }, [selectedDate]);
 
@@ -172,6 +178,9 @@ export default function DashboardPage() {
                   <TableHead className="px-3 py-2 text-xs sm:px-4 sm:py-3 sm:text-sm">
                     Ações
                   </TableHead>
+                  <TableHead className="px-3 py-2 text-xs sm:px-4 sm:py-3 sm:text-sm">
+                    Realizada
+                  </TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -200,6 +209,36 @@ export default function DashboardPage() {
                       >
                         Detalhes
                       </Link>
+                    </TableCell>
+                    <TableCell className="px-3 py-2 text-xs sm:px-4 sm:py-3 sm:text-sm">
+                      <Dialog
+                          open={!!openDialogs[item.id]}
+                          onOpenChange={(open) => {
+                            setOpenDialogs((prev) => ({ ...prev, [item.id]: open }));
+                            if (!open) {
+                              fetchAppointments();
+                            }
+                          }}
+                      >
+                        <DialogTrigger asChild>
+                          <Checkbox
+                              checked={item.confirmado}
+                              onCheckedChange={() => setOpenDialogs((prev) => ({ ...prev, [item.id]: true }))}
+                          />
+                        </DialogTrigger>
+                        <DialogContent>
+                          <DialogHeader>
+                            <DialogTitle>Confirmar atendimento</DialogTitle>
+                            <DialogDescription>
+                              Deseja confirmar que a consulta de {item.paciente.nome} foi realizada?
+                            </DialogDescription>
+                          </DialogHeader>
+                          <ConfirmButton id={item.id} />
+                          <DialogClose asChild>
+                            <Button variant="outline">Cancelar</Button>
+                          </DialogClose>
+                        </DialogContent>
+                      </Dialog>
                     </TableCell>
                   </TableRow>
                 ))}
