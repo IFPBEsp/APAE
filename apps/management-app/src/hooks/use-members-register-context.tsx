@@ -390,22 +390,23 @@ function MembersRegisterProvider({
         },
       ],
     };
-    const documento = {
-      year: new Date().getFullYear(),
-      documentCategory: "MEDICO",
-      documentType: "LAUDO",
-    };
-
-    const file = additionals.disability.report;
 
     return fetch("/api/pessoas", {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        pessoa,
-        document,
-        file,
-      }),
+      body: (() => {
+        const formData = new FormData();
+        formData.append("pessoa", JSON.stringify(pessoa));
+        formData.append(
+          "document",
+          JSON.stringify({
+            year: new Date().getFullYear(),
+            documentCategory: "MEDICO",
+            documentType: "LAUDO",
+          }),
+        );
+        formData.append("file", additionals.disability.report!);
+        return formData;
+      })(),
     });
   }, []);
 
