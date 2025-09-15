@@ -39,13 +39,13 @@ export async function GET() {
     if (error instanceof AxiosError && error.response) {
       return NextResponse.json(
         { message: error.response.data?.message || "Erro ao buscar pessoas" },
-        { status: error.response.status },
+        { status: error.response.status }
       );
     }
 
     return NextResponse.json(
       { message: "Erro inesperado no servidor" },
-      { status: 500 },
+      { status: 500 }
     );
   }
 }
@@ -60,13 +60,13 @@ export async function POST(req: Request) {
     if (response.status !== 201) {
       return NextResponse.json(
         { message: response.data?.message || "Erro ao cadastrar pessoa" },
-        { status: response.status },
+        { status: response.status }
       );
     }
 
     return NextResponse.json(
       { message: "Cadastro bem-sucedido" },
-      { status: 201 },
+      { status: 201 }
     );
   } catch (error) {
     console.error(error);
@@ -74,7 +74,7 @@ export async function POST(req: Request) {
     if (error instanceof AxiosError && error.response) {
       return NextResponse.json(
         { message: error.response.data?.message || "Erro ao cadastrar" },
-        { status: error.response.status },
+        { status: error.response.status }
       );
     }
 
@@ -89,8 +89,7 @@ export async function POST(req: Request) {
       },
       {
         status: (error as AxiosError).response?.status,
-      },
+      }
     );
   }
 }
-
