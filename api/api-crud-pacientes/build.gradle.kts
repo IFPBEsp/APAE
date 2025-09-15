@@ -32,6 +32,7 @@ dependencies {
     implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.1.0")
     implementation("org.webjars:webjars-locator-core:0.52")
     implementation("org.springframework:spring-webmvc")
+    implementation ("org.postgresql:postgresql:42.7.7")
 }
 
 group = "br.org.apae"
