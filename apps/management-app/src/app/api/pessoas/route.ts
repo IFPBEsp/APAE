@@ -40,13 +40,13 @@ export async function GET() {
     if (error instanceof AxiosError && error.response) {
       return NextResponse.json(
         { message: error.response.data?.message || "Erro ao buscar pessoas" },
-        { status: error.response.status }
+        { status: error.response.status },
       );
     }
 
     return NextResponse.json(
       { message: "Erro inesperado no servidor" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
@@ -54,20 +54,9 @@ export async function GET() {
 export async function POST(req: Request) {
   try {
     const data = await req.formData();
-
-    const pessoa = JSON.parse(data.get("pessoa") as string);
-    const documento = JSON.parse(data.get("documento") as string);
-    const file = data.get("file") as File;
-
-    console.log({ pessoa, documento, file });
-
-
     const api = await createPersonApi();
-    const formData = new FormData();
-      formData.append("pessoa", JSON.stringify(pessoa));
-      formData.append("documento", JSON.stringify(documento));
-      formData.append("file", file)
-    const response = await api.post("", formData, {
+
+    const response = await api.post("", data, {
       headers: {
         "Content-Type": "multipart/form-data",
       },
@@ -76,13 +65,13 @@ export async function POST(req: Request) {
     if (response.status !== 201) {
       return NextResponse.json(
         { message: response.data?.message || "Erro ao cadastrar pessoa" },
-        { status: response.status }
+        { status: response.status },
       );
     }
 
     return NextResponse.json(
       { message: "Cadastro bem-sucedido" },
-      { status: 201 }
+      { status: 201 },
     );
   } catch (error) {
     console.error(error);
@@ -90,7 +79,7 @@ export async function POST(req: Request) {
     if (error instanceof AxiosError && error.response) {
       return NextResponse.json(
         { message: error.response.data?.message || "Erro ao cadastrar" },
-        { status: error.response.status }
+        { status: error.response.status },
       );
     }
 
@@ -105,7 +94,7 @@ export async function POST(req: Request) {
       },
       {
         status: (error as AxiosError).response?.status,
-      }
+      },
     );
   }
 }
