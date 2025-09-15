@@ -1,3 +1,13 @@
+export interface Endereco {
+  estado: string;
+  cidade: string;
+  bairro: string;
+  rua: string;
+  numero?: string;
+  complemento?: string;
+  cep: string;
+}
+
 export interface Profissional {
   id: string;
   nome: string;
@@ -5,11 +15,7 @@ export interface Profissional {
   docProfissional: string;
   areaDaSaude: string;
   telefone: string;
-  cpf?: string;
-  rg?: string;
-  estadoSigla?: string;
-  cidade?: string;
-  endereco?: string;
-  complemento?: string;
-  cep?: string;
+  cpf: string;
+  rg: string;
+  endereco: Endereco;
 }
