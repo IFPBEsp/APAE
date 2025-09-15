@@ -1,6 +1,5 @@
 "use client";
 
-import { useRouter } from "next/navigation"
 import { useEffect, useState } from "react";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
@@ -42,7 +41,7 @@ import {
 import { AppointmentForm } from "@/components/forms/AppointmentForm";
 import { InfoCard } from "@/components/shared/InfoCard";
 import Link from "next/link";
-import {Agendamento, getAgendamentos, updateAtendido} from "./services/agendamentoService";
+import {Agendamento, getAgendamentos} from "./services/agendamentoService";
 import { Checkbox } from "@/components/ui/checkbox";
 import ConfirmButton from "@/components/buttons/confirmButton";
 
