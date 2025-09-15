@@ -576,7 +576,11 @@ export async function getProfissionaisDaSaude(): Promise<ProfissionalSaude[]> {
 
     return profissionaisRetornados.filter(
       (profissional, index, self) => {
-        return self.findIndex((p) => p.docProfissional === profissional.docProfissional) === index;
+        return (
+          self.findIndex(
+            (p) => p.docProfissional === profissional.docProfissional
+          ) === index
+        );
       }
     );
   } catch (error) {
@@ -586,13 +590,26 @@ export async function getProfissionaisDaSaude(): Promise<ProfissionalSaude[]> {
 }
 
 
+export async function getProfissionalDaSaude(id: string): Promise<ProfissionalSaude> {
+  try {
+    const profissional = await fetch(
+      `${API_BASE_URL}/profissionais/${id}`
+    ).then((res) => res.json());
+
+    return profissional;
+  } catch (error) {
+    console.error(`Error fetching professional with ID ${id}:`, error);
+    throw error;
+  }
+}
+
+
 export async function getAreasDaSaude(): Promise<string[]> {
   try {
-    const response = await fetch(`${API_BASE_URL}/profissionais/areas`).then(
-      (res) => res.json()
-    );
+    const profissionais = await getProfissionaisDaSaude();
+    const areas = profissionais.map(p => p.areaDaSaude);
     const setList: string[] = [];
-    new Set(response.content).forEach(e => setList.push(e as string));
+    new Set(areas).forEach(e => setList.push(e as string));
 
     return setList;
   } catch (error) {
