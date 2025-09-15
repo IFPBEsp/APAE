@@ -14,7 +14,8 @@ public class DisponibilidadeDTO {
     @NotNull(message = "Turno é obrigatório")
     private Turno turno;
 
-    public DisponibilidadeDTO() {}
+    public DisponibilidadeDTO() {
+    }
 
     public DisponibilidadeDTO(DiaSemana dia, Turno turno) {
         this.dia = dia;

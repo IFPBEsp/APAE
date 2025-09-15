@@ -1,6 +1,8 @@
 package br.org.apae.profissional_da_saude.domain.repository;
 
 import br.org.apae.profissional_da_saude.infrastructure.entity.DisponibilidadeEntity;
+import br.org.apae.profissional_da_saude.domain.model.enums.DiaSemana;
+import br.org.apae.profissional_da_saude.domain.model.enums.Turno;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -13,23 +15,23 @@ import java.util.UUID;
 @Repository
 public interface DisponibilidadeRepository extends JpaRepository<DisponibilidadeEntity, UUID> {
 
-    // Método para deletar disponibilidades por profissional
+    // Deletar disponibilidades por profissional
     @Modifying
-    @Query("DELETE FROM DisponibilidadeEntity d WHERE d.fkProfissionalId = :profissionalId")
+    @Query("DELETE FROM DisponibilidadeEntity d WHERE d.profissional.id = :profissionalId")
     void deleteByProfissionalId(@Param("profissionalId") UUID profissionalId);
 
-    // Método para buscar disponibilidades por profissional
-    @Query("SELECT d FROM DisponibilidadeEntity d WHERE d.fkProfissionalId = :profissionalId")
-    List<DisponibilidadeEntity> findByFkProfissionalId(@Param("profissionalId") UUID profissionalId);
+    // Buscar disponibilidades por profissional
+    @Query("SELECT d FROM DisponibilidadeEntity d WHERE d.profissional.id = :profissionalId")
+    List<DisponibilidadeEntity> findByProfissionalId(@Param("profissionalId") UUID profissionalId);
 
-    // Alternativa usando naming convention (Spring Data JPA criará automaticamente)
-    // List<DisponibilidadeEntity> findByFkProfissionalId(UUID fkProfissionalId);
-
-    // Método para verificar se já existe uma combinação dia/turno para um profissional
-    @Query("SELECT COUNT(d) > 0 FROM DisponibilidadeEntity d WHERE d.fkProfissionalId = :profissionalId AND d.diaSemana = :dia AND d.turno = :turno")
+    // Verificar se já existe uma combinação dia/turno para um profissional
+    @Query("SELECT CASE WHEN COUNT(d) > 0 THEN true ELSE false END " +
+            "FROM DisponibilidadeEntity d " +
+            "WHERE d.profissional.id = :profissionalId " +
+            "AND d.diaSemana = :dia " +
+            "AND d.turno = :turno")
     boolean existsByProfissionalIdAndDiaAndTurno(
             @Param("profissionalId") UUID profissionalId,
-            @Param("dia") br.org.apae.profissional_da_saude.domain.model.enums.DiaSemana dia,
-            @Param("turno") br.org.apae.profissional_da_saude.domain.model.enums.Turno turno
-    );
+            @Param("dia") DiaSemana dia,
+            @Param("turno") Turno turno);
 }

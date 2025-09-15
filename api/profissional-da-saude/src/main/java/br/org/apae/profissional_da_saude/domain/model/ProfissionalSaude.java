@@ -1,27 +1,24 @@
 package br.org.apae.profissional_da_saude.domain.model;
 
-import br.org.apae.profissional_da_saude.infrastructure.entity.DisponibilidadeEntity;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
 public class ProfissionalSaude {
   private UUID id;
-  private  String areaDaSaude;
-  private  String telefone;
-  private  String docProfissional;
-  private  String email;
-  private  String nome;
-  private List<DisponibilidadeEntity> disponibilidades = new ArrayList<>();
-  private  String rg;
+  private String areaDaSaude;
+  private String telefone;
+  private String docProfissional;
+  private String email;
+  private String nome;
+  private List<Disponibilidade> disponibilidades = new ArrayList<>();
+  private String rg;
 
   private Endereco endereco;
 
-
   public ProfissionalSaude(UUID id, String areaDaSaude, String telefone,
-                           String docProfissional, String email, String nome,
-                           String rg, Endereco endereco) {
+      String docProfissional, String email, String nome,
+      String rg, Endereco endereco, List<Disponibilidade> disponibilidades) {
     this.id = id;
     this.areaDaSaude = areaDaSaude;
     this.telefone = telefone;
@@ -30,10 +27,11 @@ public class ProfissionalSaude {
     this.nome = nome;
     this.rg = rg;
     this.endereco = endereco;
+    this.disponibilidades = disponibilidades;
   }
 
   public ProfissionalSaude(String areaDaSaude, String telefone, String docProfissional,
-                           String email, String nome, String rg, Endereco endereco) {
+      String email, String nome, String rg, Endereco endereco, List<Disponibilidade> disponibilidades) {
     this.areaDaSaude = areaDaSaude;
     this.telefone = telefone;
     this.docProfissional = docProfissional;
@@ -41,7 +39,7 @@ public class ProfissionalSaude {
     this.nome = nome;
     this.rg = rg;
     this.endereco = endereco;
-
+    this.disponibilidades = disponibilidades;
   }
 
   public UUID getId() {
@@ -68,12 +66,14 @@ public class ProfissionalSaude {
     return nome;
   }
 
-  public List<DisponibilidadeEntity> getDisponibilidades() {
-      return disponibilidades;
+  public List<Disponibilidade> getDisponibilidades() {
+    return disponibilidades;
   }
 
-  public void setId(UUID id) {
-    this.id = id;
+  public void setDisponibilidades(List<Disponibilidade> disponibilidades) {
+    this.disponibilidades = disponibilidades;
+  }
+
   public String getAreaDaSaude() {
     return areaDaSaude;
   }
@@ -90,24 +90,14 @@ public class ProfissionalSaude {
     this.docProfissional = docProfissional;
   }
 
-  public String getEmail() {
-    return email;
-  }
-
   public void setEmail(String email) {
     this.email = email;
-  }
-
-  public String getNome() {
-    return nome;
   }
 
   public void setNome(String nome) {
     this.nome = nome;
   }
 
-  public void setDisponibilidades(List<DisponibilidadeEntity> disponibilidades) {
-      this.disponibilidades = disponibilidades;
   public String getRg() {
     return rg;
   }

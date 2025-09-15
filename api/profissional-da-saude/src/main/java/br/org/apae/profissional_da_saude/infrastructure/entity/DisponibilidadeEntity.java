@@ -3,45 +3,41 @@ package br.org.apae.profissional_da_saude.infrastructure.entity;
 import br.org.apae.profissional_da_saude.domain.model.enums.DiaSemana;
 import br.org.apae.profissional_da_saude.domain.model.enums.Turno;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotNull;
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.util.UUID;
 
 @Entity
-@Table(
-        name = "disponibilidades",
-        uniqueConstraints = {
-                @UniqueConstraint(
-                        name = "disponibilidade_profissional_dia_turno",
-                        columnNames = {"fk_profissional_id", "dia_semana", "turno"}
-                )
-        }
-)
+@Table(name = "disponibilidades", uniqueConstraints = {
+                @UniqueConstraint(name = "disponibilidade_profissional_dia_turno", columnNames = { "fk_profissional_id",
+                                "dia_semana", "turno" })
+})
 @Data
+@NoArgsConstructor
+@AllArgsConstructor
 public class DisponibilidadeEntity {
-    @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    private UUID id;
 
-    @Enumerated(EnumType.STRING)
-    @Column(name = "dia_semana", nullable = false)
-    @NotNull(message = "Dia da semana é obrigatório")
-    private DiaSemana diaSemana;
+        @Id
+        @GeneratedValue(strategy = GenerationType.AUTO)
+        private UUID id;
 
-    @Enumerated(EnumType.STRING)
-    @Column(name = "turno", nullable = false)
-    @NotNull(message = "Turno é obrigatório")
-    private Turno turno;
+        @Enumerated(EnumType.STRING)
+        @Column(name = "dia_semana", nullable = false)
+        private DiaSemana diaSemana;
 
-    @Column(name = "fk_profissional_id", nullable = false)
-    private UUID fkProfissionalId;
+        @Enumerated(EnumType.STRING)
+        @Column(name = "turno", nullable = false)
+        private Turno turno;
 
-    public DisponibilidadeEntity() {}
+        @ManyToOne(fetch = FetchType.LAZY)
+        @JoinColumn(name = "fk_profissional_id", nullable = false)
+        private ProfissionalSaudeEntity profissional;
 
-    public DisponibilidadeEntity(DiaSemana diaSemana, Turno turno, UUID fkProfissionalId) {
-        this.diaSemana = diaSemana;
-        this.turno = turno;
-        this.fkProfissionalId = fkProfissionalId;
-    }
+        public DisponibilidadeEntity(DiaSemana diaSemana, Turno turno, ProfissionalSaudeEntity profissional) {
+                this.diaSemana = diaSemana;
+                this.turno = turno;
+                this.profissional = profissional;
+        }
 }

@@ -16,11 +16,11 @@ public class ProfissionalSaudeUpdateDTO {
     private String areaDaSaude;
 
     @NotBlank
-    @Pattern( regexp = RegexPatterns.TELEFONE, message = ValidationMessages.TELEFONE_INVALIDO )
+    @Pattern(regexp = RegexPatterns.TELEFONE, message = ValidationMessages.TELEFONE_INVALIDO)
     private String telefone;
 
     @NotBlank
-    @Pattern( regexp = RegexPatterns.DOC_PROFISSIONAL, message = ValidationMessages.DOC_PROFISSIONAL_INVALIDO )
+    @Pattern(regexp = RegexPatterns.DOC_PROFISSIONAL, message = ValidationMessages.DOC_PROFISSIONAL_INVALIDO)
     private String docProfissional;
 
     @Email(message = ValidationMessages.EMAIL_INVALIDO)
@@ -29,13 +29,14 @@ public class ProfissionalSaudeUpdateDTO {
     private String email;
 
     @NotBlank
-    @Pattern( regexp = RegexPatterns.NOME, message = ValidationMessages.NOME_INVALIDO )
+    @Pattern(regexp = RegexPatterns.NOME, message = ValidationMessages.NOME_INVALIDO)
     private String nome;
 
     @Valid
     private List<DisponibilidadeDTO> disponibilidades;
+
     @NotBlank
-    @Pattern( regexp = RegexPatterns.RG, message = ValidationMessages.RG_INVALIDO )
+    @Pattern(regexp = RegexPatterns.RG, message = ValidationMessages.RG_INVALIDO)
     private String rg;
 
     @NotNull(message = "Endereço é obrigatório")

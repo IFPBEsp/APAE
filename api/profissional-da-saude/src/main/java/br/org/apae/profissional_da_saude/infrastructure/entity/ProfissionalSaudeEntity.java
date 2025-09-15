@@ -13,8 +13,8 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-@EqualsAndHashCode(exclude = {"disponibilidades"})
-@ToString(exclude = {"disponibilidades"})
+@EqualsAndHashCode(exclude = { "disponibilidades" })
+@ToString(exclude = { "disponibilidades" })
 public class ProfissionalSaudeEntity {
 
     @Id
@@ -27,17 +27,22 @@ public class ProfissionalSaudeEntity {
     private String email;
     private String nome;
 
-    @OneToMany(
-            cascade = CascadeType.ALL,
-            orphanRemoval = true,
-            fetch = FetchType.LAZY // Mudei para LAZY para melhor performance
-    )
-    @JoinColumn(name = "fk_profissional_id")
+    @OneToMany(mappedBy = "profissional", cascade = CascadeType.ALL, orphanRemoval = true)
     @Builder.Default
     private List<DisponibilidadeEntity> disponibilidades = new ArrayList<>();
-    private  String rg;
+
+    private String rg;
 
     @Embedded
     private EnderecoEntity endereco;
 
+    public void addDisponibilidade(DisponibilidadeEntity disponibilidade) {
+        disponibilidade.setProfissional(this);
+        this.disponibilidades.add(disponibilidade);
+    }
+
+    public void removeDisponibilidade(DisponibilidadeEntity disponibilidade) {
+        disponibilidade.setProfissional(null);
+        this.disponibilidades.remove(disponibilidade);
+    }
 }

@@ -3,185 +3,160 @@ package br.org.apae.profissional_da_saude.infrastructure.persistency.mapper;
 import br.org.apae.profissional_da_saude.api.dto.DisponibilidadeDTO;
 import br.org.apae.profissional_da_saude.api.dto.ProfissionalSaudeCreateDTO;
 import br.org.apae.profissional_da_saude.api.dto.ProfissionalSaudeResponseDTO;
+import br.org.apae.profissional_da_saude.domain.model.Disponibilidade;
 import br.org.apae.profissional_da_saude.domain.model.Endereco;
 import br.org.apae.profissional_da_saude.domain.model.ProfissionalSaude;
 import br.org.apae.profissional_da_saude.infrastructure.entity.DisponibilidadeEntity;
 import br.org.apae.profissional_da_saude.infrastructure.entity.EnderecoEntity;
 import br.org.apae.profissional_da_saude.infrastructure.entity.ProfissionalSaudeEntity;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 public final class ProfissionalSaudeMapper {
 
-    private ProfissionalSaudeMapper() {}
-
-    public static ProfissionalSaudeEntity toEntity(ProfissionalSaude model) {
-        return ProfissionalSaudeEntity.builder()
-                .id(model.getId())
-                .areaDaSaude(model.getAreaDaSaude())
-                .telefone(model.getTelefone())
-                .docProfissional(model.getDocProfissional())
-                .email(model.getEmail())
-                .nome(model.getNome())
-                .build();
-    }
-
-    public static ProfissionalSaude toModel(ProfissionalSaudeEntity entity) {
-        ProfissionalSaude model = new ProfissionalSaude(
-                entity.getId(),
-                entity.getAreaDaSaude(),
-                entity.getTelefone(),
-                entity.getDocProfissional(),
-                entity.getEmail(),
-                entity.getNome());
-
-        if (entity.getDisponibilidades() != null) {
-            List<DisponibilidadeEntity> disponibilidades = entity.getDisponibilidades()
-            .stream()
-            .map(dispEntity -> new DisponibilidadeEntity(
-            dispEntity.getDiaSemana(),
-            dispEntity.getTurno(),
-            entity.getId()
-            ))
-            .collect(Collectors.toList());
-            model.setDisponibilidades(disponibilidades);
-        }
-        return model;
-    }
-
-    public static ProfissionalSaude toDomain(ProfissionalSaudeCreateDTO dto) {
-        ProfissionalSaude model = new ProfissionalSaude(
-                dto.getAreaDaSaude(),
-                dto.getTelefone(),
-                dto.getDocProfissional(),
-                dto.getEmail(),
-                dto.getNome());
-
-        // Mapear disponibilidades se existirem
-        if (dto.getDisponibilidades() != null) {
-            List<DisponibilidadeEntity> disponibilidades = dto.getDisponibilidades()
-                    .stream()
-                    .map(dispDto -> new DisponibilidadeEntity(
-                            dispDto.getDia(),
-                            dispDto.getTurno(),
-                            null // ID será setado depois no service
-                    ))
-                    .collect(Collectors.toList());
-            model.setDisponibilidades(disponibilidades);
+        private ProfissionalSaudeMapper() {
         }
 
-        return model;
-    }
+        public static ProfissionalSaudeEntity toEntity(ProfissionalSaude model) {
+                EnderecoEntity enderecoEntity = Optional.ofNullable(model.getEndereco())
+                                .map(endereco -> new EnderecoEntity(
+                                                endereco.getEstado(),
+                                                endereco.getCidade(),
+                                                endereco.getBairro(),
+                                                endereco.getRua(),
+                                                endereco.getNumero(),
+                                                endereco.getCep(),
+                                                endereco.getComplemento()))
+                                .orElse(null);
 
-    public static ProfissionalSaudeResponseDTO toResponseDTO(ProfissionalSaude model) {
-        ProfissionalSaudeResponseDTO dto = new ProfissionalSaudeResponseDTO();
-        dto.setId(model.getId());
-        dto.setAreaDaSaude(model.getAreaDaSaude());
-        dto.setTelefone(model.getTelefone());
-        dto.setDocProfissional(model.getDocProfissional());
-        dto.setEmail(model.getEmail());
-        dto.setNome(model.getNome());
+                ProfissionalSaudeEntity entity = ProfissionalSaudeEntity.builder()
+                                .id(model.getId())
+                                .areaDaSaude(model.getAreaDaSaude())
+                                .telefone(model.getTelefone())
+                                .docProfissional(model.getDocProfissional())
+                                .email(model.getEmail())
+                                .nome(model.getNome())
+                                .rg(model.getRg())
+                                .endereco(enderecoEntity)
+                                .build();
 
-        // Mapear disponibilidades se existirem
-        if (model.getDisponibilidades() != null) {
-            List<DisponibilidadeDTO> disponibilidades = model.getDisponibilidades()
-                    .stream()
-                    .map(disp -> new DisponibilidadeDTO(disp.getDiaSemana(), disp.getTurno()))
-                    .collect(Collectors.toList());
-            dto.setDisponibilidades(disponibilidades);
+                if (model.getDisponibilidades() != null) {
+                        model.getDisponibilidades().forEach(d -> {
+                                DisponibilidadeEntity dispEntity = new DisponibilidadeEntity(
+                                                d.getDiaSemana(),
+                                                d.getTurno(),
+                                                entity);
+                                entity.addDisponibilidade(dispEntity);
+                        });
+                }
+
+                return entity;
         }
 
-        return dto;
-    }
-}
-  public static ProfissionalSaudeEntity toEntity(ProfissionalSaude model) {
+        public static ProfissionalSaude toModel(ProfissionalSaudeEntity entity) {
+                Endereco endereco = Optional.ofNullable(entity.getEndereco())
+                                .map(endEntity -> new Endereco(
+                                                endEntity.getEstado(),
+                                                endEntity.getCidade(),
+                                                endEntity.getBairro(),
+                                                endEntity.getRua(),
+                                                endEntity.getNumero(),
+                                                endEntity.getCep(),
+                                                endEntity.getComplemento()))
+                                .orElse(null);
 
-    return ProfissionalSaudeEntity.builder()
-        .id(model.getId())
-        .areaDaSaude(model.getAreaDaSaude())
-        .telefone(model.getTelefone())
-        .docProfissional(model.getDocProfissional())
-        .email(model.getEmail())
-        .nome(model.getNome())
-        .rg(model.getRg())
-        .endereco(new EnderecoEntity( model.getEndereco().getEstado(),
-                model.getEndereco().getCidade(),
-                model.getEndereco().getBairro(),
-                model.getEndereco().getRua(),
-                model.getEndereco().getNumero(),
-                model.getEndereco().getCep(),
-                model.getEndereco().getComplemento()))
-        .build();
-  }
+                List<Disponibilidade> disponibilidades = entity.getDisponibilidades() != null
+                                ? entity.getDisponibilidades().stream()
+                                                .map(d -> {
+                                                        Disponibilidade disp = new Disponibilidade(d.getDiaSemana(),
+                                                                        d.getTurno());
+                                                        return disp;
+                                                }).collect(Collectors.toList())
+                                : new ArrayList<>();
 
-  public static ProfissionalSaude toModel(ProfissionalSaudeEntity entity) {
+                ProfissionalSaude profissional = new ProfissionalSaude(
+                                entity.getId(),
+                                entity.getAreaDaSaude(),
+                                entity.getTelefone(),
+                                entity.getDocProfissional(),
+                                entity.getEmail(),
+                                entity.getNome(),
+                                entity.getRg(),
+                                endereco,
+                                disponibilidades);
 
-    Endereco endereco = new Endereco( entity.getEndereco().getEstado(),
-            entity.getEndereco().getCidade(),
-            entity.getEndereco().getBairro(),
-            entity.getEndereco().getRua(),
-            entity.getEndereco().getNumero(),
-            entity.getEndereco().getCep(),
-            entity.getEndereco().getComplemento());
+                profissional.getDisponibilidades().forEach(d -> d.setProfissional(profissional));
 
-    return new ProfissionalSaude(
-            entity.getId(),
-            entity.getAreaDaSaude(),
-            entity.getTelefone(),
-            entity.getDocProfissional(),
-            entity.getEmail(),
-            entity.getNome(),
-            entity.getRg(),
-            endereco
-    );
-  }
+                return profissional;
+        }
 
-  public static ProfissionalSaude toDomain(ProfissionalSaudeCreateDTO dto) {
+        public static ProfissionalSaude toDomain(ProfissionalSaudeCreateDTO dto) {
+                Endereco endereco = Optional.ofNullable(dto.getEndereco())
+                                .map(endDto -> new Endereco(
+                                                endDto.getEstado(),
+                                                endDto.getCidade(),
+                                                endDto.getBairro(),
+                                                endDto.getRua(),
+                                                endDto.getNumero(),
+                                                endDto.getCep(),
+                                                endDto.getComplemento()))
+                                .orElse(null);
 
-    Endereco endereco = new Endereco(
-            dto.getEndereco().getEstado(),
-            dto.getEndereco().getCidade(),
-            dto.getEndereco().getBairro(),
-            dto.getEndereco().getRua(),
-            dto.getEndereco().getNumero(),
-            dto.getEndereco().getCep(),
-            dto.getEndereco().getComplemento()
-    );
+                List<Disponibilidade> disponibilidades = dto.getDisponibilidades() != null
+                                ? dto.getDisponibilidades().stream()
+                                                .map(d -> new Disponibilidade(d.getDia(), d.getTurno()))
+                                                .collect(Collectors.toList())
+                                : new ArrayList<>();
 
+                ProfissionalSaude profissional = new ProfissionalSaude(
+                                dto.getAreaDaSaude(),
+                                dto.getTelefone(),
+                                dto.getDocProfissional(),
+                                dto.getEmail(),
+                                dto.getNome(),
+                                dto.getRg(),
+                                endereco,
+                                disponibilidades);
 
-    return new ProfissionalSaude(
-            dto.getAreaDaSaude(),
-            dto.getTelefone(),
-            dto.getDocProfissional(),
-            dto.getEmail(),
-            dto.getNome(),
-            dto.getRg(),
-            endereco
-    );
-  }
+                profissional.getDisponibilidades().forEach(d -> d.setProfissional(profissional));
 
-  public static ProfissionalSaudeResponseDTO toResponseDTO(ProfissionalSaude model) {
-    ProfissionalSaudeResponseDTO dto = new ProfissionalSaudeResponseDTO();
-    dto.setId(model.getId());
-    dto.setAreaDaSaude(model.getAreaDaSaude());
-    dto.setTelefone(model.getTelefone());
-    dto.setDocProfissional(model.getDocProfissional());
-    dto.setEmail(model.getEmail());
-    dto.setNome(model.getNome());
-    dto.setRg(model.getRg());
+                return profissional;
+        }
 
-    Endereco endereco = new Endereco();
-    endereco.setEstado(model.getEndereco().getEstado());
-    endereco.setCidade(model.getEndereco().getCidade());
-    endereco.setBairro(model.getEndereco().getBairro());
-    endereco.setRua(model.getEndereco().getRua());
-    endereco.setNumero(model.getEndereco().getNumero());
-    endereco.setCep(model.getEndereco().getCep());
-    endereco.setComplemento(model.getEndereco().getComplemento());
+        public static ProfissionalSaudeResponseDTO toResponseDTO(ProfissionalSaude model) {
+                ProfissionalSaudeResponseDTO dto = new ProfissionalSaudeResponseDTO();
+                dto.setId(model.getId());
+                dto.setAreaDaSaude(model.getAreaDaSaude());
+                dto.setTelefone(model.getTelefone());
+                dto.setDocProfissional(model.getDocProfissional());
+                dto.setEmail(model.getEmail());
+                dto.setNome(model.getNome());
+                dto.setRg(model.getRg());
 
-    dto.setEndereco(endereco);
+                Optional.ofNullable(model.getEndereco())
+                                .ifPresent(enderecoModel -> {
+                                        Endereco enderecoDto = new Endereco();
+                                        enderecoDto.setEstado(enderecoModel.getEstado());
+                                        enderecoDto.setCidade(enderecoModel.getCidade());
+                                        enderecoDto.setBairro(enderecoModel.getBairro());
+                                        enderecoDto.setRua(enderecoModel.getRua());
+                                        enderecoDto.setNumero(enderecoModel.getNumero());
+                                        enderecoDto.setCep(enderecoModel.getCep());
+                                        enderecoDto.setComplemento(enderecoModel.getComplemento());
+                                        dto.setEndereco(enderecoDto);
+                                });
 
-    return dto;
-  }
+                if (model.getDisponibilidades() != null) {
+                        List<DisponibilidadeDTO> disponibilidades = model.getDisponibilidades()
+                                        .stream()
+                                        .map(d -> new DisponibilidadeDTO(d.getDiaSemana(), d.getTurno()))
+                                        .collect(Collectors.toList());
+                        dto.setDisponibilidades(disponibilidades);
+                }
+
+                return dto;
+        }
 }
