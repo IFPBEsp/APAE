@@ -46,6 +46,7 @@ public class PessoaResponsavelService {
   }
 
   private void atualizarCamposPessoaResponsavel(PessoaResponsavelEntity entity, PessoaResponsavelRequest request) {
+    entity.setNome(request.getNome());
     entity.setCpf(request.getCpf());
     entity.setEmergencia(request.getEmergencia());
     entity.setOndeProcurar(request.getOndeProcurar());
