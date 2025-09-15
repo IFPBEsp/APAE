@@ -1,7 +1,6 @@
 import { NextResponse } from "next/server";
 import { AxiosError } from "axios";
 import { createPersonApi } from "@/lib/axios";
-import { da } from "zod/v4/locales";
 
 export async function GET() {
   try {
@@ -56,11 +55,7 @@ export async function POST(req: Request) {
     const data = await req.formData();
     const api = await createPersonApi();
 
-    const response = await api.post("", data, {
-      headers: {
-        "Content-Type": "multipart/form-data",
-      },
-    });
+    const response = await api.postForm("", data);
 
     if (response.status !== 201) {
       return NextResponse.json(
