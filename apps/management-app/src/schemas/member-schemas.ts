@@ -99,7 +99,7 @@ export const Personal = z.object({
           error: "Idade deve ser positiva",
         },
       ) as ZodCoercedDate<Date>,
-    place: z.string(),
+    place: z.string().min(1, "Naturalidade é obrigatória."),
   }),
 });
 
