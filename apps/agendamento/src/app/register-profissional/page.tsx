@@ -1,7 +1,11 @@
 "use client";
 
-import { useForm, Controller, type SubmitHandler, type Control, type Resolver } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";  
+import {
+  useForm,
+  Controller,
+  type SubmitHandler,
+} from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { InputMask } from "@react-input/mask";
 
@@ -39,9 +43,10 @@ export default function CadastroProfissional(): JSX.Element {
     cep: "",
   };
 
-  const resolver = zodResolver(cadastroSchema) as unknown as Resolver<CadastroFormValues>;
-  const form = useForm<CadastroFormValues>({ resolver, defaultValues });
-  const typedControl = form.control as unknown as Control<CadastroFormValues>;
+  const form = useForm<CadastroFormValues>({
+    resolver: zodResolver(cadastroSchema),
+    defaultValues,
+  });
 
   function onCancel() {
     router.push("/visualization-professional");
@@ -76,7 +81,7 @@ export default function CadastroProfissional(): JSX.Element {
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6 w-lg">
           <FormField
-            control={typedControl}
+            control={form.control}
             name="nomeCompleto"
             render={({ field }) => (
               <FormItem>
@@ -89,7 +94,7 @@ export default function CadastroProfissional(): JSX.Element {
             )}
           />
           <FormField
-            control={typedControl}
+            control={form.control}
             name="email"
             render={({ field }) => (
               <FormItem>
@@ -115,9 +120,22 @@ export default function CadastroProfissional(): JSX.Element {
             )}
           />
           <div className="grid grid-cols-2 gap-4">
+            <FormField
+              control={form.control}
+              name="documentoProfissional"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Documento profissional</FormLabel>
+                  <FormControl>
+                    <Input placeholder="Ex: CRM/SP 123456" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
             <Controller
-              control={typedControl}
-              name="cpf"
+              control={form.control}
+              name="areaSaude"
               render={({ field, fieldState }) => (
                 <FormItem>
                   <FormLabel>CPF</FormLabel>
@@ -137,7 +155,7 @@ export default function CadastroProfissional(): JSX.Element {
               )}
             />
             <FormField
-              control={typedControl}
+              control={form.control}
               name="rg"
               render={({ field }) => (
                 <FormItem>
@@ -174,7 +192,7 @@ export default function CadastroProfissional(): JSX.Element {
               )}
             />
             <Controller
-              control={typedControl}
+              control={form.control}
               name="telefone"
               render={({ field, fieldState }) => (
                 <FormItem>
@@ -197,7 +215,7 @@ export default function CadastroProfissional(): JSX.Element {
           </div>
           <div className="grid grid-cols-3 gap-4">
             <Controller
-              control={typedControl}
+              control={form.control}
               name="estado"
               render={({ field, fieldState }) => (
                 <FormItem>
@@ -219,7 +237,7 @@ export default function CadastroProfissional(): JSX.Element {
               )}
             />
             <FormField
-              control={typedControl}
+              control={form.control}
               name="cidade"
               render={({ field }) => (
                 <FormItem>
@@ -231,8 +249,25 @@ export default function CadastroProfissional(): JSX.Element {
                 </FormItem>
               )}
             />
+          </div>
+
+          <FormField
+            control={form.control}
+            name="rua"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Endereço</FormLabel>
+                <FormControl>
+                  <Input placeholder="Ex: Rua das Flores" {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          <div className="grid grid-cols-2 gap-4">
             <FormField
-              control={typedControl}
+              control={form.control}
               name="bairro"
               render={({ field }) => (
                 <FormItem>
@@ -244,12 +279,10 @@ export default function CadastroProfissional(): JSX.Element {
                 </FormItem>
               )}
             />
-          </div>
-          <div className="grid grid-cols-2 gap-4">
-            <FormField
-              control={typedControl}
-              name="rua"
-              render={({ field }) => (
+            <Controller
+              control={form.control}
+              name="cep"
+              render={({ field, fieldState }) => (
                 <FormItem>
                   <FormLabel>Endereço</FormLabel>
                   <FormControl>
@@ -260,13 +293,26 @@ export default function CadastroProfissional(): JSX.Element {
               )}
             />
             <FormField
-              control={typedControl}
+              control={form.control}
               name="numero"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Número</FormLabel>
                   <FormControl>
                     <Input placeholder="Ex: 123" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="complemento"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Complemento</FormLabel>
+                  <FormControl>
+                    <Input placeholder="Ex: Apt 101" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
