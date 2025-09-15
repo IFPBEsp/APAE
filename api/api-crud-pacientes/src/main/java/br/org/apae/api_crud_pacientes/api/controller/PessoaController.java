@@ -35,9 +35,10 @@ public class PessoaController {
       @RequestPart("pessoa") PessoaRequest request,
       UriComponentsBuilder uriBuilder,
       @RequestPart("document") BasicInformationDocumentRequest dto,
-      @RequestPart("file") MultipartFile file) {
+      @RequestPart("file") MultipartFile file,
+      @RequestHeader("Authorization") String authorizationHeader) {
 
-    PessoaEntity pessoa = pessoaService.create(request, dto, file);
+    PessoaEntity pessoa = pessoaService.create(request, dto, file, authorizationHeader);
     URI uri = uriBuilder.path("/pessoas/{id}").buildAndExpand(pessoa.getId()).toUri();
 
     PessoaResponse response = pessoaMapper.toResponse(pessoaService.getById(pessoa.getId()));

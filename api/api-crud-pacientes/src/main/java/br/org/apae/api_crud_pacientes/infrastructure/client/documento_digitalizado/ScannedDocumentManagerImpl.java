@@ -26,13 +26,17 @@ public class ScannedDocumentManagerImpl implements IScannedDocumentManager {
         this.restTemplate = restTemplate;
     }
     @Override
-    public void createBucket(UUID patientId) {
+    public void createBucket(UUID patientId, String authorizationHeader) {
         String url = baseUrl + "/bucket/" + patientId;
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.set("Authorization", authorizationHeader);
+        HttpEntity<Void> requestEntity = new HttpEntity<>(headers);
 
         ResponseEntity<Void> response = restTemplate.exchange(
                 url,
                 HttpMethod.POST,
-                null,
+                requestEntity,
                 Void.class
         );
 
@@ -47,12 +51,13 @@ public class ScannedDocumentManagerImpl implements IScannedDocumentManager {
     }
 
     @Override
-    public void saveFile(DocumentObjectRequestDTO dto, MultipartFile file) {
+    public void saveFile(DocumentObjectRequestDTO dto, MultipartFile file, String authorizationHeader) {
         String url = baseUrl + "/upload";
 
         try {
             HttpHeaders headers = new HttpHeaders();
             headers.setContentType(MediaType.MULTIPART_FORM_DATA);
+            headers.set("Authorization", authorizationHeader);
 
             MultiValueMap<String, Object> body = new LinkedMultiValueMap<>();
 

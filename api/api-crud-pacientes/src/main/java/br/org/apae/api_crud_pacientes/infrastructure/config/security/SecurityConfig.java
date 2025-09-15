@@ -1,4 +1,4 @@
-/*package br.org.apae.api_crud_pacientes.infrastructure.config.security;
+package br.org.apae.api_crud_pacientes.infrastructure.config.security;
 
 import java.util.Arrays;
 
@@ -41,7 +41,7 @@ public class SecurityConfig {
         http
         .csrf(AbstractHttpConfigurer::disable)
         .authorizeHttpRequests(authorize -> authorize
-            .requestMatchers(adminMatchers).hasAuthority("ROLE_ADMIN")
+            .requestMatchers(adminMatchers).hasAuthority("admin")
             .requestMatchers(new AntPathRequestMatcher("/h2-console/**")).permitAll()
             .anyRequest().authenticated()
         )
@@ -64,4 +64,3 @@ public class SecurityConfig {
         return converter;
     }
 }
-*/

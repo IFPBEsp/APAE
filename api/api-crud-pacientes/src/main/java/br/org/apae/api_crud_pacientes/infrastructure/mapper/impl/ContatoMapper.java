@@ -25,6 +25,7 @@ public class ContatoMapper
     contato.setEstado(request.getEstado());
     contato.setCep(request.getCep());
     contato.setNaturalidade(request.getNaturalidade());
+    contato.setTelefone(request.getTelefone());
     contato.setPessoa(pessoa);
 
     return contato;
@@ -41,6 +42,7 @@ public class ContatoMapper
     contatoEntity.setCidade(contato.getCidade());
     contatoEntity.setEstado(contato.getEstado());
     contatoEntity.setCep(contato.getCep());
+    contatoEntity.setTelefone(contato.getTelefone());
     contatoEntity.setNaturalidade(contato.getNaturalidade());
 
     return contatoEntity;
@@ -58,6 +60,7 @@ public class ContatoMapper
     response.setCidade(contato.getCidade());
     response.setEstado(contato.getEstado());
     response.setCep(contato.getCep());
+    response.setTelefone(contato.getTelefone());
     response.setNaturalidade(contato.getNaturalidade());
 
     return response;
@@ -74,6 +77,7 @@ public class ContatoMapper
     contato.setCidade(contatoEntity.getCidade());
     contato.setEstado(contatoEntity.getEstado());
     contato.setCep(contatoEntity.getCep());
+    contato.setTelefone(contatoEntity.getTelefone());
     contato.setNaturalidade(contatoEntity.getNaturalidade());
 
     return contato;
@@ -90,6 +94,7 @@ public class ContatoMapper
     response.setCidade(contato.getCidade());
     response.setEstado(contato.getEstado());
     response.setCep(contato.getCep());
+    response.setTelefone(contato.getTelefone());
     response.setNaturalidade(contato.getNaturalidade());
     return response;
   }

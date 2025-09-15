@@ -36,6 +36,9 @@ public class ContatoEntity {
     @Column(name = "naturalidade")
     private String naturalidade;
 
+    @Column(name = "telefone")
+    private String telefone;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "pessoa_id")
     private PessoaEntity pessoa;
@@ -53,6 +56,7 @@ public class ContatoEntity {
             String estado,
             String cep,
             String naturalidade,
+            String telefone,
             PessoaEntity pessoa) {
         this.id = id;
         this.enderecoAtivo = enderecoAtivo;
@@ -64,6 +68,7 @@ public class ContatoEntity {
         this.cep = cep;
         this.naturalidade = naturalidade;
         this.pessoa = pessoa;
+        this.telefone = telefone;
     }
 
     public ContatoEntity(String endereco, String cidade, String estado, PessoaEntity pessoa) {
@@ -71,6 +76,15 @@ public class ContatoEntity {
         this.cidade = cidade;
         this.estado = estado;
         this.pessoa = pessoa;
+    }
+
+
+    public String getTelefone() {
+        return telefone;
+    }
+
+    public void setTelefone(String telefone) {
+        this.telefone = telefone;
     }
 
     public UUID getId() {

@@ -70,4 +70,12 @@ export const createDocumentsAPI = async () => {
   );
 
   return makeInterceptors(api);
+}
+
+export const createPersonApi = async () => {
+  const api_pessoas = createAxiosInstance(
+    process.env.NEXT_PUBLIC_API_URL_PERSON || "http://localhost:8086/pessoas"
+  );
+
+  return makeInterceptors(api_pessoas);
 };
