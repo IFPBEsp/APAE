@@ -9,8 +9,10 @@ import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 @Repository
 public class JpaHistoricoConsultaRepository implements HistoricoConsultaRepository {
@@ -40,14 +42,14 @@ public class JpaHistoricoConsultaRepository implements HistoricoConsultaReposito
     }
 
     @Override
-    public Optional<HistoricoConsulta> buscarPorId(Long id) {
+    public Optional<HistoricoConsulta> buscarPorId(UUID id) {
         HistoricoConsultaEntity entity = entityManager.find(HistoricoConsultaEntity.class, id);
         return Optional.ofNullable(entity).map(HistoricoConsultaEntity::toDomain);
     }
 
     @Override
     @Transactional
-    public void deletar(Long id) {
+    public void deletar(UUID id) {
         HistoricoConsultaEntity entity = entityManager.find(HistoricoConsultaEntity.class, id);
         if (entity != null) {
             entityManager.remove(entity);
@@ -55,12 +57,13 @@ public class JpaHistoricoConsultaRepository implements HistoricoConsultaReposito
     }
 
     @Override
-    public boolean existePorAgendamentoEData(Long idAgendamento, LocalDate dataConsulta) {
+    public boolean existePorAgendamentoEData(UUID idAgendamento, LocalDate dataConsulta, LocalTime horaConsulta) {
         Long count = entityManager.createQuery(
-                        "SELECT COUNT(h) FROM HistoricoConsultaEntity h WHERE h.idAgendamento = :idAgendamento AND h.dataConsulta = :dataConsulta",
+                        "SELECT COUNT(h) FROM HistoricoConsultaEntity h WHERE h.idAgendamento = :idAgendamento AND h.dataConsulta = :dataConsulta AND h.horaConsulta = :horaConsulta",
                         Long.class)
                 .setParameter("idAgendamento", idAgendamento)
                 .setParameter("dataConsulta", dataConsulta)
+                .setParameter("horaConsulta", horaConsulta)
                 .getSingleResult();
         return count > 0;
     }

@@ -24,6 +24,24 @@ export interface AgendamentoCreateDTO {
   justificativa?: string;
 }
 
+export interface HistoricoConsultaCreateDTO {
+  idAgendamento: string;
+  dataConsulta: string;
+  horaConsulta: string;
+  foiRealizada: boolean;
+  justificativa?: string;
+}
+
+export interface HistoricoConsultaResponseDTO {
+  id: string;
+  idAgendamento: string;
+  dataConsulta: string;
+  horaConsulta: string;
+  foiRealizada: boolean;
+  justificativa?: string;
+  dataCriacao: string;
+}
+
 export interface Paciente {
   id?: string;
   nome: string;
@@ -376,17 +394,72 @@ export async function saveAgendamento(
   }
 }
 
+export async function saveAgendamentoRealizado(
+  agendamento: Agendamento
+): Promise<HistoricoConsultaResponseDTO> {
+  try {
+    const dto: HistoricoConsultaCreateDTO = {
+      idAgendamento: agendamento.id,
+      dataConsulta: agendamento.proximaConsulta,
+      horaConsulta: agendamento.horaProximaConsulta,
+      foiRealizada: true,
+      justificativa: agendamento.justificativa,
+    };
+    const res = await fetch(`${API_BASE_URL}/historico-consultas`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(dto),
+    });
+    console.log(res);
+    const data = await res.json();
+
+    const [ano, mes, dia] = agendamento.proximaConsulta.split("-");
+    const emDate = new Date(parseInt(ano), parseInt(mes), parseInt(dia));
+    emDate.setDate(emDate.getDate() + 15);
+    const proximaConsulta = `${String(emDate.getFullYear()).padStart(
+      2,
+      "0"
+    )}-${String(emDate.getMonth()).padStart(2, "0")}-${String(
+      emDate.getDate()
+    ).padStart(2, "0")}`;
+
+    agendamento.proximaConsulta = proximaConsulta;
+    if (agendamento.paciente?.id && agendamento.profissional?.id) {
+      const { paciente, profissional, id, ...agendamentoDTO } = {
+        ...agendamento,
+        idPaciente: agendamento.paciente.id,
+        idProfissional: agendamento.profissional.id,
+      };
+      agendamentoDTO.confirmado = false;
+      await saveAgendamento(agendamentoDTO, agendamento.id);
+    }
+
+    return data as HistoricoConsultaResponseDTO;
+  } catch (error) {
+    console.log(error);
+    throw error;
+  }
+}
+
 export async function getAgendamentos(
   data?: string,
   hora?: string
 ): Promise<Agendamento[]> {
   try {
+    if (data) {
+      let [ano, mes, dia] = data?.split("-").map(Number);
+      data = `${ano}-${(mes-1).toString().padStart(2, "0")}-${dia.toString().padStart(2, "0")}`;
+    }
+
     const response = await fetch(
       `${API_BASE_URL}/agendamentos${data ? `?data=${data}` : ""}${
         hora ? `&hora=${hora}` : ""
-      }`,
-      {}
+      }`
     ).then((res) => res.json());
+
+    console.log(response);
 
     const agendamentos: Agendamento[] = [];
     for (let agendamento of response.content) {
@@ -426,11 +499,38 @@ export async function getAgendamentoById(id: string): Promise<Agendamento> {
   }
 }
 
-export async function deleteAgendamento(id: string): Promise<void> {
+export async function getAgendamentoRealizadoById(
+  id: string
+): Promise<Agendamento> {
   try {
-    await fetch(`${API_BASE_URL}/agendamentos/${id}`, {
-      method: "DELETE",
-    });
+    const agendamentoRealizado: HistoricoConsultaResponseDTO = await fetch(
+      `${API_BASE_URL}/historico-consultas/${id}`
+    ).then((res) => res.json());
+    const agendamento: Agendamento = await getAgendamentoById(
+      agendamentoRealizado.idAgendamento
+    );
+    agendamento.proximaConsulta = agendamentoRealizado.dataConsulta;
+    agendamento.horaProximaConsulta = agendamentoRealizado.horaConsulta;
+    return agendamento;
+  } catch (error) {
+    console.log(error);
+    throw error;
+  }
+}
+
+export async function deleteAgendamento(
+  id: string,
+  realizado: boolean
+): Promise<void> {
+  try {
+    await fetch(
+      `${API_BASE_URL}/${
+        realizado ? "historico-consultas" : "agendamentos"
+      }/${id}`,
+      {
+        method: "DELETE",
+      }
+    );
   } catch (error) {
     console.log(error);
     throw error;
@@ -445,21 +545,29 @@ export async function getPacientes(): Promise<Paciente[]> {
     let pacientesRetornados: Paciente[] = response.content;
     const existentes = new Set(pacientesRetornados.map((p: Paciente) => p.cpf));
 
-    if (!pacientesRetornados.length || !pacientes.some(p => !existentes.has(p.cpf))) {
+    if (
+      !pacientesRetornados.length ||
+      !pacientes.some((p) => !existentes.has(p.cpf))
+    ) {
       for (const paciente of pacientes) {
         if (!existentes.has(paciente.cpf)) {
-          const res = await fetch(`${API_BASE_URL}/pacientes/create`, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(paciente),
-          }).then((res) => res.json());
+          const pacienteCriado = await fetch(
+            `${API_BASE_URL}/pacientes/create`,
+            {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify(paciente),
+            }
+          ).then((res) => res.json());
 
-          pacientesRetornados.push(res);
+          pacientesRetornados.push(pacienteCriado);
         }
       }
     }
 
-    return pacientesRetornados;
+    return pacientesRetornados.filter((paciente, index, self) => {
+      return self.findIndex((p) => p.cpf === paciente.cpf) === index;
+    });
   } catch (error) {
     console.log(error);
     throw error;
@@ -476,44 +584,57 @@ export async function getProfissionaisDaSaude(): Promise<ProfissionalSaude[]> {
       profissionaisRetornados.map((p: ProfissionalSaude) => p.docProfissional)
     );
 
-    // Only create professionals that don't exist in the backend
     for (const profissional of profissionais) {
       if (!existentes.has(profissional.docProfissional)) {
-        try {
-          const res = await fetch(`${API_BASE_URL}/profissionais`, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(profissional),
-          });
+        const res = await fetch(`${API_BASE_URL}/profissionais`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(profissional),
+        });
 
-          if (!res.ok) {
-            throw new Error(`Failed to create professional: ${profissional.nome}`);
-          }
-
-          const createdProfissional = await res.json();
-          profissionaisRetornados.push(createdProfissional);
-        } catch (error) {
-          console.error(`Error creating professional ${profissional.nome}:`, error);
-          continue; // Skip to the next professional if one fails
+        if (!res.ok) {
+          continue;
         }
+
+        const createdProfissional = await res.json();
+        profissionaisRetornados.push(createdProfissional);
       }
     }
 
-    return profissionaisRetornados;
+    return profissionaisRetornados.filter((profissional, index, self) => {
+      return (
+        self.findIndex(
+          (p) => p.docProfissional === profissional.docProfissional
+        ) === index
+      );
+    });
   } catch (error) {
     console.error("Error fetching professionals:", error);
     throw error;
   }
 }
 
+export async function getProfissionalDaSaude(
+  id: string
+): Promise<ProfissionalSaude> {
+  try {
+    const profissional = await fetch(
+      `${API_BASE_URL}/profissionais/${id}`
+    ).then((res) => res.json());
+
+    return profissional;
+  } catch (error) {
+    console.error(`Error fetching professional with ID ${id}:`, error);
+    throw error;
+  }
+}
 
 export async function getAreasDaSaude(): Promise<string[]> {
   try {
-    const response = await fetch(`${API_BASE_URL}/profissionais/areas`).then(
-      (res) => res.json()
-    );
+    const profissionais = await getProfissionaisDaSaude();
+    const areas = profissionais.map((p) => p.areaDaSaude);
     const setList: string[] = [];
-    new Set(response.content).forEach(e => setList.push(e as string));
+    new Set(areas).forEach((e) => setList.push(e as string));
 
     return setList;
   } catch (error) {
