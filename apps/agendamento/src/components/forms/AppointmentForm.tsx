@@ -1,10 +1,7 @@
 "use client";
 
 import React, { useContext, useEffect, useState } from "react";
-import {
-  Card,
-  CardContent,
-} from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { DateTimePicker } from "@/components/ui/date-time-picker";
@@ -14,6 +11,7 @@ import {
   Agendamento,
   getPacientes,
   getProfissionaisDaSaude,
+  getProfissionalDaSaude,
   Paciente,
   ProfissionalSaude,
   saveAgendamento,
@@ -99,10 +97,27 @@ export function AppointmentForm({ agendamentoAEditar }: PageProps) {
     fetchPacientesEProfissionais();
   }, []);
 
+  // Apenas necessário devido à existência de duplicatas nos dados mockados
+  useEffect(() => {
+    const redefineProfissional = async () => {
+      if (agendamentoAEditar) {
+        const nomeProfissional = (await getProfissionalDaSaude(profissional)).nome;
+        const idProfissional = listaProfissionais.find(p => p.label === nomeProfissional)?.value;
+        setProfissional(idProfissional || profissional);
+        console.log(
+          profissional,
+          nomeProfissional,
+          idProfissional
+        );
+      }
+    }
+    redefineProfissional();
+  }, [listaProfissionais]);
+
   const [validationErrors, setValidationErrors] = useState({
     dataHora: false,
     paciente: false,
-    profissional: false
+    profissional: false,
   });
 
   const formatDate = (date: Date) => {
@@ -139,7 +154,7 @@ export function AppointmentForm({ agendamentoAEditar }: PageProps) {
     const errors = {
       dataHora: !dataHora,
       paciente: !paciente,
-      profissional: !profissional
+      profissional: !profissional,
     };
 
     setValidationErrors(errors);
@@ -186,25 +201,29 @@ export function AppointmentForm({ agendamentoAEditar }: PageProps) {
             )}
           </div>
 
-          <div className="space-y-2">
-            <Label htmlFor="paciente">
-              Paciente <span className="text-red-500">*</span>
-            </Label>
-            <Combobox
-              options={listaPacientes}
-              value={paciente}
-              onChange={setPaciente}
-              placeholder="Pesquisar paciente"
-              className={cn(
-                validationErrors.paciente && "border-red-500",
-                "font-normal",
-                "text-gray-400"
+          {!agendamentoAEditar && (
+            <div className="space-y-2">
+              <Label htmlFor="paciente">
+                Paciente <span className="text-red-500">*</span>
+              </Label>
+              <Combobox
+                options={listaPacientes}
+                value={paciente}
+                onChange={setPaciente}
+                placeholder="Pesquisar paciente"
+                className={cn(
+                  validationErrors.paciente && "border-red-500",
+                  "font-normal",
+                  "text-gray-400"
+                )}
+              />
+              {validationErrors.paciente && (
+                <p className="text-sm text-red-500">
+                  Este campo é obrigatório.
+                </p>
               )}
-            />
-            {validationErrors.paciente && (
-              <p className="text-sm text-red-500">Este campo é obrigatório.</p>
-            )}
-          </div>
+            </div>
+          )}
 
           <div className="space-y-2">
             <Label htmlFor="profissional">
@@ -249,7 +268,10 @@ export function AppointmentForm({ agendamentoAEditar }: PageProps) {
                 </Label>
               </div>
 
-              {dataPassou(agendamentoAEditar.proximaConsulta, agendamentoAEditar.horaProximaConsulta) && 
+              {dataPassou(
+                agendamentoAEditar.proximaConsulta,
+                agendamentoAEditar.horaProximaConsulta
+              ) && (
                 <div className="space-y-2">
                   <Label htmlFor="justificativa">Justificativa de Falta</Label>
                   <Textarea
@@ -259,7 +281,7 @@ export function AppointmentForm({ agendamentoAEditar }: PageProps) {
                     onChange={(e) => setJustificativa(e.target.value)}
                   />
                 </div>
-              }
+              )}
             </>
           )}
 
