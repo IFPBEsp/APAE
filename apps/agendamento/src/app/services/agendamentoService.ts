@@ -11,7 +11,6 @@ export interface Agendamento {
   descricao: string;
   justificativa: string;
   dataCriacao: string;
-  realizado?: boolean;
 }
 
 export interface AgendamentoCreateDTO {
@@ -58,6 +57,16 @@ export interface Paciente {
   cep: string;
 }
 
+export interface Endereco {
+  estado: string;
+  cidade: string;
+  bairro: string;
+  rua: string;
+  numero: string;
+  cep: string;
+  complemento?: string;
+}
+
 export interface ProfissionalSaude {
   id?: string;
   areaDaSaude: string;
@@ -66,15 +75,7 @@ export interface ProfissionalSaude {
   email: string;
   nome: string;
   rg: string;
-  endereco: {
-    estado: string;
-    cidade: string;
-    bairro: string;
-    rua: string;
-    numero: string;
-    cep: string;
-    complemento: string;
-  }
+  endereco: Endereco;
 }
 
 const pacientes: Paciente[] = [
@@ -214,173 +215,156 @@ const profissionais: ProfissionalSaude[] = [
   {
     areaDaSaude: "Fonoaudiologia",
     telefone: "(11) 98765-4321",
-    docProfissional: "CRFa-1/12345",
+    docProfissional: "CRFa 12345",
     email: "ana.fonou@email.com",
     nome: "Ana Fonseca",
     rg: "12.345.678-9",
     endereco: {
-      estado: "São Paulo",
+      estado: "SP",
       cidade: "São Paulo",
-      bairro: "Jardim Paulista",
-      rua: "Rua das Acácias",
+      bairro: "Centro",
+      rua: "Rua A",
       numero: "123",
-      cep: "01020-030",
-      complemento: "Apto 45"
-    }
+      cep: "01000-000",
+      complemento: "Apto 101",
+    },
   },
   {
     areaDaSaude: "Fisioterapia",
     telefone: "(21) 91234-5678",
-    docProfissional: "CREFITO-2/54321-F",
+    docProfissional: "CREFITO 54321",
     email: "marcos.fisio@email.com",
     nome: "Marcos Pereira",
     rg: "98.765.432-1",
     endereco: {
-      estado: "Rio de Janeiro",
+      estado: "RJ",
       cidade: "Rio de Janeiro",
-      bairro: "Centro",
-      rua: "Av. Rio Branco",
+      bairro: "Jardim Botânico",
+      rua: "Rua B",
       numero: "456",
-      cep: "20040-003",
-      complemento: "Sala 501"
-    }
+      cep: "20000-000",
+      complemento: "",
+    },
   },
   {
     areaDaSaude: "Psicologia",
     telefone: "(31) 93456-7890",
-    docProfissional: "CRP-04/67890",
+    docProfissional: "CRP 67890",
     email: "juliana.psico@email.com",
     nome: "Juliana Souza",
     rg: "23.456.789-0",
     endereco: {
-      estado: "Minas Gerais",
+      estado: "MG",
       cidade: "Belo Horizonte",
       bairro: "Funcionários",
-      rua: "Rua dos Três Irmãos",
+      rua: "Avenida C",
       numero: "789",
-      cep: "30110-050",
-      complemento: "Edifício Crystal"
-    }
+      cep: "30123-456",
+      complemento: "Sala 202",
+    },
   },
   {
     areaDaSaude: "Terapia Ocupacional",
     telefone: "(41) 99876-1234",
-    docProfissional: "CREFITO-8/13579-TO",
+    docProfissional: "CREFITO 13579",
     email: "roberto.to@email.com",
     nome: "Roberto Lima",
     rg: "34.567.890-1",
     endereco: {
-      estado: "Paraná",
+      estado: "PR",
       cidade: "Curitiba",
-      bairro: "Centro",
-      rua: "Rua Paraná",
-      numero: "234",
-      cep: "80010-120",
-      complemento: "Andar 7"
-    }
+      bairro: "Bigorrilho",
+      rua: "Rua D",
+      numero: "101",
+      cep: "80210-100",
+      complemento: "",
+    },
   },
   {
     areaDaSaude: "Psicopedagogia",
     telefone: "(61) 98123-4567",
-    docProfissional: "CRP-01/24680-PP",
+    docProfissional: "CRP 24680",
     email: "marcia.psi@email.com",
     nome: "Márcia Andrade",
-    rg: "45.678.901-2",
+    rg: "56.789.012-3",
     endereco: {
-      estado: "Distrito Federal",
+      estado: "DF",
       cidade: "Brasília",
       bairro: "Asa Sul",
-      rua: "Quadra 10, Bloco 5",
-      numero: "100",
-      cep: "70010-010",
-      complemento: "Próximo à estação"
-    }
+      rua: "Avenida F",
+      numero: "303",
+      cep: "70070-100",
+      complemento: "Bloco B",
+    },
   },
   {
     areaDaSaude: "Neurologia",
     telefone: "(85) 98765-4321",
-    docProfissional: "CRM-CE/112233",
-    email: "dr.carlos.neuro@email.com",
-    nome: "Dr. Carlos Moreira",
-    rg: "56.789.012-3",
+    docProfissional: "CRM 112233",
+    email: "carlos.neuro@email.com",
+    nome: "Carlos Moreira",
+    rg: "67.890.123-4",
     endereco: {
-      estado: "Ceará",
+      estado: "CE",
       cidade: "Fortaleza",
-      bairro: "Beira Mar",
-      rua: "Av. Beira Mar",
-      numero: "500",
-      cep: "60165-121",
-      complemento: "Consultório 102"
-    }
+      bairro: "Aldeota",
+      rua: "Rua G",
+      numero: "404",
+      cep: "60160-050",
+      complemento: "",
+    },
   },
   {
     areaDaSaude: "Psiquiatria",
     telefone: "(11) 97654-3210",
-    docProfissional: "CRM-SP/445566",
-    email: "dra.luana.psi@email.com",
-    nome: "Dra. Luana Rocha",
-    rg: "67.890.123-4",
+    docProfissional: "CRM 445566",
+    email: "luana.psi@email.com",
+    nome: "Luana Rocha",
+    rg: "78.901.234-5",
     endereco: {
-      estado: "São Paulo",
+      estado: "SP",
       cidade: "São Paulo",
       bairro: "Vila Progredior",
-      rua: "Rua dos Três Corações",
-      numero: "300",
-      cep: "04085-020",
-      complemento: "Perto do metrô"
-    }
+      rua: "Rua H",
+      numero: "505",
+      cep: "02012-030",
+      complemento: "Apto 303",
+    },
   },
   {
     areaDaSaude: "Enfermagem",
     telefone: "(71) 92345-6789",
-    docProfissional: "COREN-BA/998877",
+    docProfissional: "COREN 998877",
     email: "fernando.enf@email.com",
     nome: "Fernando Nogueira",
-    rg: "78.901.234-5",
+    rg: "89.012.345-6",
     endereco: {
-      estado: "Bahia",
+      estado: "BA",
       cidade: "Salvador",
-      bairro: "Pelourinho",
-      rua: "Rua da Bahia",
-      numero: "678",
-      cep: "40010-040",
-      complemento: "Próximo ao Mercado Modelo"
-    }
+      bairro: "Pituba",
+      rua: "Avenida I",
+      numero: "606",
+      cep: "41810-010",
+      complemento: "",
+    },
   },
   {
     areaDaSaude: "Pediatria",
     telefone: "(51) 93456-1234",
-    docProfissional: "CRM-RS/556677",
-    email: "dra.claudia.ped@email.com",
-    nome: "Dra. Cláudia Martins",
-    rg: "89.012.345-6",
-    endereco: {
-      estado: "Rio Grande do Sul",
-      cidade: "Porto Alegre",
-      bairro: "Centro Histórico",
-      rua: "Rua Padre Chagas",
-      numero: "123",
-      cep: "90010-000",
-      complemento: "Bloco 2"
-    }
-  },
-  {
-    areaDaSaude: "Nutrição",
-    telefone: "(27) 91234-8765",
-    docProfissional: "CRN-4/332211",
-    email: "camila.nutri@email.com",
-    nome: "Camila Ribeiro",
+    docProfissional: "CRM 556677",
+    email: "claudia.ped@email.com",
+    nome: "Cláudia Martins",
     rg: "90.123.456-7",
     endereco: {
-      estado: "Espírito Santo",
-      cidade: "Vitória",
-      bairro: "Centro",
-      rua: "Avenida Vitória",
-      numero: "987",
-      cep: "29010-100",
-      complemento: "Edifício Vitória"
-    }
-  }
+      estado: "RS",
+      cidade: "Porto Alegre",
+      bairro: "Moinhos de Vento",
+      rua: "Rua E",
+      numero: "202",
+      cep: "90035-200",
+      complemento: "Sala 101",
+    },
+  },
 ];
 
 export async function saveAgendamento(
@@ -537,21 +521,18 @@ export async function getPacientes(): Promise<Paciente[]> {
     ).then((res) => res.json());
     let pacientesRetornados: Paciente[] = response.content;
     const existentes = new Set(pacientesRetornados.map((p: Paciente) => p.cpf));
-    const pacientesNaoAdicionados = pacientes.filter(
-      (p) => !existentes.has(p.cpf)
-    );
 
-    for (const paciente of pacientesNaoAdicionados) {
-      try {
-        const res = await fetch(`${API_BASE_URL}/pacientes/create`, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(paciente),
-        }).then((res) => res.json());
+    if (!pacientesRetornados.length || !pacientes.some(p => !existentes.has(p.cpf))) {
+      for (const paciente of pacientes) {
+        if (!existentes.has(paciente.cpf)) {
+          const pacienteCriado = await fetch(`${API_BASE_URL}/pacientes/create`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(paciente),
+          }).then((res) => res.json());
 
-        pacientesRetornados.push(res);
-      } catch (e: unknown) {
-        console.log(e);
+          pacientesRetornados.push(pacienteCriado);
+        }
       }
     }
 
@@ -559,7 +540,7 @@ export async function getPacientes(): Promise<Paciente[]> {
       (paciente, index, self) => {
         return self.findIndex((p) => p.cpf === paciente.cpf) === index;
       }
-    );;
+    );
   } catch (error) {
     console.log(error);
     throw error;
@@ -571,35 +552,39 @@ export async function getProfissionaisDaSaude(): Promise<ProfissionalSaude[]> {
     const response = await fetch(
       `${API_BASE_URL}/profissionais?page=0&size=100`
     ).then((res) => res.json());
-
-    let profissionaisRetornados: ProfissionalSaude[] = response.content;
+    let profissionaisRetornados: ProfissionalSaude[] = response.content || [];
     const existentes = new Set(
       profissionaisRetornados.map((p: ProfissionalSaude) => p.docProfissional)
     );
-    const profissionaisNaoAdicionados = profissionais.filter(
-      (p) => !existentes.has(p.docProfissional)
-    );
 
-    for (const profissional of profissionaisNaoAdicionados) {
-      const res = await fetch(`${API_BASE_URL}/profissionais`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(profissional),
-      }).then((res) => res.json());
+    for (const profissional of profissionais) {
+      if (!existentes.has(profissional.docProfissional)) {
+        const res = await fetch(`${API_BASE_URL}/profissionais`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(profissional),
+        });
 
-      profissionaisRetornados.push(res);
+        if (!res.ok) {
+          continue;
+        }
+
+        const createdProfissional = await res.json();
+        profissionaisRetornados.push(createdProfissional);
+      }
     }
 
     return profissionaisRetornados.filter(
       (profissional, index, self) => {
         return self.findIndex((p) => p.docProfissional === profissional.docProfissional) === index;
       }
-    );;
+    );
   } catch (error) {
-    console.log(error);
+    console.error("Error fetching professionals:", error);
     throw error;
   }
 }
+
 
 export async function getAreasDaSaude(): Promise<string[]> {
   try {
@@ -607,7 +592,7 @@ export async function getAreasDaSaude(): Promise<string[]> {
       (res) => res.json()
     );
     const setList: string[] = [];
-    new Set(response.content).forEach((e) => setList.push(e as string));
+    new Set(response.content).forEach(e => setList.push(e as string));
 
     return setList;
   } catch (error) {
