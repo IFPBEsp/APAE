@@ -20,6 +20,7 @@ import { useForm } from "react-hook-form";
 import z from "zod";
 import { FileInputButton, FormButton, MembersRegisterForm } from "../form";
 import { Checkbox } from "@/components/ui/checkbox";
+import { useRouter } from "next/navigation";
 
 export default function MembersRegisterProfilePage() {
   const {
@@ -27,6 +28,7 @@ export default function MembersRegisterProfilePage() {
     setters: { setProfileData, setStep },
     register,
   } = useMembersRegisterContext();
+  const router = useRouter();
 
   const form = useForm<z.infer<typeof Profile>>({
     mode: "onBlur",
@@ -42,6 +44,8 @@ export default function MembersRegisterProfilePage() {
 
   const onSubmit = async (values: z.infer<typeof Profile>) => {
     setProfileData(values);
+
+    router.push("/home");
   };
 
   return (

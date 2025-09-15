@@ -16,7 +16,7 @@ export default function MembersRegisterLayout({
   return (
     <MembersRegisterProvider>
       <PageOrchestrator>
-        <div className="min-h-screen grid grid-cols-1 md:grid-cols-[1fr_2fr] antialiased">
+        <div className="h-screen rounded-lg mx-10 relative grid grid-cols-1 md:grid-cols-[1fr_2fr] antialiased overflow-hidden">
           <div
             className="absolute inset-0 bg-cover bg-center bg-no-repeat grayscale-90"
             style={{
@@ -41,7 +41,7 @@ export default function MembersRegisterLayout({
               associação.
             </p>
           </div>
-          <div className="relative flex flex-col w-full h-full p-8 bg-muted">
+          <div className="relative flex flex-col w-full h-full p-8 bg-muted overflow-y-auto">
             <h1 className="text-2xl font-bold text-blue-900 mb-4">
               Cadastro de pessoas
             </h1>

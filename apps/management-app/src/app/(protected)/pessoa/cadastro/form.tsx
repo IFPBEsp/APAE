@@ -1,5 +1,16 @@
 import { Button } from "@/components/ui/button";
+import { Checkbox } from "@/components/ui/checkbox";
+import {
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+} from "@/components/ui/form";
 import { cn } from "@/lib/utils";
+import React from "react";
+import { ControllerProps, FieldPath, FieldValues } from "react-hook-form";
+
+import * as CheckboxPrimitive from "@radix-ui/react-checkbox";
 
 function MembersRegisterForm({
   title,
@@ -66,6 +77,63 @@ function FileInputButton({
   );
 }
 
+function DoubleCheckboxFormField<
+  TFieldValues extends FieldValues = FieldValues,
+  TName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>,
+>({
+  labels,
+  ...props
+}: Omit<ControllerProps<TFieldValues, TName>, "render"> & {
+  labels: {
+    main: string;
+    true: string;
+    false: string;
+  };
+}) {
+  return (
+    <FormField
+      render={() => (
+        <FormItem className="flex flex-row items-center">
+          <FormLabel>{labels.main}</FormLabel>
+          <FormField
+            render={({ field }) => {
+              return (
+                <FormItem className="flex flex-row items-center">
+                  <FormControl>
+                    <Checkbox
+                      checked={field.value}
+                      onCheckedChange={() => field.onChange(true)}
+                    />
+                  </FormControl>
+                  <FormLabel>{labels.true}</FormLabel>
+                </FormItem>
+              );
+            }}
+            {...props}
+          />
+          <FormField
+            render={({ field }) => {
+              return (
+                <FormItem className="flex flex-row items-center">
+                  <FormControl>
+                    <Checkbox
+                      checked={!field.value}
+                      onCheckedChange={() => field.onChange(false)}
+                    />
+                  </FormControl>
+                  <FormLabel>{labels.false}</FormLabel>
+                </FormItem>
+              );
+            }}
+            {...props}
+          />
+        </FormItem>
+      )}
+      {...props}
+    />
+  );
+}
+
 function FormButton({
   className,
   children,
@@ -85,4 +153,10 @@ function FormButton({
   );
 }
 
-export { MembersRegisterForm, DoubleColumn, FileInputButton, FormButton };
+export {
+  MembersRegisterForm,
+  DoubleColumn,
+  DoubleCheckboxFormField,
+  FileInputButton,
+  FormButton,
+};

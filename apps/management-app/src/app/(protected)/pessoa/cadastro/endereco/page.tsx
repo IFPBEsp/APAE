@@ -17,8 +17,8 @@ import { formatCEP } from "@/lib/formats";
 import { Address } from "@/schemas/member-schemas";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
-
 import z from "zod";
+
 import { DoubleColumn, FormButton, MembersRegisterForm } from "../form";
 
 export default function MembersRegisterAddressPage() {
@@ -95,12 +95,12 @@ export default function MembersRegisterAddressPage() {
 
           <FormField
             control={form.control}
-            name="district"
+            name="state"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Bairro *</FormLabel>
+                <FormLabel>Estado *</FormLabel>
                 <FormControl>
-                  <Input placeholder="Centro" {...field} />
+                  <Input placeholder="Paraiba" {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -109,12 +109,26 @@ export default function MembersRegisterAddressPage() {
 
           <FormField
             control={form.control}
-            name="state"
+            name="city"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Estado *</FormLabel>
+                <FormLabel>Cidade *</FormLabel>
                 <FormControl>
-                  <Input placeholder="Paraiba" {...field} />
+                  <Input placeholder="Esperança" {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          <FormField
+            control={form.control}
+            name="district"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Bairro *</FormLabel>
+                <FormControl>
+                  <Input placeholder="Centro" {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>

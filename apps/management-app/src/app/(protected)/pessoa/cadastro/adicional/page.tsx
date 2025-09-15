@@ -20,6 +20,7 @@ import { useForm } from "react-hook-form";
 
 import z from "zod";
 import {
+  DoubleCheckboxFormField,
   DoubleColumn,
   FileInputButton,
   FormButton,
@@ -216,6 +217,16 @@ export default function MembersRegisterAdditionalsPage() {
                 <FormMessage />
               </FormItem>
             )}
+          />
+
+          <DoubleCheckboxFormField
+            control={form.control}
+            name="bpc"
+            labels={{
+              main: "Possui BPC? *",
+              true: "Sim",
+              false: "Não",
+            }}
           />
         </DoubleColumn>
       </MembersRegisterForm>

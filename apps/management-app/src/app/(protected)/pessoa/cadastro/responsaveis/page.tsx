@@ -1,7 +1,5 @@
 "use client";
 
-import { Button } from "@/components/ui/button";
-import { Checkbox } from "@/components/ui/checkbox";
 import {
   Form,
   FormControl,
@@ -22,7 +20,12 @@ import React from "react";
 import { useForm, UseFormReturn } from "react-hook-form";
 
 import z from "zod";
-import { DoubleColumn, FormButton, MembersRegisterForm } from "../form";
+import {
+  DoubleCheckboxFormField,
+  DoubleColumn,
+  FormButton,
+  MembersRegisterForm,
+} from "../form";
 
 function GuardianFormFields({
   form,
@@ -43,6 +46,7 @@ function GuardianFormFields({
     rg?: string;
     cpf?: string;
     occupation?: string;
+    whereToFind?: string;
   };
 }) {
   return (
@@ -121,51 +125,49 @@ function GuardianFormFields({
 
       <FormField
         control={form.control}
-        name={`${name}.alive`}
+        name={`${name}.whereToFind`}
         render={({ field }) => (
-          <FormItem className="flex flex-row items-center">
-            <FormLabel>Vivo? *</FormLabel>
+          <FormItem>
+            <FormLabel>Onde procurar em caso de emergência? *</FormLabel>
             <FormControl>
-              <Checkbox
-                checked={field.value}
-                onCheckedChange={() => field.onChange(true)}
+              <Input
+                placeholder={placeholders?.whereToFind ?? "Casa."}
+                {...field}
               />
             </FormControl>
-            <FormLabel>Sim</FormLabel>
-            <FormControl>
-              <Checkbox
-                checked={!field.value}
-                onCheckedChange={() => field.onChange(false)}
-              />
-            </FormControl>
-            <FormLabel>Não</FormLabel>
+            <FormMessage />
           </FormItem>
         )}
       />
 
       <FormField
         control={form.control}
-        name={`${name}.bpc`}
+        name={`${name}.emergencyContact`}
         render={({ field }) => (
-          <FormItem className="flex flex-row items-center">
-            <FormLabel>Possui BPC? *</FormLabel>
+          <FormItem>
+            <FormLabel>Contato de Emergência *</FormLabel>
             <FormControl>
-              <Checkbox
-                checked={field.value}
-                onCheckedChange={() => field.onChange(true)}
+              <Input
+                placeholder="Número de telefone, email e etc."
+                {...field}
               />
             </FormControl>
-            <FormLabel>Sim</FormLabel>
-            <FormControl>
-              <Checkbox
-                checked={!field.value}
-                onCheckedChange={() => field.onChange(false)}
-              />
-            </FormControl>
-            <FormLabel>Não</FormLabel>
+            <FormMessage />
           </FormItem>
         )}
       />
+
+      <div className="md:col-span-2">
+        <DoubleCheckboxFormField
+          control={form.control}
+          name={`${name}.alive`}
+          labels={{
+            main: "Vivo? *",
+            true: "Sim",
+            false: "Não",
+          }}
+        />
+      </div>
     </>
   );
 }
@@ -219,6 +221,7 @@ export default function MembersRegisterGuardiansPage() {
               rg: "6.135.878",
               cpf: "704.780.123-06",
               occupation: "Professor",
+              whereToFind: "Escola.",
             }}
           />
           <GuardianFormFields
@@ -234,21 +237,10 @@ export default function MembersRegisterGuardiansPage() {
               rg: "7.436.456",
               cpf: "804.680.103-02",
               occupation: "Advogada",
+              whereToFind: "Consultório.",
             }}
           />
-          <FormField
-            control={form.control}
-            name="others"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Outros Responsáveis:</FormLabel>
-                <FormControl>
-                  <Input placeholder="Irmã" {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
+
           <FormField
             control={form.control}
             name="householdIncome"
@@ -269,14 +261,13 @@ export default function MembersRegisterGuardiansPage() {
               </FormItem>
             )}
           />
+
           <FormField
             control={form.control}
-            name="emergencyContact"
+            name="others"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>
-                  Em caso de emergência a quem procurar e onde?
-                </FormLabel>
+                <FormLabel>Outros Responsáveis:</FormLabel>
                 <FormControl>
                   <Input placeholder="Irmã" {...field} />
                 </FormControl>

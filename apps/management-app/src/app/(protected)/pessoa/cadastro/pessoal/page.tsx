@@ -1,6 +1,5 @@
 "use client";
 
-import { Button } from "@/components/ui/button";
 import {
   Form,
   FormControl,
@@ -16,6 +15,7 @@ import {
 } from "@/hooks/use-members-register-context";
 import {
   formatBirthCertificate,
+  formatCNS,
   formatCPF,
   formatIssuingBody,
   formatPhone,
@@ -24,8 +24,8 @@ import {
 import { Personal } from "@/schemas/member-schemas";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
-
 import z from "zod";
+
 import { DoubleColumn, FormButton, MembersRegisterForm } from "../form";
 
 export default function MembersRegisterPersonalPage() {
@@ -91,21 +91,34 @@ export default function MembersRegisterPersonalPage() {
 
           <FormField
             control={form.control}
-            name="phone"
+            name="cns"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Telefone *</FormLabel>
+                <FormLabel>CNS *</FormLabel>
                 <FormControl>
                   <Input
-                    placeholder="(00) 00000-0000"
-                    type="tel"
-                    maxLength={15}
+                    placeholder="Apenas números"
+                    maxLength={18}
                     value={field.value}
                     onChange={(e) => {
-                      const formatted = formatPhone(e.target.value);
+                      const formatted = formatCNS(e.target.value);
                       field.onChange(formatted);
                     }}
                   />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          <FormField
+            control={form.control}
+            name="nis"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>NIS *</FormLabel>
+                <FormControl>
+                  <Input placeholder="Digite o NIS" {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -218,6 +231,43 @@ export default function MembersRegisterPersonalPage() {
                         : ""
                     }
                     onChange={(e) => field.onChange(new Date(e.target.value))}
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          <FormField
+            control={form.control}
+            name="birth.place"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Naturalidade *</FormLabel>
+                <FormControl>
+                  <Input placeholder="Brasil" {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          <FormField
+            control={form.control}
+            name="phone"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Telefone *</FormLabel>
+                <FormControl>
+                  <Input
+                    placeholder="(00) 00000-0000"
+                    type="tel"
+                    maxLength={15}
+                    value={field.value}
+                    onChange={(e) => {
+                      const formatted = formatPhone(e.target.value);
+                      field.onChange(formatted);
+                    }}
                   />
                 </FormControl>
                 <FormMessage />

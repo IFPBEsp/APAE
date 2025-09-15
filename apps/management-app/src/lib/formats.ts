@@ -75,3 +75,11 @@ export function formatCurrency(value: string) {
     .replace(/(\d)(?=(\d{3})+\d{2}$)/g, "$1.")
     .replace(/(\d{2})$/, ",$1")}`;
 }
+
+export function formatCNS(value: string) {
+  const numbers = limit(value.replace(/\D/g, ""), 15);
+  return numbers
+    .replace(/(\d{3})(\d)/, "$1 $2")
+    .replace(/(\d{4})(\d)/, "$1 $2")
+    .replace(/(\d{4})(\d)/, "$1 $2");
+}

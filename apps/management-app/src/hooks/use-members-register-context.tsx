@@ -13,17 +13,21 @@ interface PersonalData {
       date: Date;
     };
   };
+  cns: string;
+  nis: string;
   birth: {
     certificate: string;
     date: Date;
+    place: string;
   };
 }
 
 interface AddressData {
   cep: string;
+  state: string;
+  city: string;
   district: string;
   street: string;
-  state: string;
 }
 
 interface AdditionalsData {
@@ -39,15 +43,17 @@ interface AdditionalsData {
     type: string;
     referral: File | undefined;
   };
+  bpc: boolean;
 }
 
 interface GuardianData {
   rg: string;
   cpf: string;
-  bpc: boolean;
   alive: boolean;
   name: string;
   occupation: string;
+  emergencyContact: string;
+  whereToFind: string;
 }
 
 interface GuardiansData {
@@ -55,7 +61,6 @@ interface GuardiansData {
   mother: GuardianData;
   others?: string;
   householdIncome: string;
-  emergencyContact: string;
 }
 
 interface ProfileData {
@@ -186,16 +191,20 @@ const initialState: MembersRegisterState = {
         date: new Date(),
       },
     },
+    cns: "",
+    nis: "",
     birth: {
       certificate: "",
       date: new Date(),
+      place: "",
     },
   },
   address: {
     cep: "",
+    state: "",
+    city: "",
     district: "",
     street: "",
-    state: "",
   },
   additionals: {
     diseases: "",
@@ -210,27 +219,29 @@ const initialState: MembersRegisterState = {
       type: "",
       referral: undefined,
     },
+    bpc: false,
   },
   guardians: {
     father: {
       rg: "",
       cpf: "",
-      bpc: false,
       alive: false,
       name: "",
       occupation: "",
+      emergencyContact: "",
+      whereToFind: "",
     },
     mother: {
       rg: "",
       cpf: "",
-      bpc: false,
       alive: false,
       name: "",
       occupation: "",
+      emergencyContact: "",
+      whereToFind: "",
     },
     others: "",
     householdIncome: "",
-    emergencyContact: "",
   },
   step: MembersRegisterStep.PERSONAL,
   profile: {
@@ -274,30 +285,62 @@ function MembersRegisterProvider({
   const register = useCallback(async () => {
     const { personal, address, additionals, guardians } = state;
 
+    const parseBirthCertificate = (certificate: string) => {
+      const [
+        cartorio,
+        acervo,
+        servicoRegistroCivil,
+        ano,
+        tipo,
+        livro,
+        folha,
+        termo,
+        digitoVerificador,
+      ] = certificate.split(" ");
+
+      return {
+        cartorio,
+        acervo,
+        servicoRegistroCivil,
+        ano,
+        tipo,
+        livro,
+        folha,
+        termo,
+        digitoVerificador,
+      };
+    };
+
+    const {
+      cartorio,
+      livro,
+      folha: fls,
+    } = parseBirthCertificate(personal.birth.certificate);
+
     const data = {
       nomeCompleto: personal.name,
       dataNascimento: personal.birth.date.toISOString().split("T")[0],
       numRegistroNasc: personal.birth.certificate,
-      fls: "",
-      livro: "",
-      cartorio: "",
+      fls,
+      livro,
+      cartorio,
       cpf: personal.cpf,
       rg: personal.rg.number,
       dataEmissaoRg: personal.rg.issuing.date.toISOString().split("T")[0],
       orgaoEmissorRg: personal.rg.issuing.body,
-      cns: "",
-      nis: "",
+      cns: personal.cns,
+      nis: personal.nis,
       dataCadastramento: new Date().toISOString().split("T")[0],
       contatoRequest: [
         {
           enderecoAtivo: "S",
-          comprovanteResidencia: "",
+          comprovanteResidencia: undefined,
           endereco: address.street,
           bairro: address.district,
-          cidade: "",
+          cidade: address.city,
           estado: address.state,
           cep: address.cep,
-          naturalidade: "",
+          naturalidade: personal.birth.place,
           telefone: personal.phone,
         },
       ],
@@ -317,8 +360,7 @@ function MembersRegisterProvider({
       ],
       cadastrosAnuaisRequests: [
         {
-          beneficioDePrestacaoContinuada:
-            guardians.father.bpc || guardians.mother.bpc,
+          beneficioDePrestacaoContinuada: additionals.bpc,
           historicosAlergias: additionals.allergies,
           medicacoesContinuas: additionals.medications,
           historicoDoencas: additionals.diseases,
@@ -328,22 +370,22 @@ function MembersRegisterProvider({
       responsaveisRequests: [
         {
           nome: guardians.mother.name,
-          ondeProcurar: "",
+          ondeProcurar: guardians.mother.whereToFind,
           vivo: guardians.mother.alive,
           profissao: guardians.mother.occupation,
           rg: guardians.mother.rg,
           cpf: guardians.mother.cpf,
-          emergencia: guardians.emergencyContact,
+          emergencia: guardians.mother.emergencyContact,
           tipoResponsavel: "MAE",
         },
         {
           nome: guardians.father.name,
-          ondeProcurar: "",
+          ondeProcurar: guardians.father.whereToFind,
           vivo: guardians.father.alive,
           profissao: guardians.father.occupation,
           rg: guardians.father.rg,
           cpf: guardians.father.cpf,
-          emergencia: guardians.emergencyContact,
+          emergencia: guardians.father.emergencyContact,
           tipoResponsavel: "PAI",
         },
       ],
