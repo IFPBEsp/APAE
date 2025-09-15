@@ -67,7 +67,7 @@ export function PatientCard({ patient }: PatientCardProps) {
 
             <div className="mt-auto pt-2 flex justify-end">
               <Button className="w-[106px] h-[23px] rounded-[5px] !bg-[#0D4F97] !hover:bg-[#0b427d] !text-white !text-[12px]">
-                <Link href="/">
+                <Link href={`/pessoa/${patient.id}`}>
                   Ver mais
                 </Link>
               </Button>

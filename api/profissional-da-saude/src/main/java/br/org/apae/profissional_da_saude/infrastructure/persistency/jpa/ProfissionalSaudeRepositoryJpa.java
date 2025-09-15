@@ -6,4 +6,7 @@ import br.org.apae.profissional_da_saude.infrastructure.entity.ProfissionalSaude
 import java.util.UUID;
 
 public interface ProfissionalSaudeRepositoryJpa extends JpaRepository<ProfissionalSaudeEntity, UUID> {
+
+    boolean existsByEmail(String email);
+    boolean existsByDocProfissional(String docProfissional);
 }

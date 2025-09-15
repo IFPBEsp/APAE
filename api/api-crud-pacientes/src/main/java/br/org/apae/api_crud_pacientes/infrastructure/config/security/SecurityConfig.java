@@ -25,7 +25,7 @@ public class SecurityConfig {
     public static final String[] AUTHENTICATED_ENDPOINTS_ADMIN = {
         "/api/cadastros-anual/**",
         "/contatos/**",
-        "pessoas/**",
+        "/pessoas/**",
         "/pessoa_responsavel/**",
         "/tipo_atendimento/**",
         "/tipo_deficiencia/**",
@@ -45,6 +45,7 @@ public class SecurityConfig {
             .requestMatchers(new AntPathRequestMatcher("/h2-console/**")).permitAll()
             .anyRequest().authenticated()
         )
+        .headers(headers -> headers.frameOptions(frame -> frame.disable()))
         .oauth2ResourceServer(oauth2 ->
             oauth2
             .jwt(jwt ->
