@@ -41,7 +41,7 @@ export default function MembersRegisterProfilePage() {
     if (submitted && profile) {
       (async () => {
         const res = await register();
-        if (res.status === 201) {
+        if (res.status >= 201 && res.status < 300) {
           router.push("/home");
         }
       })();

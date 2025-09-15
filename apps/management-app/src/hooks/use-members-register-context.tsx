@@ -181,67 +181,67 @@ function membersRegisterReducer(
 
 const initialState: MembersRegisterState = {
   personal: {
-    name: "",
-    cpf: "",
-    phone: "",
+    name: "Teste Testado",
+    cpf: "000.000.000-00",
+    phone: "(99) 99999-9999",
     rg: {
-      number: "",
+      number: "2.222.222",
       issuing: {
-        body: "",
+        body: "SSDS/PB",
         date: new Date(),
       },
     },
-    cns: "",
-    nis: "",
+    cns: "444 4444 4444 4444",
+    nis: "111111111111",
     birth: {
-      certificate: "",
+      certificate: "111111 11 11 1111 1 11111 111 1111111 11",
       date: new Date(),
-      place: "",
+      place: "Brasil",
     },
   },
   address: {
-    cep: "",
-    state: "",
-    city: "",
-    district: "",
-    street: "",
+    cep: "11111-111",
+    state: "Paraiba",
+    city: "Esperanca",
+    district: "Centro",
+    street: "Rua 2",
   },
   additionals: {
-    diseases: "",
-    medications: "",
-    vaccines: "",
-    allergies: "",
+    diseases: "teste",
+    medications: "teste",
+    vaccines: "teste",
+    allergies: "teste",
     disability: {
-      type: "",
+      type: "teste",
       report: undefined,
     },
     care: {
-      type: "",
+      type: "teste",
       referral: undefined,
     },
     bpc: false,
   },
   guardians: {
     father: {
-      rg: "",
-      cpf: "",
+      rg: "4.173.123",
+      cpf: "789.273.677-67",
       alive: false,
-      name: "",
-      occupation: "",
-      emergencyContact: "",
-      whereToFind: "",
+      name: "Tester teste",
+      occupation: "Testado",
+      emergencyContact: "Teste",
+      whereToFind: "teste",
     },
     mother: {
-      rg: "",
-      cpf: "",
+      rg: "1.212.112",
+      cpf: "211.121.231-87",
       alive: false,
-      name: "",
-      occupation: "",
-      emergencyContact: "",
-      whereToFind: "",
+      name: "Tester teste",
+      occupation: "Teste",
+      emergencyContact: "teste",
+      whereToFind: "teste",
     },
-    others: "",
-    householdIncome: "",
+    others: "teste",
+    householdIncome: "R$ 1.111.111,11",
   },
   step: MembersRegisterStep.PERSONAL,
   profile: {
@@ -391,24 +391,24 @@ function MembersRegisterProvider({
       ],
     };
 
+    const documento = {
+      year: new Date().getFullYear(),
+      documentCategory: "MEDICO",
+      documentType: "LAUDO",
+    };
+
+    const file = additionals.disability.report!;
+
+    const formData = new FormData();
+    formData.append("pessoa", JSON.stringify(pessoa));
+    formData.append("documento", JSON.stringify(documento));
+    formData.append("file", file);
+
     return fetch("/api/pessoas", {
       method: "POST",
-      body: (() => {
-        const formData = new FormData();
-        formData.append("pessoa", JSON.stringify(pessoa));
-        formData.append(
-          "document",
-          JSON.stringify({
-            year: new Date().getFullYear(),
-            documentCategory: "MEDICO",
-            documentType: "LAUDO",
-          }),
-        );
-        formData.append("file", additionals.disability.report!);
-        return formData;
-      })(),
+      body: formData,
     });
-  }, []);
+  }, [state]);
 
   return (
     <MembersRegisterContext.Provider

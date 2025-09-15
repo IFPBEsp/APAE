@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { AxiosError } from "axios";
 import { createPersonApi } from "@/lib/axios";
+import { da } from "zod/v4/locales";
 
 export async function GET() {
   try {
@@ -52,10 +53,25 @@ export async function GET() {
 
 export async function POST(req: Request) {
   try {
-    const data = await req.json();
+    const data = await req.formData();
+
+    const pessoa = JSON.parse(data.get("pessoa") as string);
+    const documento = JSON.parse(data.get("documento") as string);
+    const file = data.get("file") as File;
+
+    console.log({ pessoa, documento, file });
+
 
     const api = await createPersonApi();
-    const response = await api.post("", data);
+    const formData = new FormData();
+      formData.append("pessoa", JSON.stringify(pessoa));
+      formData.append("documento", JSON.stringify(documento));
+      formData.append("file", file)
+    const response = await api.post("", formData, {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    });
 
     if (response.status !== 201) {
       return NextResponse.json(
