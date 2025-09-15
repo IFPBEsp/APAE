@@ -14,7 +14,7 @@ import {
 } from "@/hooks/use-members-register-context";
 import { Profile } from "@/schemas/member-schemas";
 import { zodResolver } from "@hookform/resolvers/zod";
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 
 import z from "zod";
@@ -28,6 +28,7 @@ export default function MembersRegisterProfilePage() {
     setters: { setProfileData, setStep },
     register,
   } = useMembersRegisterContext();
+  const [submitted, setSubmitted] = useState(false);
   const router = useRouter();
 
   const form = useForm<z.infer<typeof Profile>>({
@@ -37,15 +38,19 @@ export default function MembersRegisterProfilePage() {
   });
 
   useEffect(() => {
-    if (profile) {
-      register();
+    if (submitted && profile) {
+      (async () => {
+        const res = await register();
+        if (res.status === 201) {
+          router.push("/home");
+        }
+      })();
     }
-  }, [profile]);
+  }, [submitted, profile]);
 
   const onSubmit = async (values: z.infer<typeof Profile>) => {
     setProfileData(values);
-
-    router.push("/home");
+    setSubmitted(true);
   };
 
   return (

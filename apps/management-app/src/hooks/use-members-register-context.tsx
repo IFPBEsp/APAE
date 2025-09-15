@@ -96,7 +96,7 @@ interface MembersRegisterContextData {
     setProfileData: (data: Partial<ProfileData>) => void;
     setStep: (step: MembersRegisterStep) => void;
   };
-  register: () => Promise<void>;
+  register: () => Promise<Response>;
 }
 
 type MembersRegisterAction =
@@ -317,7 +317,7 @@ function MembersRegisterProvider({
       folha: fls,
     } = parseBirthCertificate(personal.birth.certificate);
 
-    const data = {
+    const pessoa = {
       nomeCompleto: personal.name,
       dataNascimento: personal.birth.date.toISOString().split("T")[0],
       numRegistroNasc: personal.birth.certificate,
@@ -390,11 +390,22 @@ function MembersRegisterProvider({
         },
       ],
     };
+    const documento = {
+      year: new Date().getFullYear(),
+      documentCategory: "MEDICO",
+      documentType: "LAUDO",
+    };
 
-    await fetch("/api/pessoas", {
+    const file = additionals.disability.report;
+
+    return fetch("/api/pessoas", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(data),
+      body: JSON.stringify({
+        pessoa,
+        document,
+        file,
+      }),
     });
   }, []);
 
