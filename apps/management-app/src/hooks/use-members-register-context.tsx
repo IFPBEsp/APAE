@@ -181,67 +181,67 @@ function membersRegisterReducer(
 
 const initialState: MembersRegisterState = {
   personal: {
-    name: "Teste Testado",
-    cpf: "000.000.000-00",
-    phone: "(99) 99999-9999",
+    name: "",
+    cpf: "",
+    phone: "",
     rg: {
-      number: "2.222.222",
+      number: "",
       issuing: {
-        body: "SSDS/PB",
+        body: "",
         date: new Date(),
       },
     },
-    cns: "444 4444 4444 4444",
-    nis: "111111111111",
+    cns: "",
+    nis: "",
     birth: {
-      certificate: "111111 11 11 1111 1 11111 111 1111111 11",
+      certificate: "",
       date: new Date(),
-      place: "Brasil",
+      place: "",
     },
   },
   address: {
-    cep: "11111-111",
-    state: "Paraiba",
-    city: "Esperanca",
-    district: "Centro",
-    street: "Rua 2",
+    cep: "",
+    state: "",
+    city: "",
+    district: "",
+    street: "",
   },
   additionals: {
-    diseases: "teste",
-    medications: "teste",
-    vaccines: "teste",
-    allergies: "teste",
+    diseases: "",
+    medications: "",
+    vaccines: "",
+    allergies: "",
     disability: {
-      type: "teste",
+      type: "",
       report: undefined,
     },
     care: {
-      type: "teste",
+      type: "",
       referral: undefined,
     },
     bpc: false,
   },
   guardians: {
     father: {
-      rg: "4.173.123",
-      cpf: "789.273.677-67",
+      rg: "",
+      cpf: "",
       alive: false,
-      name: "Tester teste",
-      occupation: "Testado",
-      emergencyContact: "Teste",
-      whereToFind: "teste",
+      name: "",
+      occupation: "",
+      emergencyContact: "",
+      whereToFind: "",
     },
     mother: {
-      rg: "1.212.112",
-      cpf: "211.121.231-87",
+      rg: "",
+      cpf: "",
       alive: false,
-      name: "Tester teste",
-      occupation: "Teste",
-      emergencyContact: "teste",
-      whereToFind: "teste",
+      name: "",
+      occupation: "",
+      emergencyContact: "",
+      whereToFind: "",
     },
-    others: "teste",
-    householdIncome: "R$ 1.111.111,11",
+    others: "",
+    householdIncome: "",
   },
   step: MembersRegisterStep.PERSONAL,
   profile: {
@@ -346,6 +346,7 @@ function MembersRegisterProvider({
       ],
       vacinacoesRequests: additionals.vaccines.split(",").map((vaccine) => ({
         nome: vaccine,
+        dataAplicacao: new Date().toISOString().split("T")[0],
       })),
 
       deficienciasRequests: [
@@ -400,8 +401,12 @@ function MembersRegisterProvider({
     const file = additionals.disability.report!;
 
     const formData = new FormData();
-    formData.append("pessoa", JSON.stringify(pessoa));
-    formData.append("documento", JSON.stringify(documento));
+    formData.append("pessoa", new Blob([JSON.stringify(pessoa)], { 
+        type: "application/json"
+    }));
+    formData.append("document", new Blob([JSON.stringify(documento)], { 
+      type: "application/json" 
+    }));
     formData.append("file", file);
 
     return fetch("/api/pessoas", {
