@@ -365,7 +365,8 @@ function MembersRegisterProvider({
           historicosAlergias: additionals.allergies,
           medicacoesContinuas: additionals.medications,
           historicoDoencas: additionals.diseases,
-          rendaFamiliar: Number(guardians.householdIncome) * 0.01,
+          rendaFamiliar:
+            Number(guardians.householdIncome.replace(/\D/g, "")) * 0.01,
         },
       ],
       responsaveisRequests: [
@@ -399,14 +400,21 @@ function MembersRegisterProvider({
     };
 
     const file = additionals.disability.report!;
+    console.log(guardians.householdIncome);
 
     const formData = new FormData();
-    formData.append("pessoa", new Blob([JSON.stringify(pessoa)], { 
-        type: "application/json"
-    }));
-    formData.append("document", new Blob([JSON.stringify(documento)], { 
-      type: "application/json" 
-    }));
+    formData.append(
+      "pessoa",
+      new Blob([JSON.stringify(pessoa)], {
+        type: "application/json",
+      }),
+    );
+    formData.append(
+      "document",
+      new Blob([JSON.stringify(documento)], {
+        type: "application/json",
+      }),
+    );
     formData.append("file", file);
 
     return fetch("/api/pessoas", {
