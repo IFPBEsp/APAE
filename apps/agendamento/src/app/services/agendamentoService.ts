@@ -642,3 +642,19 @@ export async function getAreasDaSaude(): Promise<string[]> {
     throw error;
   }
 }
+
+export const toggleConfirmacao = async (id: string) => {
+  const agendamento = await getAgendamentoById(id);
+
+  if (!agendamento.paciente.id || !agendamento.profissional.id) return;
+
+  const { paciente, profissional, ...dto } = {
+    ...agendamento,
+    idPaciente: agendamento.paciente.id,
+    idProfissional: agendamento.profissional.id,
+  };
+
+  dto.confirmado = !dto.confirmado;
+
+  await saveAgendamento(dto, id);
+};
