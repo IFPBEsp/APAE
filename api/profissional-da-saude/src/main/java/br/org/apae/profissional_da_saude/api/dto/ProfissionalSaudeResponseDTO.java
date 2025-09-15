@@ -5,6 +5,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.util.UUID;
+
 @Getter
 @Setter
 public class ProfissionalSaudeResponseDTO {
@@ -15,7 +16,7 @@ public class ProfissionalSaudeResponseDTO {
     private String docProfissional;
     private String email;
     private String nome;
-    private  String rg;
+    private String rg;
 
     private Endereco endereco;
 }

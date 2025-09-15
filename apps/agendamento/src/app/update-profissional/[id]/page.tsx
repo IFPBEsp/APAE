@@ -7,42 +7,57 @@ import { InputMask } from "@react-input/mask";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
+import { useRouter } from "next/navigation";
+
 import { useGetByIdProfissional } from "@/hooks/profissional/use-get-by-id-profissional";
 import { useUpdateProfissional } from "@/hooks/profissional/use-update-profissional";
-import { useRouter } from "next/navigation";
-import { cadastroSchema } from "@/schemas/profissional.schema"; // Reutilizamos o mesmo schema
+import { cadastroSchema } from "@/schemas/profissional.schema";
 import { HEALTH_AREAS } from "@/lib/health-areas";
 import { STATES } from "@/lib/states";
+import { JSX, useEffect } from "react";
 
 type UpdateFormValues = z.infer<typeof cadastroSchema>;
 
 export default function AtualizarProfissional(): JSX.Element {
   const router = useRouter();
-  const { profissional, loading: loadingProf, error: errorProf } = useGetByIdProfissional();
-  const { updateProfissional, loading, error, success } = useUpdateProfissional();
+  const {
+    profissional,
+    loading: loadingProf,
+    error: errorProf,
+  } = useGetByIdProfissional();
+  const { updateProfissional, loading, error, success } =
+    useUpdateProfissional();
 
-  const resolver = zodResolver(cadastroSchema) as unknown as Resolver<UpdateFormValues>;
-  const form = useForm<UpdateFormValues>({
-    resolver,
-    defaultValues: {
-      nomeCompleto: "",
-      email: "",
-      documentoProfissional: "",
-      areaSaude: "",
-      telefone: "",
-      cpf: "",
-      rg: "",
-      estado: "",
-      cidade: "",
-      bairro: "",
-      rua: "",
-      numero: "",
-      complemento: "",
-      cep: "",
-    },
-  });
+  const defaultValues: UpdateFormValues = {
+    nomeCompleto: "",
+    email: "",
+    documentoProfissional: "",
+    areaSaude: "",
+    telefone: "",
+    rg: "",
+    estado: "",
+    cidade: "",
+    bairro: "",
+    rua: "",
+    numero: "",
+    complemento: "",
+    cep: "",
+  };
 
   const form = useForm<UpdateFormValues>({
     resolver: zodResolver(cadastroSchema),
@@ -71,13 +86,13 @@ export default function AtualizarProfissional(): JSX.Element {
 
   const onSubmit: SubmitHandler<UpdateFormValues> = async (values) => {
     if (!profissional?.id) return;
+
     const payload = {
       nome: values.nomeCompleto.trim(),
       email: values.email.trim(),
       docProfissional: values.documentoProfissional.trim(),
       areaDaSaude: values.areaSaude,
       telefone: values.telefone,
-      cpf: values.cpf,
       rg: values.rg.trim(),
       endereco: {
         estado: values.estado,
@@ -89,14 +104,15 @@ export default function AtualizarProfissional(): JSX.Element {
         cep: values.cep,
       },
     };
+
     await updateProfissional(profissional.id, payload);
   };
 
-  function onCancel() {
+  const onCancel = () => {
     router.push("/visualization-professional");
-  }
+  };
 
-  if (loadingProf) return <p>Carregando dados do profissional...</p>;
+  if (loadingProf) return <p>Carregando dados...</p>;
   if (errorProf) return <p className="text-red-500">Erro: {errorProf}</p>;
 
   return (
@@ -277,7 +293,8 @@ export default function AtualizarProfissional(): JSX.Element {
                 </FormControl>
                 <FormMessage />
               </FormItem>
-            )} />
+            )}
+          />
 
           <div className="grid grid-cols-2 gap-4">
             <FormField
@@ -354,7 +371,11 @@ export default function AtualizarProfissional(): JSX.Element {
             <Button type="button" variant="outline" onClick={onCancel}>
               Cancelar
             </Button>
-            <Button type="submit" className="bg-blue-800 hover:bg-blue-900" disabled={form.formState.isSubmitting || loading}>
+            <Button
+              type="submit"
+              className="bg-blue-800 hover:bg-blue-900"
+              disabled={form.formState.isSubmitting || loading}
+            >
               Salvar
             </Button>
           </div>

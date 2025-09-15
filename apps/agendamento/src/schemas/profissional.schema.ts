@@ -14,10 +14,18 @@ const ruaRegex = /^[A-Za-zÀ-ÿ0-9\s]+$/;
 const numeroRegex = /^[0-9]{1,6}$/;
 
 export const cadastroSchema = z.object({
-  nomeCompleto: z.string().regex(nomeRegex, "Nome inválido. Use apenas letras e espaços, 3-100 caracteres"),
+  nomeCompleto: z
+    .string()
+    .regex(
+      nomeRegex,
+      "Nome inválido. Use apenas letras e espaços, 3-100 caracteres"
+    ),
   email: z.string().email("Email inválido"),
-  documentoProfissional: z.string().regex(docProfissionalRegex, "Documento profissional inválido"),
-  areaSaude: z.string()
+  documentoProfissional: z
+    .string()
+    .regex(docProfissionalRegex, "Documento profissional inválido"),
+  areaSaude: z
+    .string()
     .min(1, "Selecione uma área válida")
     .refine((v) => (HEALTH_AREAS as readonly string[]).includes(v), {
       message: "Selecione uma área válida",

@@ -11,8 +11,21 @@ import { InputMask } from "@react-input/mask";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
 import { useRouter } from "next/navigation";
 import { useCreateProfissional } from "@/hooks/profissional/use-create-profissional";
 import { cadastroSchema } from "@/schemas/profissional.schema";
@@ -23,8 +36,8 @@ import { JSX } from "react";
 type CadastroFormValues = z.infer<typeof cadastroSchema>;
 
 export default function CadastroProfissional(): JSX.Element {
-  const { create, loading, error, success } = useCreateProfissional();
   const router = useRouter();
+  const { create, loading, error, success } = useCreateProfissional();
 
   const defaultValues: CadastroFormValues = {
     nomeCompleto: "",
@@ -32,7 +45,6 @@ export default function CadastroProfissional(): JSX.Element {
     documentoProfissional: "",
     areaSaude: "",
     telefone: "",
-    cpf: "",
     rg: "",
     estado: "",
     cidade: "",
@@ -48,9 +60,9 @@ export default function CadastroProfissional(): JSX.Element {
     defaultValues,
   });
 
-  function onCancel() {
+  const onCancel = () => {
     router.push("/visualization-professional");
-  }
+  };
 
   const onSubmit: SubmitHandler<CadastroFormValues> = async (values) => {
     const payload = {
@@ -59,7 +71,6 @@ export default function CadastroProfissional(): JSX.Element {
       docProfissional: values.documentoProfissional.trim(),
       areaDaSaude: values.areaSaude,
       telefone: values.telefone,
-      cpf: values.cpf,
       rg: values.rg.trim(),
       endereco: {
         estado: values.estado,
@@ -71,7 +82,7 @@ export default function CadastroProfissional(): JSX.Element {
         cep: values.cep,
       },
     };
-    
+
     await create(payload);
   };
 
@@ -79,7 +90,10 @@ export default function CadastroProfissional(): JSX.Element {
     <div className="p-6">
       <h1 className="text-2xl font-bold mb-6">Cadastrar Profissional</h1>
       <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6 w-lg">
+        <form
+          onSubmit={form.handleSubmit(onSubmit)}
+          className="space-y-6 max-w-2xl w-full mx-auto"
+        >
           <FormField
             control={form.control}
             name="nomeCompleto"
@@ -100,20 +114,11 @@ export default function CadastroProfissional(): JSX.Element {
               <FormItem>
                 <FormLabel>Email</FormLabel>
                 <FormControl>
-                  <Input type="email" placeholder="profissional@exemplo.com" {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <FormField
-            control={typedControl}
-            name="documentoProfissional"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Documento profissional</FormLabel>
-                <FormControl>
-                  <Input placeholder="Ex: CRM/SP 123456" {...field} />
+                  <Input
+                    type="email"
+                    placeholder="profissional@exemplo.com"
+                    {...field}
+                  />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -138,22 +143,34 @@ export default function CadastroProfissional(): JSX.Element {
               name="areaSaude"
               render={({ field, fieldState }) => (
                 <FormItem>
-                  <FormLabel>CPF</FormLabel>
-                  <FormControl className="w-full">
-                    <InputMask
-                      mask="___.___.___-__"
-                      replacement={{ _: /\d/ }}
-                      value={field.value ?? ""}
-                      onChange={(e) => field.onChange(e.target.value)}
-                      onBlur={field.onBlur}
-                      placeholder="123.456.789-00"
-                      className={`w-full rounded-md border px-3 py-1 ${fieldState.invalid ? "border-red-500" : "border-gray-300"}`}
-                    />
+                  <FormLabel>Área da saúde</FormLabel>
+                  <FormControl>
+                    <Select onValueChange={field.onChange} value={field.value}>
+                      <SelectTrigger
+                        className={`w-full ${
+                          fieldState.invalid
+                            ? "border-red-500"
+                            : "border-gray-300"
+                        }`}
+                      >
+                        <SelectValue placeholder="Selecione uma opção" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {HEALTH_AREAS.map((a) => (
+                          <SelectItem key={a} value={a}>
+                            {a}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
                   </FormControl>
                   <FormMessage>{fieldState.error?.message}</FormMessage>
                 </FormItem>
               )}
             />
+          </div>
+
+          <div className="grid grid-cols-2 gap-4">
             <FormField
               control={form.control}
               name="rg"
@@ -164,30 +181,6 @@ export default function CadastroProfissional(): JSX.Element {
                     <Input placeholder="Ex: 1234567" {...field} />
                   </FormControl>
                   <FormMessage />
-                </FormItem>
-              )}
-            />
-          </div>
-          <div className="grid grid-cols-2 gap-4">
-            <Controller
-              control={typedControl}
-              name="areaSaude"
-              render={({ field, fieldState }) => (
-                <FormItem>
-                  <FormLabel>Área da saúde</FormLabel>
-                  <FormControl>
-                    <Select onValueChange={field.onChange} value={field.value}>
-                      <SelectTrigger className={`w-full ${fieldState.invalid ? "border-red-500" : "border-gray-300"}`}>
-                        <SelectValue placeholder="Selecione uma opção" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {HEALTH_AREAS.map((a) => (
-                          <SelectItem key={a} value={a}>{a}</SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </FormControl>
-                  <FormMessage>{fieldState.error?.message}</FormMessage>
                 </FormItem>
               )}
             />
@@ -213,7 +206,8 @@ export default function CadastroProfissional(): JSX.Element {
               )}
             />
           </div>
-          <div className="grid grid-cols-3 gap-4">
+
+          <div className="grid grid-cols-2 gap-4">
             <Controller
               control={form.control}
               name="estado"
@@ -222,12 +216,20 @@ export default function CadastroProfissional(): JSX.Element {
                   <FormLabel>Estado</FormLabel>
                   <FormControl>
                     <Select onValueChange={field.onChange} value={field.value}>
-                      <SelectTrigger className={`w-full ${fieldState.invalid ? "border-red-500" : "border-gray-300"}`}>
+                      <SelectTrigger
+                        className={`w-full ${
+                          fieldState.invalid
+                            ? "border-red-500"
+                            : "border-gray-300"
+                        }`}
+                      >
                         <SelectValue placeholder="Selecione um estado" />
                       </SelectTrigger>
                       <SelectContent>
                         {STATES.map((s) => (
-                          <SelectItem key={s} value={s}>{s}</SelectItem>
+                          <SelectItem key={s} value={s}>
+                            {s}
+                          </SelectItem>
                         ))}
                       </SelectContent>
                     </Select>
@@ -284,14 +286,25 @@ export default function CadastroProfissional(): JSX.Element {
               name="cep"
               render={({ field, fieldState }) => (
                 <FormItem>
-                  <FormLabel>Endereço</FormLabel>
+                  <FormLabel>CEP</FormLabel>
                   <FormControl>
-                    <Input placeholder="Ex: Rua das Flores" {...field} />
+                    <InputMask
+                      mask="_____-___"
+                      replacement={{ _: /\d/ }}
+                      value={field.value ?? ""}
+                      onChange={(e) => field.onChange(e.target.value)}
+                      onBlur={field.onBlur}
+                      placeholder="12345-678"
+                      className="w-full rounded-md border px-3 py-2"
+                    />
                   </FormControl>
-                  <FormMessage />
+                  <FormMessage>{fieldState.error?.message}</FormMessage>
                 </FormItem>
               )}
             />
+          </div>
+
+          <div className="grid grid-cols-2 gap-4">
             <FormField
               control={form.control}
               name="numero"
@@ -319,46 +332,23 @@ export default function CadastroProfissional(): JSX.Element {
               )}
             />
           </div>
-          <FormField
-            control={typedControl}
-            name="complemento"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Complemento</FormLabel>
-                <FormControl>
-                  <Input placeholder="Ex: Apt 101" {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <Controller
-            control={typedControl}
-            name="cep"
-            render={({ field, fieldState }) => (
-              <FormItem>
-                <FormLabel>CEP</FormLabel>
-                <FormControl>
-                  <InputMask
-                    mask="_____-___"
-                    replacement={{ _: /\d/ }}
-                    value={field.value ?? ""}
-                    onChange={(e) => field.onChange(e.target.value)}
-                    onBlur={field.onBlur}
-                    placeholder="12345-678"
-                    className="w-full rounded-md border px-3 py-2"
-                  />
-                </FormControl>
-                <FormMessage>{fieldState.error?.message}</FormMessage>
-              </FormItem>
-            )}
-          />
+
           {loading && <p className="text-blue-500">Salvando...</p>}
           {error && <p className="text-red-500">{error}</p>}
-          {success && <p className="text-green-600">Profissional criado com sucesso!</p>}
+          {success && (
+            <p className="text-green-600">Profissional criado com sucesso!</p>
+          )}
           <div className="flex justify-end gap-4">
-            <Button type="button" variant="outline" onClick={onCancel}>Cancelar</Button>
-            <Button type="submit" className="bg-blue-800 hover:bg-blue-900" disabled={form.formState.isSubmitting || loading}>Cadastrar</Button>
+            <Button type="button" variant="outline" onClick={onCancel}>
+              Cancelar
+            </Button>
+            <Button
+              type="submit"
+              className="bg-blue-800 hover:bg-blue-900"
+              disabled={form.formState.isSubmitting || loading}
+            >
+              Cadastrar
+            </Button>
           </div>
         </form>
       </Form>
