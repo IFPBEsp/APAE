@@ -14,6 +14,7 @@ import org.springframework.validation.annotation.Validated;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service
@@ -40,13 +41,13 @@ public class HistoricoConsultaService {
                 .collect(Collectors.toList());
     }
 
-    public HistoricoConsultaResponseDTO buscarPorId(Long id) {
+    public HistoricoConsultaResponseDTO buscarPorId(UUID id) {
         return repository.buscarPorId(id)
                 .map(mapper::toResponseDTO)
                 .orElse(null);
     }
 
-    public HistoricoConsultaResponseDTO atualizar(Long id, HistoricoConsultaUpdateDTO dto) {
+    public HistoricoConsultaResponseDTO atualizar(UUID id, HistoricoConsultaUpdateDTO dto) {
         Optional<HistoricoConsulta> optionalHistorico = repository.buscarPorId(id);
         if (optionalHistorico.isEmpty()) {
             return null;
@@ -63,7 +64,7 @@ public class HistoricoConsultaService {
         return mapper.toResponseDTO(historico);
     }
 
-    public boolean deletar(Long id) {
+    public boolean deletar(UUID id) {
         if (repository.buscarPorId(id).isEmpty()) {
             return false;
         }
@@ -77,7 +78,7 @@ public class HistoricoConsultaService {
             return false;
         }
 
-        if (repository.existePorAgendamentoEData(dto.getIdAgendamento(), dto.getDataConsulta())) {
+        if (repository.existePorAgendamentoEData(dto.getIdAgendamento(), dto.getDataConsulta(), dto.getHoraConsulta())) {
             return false;
         }
 

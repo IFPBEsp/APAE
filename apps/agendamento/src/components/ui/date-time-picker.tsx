@@ -38,13 +38,15 @@ export function DateTimePicker({ value, onChange }: DateTimePickerProps) {
 
   const handleTimeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const timeValue = e.target.value;
-    const [hours, minutes] = timeValue.split(':').map(Number);
+    let [hours, minutes] = timeValue.split(':');
+    hours = hours ? hours.padStart(0, "2") : "0";
+    minutes = minutes ? minutes.padStart(0, "2") : "0";
     
     // Use a data atual se não houver um dateTime definido
     const currentDateTime = dateTime || new Date();
 
     const newDateTime = new Date(currentDateTime);
-    newDateTime.setHours(hours, minutes);
+    newDateTime.setHours(parseInt(hours), parseInt(minutes) || 0);
     
     setDateTime(newDateTime);
     onChange(newDateTime);
