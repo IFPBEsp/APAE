@@ -41,6 +41,7 @@
     "tailwind-merge": "^3.3.1",
     "use-mask-input": "^3.5.1",
     "zod": "^4.0.17"
+    "tailwind-merge": "^3.3.1"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",

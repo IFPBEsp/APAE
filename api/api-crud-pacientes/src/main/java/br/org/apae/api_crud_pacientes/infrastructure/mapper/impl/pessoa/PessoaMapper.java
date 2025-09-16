@@ -9,7 +9,6 @@ import br.org.apae.api_crud_pacientes.domain.model.pessoa.VO.Identidade;
 import br.org.apae.api_crud_pacientes.domain.model.pessoa.VO.RegistroCivil;
 import br.org.apae.api_crud_pacientes.infrastructure.entity.*;
 import br.org.apae.api_crud_pacientes.infrastructure.mapper.PessoaMapperInterface;
-import br.org.apae.api_crud_pacientes.infrastructure.mapper.impl.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -162,6 +161,7 @@ public class PessoaMapper implements PessoaMapperInterface<PessoaRequest, Pessoa
                 .stream()
                 .map(r -> new PessoaResponsavel(
                         r.getId(),
+                        r.getNome(),
                         r.getOndeProcurar(),
                         r.isVivo(),
                         r.getProfissao(),

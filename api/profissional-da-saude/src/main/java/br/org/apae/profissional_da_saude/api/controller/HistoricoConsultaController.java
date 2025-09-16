@@ -11,6 +11,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/historico-consultas")
@@ -32,21 +33,21 @@ public class HistoricoConsultaController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<HistoricoConsultaResponseDTO> buscarPorId(@PathVariable Long id) {
+    public ResponseEntity<HistoricoConsultaResponseDTO> buscarPorId(@PathVariable UUID id) {
         HistoricoConsultaResponseDTO response = service.buscarPorId(id);
         return ResponseEntity.ok(response);
     }
 
     @PutMapping("/{id}")
     public ResponseEntity<HistoricoConsultaResponseDTO> atualizar(
-            @PathVariable Long id,
+            @PathVariable UUID id,
             @RequestBody @Valid HistoricoConsultaUpdateDTO dto) {
         HistoricoConsultaResponseDTO response = service.atualizar(id, dto);
         return ResponseEntity.ok(response);
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deletar(@PathVariable Long id) {
+    public ResponseEntity<Void> deletar(@PathVariable UUID id) {
         service.deletar(id);
         return ResponseEntity.noContent().build();
     }

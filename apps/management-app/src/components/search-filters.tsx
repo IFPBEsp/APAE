@@ -1,6 +1,5 @@
 "use client";
 
-import { useState, useEffect } from "react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import {
@@ -10,9 +9,26 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { ChevronDown, Search } from "lucide-react";
+import { cn } from "@/lib/utils";
 
-export function SearchFilters() {
-  const [activeFilter, setActiveFilter] = useState('medico'); 
+interface SearchFiltersProps {
+  readonly searchName?: string;
+  readonly setSearchName?: (name: string) => void;
+  readonly activeFilter: string;
+  readonly setActiveFilter: (filter: string) => void;
+  readonly activeStatus: string;
+  readonly setActiveStatus: (status: string) => void;
+}
+
+export function SearchFilters({
+  searchName,
+  setSearchName,
+  activeFilter,
+  setActiveFilter,
+  activeStatus,
+  setActiveStatus,
+}: SearchFiltersProps) {
+  const statusItems = ["Todos", "Ativo", "Inativo", "Em Fila"];
 
   return (
     <div className="flex items-center gap-[103px]">
@@ -22,6 +38,8 @@ export function SearchFilters() {
           <Input
             placeholder="Busque aqui"
             className="pl-10 h-[36px] border-2 border-[#0D4F97] rounded-[5px] placeholder-[#0D4F97]"
+            defaultValue={""}
+            onChange={(e) => setSearchName?.(e.target.value)}
           />
         </div>
 
@@ -31,30 +49,50 @@ export function SearchFilters() {
               variant="outline"
               className="w-[98px] h-[36px] border-2 border-[#003B93] rounded-[5px] justify-between text-[#003B93] hover:text-[#003B93] hover:bg-slate-50"
             >
-              Todos
+              <span>{activeStatus}</span>
               <ChevronDown className="h-4 w-4" />
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end" className="w-[120px]">
-            <DropdownMenuItem>Ativos</DropdownMenuItem>
-            <DropdownMenuItem>Inativos</DropdownMenuItem>
-            <DropdownMenuItem>Em Fila</DropdownMenuItem>
+            {statusItems.map((status) => (
+              <DropdownMenuItem
+                key={status}
+                onClick={() => setActiveStatus(status)}
+                className={cn({ "bg-slate-100": activeStatus === status })}
+              >
+                {status}
+              </DropdownMenuItem>
+            ))}
           </DropdownMenuContent>
         </DropdownMenu>
       </div>
 
       <div className="flex items-center gap-2">
         <Button
-          className={`${activeFilter === 'medico' ? 'bg-[#0D4F97] text-white' : 'bg-white text-[#0D4F97] border border-[#0D4F97]' } h-[36px] px-4 rounded-[5px] hover:bg-[#0b427d] hover:text-white`}
-          onClick={() => setActiveFilter('medico')}
+          className={`${
+            activeFilter === "paciente"
+              ? "bg-[#0D4F97] text-white"
+              : "bg-white text-[#0D4F97] border border-[#0D4F97]"
+          } h-[36px] px-4 rounded-[5px] hover:bg-[#0b427d] hover:text-white`}
+          onClick={() => {
+            setActiveFilter("paciente");
+            setActiveStatus("Ativo");
+          }}
         >
-          Médico
+          Pacientes
         </Button>
         <Button
-          className={`${activeFilter === 'escolar' ? 'bg-[#0D4F97] text-white' : 'bg-white text-[#0D4F97] border border-[#0D4F97]' } h-[36px] px-4 rounded-[5px] hover:bg-[#0b427d] hover:text-white`}
-          onClick={() => setActiveFilter('escolar')}
+          className={`${
+            activeFilter === "aluno"
+              ? "bg-[#0D4F97] text-white"
+              : "bg-white text-[#0D4F97] border border-[#0D4F97]"
+          } h-[36px] px-4 rounded-[5px] hover:bg-[#0b427d] hover:text-white`}
+          onClick={() => {
+            setActiveFilter("aluno");
+            setActiveStatus("Todos");
+          }}
         >
-          Escolar
+          Alunos
         </Button>
       </div>
     </div>

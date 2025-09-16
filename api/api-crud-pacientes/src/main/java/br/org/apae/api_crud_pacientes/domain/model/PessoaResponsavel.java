@@ -12,6 +12,7 @@ public class PessoaResponsavel {
   }
 
   private UUID id;
+  private String nome;
   private String ondeProcurar;
   private boolean vivo;
   private String profissao;
@@ -24,6 +25,7 @@ public class PessoaResponsavel {
 
   public PessoaResponsavel(
       UUID id,
+      String nome,
       String ondeProcurar,
       boolean vivo,
       String profissao,
@@ -32,6 +34,7 @@ public class PessoaResponsavel {
       String emergencia,
       TipoResponsavel tipoResponsavel) {
     this.id = id;
+    this.nome = nome;
     this.ondeProcurar = ondeProcurar;
     this.vivo = vivo;
     this.profissao = profissao;
@@ -54,6 +57,14 @@ public class PessoaResponsavel {
 
   public void setId(UUID id) {
     this.id = id;
+  }
+  
+  public String getNome() {
+    return nome;
+  }
+
+  public void setNome(String nome) {
+    this.nome = nome;
   }
 
   public String getOndeProcurar() {

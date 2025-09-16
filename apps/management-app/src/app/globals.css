@@ -1,5 +1,13 @@
+@import url("https://fonts.googleapis.com/css2?family=Baloo+2:wght@400..800&display=swap");
 @import "tailwindcss";
 @import "tw-animate-css";
+
+
+.font-baloo{
+   font-family: "Baloo 2", sans-serif;
+  font-optical-sizing: auto;
+  
+}
 
 @custom-variant dark (&:is(.dark *));
 
