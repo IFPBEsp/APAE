@@ -12,8 +12,9 @@ export default function PatientsAndStudentsScreen() {
   const [patients, setPatients] = useState<Patient[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [activeFilter, setActiveFilter] = useState('paciente');
-  const [activeStatus, setActiveStatus] = useState('Todos');
+  const [activeFilter, setActiveFilter] = useState<string>("paciente");
+  const [activeStatus, setActiveStatus] = useState<string>("Todos");
+  const [searchName, setSearchName] = useState<string>("");
 
   useEffect(() => {
     const loadData = async () => {
@@ -23,6 +24,7 @@ export default function PatientsAndStudentsScreen() {
         const data = await response.json();
         setPatients(data);
       } catch (err) {
+        console.error("Erro ao buscar dados:", err);
         setError("Não foi possível carregar os dados.");
       } finally {
         setIsLoading(false);
@@ -39,17 +41,27 @@ export default function PatientsAndStudentsScreen() {
       return <p className="text-center text-red-500">{error}</p>;
     }
 
-    const filteredPatients = patients.filter(patient => {
-      const isCorrectType = (activeFilter === 'paciente' && patient.status === 'Ativo') ||
-                           (activeFilter === 'aluno' && patient.status !== 'Ativo');
+    const filteredPatients = patients.filter((patient) => {
+      const isCorrectType =
+        (activeFilter === "paciente" && patient.status === "Ativo") ||
+        (activeFilter === "aluno" && patient.status !== "Ativo");
 
-      const isCorrectStatus = activeStatus === 'Todos' || patient.status === activeStatus;
+      const isCorrectStatus =
+        activeStatus === "Todos" || patient.status === activeStatus;
 
-      return isCorrectType && isCorrectStatus;
+      const matchesSearch =
+        searchName.trim() === "" ||
+        patient.nome?.toLowerCase().includes(searchName.toLowerCase());
+
+      return isCorrectType && isCorrectStatus && matchesSearch;
     });
 
     if (filteredPatients.length === 0) {
-      return <p className="text-center text-gray-500">Nenhum resultado encontrado.</p>;
+      return (
+        <p className="text-center text-gray-500">
+          Nenhum resultado encontrado.
+        </p>
+      );
     }
 
     return (
@@ -65,12 +77,14 @@ export default function PatientsAndStudentsScreen() {
     <div className="!bg-slate-100 min-h-screen">
       <main className="container mx-auto p-4 md:p-6">
         <div className="bg-white rounded-xl shadow-md border-2 p-6 mb-4">
-            <SearchFilters
-              activeFilter={activeFilter}
-              setActiveFilter={setActiveFilter}
-              activeStatus={activeStatus}
-              setActiveStatus={setActiveStatus}
-            />
+          <SearchFilters
+            searchName={searchName}
+            setSearchName={setSearchName}
+            activeFilter={activeFilter}
+            setActiveFilter={setActiveFilter}
+            activeStatus={activeStatus}
+            setActiveStatus={setActiveStatus}
+          />
         </div>
 
         <section className="relative md:bg-white md:rounded-xl md:shadow-md md:border-2 md:p-6">

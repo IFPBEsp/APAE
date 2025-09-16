@@ -30,9 +30,11 @@ export default function FileFilter({
   categoryTypes,
 }: FileFilterProps) {
   return (
-    <div className="flex justify-center gap-4 mb-4">
+    <div className="flex justify-center gap-4 items-center">
       {/* Filtro de ano */}
-      <Select onValueChange={(value) => onYearChange(value === "all" ? null : value)}>
+      <Select
+        onValueChange={(value) => onYearChange(value === "all" ? null : value)}
+      >
         <SelectTrigger className={`${selectStyle} ${textColor}`}>
           <SelectValue className={textColor} placeholder="Ano" />
         </SelectTrigger>
@@ -49,7 +51,9 @@ export default function FileFilter({
       </Select>
 
       {/* Filtro de tipo */}
-      <Select onValueChange={(value) => onTypeChange(value === "all" ? null : value)}>
+      <Select
+        onValueChange={(value) => onTypeChange(value === "all" ? null : value)}
+      >
         <SelectTrigger className={`${selectStyle} ${textColor}`}>
           <SelectValue className={textColor} placeholder="Tipo" />
         </SelectTrigger>
