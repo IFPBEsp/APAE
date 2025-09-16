@@ -63,6 +63,15 @@ export const createAuthAPI = async () => {
   return makeInterceptors(api);
 };
 
+export const createDocumentsAPI = async () => {
+  const api = createAxiosInstance(
+    process.env.NEXT_PUBLIC_API_URL_DOCUMENTS ||
+      "http://localhost:8092/api/documents"
+  );
+
+  return makeInterceptors(api);
+};
+
 export const createPersonApi = async () => {
   const api_pessoas = createAxiosInstance(
     process.env.NEXT_PUBLIC_API_URL_PERSON || "http://localhost:8090/pessoas"
