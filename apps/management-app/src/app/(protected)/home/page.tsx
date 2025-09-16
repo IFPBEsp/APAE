@@ -7,6 +7,7 @@ import { Plus } from "lucide-react";
 import { PatientCard } from "@/components/patient-card";
 import { Patient } from "@/schemas/authSchema";
 import { SearchFilters } from "@/components/search-filters";
+import { toast } from "react-toastify";
 
 export default function PatientsAndStudentsScreen() {
   const [patients, setPatients] = useState<Patient[]>([]);
@@ -26,6 +27,7 @@ export default function PatientsAndStudentsScreen() {
       } catch (err) {
         console.error("Erro ao buscar dados:", err);
         setError("Não foi possível carregar os dados.");
+        toast.error(error);
       } finally {
         setIsLoading(false);
       }

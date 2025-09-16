@@ -10,11 +10,11 @@ import {
 } from "@/components/ui/select";
 
 type FileFilterProps = {
-  year: string | null;
-  type: string | null;
-  onYearChange: (year: string | null) => void;
-  onTypeChange: (type: string | null) => void;
-  categoryTypes: string[];
+  readonly year: string;
+  readonly type: string;
+  readonly onYearChange: (year: string) => void;
+  readonly onTypeChange: (type: string) => void;
+  readonly categoryTypes: string[];
 };
 
 const years = [2023, 2024, 2025];
@@ -25,23 +25,20 @@ const selectStyle =
 const textColor = "text-[#0d4f97]";
 
 export default function FileFilter({
+  year,
+  type,
   onYearChange,
   onTypeChange,
   categoryTypes,
 }: FileFilterProps) {
+  console.log(type);
   return (
     <div className="flex justify-center gap-4 items-center">
-      {/* Filtro de ano */}
-      <Select
-        onValueChange={(value) => onYearChange(value === "all" ? null : value)}
-      >
+      <Select onValueChange={(value) => onYearChange(value)} value={year}>
         <SelectTrigger className={`${selectStyle} ${textColor}`}>
           <SelectValue className={textColor} placeholder="Ano" />
         </SelectTrigger>
         <SelectContent>
-          <SelectItem value="all" className={textColor}>
-            Ano
-          </SelectItem>
           {years.map((y) => (
             <SelectItem key={y} value={String(y)} className={textColor}>
               {y}
@@ -50,18 +47,15 @@ export default function FileFilter({
         </SelectContent>
       </Select>
 
-      {/* Filtro de tipo */}
       <Select
-        onValueChange={(value) => onTypeChange(value === "all" ? null : value)}
+        onValueChange={(value) => onTypeChange(value)}
+        value={type.toLowerCase()}
       >
         <SelectTrigger className={`${selectStyle} ${textColor}`}>
           <SelectValue className={textColor} placeholder="Tipo" />
         </SelectTrigger>
         <SelectContent>
-          <SelectItem value="all" className={textColor}>
-            Tipo
-          </SelectItem>
-          {categoryTypes.map((t) => (
+          {types.map((t) => (
             <SelectItem key={t} value={t} className={textColor}>
               {t.charAt(0).toUpperCase() + t.slice(1)}
             </SelectItem>
