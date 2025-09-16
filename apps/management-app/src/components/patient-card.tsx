@@ -18,16 +18,18 @@ const statusTextStyles = {
   "Em Fila": "text-[#9f9e9e]",
 };
 
+const statusBorderStyles = {
+    Ativo: "border-2 border-[#5db993]",
+    Inativo: "border-2 border-[#ac3637]",
+    "Em Fila": "border border-[#9f9e9e]"
+}
+
 export function PatientCard({ patient }: PatientCardProps) {
   return (
     <Card
       className={cn(
         "overflow-hidden relative rounded-lg shadow-md/30",
-        {
-          "border-2 border-[#ac3637]": patient.status === "Inativo",
-          "border-2 border-[#5db993]": patient.status === "Ativo",
-          "border border-[#9f9e9e]": patient.status !== "Inativo" && patient.status !== "Ativo",
-        }
+        statusBorderStyles[patient.status]
       )}
     >
       <Button
@@ -44,7 +46,6 @@ export function PatientCard({ patient }: PatientCardProps) {
         <div className="flex items-center gap-4">
           <div className="flex flex-col items-center gap-2 flex-shrink-0">
             <Avatar className="h-20 w-20 border">
-              {/* Ajustes para nome opcional */}
               <AvatarImage src={patient.urlFoto} alt={patient.nome ?? "Foto do paciente"} />
               <AvatarFallback>{patient.nome?.charAt(0) ?? 'P'}</AvatarFallback>
             </Avatar>
@@ -56,7 +57,6 @@ export function PatientCard({ patient }: PatientCardProps) {
 
           <div className="flex-1 flex flex-col h-full">
             <div>
-              {/* Ajuste para nome opcional */}
               <h3 className="text-base font-bold text-[#235d9b]">{patient.nome ?? "Nome não informado"}</h3>
               <div className="!text-[12px] text-[#235d9b] font-bold mt-1 space-y-0.5">
                 <p>CPF: {patient.cpf}</p>
