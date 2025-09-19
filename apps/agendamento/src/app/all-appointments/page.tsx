@@ -38,16 +38,27 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Agendamento, getAgendamentos, getAreasDaSaude } from "../services/agendamentoService";
+import {
+  Agendamento,
+  getAgendamentos,
+  getAreasDaSaude,
+} from "../services/agendamentoService";
 import { separaETransformaEmNumero } from "@/lib/utils";
 import Link from "next/link";
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
 import { AppointmentForm } from "@/components/forms/AppointmentForm";
 
 type Area = {
   id: number;
   name: string;
-}
+};
 
 export default function AllApointments() {
   const [selectedDate, setSelectedDate] = useState<Date | undefined>(undefined);
@@ -60,7 +71,9 @@ export default function AllApointments() {
     const fetchAppointments = async () => {
       const response = await getAgendamentos();
       setAppointments(response);
-      const areasExistentes: Area[] = (await getAreasDaSaude()).map((area, index) => ({ id: index, name: area } as Area));
+      const areasExistentes: Area[] = (await getAreasDaSaude()).map(
+        (area, index) => ({ id: index, name: area } as Area)
+      );
       setAreas(areasExistentes);
     };
     fetchAppointments();
@@ -93,6 +106,19 @@ export default function AllApointments() {
       matchesDate
     );
   });
+
+  const dataPassou = (data: string, horario: string) => {
+    const [ano, mes, dia] = data.split("-");
+    const [hora, minuto, segundo] = horario.split(":");
+    const emDate = new Date(parseInt(ano), parseInt(mes), parseInt(dia), parseInt(hora), parseInt(minuto), parseInt(segundo));
+    const agora = new Date();
+
+    return agora > emDate;
+  }
+
+  const semJustificativa = appointments.filter(
+    (appointment) => dataPassou(appointment.proximaConsulta, appointment.horaProximaConsulta) && !appointment.justificativa
+  );
 
   const clearFilter = () => {
     setSelectedArea("");
@@ -162,20 +188,17 @@ export default function AllApointments() {
           <InfoCard
             title="Sem justificativa"
             icon={MessageCircleWarning}
-            value={
-              appointments.filter(
-                (appointment) =>
-                  !appointment.confirmado && !appointment.justificativa
-              ).length
-            }
+            value={semJustificativa.length}
             iconColor="text-red-400"
             subtitle="Pacientes que não justificaram suas faltas"
           />
           <InfoCard
             title="Não confirmados"
             icon={CalendarX}
-            value={appointments.filter((appointment) => !appointment.confirmado)
-                .length}
+            value={
+              appointments.filter((appointment) => !appointment.confirmado)
+                .length
+            }
             subtitle="Consultas que não foram confirmadas"
           />
         </div>

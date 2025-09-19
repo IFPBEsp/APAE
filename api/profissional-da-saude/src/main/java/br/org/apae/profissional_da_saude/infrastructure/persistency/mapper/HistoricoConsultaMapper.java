@@ -15,6 +15,7 @@ public class HistoricoConsultaMapper {
         HistoricoConsulta historico = new HistoricoConsulta();
         historico.setIdAgendamento(dto.getIdAgendamento());
         historico.setDataConsulta(dto.getDataConsulta());
+        historico.setHoraConsulta(dto.getHoraConsulta());
         historico.setFoiRealizada(dto.getFoiRealizada());
         historico.setJustificativa(dto.getJustificativa());
         historico.setDataCriacao(LocalDateTime.now());
@@ -26,6 +27,7 @@ public class HistoricoConsultaMapper {
         dto.setId(historico.getId());
         dto.setIdAgendamento(historico.getIdAgendamento());
         dto.setDataConsulta(historico.getDataConsulta());
+        dto.setHoraConsulta(historico.getHoraConsulta());
         dto.setFoiRealizada(historico.isFoiRealizada());
         dto.setJustificativa(historico.getJustificativa());
         dto.setDataCriacao(historico.getDataCriacao());

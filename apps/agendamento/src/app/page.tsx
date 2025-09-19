@@ -40,24 +40,31 @@ import {
 import { AppointmentForm } from "@/components/forms/AppointmentForm";
 import { InfoCard } from "@/components/shared/InfoCard";
 import Link from "next/link";
-import { Agendamento, getAgendamentos } from "./services/agendamentoService";
+import {Agendamento, getAgendamentos, toggleConfirmacao} from "./services/agendamentoService";
+import { Checkbox } from "@/components/ui/checkbox";
 
 export default function DashboardPage() {
   const [selectedDate, setSelectedDate] = useState<Date>(new Date());
   const [appointments, setAppointments] = useState<Agendamento[]>([]);
   const [allAppointments, setAllAppointments] = useState<Agendamento[]>([]);
 
-  useEffect(() => {
-    const fetchAppointments = async () => {
-      const todayAppointments = await getAgendamentos(
+  const fetchAppointments = async () => {
+    const todayAppointments = await getAgendamentos(
         format(selectedDate, "yyyy-MM-dd")
-      );
-      const allExistingAppointments = await getAgendamentos();
-      setAppointments(todayAppointments);
-      setAllAppointments(allExistingAppointments);
-    };
+    );
+    const allExistingAppointments = await getAgendamentos();
+    setAppointments(todayAppointments);
+    setAllAppointments(allExistingAppointments);
+  };
+
+  useEffect(() => {
     fetchAppointments();
   }, [selectedDate]);
+
+  const confirmarAgendamento = async (id: string) => {
+    await toggleConfirmacao(id);
+    fetchAppointments();
+  };
 
   return (
     <div className="min-h-screen w-full text-sm overflow-x-hidden">
@@ -172,6 +179,9 @@ export default function DashboardPage() {
                   <TableHead className="px-3 py-2 text-xs sm:px-4 sm:py-3 sm:text-sm">
                     Ações
                   </TableHead>
+                  <TableHead className="px-3 py-2 text-xs sm:px-4 sm:py-3 sm:text-sm">
+                    Confirmada
+                  </TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -200,6 +210,12 @@ export default function DashboardPage() {
                       >
                         Detalhes
                       </Link>
+                    </TableCell>
+                    <TableCell className="px-3 py-2 text-xs sm:px-4 sm:py-3 sm:text-sm">
+                      <Checkbox
+                          checked={item.confirmado}
+                          onCheckedChange={() => confirmarAgendamento(item.id)}
+                      />
                     </TableCell>
                   </TableRow>
                 ))}

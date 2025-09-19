@@ -12,6 +12,7 @@ public class PessoaResponsavel {
   }
 
   private UUID id;
+  private String nome;
   private String ondeProcurar;
   private boolean vivo;
   private String profissao;
@@ -19,21 +20,21 @@ public class PessoaResponsavel {
   private String cpf;
   private String emergencia;
   private TipoResponsavel tipoResponsavel;
-  private Pessoa pessoa;
 
   public PessoaResponsavel() {}
 
   public PessoaResponsavel(
       UUID id,
+      String nome,
       String ondeProcurar,
       boolean vivo,
       String profissao,
       String rg,
       String cpf,
       String emergencia,
-      TipoResponsavel tipoResponsavel,
-      Pessoa pessoa) {
+      TipoResponsavel tipoResponsavel) {
     this.id = id;
+    this.nome = nome;
     this.ondeProcurar = ondeProcurar;
     this.vivo = vivo;
     this.profissao = profissao;
@@ -41,15 +42,13 @@ public class PessoaResponsavel {
     this.cpf = cpf;
     this.emergencia = emergencia;
     this.tipoResponsavel = tipoResponsavel;
-    this.pessoa = pessoa;
   }
 
   public PessoaResponsavel(
-      String ondeProcurar, String cpf, TipoResponsavel tipoResponsavel, Pessoa pessoa) {
+      String ondeProcurar, String cpf, TipoResponsavel tipoResponsavel) {
     this.ondeProcurar = ondeProcurar;
     this.cpf = cpf;
     this.tipoResponsavel = tipoResponsavel;
-    this.pessoa = pessoa;
   }
 
   public UUID getId() {
@@ -58,6 +57,14 @@ public class PessoaResponsavel {
 
   public void setId(UUID id) {
     this.id = id;
+  }
+  
+  public String getNome() {
+    return nome;
+  }
+
+  public void setNome(String nome) {
+    this.nome = nome;
   }
 
   public String getOndeProcurar() {
@@ -114,13 +121,5 @@ public class PessoaResponsavel {
 
   public void setTipoResponsavel(TipoResponsavel tipoResponsavel) {
     this.tipoResponsavel = tipoResponsavel;
-  }
-
-  public Pessoa getPessoa() {
-    return pessoa;
-  }
-
-  public void setPessoa(Pessoa pessoa) {
-    this.pessoa = pessoa;
   }
 }

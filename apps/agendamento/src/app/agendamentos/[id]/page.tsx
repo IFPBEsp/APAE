@@ -20,33 +20,17 @@ import { Button } from "@/components/ui/button";
 
 import {
   getAgendamentoById,
-  Agendamento
+  Agendamento,
 } from "@/app/services/agendamentoService";
 import { AppointmentForm } from "@/components/forms/AppointmentForm";
 import TrashButton from "@/components/buttons/trashButton";
-import ConfirmButton from "@/components/buttons/confirmButton";
+import ConfirmaRealizacaoButton from "@/components/buttons/ConfirmaRealizacaoButton";
 import { separaETransformaEmNumero } from "@/lib/utils";
 
 interface PageProps {
   params: {
     id: string;
   };
-}
-
-function getStatusStyle(status: boolean | undefined, data: Date | null) {
-  if (!data) {
-    return { class: "bg-gray-400", text: "Data Inválida" };
-  }
-  const dataAtual = new Date();
-  if (status && data < dataAtual) {
-    return { class: "bg-[#0D9767]", text: "Consulta Realizada" };
-  } else if (status) {
-    return { class: "bg-[#0D4F97]", text: "Consulta Confirmada" };
-  } else if (data > dataAtual) {
-    return { class: "bg-[#f0bc1f]", text: "Consulta Pendente" };
-  } else {
-    return { class: "bg-[#970D0D]", text: "Consulta Não Realizada" };
-  }
 }
 
 export default async function VisualizarAgendamento({ params }: PageProps) {
@@ -69,6 +53,20 @@ export default async function VisualizarAgendamento({ params }: PageProps) {
     !isNaN(segundo)
       ? new Date(ano, mes, dia, hora, minuto, segundo)
       : null;
+
+  const getStatusStyle = (status: boolean | undefined, data: Date | null) => {
+    if (!data) {
+      return { class: "bg-gray-400", text: "Data Inválida" };
+    }
+    const dataAtual = new Date();
+    if (status) {
+      return { class: "bg-[#0D4F97]", text: "Consulta Confirmada" };
+    } else if (data > dataAtual) {
+      return { class: "bg-[#f0bc1f]", text: "Consulta Pendente" };
+    } else {
+      return { class: "bg-[#970D0D]", text: "Consulta Não Realizada" };
+    }
+  };
   const statusInfo = getStatusStyle(agendamento.confirmado, dataHoraDate);
 
   return (
@@ -121,8 +119,8 @@ export default async function VisualizarAgendamento({ params }: PageProps) {
                   <AppointmentForm agendamentoAEditar={agendamento} />
                 </DialogContent>
               </Dialog>
-              <TrashButton id={id} />
-              <ConfirmButton id={id} />
+              <TrashButton id={id} realizado={false} />
+              <ConfirmaRealizacaoButton id={id} />
             </CardAction>
           </CardHeader>
           <CardContent>
@@ -165,11 +163,15 @@ export default async function VisualizarAgendamento({ params }: PageProps) {
             </div>
             <div className="mb-2">
               <p className="font-medium mb-1">Descrição: </p>
-              <p className="break-words whitespace-pre-wrap">{agendamento.descricao || "—"}</p>
+              <p className="break-words whitespace-pre-wrap">
+                {agendamento.descricao || "—"}
+              </p>
             </div>
             <div className="mb-3">
               <p className="font-medium mb-1">Justificativa: </p>
-              <p className="break-words whitespace-pre-wrap">{agendamento.justificativa || "—"}</p>
+              <p className="break-words whitespace-pre-wrap">
+                {agendamento.justificativa || "—"}
+              </p>
             </div>
           </CardContent>
         </Card>
@@ -262,74 +264,6 @@ export default async function VisualizarAgendamento({ params }: PageProps) {
             <div className="flex mb-3">
               <p className="font-medium mr-2">CEP: </p>
               <p>{agendamento.paciente.cep || "—"}</p>
-            </div>
-          </CardContent>
-        </Card>
-
-        {/* Card Informações de Saúde do Paciente */}
-        <Card className="text-[#0D4F97] mb-7">
-          <CardHeader>
-            <CardTitle className="font-bold text-center text-lg md:text-xl">
-              Informações de Saúde do Paciente
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="flex flex-col mb-2">
-              <p className="font-medium mb-1">Vacinas que tomou: </p>
-              <div className="flex flex-wrap gap-2 justify-evenly">
-                {(agendamento.paciente.vacinacoes || []).map(
-                  (vacina: string, i: number) => (
-                    <p key={i}>{vacina}</p>
-                  )
-                )}
-              </div>
-            </div>
-            <div className="flex flex-col mb-2">
-              <p className="font-medium mr-2">Doenças que já teve: </p>
-              <div className="flex flex-wrap gap-2 justify-start">
-                {(agendamento.paciente?.doencas || []).map(
-                  (doenca: string, index: number, array: string[]) => (
-                    <p key={index}>
-                      {doenca}
-                      {index < array.length - 1 ? "," : "."}
-                    </p>
-                  )
-                )}
-              </div>
-            </div>
-            <div className="flex flex-col mb-2">
-              <p className="font-medium mr-2">Alergias: </p>
-              <div className="flex flex-wrap gap-2 justify-start">
-                {(agendamento.paciente?.alergias || []).map(
-                  (alergia: string, index: number, array: string[]) => (
-                    <p key={index}>
-                      {alergia}
-                      {index < array.length - 1 ? "," : "."}
-                    </p>
-                  )
-                )}
-              </div>
-            </div>
-            <div className="flex flex-col mb-2">
-              <p className="font-medium mr-2">Tipo de medicação que toma: </p>
-              <div className="flex flex-wrap gap-2 justify-start">
-                {(agendamento.paciente?.medicacoes || []).map(
-                  (medicacao: string, index: number, array: string[]) => (
-                    <p key={index}>
-                      {medicacao}
-                      {index < array.length - 1 ? "," : "."}
-                    </p>
-                  )
-                )}
-              </div>
-            </div>
-            <div className="flex mb-3">
-              <p className="font-medium mr-2">Tipo de deficiência: </p>
-              <p>{agendamento.paciente?.deficiencias || "—"}</p>
-            </div>
-            <div className="flex mb-3">
-              <p className="font-medium mr-2">Tipo de atendimento: </p>
-              <p>{agendamento.paciente?.tiposAtendimentos || "—"}</p>
             </div>
           </CardContent>
         </Card>
