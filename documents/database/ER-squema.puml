@@ -1,0 +1,166 @@
+## Conceptual Data Model
+
+### Version (Person/Professional)
+```plantuml-svg
+@startuml
+
+left to right direction
+skinparam ClassBorderThickness 1 
+skinparam MinClassWidth 200 
+skinparam RoundCorner 20 
+skinparam nodesep 100 
+skinparam ranksep 150 
+skinparam linetype ortho 
+hide circle
+
+
+entity "Endereço" as Address {
+	id
+	--
+	cidade
+	cep
+	estado
+	bairro
+	rua
+	numero
+	complemento
+}
+
+entity "Paciente" as Person {
+	id
+	--
+	nome completo
+	naturalidade
+	data de nascimento
+	contato
+	numero registro de nascimento
+	cartorio
+	FLs
+	livro
+	rg
+	data de emissao
+	orgao emissor
+	cpf
+	cns
+	nis
+	data de cadastro
+	alergias
+	isAluno
+}
+
+entity "Vacina" as Vaccine {
+	nome
+}
+
+entity "Pais" as Parent {
+	id
+	--
+	nome
+	rg
+	cpf
+	vivo
+	profissao
+	parentesco 'pai ou mãe
+}
+
+entity "Cadastro anual" as Historic {
+	id
+	--
+	bpc
+	doencas
+	renda familiar
+	ano
+}
+
+entity "Responsável" as Guardian {
+	id
+	--
+	nome
+	contato
+	parentesco
+}
+
+entity "Atendimento" as Service {
+	nome
+	--
+	descricao
+}
+
+entity "Trasntorno" as Deficiency {
+	nome
+	--
+	descricao
+}
+
+entity "Agendamento" as Schedule {
+	id
+	--
+	frequencia de dias
+	proxima consulta
+	data_criacao
+}
+
+entity "Faltas" as Absence {
+	id
+	--
+	data_falta
+	justificativa
+	justificada
+	data_criacao
+}
+
+entity "Profissional da saúde" as HealthProfessional {
+	id
+	--
+	nome completo
+	email
+	contato
+	CRM
+	rg
+}
+
+entity "Consulta" as Appointment {
+	id
+	--
+	data_consulta
+	data_criacao
+	justificativa
+	foi_realizada
+}
+
+entity "Disponibilidade" as Availability {
+	dia_da_semana
+	turno
+}
+
+'Relacionamentos de pessoa
+Person "1" -RIGHT- "1" Address
+Person "1" -UP- "N" Guardian
+Person "N" -UP- "N" Vaccine
+Person "1" -DOWN- "N" Historic
+Person "1" -UP- "N" Parent
+
+'Relacionamentos de Cadastro anual
+Historic "1" -- "N" Schedule
+Historic "N" -LEFT- "N" Deficiency
+Historic "N" -RIGHT- "N" Service
+
+'Relacionamentos de Profissional
+HealthProfessional "1" -UP- "1" Address
+HealthProfessional "1" -LEFT- "N" Service
+HealthProfessional "1" -DOWN- "N" Schedule
+
+'Relacionamentos de consulta
+Appointment "1" -RIGHT- "N" Absence
+
+'Relacionamentos de Schedule
+Schedule "1" -RIGHT- "N" Appointment
+
+'Relacionamentos de Endereço
+Address "1" -left- "1" Guardian
+
+'Relaciomaneto de disponibilidade
+HealthProfessional "1" -right- "N" Availability
+
+@enduml
+```
