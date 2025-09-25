@@ -14,7 +14,7 @@ public class AreaSaudeEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
     private Integer id;
-
+    @Column(unique = true)
     private String area;
 
 }
