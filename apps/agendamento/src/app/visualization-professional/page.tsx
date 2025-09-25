@@ -133,14 +133,14 @@ export default function VisualizationProfessionalPage() {
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead>Profissional</TableHead>
-                  <TableHead>Documento</TableHead>
-                  <TableHead>Área</TableHead>
-                  <TableHead className="hidden md:table-cell">
+                  <TableHead className="bg-[#0D4F97]">Profissional</TableHead>
+                  <TableHead className="bg-[#0D4F97]">Documento</TableHead>
+                  <TableHead className="bg-[#0D4F97]">Área</TableHead>
+                  <TableHead className="hidden md:table-cell bg-[#0D4F97]">
                     Telefone
                   </TableHead>
                   <TableHead>
-                    <span className="sr-only">Ações</span>
+                    <span className="sr-only bg-[#0D4F97]">Ações</span>
                   </TableHead>
                 </TableRow>
               </TableHeader>
