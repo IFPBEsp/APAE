@@ -17,4 +17,6 @@ public interface AreaSaudeRepository {
     AreaSaude update(AreaSaude areaSaude);
 
     void deleteById(Integer id);
+
+    boolean existsByArea(String area);
 }
