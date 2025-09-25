@@ -4,6 +4,7 @@ import br.org.apae.profissional_da_saude.api.dto.AreaSaudeCreateDTO;
 import br.org.apae.profissional_da_saude.api.dto.AreaSaudeResponseDTO;
 import br.org.apae.profissional_da_saude.api.dto.AreaSaudeUpdateDTO;
 import br.org.apae.profissional_da_saude.domain.exception.EntidadeNaoEncontradaException;
+import br.org.apae.profissional_da_saude.domain.exception.ValidacaoNegocioException;
 import br.org.apae.profissional_da_saude.domain.model.AreaSaude;
 import br.org.apae.profissional_da_saude.domain.repository.AreaSaudeRepository;
 import br.org.apae.profissional_da_saude.infrastructure.persistency.mapper.AreaSaudeMapper;
@@ -23,6 +24,9 @@ public class AreaSaudeService {
     }
 
     public AreaSaudeResponseDTO save(AreaSaudeCreateDTO dto){
+        if (this.repository.existsByArea(dto.getArea())){
+            throw new ValidacaoNegocioException("Área de saúde já cadastrada.");
+        }
         AreaSaude domain = new AreaSaude(
                 dto.getArea()
         );
