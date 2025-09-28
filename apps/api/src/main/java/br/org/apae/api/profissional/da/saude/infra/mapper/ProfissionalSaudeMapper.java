@@ -1,11 +1,11 @@
-package br.org.apae.api.profissional.da.saude.mapper;
+package br.org.apae.api.profissional.da.saude.infra.mapper;
 
 import br.org.apae.api.common.entity.EnderecoEntity;
 import br.org.apae.api.common.model.Endereco;
 import br.org.apae.api.profissional.da.saude.domain.model.ProfissionalSaude;
 import br.org.apae.api.profissional.da.saude.dto.ProfissionalSaudeCreateDTO;
 import br.org.apae.api.profissional.da.saude.dto.ProfissionalSaudeResponseDTO;
-import br.org.apae.api.profissional.da.saude.entity.ProfissionalSaudeEntity;
+import br.org.apae.api.profissional.da.saude.infra.entity.ProfissionalSaudeEntity;
 import org.springframework.stereotype.Component;
 
 @Component

@@ -1,4 +1,4 @@
-package br.org.apae.api.profissional.da.saude.entity;
+package br.org.apae.api.profissional.da.saude.infra.entity;
 
 import br.org.apae.api.common.entity.EnderecoEntity;
 import jakarta.persistence.*;

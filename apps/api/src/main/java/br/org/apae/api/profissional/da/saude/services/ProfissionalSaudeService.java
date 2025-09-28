@@ -6,10 +6,10 @@ import br.org.apae.api.profissional.da.saude.domain.repository.ProfissionalSaude
 import br.org.apae.api.profissional.da.saude.dto.ProfissionalSaudeCreateDTO;
 import br.org.apae.api.profissional.da.saude.dto.ProfissionalSaudeResponseDTO;
 import br.org.apae.api.profissional.da.saude.dto.ProfissionalSaudeUpdateDTO;
-import br.org.apae.api.profissional.da.saude.entity.ProfissionalSaudeEntity;
-import br.org.apae.api.profissional.da.saude.exceptions.EntidadeNaoEncontradaException;
-import br.org.apae.api.profissional.da.saude.exceptions.ValidacaoNegocioException;
-import br.org.apae.api.profissional.da.saude.mapper.ProfissionalSaudeMapper;
+import br.org.apae.api.profissional.da.saude.infra.entity.ProfissionalSaudeEntity;
+import br.org.apae.api.profissional.da.saude.domain.exceptions.EntidadeNaoEncontradaException;
+import br.org.apae.api.profissional.da.saude.domain.exceptions.ValidacaoNegocioException;
+import br.org.apae.api.profissional.da.saude.infra.mapper.ProfissionalSaudeMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

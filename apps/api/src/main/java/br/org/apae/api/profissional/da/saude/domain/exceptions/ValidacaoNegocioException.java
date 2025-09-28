@@ -1,4 +1,4 @@
-package br.org.apae.api.profissional.da.saude.exceptions;
+package br.org.apae.api.profissional.da.saude.domain.exceptions;
 
 public class ValidacaoNegocioException extends RuntimeException {
     public ValidacaoNegocioException(String menssagem){
