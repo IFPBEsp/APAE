@@ -11,8 +11,8 @@ import br.org.apae.api.auth.application.interfaces.AuthApplicationService;
 import br.org.apae.api.auth.domain.exceptions.AuthenticationException;
 import br.org.apae.api.auth.domain.exceptions.InvalidPasswordException;
 import br.org.apae.api.auth.domain.exceptions.UserNotFoundException;
+import br.org.apae.api.auth.domain.interfaces.TokenProvider;
 import br.org.apae.api.auth.domain.model.User;
-import br.org.apae.api.auth.infrastructure.security.JwtProvider;
 import br.org.apae.api.auth.interfaces.dto.SignInDTO;
 import br.org.apae.api.auth.interfaces.dto.SignUpDTO;
 import br.org.apae.api.auth.interfaces.dto.TokenResponseDTO;
@@ -21,16 +21,16 @@ import br.org.apae.api.auth.interfaces.dto.TokenResponseDTO;
 public class AuthApplicationServiceImpl implements AuthApplicationService {
   private final UserService userService;
   private final PasswordEncoder passwordEncoder;
-  private final JwtProvider jwtProvider;
+  private final TokenProvider tokenProvider;
   private final AuthenticationConfiguration authenticationConfiguration;
 
   public AuthApplicationServiceImpl(UserService userService, PasswordEncoder passwordEncoder,
       AuthenticationConfiguration authenticationConfiguration,
-      JwtProvider jwtProvider) {
+      TokenProvider tokenProvider) {
     this.userService = userService;
     this.passwordEncoder = passwordEncoder;
     this.authenticationConfiguration = authenticationConfiguration;
-    this.jwtProvider = jwtProvider;
+    this.tokenProvider = tokenProvider;
   }
 
   @Override
@@ -54,9 +54,9 @@ public class AuthApplicationServiceImpl implements AuthApplicationService {
       var authentication = authenticationManager.authenticate(authenticationToken);
 
       UserDetails userDetails = (UserDetails) authentication.getPrincipal();
-      String jwt = jwtProvider.generateToken((User) userDetails);
+      String token = tokenProvider.generateToken((User) userDetails);
 
-      return new TokenResponseDTO(jwt);
+      return new TokenResponseDTO(token);
     } catch (UserNotFoundException | InvalidPasswordException e) {
       throw e;
     } catch (Exception e) {
