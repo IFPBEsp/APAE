@@ -10,33 +10,43 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Past;
 
 public record UpdatePatientDTO(
-        @NotBlank(message = "O campo nome completo é obrigatório.") String fullName,
+        @NotBlank(message = "O nome completo não pode estar em branco")
+        String fullName,
 
-        String birthplace,
+        @NotBlank(message = "A naturalidade não pode estar em branco")
+        String nationality,
 
-        @NotNull(message = "O campo data de nascimento é obrigatório.") @Past(message = "A data de nascimento deve ser no passado.") LocalDate birthDate,
-
+        @NotNull(message = "A data de nascimento não pode ser nula")
+        @Past(message = "A data de nascimento deve ser uma data no passado")
+        LocalDate birthDate,
         String contact,
         String birthCertificateNumber,
         String registryOffice,
         String fls,
-        String livro,
+        String book,
         String rg,
         LocalDate issueDate,
         String issuingAgency,
         String cpf,
         String cns,
         String nis,
-
-        @NotNull(message = "O campo data de cadastro é obrigatório.") LocalDate registrationDate,
+        @NotNull(message = "A data de cadastro não pode ser nula")
+        LocalDate registrationDate,
 
         String allergies,
+        Boolean isStudent,
 
-        @NotNull(message = "O campo 'é aluno' é obrigatório.") Boolean isStudent,
+        @NotNull(message = "Os dados de endereço são obrigatórios")
+        @Valid
+        UpdateAddressDTO address,
 
-        @NotNull(message = "O campo endereço é obrigatório.") @Valid UpdateAddressDTO address,
+        @NotNull(message = "Os dados do responsável são obrigatórios")
+        @Valid
+        UpdateGuardianDTO guardian,
 
-        @NotNull(message = "O campo responsável é obrigatório.") @Valid UpdateGuardianDTO guardian,
-
-        @NotEmpty(message = "A lista de pais/responsáveis não pode estar vazia.") @Valid List<UpdateParentDTO> parents) {
+        @NotEmpty(message = "É necessário fornecer os dados de pelo menos um pai ou responsável legal")
+        @Valid
+        List<UpdateParentDTO> parents
+) {
 }
+

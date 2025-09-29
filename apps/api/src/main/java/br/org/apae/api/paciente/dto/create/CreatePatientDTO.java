@@ -19,18 +19,23 @@ public record CreatePatientDTO(
 
         @NotNull(message = "A data de nascimento não pode ser nula")
         @Past(message = "A data de nascimento deve ser uma data no passado")
-        LocalDate dateOfBirth,
+        LocalDate birthDate,
 
-        @NotBlank(message = "O contato não pode estar em branco")
         String contact,
-
-        String birthRecord,
+        String birthCertificateNumber,
+        String registryOffice,
         String fls,
         String book,
+        String rg,
         LocalDate issueDate,
-        String issuingAuthority,
+        String issuingAgency,
         String cpf,
         String cns,
+        String nis,
+
+        @NotNull(message = "A data de cadastro não pode ser nula")
+        LocalDate registrationDate,
+
         String allergies,
         Boolean isStudent,
 

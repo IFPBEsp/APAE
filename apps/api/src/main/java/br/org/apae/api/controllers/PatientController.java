@@ -32,7 +32,7 @@ public class PatientController {
             @ApiResponse(responseCode = "201", description = "Paciente cadastrado com sucesso"),
             @ApiResponse(responseCode = "400", description = "Dados inválidos fornecidos")
     })
-    @PostMapping
+    @PostMapping("/create")
     public ResponseEntity<Void> createPatient(@RequestBody @Valid CreatePatientDTO createPatientDTO) {
         patientFacade.createPatient(createPatientDTO);
         return ResponseEntity.status(201).build();
