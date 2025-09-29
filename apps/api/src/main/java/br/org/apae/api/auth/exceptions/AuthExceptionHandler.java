@@ -60,11 +60,11 @@ public class AuthExceptionHandler {
   public ResponseEntity<ErrorResponse> handleTokenVerification(TokenVerificationException ex,
       HttpServletRequest request) {
     ErrorResponse error = new ErrorResponse(
-        HttpStatus.INTERNAL_SERVER_ERROR.value(),
-        HttpStatus.INTERNAL_SERVER_ERROR.getReasonPhrase(),
+        HttpStatus.UNAUTHORIZED.value(),
+        HttpStatus.UNAUTHORIZED.getReasonPhrase(),
         ex.getMessage(),
         request.getRequestURI());
-    return new ResponseEntity<>(error, HttpStatus.INTERNAL_SERVER_ERROR);
+    return new ResponseEntity<>(error, HttpStatus.UNAUTHORIZED);
   }
 
   @ExceptionHandler(InvalidPasswordException.class)
