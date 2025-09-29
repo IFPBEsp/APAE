@@ -12,7 +12,7 @@ import jakarta.persistence.Table;
 import java.util.UUID;
 
 @Entity
-@Table(name = "pais")
+@Table(name = "Pais")
 public class Parent {
 
     @Id
