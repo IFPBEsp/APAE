@@ -60,11 +60,10 @@ export default function Disponibilidade({ control, watch }: DisponibilidadeProps
             {turnos.map((turno) => (
               <TableRow key={turno.id}>
                 <TableCell className="font-medium">{turno.label}</TableCell>
-
                 {diasDaSemana.map((dia) => {
-                  const index = watch("disponibilidade").findIndex(
-                    (d: DisponibilidadeType) =>
-                      d.dia === dia.id && d.turno === turno.id
+                  const disponibilidade = watch("disponibilidade") ?? [];
+                  const index = disponibilidade.findIndex(
+                    (d: DisponibilidadeType) => d.dia === dia.id && d.turno === turno.id
                   );
 
                   return (
