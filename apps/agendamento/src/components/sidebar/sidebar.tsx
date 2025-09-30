@@ -50,7 +50,7 @@ export function AppSidebar() {
             alt="Logo"
           />
           <div className={styles.textContainer}>
-            <div className={styles.title}>APAE</div>
+            <div className={styles.title}></div>
             <div className={styles.subtitle}>Agendamento</div>
           </div>
         </div>
