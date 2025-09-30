@@ -1,79 +1,68 @@
 #!/bin/bash
 
-BACKEND_TARGET=${1:-all}
-FRONTEND_TARGET=${2:-all}
-SCOPE=${3:-both}
-
-DB_HOST="localhost"
-DB_PORT=5200
-MAX_RETRIES=5
-WAIT_SECONDS=2
+MODE=${1:-both}
+FRONTEND_TARGET=${2:-web}
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 ROOT_DIR="$(cd "$SCRIPT_DIR/.." && pwd)"
-GRADLE_CMD="$ROOT_DIR/api/gradlew"
+MAVEN_CMD="$ROOT_DIR/apps/api/mvnw"
+
+DB_HOST="localhost"
+DB_PORT=5200
+DB_MAX_RETRIES=5
+DB_WAIT_SECONDS=2
 
 check_db_up() {
   local attempt=1
+  echo "Verificando banco de dados em $DB_HOST:$DB_PORT..."
   while ! nc -z "$DB_HOST" "$DB_PORT" >/dev/null 2>&1; do
-    if [ "$attempt" -ge $MAX_RETRIES ]; then
-      echo "Banco de dados não ativo em $DB_HOST:$DB_PORT após $MAX_RETRIES tentativas."
+    if [ "$attempt" -ge "$DB_MAX_RETRIES" ]; then
+      echo "Banco de dados não respondeu."
       return 1
     fi
     attempt=$((attempt + 1))
-    sleep $WAIT_SECONDS
+    sleep "$DB_WAIT_SECONDS"
   done
-}
-
-run_command() {
-  local cmd="$1"
-  echo "$cmd"
-  eval "$cmd"
-}
-
-build_backend_cmd() {
-  local target=${1:-all}
-  if [ "$target" = "all" ]; then
-    echo "cd $ROOT_DIR/api && $GRADLE_CMD bootRun"
-  else
-    echo "cd $ROOT_DIR/api && $GRADLE_CMD :$target:bootRun"
-  fi
-}
-
-build_frontend_cmd() {
-  local target=${1:-all}
-  if [ "$target" = "all" ]; then
-    echo "pnpm -r --filter \"./apps/*\" dev"
-  else
-    echo "cd $ROOT_DIR/apps/$target && pnpm dev"
-  fi
+  return 0
 }
 
 run_backend() {
   check_db_up || exit 1
-  run_command "$(build_backend_cmd "$BACKEND_TARGET")"
+  echo "Iniciando backend..."
+  cd "$ROOT_DIR/apps/api" || exit 1
+  $MAVEN_CMD spring-boot:run
 }
 
 run_frontend() {
-  run_command "$(build_frontend_cmd "$FRONTEND_TARGET")"
+  echo "Iniciando frontend ($FRONTEND_TARGET)..."
+  cd "$ROOT_DIR/apps/$FRONTEND_TARGET" || {
+    echo "Projeto frontend '$FRONTEND_TARGET' não encontrado."
+    exit 1
+  }
+  pnpm dev
 }
 
 run_both() {
   check_db_up || exit 1
-  local backend_cmd frontend_cmd
-  backend_cmd=$(build_backend_cmd "$BACKEND_TARGET")
-  frontend_cmd=$(build_frontend_cmd "$FRONTEND_TARGET")
-  echo "Rodando backend (${BACKEND_TARGET}) + frontend (${FRONTEND_TARGET})..."
-  npx concurrently -k -n backend,frontend -c red,blue "$backend_cmd" "$frontend_cmd"
+  echo "Rodando backend e frontend..."
+  BACKEND_CMD="cd $ROOT_DIR/apps/api && $MAVEN_CMD spring-boot:run"
+  FRONTEND_CMD="cd $ROOT_DIR/apps/$FRONTEND_TARGET && pnpm dev"
+
+  npx concurrently -k -n backend,frontend -c red,blue "$BACKEND_CMD" "$FRONTEND_CMD"
 }
 
-case "$SCOPE" in
-  backend)  run_backend ;;
-  frontend) run_frontend ;;
-  both|"")  run_both ;;
-  *) 
-    echo "Escopo inválido: $SCOPE"
-    echo "Uso: ./dev.sh [backendProject|all] [frontendProject|all] [backend|frontend|both]"
+case "$MODE" in
+  backend)
+    run_backend
+    ;;
+  frontend)
+    run_frontend
+    ;;
+  both|"")
+    run_both
+    ;;
+  *)
+    echo "Uso: ./run-app.sh [backend|frontend|both] [frontendProject]"
     exit 1
     ;;
 esac
