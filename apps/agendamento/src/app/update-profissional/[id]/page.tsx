@@ -361,10 +361,7 @@ export default function AtualizarProfissional(): JSX.Element {
           {loading && <p className="text-blue-500">Salvando...</p>}
           {error && <p className="text-red-500">{error}</p>}
           {success && (
-            <p className="text-green-600">
-              Profissional atualizado com sucesso!
-            </p>
-          )}
+            <p className="text-green-600">Profissional atualizado com sucesso!</p>)}
           <div className="flex justify-end gap-4">
             <Button type="button" variant="outline" onClick={onCancel}>
               Cancelar

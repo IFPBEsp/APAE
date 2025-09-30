@@ -41,13 +41,7 @@ export default function CadastroProfissional(): JSX.Element {
     numero: "",
     complemento: "",
     cep: "",
-    disponibilidade: diasDaSemana.flatMap((dia) =>
-      turnos.map((turno) => ({
-        dia: dia.id,
-        turno: turno.id,
-        checked: false,
-      }))
-    ),
+    disponibilidade: [],
   };
 
   const form = useForm<CadastroFormValues>({

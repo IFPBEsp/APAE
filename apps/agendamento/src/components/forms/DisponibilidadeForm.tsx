@@ -10,6 +10,7 @@ import {
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Control, UseFormWatch } from "react-hook-form";
+import { useEffect } from "react";
 
 export type DisponibilidadeType = {
   dia: string;
@@ -36,6 +37,25 @@ export const turnos = [
 ];
 
 export default function Disponibilidade({ control, watch }: DisponibilidadeProps) {
+  useEffect(() => {
+    const currentDisponibilidade = watch('disponibilidade') || [];
+    
+    if (currentDisponibilidade.length === 0) {
+      const initialDisponibilidade = diasDaSemana.flatMap((dia) =>
+        turnos.map((turno) => ({
+          dia: dia.id,
+          turno: turno.id,
+          checked: false,
+        }))
+      );
+      
+      control._formValues.disponibilidade = initialDisponibilidade;
+      control._subjects.state.next({});
+    }
+  }, [control, watch]);
+
+  const currentDisponibilidade = watch('disponibilidade') || [];
+
   return (
     <div className="space-y-4">
       <FormLabel>Disponibilidade</FormLabel>
@@ -61,10 +81,19 @@ export default function Disponibilidade({ control, watch }: DisponibilidadeProps
               <TableRow key={turno.id}>
                 <TableCell className="font-medium">{turno.label}</TableCell>
                 {diasDaSemana.map((dia) => {
-                  const disponibilidade = watch("disponibilidade") ?? [];
-                  const index = disponibilidade.findIndex(
+                  const index = currentDisponibilidade.findIndex(
                     (d: DisponibilidadeType) => d.dia === dia.id && d.turno === turno.id
                   );
+
+                  if (index === -1) {
+                    return (
+                      <TableCell key={dia.id} className="text-center">
+                        <div className="flex items-center justify-center">
+                          <Checkbox disabled />
+                        </div>
+                      </TableCell>
+                    );
+                  }
 
                   return (
                     <TableCell key={dia.id} className="text-center">
