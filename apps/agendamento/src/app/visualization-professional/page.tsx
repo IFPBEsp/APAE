@@ -87,12 +87,12 @@ export default function VisualizationProfessionalPage() {
     <div className="w-full bg-background p-4 md:p-6 lg:p-8">
       <div className="mx-auto w-full max-w-[1400px]">
         <header className="mb-8 flex flex-col items-stretch gap-4 md:flex-row md:items-center md:justify-between">
-          <h1 className="text-2xl font-semibold lg:text-3xl" style={{ color: "#003b93" }}>
+          <h1 className="text-2xl font-semibold lg:text-3xl text-[#0D4F97]"
+          >
             Profissionais da Saúde
           </h1>
           <Button
-            style={{ backgroundColor: "#0D4F97" }}
-            className="md:w-auto bg-blue-800 hover:bg-blue-900"
+            className="md:w-auto bg-[#0D4F97] hover:bg-blue-900"
             onClick={handleAddNew}
           >
             Cadastrar Profissional
@@ -101,23 +101,21 @@ export default function VisualizationProfessionalPage() {
 
         <div className="mb-6 flex flex-col gap-4 md:flex-row">
           <Input
-            style={{ borderColor: "#0D4F97" }}
             type="text"
             placeholder="Buscar por nome ou documento..."
-            className="flex-grow"
+            className="flex-grow border-[#0D4F97]"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
           />
           <Select value={areaFilter} onValueChange={setAreaFilter}>
             <SelectTrigger 
-              className="w-full md:w-[200px]" 
-              style={{ borderColor: "#0D4F97", color: "#0D4F97" }}  
+              className="w-full md:w-[200px] border-[#0D4F97] text-[#0D4F97]" 
             >
               <SelectValue placeholder="Filtrar por área" />
             </SelectTrigger>
             <SelectContent>
               {uniqueAreas.map((area) => (
-                <SelectItem key={area} value={area} style={{ color: "#0D4F97" }}>
+                <SelectItem  className="border-[#0D4F97]" key={area} value={area} >
                   {area === "all" ? "Todas as Áreas" : area}
                 </SelectItem>
               ))}
