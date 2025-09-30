@@ -29,6 +29,7 @@ import styles from "./sidebar.module.css";
 import { useSidebar } from "@/components/ui/sidebar";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
+import logo from "../../assets/logo.png";
 
 export function AppSidebar() {
   const { open, setOpen } = useSidebar();
@@ -43,10 +44,10 @@ export function AppSidebar() {
         <div className={styles.logoContainer}>
           <Image
             className={styles.logo}
-            src={require("../../assets/APAE-logo.svg")}
+            src={logo}
             width={60}
             height={60}
-            alt="Logo da APAE"
+            alt="Logo"
           />
           <div className={styles.textContainer}>
             <div className={styles.title}>APAE</div>
