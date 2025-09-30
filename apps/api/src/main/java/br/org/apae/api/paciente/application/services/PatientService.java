@@ -1,4 +1,4 @@
-package br.org.apae.api.paciente.services;
+package br.org.apae.api.paciente.application.services;
 
 import br.org.apae.api.paciente.domain.model.Address;
 import br.org.apae.api.paciente.domain.model.Guardian;
@@ -6,12 +6,12 @@ import br.org.apae.api.paciente.domain.model.Parent;
 import br.org.apae.api.paciente.domain.model.Patient;
 import br.org.apae.api.paciente.domain.repository.PatientRepository;
 import br.org.apae.api.paciente.domain.repository.PatientSpecification;
-import br.org.apae.api.paciente.dto.create.CreatePatientDTO;
+import br.org.apae.api.paciente.interfaces.dto.create.CreatePatientDTO;
 import br.org.apae.api.paciente.dto.filter.PatientFilterDTO;
-import br.org.apae.api.paciente.dto.response.PatientResponseDTO;
-import br.org.apae.api.paciente.dto.update.UpdatePatientDTO;
+import br.org.apae.api.paciente.interfaces.dto.response.PatientResponseDTO;
+import br.org.apae.api.paciente.interfaces.dto.update.UpdatePatientDTO;
 import br.org.apae.api.paciente.exception.types.PatientNotFoundException;
-import br.org.apae.api.paciente.facade.IPatientFacade;
+import br.org.apae.api.paciente.application.facade.IPatientFacade;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

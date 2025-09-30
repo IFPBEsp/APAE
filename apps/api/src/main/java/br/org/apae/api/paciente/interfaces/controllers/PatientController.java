@@ -1,9 +1,8 @@
-package br.org.apae.api.controllers;
+package br.org.apae.api.paciente.interfaces.controllers;
 
-import br.org.apae.api.paciente.dto.create.CreatePatientDTO;
-import br.org.apae.api.paciente.dto.update.UpdatePatientDTO;
-import br.org.apae.api.paciente.dto.response.PatientResponseDTO;
-import br.org.apae.api.paciente.facade.IPatientFacade;
+import br.org.apae.api.paciente.interfaces.dto.create.CreatePatientDTO;
+import br.org.apae.api.paciente.interfaces.dto.response.PatientResponseDTO;
+import br.org.apae.api.paciente.interfaces.dto.update.UpdatePatientDTO;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -17,27 +16,17 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
-@RestController
 @RequestMapping("/patients")
 @Tag(name = "Patients", description = "Endpoints para gerenciamento de pacientes")
-public class PatientController {
-
-    private final IPatientFacade patientFacade;
-
-    public PatientController(IPatientFacade patientFacade) {
-        this.patientFacade = patientFacade;
-    }
+public interface PatientController {
 
     @Operation(summary = "Cadastrar um novo paciente", description = "Cria um novo paciente no sistema com todos os seus dados.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "201", description = "Paciente cadastrado com sucesso"),
             @ApiResponse(responseCode = "400", description = "Dados inválidos fornecidos")
     })
-    @PostMapping("/create")
-    public ResponseEntity<Void> createPatient(@RequestBody @Valid CreatePatientDTO createPatientDTO) {
-        patientFacade.createPatient(createPatientDTO);
-        return ResponseEntity.status(201).build();
-    }
+    @PostMapping
+    ResponseEntity<Void> createPatient(@RequestBody @Valid CreatePatientDTO createPatientDTO);
 
     @Operation(summary = "Buscar paciente por ID", description = "Retorna os dados completos de um paciente específico pelo seu ID.")
     @ApiResponses(value = {
@@ -45,20 +34,14 @@ public class PatientController {
             @ApiResponse(responseCode = "404", description = "Paciente não encontrado")
     })
     @GetMapping("/{id}")
-    public ResponseEntity<PatientResponseDTO> findById(@PathVariable UUID id) {
-        PatientResponseDTO patient = patientFacade.findById(id);
-        return ResponseEntity.ok(patient);
-    }
+    ResponseEntity<PatientResponseDTO> findById(@PathVariable UUID id);
 
     @Operation(summary = "Listar todos os pacientes", description = "Retorna uma lista de todos os pacientes cadastrados, sem aplicar filtros.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Lista de pacientes retornada com sucesso")
     })
     @GetMapping
-    public ResponseEntity<List<PatientResponseDTO>> findAll() {
-        List<PatientResponseDTO> patients = patientFacade.findAll();
-        return ResponseEntity.ok(patients);
-    }
+    ResponseEntity<List<PatientResponseDTO>> findAll();
 
     @Operation(summary = "Filtrar pacientes", description = "Retorna uma lista de pacientes com base em critérios de filtro dinâmicos. Os filtros suportados são: fullName, cpf, city.")
     @Parameter(name = "filters", description = "Exemplo de uso: /filter?fullName=João&cpf=123.456.789-00")
@@ -66,11 +49,7 @@ public class PatientController {
             @ApiResponse(responseCode = "200", description = "Lista de pacientes filtrada retornada com sucesso")
     })
     @GetMapping("/filter")
-    public ResponseEntity<List<PatientResponseDTO>> findByFilter(@RequestParam Map<String, String> filters) {
-        List<PatientResponseDTO> patients = patientFacade.findByFilter(filters);
-        return ResponseEntity.ok(patients);
-    }
-
+    ResponseEntity<List<PatientResponseDTO>> findByFilter(@RequestParam Map<String, String> filters);
 
     @Operation(summary = "Atualizar um paciente", description = "Atualiza os dados de um paciente existente a partir do seu ID.")
     @ApiResponses(value = {
@@ -79,10 +58,7 @@ public class PatientController {
             @ApiResponse(responseCode = "404", description = "Paciente não encontrado")
     })
     @PutMapping("/{id}")
-    public ResponseEntity<PatientResponseDTO> updatePatient(@PathVariable UUID id, @RequestBody @Valid UpdatePatientDTO updatePatientDTO) {
-        PatientResponseDTO updatedPatient = patientFacade.updatePatient(id, updatePatientDTO);
-        return ResponseEntity.ok(updatedPatient);
-    }
+    ResponseEntity<PatientResponseDTO> updatePatient(@PathVariable UUID id, @RequestBody @Valid UpdatePatientDTO updatePatientDTO);
 
     @Operation(summary = "Excluir um paciente", description = "Remove um paciente do sistema a partir do seu ID.")
     @ApiResponses(value = {
@@ -90,9 +66,5 @@ public class PatientController {
             @ApiResponse(responseCode = "404", description = "Paciente não encontrado")
     })
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deletePatient(@PathVariable UUID id) {
-        patientFacade.deletePatient(id);
-        return ResponseEntity.noContent().build();
-    }
+    ResponseEntity<Void> deletePatient(@PathVariable UUID id);
 }
-

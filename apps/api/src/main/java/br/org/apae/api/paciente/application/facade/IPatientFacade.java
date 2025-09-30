@@ -1,8 +1,8 @@
-package br.org.apae.api.paciente.facade;
+package br.org.apae.api.paciente.application.facade;
 
-import br.org.apae.api.paciente.dto.create.CreatePatientDTO;
-import br.org.apae.api.paciente.dto.response.PatientResponseDTO;
-import br.org.apae.api.paciente.dto.update.UpdatePatientDTO;
+import br.org.apae.api.paciente.interfaces.dto.create.CreatePatientDTO;
+import br.org.apae.api.paciente.interfaces.dto.response.PatientResponseDTO;
+import br.org.apae.api.paciente.interfaces.dto.update.UpdatePatientDTO;
 
 import java.util.List;
 import java.util.Map;

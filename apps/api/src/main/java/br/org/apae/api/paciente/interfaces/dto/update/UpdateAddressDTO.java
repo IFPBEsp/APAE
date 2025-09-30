@@ -1,4 +1,4 @@
-package br.org.apae.api.paciente.dto.update;
+package br.org.apae.api.paciente.interfaces.dto.update;
 
 import jakarta.validation.constraints.NotBlank;
 

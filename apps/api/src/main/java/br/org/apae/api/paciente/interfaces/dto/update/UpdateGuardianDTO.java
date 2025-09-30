@@ -1,11 +1,9 @@
-package br.org.apae.api.paciente.dto.update;
+package br.org.apae.api.paciente.interfaces.dto.update;
 
 import jakarta.validation.constraints.NotBlank;
 
-public record UpdateParentDTO(
+public record UpdateGuardianDTO(
         @NotBlank(message = "O campo nome é obrigatório.") String name,
-        String rg,
-        String cpf,
-        String profession,
+        @NotBlank(message = "O campo contato é obrigatório.") String contact,
         @NotBlank(message = "O campo parentesco é obrigatório.") String kinship) {
 }
