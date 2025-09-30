@@ -33,7 +33,6 @@ import { cn } from "@/lib/utils";
 export function AppSidebar() {
   const { open, setOpen } = useSidebar();
   const pathname = usePathname();
-  console.log(pathname)
 
   return (
     <Sidebar className={styles.sidebar}>
@@ -79,7 +78,7 @@ export function AppSidebar() {
                                 "h-10 transition-colors",
                                 pathname == "/"
                                   ? "bg-[#FFFFFF] !text-[#000000]"
-                                  : "text-[#0D4F97] hover:bg-[#0D4F97] hover:!text-white hover:color-[FFFFFF]"
+                                  : "text-[#0D4F97] hover:bg-[#0D4F97] hover:!text-white"
                               )}`}
                     >
                       <ChecklistIcon size={16} />
@@ -94,7 +93,7 @@ export function AppSidebar() {
                                 "h-10 transition-colors",
                                 pathname == "/all-appointments"
                                   ? "bg-[#FFFFFF] !text-[#000000]"
-                                  : "text-[#0D4F97] hover:bg-[#0D4F97] hover:!text-white hover:color-[FFFFFF]"
+                                  : "text-[#0D4F97] hover:bg-[#0D4F97] hover:!text-white"
                               )}`}
                     >
                       <TasklistIcon size={16} />
@@ -113,7 +112,7 @@ export function AppSidebar() {
                         "h-10 transition-colors",
                         pathname == "/visualization-professional"
                           ? "bg-[#FFFFFF] !text-[#000000]"
-                          : "text-[#0D4F97] hover:bg-[#0D4F97] hover:!text-white hover:color-[FFFFFF]"
+                          : "text-[#0D4F97] hover:bg-[#0D4F97] hover:!text-white"
                       )}`}
             >
               <IdBadgeIcon size={20} />
