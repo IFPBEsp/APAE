@@ -1,12 +1,12 @@
-package br.org.apae.api.auth.services;
+package br.org.apae.api.auth.application.internal;
 
 import org.springframework.stereotype.Service;
 
+import br.org.apae.api.auth.domain.exceptions.UserConflictException;
+import br.org.apae.api.auth.domain.exceptions.UserNotFoundException;
 import br.org.apae.api.auth.domain.model.User;
 import br.org.apae.api.auth.domain.model.UserRole;
 import br.org.apae.api.auth.domain.repository.UserRepository;
-import br.org.apae.api.auth.exceptions.types.InvalidCredentialsException;
-import br.org.apae.api.auth.exceptions.types.UserNotFoundException;
 
 @Service
 public class UserService {
@@ -20,7 +20,7 @@ public class UserService {
     boolean exists = userRepository.existsByUsername(username);
 
     if (exists) {
-      throw new InvalidCredentialsException();
+      throw new UserConflictException();
     }
 
     User user = new User(username, password, UserRole.ADMIN);
