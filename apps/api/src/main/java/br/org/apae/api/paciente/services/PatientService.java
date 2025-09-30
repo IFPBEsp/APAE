@@ -18,6 +18,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -100,8 +101,8 @@ public class PatientService implements IPatientFacade {
     }
 
     @Override
-    public List<PatientResponseDTO> findByFilter(PatientFilterDTO filter) {
-        Specification<Patient> spec = PatientSpecification.filterBy(filter);
+    public List<PatientResponseDTO> findByFilter(Map<String, String> filters) {
+        Specification<Patient> spec = PatientSpecification.filterBy(filters);
         return patientRepository.findAll(spec).stream()
                 .map(PatientResponseDTO::new)
                 .collect(Collectors.toList());

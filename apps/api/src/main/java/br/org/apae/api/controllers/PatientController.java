@@ -1,11 +1,11 @@
 package br.org.apae.api.controllers;
 
 import br.org.apae.api.paciente.dto.create.CreatePatientDTO;
-import br.org.apae.api.paciente.dto.filter.PatientFilterDTO;
 import br.org.apae.api.paciente.dto.update.UpdatePatientDTO;
 import br.org.apae.api.paciente.dto.response.PatientResponseDTO;
 import br.org.apae.api.paciente.facade.IPatientFacade;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -14,6 +14,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 @RestController
@@ -59,13 +60,14 @@ public class PatientController {
         return ResponseEntity.ok(patients);
     }
 
-    @Operation(summary = "Filtrar pacientes", description = "Retorna uma lista de pacientes com base nos critérios de filtro fornecidos (nome e/ou CPF).")
+    @Operation(summary = "Filtrar pacientes", description = "Retorna uma lista de pacientes com base em critérios de filtro dinâmicos. Os filtros suportados são: fullName, cpf, city.")
+    @Parameter(name = "filters", description = "Exemplo de uso: /filter?fullName=João&cpf=123.456.789-00")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Lista de pacientes filtrada retornada com sucesso")
     })
     @GetMapping("/filter")
-    public ResponseEntity<List<PatientResponseDTO>> findByFilter(PatientFilterDTO filter) {
-        List<PatientResponseDTO> patients = patientFacade.findByFilter(filter);
+    public ResponseEntity<List<PatientResponseDTO>> findByFilter(@RequestParam Map<String, String> filters) {
+        List<PatientResponseDTO> patients = patientFacade.findByFilter(filters);
         return ResponseEntity.ok(patients);
     }
 

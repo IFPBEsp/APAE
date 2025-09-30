@@ -1,11 +1,11 @@
 package br.org.apae.api.paciente.facade;
 
 import br.org.apae.api.paciente.dto.create.CreatePatientDTO;
-import br.org.apae.api.paciente.dto.filter.PatientFilterDTO;
 import br.org.apae.api.paciente.dto.response.PatientResponseDTO;
 import br.org.apae.api.paciente.dto.update.UpdatePatientDTO;
 
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 public interface IPatientFacade {
@@ -15,7 +15,7 @@ public interface IPatientFacade {
 
     List<PatientResponseDTO> findAll();
 
-    List<PatientResponseDTO> findByFilter(PatientFilterDTO filter);
+    List<PatientResponseDTO> findByFilter(Map<String, String> filters);
 
     PatientResponseDTO updatePatient(UUID id, UpdatePatientDTO updatePatientDTO);
 
