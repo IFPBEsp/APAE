@@ -164,9 +164,8 @@ export default function CadastroProfissional() {
             </Button>
             <Button
               type="submit"
-              className="bg-blue-800 hover:bg-blue-900"
+              className="bg-[#0D4F97] hover:bg-blue-900"
               disabled={loading}
-              style={{ background: '#0D4F97' }}
             >
               Cadastrar
             </Button>
