@@ -9,7 +9,7 @@ import jakarta.persistence.Table;
 import java.util.UUID;
 
 @Entity
-@Table(name = "Responsavel")
+@Table(name = "responsavel")
 public class Guardian {
 
     @Id
