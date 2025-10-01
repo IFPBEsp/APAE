@@ -1,4 +1,4 @@
-package br.org.apae.api.paciente.interfaces.dto.response;
+package br.org.apae.api.common.dto.paciente.dto.response;
 
 import br.org.apae.api.paciente.domain.model.Parent;
 

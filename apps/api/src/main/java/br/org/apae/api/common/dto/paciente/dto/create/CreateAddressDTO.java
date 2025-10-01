@@ -1,4 +1,4 @@
-package br.org.apae.api.paciente.interfaces.dto.create;
+package br.org.apae.api.common.dto.paciente.dto.create;
 
 import jakarta.validation.constraints.NotBlank;
 

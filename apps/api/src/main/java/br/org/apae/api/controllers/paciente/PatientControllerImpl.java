@@ -2,9 +2,9 @@ package br.org.apae.api.controllers.paciente;
 
 import br.org.apae.api.paciente.application.facade.IPatientFacade;
 import br.org.apae.api.paciente.interfaces.controllers.PatientController;
-import br.org.apae.api.paciente.interfaces.dto.create.CreatePatientDTO;
-import br.org.apae.api.paciente.interfaces.dto.response.PatientResponseDTO;
-import br.org.apae.api.paciente.interfaces.dto.update.UpdatePatientDTO;
+import br.org.apae.api.common.dto.paciente.dto.create.CreatePatientDTO;
+import br.org.apae.api.common.dto.paciente.dto.response.PatientResponseDTO;
+import br.org.apae.api.common.dto.paciente.dto.update.UpdatePatientDTO;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
 
