@@ -7,7 +7,7 @@ import java.util.UUID;
 
 public record AddressResponseDTO(
         UUID id,
-        String zipCode,
+        String cep,
         String city,
         String state,
         String neighborhood,
@@ -19,7 +19,7 @@ public record AddressResponseDTO(
     public AddressResponseDTO(Address address) {
         this(
                 address.getId(),
-                address.getZipCode(),
+                address.getCep(),
                 address.getCity(),
                 address.getState(),
                 address.getNeighborhood(),

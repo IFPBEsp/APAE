@@ -1,6 +1,6 @@
 package br.org.apae.api.paciente.application.services;
 
-import br.org.apae.api.paciente.application.facade.IPatientFacade;
+import br.org.apae.api.paciente.application.interfaces.IPatientApplicationService;
 import br.org.apae.api.paciente.application.mappers.PatientMapper;
 import br.org.apae.api.paciente.domain.model.Patient;
 import br.org.apae.api.paciente.domain.repository.PatientRepository;
@@ -9,6 +9,8 @@ import br.org.apae.api.paciente.exception.types.PatientNotFoundException;
 import br.org.apae.api.common.dto.paciente.dto.create.CreatePatientDTO;
 import br.org.apae.api.common.dto.paciente.dto.response.PatientResponseDTO;
 import br.org.apae.api.common.dto.paciente.dto.update.UpdatePatientDTO;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -19,7 +21,7 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service
-public class PatientService implements IPatientFacade {
+public class PatientService implements IPatientApplicationService {
 
     private final PatientRepository patientRepository;
     private final PatientMapper patientMapper;
@@ -52,11 +54,9 @@ public class PatientService implements IPatientFacade {
     }
 
     @Override
-    public List<PatientResponseDTO> findAll() {
-        List<Patient> patients = patientRepository.findAll();
-        return patients.stream()
-                .map(PatientResponseDTO::new)
-                .collect(Collectors.toList());
+    public Page<PatientResponseDTO> findAll(Pageable pageable) {
+        Page<Patient> patientsPage = patientRepository.findAll(pageable);
+        return patientsPage.map(PatientResponseDTO::new);
     }
 
     @Override

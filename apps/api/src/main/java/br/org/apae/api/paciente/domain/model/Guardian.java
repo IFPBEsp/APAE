@@ -1,5 +1,7 @@
 package br.org.apae.api.paciente.domain.model;
 
+import br.org.apae.api.common.dto.paciente.dto.create.CreateGuardianDTO;
+import br.org.apae.api.common.dto.paciente.dto.update.UpdateGuardianDTO;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -9,7 +11,7 @@ import jakarta.persistence.Table;
 import java.util.UUID;
 
 @Entity
-@Table(name = "responsavel")
+@Table(name = "responsaveis")
 public class Guardian {
 
     @Id

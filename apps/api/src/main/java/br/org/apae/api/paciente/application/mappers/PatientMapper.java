@@ -20,9 +20,6 @@ import java.util.stream.Collectors;
 public class PatientMapper {
 
     public Patient toEntity(CreatePatientDTO dto) {
-        if (dto == null) {
-            return null;
-        }
 
         Patient patient = new Patient();
         patient.setFullName(dto.fullName());
@@ -94,7 +91,7 @@ public class PatientMapper {
         address.setNeighborhood(dto.neighborhood());
         address.setCity(dto.city());
         address.setState(dto.state());
-        address.setZipCode(dto.zipCode());
+        address.setCep(dto.cep());
         address.setComplement(dto.complement());
         return address;
     }
@@ -135,7 +132,7 @@ public class PatientMapper {
         address.setNeighborhood(dto.neighborhood());
         address.setCity(dto.city());
         address.setState(dto.state());
-        address.setZipCode(dto.zipCode());
+        address.setCep(dto.cep());
         address.setComplement(dto.complement());
     }
 

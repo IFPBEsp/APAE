@@ -7,7 +7,7 @@ public record CreateAddressDTO(
         String city,
 
         @NotBlank(message = "O CEP não pode estar em branco")
-        String zipCode,
+        String cep,
 
         @NotBlank(message = "O estado não pode estar em branco")
         String state,

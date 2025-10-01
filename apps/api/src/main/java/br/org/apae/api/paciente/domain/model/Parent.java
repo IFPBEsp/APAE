@@ -1,5 +1,6 @@
 package br.org.apae.api.paciente.domain.model;
 
+import br.org.apae.api.common.dto.paciente.dto.create.CreateParentDTO;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;

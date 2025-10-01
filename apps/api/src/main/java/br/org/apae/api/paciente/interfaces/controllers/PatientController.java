@@ -9,6 +9,8 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -36,12 +38,12 @@ public interface PatientController {
     @GetMapping("/{id}")
     ResponseEntity<PatientResponseDTO> findById(@PathVariable UUID id);
 
-    @Operation(summary = "Listar todos os pacientes", description = "Retorna uma lista de todos os pacientes cadastrados, sem aplicar filtros.")
+    @Operation(summary = "Listar todos os pacientes", description = "Retorna uma página de pacientes. Suporta paginação e ordenação via parâmetros de URL (ex: ?page=0&size=10&sort=fullName,asc).")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Lista de pacientes retornada com sucesso")
+            @ApiResponse(responseCode = "200", description = "Página de pacientes retornada com sucesso")
     })
     @GetMapping
-    ResponseEntity<List<PatientResponseDTO>> findAll();
+    ResponseEntity<Page<PatientResponseDTO>> findAll(Pageable pageable);
 
     @Operation(summary = "Filtrar pacientes", description = "Retorna uma lista de pacientes com base em critérios de filtro dinâmicos. Os filtros suportados são: fullName, cpf, city.")
     @Parameter(name = "filters", description = "Exemplo de uso: /filter?fullName=João&cpf=123.456.789-00")

@@ -1,5 +1,7 @@
 package br.org.apae.api.paciente.domain.model;
 
+import br.org.apae.api.common.dto.paciente.dto.create.CreateAddressDTO;
+import br.org.apae.api.common.dto.paciente.dto.update.UpdateAddressDTO;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -9,7 +11,7 @@ import jakarta.persistence.Table;
 import java.util.UUID;
 
 @Entity
-@Table(name = "endereco")
+@Table(name = "enderecos")
 public class Address {
 
     @Id
@@ -20,7 +22,7 @@ public class Address {
     private String city;
 
     @Column(name = "cep", nullable = false)
-    private String zipCode;
+    private String cep;
 
     @Column(name = "estado", nullable = false)
     private String state;
@@ -52,12 +54,12 @@ public class Address {
         this.city = city;
     }
 
-    public String getZipCode() {
-        return zipCode;
+    public String getCep() {
+        return cep;
     }
 
-    public void setZipCode(String zipCode) {
-        this.zipCode = zipCode;
+    public void setCep(String cep) {
+        this.cep = cep;
     }
 
     public String getState() {
