@@ -1,6 +1,6 @@
 package br.org.apae.api.common.dto.paciente.dto.response;
 
-import br.org.apae.api.paciente.domain.model.Parent;
+import br.org.apae.api.patient.domain.model.Parent;
 
 import java.util.UUID;
 
@@ -11,7 +11,8 @@ public record ParentResponseDTO(
         String rg,
         String cpf,
         String profession,
-        String kinship
+        String kinship,
+        Boolean isAlive
 ) {
     public ParentResponseDTO(Parent parent) {
         this(
@@ -20,7 +21,8 @@ public record ParentResponseDTO(
                 parent.getRg(),
                 parent.getCpf(),
                 parent.getProfession(),
-                parent.getKinship()
+                parent.getKinship(),
+                parent.isAlive()
         );
     }
 }

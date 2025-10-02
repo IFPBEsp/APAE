@@ -1,4 +1,4 @@
-package br.org.apae.api.paciente.interfaces.controllers;
+package br.org.apae.api.patient.interfaces.controllers;
 
 import br.org.apae.api.common.dto.paciente.dto.create.CreatePatientDTO;
 import br.org.apae.api.common.dto.paciente.dto.response.PatientResponseDTO;

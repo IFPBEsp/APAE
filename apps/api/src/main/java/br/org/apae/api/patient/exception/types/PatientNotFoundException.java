@@ -1,4 +1,4 @@
-package br.org.apae.api.paciente.exception.types;
+package br.org.apae.api.patient.exception.types;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ResponseStatus;

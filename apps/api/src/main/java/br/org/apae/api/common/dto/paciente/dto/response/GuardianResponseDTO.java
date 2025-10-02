@@ -1,6 +1,6 @@
 package br.org.apae.api.common.dto.paciente.dto.response;
 
-import br.org.apae.api.paciente.domain.model.Guardian;
+import br.org.apae.api.patient.domain.model.Guardian;
 
 import java.util.UUID;
 

@@ -1,7 +1,7 @@
-package br.org.apae.api.controllers.paciente;
+package br.org.apae.api.controllers.patient;
 
-import br.org.apae.api.paciente.application.interfaces.IPatientApplicationService;
-import br.org.apae.api.paciente.interfaces.controllers.PatientController;
+import br.org.apae.api.patient.application.interfaces.PatientApplicationService;
+import br.org.apae.api.patient.interfaces.controllers.PatientController;
 import br.org.apae.api.common.dto.paciente.dto.create.CreatePatientDTO;
 import br.org.apae.api.common.dto.paciente.dto.response.PatientResponseDTO;
 import br.org.apae.api.common.dto.paciente.dto.update.UpdatePatientDTO;
@@ -17,9 +17,9 @@ import java.util.UUID;
 @RestController
 public class PatientControllerImpl implements PatientController {
 
-    private final IPatientApplicationService patientService;
+    private final PatientApplicationService patientService;
 
-    public PatientControllerImpl(IPatientApplicationService patientService) {
+    public PatientControllerImpl(PatientApplicationService patientService) {
         this.patientService = patientService;
     }
 

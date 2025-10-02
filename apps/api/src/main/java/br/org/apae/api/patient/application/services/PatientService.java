@@ -1,11 +1,10 @@
-package br.org.apae.api.paciente.application.services;
+package br.org.apae.api.patient.application.services;
 
-import br.org.apae.api.paciente.application.interfaces.IPatientApplicationService;
-import br.org.apae.api.paciente.application.mappers.PatientMapper;
-import br.org.apae.api.paciente.domain.model.Patient;
-import br.org.apae.api.paciente.domain.repository.PatientRepository;
-import br.org.apae.api.paciente.domain.repository.PatientSpecification;
-import br.org.apae.api.paciente.exception.types.PatientNotFoundException;
+import br.org.apae.api.patient.application.interfaces.PatientApplicationService;
+import br.org.apae.api.patient.domain.model.Patient;
+import br.org.apae.api.patient.domain.repository.PatientRepository;
+import br.org.apae.api.patient.domain.repository.PatientSpecification;
+import br.org.apae.api.patient.exception.types.PatientNotFoundException;
 import br.org.apae.api.common.dto.paciente.dto.create.CreatePatientDTO;
 import br.org.apae.api.common.dto.paciente.dto.response.PatientResponseDTO;
 import br.org.apae.api.common.dto.paciente.dto.update.UpdatePatientDTO;
@@ -21,20 +20,18 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service
-public class PatientService implements IPatientApplicationService {
+public class PatientService implements PatientApplicationService {
 
     private final PatientRepository patientRepository;
-    private final PatientMapper patientMapper;
 
-    public PatientService(PatientRepository patientRepository, PatientMapper patientMapper) {
+    public PatientService(PatientRepository patientRepository) {
         this.patientRepository = patientRepository;
-        this.patientMapper = patientMapper;
     }
 
     @Override
     @Transactional
     public void createPatient(CreatePatientDTO createPatientDTO) {
-        Patient patient = patientMapper.toEntity(createPatientDTO);
+        Patient patient = Patient.from(createPatientDTO);
         patientRepository.save(patient);
     }
 
@@ -42,7 +39,7 @@ public class PatientService implements IPatientApplicationService {
     @Transactional
     public PatientResponseDTO updatePatient(UUID id, UpdatePatientDTO updatePatientDTO) {
         Patient patient = patientRepository.findById(id).orElseThrow(PatientNotFoundException::new);
-        patientMapper.updateEntityFromDTO(patient, updatePatientDTO);
+        patient.updateWith(updatePatientDTO);
         return new PatientResponseDTO(patient);
     }
 

@@ -1,4 +1,4 @@
-package br.org.apae.api.paciente.application.interfaces;
+package br.org.apae.api.patient.application.interfaces;
 
 import br.org.apae.api.common.dto.paciente.dto.create.CreatePatientDTO;
 import br.org.apae.api.common.dto.paciente.dto.response.PatientResponseDTO;
@@ -10,7 +10,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
-public interface IPatientApplicationService {
+public interface PatientApplicationService {
     void createPatient(CreatePatientDTO createPatientDTO);
 
     PatientResponseDTO findById(UUID id);

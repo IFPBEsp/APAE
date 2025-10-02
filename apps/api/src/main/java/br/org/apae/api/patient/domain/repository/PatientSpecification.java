@@ -1,6 +1,6 @@
-package br.org.apae.api.paciente.domain.repository;
+package br.org.apae.api.patient.domain.repository;
 
-import br.org.apae.api.paciente.domain.model.Patient;
+import br.org.apae.api.patient.domain.model.Patient;
 import jakarta.persistence.criteria.Predicate;
 import org.springframework.data.jpa.domain.Specification;
 

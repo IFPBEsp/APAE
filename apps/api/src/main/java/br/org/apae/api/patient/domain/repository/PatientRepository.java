@@ -1,7 +1,7 @@
-package br.org.apae.api.paciente.domain.repository;
+package br.org.apae.api.patient.domain.repository;
 
 
-import br.org.apae.api.paciente.domain.model.Patient;
+import br.org.apae.api.patient.domain.model.Patient;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import java.util.UUID;

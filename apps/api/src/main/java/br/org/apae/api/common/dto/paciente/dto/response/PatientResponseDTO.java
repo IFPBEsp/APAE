@@ -1,6 +1,6 @@
 package br.org.apae.api.common.dto.paciente.dto.response;
 
-import br.org.apae.api.paciente.domain.model.Patient;
+import br.org.apae.api.patient.domain.model.Patient;
 import java.time.LocalDate;
 import java.util.Collections;
 import java.util.List;
