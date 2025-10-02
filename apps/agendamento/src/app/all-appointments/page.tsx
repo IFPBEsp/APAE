@@ -221,7 +221,7 @@ export default function AllApointments() {
           </div>
 
           <Select onValueChange={setSelectedArea}>
-            <SelectTrigger className="data-[placeholder]:text-[#0D4F97] border-[#0D4F97]">
+            <SelectTrigger className="data-[placeholder]:text-[#0D4F97] border-[#0D4F97] hover:bg-accent">
               <SelectValue placeholder="Área da Saúde" />
             </SelectTrigger>
             <SelectContent>
@@ -239,7 +239,7 @@ export default function AllApointments() {
             <Button
               variant="outline"
               onClick={clearFilter}
-              className="w-auto text-xs sm:text-sm text-red-600 hover:bg-red-50"
+              className="w-auto text-xs sm:text-sm text-red-600 hover:bg-red-50 hover:text-red-600 border-red-600"
             >
               Limpar Filtro
             </Button>
