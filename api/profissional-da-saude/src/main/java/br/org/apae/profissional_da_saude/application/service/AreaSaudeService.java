@@ -38,13 +38,10 @@ public class AreaSaudeService {
         return this.repository.findAll(pageable).map(AreaSaudeMapper::toResponseDTO);
     }
 
-    public Optional<AreaSaudeResponseDTO> findById(Integer id){
-        Optional<AreaSaudeResponseDTO> dto =
-                this.repository.findById(id).map(AreaSaudeMapper::toResponseDTO);
-
-        if (dto.isEmpty()) throw new EntidadeNaoEncontradaException("Área de saúde não encontrada");
-
-        return dto;
+    public AreaSaudeResponseDTO findById(Integer id) {
+        return this.repository.findById(id)
+                .map(AreaSaudeMapper::toResponseDTO)
+                .orElseThrow(() -> new EntidadeNaoEncontradaException("Área de saúde não encontrada"));
     }
 
     public void deleteById(Integer id){

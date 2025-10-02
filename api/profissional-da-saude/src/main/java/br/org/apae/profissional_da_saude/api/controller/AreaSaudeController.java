@@ -34,8 +34,7 @@ public class AreaSaudeController {
 
     @GetMapping("/{id}")
     public ResponseEntity<AreaSaudeResponseDTO> findById(@PathVariable Integer id){
-        return this.service.findById(id).map(ResponseEntity::ok)
-                .orElse(ResponseEntity.noContent().build());
+        return ResponseEntity.ok(this.service.findById(id));
     }
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> delete(@PathVariable Integer id){
