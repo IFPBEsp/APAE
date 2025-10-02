@@ -14,7 +14,6 @@ public interface AreaSaudeRepository {
 
     Optional<AreaSaude> findById(Integer id);
 
-    AreaSaude update(AreaSaude areaSaude);
 
     void deleteById(Integer id);
 

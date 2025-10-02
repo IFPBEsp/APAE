@@ -41,13 +41,6 @@ public class AreaSaudeRepositoryImpl implements AreaSaudeRepository {
     }
 
     @Override
-    public AreaSaude update(AreaSaude areaSaude) {
-        return toModel(this.repositoryJpa.save(
-                toEntity(areaSaude))
-        );
-    }
-
-    @Override
     public void deleteById(Integer id) {
          this.repositoryJpa.deleteById(id);
     }
