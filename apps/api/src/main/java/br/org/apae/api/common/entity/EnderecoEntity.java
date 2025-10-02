@@ -12,11 +12,12 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Builder
 public class EnderecoEntity {
-    private String estado;
-    private String cidade;
-    private String bairro;
-    private String rua;
-    private String numero;
+    private String state;
+    private String city;
+    private String neighborhood;
+    private String road;
+    private String number;
     private String cep;
-    private String complemento;
+    private String complement;
+
 }

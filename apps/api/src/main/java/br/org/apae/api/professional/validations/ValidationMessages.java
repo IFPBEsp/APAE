@@ -1,4 +1,4 @@
-package br.org.apae.api.profissional.da.saude.validations;
+package br.org.apae.api.professional.da.saude.validations;
 
 public final class ValidationMessages {
     private ValidationMessages() {}
