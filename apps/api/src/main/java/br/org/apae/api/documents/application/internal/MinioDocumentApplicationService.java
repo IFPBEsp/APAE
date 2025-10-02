@@ -141,7 +141,7 @@ public class MinioDocumentApplicationService implements DocumentApplicationServi
         }
     }
 
-    static private Iterable<DocumentDTO> mapDocuments(Iterable<Result<Item>> results, ListDocumentsArgsDTO dto)
+    private static Iterable<DocumentDTO> mapDocuments(Iterable<Result<Item>> results, ListDocumentsArgsDTO dto)
             throws InsufficientDataException, IOException,
             InvalidKeyException, InvalidResponseException, NoSuchAlgorithmException {
         List<DocumentDTO> documents = new ArrayList<>();
