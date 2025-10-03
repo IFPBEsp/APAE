@@ -1,35 +1,39 @@
 package br.org.apae.api.controllers.HealthProfessional;
 
+import br.org.apae.api.professional.facade.IHealthProfessionalFacade;
 import br.org.apae.api.professional.dto.HealthProfessionalCreateDTO;
+import br.org.apae.api.professional.dto.HealthProfessionalResponseDTO;
+import br.org.apae.api.professional.dto.HealthProfessionalUpdateDTO;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 
 import java.util.UUID;
-import org.springframework.data.domain.Page;
 
 @RestController
 @RequestMapping("/professionals")
 @CrossOrigin(origins = "http://localhost:3000")
 public class HealthProfessionalController {
 
-    private final br.org.apae.api.professional.services.HealthProfessionalService service;
+    // Depende da interface
+    private final IHealthProfessionalFacade service;
 
     @Autowired
-    public HealthProfessionalController(br.org.apae.api.professional.services.HealthProfessionalService service) {
+    public HealthProfessionalController(IHealthProfessionalFacade service) {
         this.service = service;
     }
 
     @PostMapping
-    public ResponseEntity<br.org.apae.api.professional.dto.HealthProfessionalResponseDTO> create(@RequestBody @Valid HealthProfessionalCreateDTO dto) {
+    public ResponseEntity<HealthProfessionalResponseDTO> create(@RequestBody @Valid HealthProfessionalCreateDTO dto) {
         return ResponseEntity.ok(this.service.save(dto));
     }
 
     @GetMapping
-    public ResponseEntity<Page<br.org.apae.api.professional.dto.HealthProfessionalResponseDTO>> getAll(Pageable pageable) {
+    public ResponseEntity<Page<HealthProfessionalResponseDTO>> getAll(Pageable pageable) {
         return ResponseEntity.ok(this.service.findAll(pageable));
     }
 
@@ -40,15 +44,15 @@ public class HealthProfessionalController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<br.org.apae.api.professional.dto.HealthProfessionalResponseDTO> findById(@PathVariable UUID id) {
-        br.org.apae.api.professional.dto.HealthProfessionalResponseDTO dto = service.findById(id);
+    public ResponseEntity<HealthProfessionalResponseDTO> findById(@PathVariable UUID id) {
+        HealthProfessionalResponseDTO dto = service.findById(id);
         return ResponseEntity.ok(dto);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<br.org.apae.api.professional.dto.HealthProfessionalResponseDTO> update(
+    public ResponseEntity<HealthProfessionalResponseDTO> update(
             @PathVariable UUID id,
-            @RequestBody @Valid br.org.apae.api.professional.dto.HealthProfessionalUpdateDTO dto) {
+            @RequestBody @Valid HealthProfessionalUpdateDTO dto) {
         return ResponseEntity.ok(this.service.update(id, dto));
     }
 }
