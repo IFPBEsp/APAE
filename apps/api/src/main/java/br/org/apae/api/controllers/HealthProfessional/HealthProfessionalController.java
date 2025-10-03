@@ -12,7 +12,7 @@ import java.util.UUID;
 import org.springframework.data.domain.Page;
 
 @RestController
-@RequestMapping("/profissionais")
+@RequestMapping("/professionals")
 @CrossOrigin(origins = "http://localhost:3000")
 public class HealthProfessionalController {
 

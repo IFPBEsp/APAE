@@ -1,6 +1,6 @@
 package br.org.apae.api.professional.infra.mapper;
 
-import br.org.apae.api.common.entity.EnderecoEntity;
+import br.org.apae.api.common.entity.AddressEntity;
 import br.org.apae.api.common.model.Address;
 import br.org.apae.api.professional.dto.HealthProfessionalCreateDTO;
 import org.springframework.stereotype.Component;
@@ -13,15 +13,15 @@ public final class HealthProfessionalMapper {
         return br.org.apae.api.professional.infra.entity.HealthProfessionalEntity.builder()
                 .id(model.getId())
                 .healthSector(model.getHealthSector())
-                .telephone(model.getTelephone())
-                .docProfessional(model.getDocProfessional())
+                .phoneNumber(model.getPhoneNumber())
+                .professionalDocument(model.getProfessionalDocument())
                 .email(model.getEmail())
                 .name(model.getName())
-                .generalRegistry(model.getGeneralRegistry())
-                .address(new EnderecoEntity( model.getAddress().getState(),
+                .identityDocument(model.getIdentityDocument())
+                .address(new AddressEntity( model.getAddress().getState(),
                         model.getAddress().getCity(),
                         model.getAddress().getNeighborhood(),
-                        model.getAddress().getRoad(),
+                        model.getAddress().getStreet(),
                         model.getAddress().getNumber(),
                         model.getAddress().getCep(),
                         model.getAddress().getComplement()))
@@ -33,7 +33,7 @@ public final class HealthProfessionalMapper {
         Address address = new Address( entity.getAddress().getState(),
                 entity.getAddress().getCity(),
                 entity.getAddress().getNeighborhood(),
-                entity.getAddress().getRoad(),
+                entity.getAddress().getStreet(),
                 entity.getAddress().getNumber(),
                 entity.getAddress().getCep(),
                 entity.getAddress().getComplement());
@@ -41,11 +41,11 @@ public final class HealthProfessionalMapper {
         return new br.org.apae.api.professional.domain.model.HealthProfessional(
                 entity.getId(),
                 entity.getHealthSector(),
-                entity.getTelephone(),
-                entity.getDocProfessional(),
+                entity.getPhoneNumber(),
+                entity.getProfessionalDocument(),
                 entity.getEmail(),
                 entity.getName(),
-                entity.getGeneralRegistry(),
+                entity.getIdentityDocument(),
                 address
         );
     }
@@ -56,7 +56,7 @@ public final class HealthProfessionalMapper {
                 dto.getAddress().getState(),
                 dto.getAddress().getCity(),
                 dto.getAddress().getNeighborhood(),
-                dto.getAddress().getRoad(),
+                dto.getAddress().getStreet(),
                 dto.getAddress().getNumber(),
                 dto.getAddress().getCep(),
                 dto.getAddress().getComplement()
@@ -65,11 +65,11 @@ public final class HealthProfessionalMapper {
 
         return new br.org.apae.api.professional.domain.model.HealthProfessional(
                 dto.getHealthSector(),
-                dto.getTelephone(),
-                dto.getDocProfessional(),
+                dto.getPhoneNumber(),
+                dto.getProfessionalDocument(),
                 dto.getEmail(),
                 dto.getName(),
-                dto.getGeneralRegistry(),
+                dto.getIdentityDocument(),
                 address
         );
     }
@@ -78,17 +78,17 @@ public final class HealthProfessionalMapper {
         br.org.apae.api.professional.dto.HealthProfessionalResponseDTO dto = new br.org.apae.api.professional.dto.HealthProfessionalResponseDTO();
         dto.setId(model.getId());
         dto.setHealthSector(model.getHealthSector());
-        dto.setTelephone(model.getTelephone());
-        dto.setDocProfessional(model.getDocProfessional());
+        dto.setPhoneNumber(model.getPhoneNumber());
+        dto.setProfessionalDocument(model.getProfessionalDocument());
         dto.setEmail(model.getEmail());
         dto.setName(model.getName());
-        dto.setGeneralRegistry(model.getGeneralRegistry());
+        dto.setIdentityDocument(model.getIdentityDocument());
 
         Address address = new Address();
         address.setState(model.getAddress().getState());
         address.setCity(model.getAddress().getCity());
         address.setNeighborhood(model.getAddress().getNeighborhood());
-        address.setRoad(model.getAddress().getRoad());
+        address.setStreet(model.getAddress().getStreet());
         address.setNumber(model.getAddress().getNumber());
         address.setCep(model.getAddress().getCep());
         address.setComplement(model.getAddress().getComplement());

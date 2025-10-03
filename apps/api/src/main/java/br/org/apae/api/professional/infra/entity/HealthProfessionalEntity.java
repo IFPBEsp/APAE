@@ -1,13 +1,13 @@
 package br.org.apae.api.professional.infra.entity;
 
-import br.org.apae.api.common.entity.EnderecoEntity;
+import br.org.apae.api.common.entity.AddressEntity;
 import jakarta.persistence.*;
 import lombok.*;
 
 import java.util.UUID;
 
 @Entity
-@Table(name = "profissionais_saude") //colocar para inglês?
+@Table(name = "health_professionals")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -18,13 +18,13 @@ public class HealthProfessionalEntity {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private UUID id;
     private String healthSector;
-    private String telephone;
-    private String docProfessional;
+    private String phoneNumber;
+    private String professionalDocument;
     private String email;
     private String name;
-    private  String generalRegistry;
+    private String identityDocument;
 
     @Embedded
-    private EnderecoEntity address;
+    private AddressEntity address;
 
 }

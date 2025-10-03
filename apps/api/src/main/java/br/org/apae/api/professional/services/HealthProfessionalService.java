@@ -1,7 +1,9 @@
 package br.org.apae.api.professional.services;
 
 import br.org.apae.api.common.model.Address;
+import br.org.apae.api.professional.domain.model.HealthProfessional;
 import br.org.apae.api.professional.dto.HealthProfessionalCreateDTO;
+import br.org.apae.api.professional.dto.HealthProfessionalResponseDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -23,27 +25,23 @@ public class HealthProfessionalService {
     }
 
     public br.org.apae.api.professional.dto.HealthProfessionalResponseDTO save(HealthProfessionalCreateDTO dto) {
-        if (this.repository.existsByDocProfissional(dto.getDocProfessional())) {
-            throw new br.org.apae.api.professional.domain.exceptions.BusinessValidationException("Documento profissional já cadastrado.");
+        if (this.repository.existsByProfessionalDocument(dto.getProfessionalDocument())) {
+            throw new br.org.apae.api.professional.domain.exceptions.BusinessValidationException("Professional document already registered.");
         }
 
         if (this.repository.existsByEmail(dto.getEmail())) {
-            throw new br.org.apae.api.professional.domain.exceptions.BusinessValidationException("E-mail já cadastrado.");
+            throw new br.org.apae.api.professional.domain.exceptions.BusinessValidationException("Email already registered.");
         }
 
         br.org.apae.api.professional.domain.model.HealthProfessional domainModel = mapper.toDomain(dto);
 
-        br.org.apae.api.professional.infra.entity.HealthProfessionalEntity entityToSave = mapper.toEntity(domainModel);
-
-        br.org.apae.api.professional.infra.entity.HealthProfessionalEntity savedEntity = this.repository.save(entityToSave);
-
-        br.org.apae.api.professional.domain.model.HealthProfessional savedModel = mapper.toModel(savedEntity);
-
-        return mapper.toResponseDTO(savedModel);
+        return getHealthProfessionalResponseDTO(domainModel);
     }
 
     public Page<br.org.apae.api.professional.dto.HealthProfessionalResponseDTO> findAll(Pageable pageable) {
-        Page<br.org.apae.api.professional.infra.entity.HealthProfessionalEntity> entityPage = (Page<br.org.apae.api.professional.infra.entity.HealthProfessionalEntity>) this.repository.findAll();
+
+        Page<br.org.apae.api.professional.infra.entity.HealthProfessionalEntity> entityPage = this.repository.findAll(pageable);
+
 
         return entityPage.map(entity -> {
             br.org.apae.api.professional.domain.model.HealthProfessional model = mapper.toModel(entity);
@@ -65,34 +63,37 @@ public class HealthProfessionalService {
 
     public br.org.apae.api.professional.dto.HealthProfessionalResponseDTO update(UUID id, br.org.apae.api.professional.dto.HealthProfessionalUpdateDTO dto) {
         br.org.apae.api.professional.infra.entity.HealthProfessionalEntity entityExistente = this.repository.findById(id)
-                .orElseThrow(() -> new br.org.apae.api.professional.domain.exceptions.EntityNotFoundException("Profissional de saúde não encontrado"));
+                .orElseThrow(() -> new br.org.apae.api.professional.domain.exceptions.EntityNotFoundException("Health professional not found."));
 
         br.org.apae.api.professional.domain.model.HealthProfessional modelExistente = mapper.toModel(entityExistente);
 
         Optional.ofNullable(dto.getHealthSector()).ifPresent(modelExistente::setHealthSector);
-        Optional.ofNullable(dto.getDocProfessional()).ifPresent(modelExistente::setDocProfessional);
+        Optional.ofNullable(dto.getProfessionalDocument()).ifPresent(modelExistente::setProfessionalDocument);
         Optional.ofNullable(dto.getName()).ifPresent(modelExistente::setName);
         Optional.ofNullable(dto.getEmail()).ifPresent(modelExistente::setEmail);
-        Optional.ofNullable(dto.getTelephone()).ifPresent(modelExistente::setTelephone);
-        Optional.ofNullable(dto.getGeneralRegistry()).ifPresent(modelExistente::setGeneralRegistry
-        );
+        Optional.ofNullable(dto.getPhoneNumber()).ifPresent(modelExistente::setPhoneNumber);
+        Optional.ofNullable(dto.getIdentityDocument()).ifPresent(modelExistente::setIdentityDocument);
 
         if (dto.getAddress() != null) {
             Address addressModel = modelExistente.getAddress();
             Optional.ofNullable(dto.getAddress().getState()).ifPresent(addressModel::setState);
             Optional.ofNullable(dto.getAddress().getCity()).ifPresent(addressModel::setCity);
             Optional.ofNullable(dto.getAddress().getNeighborhood()).ifPresent(addressModel::setNeighborhood);
-            Optional.ofNullable(dto.getAddress().getRoad()).ifPresent(addressModel::setRoad);
+            Optional.ofNullable(dto.getAddress().getStreet()).ifPresent(addressModel::setStreet);
             Optional.ofNullable(dto.getAddress().getNumber()).ifPresent(addressModel::setNumber);
             Optional.ofNullable(dto.getAddress().getCep()).ifPresent(addressModel::setCep);
             Optional.ofNullable(dto.getAddress().getComplement()).ifPresent(addressModel::setComplement);
         }
 
+        return getHealthProfessionalResponseDTO(modelExistente);
+    }
+
+    private HealthProfessionalResponseDTO getHealthProfessionalResponseDTO(HealthProfessional modelExistente) {
         br.org.apae.api.professional.infra.entity.HealthProfessionalEntity entityParaSalvar = mapper.toEntity(modelExistente);
 
         br.org.apae.api.professional.infra.entity.HealthProfessionalEntity savedEntity = this.repository.save(entityParaSalvar);
 
-        br.org.apae.api.professional.domain.model.HealthProfessional savedModel = mapper.toModel(savedEntity);
+        HealthProfessional savedModel = mapper.toModel(savedEntity);
         return mapper.toResponseDTO(savedModel);
     }
 }

@@ -11,11 +11,11 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class EnderecoEntity {
+public class AddressEntity {
     private String state;
     private String city;
     private String neighborhood;
-    private String road;
+    private String street;
     private String number;
     private String cep;
     private String complement;

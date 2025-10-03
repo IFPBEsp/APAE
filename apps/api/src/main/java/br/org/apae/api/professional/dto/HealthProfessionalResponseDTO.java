@@ -11,10 +11,10 @@ public class HealthProfessionalResponseDTO {
 
     private UUID id;
     private String healthSector;
-    private String telephone;
-    private String docProfessional;
+    private String phoneNumber;
+    private String professionalDocument;
     private String email;
     private String name;
-    private  String generalRegistry;
+    private  String identityDocument;
     private Address address;
 }

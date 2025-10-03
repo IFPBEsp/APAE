@@ -1,8 +1,8 @@
 package br.org.apae.api.professional.dto;
 
-import br.org.apae.api.common.dto.EnderecoDTO;
-import br.org.apae.api.professional.da.saude.validations.RegexPatterns;
-import br.org.apae.api.professional.da.saude.validations.ValidationMessages;
+import br.org.apae.api.common.dto.AddressDTO;
+import br.org.apae.api.professional.validations.RegexPatterns;
+import br.org.apae.api.professional.validations.ValidationMessages;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import jakarta.validation.Valid;
@@ -19,27 +19,27 @@ public class HealthProfessionalCreateDTO {
     private String healthSector;
 
     @NotBlank
-    @Pattern( regexp = RegexPatterns.TELEFONE, message = ValidationMessages.TELEFONE_INVALIDO )
-    private String telephone;
+    @Pattern( regexp = RegexPatterns.PHONE_NUMBER, message = ValidationMessages.INVALID_PHONE )
+    private String phoneNumber;
 
     @NotBlank
-    @Pattern( regexp = RegexPatterns.DOC_PROFISSIONAL, message = ValidationMessages.DOC_PROFISSIONAL_INVALIDO )
-    private String docProfessional;
+    @Pattern( regexp = RegexPatterns.PROFESSIONAL_DOCUMENT, message = ValidationMessages.INVALID_PROFESSIONAL_DOCUMENT )
+    private String professionalDocument;
 
-    @Email(message = ValidationMessages.EMAIL_INVALIDO)
+    @Email(message = ValidationMessages.INVALID_EMAIL)
     @NotBlank
     @Size(max = 254)
     private String email;
 
     @NotBlank
-    @Pattern( regexp = RegexPatterns.NOME, message = ValidationMessages.NOME_INVALIDO )
+    @Pattern( regexp = RegexPatterns.NAME, message = ValidationMessages.INVALID_NAME )
     private String name;
 
     @NotBlank
-    @Pattern( regexp = RegexPatterns.RG, message = ValidationMessages.RG_INVALIDO )
-    private String generalRegistry;
+    @Pattern( regexp = RegexPatterns.IDENTITY_DOCUMENT_RG, message = ValidationMessages.INVALID_IDENTITY_DOCUMENT )
+    private String identityDocument;
 
-    @NotNull(message = "Endereço é obrigatório")
+    @NotNull(message = "Address is mandatory")
     @Valid
-    private EnderecoDTO address;
+    private AddressDTO address; //
 }

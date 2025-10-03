@@ -10,7 +10,7 @@ public interface HealthProfessionalRepository extends JpaRepository<br.org.apae.
 
     Page<br.org.apae.api.professional.infra.entity.HealthProfessionalEntity> findAll(Pageable pageable);
 
-    boolean existsByDocProfissional(String docProfissional);
+    boolean existsByProfessionalDocument(String professionalDocument);
 
     boolean existsByEmail(String email);
 }
