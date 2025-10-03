@@ -1,4 +1,4 @@
-package br.org.apae.api.professional.validations;
+package br.org.apae.api.common.validations;
 
 public final class RegexPatterns {
     private RegexPatterns() {}

@@ -10,7 +10,7 @@ import org.springframework.stereotype.Component;
 @Component
 public final class HealthProfessionalMapper {
 
-    // --- Métodos Auxiliares para Endereço (Consistentes) ---
+    // --- Métodos Auxiliares para Endereço ---
 
     private AddressEntity toAddressEntity(Address model) {
         return AddressEntity.builder()
@@ -96,6 +96,7 @@ public final class HealthProfessionalMapper {
     }
 
     public HealthProfessionalResponseDTO toResponseDTO(br.org.apae.api.professional.domain.model.HealthProfessional model) {
+
         Address address = new Address(
                 model.getAddress().getState(),
                 model.getAddress().getCity(),

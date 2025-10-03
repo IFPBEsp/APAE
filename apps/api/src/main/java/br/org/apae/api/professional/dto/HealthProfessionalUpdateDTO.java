@@ -1,8 +1,8 @@
 package br.org.apae.api.professional.dto;
 
 import br.org.apae.api.common.dto.AddressDTO;
-import br.org.apae.api.professional.validations.RegexPatterns;
-import br.org.apae.api.professional.validations.ValidationMessages;
+import br.org.apae.api.common.validations.RegexPatterns;
+import br.org.apae.api.common.validations.ValidationMessages;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.*;
 

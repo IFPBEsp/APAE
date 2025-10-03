@@ -1,7 +1,7 @@
 package br.org.apae.api.common.dto;
 
-import br.org.apae.api.professional.validations.RegexPatterns;
-import br.org.apae.api.professional.validations.ValidationMessages;
+import br.org.apae.api.common.validations.RegexPatterns;
+import br.org.apae.api.common.validations.ValidationMessages;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 
