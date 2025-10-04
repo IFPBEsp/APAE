@@ -87,19 +87,19 @@ export default function CadastroProfissional(): JSX.Element {
   };
 
   return (
-    <div className="p-6">
-      <h1 className="text-2xl font-bold mb-6">Cadastrar Profissional</h1>
+    <div className="p-0">
+      <h1 className="text-2xl font-bold mb-6"></h1>
       <Form {...form}>
         <form
           onSubmit={form.handleSubmit(onSubmit)}
-          className="space-y-6 max-w-2xl w-full mx-auto"
+          className="space-y-6 w-full max-w-2xl"
         >
           <FormField
             control={form.control}
             name="nomeCompleto"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Nome completo</FormLabel>
+                <FormLabel>Nome completo *</FormLabel>
                 <FormControl>
                   <Input placeholder="Ex: Maria da Silva" {...field} />
                 </FormControl>
@@ -112,7 +112,7 @@ export default function CadastroProfissional(): JSX.Element {
             name="email"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Email</FormLabel>
+                <FormLabel>Email *</FormLabel>
                 <FormControl>
                   <Input
                     type="email"
@@ -130,7 +130,7 @@ export default function CadastroProfissional(): JSX.Element {
               name="documentoProfissional"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Documento profissional</FormLabel>
+                  <FormLabel>Documento profissional *</FormLabel>
                   <FormControl>
                     <Input placeholder="Ex: CRM/SP 123456" {...field} />
                   </FormControl>
@@ -143,7 +143,7 @@ export default function CadastroProfissional(): JSX.Element {
               name="areaSaude"
               render={({ field, fieldState }) => (
                 <FormItem>
-                  <FormLabel>Área da saúde</FormLabel>
+                  <FormLabel>Área da saúde *</FormLabel>
                   <FormControl>
                     <Select onValueChange={field.onChange} value={field.value}>
                       <SelectTrigger
@@ -176,7 +176,7 @@ export default function CadastroProfissional(): JSX.Element {
               name="rg"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>RG</FormLabel>
+                  <FormLabel>RG *</FormLabel>
                   <FormControl>
                     <Input placeholder="Ex: 1234567" {...field} />
                   </FormControl>
@@ -189,7 +189,7 @@ export default function CadastroProfissional(): JSX.Element {
               name="telefone"
               render={({ field, fieldState }) => (
                 <FormItem>
-                  <FormLabel>Telefone</FormLabel>
+                  <FormLabel>Telefone *</FormLabel>
                   <FormControl>
                     <InputMask
                       mask="(__) _____-____"
@@ -213,7 +213,7 @@ export default function CadastroProfissional(): JSX.Element {
               name="estado"
               render={({ field, fieldState }) => (
                 <FormItem>
-                  <FormLabel>Estado</FormLabel>
+                  <FormLabel>Estado *</FormLabel>
                   <FormControl>
                     <Select onValueChange={field.onChange} value={field.value}>
                       <SelectTrigger
@@ -243,7 +243,7 @@ export default function CadastroProfissional(): JSX.Element {
               name="cidade"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Cidade</FormLabel>
+                  <FormLabel>Cidade *</FormLabel>
                   <FormControl>
                     <Input placeholder="Ex: João Pessoa" {...field} />
                   </FormControl>
@@ -258,7 +258,7 @@ export default function CadastroProfissional(): JSX.Element {
             name="rua"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Endereço</FormLabel>
+                <FormLabel>Endereço *</FormLabel>
                 <FormControl>
                   <Input placeholder="Ex: Rua das Flores" {...field} />
                 </FormControl>
@@ -273,7 +273,7 @@ export default function CadastroProfissional(): JSX.Element {
               name="bairro"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Bairro</FormLabel>
+                  <FormLabel>Bairro *</FormLabel>
                   <FormControl>
                     <Input placeholder="Ex: Centro" {...field} />
                   </FormControl>
@@ -286,7 +286,7 @@ export default function CadastroProfissional(): JSX.Element {
               name="cep"
               render={({ field, fieldState }) => (
                 <FormItem>
-                  <FormLabel>CEP</FormLabel>
+                  <FormLabel>CEP *</FormLabel>
                   <FormControl>
                     <InputMask
                       mask="_____-___"
@@ -310,7 +310,7 @@ export default function CadastroProfissional(): JSX.Element {
               name="numero"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Número</FormLabel>
+                  <FormLabel>Número *</FormLabel>
                   <FormControl>
                     <Input placeholder="Ex: 123" {...field} />
                   </FormControl>
