@@ -70,7 +70,7 @@ export default function DashboardPage() {
     <div className="min-h-screen w-full text-sm overflow-x-hidden">
       <main className="flex-1 p-3 sm:p-6 max-w-[100vw] mx-auto">
         <div className="mb-4 flex flex-col justify-between gap-3 sm:mb-6 sm:flex-row sm:items-center">
-          <h1 className="text-lg font-bold sm:text-2xl">
+          <h1 className="text-lg font-bold sm:text-2xl text-[#0D4F97]">
             Agendamentos de Hoje
           </h1>
           <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
@@ -78,7 +78,7 @@ export default function DashboardPage() {
               <PopoverTrigger asChild>
                 <Button
                   variant="outline"
-                  className="w-full justify-start bg-white text-left font-normal text-xs sm:w-[220px] sm:text-sm"
+                  className="w-full justify-start bg-white border-[#0D4F97] text-left text-[#0D4F97] font-normal text-xs sm:w-[220px] sm:text-sm"
                 >
                   <CalendarDays className="mr-2 h-4 w-4" />
                   {selectedDate ? (
@@ -104,7 +104,7 @@ export default function DashboardPage() {
 
             <Dialog>
               <DialogTrigger asChild>
-                <Button className="w-full bg-blue-800 text-white hover:bg-blue-900 text-xs sm:w-auto sm:text-sm">
+                <Button className="w-full bg-[#0D4F97] text-white hover:bg-blue-900 text-xs sm:w-auto sm:text-sm">
                   Novo agendamento
                 </Button>
               </DialogTrigger>
@@ -133,11 +133,15 @@ export default function DashboardPage() {
               appointments.filter((appointment) => !appointment.confirmado)
                 .length
             } pendentes`}
+            titleClassName="text-[#0D4F97]"
+            valueClassName="text-[#0D4F97]"
           />
           <InfoCard
             title="Todos os agendamentos"
             icon={Users}
             value={allAppointments.length}
+            titleClassName="text-[#0D4F97]"
+            valueClassName="text-[#0D4F97]"
           />
           <InfoCard
             title="Sem justificativa"
@@ -150,6 +154,8 @@ export default function DashboardPage() {
             }
             iconColor="text-red-400"
             subtitle="Pacientes que não justificaram suas faltas"
+            titleClassName="text-[#0D4F97]"
+            valueClassName="text-[#0D4F97]"
           />
           <InfoCard
             title="Não confirmados"
@@ -159,6 +165,8 @@ export default function DashboardPage() {
                 .length
             }
             subtitle="Consultas que não foram confirmadas"
+            titleClassName="text-[#0D4F97]"
+            valueClassName="text-[#0D4F97]"
           />
         </div>
 
@@ -167,19 +175,19 @@ export default function DashboardPage() {
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead className="px-3 py-2 text-xs sm:px-4 sm:py-3 sm:text-sm">
+                  <TableHead className="px-3 py-2 text-xs text-[#0D4F97] sm:px-4 sm:py-3 sm:text-sm">
                     Paciente
                   </TableHead>
-                  <TableHead className="px-3 py-2 text-xs sm:px-4 sm:py-3 sm:text-sm">
+                  <TableHead className="px-3 py-2 text-xs text-[#0D4F97] sm:px-4 sm:py-3 sm:text-sm">
                     Confirmou Presença
                   </TableHead>
-                  <TableHead className="px-3 py-2 text-xs sm:px-4 sm:py-3 sm:text-sm">
+                  <TableHead className="px-3 py-2 text-xs text-[#0D4F97] sm:px-4 sm:py-3 sm:text-sm">
                     Profissional
                   </TableHead>
-                  <TableHead className="px-3 py-2 text-xs sm:px-4 sm:py-3 sm:text-sm">
+                  <TableHead className="px-3 py-2 text-xs text-[#0D4F97] sm:px-4 sm:py-3 sm:text-sm">
                     Ações
                   </TableHead>
-                  <TableHead className="px-3 py-2 text-xs sm:px-4 sm:py-3 sm:text-sm">
+                  <TableHead className="px-3 py-2 text-xs text-[#0D4F97] sm:px-4 sm:py-3 sm:text-sm">
                     Confirmada
                   </TableHead>
                 </TableRow>
