@@ -189,7 +189,7 @@ function Sidebar({
           data-mobile="true"
           className={cn(
             "mobile-sidebar w-(--sidebar-width) p-0 [&>button]:hidden",
-            "bg-[#B2D7EC] text-[#0D4F97]" // ← cores padrão mobile
+            " h-screen bg-[#B2D7EC] text-[#0D4F97] rounded-r-3xl"
           )}
           style={
             {
