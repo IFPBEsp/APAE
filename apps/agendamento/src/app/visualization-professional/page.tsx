@@ -87,11 +87,12 @@ export default function VisualizationProfessionalPage() {
     <div className="w-full bg-background p-4 md:p-6 lg:p-8">
       <div className="mx-auto w-full max-w-[1400px]">
         <header className="mb-8 flex flex-col items-stretch gap-4 md:flex-row md:items-center md:justify-between">
-          <h1 className="text-2xl font-semibold text-foreground lg:text-3xl">
+          <h1 className="text-2xl font-semibold lg:text-3xl text-[#0D4F97]"
+          >
             Profissionais da Saúde
           </h1>
           <Button
-            className="md:w-auto bg-blue-800 hover:bg-blue-900"
+            className="md:w-auto bg-[#0D4F97] hover:bg-blue-900"
             onClick={handleAddNew}
           >
             Cadastrar Profissional
@@ -102,17 +103,19 @@ export default function VisualizationProfessionalPage() {
           <Input
             type="text"
             placeholder="Buscar por nome ou documento..."
-            className="flex-grow"
+            className="flex-grow border-[#0D4F97]"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
           />
           <Select value={areaFilter} onValueChange={setAreaFilter}>
-            <SelectTrigger className="w-full md:w-[200px]">
+            <SelectTrigger 
+              className="w-full md:w-[200px] border-[#0D4F97] hover:bg-accent text-[#0D4F97]" 
+            >
               <SelectValue placeholder="Filtrar por área" />
             </SelectTrigger>
             <SelectContent>
               {uniqueAreas.map((area) => (
-                <SelectItem key={area} value={area}>
+                <SelectItem  className="border-[#0D4F97]" key={area} value={area} >
                   {area === "all" ? "Todas as Áreas" : area}
                 </SelectItem>
               ))}
@@ -128,14 +131,14 @@ export default function VisualizationProfessionalPage() {
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead>Profissional</TableHead>
-                  <TableHead>Documento</TableHead>
-                  <TableHead>Área</TableHead>
-                  <TableHead className="hidden md:table-cell">
+                  <TableHead className="text-[#0D4F97]">Profissional</TableHead>
+                  <TableHead className="text-[#0D4F97]">Documento</TableHead>
+                  <TableHead className="text-[#0D4F97]">Área</TableHead>
+                  <TableHead className="hidden md:table-cell text-[#0D4F97]">
                     Telefone
                   </TableHead>
                   <TableHead>
-                    <span className="sr-only">Ações</span>
+                    <span className="sr-only text-[#0D4F97]">Ações</span>
                   </TableHead>
                 </TableRow>
               </TableHeader>
