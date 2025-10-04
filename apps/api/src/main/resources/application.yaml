@@ -31,5 +31,11 @@ app:
   token:
     secret: "U29tZVNlY3JldEF0TGVhc3QtMjU2Qml0cw=="
 
+minio:
+  access:
+    key: "ROOTUSER"
+    secret: "CHANGEME123"
+  url: "http://127.0.0.1:9000"
+
 server:
   port: 8090
