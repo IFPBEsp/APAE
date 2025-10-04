@@ -109,7 +109,7 @@ export default function VisualizationProfessionalPage() {
           />
           <Select value={areaFilter} onValueChange={setAreaFilter}>
             <SelectTrigger 
-              className="w-full md:w-[200px] border-[#0D4F97] text-[#0D4F97]" 
+              className="w-full md:w-[200px] border-[#0D4F97] hover:bg-accent text-[#0D4F97]" 
             >
               <SelectValue placeholder="Filtrar por área" />
             </SelectTrigger>
