@@ -130,7 +130,7 @@ export default function AllApointments() {
     <div className="min-h-screen w-full text-sm overflow-x-hidden">
       <main className="flex-1 p-3 sm:p-6 w-full max-w-none">
         <div className="mb-4 flex flex-col justify-between gap-3 sm:mb-6 sm:flex-row sm:items-center">
-          <h1 className="text-lg font-bold sm:text-2xl">
+          <h1 className="text-lg font-bold sm:text-2xl text-[#0D4F97]">
             Todos os Agendamentos
           </h1>
           <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
@@ -138,15 +138,15 @@ export default function AllApointments() {
               <PopoverTrigger asChild>
                 <Button
                   variant="outline"
-                  className="w-full justify-start bg-white text-left font-normal text-xs sm:w-[220px] sm:text-sm"
+                  className="w-full justify-start bg-white text-left font-normal text-xs sm:w-[220px] sm:text-sm border-[#0D4F97]"
                 >
-                  <CalendarDays className="mr-2 h-4 w-4" />
+                  <CalendarDays className="mr-2 h-4 w-4 text-[#0D4F97]" />
                   {selectedDate ? (
                     format(selectedDate, "dd 'de' MMMM 'de' yyyy", {
                       locale: ptBR,
                     })
                   ) : (
-                    <span>Escolha uma data</span>
+                    <span className="text-[#0D4F97]">Escolha uma data</span>
                   )}
                 </Button>
               </PopoverTrigger>
@@ -162,7 +162,7 @@ export default function AllApointments() {
             </Popover>
             <Dialog>
               <DialogTrigger asChild>
-                <Button className="w-full bg-blue-800 text-white hover:bg-blue-900 text-xs sm:w-auto sm:text-sm">
+                <Button className="w-full bg-[#0D4F97] text-white hover:bg-blue-900 text-xs sm:w-auto sm:text-sm">
                   Novo agendamento
                 </Button>
               </DialogTrigger>
@@ -184,6 +184,8 @@ export default function AllApointments() {
             title="Todos os agendamentos"
             icon={Users}
             value={appointments.length}
+            titleClassName="text-[#0D4F97]"
+            valueClassName="text-[#0D4F97]"
           />
           <InfoCard
             title="Sem justificativa"
@@ -191,6 +193,8 @@ export default function AllApointments() {
             value={semJustificativa.length}
             iconColor="text-red-400"
             subtitle="Pacientes que não justificaram suas faltas"
+            titleClassName="text-[#0D4F97]"
+            valueClassName="text-[#0D4F97]"
           />
           <InfoCard
             title="Não confirmados"
@@ -200,6 +204,8 @@ export default function AllApointments() {
                 .length
             }
             subtitle="Consultas que não foram confirmadas"
+            titleClassName="text-[#0D4F97]"
+            valueClassName="text-[#0D4F97]"
           />
         </div>
 
@@ -208,14 +214,14 @@ export default function AllApointments() {
             <SearchIcon className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
             <Input
               placeholder="Buscar paciente ou profissional..."
-              className="pl-10 pr-3"
+              className="pl-10 pr-3 border-[#0D4F97]"
               value={searchName}
               onChange={(e) => setSearchName(e.target.value)}
             />
           </div>
 
           <Select onValueChange={setSelectedArea}>
-            <SelectTrigger className="data-[placeholder]:text-black">
+            <SelectTrigger className="data-[placeholder]:text-[#0D4F97] border-[#0D4F97] hover:bg-accent">
               <SelectValue placeholder="Área da Saúde" />
             </SelectTrigger>
             <SelectContent>
@@ -233,7 +239,7 @@ export default function AllApointments() {
             <Button
               variant="outline"
               onClick={clearFilter}
-              className="w-auto text-xs sm:text-sm text-red-600 hover:bg-red-50"
+              className="w-auto text-xs sm:text-sm text-red-600 hover:bg-red-50 hover:text-red-600 border-red-600"
             >
               Limpar Filtro
             </Button>
@@ -245,16 +251,16 @@ export default function AllApointments() {
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead className="px-3 py-2 text-xs sm:px-4 sm:py-3 sm:text-sm">
+                  <TableHead className="px-3 py-2 text-xs sm:px-4 sm:py-3 sm:text-sm text-[#0D4F97]">
                     Paciente
                   </TableHead>
-                  <TableHead className="px-3 py-2 text-xs sm:px-4 sm:py-3 sm:text-sm">
+                  <TableHead className="px-3 py-2 text-xs sm:px-4 sm:py-3 sm:text-sm text-[#0D4F97]">
                     Próxima Consulta
                   </TableHead>
-                  <TableHead className="px-3 py-2 text-xs sm:px-4 sm:py-3 sm:text-sm">
+                  <TableHead className="px-3 py-2 text-xs sm:px-4 sm:py-3 sm:text-sm text-[#0D4F97]">
                     Profissional
                   </TableHead>
-                  <TableHead className="px-3 py-2 text-xs sm:px-4 sm:py-3 sm:text-sm">
+                  <TableHead className="px-3 py-2 text-xs sm:px-4 sm:py-3 sm:text-sm text-[#0D4F97]">
                     Ações
                   </TableHead>
                 </TableRow>
