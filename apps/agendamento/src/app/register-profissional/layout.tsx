@@ -12,7 +12,7 @@ export default function Layout({
   readonly children: React.ReactNode;
 }) {
   return (
-      <div className="h-screen rounded-lg mx-6 relative grid grid-cols-1 md:grid-cols-[1fr_2fr] gap-x-4 antialiased overflow-hidden">
+      <div className="m-5 rounded-lg mx-6 relative grid grid-cols-1 md:grid-cols-[1fr_2fr] gap-x-4 antialiased overflow-hidden">
           <div
             className="absolute inset-0 bg-cover bg-center bg-no-repeat grayscale-90"
             style={{
