@@ -32,13 +32,16 @@ import { cn } from "@/lib/utils";
 import logo from "../../assets/logo.png";
 
 export function AppSidebar() {
-  const { open, setOpen } = useSidebar();
+  const { open, setOpen, isMobile, setOpenMobile } = useSidebar();
   const pathname = usePathname();
 
   return (
     <Sidebar className={styles.sidebar}>
       <SidebarHeader className={styles.header}>
-        <button className={styles.closeButton} onClick={() => setOpen(false)}>
+        <button className={styles.closeButton} onClick={() => {
+          if (isMobile) setOpenMobile(false);
+          else setOpen(false);
+        }}>
           <ArrowLeftIcon size={20} />
         </button>
         <div className={styles.logoContainer}>
