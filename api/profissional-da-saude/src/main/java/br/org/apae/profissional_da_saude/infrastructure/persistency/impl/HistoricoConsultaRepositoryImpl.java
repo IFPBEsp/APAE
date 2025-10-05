@@ -1,8 +1,9 @@
-package br.org.apae.profissional_da_saude.infrastructure.persistency.jpa;
+package br.org.apae.profissional_da_saude.infrastructure.persistency.impl;
 
 import br.org.apae.profissional_da_saude.domain.model.HistoricoConsulta;
 import br.org.apae.profissional_da_saude.domain.repository.HistoricoConsultaRepository;
 import br.org.apae.profissional_da_saude.infrastructure.entity.HistoricoConsultaEntity;
+import br.org.apae.profissional_da_saude.infrastructure.persistency.jpa.HistoricoConsultaJpaRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
@@ -14,7 +15,7 @@ import java.util.UUID;
 
 @Repository
 @RequiredArgsConstructor
-public class JpaHistoricoConsultaRepository implements HistoricoConsultaRepository {
+public class HistoricoConsultaRepositoryImpl implements HistoricoConsultaRepository {
 
     private final HistoricoConsultaJpaRepository jpaRepository;
 
