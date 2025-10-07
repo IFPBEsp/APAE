@@ -2,6 +2,7 @@ package br.org.apae.api.patient.domain.model;
 
 import br.org.apae.api.common.dto.paciente.dto.create.CreatePatientDTO;
 import br.org.apae.api.common.dto.paciente.dto.update.UpdatePatientDTO;
+import br.org.apae.api.common.model.Address;
 import jakarta.persistence.*;
 import java.time.LocalDate;
 import java.util.ArrayList;

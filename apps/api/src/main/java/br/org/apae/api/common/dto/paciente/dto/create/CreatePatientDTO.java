@@ -3,6 +3,7 @@ package br.org.apae.api.common.dto.paciente.dto.create;
 import java.time.LocalDate;
 import java.util.List;
 
+import br.org.apae.api.common.dto.address.CreateAddressDTO;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
