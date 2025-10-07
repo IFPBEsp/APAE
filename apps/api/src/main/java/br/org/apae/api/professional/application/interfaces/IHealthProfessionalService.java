@@ -1,4 +1,4 @@
-package br.org.apae.api.professional.facade;
+package br.org.apae.api.professional.application.interfaces;
 
 import br.org.apae.api.professional.dto.HealthProfessionalCreateDTO;
 import br.org.apae.api.professional.dto.HealthProfessionalResponseDTO;
@@ -8,7 +8,7 @@ import org.springframework.data.domain.Pageable;
 
 import java.util.UUID;
 
-public interface IHealthProfessionalFacade {
+public interface IHealthProfessionalService {
 
     HealthProfessionalResponseDTO save(HealthProfessionalCreateDTO dto);
 

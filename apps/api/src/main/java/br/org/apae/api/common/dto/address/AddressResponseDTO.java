@@ -1,6 +1,6 @@
-package br.org.apae.api.common.dto.paciente.dto.response;
+package br.org.apae.api.common.dto.address;
 
-import br.org.apae.api.patient.domain.model.Address;
+import br.org.apae.api.common.model.Address;
 
 import java.util.UUID;
 

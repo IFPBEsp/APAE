@@ -1,4 +1,4 @@
-package br.org.apae.api.professional.domain.exceptions;
+package br.org.apae.api.professional.exceptions;
 
 public class EntityNotFoundException extends RuntimeException {
 

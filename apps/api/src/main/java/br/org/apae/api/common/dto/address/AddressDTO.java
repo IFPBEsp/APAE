@@ -1,4 +1,4 @@
-package br.org.apae.api.common.dto;
+package br.org.apae.api.common.dto.address;
 
 import br.org.apae.api.common.validations.RegexPatterns;
 import br.org.apae.api.common.validations.ValidationMessages;
