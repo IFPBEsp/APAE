@@ -11,23 +11,11 @@ import { InputMask } from "@react-input/mask";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage, FormDescription } from "@/components/ui/form";
 import { useRouter } from "next/navigation";
 import { useCreateProfissional } from "@/hooks/profissional/use-create-profissional";
+import Disponibilidade, { DisponibilidadeType, diasDaSemana, turnos } from "@/components/forms/DisponibilidadeForm";
 import { cadastroSchema } from "@/schemas/profissional.schema";
 import { HEALTH_AREAS } from "@/lib/health-areas";
 import { STATES } from "@/lib/states";
@@ -53,6 +41,7 @@ export default function CadastroProfissional(): JSX.Element {
     numero: "",
     complemento: "",
     cep: "",
+    disponibilidade: [],
   };
 
   const form = useForm<CadastroFormValues>({
@@ -114,11 +103,7 @@ export default function CadastroProfissional(): JSX.Element {
               <FormItem>
                 <FormLabel>Email *</FormLabel>
                 <FormControl>
-                  <Input
-                    type="email"
-                    placeholder="profissional@exemplo.com"
-                    {...field}
-                  />
+                  <Input type="email" placeholder="profissional@exemplo.com" {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -267,7 +252,7 @@ export default function CadastroProfissional(): JSX.Element {
             )}
           />
 
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <FormField
               control={form.control}
               name="bairro"
@@ -332,6 +317,8 @@ export default function CadastroProfissional(): JSX.Element {
               )}
             />
           </div>
+
+          <Disponibilidade control={form.control} watch={form.watch} />
 
           {loading && <p className="text-blue-500">Salvando...</p>}
           {error && <p className="text-red-500">{error}</p>}

@@ -50,4 +50,12 @@ export const cadastroSchema = z.object({
       "Telefone inválido. Formato esperado: (xx) xxxxx-xxxx"
     )
     .transform((val) => val.trim()),
+
+  disponibilidade: z.array(
+    z.object({
+      dia: z.string(),
+      turno: z.string(),
+      checked: z.boolean(),
+    })
+  ),
 });

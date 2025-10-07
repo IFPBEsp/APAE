@@ -130,7 +130,7 @@ export default function AtualizarProfissional(): JSX.Element {
               <FormItem>
                 <FormLabel>Nome completo</FormLabel>
                 <FormControl>
-                  <Input placeholder="Ex: Maria da Silva" {...field} />
+                  <Input {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -143,11 +143,7 @@ export default function AtualizarProfissional(): JSX.Element {
               <FormItem>
                 <FormLabel>Email</FormLabel>
                 <FormControl>
-                  <Input
-                    type="email"
-                    placeholder="profissional@exemplo.com"
-                    {...field}
-                  />
+                  <Input type="email" {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -296,7 +292,7 @@ export default function AtualizarProfissional(): JSX.Element {
             )}
           />
 
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <FormField
               control={form.control}
               name="bairro"
@@ -366,7 +362,7 @@ export default function AtualizarProfissional(): JSX.Element {
           {error && <p className="text-red-500">{error}</p>}
           {success && (
             <p className="text-green-600">Profissional atualizado com sucesso!</p>
-          )}
+            )}
           <div className="flex justify-end gap-4">
             <Button type="button" variant="outline" onClick={onCancel}>
               Cancelar
