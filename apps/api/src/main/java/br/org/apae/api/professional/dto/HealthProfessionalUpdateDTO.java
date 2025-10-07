@@ -1,6 +1,6 @@
 package br.org.apae.api.professional.dto;
 
-import br.org.apae.api.common.dto.AddressDTO;
+import br.org.apae.api.common.dto.address.AddressDTO;
 import br.org.apae.api.common.validations.RegexPatterns;
 import br.org.apae.api.common.validations.ValidationMessages;
 import jakarta.validation.Valid;

@@ -1,14 +1,17 @@
+// br.org.apae.api.professional.domain.repository.HealthProfessionalRepository
 package br.org.apae.api.professional.domain.repository;
 
+import br.org.apae.api.professional.domain.model.HealthProfessional; // Importar a classe consolidada
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.UUID;
 
-public interface HealthProfessionalRepository extends JpaRepository<br.org.apae.api.professional.infra.entity.HealthProfessionalEntity, UUID> {
+// O tipo de entidade referenciado no JpaRepository deve ser HealthProfessional
+public interface HealthProfessionalRepository extends JpaRepository<HealthProfessional, UUID> {
 
-    Page<br.org.apae.api.professional.infra.entity.HealthProfessionalEntity> findAll(Pageable pageable);
+    Page<HealthProfessional> findAll(Pageable pageable);
 
     boolean existsByProfessionalDocument(String professionalDocument);
 

@@ -1,6 +1,6 @@
 package br.org.apae.api.controllers.HealthProfessional;
 
-import br.org.apae.api.professional.facade.IHealthProfessionalFacade;
+import br.org.apae.api.professional.application.interfaces.IHealthProfessionalService;
 import br.org.apae.api.professional.dto.HealthProfessionalCreateDTO;
 import br.org.apae.api.professional.dto.HealthProfessionalResponseDTO;
 import br.org.apae.api.professional.dto.HealthProfessionalUpdateDTO;
@@ -20,10 +20,10 @@ import java.util.UUID;
 public class HealthProfessionalController {
 
     // Depende da interface
-    private final IHealthProfessionalFacade service;
+    private final IHealthProfessionalService service;
 
     @Autowired
-    public HealthProfessionalController(IHealthProfessionalFacade service) {
+    public HealthProfessionalController(IHealthProfessionalService service) {
         this.service = service;
     }
 
