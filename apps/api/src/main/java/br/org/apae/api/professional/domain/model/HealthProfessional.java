@@ -1,21 +1,16 @@
 package br.org.apae.api.professional.domain.model;
 
 import br.org.apae.api.common.model.Address;
-import br.org.apae.api.common.dto.address.AddressDTO;
 import br.org.apae.api.professional.dto.HealthProfessionalCreateDTO;
 import br.org.apae.api.professional.dto.HealthProfessionalResponseDTO;
 import br.org.apae.api.professional.dto.HealthProfessionalUpdateDTO;
+import br.org.apae.api.common.dto.address.AddressDTO;
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.Setter;
-
 import java.util.Optional;
 import java.util.UUID;
 
 @Entity
 @Table(name = "health_professionals")
-@Setter
-@Getter
 public class HealthProfessional {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -33,6 +28,16 @@ public class HealthProfessional {
 
     protected HealthProfessional() {}
 
+    public HealthProfessional(String healthSector, String phoneNumber, String professionalDocument, String email, String name, String identityDocument, Address address) {
+        this.healthSector = healthSector;
+        this.phoneNumber = phoneNumber;
+        this.professionalDocument = professionalDocument;
+        this.email = email;
+        this.name = name;
+        this.identityDocument = identityDocument;
+        this.address = address;
+    }
+
     public HealthProfessional(UUID id, String healthSector, String phoneNumber, String professionalDocument, String email, String name, String identityDocument, Address address) {
         this.id = id;
         this.healthSector = healthSector;
@@ -44,27 +49,16 @@ public class HealthProfessional {
         this.address = address;
     }
 
-    public HealthProfessional(String healthSector, String phoneNumber, String professionalDocument, String email, String name, String identityDocument, Address address) {
-        this.healthSector = healthSector;
-        this.phoneNumber = phoneNumber;
-        this.professionalDocument = professionalDocument;
-        this.email = email;
-        this.name = name;
-        this.identityDocument = identityDocument;
-        this.address = address;
-    }
-
-    // factory
     public static HealthProfessional from(HealthProfessionalCreateDTO dto) {
-        Address address = Address.builder()
-                .city(dto.address().city())
-                .cep(dto.address().cep())
-                .state(dto.address().state())
-                .neighborhood(dto.address().neighborhood())
-                .street(dto.address().street())
-                .number(dto.address().number())
-                .complement(dto.address().complement())
-                .build();
+        Address address = new Address(
+                dto.address().city(),
+                dto.address().cep(),
+                dto.address().state(),
+                dto.address().neighborhood(),
+                dto.address().street(),
+                dto.address().number(),
+                dto.address().complement()
+        );
 
         return new HealthProfessional(
                 dto.healthSector(),
@@ -112,5 +106,69 @@ public class HealthProfessional {
                 this.identityDocument,
                 this.address
         );
+    }
+
+    public UUID getId() {
+        return id;
+    }
+
+//    public void setId(UUID id) {
+//        this.id = id;
+//    }
+
+    public String getHealthSector() {
+        return healthSector;
+    }
+
+    public void setHealthSector(String healthSector) {
+        this.healthSector = healthSector;
+    }
+
+    public String getPhoneNumber() {
+        return phoneNumber;
+    }
+
+    public void setPhoneNumber(String phoneNumber) {
+        this.phoneNumber = phoneNumber;
+    }
+
+    public String getProfessionalDocument() {
+        return professionalDocument;
+    }
+
+    public void setProfessionalDocument(String professionalDocument) {
+        this.professionalDocument = professionalDocument;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getIdentityDocument() {
+        return identityDocument;
+    }
+
+    public void setIdentityDocument(String identityDocument) {
+        this.identityDocument = identityDocument;
+    }
+
+    public Address getAddress() {
+        return address;
+    }
+
+    public void setAddress(Address address) {
+        this.address = address;
     }
 }

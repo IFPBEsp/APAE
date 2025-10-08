@@ -2,12 +2,15 @@ package br.org.apae.api.patient.domain.model;
 
 import br.org.apae.api.common.dto.paciente.dto.create.CreatePatientDTO;
 import br.org.apae.api.common.dto.paciente.dto.update.UpdatePatientDTO;
+import br.org.apae.api.common.dto.address.CreateAddressDTO;
+import br.org.apae.api.common.dto.address.UpdateAddressDTO;
 import br.org.apae.api.common.model.Address;
 import jakarta.persistence.*;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.UUID;
 
 @Entity
@@ -133,6 +136,22 @@ public class Patient {
     }
 
     public static Patient from(CreatePatientDTO dto) {
+        Address address = null;
+        if (dto.address() != null) {
+            CreateAddressDTO addressDto = dto.address();
+            address = new Address(
+                    addressDto.city(),
+                    addressDto.cep(),
+                    addressDto.state(),
+                    addressDto.neighborhood(),
+                    addressDto.street(),
+                    addressDto.number(),
+                    addressDto.complement()
+            );
+        }
+
+        Guardian guardian = Guardian.from(dto.guardian());
+
         Patient patient = Patient.builder()
                 .fullName(dto.fullName())
                 .birthplace(dto.nationality())
@@ -151,8 +170,8 @@ public class Patient {
                 .registrationDate(dto.registrationDate())
                 .allergies(dto.allergies())
                 .isStudent(dto.isStudent())
-                .address(Address.from(dto.address()))
-                .guardian(Guardian.from(dto.guardian()))
+                .address(address)
+                .guardian(guardian)
                 .build();
 
         if (dto.parents() != null) {
@@ -166,10 +185,11 @@ public class Patient {
     }
 
     public void updateWith(UpdatePatientDTO dto) {
-        this.fullName = dto.fullName();
-        this.birthplace = dto.nationality();
-        this.birthDate = dto.birthDate();
-        this.contact = dto.contact();
+        Optional.ofNullable(dto.fullName()).ifPresent(v -> this.fullName = v);
+        Optional.ofNullable(dto.nationality()).ifPresent(v -> this.birthplace = v);
+        Optional.ofNullable(dto.birthDate()).ifPresent(v -> this.birthDate = v);
+        Optional.ofNullable(dto.contact()).ifPresent(v -> this.contact = v);
+
         this.birthCertificateNumber = dto.birthCertificateNumber();
         this.registryOffice = dto.registryOffice();
         this.fls = dto.fls();
@@ -184,9 +204,19 @@ public class Patient {
         this.allergies = dto.allergies();
         this.isStudent = dto.isStudent();
 
+
         if (this.address != null && dto.address() != null) {
-            this.address.updateWith(dto.address());
+            UpdateAddressDTO addressDto = dto.address();
+
+            Optional.ofNullable(addressDto.city()).ifPresent(this.address::setCity);
+            Optional.ofNullable(addressDto.cep()).ifPresent(this.address::setCep);
+            Optional.ofNullable(addressDto.state()).ifPresent(this.address::setState);
+            Optional.ofNullable(addressDto.neighborhood()).ifPresent(this.address::setNeighborhood);
+            Optional.ofNullable(addressDto.street()).ifPresent(this.address::setStreet);
+            Optional.ofNullable(addressDto.number()).ifPresent(this.address::setNumber);
+            Optional.ofNullable(addressDto.complement()).ifPresent(this.address::setComplement);
         }
+
         if (this.guardian != null && dto.guardian() != null) {
             this.guardian.updateWith(dto.guardian());
         }
