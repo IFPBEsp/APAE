@@ -1,10 +1,11 @@
 package br.org.apae.api.patient.application.interfaces;
 
-import br.org.apae.api.common.dto.paciente.dto.create.CreatePatientDTO;
-import br.org.apae.api.common.dto.paciente.dto.response.PatientResponseDTO;
-import br.org.apae.api.common.dto.paciente.dto.update.UpdatePatientDTO;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+
+import br.org.apae.api.common.dto.patient.create.CreatePatientDTO;
+import br.org.apae.api.common.dto.patient.response.PatientResponseDTO;
+import br.org.apae.api.common.dto.patient.update.UpdatePatientDTO;
 
 import java.util.List;
 import java.util.Map;

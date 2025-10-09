@@ -1,8 +1,8 @@
 package br.org.apae.api.auth.application.interfaces;
 
-import br.org.apae.api.common.dto.auth.dto.SignInDTO;
-import br.org.apae.api.common.dto.auth.dto.SignUpDTO;
-import br.org.apae.api.common.dto.auth.dto.TokenResponseDTO;
+import br.org.apae.api.common.dto.auth.request.SignInDTO;
+import br.org.apae.api.common.dto.auth.request.SignUpDTO;
+import br.org.apae.api.common.dto.auth.response.TokenResponseDTO;
 
 public interface AuthApplicationService {
   void signUp(SignUpDTO signUpDto);

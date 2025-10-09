@@ -5,9 +5,9 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 
-import br.org.apae.api.common.dto.auth.dto.SignInDTO;
-import br.org.apae.api.common.dto.auth.dto.SignUpDTO;
-import br.org.apae.api.common.dto.auth.dto.TokenResponseDTO;
+import br.org.apae.api.common.dto.auth.request.SignInDTO;
+import br.org.apae.api.common.dto.auth.request.SignUpDTO;
+import br.org.apae.api.common.dto.auth.response.TokenResponseDTO;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import jakarta.validation.Valid;

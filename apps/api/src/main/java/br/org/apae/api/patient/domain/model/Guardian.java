@@ -1,10 +1,11 @@
 package br.org.apae.api.patient.domain.model;
 
-import br.org.apae.api.common.dto.paciente.dto.create.CreateGuardianDTO;
-import br.org.apae.api.common.dto.paciente.dto.update.UpdateGuardianDTO;
 import jakarta.persistence.*;
 import java.util.Objects;
 import java.util.UUID;
+
+import br.org.apae.api.common.dto.patient.create.CreateGuardianDTO;
+import br.org.apae.api.common.dto.patient.update.UpdateGuardianDTO;
 
 @Entity
 @Table(name = "responsaveis")
