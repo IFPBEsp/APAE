@@ -6,9 +6,9 @@ import org.springframework.web.bind.annotation.*;
 
 import br.org.apae.api.auth.application.interfaces.AuthApplicationService;
 import br.org.apae.api.auth.interfaces.controllers.AuthController;
-import br.org.apae.api.common.dto.auth.dto.SignInDTO;
-import br.org.apae.api.common.dto.auth.dto.SignUpDTO;
-import br.org.apae.api.common.dto.auth.dto.TokenResponseDTO;
+import br.org.apae.api.common.dto.auth.request.SignInDTO;
+import br.org.apae.api.common.dto.auth.request.SignUpDTO;
+import br.org.apae.api.common.dto.auth.response.TokenResponseDTO;
 import jakarta.validation.Valid;
 
 @RestController
