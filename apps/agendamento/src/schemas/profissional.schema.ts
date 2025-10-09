@@ -58,4 +58,26 @@ export const cadastroSchema = z.object({
       checked: z.boolean(),
     })
   ),
+
+  termoVoluntariado: z
+    .any()
+    .refine(
+      (file) =>
+        file &&
+        typeof window !== "undefined" &&
+        file instanceof File &&
+        file.size > 0,
+      "Anexe o termo de voluntariado (obrigatório)"
+    ),
+  curriculo: z
+    .any()
+    .refine(
+      (file) =>
+        file &&
+        typeof window !== "undefined" &&
+        file instanceof File &&
+        file.size > 0,
+      "Anexe o currículo (obrigatório)"
+    ),
+  arquivoGenerico: z.any().optional(),
 });
