@@ -1,13 +1,14 @@
-package br.org.apae.api.patient.application.services;
+package br.org.apae.api.patient.application.internal;
 
+import br.org.apae.api.common.dto.patient.create.CreatePatientDTO;
+import br.org.apae.api.common.dto.patient.response.PatientResponseDTO;
+import br.org.apae.api.common.dto.patient.update.UpdatePatientDTO;
 import br.org.apae.api.patient.application.interfaces.PatientApplicationService;
 import br.org.apae.api.patient.domain.model.Patient;
 import br.org.apae.api.patient.domain.repository.PatientRepository;
 import br.org.apae.api.patient.domain.repository.PatientSpecification;
 import br.org.apae.api.patient.exception.types.PatientNotFoundException;
-import br.org.apae.api.common.dto.paciente.dto.create.CreatePatientDTO;
-import br.org.apae.api.common.dto.paciente.dto.response.PatientResponseDTO;
-import br.org.apae.api.common.dto.paciente.dto.update.UpdatePatientDTO;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;

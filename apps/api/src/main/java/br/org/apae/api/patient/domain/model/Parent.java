@@ -1,9 +1,10 @@
 package br.org.apae.api.patient.domain.model;
 
-import br.org.apae.api.common.dto.paciente.dto.create.CreateParentDTO;
 import jakarta.persistence.*;
 import java.util.Objects;
 import java.util.UUID;
+
+import br.org.apae.api.common.dto.patient.create.CreateParentDTO;
 
 @Entity
 @Table(name = "pais")
