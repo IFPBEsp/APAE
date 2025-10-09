@@ -1,4 +1,4 @@
-package br.org.apae.api.common.dto.auth.dto;
+package br.org.apae.api.common.dto.auth.response;
 
 public record TokenResponseDTO(String token) {
 

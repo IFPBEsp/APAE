@@ -1,18 +1,17 @@
-package br.org.apae.api.common.dto.paciente.dto.create;
+package br.org.apae.api.common.dto.patient.update;
 
 import java.time.LocalDate;
 import java.util.List;
 
-import br.org.apae.api.common.dto.address.CreateAddressDTO;
+import br.org.apae.api.common.dto.address.UpdateAddressDTO;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Past;
 
-
-public record CreatePatientDTO(
-        @NotBlank(message = "O nome não pode estar em branco")
+public record UpdatePatientDTO(
+        @NotBlank(message = "O nome completo não pode estar em branco")
         String fullName,
 
         @NotBlank(message = "A naturalidade não pode estar em branco")
@@ -21,7 +20,6 @@ public record CreatePatientDTO(
         @NotNull(message = "A data de nascimento não pode ser nula")
         @Past(message = "A data de nascimento deve ser uma data no passado")
         LocalDate birthDate,
-
         String contact,
         String birthCertificateNumber,
         String registryOffice,
@@ -33,7 +31,6 @@ public record CreatePatientDTO(
         String cpf,
         String cns,
         String nis,
-
         @NotNull(message = "A data de cadastro não pode ser nula")
         LocalDate registrationDate,
 
@@ -42,14 +39,15 @@ public record CreatePatientDTO(
 
         @NotNull(message = "Os dados de endereço são obrigatórios")
         @Valid
-        CreateAddressDTO address,
+        UpdateAddressDTO address,
 
         @NotNull(message = "Os dados do responsável são obrigatórios")
         @Valid
-        CreateGuardianDTO guardian,
+        UpdateGuardianDTO guardian,
 
         @NotEmpty(message = "É necessário fornecer os dados de pelo menos um pai ou responsável legal")
         @Valid
-        List<CreateParentDTO> parents
+        List<UpdateParentDTO> parents
 ) {
 }
+

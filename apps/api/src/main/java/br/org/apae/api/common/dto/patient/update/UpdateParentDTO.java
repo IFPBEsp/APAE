@@ -1,4 +1,4 @@
-package br.org.apae.api.common.dto.paciente.dto.update;
+package br.org.apae.api.common.dto.patient.update;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;

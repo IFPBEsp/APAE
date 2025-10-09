@@ -1,4 +1,4 @@
-package br.org.apae.api.common.dto.paciente.dto.response;
+package br.org.apae.api.common.dto.patient.response;
 
 import br.org.apae.api.common.dto.address.AddressResponseDTO;
 import br.org.apae.api.patient.domain.model.Patient;
