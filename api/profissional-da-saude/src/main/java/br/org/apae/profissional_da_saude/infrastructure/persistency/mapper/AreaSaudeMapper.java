@@ -11,10 +11,14 @@ public final class AreaSaudeMapper {
     }
 
     public static AreaSaudeEntity toEntity(AreaSaude model){
-        return AreaSaudeEntity.builder()
-                .id(model.getId())
-                .area(model.getArea())
-            .build();
+        AreaSaudeEntity.AreaSaudeEntityBuilder builder = AreaSaudeEntity.builder()
+                .area(model.getArea());
+
+        if (model.getId() != null) {
+            builder.id(model.getId());
+        }
+
+        return builder.build();
     }
     public static AreaSaude toModel(AreaSaudeEntity entity){
         return new AreaSaude(

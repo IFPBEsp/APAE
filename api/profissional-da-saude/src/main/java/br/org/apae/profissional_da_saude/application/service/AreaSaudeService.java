@@ -24,6 +24,9 @@ public class AreaSaudeService {
     }
 
     public AreaSaudeResponseDTO save(AreaSaudeCreateDTO dto){
+        if (dto.getArea() == null || dto.getArea().trim().isEmpty()) {
+            throw new ValidacaoNegocioException("A área de saúde não pode ser nula ou vazia.");
+        }
         if (this.repository.existsByArea(dto.getArea())){
             throw new ValidacaoNegocioException("Área de saúde já cadastrada.");
         }
@@ -49,6 +52,9 @@ public class AreaSaudeService {
     }
 
     public AreaSaudeResponseDTO update(Integer id, AreaSaudeUpdateDTO dto){
+        if (dto.getArea() == null || dto.getArea().trim().isEmpty()) {
+            throw new ValidacaoNegocioException("A área de saúde não pode ser nula ou vazia.");
+        }
         AreaSaude existe = this.repository.findById(id)
                 .orElseThrow(()-> new EntidadeNaoEncontradaException("Área de saúde não encontrada"));
 
