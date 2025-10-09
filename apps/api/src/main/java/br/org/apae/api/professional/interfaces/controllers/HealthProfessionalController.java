@@ -28,7 +28,7 @@ public interface HealthProfessionalController {
       @ApiResponse(responseCode = "500", description = "Erro interno no servidor", content = @Content)
   })
   @PostMapping
-  ResponseEntity<HealthProfessionalResponseDTO> createHealthProfessional(CreateHealthProfessionalDTO dto);
+  ResponseEntity<Void> createHealthProfessional(CreateHealthProfessionalDTO dto);
 
   @Operation(summary = "Listar profissionais de saúde", description = "Retorna uma lista paginada de todos os profissionais de saúde cadastrados.", responses = {
       @ApiResponse(responseCode = "200", description = "Lista obtida com sucesso", content = @Content(schema = @Schema(implementation = Page.class))),

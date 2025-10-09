@@ -2,7 +2,6 @@ package br.org.apae.api.professional.domain.model;
 
 import br.org.apae.api.common.dto.professional.request.CreateHealthProfessionalDTO;
 import br.org.apae.api.common.dto.professional.request.UpdateHealthProfessionalDTO;
-import br.org.apae.api.common.dto.professional.response.HealthProfessionalResponseDTO;
 import br.org.apae.api.common.model.Address;
 import jakarta.persistence.*;
 
@@ -75,18 +74,6 @@ public class HealthProfessional {
         if (dto.address() != null && this.address != null) {
             this.address.updateWith(dto.address());
         }
-    }
-
-    public HealthProfessionalResponseDTO toResponseDTO() {
-        return new HealthProfessionalResponseDTO(
-                this.id,
-                this.name,
-                this.email,
-                this.healthSector,
-                this.phoneNumber,
-                this.professionalDocument,
-                this.identityDocument,
-                this.address);
     }
 
     public UUID getId() {

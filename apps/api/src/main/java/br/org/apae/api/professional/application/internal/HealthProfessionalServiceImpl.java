@@ -25,7 +25,7 @@ public class HealthProfessionalServiceImpl implements HealthProfessionalService 
     }
 
     @Override
-    public HealthProfessionalResponseDTO save(CreateHealthProfessionalDTO dto) {
+    public void save(CreateHealthProfessionalDTO dto) {
         if (this.repository.existsByProfessionalDocument(dto.professionalDocument())) {
             throw new ProfessionalDocumentConflictException();
         }
@@ -36,16 +36,14 @@ public class HealthProfessionalServiceImpl implements HealthProfessionalService 
 
         HealthProfessional entityToSave = HealthProfessional.from(dto);
 
-        HealthProfessional savedEntity = this.repository.save(entityToSave);
-
-        return savedEntity.toResponseDTO();
+        this.repository.save(entityToSave);
     }
 
     @Override
     public Page<HealthProfessionalResponseDTO> findAll(Pageable pageable) {
         Page<HealthProfessional> entityPage = this.repository.findAll(pageable);
 
-        return entityPage.map(HealthProfessional::toResponseDTO);
+        return entityPage.map(HealthProfessionalResponseDTO::new);
     }
 
     @Override
@@ -58,7 +56,7 @@ public class HealthProfessionalServiceImpl implements HealthProfessionalService 
         HealthProfessional entity = this.repository.findById(id)
                 .orElseThrow(HealthProfessionalNotFoundException::new);
 
-        return entity.toResponseDTO();
+        return new HealthProfessionalResponseDTO(entity);
     }
 
     @Override
@@ -68,8 +66,6 @@ public class HealthProfessionalServiceImpl implements HealthProfessionalService 
 
         entityToUpdate.updateWith(dto);
 
-        HealthProfessional savedEntity = this.repository.save(entityToUpdate);
-
-        return savedEntity.toResponseDTO();
+        return new HealthProfessionalResponseDTO(entityToUpdate);
     }
 }
