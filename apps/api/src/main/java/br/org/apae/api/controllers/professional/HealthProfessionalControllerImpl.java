@@ -14,7 +14,6 @@ import org.springframework.web.bind.annotation.*;
 import java.util.UUID;
 
 @RestController
-@CrossOrigin(origins = "http://localhost:3000")
 public class HealthProfessionalControllerImpl implements HealthProfessionalController {
     private final HealthProfessionalService service;
 
@@ -23,9 +22,10 @@ public class HealthProfessionalControllerImpl implements HealthProfessionalContr
     }
 
     @Override
-    public ResponseEntity<HealthProfessionalResponseDTO> createHealthProfessional(
+    public ResponseEntity<Void> createHealthProfessional(
             @RequestBody @Valid CreateHealthProfessionalDTO dto) {
-        return ResponseEntity.ok(this.service.save(dto));
+        this.service.save(dto);
+        return ResponseEntity.status(201).build();
     }
 
     @Override

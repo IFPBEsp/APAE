@@ -11,7 +11,7 @@ import java.util.UUID;
 
 public interface HealthProfessionalService {
 
-    HealthProfessionalResponseDTO save(CreateHealthProfessionalDTO dto);
+    void save(CreateHealthProfessionalDTO dto);
 
     Page<HealthProfessionalResponseDTO> findAll(Pageable pageable);
 
