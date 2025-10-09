@@ -320,6 +320,58 @@ export default function CadastroProfissional(): JSX.Element {
 
           <Disponibilidade control={form.control} watch={form.watch} />
 
+          <FormField
+            control={form.control}
+            name="termoVoluntariado"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Anexar Termo de Voluntariado *</FormLabel>
+                <FormControl>
+                  <Input
+                    type="file"
+                    accept=".pdf,.doc,.docx,.jpg,.png"
+                    onChange={(e) => field.onChange(e.target.files?.[0])}
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="curriculo"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Anexar Currículo *</FormLabel>
+                <FormControl>
+                  <Input
+                    type="file"
+                    accept=".pdf,.doc,.docx"
+                    onChange={(e) => field.onChange(e.target.files?.[0])}
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="arquivoGenerico"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Anexar Arquivo Genérico (opcional)</FormLabel>
+                <FormControl>
+                  <Input
+                    type="file"
+                    accept=".pdf,.jpg,.png,.doc,.docx"
+                    onChange={(e) => field.onChange(e.target.files?.[0])}
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
           {loading && <p className="text-blue-500">Salvando...</p>}
           {error && <p className="text-red-500">{error}</p>}
           {success && (
