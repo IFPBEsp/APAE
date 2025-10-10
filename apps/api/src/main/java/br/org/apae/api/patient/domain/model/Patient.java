@@ -2,13 +2,17 @@ package br.org.apae.api.patient.domain.model;
 
 import br.org.apae.api.common.dto.patient.create.CreatePatientDTO;
 import br.org.apae.api.common.dto.patient.update.UpdatePatientDTO;
+import br.org.apae.api.patient.domain.model.Vaccine;
 import br.org.apae.api.common.model.Address;
 import jakarta.persistence.*;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
 
 @Entity
@@ -80,6 +84,14 @@ public class Patient {
 
     @OneToMany(mappedBy = "patient", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Parent> parents = new ArrayList<>();
+
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(
+            name = "paciente_vacina",
+            joinColumns = @JoinColumn(name = "paciente_id"),
+            inverseJoinColumns = @JoinColumn(name = "vacina_id")
+    )
+    private Set<Vaccine> vaccines = new HashSet<>();
 
     protected Patient() {
     }
@@ -188,6 +200,22 @@ public class Patient {
 
     public List<Parent> getParents() {
         return parents;
+    }
+
+    public Set<Vaccine> getVaccines() {
+        return Collections.unmodifiableSet(vaccines);
+    }
+
+    public void addVaccine(Vaccine vaccine) {
+        this.vaccines.add(vaccine);
+    }
+
+    public void removeVaccine(Vaccine vaccine) {
+        this.vaccines.remove(vaccine);
+    }
+
+    public void clearVaccines() {
+        this.vaccines.clear();
     }
 
     private void addParent(Parent parent) {

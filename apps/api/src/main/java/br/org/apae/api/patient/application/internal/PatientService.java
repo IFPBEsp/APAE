@@ -3,10 +3,13 @@ package br.org.apae.api.patient.application.internal;
 import br.org.apae.api.common.dto.patient.create.CreatePatientDTO;
 import br.org.apae.api.common.dto.patient.response.PatientResponseDTO;
 import br.org.apae.api.common.dto.patient.update.UpdatePatientDTO;
+import br.org.apae.api.patient.exception.types.DataIntegrityException;
 import br.org.apae.api.patient.application.interfaces.PatientApplicationService;
 import br.org.apae.api.patient.domain.model.Patient;
+import br.org.apae.api.patient.domain.model.Vaccine;
 import br.org.apae.api.patient.domain.repository.PatientRepository;
 import br.org.apae.api.patient.domain.repository.PatientSpecification;
+import br.org.apae.api.patient.domain.repository.VaccineRepository;
 import br.org.apae.api.patient.exception.types.PatientNotFoundException;
 
 import org.springframework.data.domain.Page;
@@ -24,23 +27,48 @@ import java.util.stream.Collectors;
 public class PatientService implements PatientApplicationService {
 
     private final PatientRepository patientRepository;
+    private final VaccineRepository vaccineRepository;
 
-    public PatientService(PatientRepository patientRepository) {
+    public PatientService(PatientRepository patientRepository, VaccineRepository vaccineRepository) {
         this.patientRepository = patientRepository;
+        this.vaccineRepository = vaccineRepository;
     }
 
     @Override
     @Transactional
     public void createPatient(CreatePatientDTO createPatientDTO) {
         Patient patient = Patient.from(createPatientDTO);
+
+        if (createPatientDTO.vaccineIds() != null && !createPatientDTO.vaccineIds().isEmpty()) {
+            List<Vaccine> vaccines = vaccineRepository.findAllById(createPatientDTO.vaccineIds());
+
+            if (vaccines.size() != createPatientDTO.vaccineIds().size()) {
+                throw new DataIntegrityException("Uma ou mais vacinas com os IDs fornecidos não foram encontradas.");
+            }
+
+            vaccines.forEach(patient::addVaccine);
+        }
+
         patientRepository.save(patient);
     }
 
     @Override
     @Transactional
     public PatientResponseDTO updatePatient(UUID id, UpdatePatientDTO updatePatientDTO) {
-        Patient patient = patientRepository.findById(id).orElseThrow(PatientNotFoundException::new);
+        Patient patient = patientRepository.findById(id)
+                .orElseThrow(() -> new PatientNotFoundException("Paciente com ID " + id + " não encontrado."));
         patient.updateWith(updatePatientDTO);
+        patient.clearVaccines();
+        if (updatePatientDTO.vaccineIds() != null && !updatePatientDTO.vaccineIds().isEmpty()) {
+            List<Vaccine> vaccines = vaccineRepository.findAllById(updatePatientDTO.vaccineIds());
+
+            if (vaccines.size() != updatePatientDTO.vaccineIds().size()) {
+                throw new DataIntegrityException("Uma ou mais vacinas com os IDs fornecidos não foram encontradas.");
+            }
+
+            vaccines.forEach(patient::addVaccine);
+        }
+
         return new PatientResponseDTO(patient);
     }
 

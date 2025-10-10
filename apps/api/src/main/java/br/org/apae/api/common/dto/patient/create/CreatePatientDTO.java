@@ -50,6 +50,8 @@ public record CreatePatientDTO(
 
         @NotEmpty(message = "É necessário fornecer os dados de pelo menos um pai ou responsável legal")
         @Valid
-        List<CreateParentDTO> parents
+        List<CreateParentDTO> parents,
+
+        List<Long> vaccineIds
 ) {
 }
