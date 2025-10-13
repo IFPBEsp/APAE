@@ -11,17 +11,17 @@ import java.util.UUID;
 
 public record CreateAppointmentDTO(
 
-    @NotNull(message = "Patient ID cannot be null") UUID patientId,
+        @NotNull(message = "O ID do paciente não pode ser nulo") UUID patientId,
 
-    @NotNull(message = "Professional ID cannot be null") UUID professionalId,
+        @NotNull(message = "O ID do profissional não pode ser nulo") UUID professionalId,
 
-    @NotNull(message = "Frequency in days cannot be null") Integer frequencyDays,
+        @NotNull(message = "A frequência em dias não pode ser nula") Integer frequencyDays,
 
-    @NotNull(message = "Next appointment date cannot be null") LocalDate nextAppointmentDate,
+        @NotNull(message = "A data da próxima consulta não pode ser nula") LocalDate nextAppointmentDate,
 
-    @NotNull(message = "Next appointment time cannot be null") @JsonFormat(pattern = "HH:mm:ss") LocalTime nextAppointmentTime,
+        @NotNull(message = "O horário da próxima consulta não pode ser nulo") @JsonFormat(pattern = "HH:mm:ss") LocalTime nextAppointmentTime,
 
-    @NotNull(message = "Confirmation status cannot be null") Boolean confirmed,
+        @NotNull(message = "O status de confirmação não pode ser nulo") Boolean confirmed,
 
-    @NotBlank(message = "Description cannot be blank") String description) {
+        @NotBlank(message = "A descrição não pode estar em branco") String description) {
 }

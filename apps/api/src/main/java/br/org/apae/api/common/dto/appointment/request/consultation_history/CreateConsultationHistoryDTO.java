@@ -9,13 +9,13 @@ import jakarta.validation.constraints.PastOrPresent;
 
 public record CreateConsultationHistoryDTO(
 
-    @NotNull(message = "Appointment ID is required") UUID appointmentId,
+        @NotNull(message = "O ID da consulta é obrigatório") UUID appointmentId,
 
-    @NotNull(message = "Consultation date is required") @PastOrPresent(message = "Consultation date cannot be in the future") LocalDate consultationDate,
+        @NotNull(message = "A data da consulta é obrigatória") @PastOrPresent(message = "A data da consulta não pode estar no futuro") LocalDate consultationDate,
 
-    @NotNull(message = "Consultation time is required") LocalTime consultationTime,
+        @NotNull(message = "O horário da consulta é obrigatório") LocalTime consultationTime,
 
-    @NotNull(message = "Performed indicator is required") Boolean performed,
+        @NotNull(message = "O indicador de realização é obrigatório") Boolean performed,
 
-    String justification) {
+        String justification) {
 }

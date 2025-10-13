@@ -4,7 +4,7 @@ import jakarta.validation.constraints.NotNull;
 
 public record UpdateConsultationHistoryDTO(
 
-    @NotNull(message = "Performed indicator is required") Boolean performed,
+        @NotNull(message = "O indicador de realização é obrigatório") Boolean performed,
 
-    String justification) {
+        String justification) {
 }
