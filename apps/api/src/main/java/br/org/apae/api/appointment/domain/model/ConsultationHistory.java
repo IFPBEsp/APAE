@@ -13,7 +13,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 
 @Entity
-@Table(name = "historico_consulta")
+@Table(name = "historico_de_consultas")
 public class ConsultationHistory {
   @Id
   @GeneratedValue(strategy = GenerationType.UUID)

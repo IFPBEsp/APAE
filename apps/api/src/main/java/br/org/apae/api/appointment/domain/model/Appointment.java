@@ -15,7 +15,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 
 @Entity
-@Table(name = "agendamento")
+@Table(name = "agendamentos")
 public class Appointment {
   @Id
   @GeneratedValue(strategy = GenerationType.UUID)
