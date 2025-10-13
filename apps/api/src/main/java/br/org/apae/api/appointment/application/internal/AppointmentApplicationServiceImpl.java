@@ -52,6 +52,16 @@ public class AppointmentApplicationServiceImpl implements AppointmentApplication
   }
 
   @Override
+  public Page<AppointmentResponseDTO> findAll(LocalDate date, LocalTime time, Pageable pageable) {
+    if (date != null && time == null) {
+      return this.findAllByDate(date, pageable);
+    } else if (date != null) {
+      return this.findAllByDateAndTime(date, time, pageable);
+    }
+    return this.findAll(pageable);
+  }
+
+  @Override
   public AppointmentResponseDTO findById(UUID id) {
     Appointment appointment = this.appointmentRepository.findById(id).orElseThrow(AppointmentNotFoundException::new);
 

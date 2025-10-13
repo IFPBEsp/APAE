@@ -32,12 +32,8 @@ public class AppointmentControllerImpl implements AppointmentController {
 
   @Override
   public ResponseEntity<Page<AppointmentResponseDTO>> getAll(LocalDate date, LocalTime time, Pageable pageable) {
-    if (date != null && time == null) {
-      return ResponseEntity.ok(appointmentApplicationService.findAllByDate(date, pageable));
-    } else if (date != null) {
-      return ResponseEntity.ok(appointmentApplicationService.findAllByDateAndTime(date, time, pageable));
-    }
-    return ResponseEntity.ok(appointmentApplicationService.findAll(pageable));
+    Page<AppointmentResponseDTO> appointments = appointmentApplicationService.findAll(date, time, pageable);
+    return ResponseEntity.ok(appointments);
   }
 
   @Override

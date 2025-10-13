@@ -16,6 +16,8 @@ public interface AppointmentApplicationService {
 
   Page<AppointmentResponseDTO> findAll(Pageable pageable);
 
+  Page<AppointmentResponseDTO> findAll(LocalDate date, LocalTime time, Pageable pageable);
+
   Page<AppointmentResponseDTO> findAllByDate(LocalDate date, Pageable pageable);
 
   Page<AppointmentResponseDTO> findAllByDateAndTime(LocalDate date, LocalTime time, Pageable pageable);
