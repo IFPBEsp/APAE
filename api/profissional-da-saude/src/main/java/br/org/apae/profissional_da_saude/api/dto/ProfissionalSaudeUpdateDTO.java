@@ -34,6 +34,8 @@ public class ProfissionalSaudeUpdateDTO {
     @Pattern( regexp = RegexPatterns.RG, message = ValidationMessages.RG_INVALIDO )
     private String rg;
 
+    private boolean ativo;
+
     @NotNull(message = "Endereço é obrigatório")
     @Valid
     private EnderecoDTO endereco;

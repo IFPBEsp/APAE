@@ -45,7 +45,7 @@ public class ProfissionalSaudeService {
             dto.getEmail(),
             dto.getNome(),
             dto.getRg(),
-            dto.isAtivo(),
+            true,
             new Endereco(
                     dto.getEndereco().getEstado(),
                     dto.getEndereco().getCidade(),

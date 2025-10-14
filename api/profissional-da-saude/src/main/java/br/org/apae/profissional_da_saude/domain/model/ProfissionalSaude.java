@@ -11,11 +11,8 @@ public class ProfissionalSaude {
   private  String email;
   private  String nome;
   private  String rg;
-
-  private Endereco endereco;
-
   private boolean ativo = true;
-
+  private Endereco endereco;
 
   public ProfissionalSaude(UUID id, String areaDaSaude, String telefone,
                            String docProfissional, String email, String nome,
@@ -39,8 +36,8 @@ public class ProfissionalSaude {
     this.email = email;
     this.nome = nome;
     this.rg = rg;
-    this.endereco = endereco;
     this.ativo = ativo;
+    this.endereco = endereco;
   }
 
   public boolean isAtivo() {
