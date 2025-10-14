@@ -45,6 +45,7 @@ public class ProfissionalSaudeService {
             dto.getEmail(),
             dto.getNome(),
             dto.getRg(),
+            dto.isAtivo(),
             new Endereco(
                     dto.getEndereco().getEstado(),
                     dto.getEndereco().getCidade(),
@@ -65,9 +66,16 @@ public class ProfissionalSaudeService {
         .map(ProfissionalSaudeMapper::toResponseDTO);
   }
 
-  public void delete(UUID id) {
-    this.repository.deleteById(id);
+  public ProfissionalSaudeResponseDTO desativar(UUID id) {
+    ProfissionalSaude existente = this.repository.findById(id).orElseThrow(() -> new EntidadeNaoEncontradaException("Profissional não encontrado"));
+    existente.setAtivo(false);
+    ProfissionalSaude saved = this.repository.update(existente);
+    return ProfissionalSaudeMapper.toResponseDTO(saved);
   }
+
+  // public void delete(UUID id) {
+  //   this.repository.deleteById(id);
+  // }
 
   public Optional<ProfissionalSaudeResponseDTO> findById(UUID id) {
     Optional<ProfissionalSaudeResponseDTO> dto = this.repository.findById(id)

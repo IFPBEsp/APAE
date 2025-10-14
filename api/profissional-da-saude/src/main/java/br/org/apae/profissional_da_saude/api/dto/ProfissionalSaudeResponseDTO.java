@@ -17,6 +17,7 @@ public class ProfissionalSaudeResponseDTO {
     private String email;
     private String nome;
     private String rg;
+    private boolean ativo;
 
     private Endereco endereco;
 }

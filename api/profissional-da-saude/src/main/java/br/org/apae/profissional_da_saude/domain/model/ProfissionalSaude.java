@@ -14,10 +14,12 @@ public class ProfissionalSaude {
 
   private Endereco endereco;
 
+  private boolean ativo = true;
+
 
   public ProfissionalSaude(UUID id, String areaDaSaude, String telefone,
                            String docProfissional, String email, String nome,
-                           String rg, Endereco endereco) {
+                           String rg, boolean ativo, Endereco endereco) {
     this.id = id;
     this.areaDaSaude = areaDaSaude;
     this.telefone = telefone;
@@ -26,10 +28,11 @@ public class ProfissionalSaude {
     this.nome = nome;
     this.rg = rg;
     this.endereco = endereco;
+    this.ativo = ativo;
   }
 
   public ProfissionalSaude(String areaDaSaude, String telefone, String docProfissional,
-                           String email, String nome, String rg, Endereco endereco) {
+                           String email, String nome, String rg, boolean ativo, Endereco endereco) {
     this.areaDaSaude = areaDaSaude;
     this.telefone = telefone;
     this.docProfissional = docProfissional;
@@ -37,7 +40,15 @@ public class ProfissionalSaude {
     this.nome = nome;
     this.rg = rg;
     this.endereco = endereco;
+    this.ativo = ativo;
+  }
 
+  public boolean isAtivo() {
+    return ativo;
+  }
+
+  public void setAtivo(boolean ativo) {
+    this.ativo = ativo;
   }
 
   public UUID getId() {

@@ -36,11 +36,15 @@ public class ProfissionalSaudeController {
     return ResponseEntity.ok(this.service.findAll(pageable));
   }
 
-  @DeleteMapping("/{id}")
-  public ResponseEntity<Void> delete(@PathVariable UUID id) {
-    this.service.delete(id);
-    return ResponseEntity.noContent().build();
+  public ResponseEntity<ProfissionalSaudeResponseDTO> inactivate(@PathVariable UUID id) {
+    return ResponseEntity.ok(this.service.desativar(id));
   }
+
+  // @DeleteMapping("/{id}")
+  // public ResponseEntity<Void> delete(@PathVariable UUID id) {
+  //   this.service.delete(id);
+  //   return ResponseEntity.noContent().build();
+  // }
 
   @GetMapping("/{id}")
   public ResponseEntity<ProfissionalSaudeResponseDTO> findById(@PathVariable UUID id) {
