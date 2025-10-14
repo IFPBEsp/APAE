@@ -23,8 +23,8 @@ public class ProfissionalSaudeEntity {
     private String email;
     private String nome;
     private String rg;
-    
-    @Column(name = "ativo", nullable = false)
+
+    @Column(nullable = false, columnDefinition = "BOOLEAN DEFAULT TRUE")
     private boolean ativo;
 
     @Embedded
