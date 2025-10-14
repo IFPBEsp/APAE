@@ -21,6 +21,7 @@ public final class ProfissionalSaudeMapper {
         .email(model.getEmail())
         .nome(model.getNome())
         .rg(model.getRg())
+        .ativo(true)
         .endereco(new EnderecoEntity( model.getEndereco().getEstado(),
                 model.getEndereco().getCidade(),
                 model.getEndereco().getBairro(),
@@ -49,6 +50,7 @@ public final class ProfissionalSaudeMapper {
             entity.getEmail(),
             entity.getNome(),
             entity.getRg(),
+            entity.isAtivo(),
             endereco
     );
   }
@@ -73,6 +75,7 @@ public final class ProfissionalSaudeMapper {
             dto.getEmail(),
             dto.getNome(),
             dto.getRg(),
+            dto.isAtivo(),
             endereco
     );
   }

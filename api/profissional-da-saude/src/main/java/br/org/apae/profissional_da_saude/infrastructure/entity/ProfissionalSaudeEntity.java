@@ -22,7 +22,8 @@ public class ProfissionalSaudeEntity {
     private String docProfissional;
     private String email;
     private String nome;
-    private  String rg;
+    private String rg;
+    private boolean ativo;
 
     @Embedded
     private EnderecoEntity endereco;
