@@ -4,7 +4,7 @@ import { useGetByIdProfissional } from "@/hooks/profissional/use-get-by-id-profi
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Pencil, Check, X } from "lucide-react";
+import { Pencil, Check, X, CircleCheck, CircleX } from "lucide-react";
 import { useRouter } from "next/navigation";
 
 interface ProfissionalExibicao {
@@ -16,6 +16,7 @@ interface ProfissionalExibicao {
   telefone: string;
   rg: string;
   cpf: string;
+  ativo: boolean;
   endereco: {
     estado: string;
     cidade: string;
@@ -50,6 +51,7 @@ export default function VisualizarProfissional({ params }: PageProps) {
     ...profissional,
     cpf: profissional.cpf || "—",
     rg: profissional.rg || "—",
+    ativo: profissional.ativo,
     docProfissional: profissional.docProfissional || "—",
     disponibilidade: profissional.disponibilidade || [],
     endereco: profissional.endereco || {
@@ -95,7 +97,7 @@ export default function VisualizarProfissional({ params }: PageProps) {
           <p className="text-base text-gray-600">{dadosExibicao.areaDaSaude}</p>
         </div>
       </div>
-
+      
       {/* Grid de cards responsivo */}
       <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
         {/* Informação de perfil */}

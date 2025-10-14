@@ -18,4 +18,5 @@ export interface Profissional {
   cpf: string;
   rg: string;
   endereco: Endereco;
+  ativo: boolean;
 }
