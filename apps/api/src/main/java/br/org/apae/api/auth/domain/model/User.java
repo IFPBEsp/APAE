@@ -18,7 +18,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 
 @Entity
-@Table(name = "users")
+@Table(name = "usuarios")
 public class User implements UserDetails {
   @Id
   @GeneratedValue(strategy = GenerationType.UUID)
@@ -27,11 +27,11 @@ public class User implements UserDetails {
   @Column(nullable = false, unique = true)
   private String username;
 
-  @Column(nullable = false)
+  @Column(name = "senha", nullable = false)
   private String password;
 
   @Enumerated(EnumType.STRING)
-  @Column(nullable = false)
+  @Column(name = "cargo", nullable = false)
   private UserRole role;
 
   protected User() {
