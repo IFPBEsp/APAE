@@ -20,7 +20,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { MoreHorizontal, Edit, Trash2, Eye } from "lucide-react";
+import { MoreHorizontal, Edit, Eye, CircleX, CircleCheck } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -138,6 +138,7 @@ export default function VisualizationProfessionalPage() {
                   <TableHead className="hidden md:table-cell text-[#0D4F97]">
                     Telefone
                   </TableHead>
+                  <TableHead className="text-[#0D4F97]">Ativo</TableHead>
                   <TableHead>
                     <span className="sr-only text-[#0D4F97]">Ações</span>
                   </TableHead>
@@ -153,6 +154,7 @@ export default function VisualizationProfessionalPage() {
                       <TableCell className="hidden md:table-cell">
                         {prof.telefone}
                       </TableCell>
+                      <TableCell>{prof.ativo ? "Ativo" : "Inativo"}</TableCell>
                       <TableCell className="text-right">
                         <AlertDialog>
                           <DropdownMenu>
@@ -179,10 +181,17 @@ export default function VisualizationProfessionalPage() {
                               </DropdownMenuItem>
                               <DropdownMenuSeparator />
                               <AlertDialogTrigger asChild>
-                                <DropdownMenuItem className="text-destructive focus:text-destructive">
-                                  <Trash2 className="mr-2 h-4 w-4" />
-                                  Excluir
-                                </DropdownMenuItem>
+                                { prof.ativo ?
+                                  <DropdownMenuItem className="text-destructive focus:text-destructive">
+                                    <CircleX className="mr-2 h-4 w-4" />
+                                    Inativar
+                                  </DropdownMenuItem>
+                                  :
+                                  <DropdownMenuItem className="text-default focus:text-default text-[#008000]">
+                                    <CircleCheck className="mr-2 h-4 w-4" />
+                                    Ativar
+                                  </DropdownMenuItem>
+                                }
                               </AlertDialogTrigger>
                             </DropdownMenuContent>
                           </DropdownMenu>
