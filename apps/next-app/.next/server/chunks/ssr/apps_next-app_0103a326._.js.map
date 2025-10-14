@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": [],
+  "sections": [
+    {"offset": {"line": 6, "column": 0}, "map": {"version":3,"sources":[],"names":[],"mappings":"","debugId":null}},
+    {"offset": {"line": 30, "column": 0}, "map": {"version":3,"sources":["file:///home/pedro-gregorio/Documentos/pedro/Projeto-Sistemas/APAE/apps/next-app/src/app/auth/register/page.tsx"],"sourcesContent":["import React from \"react\";\n\nfunction page() {\n  return (\n    <div\n      className=\"min-w-[326px] w-[50vw] min-h-[326px] h-[75vh]\n                  bg-white rounded-[20px] overflow-auto\"\n      style={{ boxShadow: \"4px 4px 10px rgba(0, 0, 0, 0.25)\" }}\n    ></div>\n  );\n}\n\nexport default page;\n"],"names":[],"mappings":";;;;;AAEA,SAAS;IACP,qBACE,6WAAC;QACC,WAAU;QAEV,OAAO;YAAE,WAAW;QAAmC;;;;;;AAG7D;uCAEe","debugId":null}}]
+}

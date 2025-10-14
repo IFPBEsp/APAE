@@ -1,0 +1,20 @@
+issuer_uri: http://localhost:8080/realms/master
+jwk_set_uri: http://localhost:8080/realms/master/protocol/openid-connect/certs
+
+spring:
+  application:
+    name: documentos-digitalizados
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: ${issuer_uri}
+          jwk_set_uri: ${jwk_set_uri}
+
+minio:
+  endpoint: http://localhost:9000
+  accessKey: ROOTUSER
+  secretKey: CHANGEME123
+
+server:
+  port: 8092
