@@ -310,7 +310,7 @@ export default function CadastroProfissional(): JSX.Element {
                 <FormItem>
                   <FormLabel>Complemento</FormLabel>
                   <FormControl>
-                    <Input placeholder="Ex: Apt 101" {...field} />
+                    <Input placeholder="Ex: Apt 101 ou Casa" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
