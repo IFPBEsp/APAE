@@ -23,6 +23,8 @@ public class ProfissionalSaudeEntity {
     private String email;
     private String nome;
     private String rg;
+    
+    @Column(name = "ativo", nullable = false)
     private boolean ativo;
 
     @Embedded
