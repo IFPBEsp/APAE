@@ -41,6 +41,11 @@ public class ProfissionalSaudeController {
     return ResponseEntity.ok(this.service.desativar(id));
   }
 
+  @PostMapping("/activate/{id}")
+  public ResponseEntity<ProfissionalSaudeResponseDTO> activate(@PathVariable UUID id) {
+    return ResponseEntity.ok(this.service.ativar(id));
+  }
+
   // @DeleteMapping("/{id}")
   // public ResponseEntity<Void> delete(@PathVariable UUID id) {
   //   this.service.delete(id);

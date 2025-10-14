@@ -73,6 +73,13 @@ public class ProfissionalSaudeService {
     return ProfissionalSaudeMapper.toResponseDTO(saved);
   }
 
+  public ProfissionalSaudeResponseDTO ativar(UUID id) {
+    ProfissionalSaude existente = this.repository.findById(id).orElseThrow(() -> new EntidadeNaoEncontradaException("Profissional não encontrado"));
+    existente.setAtivo(true);
+    ProfissionalSaude saved = this.repository.update(existente);
+    return ProfissionalSaudeMapper.toResponseDTO(saved);
+  }
+
   // public void delete(UUID id) {
   //   this.repository.deleteById(id);
   // }
