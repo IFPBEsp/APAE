@@ -1,4 +1,53 @@
 package br.org.apae.api.disorder.interfaces.controllers;
 
+import br.org.apae.api.common.dto.disorder.request.CreateDisorderDTO;
+import br.org.apae.api.common.dto.disorder.request.UpdateDisorderDTO;
+import br.org.apae.api.common.dto.disorder.response.DisorderResponseDTO;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.UUID;
+
+@RequestMapping("/transtornos")
 public interface DisorderController {
+
+    @Operation(summary = "Cadastrar Transtorno", description = "Cria um novo registro de transtorno no sistema.", responses = {
+            @ApiResponse(responseCode = "201", description = "Transtorno criado com sucesso", content = @Content(schema = @Schema(implementation = DisorderResponseDTO.class))),
+            @ApiResponse(responseCode = "400", description = "Dados inválidos", content = @Content)
+    })
+    @PostMapping
+    ResponseEntity<DisorderResponseDTO> createDisorder(@RequestBody CreateDisorderDTO dto);
+
+    @Operation(summary = "Listar Transtornos", description = "Retorna uma lista paginada de todos os transtornos cadastrados.", responses = {
+            @ApiResponse(responseCode = "200", description = "Lista obtida com sucesso", content = @Content(schema = @Schema(implementation = Page.class)))
+    })
+    @GetMapping
+    ResponseEntity<Page<DisorderResponseDTO>> getAllDisorders(Pageable pageable);
+
+    @Operation(summary = "Excluir Transtorno", description = "Remove um transtorno pelo seu identificador (UUID).", responses = {
+            @ApiResponse(responseCode = "204", description = "Transtorno excluído com sucesso", content = @Content),
+            @ApiResponse(responseCode = "404", description = "Transtorno não encontrado", content = @Content)
+    })
+    @DeleteMapping("/{id}")
+    ResponseEntity<Void> deleteDisorder(@PathVariable UUID id);
+
+    @Operation(summary = "Buscar Transtorno por ID", description = "Obtém os dados de um transtorno específico através do seu identificador (UUID).", responses = {
+            @ApiResponse(responseCode = "200", description = "Transtorno encontrado", content = @Content(schema = @Schema(implementation = DisorderResponseDTO.class))),
+            @ApiResponse(responseCode = "404", description = "Transtorno não encontrado", content = @Content)
+    })
+    @GetMapping("/{id}")
+    ResponseEntity<DisorderResponseDTO> findByIdDisorder(@PathVariable UUID id);
+
+    @Operation(summary = "Atualizar Transtorno", description = "Atualiza as informações de um transtorno existente.", responses = {
+            @ApiResponse(responseCode = "200", description = "Transtorno atualizado com sucesso", content = @Content(schema = @Schema(implementation = DisorderResponseDTO.class))),
+            @ApiResponse(responseCode = "404", description = "Transtorno não encontrado", content = @Content)
+    })
+    @PutMapping("/{id}")
+    ResponseEntity<DisorderResponseDTO> updateDisorder(@PathVariable UUID id, @RequestBody UpdateDisorderDTO dto);
 }
