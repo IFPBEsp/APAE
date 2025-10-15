@@ -3,17 +3,15 @@ package br.org.apae.api.patient.domain.model;
 import jakarta.persistence.*;
 import java.math.BigDecimal;
 import java.time.Year;
-import java.util.HashSet;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 
 @Entity
-@Table(name = "cadastro_anual")
+@Table(name = "cadastros_anuais")
 public class AnnualRegistry {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    @GeneratedValue(strategy = GenerationType.UUID)
+    private UUID id;
 
     @Column(name = "bpc")
     private String bpc; // Benefício de Prestação Continuada
@@ -39,6 +37,7 @@ public class AnnualRegistry {
     )
     private Set<Disorder> disorders = new HashSet<>();
 
+    @Deprecated
     protected AnnualRegistry() {}
 
     public AnnualRegistry(String bpc, String diseases, BigDecimal familyIncome, Year year, Patient patient) {
@@ -55,7 +54,7 @@ public class AnnualRegistry {
         this.patient = patient;
     }
 
-    public Long getId() {
+    public UUID getId() {
         return id;
     }
 
@@ -80,10 +79,10 @@ public class AnnualRegistry {
     }
 
     public Set<Disorder> getDisorders() {
-        return disorders;
+        return Collections.unmodifiableSet(disorders);
     }
 
-    public void mapForUpdate(String bpc, String diseases, BigDecimal familyIncome, Year year) {
+    public void updateDetails(String bpc, String diseases, BigDecimal familyIncome, Year year) {
         this.bpc = bpc;
         this.diseases = diseases;
         this.familyIncome = familyIncome;
@@ -96,9 +95,14 @@ public class AnnualRegistry {
         this.disorders.add(disorder);
     }
 
+    public void removeDisorder(Disorder disorder) {
+        this.disorders.remove(disorder);
+    }
+
     public void clearDisorders() {
         this.disorders.clear();
     }
+
 
     @Override
     public boolean equals(Object o) {

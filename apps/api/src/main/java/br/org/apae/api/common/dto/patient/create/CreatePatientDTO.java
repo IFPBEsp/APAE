@@ -52,6 +52,6 @@ public record CreatePatientDTO(
         @Valid
         List<CreateParentDTO> parents,
 
-        List<Long> vaccineIds
+        List<String> vaccineNames
 ) {
 }

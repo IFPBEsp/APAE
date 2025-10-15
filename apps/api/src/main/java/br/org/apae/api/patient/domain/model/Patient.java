@@ -1,19 +1,9 @@
 package br.org.apae.api.patient.domain.model;
 
-import br.org.apae.api.common.dto.patient.create.CreatePatientDTO;
-import br.org.apae.api.common.dto.patient.update.UpdatePatientDTO;
-import br.org.apae.api.patient.domain.model.Vaccine;
 import br.org.apae.api.common.model.Address;
 import jakarta.persistence.*;
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 
 @Entity
 @Table(name = "pacientes")
@@ -41,13 +31,13 @@ public class Patient {
     @Column(name = "cartorio")
     private String registryOffice;
 
-    @Column
+    @Column(name = "fls")
     private String fls;
 
-    @Column
+    @Column(name = "livro")
     private String book;
 
-    @Column
+    @Column(name = "rg")
     private String rg;
 
     @Column(name = "data_de_emissao")
@@ -56,13 +46,13 @@ public class Patient {
     @Column(name = "orgao_emissor")
     private String issuingAgency;
 
-    @Column
+    @Column(name = "cpf")
     private String cpf;
 
-    @Column
+    @Column(name = "cns")
     private String cns;
 
-    @Column
+    @Column(name = "nis")
     private String nis;
 
     @Column(name = "data_de_cadastro", nullable = false)
@@ -93,350 +83,81 @@ public class Patient {
     )
     private Set<Vaccine> vaccines = new HashSet<>();
 
-    protected Patient() {
+    @Deprecated
+    protected Patient() {}
+
+    public Patient(String fullName, LocalDate birthDate, LocalDate registrationDate, Address address, Guardian guardian) {
+        Objects.requireNonNull(fullName, "O nome completo não pode ser nulo.");
+        Objects.requireNonNull(birthDate, "A data de nascimento não pode ser nula.");
+        Objects.requireNonNull(registrationDate, "A data de cadastro não pode ser nula.");
+        Objects.requireNonNull(address, "O endereço não pode ser nulo.");
+        Objects.requireNonNull(guardian, "O responsável não pode ser nulo.");
+        this.fullName = fullName;
+        this.birthDate = birthDate;
+        this.registrationDate = registrationDate;
+        this.address = address;
+        this.guardian = guardian;
     }
 
-    private Patient(Builder builder) {
-        this.fullName = builder.fullName;
-        this.birthplace = builder.birthplace;
-        this.birthDate = builder.birthDate;
-        this.contact = builder.contact;
-        this.birthCertificateNumber = builder.birthCertificateNumber;
-        this.registryOffice = builder.registryOffice;
-        this.fls = builder.fls;
-        this.book = builder.book;
-        this.rg = builder.rg;
-        this.issueDate = builder.issueDate;
-        this.issuingAgency = builder.issuingAgency;
-        this.cpf = builder.cpf;
-        this.cns = builder.cns;
-        this.nis = builder.nis;
-        this.registrationDate = builder.registrationDate;
-        this.allergies = builder.allergies;
-        this.isStudent = builder.isStudent;
-        this.address = builder.address;
-        this.guardian = builder.guardian;
-    }
-
-    public UUID getId() {
-        return id;
-    }
-
-    public String getFullName() {
-        return fullName;
-    }
-
-    public String getBirthplace() {
-        return birthplace;
-    }
-
-    public LocalDate getBirthDate() {
-        return birthDate;
-    }
-
-    public String getContact() {
-        return contact;
-    }
-
-    public String getBirthCertificateNumber() {
-        return birthCertificateNumber;
-    }
-
-    public String getRegistryOffice() {
-        return registryOffice;
-    }
-
-    public String getFls() {
-        return fls;
-    }
-
-    public String getBook() {
-        return book;
-    }
-
-    public String getRg() {
-        return rg;
-    }
-
-    public LocalDate getIssueDate() {
-        return issueDate;
-    }
-
-    public String getIssuingAgency() {
-        return issuingAgency;
-    }
-
-    public String getCpf() {
-        return cpf;
-    }
-
-    public String getCns() {
-        return cns;
-    }
-
-    public String getNis() {
-        return nis;
-    }
-
-    public LocalDate getRegistrationDate() {
-        return registrationDate;
-    }
-
-    public String getAllergies() {
-        return allergies;
-    }
-
-    public boolean isStudent() {
-        return isStudent;
-    }
-
-    public Address getAddress() {
-        return address;
-    }
-
-    public Guardian getGuardian() {
-        return guardian;
-    }
-
+    public UUID getId() { return id; }
+    public String getFullName() { return fullName; }
+    public String getBirthplace() { return birthplace; }
+    public LocalDate getBirthDate() { return birthDate; }
+    public String getContact() { return contact; }
+    public String getBirthCertificateNumber() { return birthCertificateNumber; }
+    public String getRegistryOffice() { return registryOffice; }
+    public String getFls() { return fls; }
+    public String getBook() { return book; }
+    public String getRg() { return rg; }
+    public LocalDate getIssueDate() { return issueDate; }
+    public String getIssuingAgency() { return issuingAgency; }
+    public String getCpf() { return cpf; }
+    public String getCns() { return cns; }
+    public String getNis() { return nis; }
+    public LocalDate getRegistrationDate() { return registrationDate; }
+    public String getAllergies() { return allergies; }
+    public boolean isStudent() { return isStudent; }
+    public Address getAddress() { return address; }
+    public Guardian getGuardian() { return guardian; }
     public List<Parent> getParents() {
-        return parents;
+        return Collections.unmodifiableList(parents);
     }
 
     public Set<Vaccine> getVaccines() {
         return Collections.unmodifiableSet(vaccines);
     }
 
-    public void addVaccine(Vaccine vaccine) {
-        this.vaccines.add(vaccine);
-    }
+    public void setFullName(String fullName) { this.fullName = fullName; }
+    public void setBirthplace(String birthplace) { this.birthplace = birthplace; }
+    public void setBirthDate(LocalDate birthDate) { this.birthDate = birthDate; }
+    public void setContact(String contact) { this.contact = contact; }
+    public void setBirthCertificateNumber(String birthCertificateNumber) { this.birthCertificateNumber = birthCertificateNumber; }
+    public void setRegistryOffice(String registryOffice) { this.registryOffice = registryOffice; }
+    public void setFls(String fls) { this.fls = fls; }
+    public void setBook(String book) { this.book = book; }
+    public void setRg(String rg) { this.rg = rg; }
+    public void setIssueDate(LocalDate issueDate) { this.issueDate = issueDate; }
+    public void setIssuingAgency(String issuingAgency) { this.issuingAgency = issuingAgency; }
+    public void setCpf(String cpf) { this.cpf = cpf; }
+    public void setCns(String cns) { this.cns = cns; }
+    public void setNis(String nis) { this.nis = nis; }
+    public void setRegistrationDate(LocalDate registrationDate) { this.registrationDate = registrationDate; }
+    public void setAllergies(String allergies) { this.allergies = allergies; }
+    public void setStudent(boolean student) { isStudent = student; }
+    public void setAddress(Address address) { this.address = address; }
+    public void setGuardian(Guardian guardian) { this.guardian = guardian; }
 
-    public void removeVaccine(Vaccine vaccine) {
-        this.vaccines.remove(vaccine);
-    }
-
-    public void clearVaccines() {
-        this.vaccines.clear();
-    }
-
-    private void addParent(Parent parent) {
+    public void addParent(Parent parent) {
         this.parents.add(parent);
         parent.setPatient(this);
     }
-
-    public static Patient from(CreatePatientDTO dto) {
-        Guardian guardian = Guardian.from(dto.guardian());
-
-        Patient patient = Patient.builder()
-                .fullName(dto.fullName())
-                .birthplace(dto.nationality())
-                .birthDate(dto.birthDate())
-                .contact(dto.contact())
-                .birthCertificateNumber(dto.birthCertificateNumber())
-                .registryOffice(dto.registryOffice())
-                .fls(dto.fls())
-                .book(dto.book())
-                .rg(dto.rg())
-                .issueDate(dto.issueDate())
-                .issuingAgency(dto.issuingAgency())
-                .cpf(dto.cpf())
-                .cns(dto.cns())
-                .nis(dto.nis())
-                .registrationDate(dto.registrationDate())
-                .allergies(dto.allergies())
-                .isStudent(dto.isStudent())
-                .address(Address.from(dto.address()))
-                .guardian(guardian)
-                .build();
-
-        if (dto.parents() != null) {
-            dto.parents().forEach(parentDTO -> {
-                Parent parent = Parent.from(parentDTO, patient);
-                patient.addParent(parent);
-            });
-        }
-
-        return patient;
+    public void addVaccine(Vaccine vaccine) {
+        this.vaccines.add(vaccine);
     }
-
-    public void updateWith(UpdatePatientDTO dto) {
-        Optional.ofNullable(dto.fullName()).ifPresent(v -> this.fullName = v);
-        Optional.ofNullable(dto.nationality()).ifPresent(v -> this.birthplace = v);
-        Optional.ofNullable(dto.birthDate()).ifPresent(v -> this.birthDate = v);
-        Optional.ofNullable(dto.contact()).ifPresent(v -> this.contact = v);
-
-        this.birthCertificateNumber = dto.birthCertificateNumber();
-        this.registryOffice = dto.registryOffice();
-        this.fls = dto.fls();
-        this.book = dto.book();
-        this.rg = dto.rg();
-        this.issueDate = dto.issueDate();
-        this.issuingAgency = dto.issuingAgency();
-        this.cpf = dto.cpf();
-        this.cns = dto.cns();
-        this.nis = dto.nis();
-        this.registrationDate = dto.registrationDate();
-        this.allergies = dto.allergies();
-        this.isStudent = dto.isStudent();
-
-        if (this.address != null && dto.address() != null) {
-            this.address.updateWith(dto.address());
-        }
-
-        if (this.guardian != null && dto.guardian() != null) {
-            this.guardian.updateWith(dto.guardian());
-        }
-
+    public void clearParents() {
         this.parents.clear();
-        if (dto.parents() != null) {
-            dto.parents().forEach(parentDTO -> {
-                Parent parent = Parent.builder()
-                        .name(parentDTO.name())
-                        .rg(parentDTO.rg())
-                        .cpf(parentDTO.cpf())
-                        .isAlive(parentDTO.isAlive())
-                        .profession(parentDTO.profession())
-                        .kinship(parentDTO.kinship())
-                        .patient(this)
-                        .build();
-                this.addParent(parent);
-            });
-        }
     }
-
-    public static Builder builder() {
-        return new Builder();
-    }
-
-    public static class Builder {
-        private String fullName;
-        private String birthplace;
-        private LocalDate birthDate;
-        private String contact;
-        private String birthCertificateNumber;
-        private String registryOffice;
-        private String fls;
-        private String book;
-        private String rg;
-        private LocalDate issueDate;
-        private String issuingAgency;
-        private String cpf;
-        private String cns;
-        private String nis;
-        private LocalDate registrationDate;
-        private String allergies;
-        private boolean isStudent;
-        private Address address;
-        private Guardian guardian;
-        private List<Parent> parents = new ArrayList<>();
-
-        public Builder fullName(String fullName) {
-            this.fullName = fullName;
-            return this;
-        }
-
-        public Builder birthplace(String birthplace) {
-            this.birthplace = birthplace;
-            return this;
-        }
-
-        public Builder birthDate(LocalDate birthDate) {
-            this.birthDate = birthDate;
-            return this;
-        }
-
-        public Builder contact(String contact) {
-            this.contact = contact;
-            return this;
-        }
-
-        public Builder birthCertificateNumber(String birthCertificateNumber) {
-            this.birthCertificateNumber = birthCertificateNumber;
-            return this;
-        }
-
-        public Builder registryOffice(String registryOffice) {
-            this.registryOffice = registryOffice;
-            return this;
-        }
-
-        public Builder fls(String fls) {
-            this.fls = fls;
-            return this;
-        }
-
-        public Builder book(String book) {
-            this.book = book;
-            return this;
-        }
-
-        public Builder rg(String rg) {
-            this.rg = rg;
-            return this;
-        }
-
-        public Builder issueDate(LocalDate issueDate) {
-            this.issueDate = issueDate;
-            return this;
-        }
-
-        public Builder issuingAgency(String issuingAgency) {
-            this.issuingAgency = issuingAgency;
-            return this;
-        }
-
-        public Builder cpf(String cpf) {
-            this.cpf = cpf;
-            return this;
-        }
-
-        public Builder cns(String cns) {
-            this.cns = cns;
-            return this;
-        }
-
-        public Builder nis(String nis) {
-            this.nis = nis;
-            return this;
-        }
-
-        public Builder registrationDate(LocalDate registrationDate) {
-            this.registrationDate = registrationDate;
-            return this;
-        }
-
-        public Builder allergies(String allergies) {
-            this.allergies = allergies;
-            return this;
-        }
-
-        public Builder isStudent(boolean isStudent) {
-            this.isStudent = isStudent;
-            return this;
-        }
-
-        public Builder address(Address address) {
-            this.address = address;
-            return this;
-        }
-
-        public Builder guardian(Guardian guardian) {
-            this.guardian = guardian;
-            return this;
-        }
-
-        public Builder parents(List<Parent> parents) {
-            this.parents = parents;
-            return this;
-        }
-
-        public Patient build() {
-            Objects.requireNonNull(fullName, "O nome completo não pode ser nulo.");
-            Objects.requireNonNull(birthDate, "A data de nascimento não pode ser nula.");
-            Objects.requireNonNull(registrationDate, "A data de cadastro não pode ser nula.");
-            Objects.requireNonNull(address, "O endereço não pode ser nulo.");
-            Objects.requireNonNull(guardian, "O responsável não pode ser nulo.");
-
-            return new Patient(this);
-        }
+    public void clearVaccines() {
+        this.vaccines.clear();
     }
 }

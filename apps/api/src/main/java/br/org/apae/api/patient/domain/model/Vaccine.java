@@ -7,14 +7,15 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import java.util.Objects;
+import java.util.UUID;
 
 @Entity
-@Table(name = "vacina")
+@Table(name = "vacinas")
 public class Vaccine {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    @GeneratedValue(strategy = GenerationType.UUID)
+    private UUID id;
 
     @Column(name = "nome", nullable = false, unique = true)
     private String name;
@@ -28,7 +29,7 @@ public class Vaccine {
         this.name = name;
     }
 
-    public Long getId() {
+    public UUID getId() {
         return id;
     }
 
@@ -36,7 +37,7 @@ public class Vaccine {
         return name;
     }
 
-    public void mapForUpdate(String newName) {
+    public void updateName(String newName) {
         if (newName != null && !newName.trim().isEmpty()) {
             this.name = newName;
         }

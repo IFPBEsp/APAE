@@ -7,14 +7,15 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import java.util.Objects;
+import java.util.UUID;
 
 @Entity
-@Table(name = "transtorno")
+@Table(name = "transtornos")
 public class Disorder {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    @GeneratedValue(strategy = GenerationType.UUID)
+    private UUID id;
 
     @Column(name = "nome", nullable = false, unique = true, length = 150)
     private String name;
@@ -22,6 +23,7 @@ public class Disorder {
     @Column(name = "descricao", columnDefinition = "TEXT")
     private String description;
 
+    @Deprecated
     protected Disorder() {}
 
     public Disorder(String name, String description) {
@@ -32,7 +34,7 @@ public class Disorder {
         this.description = description;
     }
 
-    public Long getId() {
+    public UUID getId() {
         return id;
     }
 
@@ -44,7 +46,7 @@ public class Disorder {
         return description;
     }
 
-    public void mapForUpdate(String newName, String newDescription) {
+    public void updateDetails(String newName, String newDescription) {
         if (newName != null && !newName.trim().isEmpty()) {
             this.name = newName;
         }

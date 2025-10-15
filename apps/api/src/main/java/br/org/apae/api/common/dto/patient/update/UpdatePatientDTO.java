@@ -48,7 +48,7 @@ public record UpdatePatientDTO(
         @NotEmpty(message = "É necessário fornecer os dados de pelo menos um pai ou responsável legal")
         @Valid
         List<UpdateParentDTO> parents,
-        
-        List<Long> vaccineIds
+
+        List<String> vaccineNames
 ) {
 }
