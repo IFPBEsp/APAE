@@ -62,7 +62,8 @@ public class DisorderServiceImpl implements DisorderService {
             }
         }
 
-        disorder.updateWith(dto);
+        disorder.updateDetails(dto.name(), dto.description());
+
         Disorder updatedDisorder = repository.save(disorder);
 
         return mapper.toResponseDTO(updatedDisorder);

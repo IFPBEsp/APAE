@@ -1,8 +1,6 @@
 package br.org.apae.api.patient.domain.model;
 
-import br.org.apae.api.common.dto.disorder.request.UpdateDisorderDTO;
 import jakarta.persistence.*;
-
 import java.util.Optional;
 import java.util.UUID;
 
@@ -28,9 +26,9 @@ public class Disorder {
         this.description = description;
     }
 
-    public void updateWith(UpdateDisorderDTO dto) {
-        Optional.ofNullable(dto.name()).ifPresent(value -> this.name = value);
-        Optional.ofNullable(dto.description()).ifPresent(value -> this.description = value);
+    public void updateDetails(String name, String description) {
+        Optional.ofNullable(name).ifPresent(value -> this.name = value);
+        Optional.ofNullable(description).ifPresent(value -> this.description = value);
     }
 
     public UUID getId() {
