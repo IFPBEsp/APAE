@@ -1,18 +1,16 @@
-package br.org.apae.api.disorder.application.interfaces;
+package br.org.apae.api.patient.application.interfaces;
 
 import br.org.apae.api.common.dto.disorder.request.CreateDisorderDTO;
 import br.org.apae.api.common.dto.disorder.request.UpdateDisorderDTO;
 import br.org.apae.api.common.dto.disorder.response.DisorderResponseDTO;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-
+import java.util.List;
 import java.util.UUID;
 
 public interface DisorderService {
 
     DisorderResponseDTO save(CreateDisorderDTO dto);
 
-    Page<DisorderResponseDTO> findAll(Pageable pageable);
+    List<DisorderResponseDTO> findAll();
 
     void delete(UUID id);
 

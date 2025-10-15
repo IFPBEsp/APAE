@@ -1,4 +1,4 @@
-package br.org.apae.api.disorder.interfaces.controllers;
+package br.org.apae.api.patient.interfaces.controllers;
 
 import br.org.apae.api.common.dto.disorder.request.CreateDisorderDTO;
 import br.org.apae.api.common.dto.disorder.request.UpdateDisorderDTO;
@@ -7,11 +7,10 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.UUID;
 
 @RequestMapping("/transtornos")
@@ -24,11 +23,11 @@ public interface DisorderController {
     @PostMapping
     ResponseEntity<DisorderResponseDTO> createDisorder(@RequestBody CreateDisorderDTO dto);
 
-    @Operation(summary = "Listar Transtornos", description = "Retorna uma lista paginada de todos os transtornos cadastrados.", responses = {
-            @ApiResponse(responseCode = "200", description = "Lista obtida com sucesso", content = @Content(schema = @Schema(implementation = Page.class)))
+    @Operation(summary = "Listar todos os Transtornos", description = "Retorna uma lista completa de todos os transtornos cadastrados (sem paginação).", responses = {
+            @ApiResponse(responseCode = "200", description = "Lista obtida com sucesso", content = @Content(schema = @Schema(implementation = List.class)))
     })
     @GetMapping
-    ResponseEntity<Page<DisorderResponseDTO>> getAllDisorders(Pageable pageable);
+    ResponseEntity<List<DisorderResponseDTO>> getAllDisorders();
 
     @Operation(summary = "Excluir Transtorno", description = "Remove um transtorno pelo seu identificador (UUID).", responses = {
             @ApiResponse(responseCode = "204", description = "Transtorno excluído com sucesso", content = @Content),

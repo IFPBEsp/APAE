@@ -3,16 +3,15 @@ package br.org.apae.api.controllers.disorder;
 import br.org.apae.api.common.dto.disorder.request.CreateDisorderDTO;
 import br.org.apae.api.common.dto.disorder.request.UpdateDisorderDTO;
 import br.org.apae.api.common.dto.disorder.response.DisorderResponseDTO;
-import br.org.apae.api.disorder.application.interfaces.DisorderService;
-import br.org.apae.api.disorder.interfaces.controllers.DisorderController;
+import br.org.apae.api.patient.application.interfaces.DisorderService;
+import br.org.apae.api.patient.interfaces.controllers.DisorderController;
 import jakarta.validation.Valid;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import java.net.URI;
+import java.util.List;
 import java.util.UUID;
 
 @RestController
@@ -35,8 +34,8 @@ public class DisorderControllerImpl implements DisorderController {
     }
 
     @Override
-    public ResponseEntity<Page<DisorderResponseDTO>> getAllDisorders(Pageable pageable) {
-        return ResponseEntity.ok(service.findAll(pageable));
+    public ResponseEntity<List<DisorderResponseDTO>> getAllDisorders() {
+        return ResponseEntity.ok(service.findAll());
     }
 
     @Override
