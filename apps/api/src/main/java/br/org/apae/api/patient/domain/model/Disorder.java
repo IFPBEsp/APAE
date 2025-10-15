@@ -13,7 +13,7 @@ public class Disorder {
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
-    @Column
+    @Column(unique = true)
     private String name;
 
     @Column
