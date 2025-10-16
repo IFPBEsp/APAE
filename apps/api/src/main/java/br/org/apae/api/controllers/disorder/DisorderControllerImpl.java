@@ -26,13 +26,13 @@ public class DisorderControllerImpl implements DisorderController {
 
     @Override
     public ResponseEntity<DisorderResponseDTO> createDisorder(@Valid CreateDisorderDTO dto) {
-        DisorderResponseDTO result = service.save(dto);
+        DisorderResponseDTO createdDisorder = service.save(dto);
 
         URI location = UriComponentsBuilder.fromPath("/transtornos/{id}")
-                .buildAndExpand(result.id())
+                .buildAndExpand(createdDisorder.id())
                 .toUri();
 
-        return ResponseEntity.status(HttpStatus.OK).location(location).body(result);
+        return ResponseEntity.created(location).body(createdDisorder);
     }
 
     @Override

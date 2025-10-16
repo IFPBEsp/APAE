@@ -28,13 +28,12 @@ public class DisorderServiceImpl implements DisorderService {
 
     @Override
     public DisorderResponseDTO save(CreateDisorderDTO dto) {
-        return repository.findByNameIgnoreCase(dto.name())
-                .map(mapper::toResponseDTO)
-                .orElseGet(() -> {
-                    Disorder disorder = mapper.toEntity(dto);
-                    Disorder savedDisorder = repository.save(disorder);
-                    return mapper.toResponseDTO(savedDisorder);
-                });
+        validateNameUniqueness(dto.name());
+
+        Disorder disorder = mapper.toEntity(dto);
+        Disorder savedDisorder = repository.save(disorder);
+
+        return mapper.toResponseDTO(savedDisorder);
     }
 
     @Override
@@ -69,6 +68,12 @@ public class DisorderServiceImpl implements DisorderService {
     public void delete(UUID id) {
         Disorder disorder = findDisorderOrThrow(id);
         repository.delete(disorder);
+    }
+
+    private void validateNameUniqueness(String name) {
+        if (repository.findByNameIgnoreCase(name).isPresent()) {
+            throw new DisorderAlreadyExistsException(name);
+        }
     }
 
     private void validateNameUniquenessExcludingId(String name, UUID idToExclude) {

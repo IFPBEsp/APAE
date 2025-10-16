@@ -16,10 +16,10 @@ import java.util.UUID;
 @RequestMapping("/transtornos")
 public interface DisorderController {
 
-    @Operation(summary = "Cadastrar ou Retornar Transtorno", description = "Busca um transtorno por nome. Se existir, retorna o existente (200 OK). Se não, cria um novo (201 Created).", responses = {
+    @Operation(summary = "Cadastrar Transtorno", description = "Cria um novo registro de transtorno no sistema. Falha se o nome já existir.", responses = {
             @ApiResponse(responseCode = "201", description = "Transtorno criado com sucesso", content = @Content(schema = @Schema(implementation = DisorderResponseDTO.class))),
-            @ApiResponse(responseCode = "200", description = "Transtorno já existia e foi retornado", content = @Content(schema = @Schema(implementation = DisorderResponseDTO.class))),
-            @ApiResponse(responseCode = "400", description = "Dados inválidos", content = @Content)
+            @ApiResponse(responseCode = "400", description = "Dados inválidos", content = @Content),
+            @ApiResponse(responseCode = "409", description = "Conflito: Transtorno com este nome já existe.", content = @Content) // 409 para Conflito
     })
     @PostMapping
     ResponseEntity<DisorderResponseDTO> createDisorder(@RequestBody CreateDisorderDTO dto);
