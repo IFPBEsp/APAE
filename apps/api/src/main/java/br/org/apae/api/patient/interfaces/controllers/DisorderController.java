@@ -16,8 +16,9 @@ import java.util.UUID;
 @RequestMapping("/transtornos")
 public interface DisorderController {
 
-    @Operation(summary = "Cadastrar Transtorno", description = "Cria um novo registro de transtorno no sistema.", responses = {
+    @Operation(summary = "Cadastrar ou Retornar Transtorno", description = "Busca um transtorno por nome. Se existir, retorna o existente (200 OK). Se não, cria um novo (201 Created).", responses = {
             @ApiResponse(responseCode = "201", description = "Transtorno criado com sucesso", content = @Content(schema = @Schema(implementation = DisorderResponseDTO.class))),
+            @ApiResponse(responseCode = "200", description = "Transtorno já existia e foi retornado", content = @Content(schema = @Schema(implementation = DisorderResponseDTO.class))),
             @ApiResponse(responseCode = "400", description = "Dados inválidos", content = @Content)
     })
     @PostMapping
@@ -43,9 +44,10 @@ public interface DisorderController {
     @GetMapping("/{id}")
     ResponseEntity<DisorderResponseDTO> findByIdDisorder(@PathVariable UUID id);
 
-    @Operation(summary = "Atualizar Transtorno", description = "Atualiza as informações de um transtorno existente.", responses = {
+    @Operation(summary = "Atualizar Transtorno", description = "Atualiza o nome de um transtorno existente.", responses = {
             @ApiResponse(responseCode = "200", description = "Transtorno atualizado com sucesso", content = @Content(schema = @Schema(implementation = DisorderResponseDTO.class))),
-            @ApiResponse(responseCode = "404", description = "Transtorno não encontrado", content = @Content)
+            @ApiResponse(responseCode = "404", description = "Transtorno não encontrado", content = @Content),
+            @ApiResponse(responseCode = "409", description = "Conflito (Nome já existe)", content = @Content)
     })
     @PutMapping("/{id}")
     ResponseEntity<DisorderResponseDTO> updateDisorder(@PathVariable UUID id, @RequestBody UpdateDisorderDTO dto);

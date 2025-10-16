@@ -9,14 +9,13 @@ import org.springframework.stereotype.Component;
 public class DisorderMapper {
 
     public Disorder toEntity(CreateDisorderDTO dto) {
-        return new Disorder(dto.name(), dto.description());
+        return new Disorder(dto.name());
     }
 
     public DisorderResponseDTO toResponseDTO(Disorder disorder) {
         return new DisorderResponseDTO(
                 disorder.getId(),
-                disorder.getName(),
-                disorder.getDescription()
+                disorder.getName()
         );
     }
 }

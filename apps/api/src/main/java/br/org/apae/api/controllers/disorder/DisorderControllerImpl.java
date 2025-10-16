@@ -9,6 +9,7 @@ import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.util.UriComponentsBuilder;
+import org.springframework.http.HttpStatus;
 
 import java.net.URI;
 import java.util.List;
@@ -25,12 +26,13 @@ public class DisorderControllerImpl implements DisorderController {
 
     @Override
     public ResponseEntity<DisorderResponseDTO> createDisorder(@Valid CreateDisorderDTO dto) {
-        DisorderResponseDTO createdDisorder = service.save(dto);
+        DisorderResponseDTO result = service.save(dto);
+
         URI location = UriComponentsBuilder.fromPath("/transtornos/{id}")
-                .buildAndExpand(createdDisorder.id())
+                .buildAndExpand(result.id())
                 .toUri();
 
-        return ResponseEntity.created(location).body(createdDisorder);
+        return ResponseEntity.status(HttpStatus.OK).location(location).body(result);
     }
 
     @Override

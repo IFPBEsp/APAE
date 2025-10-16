@@ -6,6 +6,7 @@ import br.org.apae.api.common.dto.disorder.response.DisorderResponseDTO;
 import br.org.apae.api.patient.application.interfaces.DisorderService;
 import br.org.apae.api.patient.domain.model.Disorder;
 import br.org.apae.api.patient.domain.repository.DisorderRepository;
+import br.org.apae.api.patient.exception.types.DisorderAlreadyExistsException;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -27,14 +28,13 @@ public class DisorderServiceImpl implements DisorderService {
 
     @Override
     public DisorderResponseDTO save(CreateDisorderDTO dto) {
-        if (repository.findByNameIgnoreCase(dto.name()).isPresent()) {
-            throw new IllegalArgumentException("Já existe um transtorno com o nome '" + dto.name() + "'.");
-        }
-
-        Disorder disorder = mapper.toEntity(dto);
-        Disorder savedDisorder = repository.save(disorder);
-
-        return mapper.toResponseDTO(savedDisorder);
+        return repository.findByNameIgnoreCase(dto.name())
+                .map(mapper::toResponseDTO)
+                .orElseGet(() -> {
+                    Disorder disorder = mapper.toEntity(dto);
+                    Disorder savedDisorder = repository.save(disorder);
+                    return mapper.toResponseDTO(savedDisorder);
+                });
     }
 
     @Override
@@ -57,15 +57,11 @@ public class DisorderServiceImpl implements DisorderService {
         Disorder disorder = findDisorderOrThrow(id);
 
         if (dto.name() != null) {
-            if (repository.existsByNameIgnoreCaseAndIdNot(dto.name(), id)) {
-                throw new IllegalArgumentException("Já existe outro transtorno com o nome '" + dto.name() + "'.");
-            }
+            validateNameUniquenessExcludingId(dto.name(), id);
+            disorder.updateDetails(dto.name());
         }
 
-        disorder.updateDetails(dto.name(), dto.description());
-
         Disorder updatedDisorder = repository.save(disorder);
-
         return mapper.toResponseDTO(updatedDisorder);
     }
 
@@ -73,6 +69,12 @@ public class DisorderServiceImpl implements DisorderService {
     public void delete(UUID id) {
         Disorder disorder = findDisorderOrThrow(id);
         repository.delete(disorder);
+    }
+
+    private void validateNameUniquenessExcludingId(String name, UUID idToExclude) {
+        if (repository.existsByNameIgnoreCaseAndIdNot(name, idToExclude)) {
+            throw new DisorderAlreadyExistsException(name);
+        }
     }
 
     private Disorder findDisorderOrThrow(UUID id) {
