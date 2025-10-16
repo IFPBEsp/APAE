@@ -1,11 +1,9 @@
 package br.org.apae.api.patient.domain.model;
 
+import br.org.apae.api.common.model.Address;
 import jakarta.persistence.*;
 import java.util.Objects;
 import java.util.UUID;
-
-import br.org.apae.api.common.dto.patient.create.CreateGuardianDTO;
-import br.org.apae.api.common.dto.patient.update.UpdateGuardianDTO;
 
 @Entity
 @Table(name = "responsaveis")
@@ -24,56 +22,31 @@ public class Guardian {
     @Column(name = "parentesco", nullable = false)
     private String kinship;
 
-    protected Guardian() {
-    }
+    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JoinColumn(name = "endereco_id", referencedColumnName = "id")
+    private Address address;
 
-    private Guardian(Builder builder) {
-        this.name = builder.name;
-        this.contact = builder.contact;
-        this.kinship = builder.kinship;
+    @Deprecated
+    protected Guardian() {}
+
+    public Guardian(String name, String contact, String kinship, Address address) {
+        Objects.requireNonNull(name, "O nome do responsável não pode ser nulo.");
+        Objects.requireNonNull(contact, "O contato do responsável não pode ser nulo.");
+        Objects.requireNonNull(kinship, "O parentesco do responsável não pode ser nulo.");
+        this.name = name;
+        this.contact = contact;
+        this.kinship = kinship;
+        this.address = address;
     }
 
     public UUID getId() { return id; }
     public String getName() { return name; }
     public String getContact() { return contact; }
     public String getKinship() { return kinship; }
+    public Address getAddress() { return address; }
 
-    public static Guardian from(CreateGuardianDTO dto) {
-        if (dto == null) return null;
-        return Guardian.builder()
-                .name(dto.name())
-                .contact(dto.contact())
-                .kinship(dto.kinship())
-                .build();
-    }
-
-    public void updateWith(UpdateGuardianDTO dto) {
-        if (dto == null) return;
-        this.name = dto.name();
-        this.contact = dto.contact();
-        this.kinship = dto.kinship();
-    }
-
-
-    public static Builder builder() {
-        return new Builder();
-    }
-
-    public static class Builder {
-        private String name;
-        private String contact;
-        private String kinship;
-
-        public Builder name(String name) { this.name = name; return this; }
-        public Builder contact(String contact) { this.contact = contact; return this; }
-        public Builder kinship(String kinship) { this.kinship = kinship; return this; }
-
-        public Guardian build() {
-            Objects.requireNonNull(name, "O nome do responsável não pode ser nulo.");
-            Objects.requireNonNull(contact, "O contato do responsável não pode ser nulo.");
-            Objects.requireNonNull(kinship, "O parentesco do responsável não pode ser nulo.");
-
-            return new Guardian(this);
-        }
-    }
+    public void setName(String name) { this.name = name; }
+    public void setContact(String contact) { this.contact = contact; }
+    public void setKinship(String kinship) { this.kinship = kinship; }
+    public void setAddress(Address address) { this.address = address; }
 }

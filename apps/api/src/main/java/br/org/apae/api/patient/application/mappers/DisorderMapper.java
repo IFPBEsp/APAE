@@ -1,4 +1,4 @@
-package br.org.apae.api.patient.application.internal;
+package br.org.apae.api.patient.application.mappers;
 
 import br.org.apae.api.common.dto.disorder.request.CreateDisorderDTO;
 import br.org.apae.api.common.dto.disorder.response.DisorderResponseDTO;

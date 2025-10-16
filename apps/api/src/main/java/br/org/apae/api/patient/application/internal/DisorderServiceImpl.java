@@ -4,6 +4,7 @@ import br.org.apae.api.common.dto.disorder.request.CreateDisorderDTO;
 import br.org.apae.api.common.dto.disorder.request.UpdateDisorderDTO;
 import br.org.apae.api.common.dto.disorder.response.DisorderResponseDTO;
 import br.org.apae.api.patient.application.interfaces.DisorderService;
+import br.org.apae.api.patient.application.mappers.DisorderMapper;
 import br.org.apae.api.patient.domain.model.Disorder;
 import br.org.apae.api.patient.domain.repository.DisorderRepository;
 import br.org.apae.api.patient.exception.types.DisorderAlreadyExistsException;

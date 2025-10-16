@@ -1,165 +1,72 @@
 package br.org.apae.api.professional.domain.model;
 
-import br.org.apae.api.common.dto.professional.request.CreateHealthProfessionalDTO;
-import br.org.apae.api.common.dto.professional.request.UpdateHealthProfessionalDTO;
 import br.org.apae.api.common.model.Address;
 import jakarta.persistence.*;
-
 import java.util.Objects;
-import java.util.Optional;
 import java.util.UUID;
 
 @Entity
 @Table(name = "profissionais_da_saude")
 public class HealthProfessional {
+
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
-    @Column(name = "nome")
+    @Column(name = "nome", nullable = false)
     private String name;
 
-    @Column(name = "email")
+    @Column(name = "email", nullable = false, unique = true)
     private String email;
 
-    @Column(name = "area_da_saude")
+    @Column(name = "area_da_saude", nullable = false)
     private String healthSector;
 
-    @Column(name = "contato")
+    @Column(name = "contato", nullable = false)
     private String phoneNumber;
 
-    @Column(name = "documento_profisisonal")
+    @Column(name = "documento_profissional", nullable = false, unique = true)
     private String professionalDocument;
 
-    @Column(name = "rg")
+    @Column(name = "rg", unique = true)
     private String identityDocument;
 
     @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JoinColumn(name = "endereco_id", referencedColumnName = "id")
     private Address address;
 
+    @Deprecated
     protected HealthProfessional() {
     }
 
-    private HealthProfessional(Builder builder) {
-        this.name = builder.name;
-        this.email = builder.email;
-        this.healthSector = builder.healthSector;
-        this.phoneNumber = builder.phoneNumber;
-        this.professionalDocument = builder.professionalDocument;
-        this.identityDocument = builder.identityDocument;
-        this.address = builder.address;
+    public HealthProfessional(String name, String email, String healthSector, String phoneNumber, String professionalDocument) {
+        Objects.requireNonNull(name, "O nome não pode ser nulo.");
+        Objects.requireNonNull(email, "O e-mail não pode ser nulo.");
+        Objects.requireNonNull(healthSector, "A área da saúde não pode ser nula.");
+        Objects.requireNonNull(phoneNumber, "O contato não pode ser nulo.");
+        Objects.requireNonNull(professionalDocument, "O documento profissional não pode ser nulo.");
+
+        this.name = name;
+        this.email = email;
+        this.healthSector = healthSector;
+        this.phoneNumber = phoneNumber;
+        this.professionalDocument = professionalDocument;
     }
 
-    public static HealthProfessional from(CreateHealthProfessionalDTO dto) {
-        return HealthProfessional.builder()
-                .name(dto.name())
-                .email(dto.email())
-                .healthSector(dto.healthSector())
-                .phoneNumber(dto.phoneNumber())
-                .professionalDocument(dto.professionalDocument())
-                .identityDocument(dto.identityDocument())
-                .address(Address.from(dto.address()))
-                .build();
-    }
+    public UUID getId() { return id; }
+    public String getName() { return name; }
+    public String getEmail() { return email; }
+    public String getHealthSector() { return healthSector; }
+    public String getPhoneNumber() { return phoneNumber; }
+    public String getProfessionalDocument() { return professionalDocument; }
+    public String getIdentityDocument() { return identityDocument; }
+    public Address getAddress() { return address; }
 
-    public void updateWith(UpdateHealthProfessionalDTO dto) {
-        Optional.ofNullable(dto.name()).ifPresent(value -> this.name = value);
-        Optional.ofNullable(dto.email()).ifPresent(value -> this.email = value);
-        Optional.ofNullable(dto.healthSector()).ifPresent(value -> this.healthSector = value);
-        Optional.ofNullable(dto.phoneNumber()).ifPresent(value -> this.phoneNumber = value);
-        Optional.ofNullable(dto.professionalDocument()).ifPresent(value -> this.professionalDocument = value);
-        Optional.ofNullable(dto.identityDocument()).ifPresent(value -> this.identityDocument = value);
-
-        if (dto.address() != null && this.address != null) {
-            this.address.updateWith(dto.address());
-        }
-    }
-
-    public UUID getId() {
-        return id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public String getHealthSector() {
-        return healthSector;
-    }
-
-    public String getPhoneNumber() {
-        return phoneNumber;
-    }
-
-    public String getProfessionalDocument() {
-        return professionalDocument;
-    }
-
-    public String getIdentityDocument() {
-        return identityDocument;
-    }
-
-    public Address getAddress() {
-        return address;
-    }
-
-    public static Builder builder() {
-        return new Builder();
-    }
-
-    public static class Builder {
-        private String name;
-        private String email;
-        private String healthSector;
-        private String phoneNumber;
-        private String professionalDocument;
-        private String identityDocument;
-        private Address address;
-
-        public Builder name(String name) {
-            this.name = name;
-            return this;
-        }
-
-        public Builder email(String email) {
-            this.email = email;
-            return this;
-        }
-
-        public Builder healthSector(String healthSector) {
-            this.healthSector = healthSector;
-            return this;
-        }
-
-        public Builder phoneNumber(String phoneNumber) {
-            this.phoneNumber = phoneNumber;
-            return this;
-        }
-
-        public Builder professionalDocument(String professionalDocument) {
-            this.professionalDocument = professionalDocument;
-            return this;
-        }
-
-        public Builder identityDocument(String identityDocument) {
-            this.identityDocument = identityDocument;
-            return this;
-        }
-
-        public Builder address(Address address) {
-            this.address = address;
-            return this;
-        }
-
-        public HealthProfessional build() {
-            Objects.requireNonNull(address, "O endereço não pode ser nulo.");
-
-            return new HealthProfessional(this);
-        }
-    }
+    public void setName(String name) { this.name = name; }
+    public void setEmail(String email) { this.email = email; }
+    public void setHealthSector(String healthSector) { this.healthSector = healthSector; }
+    public void setPhoneNumber(String phoneNumber) { this.phoneNumber = phoneNumber; }
+    public void setProfessionalDocument(String professionalDocument) { this.professionalDocument = professionalDocument; }
+    public void setIdentityDocument(String identityDocument) { this.identityDocument = identityDocument; }
+    public void setAddress(Address address) { this.address = address; }
 }

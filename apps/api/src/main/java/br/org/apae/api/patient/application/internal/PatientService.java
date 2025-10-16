@@ -4,11 +4,12 @@ import br.org.apae.api.common.dto.patient.create.CreatePatientDTO;
 import br.org.apae.api.common.dto.patient.response.PatientResponseDTO;
 import br.org.apae.api.common.dto.patient.update.UpdatePatientDTO;
 import br.org.apae.api.patient.application.interfaces.PatientApplicationService;
+import br.org.apae.api.patient.application.mappers.PatientMapper;
 import br.org.apae.api.patient.domain.model.Patient;
+import br.org.apae.api.patient.domain.model.Vaccine;
 import br.org.apae.api.patient.domain.repository.PatientRepository;
 import br.org.apae.api.patient.domain.repository.PatientSpecification;
 import br.org.apae.api.patient.exception.types.PatientNotFoundException;
-
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
@@ -24,24 +25,38 @@ import java.util.stream.Collectors;
 public class PatientService implements PatientApplicationService {
 
     private final PatientRepository patientRepository;
+    private final VaccineService vaccineService;
+    private final PatientMapper patientMapper;
 
-    public PatientService(PatientRepository patientRepository) {
+    public PatientService(PatientRepository patientRepository, VaccineService vaccineService, PatientMapper patientMapper) {
         this.patientRepository = patientRepository;
+        this.vaccineService = vaccineService;
+        this.patientMapper = patientMapper;
     }
 
     @Override
     @Transactional
     public void createPatient(CreatePatientDTO createPatientDTO) {
-        Patient patient = Patient.from(createPatientDTO);
+        Patient patient = patientMapper.toEntity(createPatientDTO);
+        List<Vaccine> vaccines = vaccineService.findAndValidateVaccinesByNames(createPatientDTO.vaccineNames());
+        vaccines.forEach(patient::addVaccine);
+
         patientRepository.save(patient);
     }
 
     @Override
     @Transactional
     public PatientResponseDTO updatePatient(UUID id, UpdatePatientDTO updatePatientDTO) {
-        Patient patient = patientRepository.findById(id).orElseThrow(PatientNotFoundException::new);
-        patient.updateWith(updatePatientDTO);
-        return new PatientResponseDTO(patient);
+        Patient patient = patientRepository.findById(id)
+                .orElseThrow(() -> new PatientNotFoundException("Paciente com ID " + id + " não encontrado."));
+
+        patientMapper.updateEntityFromDto(patient, updatePatientDTO);
+        patient.clearVaccines();
+        List<Vaccine> vaccines = vaccineService.findAndValidateVaccinesByNames(updatePatientDTO.vaccineNames());
+        vaccines.forEach(patient::addVaccine);
+
+        Patient updatedPatient = patientRepository.save(patient);
+        return new PatientResponseDTO(updatedPatient);
     }
 
     @Override
@@ -69,9 +84,8 @@ public class PatientService implements PatientApplicationService {
     @Transactional
     public void deletePatient(UUID id) {
         if (!patientRepository.existsById(id)) {
-            throw new PatientNotFoundException();
+            throw new PatientNotFoundException("Paciente com ID " + id + " não encontrado para exclusão.");
         }
         patientRepository.deleteById(id);
     }
 }
-

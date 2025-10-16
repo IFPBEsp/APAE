@@ -1,8 +1,8 @@
 package br.org.apae.api.patient.domain.model;
 
-import jakarta.persistence.*;
 import java.util.Optional;
 import java.util.UUID;
+import jakarta.persistence.*;
 
 @Entity
 @Table(name = "transtornos")
@@ -12,7 +12,7 @@ public class Disorder {
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
-    @Column(unique = true)
+    @Column(name = "nome", nullable = false, unique = true, length = 150)
     private String name;
 
     protected Disorder() {}
