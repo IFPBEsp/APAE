@@ -20,16 +20,11 @@ export const cadastroSchema = z.object({
       nomeRegex,
       "Nome inválido. Use apenas letras e espaços, 3-100 caracteres"
     ),
-  email: z.string().email("Email inválido"),
+  email: z.email("Email inválido"),
   documentoProfissional: z
     .string()
     .regex(docProfissionalRegex, "Documento profissional inválido"),
-  areaSaude: z
-    .string()
-    .min(1, "Selecione uma área válida")
-    .refine((v) => (HEALTH_AREAS as readonly string[]).includes(v), {
-      message: "Selecione uma área válida",
-    }),
+  areaSaude: z.string().min(1, "Selecione uma área"),
   rg: z
     .string()
     .regex(rgRegex, "RG inválido")
@@ -52,10 +47,12 @@ export const cadastroSchema = z.object({
     .transform((val) => val.trim()),
 
   disponibilidade: z.array(
-    z.object({
-      dia: z.string(),
-      turno: z.string(),
-      checked: z.boolean(),
-    })
+    z
+      .object({
+        dia: z.string(),
+        turno: z.string(),
+        checked: z.boolean(),
+      })
+      .optional()
   ),
 });

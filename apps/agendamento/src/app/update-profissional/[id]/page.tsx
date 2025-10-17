@@ -27,9 +27,9 @@ import { useRouter } from "next/navigation";
 import { useGetByIdProfissional } from "@/hooks/profissional/use-get-by-id-profissional";
 import { useUpdateProfissional } from "@/hooks/profissional/use-update-profissional";
 import { cadastroSchema } from "@/schemas/profissional.schema";
-import { HEALTH_AREAS } from "@/lib/health-areas";
 import { STATES } from "@/lib/states";
 import { JSX, useEffect } from "react";
+import HealthAreaSelect from "@/components/shared/HealthAreaSelect";
 
 type UpdateFormValues = z.infer<typeof cadastroSchema>;
 
@@ -57,6 +57,7 @@ export default function AtualizarProfissional(): JSX.Element {
     numero: "",
     complemento: "",
     cep: "",
+    disponibilidade: [],
   };
 
   const form = useForm<UpdateFormValues>({
@@ -85,6 +86,7 @@ export default function AtualizarProfissional(): JSX.Element {
   }, [profissional, form]);
 
   const onSubmit: SubmitHandler<UpdateFormValues> = async (values) => {
+    console.log("Form state:", form.formState);
     if (!profissional?.id) return;
 
     const payload = {
@@ -168,26 +170,12 @@ export default function AtualizarProfissional(): JSX.Element {
               name="areaSaude"
               render={({ field, fieldState }) => (
                 <FormItem>
-                  <FormLabel>Área da saúde</FormLabel>
+                  <FormLabel>Área de atendimento *</FormLabel>
                   <FormControl>
-                    <Select onValueChange={field.onChange} value={field.value}>
-                      <SelectTrigger
-                        className={`w-full ${
-                          fieldState.invalid
-                            ? "border-red-500"
-                            : "border-gray-300"
-                        }`}
-                      >
-                        <SelectValue placeholder="Selecione uma opção" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {HEALTH_AREAS.map((a) => (
-                          <SelectItem key={a} value={a}>
-                            {a}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
+                    <HealthAreaSelect
+                      value={field.value}
+                      onChange={field.onChange}
+                    />
                   </FormControl>
                   <FormMessage>{fieldState.error?.message}</FormMessage>
                 </FormItem>
@@ -361,8 +349,10 @@ export default function AtualizarProfissional(): JSX.Element {
           {loading && <p className="text-blue-500">Salvando...</p>}
           {error && <p className="text-red-500">{error}</p>}
           {success && (
-            <p className="text-green-600">Profissional atualizado com sucesso!</p>
-            )}
+            <p className="text-green-600">
+              Profissional atualizado com sucesso!
+            </p>
+          )}
           <div className="flex justify-end gap-4">
             <Button type="button" variant="outline" onClick={onCancel}>
               Cancelar

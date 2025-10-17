@@ -1,25 +1,40 @@
 "use client";
 
-import {
-  useForm,
-  Controller,
-  type SubmitHandler,
-} from "react-hook-form";
+import { useForm, Controller, type SubmitHandler } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { InputMask } from "@react-input/mask";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage, FormDescription } from "@/components/ui/form";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+  FormDescription,
+} from "@/components/ui/form";
 import { useRouter } from "next/navigation";
 import { useCreateProfissional } from "@/hooks/profissional/use-create-profissional";
-import Disponibilidade, { DisponibilidadeType, diasDaSemana, turnos } from "@/components/forms/DisponibilidadeForm";
+import Disponibilidade, {
+  DisponibilidadeType,
+  diasDaSemana,
+  turnos,
+} from "@/components/forms/DisponibilidadeForm";
 import { cadastroSchema } from "@/schemas/profissional.schema";
 import { HEALTH_AREAS } from "@/lib/health-areas";
 import { STATES } from "@/lib/states";
 import { JSX } from "react";
+import HealthAreaSelect from "@/components/shared/HealthAreaSelect";
 
 type CadastroFormValues = z.infer<typeof cadastroSchema>;
 
@@ -103,7 +118,11 @@ export default function CadastroProfissional(): JSX.Element {
               <FormItem>
                 <FormLabel>Email *</FormLabel>
                 <FormControl>
-                  <Input type="email" placeholder="profissional@exemplo.com" {...field} />
+                  <Input
+                    type="email"
+                    placeholder="profissional@exemplo.com"
+                    {...field}
+                  />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -123,31 +142,18 @@ export default function CadastroProfissional(): JSX.Element {
                 </FormItem>
               )}
             />
+
             <Controller
               control={form.control}
               name="areaSaude"
               render={({ field, fieldState }) => (
                 <FormItem>
-                  <FormLabel>Área da saúde *</FormLabel>
+                  <FormLabel>Área de atendimento *</FormLabel>
                   <FormControl>
-                    <Select onValueChange={field.onChange} value={field.value}>
-                      <SelectTrigger
-                        className={`w-full ${
-                          fieldState.invalid
-                            ? "border-red-500"
-                            : "border-gray-300"
-                        }`}
-                      >
-                        <SelectValue placeholder="Selecione uma opção" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {HEALTH_AREAS.map((a) => (
-                          <SelectItem key={a} value={a}>
-                            {a}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
+                    <HealthAreaSelect
+                      value={field.value}
+                      onChange={field.onChange}
+                    />
                   </FormControl>
                   <FormMessage>{fieldState.error?.message}</FormMessage>
                 </FormItem>
