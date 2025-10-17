@@ -21,7 +21,7 @@ public class Disorder {
         this.name = name;
     }
 
-    public void updateDetails(String name) {
+    public void setName(String name) {
         Optional.ofNullable(name).ifPresent(value -> this.name = value);
     }
 

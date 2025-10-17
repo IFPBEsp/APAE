@@ -58,11 +58,10 @@ public class DisorderServiceImpl implements DisorderService {
 
         if (dto.name() != null) {
             validateNameUniquenessExcludingId(dto.name(), id);
-            disorder.updateDetails(dto.name());
+            disorder.setName(dto.name());
         }
 
-        Disorder updatedDisorder = repository.save(disorder);
-        return mapper.toResponseDTO(updatedDisorder);
+        return mapper.toResponseDTO(repository.save(disorder));
     }
 
     @Override
