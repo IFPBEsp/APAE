@@ -58,3 +58,17 @@ export async function getProfissionalById(id: string) {
 
   return response.json();
 }
+
+export async function activateProfissional(id: string) {
+  const response = await fetch(API_URL + `/profissionais/activate/${id}`, {
+    method: "POST", // não deveria ser esse método
+  });
+  return response;
+}
+
+export async function inactivateProfissional(id: string) {
+  const response = await fetch(API_URL + `/profissionais/inactivate/${id}`, {
+    method: "POST", // não deveria ser esse método
+  });
+  return response;
+}

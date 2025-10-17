@@ -84,7 +84,7 @@ export default function VisualizarProfissional({ params }: PageProps) {
         </Button>
       </header>
 
-      {/* Avatar e nome */}
+      {/* Avatar, nome e status */}
       <div className="flex flex-col items-center sm:flex-row sm:items-center gap-4 sm:gap-6 mb-10">
         <Avatar className="h-24 w-24 border-2 border-[#0D4F97]">
           <AvatarImage src={""} alt={dadosExibicao.nome} />
@@ -95,6 +95,19 @@ export default function VisualizarProfissional({ params }: PageProps) {
         <div className="text-center sm:text-left">
           <h2 className="text-xl font-bold text-[#0D4F97]">{dadosExibicao.nome}</h2>
           <p className="text-base text-gray-600">{dadosExibicao.areaDaSaude}</p>
+        </div>
+        <div className="flex items-center gap-2 mt-2 sm:mt-0">
+          {dadosExibicao.ativo ? (
+            <div className="flex items-center gap-2 text-[#008000]">
+              <CircleCheck className="h-5 w-5" />
+              <span className="font-medium">Ativo</span>
+            </div>
+          ) : (
+            <div className="flex items-center gap-2 text-[#B30000]">
+              <CircleX className="h-5 w-5" />
+              <span className="font-medium">Inativo</span>
+            </div>
+          )}
         </div>
       </div>
       

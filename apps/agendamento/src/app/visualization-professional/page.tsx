@@ -42,12 +42,14 @@ import {
 } from "@/components/ui/alert-dialog";
 
 import { useFetchProfessionals } from "@/hooks/profissional/use-fetch-profissional";
-import { useRemoveProfissional } from "@/hooks/profissional/use-delete-profissional";
+import { useActivateProfissional } from "@/hooks/profissional/use-activate-profissional";
+import { useInactivateProfissional } from "@/hooks/profissional/use-inactivate-profissional";
 
 export default function VisualizationProfessionalPage() {
   const { profissionais, loading, error, setProfissionais } =
     useFetchProfessionals();
-  const { remove } = useRemoveProfissional();
+  const { activate } = useActivateProfissional();
+  const { inactivate } = useInactivateProfissional();
 
   const router = useRouter();
 
@@ -62,12 +64,22 @@ export default function VisualizationProfessionalPage() {
     router.push(`/update-profissional/${id}`);
   };
 
-  const handleDeleteConfirm = async (id: string) => {
+  const handleActivateConfirm = async (id: string) => {
     try {
-      await remove(id);
-      setProfissionais((prev) => prev.filter((p) => p.id !== id));
+      await activate(id);
+      setProfissionais((prev) => prev.map((p) => p.id === id ? { ...p, ativo: true } : p));
     } catch (error) {
-      console.error("Erro ao excluir profissional", error);
+      console.error("Erro ao ativar profissional", error);
+    }
+  };
+
+  const handleInactivateConfirm = async (id: string) => {
+    try {
+      await inactivate(id);
+      setProfissionais((prev) => prev.map((p) => p.id === id ? { ...p, ativo: false } : p));
+      console.log('Profissional inativado com sucesso');
+    } catch (error) {
+      console.error("Erro ao ativar profissional", error);
     }
   };
 
@@ -138,7 +150,7 @@ export default function VisualizationProfessionalPage() {
                   <TableHead className="hidden md:table-cell text-[#0D4F97]">
                     Telefone
                   </TableHead>
-                  <TableHead className="text-[#0D4F97]">Ativo</TableHead>
+                  <TableHead className="text-[#0D4F97]">Status</TableHead>
                   <TableHead>
                     <span className="sr-only text-[#0D4F97]">Ações</span>
                   </TableHead>
@@ -202,8 +214,7 @@ export default function VisualizationProfessionalPage() {
                                 Você tem certeza?
                               </AlertDialogTitle>
                               <AlertDialogDescription>
-                                Esta ação não pode ser desfeita. Isso irá
-                                excluir permanentemente o profissional{" "}
+                                Esta ação irá {prof.ativo ? "inativar" : "ativar"} o profissional{" "}
                                 <strong className="font-medium">
                                   {prof.nome}
                                 </strong>
@@ -213,9 +224,11 @@ export default function VisualizationProfessionalPage() {
                             <AlertDialogFooter>
                               <AlertDialogCancel>Cancelar</AlertDialogCancel>
                               <AlertDialogAction
-                                onClick={() => handleDeleteConfirm(prof.id)}
+                                onClick={() => 
+                                  prof.ativo ? handleInactivateConfirm(prof.id) : handleActivateConfirm(prof.id)
+                                }
                               >
-                                Excluir
+                                {prof.ativo ? "Inativar" : "Ativar"}
                               </AlertDialogAction>
                             </AlertDialogFooter>
                           </AlertDialogContent>
