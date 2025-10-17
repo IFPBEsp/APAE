@@ -36,12 +36,12 @@ public class ProfissionalSaudeController {
     return ResponseEntity.ok(this.service.findAll(pageable));
   }
 
-  @PostMapping("/inactivate/{id}")
+  @PutMapping("/inactivate/{id}")
   public ResponseEntity<ProfissionalSaudeResponseDTO> inactivate(@PathVariable UUID id) {
     return ResponseEntity.ok(this.service.desativar(id));
   }
 
-  @PostMapping("/activate/{id}")
+  @PutMapping("/activate/{id}")
   public ResponseEntity<ProfissionalSaudeResponseDTO> activate(@PathVariable UUID id) {
     return ResponseEntity.ok(this.service.ativar(id));
   }
