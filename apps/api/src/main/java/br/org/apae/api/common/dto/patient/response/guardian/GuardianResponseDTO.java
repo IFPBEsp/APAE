@@ -1,7 +1,9 @@
-package br.org.apae.api.common.dto.patient.response;
+package br.org.apae.api.common.dto.patient.response.guardian;
 
+import br.org.apae.api.common.dto.address.AddressResponseDTO;
 import br.org.apae.api.patient.domain.model.Guardian;
 
+import java.util.Optional;
 import java.util.UUID;
 
 /**
@@ -11,10 +13,11 @@ public record GuardianResponseDTO(
         UUID id,
         String name,
         String contact,
-        String kinship
-) {
+        String kinship,
+        AddressResponseDTO address) {
     /**
      * Construtor que converte uma entidade Guardian para o DTO de resposta.
+     * 
      * @param guardian A entidade Guardian.
      */
     public GuardianResponseDTO(Guardian guardian) {
@@ -22,7 +25,9 @@ public record GuardianResponseDTO(
                 guardian.getId(),
                 guardian.getName(),
                 guardian.getContact(),
-                guardian.getKinship()
-        );
+                guardian.getKinship(),
+                Optional.ofNullable(guardian.getAddress())
+                        .map(AddressResponseDTO::new)
+                        .orElse(null));
     }
 }
