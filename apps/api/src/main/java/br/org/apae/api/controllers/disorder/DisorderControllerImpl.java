@@ -1,8 +1,8 @@
 package br.org.apae.api.controllers.disorder;
 
-import br.org.apae.api.common.dto.disorder.request.CreateDisorderDTO;
-import br.org.apae.api.common.dto.disorder.request.UpdateDisorderDTO;
-import br.org.apae.api.common.dto.disorder.response.DisorderResponseDTO;
+import br.org.apae.api.common.dto.patient.request.disorder.CreateDisorderDTO;
+import br.org.apae.api.common.dto.patient.request.disorder.UpdateDisorderDTO;
+import br.org.apae.api.common.dto.patient.response.disorder.DisorderResponseDTO;
 import br.org.apae.api.patient.application.interfaces.DisorderService;
 import br.org.apae.api.patient.interfaces.controllers.DisorderController;
 import jakarta.validation.Valid;

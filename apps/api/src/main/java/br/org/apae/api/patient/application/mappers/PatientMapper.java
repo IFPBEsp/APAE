@@ -2,9 +2,12 @@ package br.org.apae.api.patient.application.mappers;
 
 import br.org.apae.api.address.application.mapper.AddressMapper;
 import br.org.apae.api.address.domain.model.Address;
+import br.org.apae.api.common.dto.address.AddressResponseDTO;
 import br.org.apae.api.common.dto.patient.request.patient.CreatePatientDTO;
+import br.org.apae.api.common.dto.patient.request.patient.UpdatePatientDTO;
+import br.org.apae.api.common.dto.patient.response.guardian.GuardianResponseDTO;
 import br.org.apae.api.common.dto.patient.response.patient.PatientResponseDTO;
-import br.org.apae.api.common.dto.patient.update.UpdatePatientDTO;
+import br.org.apae.api.common.dto.patient.response.vaccine.VaccineResponseDTO;
 import br.org.apae.api.patient.domain.model.Guardian;
 import br.org.apae.api.patient.domain.model.Patient;
 import br.org.apae.api.patient.domain.model.Vaccine;
@@ -26,10 +29,11 @@ public class PatientMapper {
         this.vaccineMapper = vaccineMapper;
     }
 
-    public Patient toEntity(CreatePatientDTO dto) {
-        Address address = addressMapper.toEntity(dto.address());
-        Guardian guardian = guardianMapper.toEntity(dto.guardian());
-        Set<Vaccine> vaccines = vaccineMapper.toEntitySet(dto.vaccineNames());
+    public Patient toEntity(CreatePatientDTO dto, AddressResponseDTO addressDto, GuardianResponseDTO guardianDto,
+            Set<VaccineResponseDTO> vaccineDtos) {
+        Address address = addressMapper.toEntityFromResponse(addressDto);
+        Guardian guardian = guardianMapper.toEntityFromResponse(guardianDto);
+        Set<Vaccine> vaccines = vaccineMapper.toEntitySetFromResponse(vaccineDtos);
 
         return new Patient(
                 dto.fullName(),

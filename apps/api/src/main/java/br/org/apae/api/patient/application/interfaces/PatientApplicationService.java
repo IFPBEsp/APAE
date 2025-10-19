@@ -3,9 +3,9 @@ package br.org.apae.api.patient.application.interfaces;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
-import br.org.apae.api.common.dto.patient.create.CreatePatientDTO;
-import br.org.apae.api.common.dto.patient.response.PatientResponseDTO;
-import br.org.apae.api.common.dto.patient.update.UpdatePatientDTO;
+import br.org.apae.api.common.dto.patient.request.patient.CreatePatientDTO;
+import br.org.apae.api.common.dto.patient.request.patient.UpdatePatientDTO;
+import br.org.apae.api.common.dto.patient.response.patient.PatientResponseDTO;
 
 import java.util.List;
 import java.util.Map;
@@ -24,4 +24,3 @@ public interface PatientApplicationService {
 
     void deletePatient(UUID id);
 }
-
