@@ -13,13 +13,13 @@ public class AnnualRegistry {
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
-    @Column(name = "bpc")
+    @Column(name = "bpc", nullable = false)
     private String bpc; // Benefício de Prestação Continuada
 
-    @Column(name = "doencas", columnDefinition = "TEXT")
+    @Column(name = "doencas", columnDefinition = "TEXT", nullable = false)
     private String diseases;
 
-    @Column(name = "renda_familiar")
+    @Column(name = "renda_familiar", nullable = false)
     private BigDecimal familyIncome;
 
     @Column(name = "ano", nullable = false)
@@ -30,17 +30,14 @@ public class AnnualRegistry {
     private Patient patient;
 
     @ManyToMany(fetch = FetchType.LAZY)
-    @JoinTable(
-            name = "cadastro_anual_transtorno",
-            joinColumns = @JoinColumn(name = "cadastro_anual_id"),
-            inverseJoinColumns = @JoinColumn(name = "transtorno_id")
-    )
+    @JoinTable(name = "cadastro_anual_transtorno", joinColumns = @JoinColumn(name = "cadastro_anual_id", referencedColumnName = "id"), inverseJoinColumns = @JoinColumn(name = "transtorno_id", referencedColumnName = "id"))
     private Set<Disorder> disorders = new HashSet<>();
 
-    @Deprecated
-    protected AnnualRegistry() {}
+    protected AnnualRegistry() {
+    }
 
-    public AnnualRegistry(String bpc, String diseases, BigDecimal familyIncome, Year year, Patient patient) {
+    public AnnualRegistry(String bpc, String diseases, BigDecimal familyIncome, Year year, Patient patient,
+            Set<Disorder> disorders) {
         if (year == null) {
             throw new IllegalArgumentException("O ano do cadastro não pode ser nulo.");
         }
@@ -52,6 +49,18 @@ public class AnnualRegistry {
         this.familyIncome = familyIncome;
         this.year = year;
         this.patient = patient;
+        this.disorders = disorders;
+    }
+
+    public AnnualRegistry(UUID id, String bpc, String diseases, BigDecimal familyIncome, Year year, Patient patient,
+            Set<Disorder> disorders) {
+        this.id = id;
+        this.bpc = bpc;
+        this.diseases = diseases;
+        this.familyIncome = familyIncome;
+        this.year = year;
+        this.patient = patient;
+        this.disorders = disorders;
     }
 
     public UUID getId() {
@@ -82,32 +91,26 @@ public class AnnualRegistry {
         return Collections.unmodifiableSet(disorders);
     }
 
-    public void updateDetails(String bpc, String diseases, BigDecimal familyIncome, Year year) {
-        this.bpc = bpc;
-        this.diseases = diseases;
-        this.familyIncome = familyIncome;
-        if (year != null) {
-            this.year = year;
-        }
+    private void addDisorders(Set<Disorder> disorder) {
+        this.disorders.addAll(disorder);
     }
 
-    public void addDisorder(Disorder disorder) {
-        this.disorders.add(disorder);
-    }
-
-    public void removeDisorder(Disorder disorder) {
-        this.disorders.remove(disorder);
-    }
-
-    public void clearDisorders() {
+    private void clearDisorders() {
         this.disorders.clear();
     }
 
+    public void setDisorders(Set<Disorder> disorders) {
+        // TODO: validar(ter pelo menos um transtorno relacionado)
+        this.clearDisorders();
+        this.addDisorders(disorders);
+    }
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o)
+            return true;
+        if (o == null || getClass() != o.getClass())
+            return false;
         AnnualRegistry that = (AnnualRegistry) o;
         return Objects.equals(id, that.id);
     }

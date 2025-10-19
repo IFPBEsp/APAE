@@ -1,8 +1,8 @@
 package br.org.apae.api.patient.application.internal;
 
-import br.org.apae.api.common.dto.disorder.request.CreateDisorderDTO;
-import br.org.apae.api.common.dto.disorder.request.UpdateDisorderDTO;
-import br.org.apae.api.common.dto.disorder.response.DisorderResponseDTO;
+import br.org.apae.api.common.dto.patient.request.disorder.CreateDisorderDTO;
+import br.org.apae.api.common.dto.patient.request.disorder.UpdateDisorderDTO;
+import br.org.apae.api.common.dto.patient.response.disorder.DisorderResponseDTO;
 import br.org.apae.api.patient.application.interfaces.DisorderService;
 import br.org.apae.api.patient.application.mappers.DisorderMapper;
 import br.org.apae.api.patient.domain.model.Disorder;
@@ -12,6 +12,7 @@ import jakarta.persistence.EntityNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -39,10 +40,24 @@ public class DisorderServiceImpl implements DisorderService {
 
     @Override
     @Transactional(readOnly = true)
+    public Set<DisorderResponseDTO> findDisordersByNames(Set<CreateDisorderDTO> createDisorderDTOs) {
+        Set<String> names = createDisorderDTOs.stream()
+                .map(CreateDisorderDTO::name)
+                .collect(Collectors.toSet());
+
+        Set<Disorder> disorders = repository.findByNameIn(names);
+
+        return disorders.stream()
+                .map(mapper::toResponseDTO)
+                .collect(Collectors.toSet());
+    }
+
+    @Override
+    @Transactional(readOnly = true)
     public List<DisorderResponseDTO> findAll() {
         return repository.findAll().stream()
                 .map(mapper::toResponseDTO)
-                .collect(Collectors.toList());
+                .toList();
     }
 
     @Override
