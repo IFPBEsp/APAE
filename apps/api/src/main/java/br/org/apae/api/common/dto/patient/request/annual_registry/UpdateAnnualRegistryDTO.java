@@ -4,7 +4,7 @@ import java.math.BigDecimal;
 import java.time.Year;
 import java.util.Set;
 
-import br.org.apae.api.common.dto.disorder.request.UpdateDisorderDTO;
+import br.org.apae.api.common.dto.patient.request.disorder.UpdateDisorderDTO;
 import jakarta.validation.constraints.Positive;
 import jakarta.validation.constraints.Size;
 
