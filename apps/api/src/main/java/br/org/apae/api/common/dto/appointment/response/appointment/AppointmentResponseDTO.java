@@ -7,13 +7,13 @@ import java.util.UUID;
 
 public record AppointmentResponseDTO(
     UUID id,
-    UUID patientId,
     UUID professionalId,
     Integer frequencyDays,
-    LocalDate nextAppointmentDate,
-    LocalTime nextAppointmentTime,
-    Boolean confirmed,
-    String description,
-    String justification,
-    LocalDateTime creationDate) {
+    LocalDate initialDate,
+    LocalTime hour,
+    LocalDate endDate,
+    UUID serviceId,
+    UUID annualRegistrationId,
+    LocalDateTime creationDate ){
 }
+

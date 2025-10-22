@@ -13,19 +13,17 @@ import jakarta.validation.constraints.Positive;
 
 public record UpdateAppointmentDTO(
 
-        @NotNull(message = "O ID do paciente é obrigatório") UUID patientId,
+    @NotNull(message = "O ID do profissional é obrigatório") UUID professionalId,
 
-        @NotNull(message = "O ID do profissional é obrigatório") UUID professionalId,
+    @NotNull(message = "A frequência em dias é obrigatória") @Positive(message = "A frequência em dias deve ser maior que zero") Integer frequencyDays,
 
-        @NotNull(message = "A frequência em dias é obrigatória") @Positive(message = "A frequência em dias deve ser maior que zero") Integer frequencyDays,
+    @NotNull(message = "A data inicial das consultas não pode ser nula") @FutureOrPresent(message = "A data inicial das consultas não pode estar no passado")LocalDate initialDate,
 
-        @NotNull(message = "A data da próxima consulta é obrigatória") @FutureOrPresent(message = "A data da próxima consulta não pode estar no passado") LocalDate nextAppointmentDate,
+    @NotNull(message = "A hora das consultas não pode ser nula")  @JsonFormat(pattern = "HH:mm:ss") LocalTime hour,
 
-        @NotNull(message = "O horário da próxima consulta é obrigatório") @JsonFormat(pattern = "HH:mm:ss") LocalTime nextAppointmentTime,
+    @NotNull(message = "A data final das consultas não pode ser nulo") @FutureOrPresent(message = "A data final das consultas não pode estar no passado") LocalDate endDate,
 
-        @NotNull(message = "O indicador de confirmação é obrigatório") Boolean confirmed,
+    @NotNull(message = "O ID do atendimento não pode ser nulo") UUID serviceId,
 
-        @NotBlank(message = "A descrição não pode estar em branco") String description,
-
-        String justification) {
+    @NotNull(message = "O ID  do registro anual não pode estar em branco") UUID annualRegistrationId) {
 }

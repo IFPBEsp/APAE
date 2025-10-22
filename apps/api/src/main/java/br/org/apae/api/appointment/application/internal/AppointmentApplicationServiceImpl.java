@@ -41,13 +41,13 @@ public class AppointmentApplicationServiceImpl implements AppointmentApplication
 
   @Override
   public Page<AppointmentResponseDTO> findAllByDate(LocalDate date, Pageable pageable) {
-    return this.appointmentRepository.findAllByNextAppointment(date, pageable)
+    return this.appointmentRepository.findAllByInitialDate(date, pageable)
         .map(this.appointmentMapper::toResponse);
   }
 
   @Override
   public Page<AppointmentResponseDTO> findAllByDateAndTime(LocalDate date, LocalTime time, Pageable pageable) {
-    return this.appointmentRepository.findAllByNextAppointmentAndNextAppointmentTime(date, time, pageable)
+    return this.appointmentRepository.findAllByInitialDateAndHour(date, time, pageable)
         .map(this.appointmentMapper::toResponse);
   }
 

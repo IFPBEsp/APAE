@@ -21,29 +21,26 @@ public class Appointment {
   @GeneratedValue(strategy = GenerationType.UUID)
   private UUID id;
 
-  @Column(name = "paciente_id", nullable = false)
-  private UUID patientId;
-
   @Column(name = "profissional_id", nullable = false)
   private UUID professionalId;
 
   @Column(name = "frequencia_dias", nullable = false)
   private Integer frequencyDays;
 
-  @Column(name = "proxima_consulta", nullable = false)
-  private LocalDate nextAppointment;
+  @Column(name = "data_inicial", nullable = false)
+  private LocalDate initialDate;
 
-  @Column(name = "hora_proxima_consulta", nullable = false)
-  private LocalTime nextAppointmentTime;
+  @Column(name = "hora", nullable = false)
+  private LocalTime hour;
 
-  @Column(name = "confirmado", nullable = false)
-  private Boolean confirmed;
+  @Column(name = "data_final", nullable = false)
+  private LocalDate endDate;
 
-  @Column(name = "descricao")
-  private String description;
+  @Column(name = "atendimento_id", nullable = false)
+  private UUID serviceId;
 
-  @Column(name = "justificativa")
-  private String justification;
+  @Column(name = "cadastro_anual_id", nullable = false)
+  private UUID annualRegistrationId;
 
   @CreationTimestamp
   @Column(name = "data_criacao")
@@ -52,72 +49,97 @@ public class Appointment {
   public Appointment() {
   }
 
-  public Appointment(UUID patientId, UUID professionalId, Integer frequencyDays, LocalDate nextAppointment,
-      LocalTime nextAppointmentTime, Boolean confirmed, String description, String justification,
-      LocalDateTime creationDate) {
-    this.patientId = patientId;
-    this.professionalId = professionalId;
-    this.frequencyDays = frequencyDays;
-    this.nextAppointment = nextAppointment;
-    this.nextAppointmentTime = nextAppointmentTime;
-    this.confirmed = confirmed;
-    this.description = description;
-    this.justification = justification;
-    this.creationDate = creationDate;
+  public Appointment(UUID professionalId, Integer frequencyDays, LocalDate initialDate, LocalTime hour, LocalDate endDate, UUID serviceId, UUID annualRegistrationId) {
+      this.professionalId = professionalId;
+      this.frequencyDays = frequencyDays;
+      this.initialDate = initialDate;
+      this.hour = hour;
+      this.endDate = endDate;
+      this.serviceId = serviceId;
+      this.annualRegistrationId = annualRegistrationId;
   }
 
-  public Appointment(UUID id, UUID patientId, UUID professionalId, Integer frequencyDays, LocalDate nextAppointment,
-      LocalTime nextAppointmentTime, Boolean confirmed, String description, String justification,
-      LocalDateTime creationDate) {
-    this.id = id;
-    this.patientId = patientId;
-    this.professionalId = professionalId;
-    this.frequencyDays = frequencyDays;
-    this.nextAppointment = nextAppointment;
-    this.nextAppointmentTime = nextAppointmentTime;
-    this.confirmed = confirmed;
-    this.description = description;
-    this.justification = justification;
-    this.creationDate = creationDate;
-  }
+    public Appointment(UUID id, UUID professionalId, Integer frequencyDays, LocalDate initialDate, LocalTime hour, LocalDate endDate, UUID serviceId, UUID annualRegistrationId, LocalDateTime creationDate) {
+        this.id = id;
+        this.professionalId = professionalId;
+        this.frequencyDays = frequencyDays;
+        this.initialDate = initialDate;
+        this.hour = hour;
+        this.endDate = endDate;
+        this.serviceId = serviceId;
+        this.annualRegistrationId = annualRegistrationId;
+        this.creationDate = creationDate;
+    }
 
-  public UUID getId() {
-    return id;
-  }
-
-  public UUID getPatientId() {
-    return patientId;
-  }
-
-  public UUID getProfessionalId() {
-    return professionalId;
-  }
-
-  public Integer getFrequencyDays() {
-    return frequencyDays;
-  }
-
-  public LocalDate getNextAppointment() {
-    return nextAppointment;
-  }
-
-  public LocalTime getNextAppointmentTime() {
-    return nextAppointmentTime;
-  }
-
-  public Boolean getConfirmed() {
-    return confirmed;
-  }
-
-  public String getDescription() {
-    return description;
-  }
-
-  public String getJustification() {
-    return justification;
-  }
-
-  public LocalDateTime getCreationDate() {
+    public LocalDateTime getCreationDate() {
     return creationDate;
   }
+
+    public UUID getId() {
+        return id;
+    }
+
+    public void setId(UUID id) {
+        this.id = id;
+    }
+
+    public UUID getProfessionalId() {
+        return professionalId;
+    }
+
+    public void setProfessionalId(UUID professionalId) {
+        this.professionalId = professionalId;
+    }
+
+    public Integer getFrequencyDays() {
+        return frequencyDays;
+    }
+
+    public void setFrequencyDays(Integer frequencyDays) {
+        this.frequencyDays = frequencyDays;
+    }
+
+    public LocalDate getInitialDate() {
+        return initialDate;
+    }
+
+    public void setInitialDate(LocalDate initialDate) {
+        this.initialDate = initialDate;
+    }
+
+    public LocalTime getHour() {
+        return hour;
+    }
+
+    public void setHour(LocalTime hour) {
+        this.hour = hour;
+    }
+
+    public LocalDate getEndDate() {
+        return endDate;
+    }
+
+    public void setEndDate(LocalDate endDate) {
+        this.endDate = endDate;
+    }
+
+    public UUID getServiceId() {
+        return serviceId;
+    }
+
+    public void setServiceId(UUID serviceId) {
+        this.serviceId = serviceId;
+    }
+
+    public UUID getAnnualRegistrationId() {
+        return annualRegistrationId;
+    }
+
+    public void setAnnualRegistrationId(UUID annualRegistrationId) {
+        this.annualRegistrationId = annualRegistrationId;
+    }
+
+    public void setCreationDate(LocalDateTime creationDate) {
+        this.creationDate = creationDate;
+    }
 }
