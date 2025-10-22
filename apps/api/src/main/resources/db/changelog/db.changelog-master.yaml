@@ -1,3 +1,7 @@
 databaseChangeLog:
   - include:
-      file: src/main/resources/db/changelog/changes/001-initial-schema.sql
+      file: changes/001-initial-schema.sql
+      relativeToChangelogFile: true
+  - include:
+      file: changes/002-drop-table-historico-de-consultas.sql
+      relativeToChangelogFile: true
