@@ -28,12 +28,23 @@ public class AgendamentoEntity {
     private UUID idPaciente;
     @Column(name = "profissional_id", nullable = false)
     private UUID idProfissional;
+
+    @Column(name = "fk_atendimento", nullable = false)
+    private UUID idAtendimento;
+    @Column(name = "fk_cadastro_anual", nullable = false)
+    private UUID idCadastroAnual;
+
     @Column(name = "frequencia_dias", nullable = false)
     private Integer frequenciaDias;
-    @Column(name = "proxima_consulta", nullable = false)
-    private LocalDate proximaConsulta;
-    @Column(name = "hora_proxima_consulta", nullable = false)
-    private LocalTime horaProximaConsulta;
+    @Column(name = "data_inicial", nullable = false)
+    private LocalDate dataInicial;
+    @Column(name = "data_fim", nullable = false)
+    private LocalDate dataFim;
+    @Column(name = "hora", nullable = false)
+    private LocalTime hora;
+    @Column(name = "ativo", nullable = false)
+    private Boolean ativo;
+
     @Column(name = "confirmado", nullable = false)
     private Boolean confirmado;
     @Column(name = "descricao")

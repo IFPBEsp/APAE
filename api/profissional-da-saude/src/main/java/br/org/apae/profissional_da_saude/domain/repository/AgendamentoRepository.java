@@ -19,8 +19,4 @@ public interface AgendamentoRepository {
     Agendamento update(Agendamento agendamento);
 
     void deleteById(UUID id);
-
-    Page<Agendamento> findAllByProximaConsulta(LocalDate data, Pageable pageable);
-
-    Page<Agendamento> findAllByProximaConsultaAndHoraProximaConsulta(LocalDate data, LocalTime hora, Pageable pageable);
 }

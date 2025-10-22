@@ -49,17 +49,31 @@ public class AgendamentoService {
         Optional.ofNullable(dto.getIdPaciente())
                 .ifPresent(agendamentoSaved::setIdPaciente);
 
-        Optional.ofNullable(dto.getFrequenciaDias())
-                .ifPresent(agendamentoSaved::setFrequenciaDias);
-
         Optional.ofNullable(dto.getIdProfissional())
                 .ifPresent(agendamentoSaved::setIdProfissional);
 
-        Optional.ofNullable(dto.getProximaConsulta())
-                .ifPresent(agendamentoSaved::setProximaConsulta);
+        // Novos campos
+        Optional.ofNullable(dto.getIdAtendimento())
+                .ifPresent(agendamentoSaved::setIdAtendimento);
 
-        Optional.ofNullable(dto.getHoraProximaConsulta())
-                .ifPresent(agendamentoSaved::setHoraProximaConsulta);
+        Optional.ofNullable(dto.getIdCadastroAnual())
+                .ifPresent(agendamentoSaved::setIdCadastroAnual);
+
+        Optional.ofNullable(dto.getFrequenciaDias())
+                .ifPresent(agendamentoSaved::setFrequenciaDias);
+
+        Optional.ofNullable(dto.getDataInicial())
+                .ifPresent(agendamentoSaved::setDataInicial);
+
+        Optional.ofNullable(dto.getDataFim())
+                .ifPresent(agendamentoSaved::setDataFim);
+
+        Optional.ofNullable(dto.getHora())
+                .ifPresent(agendamentoSaved::setHora);
+
+        Optional.ofNullable(dto.getAtivo())
+                .ifPresent(agendamentoSaved::setAtivo);
+        // Fim Novos campos
 
         Optional.ofNullable(dto.getConfirmado())
                 .ifPresent(agendamentoSaved::setConfirmado);
@@ -73,16 +87,6 @@ public class AgendamentoService {
         Agendamento agendamentoUpdated = this.repository.update(agendamentoSaved);
         return AgendamentoMapper.toResponseDTO(agendamentoUpdated);
     }
-
-    public Page<AgendamentoResponseDTO> findByProximaConsulta(LocalDate data, Pageable pageable) {
-        return this.repository.findAllByProximaConsulta(data, pageable)
-                .map(AgendamentoMapper::toResponseDTO);
-    }
-
-    public Page<AgendamentoResponseDTO> findAllByProximaConsultaAndHoraProximaConsulta(LocalDate data, LocalTime hora, Pageable pageable) {
-        return  this.repository.findAllByProximaConsultaAndHoraProximaConsulta(data, hora, pageable).map(AgendamentoMapper::toResponseDTO);
-    }
-
     public void remove(UUID id) {
         this.repository.deleteById(id);
     }

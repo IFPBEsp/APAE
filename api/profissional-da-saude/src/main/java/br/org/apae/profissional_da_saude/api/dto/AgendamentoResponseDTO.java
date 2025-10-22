@@ -16,9 +16,13 @@ public class AgendamentoResponseDTO {
     private UUID id;
     private UUID idPaciente;
     private UUID idProfissional;
+    private UUID idAtendimento;
+    private UUID idCadastroAnual;
     private Integer frequenciaDias;
-    private LocalDate proximaConsulta;
-    private LocalTime horaProximaConsulta;
+    private LocalDate dataInicial;
+    private LocalDate dataFim;
+    private LocalTime hora;
+    private Boolean ativo;
     private Boolean confirmado;
     private String descricao;
     private String justificativa;

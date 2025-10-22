@@ -18,18 +18,30 @@ public class AgendamentoCreateDTO {
     private UUID idProfissional;
 
     @NotNull
+    private UUID idAtendimento;
+
+    @NotNull
+    private UUID idCadastroAnual;
+
+    @NotNull
     private Integer frequenciaDias;
 
     @NotNull
-    private LocalDate proximaConsulta;
+    private LocalDate dataInicial;
 
     @NotNull
-    private Boolean confirmado;
-
-    @NotNull
-    private String descricao;
+    private LocalDate dataFim;
 
     @NotNull
     @JsonFormat(pattern = "HH:mm:ss")
-    private LocalTime horaProximaConsulta;
+    private LocalTime hora;
+
+    @NotNull
+    private Boolean ativo;
+
+    private Boolean confirmado;
+
+    private String descricao;
+
+    private String justificativa;
 }
