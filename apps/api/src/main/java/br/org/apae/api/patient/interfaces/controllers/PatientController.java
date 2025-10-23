@@ -11,8 +11,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 
+import br.org.apae.api.common.dto.patient.create.CreateDocumentsDTO;
 import br.org.apae.api.common.dto.patient.create.CreatePatientDTO;
 import br.org.apae.api.common.dto.patient.response.PatientResponseDTO;
 import br.org.apae.api.common.dto.patient.update.UpdatePatientDTO;
@@ -31,8 +31,8 @@ public interface PatientController {
             @ApiResponse(responseCode = "400", description = "Dados inválidos fornecidos")
     })
     @PostMapping(consumes = { MediaType.MULTIPART_FORM_DATA_VALUE })
-    ResponseEntity<Void> createPatient(@RequestPart(name = "patient") @Valid CreatePatientDTO createPatientDTO,
-            @RequestPart(name = "document") MultipartFile document);
+    ResponseEntity<Void> createPatient(@RequestPart("patient") @Valid CreatePatientDTO patient,
+            @ModelAttribute @Valid CreateDocumentsDTO documents);
 
     @Operation(summary = "Buscar paciente por ID", description = "Retorna os dados completos de um paciente específico pelo seu ID.")
     @ApiResponses(value = {

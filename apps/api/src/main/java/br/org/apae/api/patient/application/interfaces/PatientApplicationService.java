@@ -2,8 +2,8 @@ package br.org.apae.api.patient.application.interfaces;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.web.multipart.MultipartFile;
 
+import br.org.apae.api.common.dto.patient.create.CreateDocumentsDTO;
 import br.org.apae.api.common.dto.patient.create.CreatePatientDTO;
 import br.org.apae.api.common.dto.patient.response.PatientResponseDTO;
 import br.org.apae.api.common.dto.patient.update.UpdatePatientDTO;
@@ -13,7 +13,7 @@ import java.util.Map;
 import java.util.UUID;
 
 public interface PatientApplicationService {
-    void createPatient(CreatePatientDTO createPatientDTO, MultipartFile document);
+    void createPatient(CreatePatientDTO createPatientDTO, CreateDocumentsDTO documents);
 
     PatientResponseDTO findById(UUID id);
 

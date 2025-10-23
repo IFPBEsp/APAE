@@ -1,8 +1,10 @@
 package br.org.apae.api.documents.domain.enums;
 
 public enum DocumentCategory {
+    APAE("APAE"),
     MEDICAL("MEDICO"),
-    PERSONAL("PESSOAL");
+    PERSONAL("PESSOAL"),
+    SCHOOL("ESCOLAR");
 
     private String value;
 

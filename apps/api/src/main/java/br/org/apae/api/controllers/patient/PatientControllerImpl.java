@@ -1,5 +1,6 @@
 package br.org.apae.api.controllers.patient;
 
+import br.org.apae.api.common.dto.patient.create.CreateDocumentsDTO;
 import br.org.apae.api.common.dto.patient.create.CreatePatientDTO;
 import br.org.apae.api.common.dto.patient.response.PatientResponseDTO;
 import br.org.apae.api.common.dto.patient.update.UpdatePatientDTO;
@@ -10,7 +11,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 import java.util.Map;
@@ -26,8 +26,8 @@ public class PatientControllerImpl implements PatientController {
     }
 
     @Override
-    public ResponseEntity<Void> createPatient(CreatePatientDTO createPatientDTO, MultipartFile document) {
-        patientService.createPatient(createPatientDTO, document);
+    public ResponseEntity<Void> createPatient(CreatePatientDTO patient, CreateDocumentsDTO documents) {
+        patientService.createPatient(patient, documents);
         return ResponseEntity.status(201).build();
     }
 
