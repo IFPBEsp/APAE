@@ -6,8 +6,17 @@ databaseChangeLog:
       file: changes/002-drop-table-historico-de-consultas.sql
       relativeToChangelogFile: true
   - include:
-      file: changes/003-alter-table-agendamentos.sql
+      file: changes/003-create-table-atendimento.sql
       relativeToChangelogFile: true
   - include:
-      file: changes/004-create-table-faltas.sql
+      file: changes/004-create-table-cadastro-anual.sql
+      relativeToChangelogFile: true
+  - include:
+      file: changes/005-create-table-faltas.sql
+      relativeToChangelogFile: true
+  - include:
+      file: changes/006-alter-table-agendamentos.sql
+      relativeToChangelogFile: true
+  - include:
+      file: changes/007-create-view-agendamentos-gerados.sql
       relativeToChangelogFile: true
