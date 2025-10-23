@@ -8,8 +8,10 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import br.org.apae.api.common.dto.patient.create.CreatePatientDTO;
 import br.org.apae.api.common.dto.patient.response.PatientResponseDTO;
@@ -28,8 +30,9 @@ public interface PatientController {
             @ApiResponse(responseCode = "201", description = "Paciente cadastrado com sucesso"),
             @ApiResponse(responseCode = "400", description = "Dados inválidos fornecidos")
     })
-    @PostMapping
-    ResponseEntity<Void> createPatient(@RequestBody @Valid CreatePatientDTO createPatientDTO);
+    @PostMapping(consumes = { MediaType.MULTIPART_FORM_DATA_VALUE })
+    ResponseEntity<Void> createPatient(@RequestPart(name = "patient") @Valid CreatePatientDTO createPatientDTO,
+            @RequestPart(name = "document") MultipartFile document);
 
     @Operation(summary = "Buscar paciente por ID", description = "Retorna os dados completos de um paciente específico pelo seu ID.")
     @ApiResponses(value = {
@@ -61,7 +64,8 @@ public interface PatientController {
             @ApiResponse(responseCode = "404", description = "Paciente não encontrado")
     })
     @PutMapping("/{id}")
-    ResponseEntity<PatientResponseDTO> updatePatient(@PathVariable UUID id, @RequestBody @Valid UpdatePatientDTO updatePatientDTO);
+    ResponseEntity<PatientResponseDTO> updatePatient(@PathVariable UUID id,
+            @RequestBody @Valid UpdatePatientDTO updatePatientDTO);
 
     @Operation(summary = "Excluir um paciente", description = "Remove um paciente do sistema a partir do seu ID.")
     @ApiResponses(value = {

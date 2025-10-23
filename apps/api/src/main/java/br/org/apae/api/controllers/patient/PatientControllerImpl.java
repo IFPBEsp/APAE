@@ -10,6 +10,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 import java.util.Map;
@@ -25,8 +26,8 @@ public class PatientControllerImpl implements PatientController {
     }
 
     @Override
-    public ResponseEntity<Void> createPatient(CreatePatientDTO createPatientDTO) {
-        patientService.createPatient(createPatientDTO);
+    public ResponseEntity<Void> createPatient(CreatePatientDTO createPatientDTO, MultipartFile document) {
+        patientService.createPatient(createPatientDTO, document);
         return ResponseEntity.status(201).build();
     }
 
