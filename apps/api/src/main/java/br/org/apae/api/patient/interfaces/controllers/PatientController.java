@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.*;
 import br.org.apae.api.common.dto.patient.request.patient.CreatePatientDTO;
 import br.org.apae.api.common.dto.patient.request.patient.UpdatePatientDTO;
 import br.org.apae.api.common.dto.patient.response.patient.PatientResponseDTO;
+import br.org.apae.api.common.dto.patient.response.patient.PatientSummaryResponseDTO;
 
 import java.util.List;
 import java.util.Map;
@@ -29,7 +30,7 @@ public interface PatientController {
                         @ApiResponse(responseCode = "400", description = "Dados inválidos fornecidos")
         })
         @PostMapping
-        ResponseEntity<Void> createPatient(@RequestBody @Valid CreatePatientDTO createPatientDTO);
+        ResponseEntity<PatientResponseDTO> createPatient(@RequestBody @Valid CreatePatientDTO createPatientDTO);
 
         @Operation(summary = "Buscar paciente por ID", description = "Retorna os dados completos de um paciente específico pelo seu ID.")
         @ApiResponses(value = {
@@ -44,7 +45,7 @@ public interface PatientController {
                         @ApiResponse(responseCode = "200", description = "Página de pacientes retornada com sucesso")
         })
         @GetMapping
-        ResponseEntity<Page<PatientResponseDTO>> findAll(Pageable pageable);
+        ResponseEntity<Page<PatientSummaryResponseDTO>> findAll(Pageable pageable);
 
         @Operation(summary = "Filtrar pacientes", description = "Retorna uma lista de pacientes com base em critérios de filtro dinâmicos. Os filtros suportados são: fullName, cpf, city.")
         @Parameter(name = "filters", description = "Exemplo de uso: /filter?fullName=João&cpf=123.456.789-00")
@@ -52,7 +53,7 @@ public interface PatientController {
                         @ApiResponse(responseCode = "200", description = "Lista de pacientes filtrada retornada com sucesso")
         })
         @GetMapping("/filter")
-        ResponseEntity<List<PatientResponseDTO>> findByFilter(@RequestParam Map<String, String> filters);
+        ResponseEntity<List<PatientSummaryResponseDTO>> findByFilter(@RequestParam Map<String, String> filters);
 
         @Operation(summary = "Atualizar um paciente", description = "Atualiza os dados de um paciente existente a partir do seu ID.")
         @ApiResponses(value = {
@@ -69,6 +70,6 @@ public interface PatientController {
                         @ApiResponse(responseCode = "204", description = "Paciente excluído com sucesso"),
                         @ApiResponse(responseCode = "404", description = "Paciente não encontrado")
         })
-        @DeleteMapping("/{id}")
+        @PatchMapping("/{id}")
         ResponseEntity<Void> deletePatient(@PathVariable UUID id);
 }
