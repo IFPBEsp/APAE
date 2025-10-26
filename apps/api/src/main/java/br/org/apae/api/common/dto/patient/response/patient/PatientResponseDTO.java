@@ -6,11 +6,9 @@ import br.org.apae.api.common.dto.patient.response.parent.ParentResponseDTO;
 import br.org.apae.api.common.dto.patient.response.vaccine.VaccineResponseDTO;
 import br.org.apae.api.patient.domain.model.Patient;
 import java.time.LocalDate;
-import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 public record PatientResponseDTO(
                 UUID id,
@@ -31,12 +29,14 @@ public record PatientResponseDTO(
                 LocalDate registrationDate,
                 String allergies,
                 boolean isStudent,
+                boolean isDeleted,
                 AddressResponseDTO address,
                 GuardianResponseDTO guardian,
                 List<ParentResponseDTO> parents,
                 Set<VaccineResponseDTO> vaccineNames) {
-
-        public PatientResponseDTO(Patient patient) {
+        public PatientResponseDTO(Patient patient, AddressResponseDTO addressResponseDTO,
+                        GuardianResponseDTO guardianResponseDTO, List<ParentResponseDTO> parentResponseDTOs,
+                        Set<VaccineResponseDTO> vaccineResponseDTOs) {
                 this(
                                 patient.getId(),
                                 patient.getFullName(),
@@ -56,14 +56,10 @@ public record PatientResponseDTO(
                                 patient.getRegistrationDate(),
                                 patient.getAllergies(),
                                 patient.isStudent(),
-                                patient.getAddress() != null ? new AddressResponseDTO(patient.getAddress()) : null,
-                                patient.getGuardian() != null ? new GuardianResponseDTO(patient.getGuardian()) : null,
-                                patient.getParents() != null
-                                                ? patient.getParents().stream().map(ParentResponseDTO::new).toList()
-                                                : Collections.emptyList(),
-                                patient.getVaccines() != null
-                                                ? patient.getVaccines().stream().map(VaccineResponseDTO::new)
-                                                                .collect(Collectors.toSet())
-                                                : Collections.emptySet());
+                                patient.isDeleted(),
+                                addressResponseDTO,
+                                guardianResponseDTO,
+                                parentResponseDTOs,
+                                vaccineResponseDTOs);
         }
 }
