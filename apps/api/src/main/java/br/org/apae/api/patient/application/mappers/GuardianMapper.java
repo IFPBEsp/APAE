@@ -7,6 +7,9 @@ import br.org.apae.api.common.dto.patient.request.guardian.CreateGuardianDTO;
 import br.org.apae.api.common.dto.patient.request.guardian.UpdateGuardianDTO;
 import br.org.apae.api.common.dto.patient.response.guardian.GuardianResponseDTO;
 import br.org.apae.api.patient.domain.model.Guardian;
+
+import java.util.UUID;
+
 import org.springframework.stereotype.Component;
 
 @Component
@@ -18,38 +21,44 @@ public class GuardianMapper {
         this.addressMapper = addressMapper;
     }
 
-    public Guardian toEntity(CreateGuardianDTO dto, AddressResponseDTO addressDto) {
+    public Guardian toEntity(CreateGuardianDTO dto, AddressResponseDTO addressDto, UUID patientId) {
         Address address = addressMapper.toEntityFromResponse(addressDto);
 
         return new Guardian(
                 dto.name(),
                 dto.contact(),
                 dto.kinship(),
-                address);
+                address,
+                patientId);
     }
 
-    public Guardian toEntityFromResponse(GuardianResponseDTO dto) {
+    public Guardian toEntityFromResponse(GuardianResponseDTO dto, UUID patientId) {
         Address address = addressMapper.toEntityFromResponse(dto.address());
 
         return new Guardian(
                 dto.name(),
                 dto.contact(),
                 dto.kinship(),
-                address);
+                address,
+                patientId);
     }
 
-    public Guardian updateEntityFromDto(Guardian guardian, UpdateGuardianDTO dto) {
-        Address updatedAddress = addressMapper.updateEntityFromDto(guardian.getAddress(), dto.address());
+    public Guardian updateEntityFromDto(Guardian guardian, UpdateGuardianDTO dto, AddressResponseDTO addressDto,
+            UUID patientId) {
+        Address addressUpdated = addressMapper.toEntityFromResponse(addressDto);
 
         return new Guardian(
                 guardian.getId(),
                 dto.name(),
                 dto.contact(),
                 dto.kinship(),
-                updatedAddress);
+                addressUpdated,
+                patientId);
     }
 
     public GuardianResponseDTO toResponseDTO(Guardian guardian) {
-        return new GuardianResponseDTO(guardian);
+        AddressResponseDTO addressResponseDTO = new AddressResponseDTO(guardian.getAddress());
+
+        return new GuardianResponseDTO(guardian, addressResponseDTO);
     }
 }

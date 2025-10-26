@@ -4,7 +4,6 @@ import br.org.apae.api.common.dto.patient.request.parent.CreateParentDTO;
 import br.org.apae.api.common.dto.patient.request.parent.UpdateParentDTO;
 import br.org.apae.api.common.dto.patient.response.parent.ParentResponseDTO;
 import br.org.apae.api.patient.domain.model.Parent;
-import br.org.apae.api.patient.domain.model.Patient;
 
 import java.util.List;
 import java.util.UUID;
@@ -13,7 +12,8 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class ParentMapper {
-    public Parent toEntity(CreateParentDTO dto, Patient patient) {
+
+    public Parent toEntity(CreateParentDTO dto, UUID patientId) {
         return new Parent(
                 dto.name(),
                 dto.rg(),
@@ -21,37 +21,40 @@ public class ParentMapper {
                 dto.isAlive(),
                 dto.profession(),
                 dto.kinship(),
-                patient);
+                patientId);
     }
 
-    public List<Parent> toEntityList(List<CreateParentDTO> createParentDTOs, Patient patient) {
-        return createParentDTOs.stream()
-                .map(dto -> toEntity(dto, patient))
+    public List<Parent> toEntityList(List<CreateParentDTO> dtos, UUID patientId) {
+        return dtos.stream()
+                .map(dto -> toEntity(dto, patientId))
                 .toList();
     }
 
-    public List<Parent> updateEntityList(List<Parent> parents, List<UpdateParentDTO> dtoList, Patient patient) {
-        return dtoList.stream()
-                .map(dto -> {
-                    Parent existing = findById(parents, dto.id());
-                    return new Parent(
-                            existing.getId(),
-                            dto.name(),
-                            dto.rg(),
-                            dto.cpf(),
-                            dto.isAlive(),
-                            dto.profession(),
-                            dto.kinship(),
-                            patient);
-                })
+    public List<Parent> updateEntityListFromDto(List<UpdateParentDTO> updateParentDtos, UUID patientId) {
+        return updateParentDtos.stream()
+                .map(dto -> new Parent(
+                        dto.name(),
+                        dto.rg(),
+                        dto.cpf(),
+                        dto.isAlive(),
+                        dto.profession(),
+                        dto.kinship(),
+                        patientId))
                 .toList();
     }
 
-    private Parent findById(List<Parent> parents, UUID id) {
-        return parents.stream()
-                .filter(p -> id.equals(p.getId()))
-                .findFirst()
-                .orElse(null);
+    public List<Parent> toEntityListFromResponse(List<ParentResponseDTO> responseDTOs, UUID patientId) {
+        return responseDTOs.stream()
+                .map(dto -> new Parent(
+                        dto.id(),
+                        dto.name(),
+                        dto.rg(),
+                        dto.cpf(),
+                        dto.isAlive(),
+                        dto.profession(),
+                        dto.kinship(),
+                        patientId))
+                .toList();
     }
 
     public ParentResponseDTO toResponseDTO(Parent parent) {
