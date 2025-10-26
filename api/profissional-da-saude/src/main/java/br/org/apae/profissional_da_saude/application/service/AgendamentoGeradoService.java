@@ -1,5 +1,12 @@
 package br.org.apae.profissional_da_saude.application.service;
 
+import java.time.LocalDate;
+import java.util.List;
+import java.util.UUID;
+
+import org.springframework.stereotype.Service;
+
+import br.org.apae.profissional_da_saude.domain.model.AgendamentoGerado;
 import br.org.apae.profissional_da_saude.domain.repository.AgendamentoGeradoRepository;
 
 @Service
