@@ -6,19 +6,20 @@ import org.springframework.data.domain.Pageable;
 import br.org.apae.api.common.dto.patient.request.patient.CreatePatientDTO;
 import br.org.apae.api.common.dto.patient.request.patient.UpdatePatientDTO;
 import br.org.apae.api.common.dto.patient.response.patient.PatientResponseDTO;
+import br.org.apae.api.common.dto.patient.response.patient.PatientSummaryResponseDTO;
 
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
 public interface PatientApplicationService {
-    void createPatient(CreatePatientDTO createPatientDTO);
+    PatientResponseDTO createPatient(CreatePatientDTO createPatientDTO);
 
-    PatientResponseDTO findById(UUID id);
+    PatientResponseDTO findPatientById(UUID id);
 
-    Page<PatientResponseDTO> findAll(Pageable pageable);
+    Page<PatientSummaryResponseDTO> findAllPatients(Pageable pageable);
 
-    List<PatientResponseDTO> findByFilter(Map<String, String> filters);
+    List<PatientSummaryResponseDTO> findPatientByFilter(Map<String, String> filters);
 
     PatientResponseDTO updatePatient(UUID id, UpdatePatientDTO updatePatientDTO);
 

@@ -3,12 +3,12 @@ package br.org.apae.api.patient.application.internal;
 import br.org.apae.api.common.dto.patient.request.disorder.CreateDisorderDTO;
 import br.org.apae.api.common.dto.patient.request.disorder.UpdateDisorderDTO;
 import br.org.apae.api.common.dto.patient.response.disorder.DisorderResponseDTO;
-import br.org.apae.api.patient.application.interfaces.DisorderService;
+import br.org.apae.api.patient.application.interfaces.DisorderApplicationService;
 import br.org.apae.api.patient.application.mappers.DisorderMapper;
+import br.org.apae.api.patient.domain.exceptions.DisorderConflictException;
+import br.org.apae.api.patient.domain.exceptions.DisorderNotFoundException;
 import br.org.apae.api.patient.domain.model.Disorder;
 import br.org.apae.api.patient.domain.repository.DisorderRepository;
-import br.org.apae.api.patient.exception.types.DisorderAlreadyExistsException;
-import jakarta.persistence.EntityNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
@@ -18,21 +18,21 @@ import java.util.stream.Collectors;
 
 @Service
 @Transactional
-public class DisorderServiceImpl implements DisorderService {
+public class DisorderApplicationServiceImpl implements DisorderApplicationService {
 
     private final DisorderRepository repository;
     private final DisorderMapper mapper;
 
-    public DisorderServiceImpl(DisorderRepository repository, DisorderMapper mapper) {
+    public DisorderApplicationServiceImpl(DisorderRepository repository, DisorderMapper mapper) {
         this.repository = repository;
         this.mapper = mapper;
     }
 
     @Override
-    public DisorderResponseDTO save(CreateDisorderDTO dto) {
-        validateNameUniqueness(dto.name());
+    public DisorderResponseDTO createDisorder(CreateDisorderDTO createDisorderDto) {
+        validateNameUniqueness(createDisorderDto.name());
 
-        Disorder disorder = mapper.toEntity(dto);
+        Disorder disorder = mapper.toEntity(createDisorderDto);
         Disorder savedDisorder = repository.save(disorder);
 
         return mapper.toResponseDTO(savedDisorder);
@@ -40,8 +40,8 @@ public class DisorderServiceImpl implements DisorderService {
 
     @Override
     @Transactional(readOnly = true)
-    public Set<DisorderResponseDTO> findDisordersByNames(Set<CreateDisorderDTO> createDisorderDTOs) {
-        Set<String> names = createDisorderDTOs.stream()
+    public Set<DisorderResponseDTO> findDisorders(Set<CreateDisorderDTO> createDisorderDtos) {
+        Set<String> names = createDisorderDtos.stream()
                 .map(CreateDisorderDTO::name)
                 .collect(Collectors.toSet());
 
@@ -54,7 +54,7 @@ public class DisorderServiceImpl implements DisorderService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<DisorderResponseDTO> findAll() {
+    public List<DisorderResponseDTO> findAllDisorders() {
         return repository.findAll().stream()
                 .map(mapper::toResponseDTO)
                 .toList();
@@ -62,17 +62,19 @@ public class DisorderServiceImpl implements DisorderService {
 
     @Override
     @Transactional(readOnly = true)
-    public DisorderResponseDTO findById(UUID id) {
+    public DisorderResponseDTO findDisorderById(UUID id) {
         Disorder disorder = findDisorderOrThrow(id);
         return mapper.toResponseDTO(disorder);
     }
 
     @Override
-    public DisorderResponseDTO update(UUID id, UpdateDisorderDTO dto) {
+    public DisorderResponseDTO updateDisorder(UUID id, UpdateDisorderDTO dto) {
         Disorder disorder = findDisorderOrThrow(id);
 
         if (dto.name() != null) {
-            validateNameUniquenessExcludingId(dto.name(), id);
+            if (repository.existsByNameIgnoreCaseAndIdNot(dto.name(), id)) {
+                throw new DisorderConflictException(dto.name());
+            }
             disorder.setName(dto.name());
         }
 
@@ -80,25 +82,19 @@ public class DisorderServiceImpl implements DisorderService {
     }
 
     @Override
-    public void delete(UUID id) {
+    public void deleteDisorder(UUID id) {
         Disorder disorder = findDisorderOrThrow(id);
         repository.delete(disorder);
     }
 
     private void validateNameUniqueness(String name) {
         if (repository.findByNameIgnoreCase(name).isPresent()) {
-            throw new DisorderAlreadyExistsException(name);
-        }
-    }
-
-    private void validateNameUniquenessExcludingId(String name, UUID idToExclude) {
-        if (repository.existsByNameIgnoreCaseAndIdNot(name, idToExclude)) {
-            throw new DisorderAlreadyExistsException(name);
+            throw new DisorderConflictException(name);
         }
     }
 
     private Disorder findDisorderOrThrow(UUID id) {
         return repository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("Transtorno com ID " + id + " não encontrado."));
+                .orElseThrow(DisorderNotFoundException::new);
     }
 }
