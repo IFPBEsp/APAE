@@ -26,22 +26,27 @@ public class Guardian {
     @JoinColumn(name = "endereco_id", referencedColumnName = "id")
     private Address address;
 
+    @Column(name = "paciente_id", nullable = false)
+    private UUID patientId;
+
     protected Guardian() {
     }
 
-    public Guardian(String name, String contact, String kinship, Address address) {
+    public Guardian(String name, String contact, String kinship, Address address, UUID patientId) {
         this.name = name;
         this.contact = contact;
         this.kinship = kinship;
         this.address = address;
+        this.patientId = patientId;
     }
 
-    public Guardian(UUID id, String name, String contact, String kinship, Address address) {
+    public Guardian(UUID id, String name, String contact, String kinship, Address address, UUID patientId) {
         this.id = id;
         this.name = name;
         this.contact = contact;
         this.kinship = kinship;
         this.address = address;
+        this.patientId = patientId;
     }
 
     public UUID getId() {
@@ -62,5 +67,9 @@ public class Guardian {
 
     public Address getAddress() {
         return address;
+    }
+
+    public UUID getPatientId() {
+        return patientId;
     }
 }

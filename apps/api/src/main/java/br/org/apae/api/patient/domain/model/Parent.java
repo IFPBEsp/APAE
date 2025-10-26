@@ -29,26 +29,25 @@ public class Parent {
     @Column(name = "parentesco", nullable = false)
     private String kinship;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "paciente_id", nullable = false)
-    private Patient patient;
+    @Column(name = "paciente_id", nullable = false)
+    private UUID patientId;
 
     protected Parent() {
     }
 
     public Parent(String name, String rg, String cpf, boolean isAlive, String profession, String kinship,
-            Patient patient) {
+            UUID patientId) {
         this.name = name;
         this.rg = rg;
         this.cpf = cpf;
         this.isAlive = isAlive;
         this.profession = profession;
         this.kinship = kinship;
-        this.patient = patient;
+        this.patientId = patientId;
     }
 
     public Parent(UUID id, String name, String rg, String cpf, boolean isAlive, String profession, String kinship,
-            Patient patient) {
+            UUID patientId) {
         this.id = id;
         this.name = name;
         this.rg = rg;
@@ -56,7 +55,7 @@ public class Parent {
         this.isAlive = isAlive;
         this.profession = profession;
         this.kinship = kinship;
-        this.patient = patient;
+        this.patientId = patientId;
     }
 
     public UUID getId() {
@@ -87,7 +86,7 @@ public class Parent {
         return kinship;
     }
 
-    public Patient getPatient() {
-        return patient;
+    public UUID getPatientId() {
+        return patientId;
     }
 }
