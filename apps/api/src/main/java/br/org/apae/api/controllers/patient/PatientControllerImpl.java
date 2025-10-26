@@ -3,6 +3,7 @@ package br.org.apae.api.controllers.patient;
 import br.org.apae.api.common.dto.patient.request.patient.CreatePatientDTO;
 import br.org.apae.api.common.dto.patient.request.patient.UpdatePatientDTO;
 import br.org.apae.api.common.dto.patient.response.patient.PatientResponseDTO;
+import br.org.apae.api.common.dto.patient.response.patient.PatientSummaryResponseDTO;
 import br.org.apae.api.patient.application.interfaces.PatientApplicationService;
 import br.org.apae.api.patient.interfaces.controllers.PatientController;
 
@@ -25,26 +26,26 @@ public class PatientControllerImpl implements PatientController {
     }
 
     @Override
-    public ResponseEntity<Void> createPatient(CreatePatientDTO createPatientDTO) {
-        patientService.createPatient(createPatientDTO);
-        return ResponseEntity.status(201).build();
+    public ResponseEntity<PatientResponseDTO> createPatient(CreatePatientDTO createPatientDTO) {
+        PatientResponseDTO patientCreated = patientService.createPatient(createPatientDTO);
+        return ResponseEntity.ok(patientCreated);
     }
 
     @Override
     public ResponseEntity<PatientResponseDTO> findById(UUID id) {
-        PatientResponseDTO patient = patientService.findById(id);
+        PatientResponseDTO patient = patientService.findPatientById(id);
         return ResponseEntity.ok(patient);
     }
 
     @Override
-    public ResponseEntity<Page<PatientResponseDTO>> findAll(Pageable pageable) {
-        Page<PatientResponseDTO> patientsPage = patientService.findAll(pageable);
+    public ResponseEntity<Page<PatientSummaryResponseDTO>> findAll(Pageable pageable) {
+        Page<PatientSummaryResponseDTO> patientsPage = patientService.findAllPatients(pageable);
         return ResponseEntity.ok(patientsPage);
     }
 
     @Override
-    public ResponseEntity<List<PatientResponseDTO>> findByFilter(Map<String, String> filters) {
-        List<PatientResponseDTO> patients = patientService.findByFilter(filters);
+    public ResponseEntity<List<PatientSummaryResponseDTO>> findByFilter(Map<String, String> filters) {
+        List<PatientSummaryResponseDTO> patients = patientService.findPatientByFilter(filters);
         return ResponseEntity.ok(patients);
     }
 
