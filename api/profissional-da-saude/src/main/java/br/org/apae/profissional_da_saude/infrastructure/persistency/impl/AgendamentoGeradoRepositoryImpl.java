@@ -1,7 +1,9 @@
 package br.org.apae.profissional_da_saude.infrastructure.persistency.impl;
 
 import java.time.LocalDate;
+import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 import org.springframework.stereotype.Repository;
@@ -22,7 +24,7 @@ public class AgendamentoGeradoRepositoryImpl implements AgendamentoGeradoReposit
 
     @Override
     public List<AgendamentoGerado> findAll(){
-        return this.repository.findAll();
+        return Optional.ofNullable(repository.findAll()).orElse(Collections.emptyList());
     }
     
     @Override

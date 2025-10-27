@@ -5,6 +5,8 @@ import java.time.LocalTime;
 import java.util.List;
 import java.util.UUID;
 
+import br.org.apae.profissional_da_saude.api.dto.FaltaDTO;
+
 public class AgendamentoGerado {
 
     private UUID id;
@@ -18,7 +20,7 @@ public class AgendamentoGerado {
     private UUID fk_profissional;
     private UUID fk_cadastro_anual;
 
-    private List<Falta> faltas;
+    private List<FaltaDTO> faltas;
 
 
     public AgendamentoGerado(Integer frequencia_dias, LocalDate data_inicial, LocalTime hora, LocalDate data_fim, Boolean ativo, UUID fk_atendimento, UUID fk_profissional, UUID fk_cadastro_anual) {
@@ -32,7 +34,7 @@ public class AgendamentoGerado {
         this.fk_cadastro_anual = fk_cadastro_anual;
     }
 
-    public AgendamentoGerado(UUID id, Integer frequencia_dias, LocalDate data_inicial, LocalTime hora, LocalDate data_fim, Boolean ativo, UUID fk_atendimento, UUID fk_profissional, UUID fk_cadastro_anual, List<Falta> faltas) {
+    public AgendamentoGerado(UUID id, Integer frequencia_dias, LocalDate data_inicial, LocalTime hora, LocalDate data_fim, Boolean ativo, UUID fk_atendimento, UUID fk_profissional, UUID fk_cadastro_anual, List<FaltaDTO> faltas) {
         this.id = id;
         this.frequencia_dias = frequencia_dias;
         this.data_inicial = data_inicial;
@@ -111,10 +113,10 @@ public class AgendamentoGerado {
         this.ativo = ativo;
     }
 
-    public List<Falta> getFaltas(){ 
+    public List<FaltaDTO> getFaltas(){ 
         return faltas; 
     }
-    public void setFaltas(List<Falta> faltas){ 
+    public void setFaltas(List<FaltaDTO> faltas){ 
         this.faltas = faltas; 
     }
 
