@@ -9,7 +9,6 @@ import org.springframework.stereotype.Repository;
 import br.org.apae.profissional_da_saude.domain.model.AgendamentoGerado;
 import br.org.apae.profissional_da_saude.domain.repository.AgendamentoGeradoRepository;
 import br.org.apae.profissional_da_saude.infrastructure.persistency.jpa.AgendamentoGeradoRepositoryJpa;
-import br.org.apae.profissional_da_saude.infrastructure.persistency.mapper.AgendamentoGeradoMapper;
 
 
 @Repository
@@ -22,16 +21,12 @@ public class AgendamentoGeradoRepositoryImpl implements AgendamentoGeradoReposit
     }
 
     @Override
-    List<AgendamentoGerado> findAll(){
-        return this.repository.findAll().stream()
-                .map(AgendamentoGeradoMapper::toModel)
-                .collect(Collectors.toList());
+    public List<AgendamentoGerado> findAll(){
+        return this.repository.findAll();
     }
     
     @Override
-    List<AgendamentoGerado> findByFilter(UUID profissional, LocalDate data, UUID paciente, Boolean status){
-        return this.repository.findByFilter(profissional, data, paciente, status).stream()
-                .map(AgendamentoGeradoMapper::toModel)
-                .collect(Collectors.toList());
+    public List<AgendamentoGerado> findByFilter(UUID profissional, LocalDate data, UUID paciente, Boolean status){
+        return this.repository.findByFilter(profissional, data, paciente, status);
     }
 }

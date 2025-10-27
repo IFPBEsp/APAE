@@ -32,7 +32,7 @@ public class AgendamentoGerado {
         this.fk_cadastro_anual = fk_cadastro_anual;
     }
 
-    public AgendamentoGerado(UUID id, Integer frequencia_dias, LocalDate data_inicial, LocalTime hora, LocalDate data_fim, Boolean ativo, UUID fk_atendimento, UUID fk_profissional, UUID fk_cadastro_anual, List<Falta> faltas)) {
+    public AgendamentoGerado(UUID id, Integer frequencia_dias, LocalDate data_inicial, LocalTime hora, LocalDate data_fim, Boolean ativo, UUID fk_atendimento, UUID fk_profissional, UUID fk_cadastro_anual, List<Falta> faltas) {
         this.id = id;
         this.frequencia_dias = frequencia_dias;
         this.data_inicial = data_inicial;

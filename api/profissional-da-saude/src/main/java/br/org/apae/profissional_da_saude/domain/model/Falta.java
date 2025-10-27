@@ -14,10 +14,10 @@ public class Falta {
         this.id=id;
     }
 
-    public UUID getMotivo(){
+    public String getMotivo(){
         return motivo;
     }
-    public void SetMotivo(String motivo){
+    public void setMotivo(String motivo){
         this.motivo=motivo;
     }
     

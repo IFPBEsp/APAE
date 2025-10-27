@@ -5,6 +5,7 @@ import java.time.LocalTime;
 import java.util.List;
 import java.util.UUID;
 
+import br.org.apae.profissional_da_saude.domain.model.Falta;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.NoArgsConstructor;
@@ -27,6 +28,6 @@ public class AgendamentoGeradoResponseDTO {
     private UUID fk_profissional;
     private UUID fk_cadastro_anual;
 
-    private List<Falta> faltas;
+    private List<FaltaDTO> faltas;
     
 }
