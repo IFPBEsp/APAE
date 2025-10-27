@@ -11,7 +11,7 @@ public class Falta {
 
     private LocalDate data;
     private LocalTime hora;
-    private Boolean justificativa;
+    private Boolean justificada;
     private String motivo;
     private LocalDateTime dataCriacao;
 
@@ -19,23 +19,23 @@ public class Falta {
     private UUID fk_profissional;
     private UUID fk_cadastro_anual;
 
-    public Falta(LocalDate data, LocalTime hora, Boolean justificativa, String motivo, UUID fk_atendimento,
+    public Falta(LocalDate data, LocalTime hora, Boolean justificada, String motivo, UUID fk_atendimento,
             UUID fk_profissional, UUID fk_cadastro_anual) {
         this.data = data;
         this.hora = hora;
-        this.justificativa = justificativa;
+        this.justificada = justificada;
         this.motivo = motivo;
         this.fk_atendimento = fk_atendimento;
         this.fk_profissional = fk_profissional;
         this.fk_cadastro_anual = fk_cadastro_anual;
     }
 
-    public Falta(UUID id, LocalDate data, LocalTime hora, Boolean justificativa, String motivo,
+    public Falta(UUID id, LocalDate data, LocalTime hora, Boolean justificada, String motivo,
             UUID fk_atendimento, UUID fk_profissional, UUID fk_cadastro_anual, LocalDateTime dataCriacao) {
         this.id = id;
         this.data = data;
         this.hora = hora;
-        this.justificativa = justificativa;
+        this.justificada = justificada;
         this.motivo = motivo;
         this.fk_atendimento = fk_atendimento;
         this.fk_profissional = fk_profissional;
@@ -70,12 +70,12 @@ public class Falta {
         this.hora = hora;
     }
 
-    public Boolean getJustificativa() {
-        return justificativa;
+    public Boolean getJustificada() {
+        return justificada;
     }
 
-    public void setJustificativa(Boolean justificativa) {
-        this.justificativa = justificativa;
+    public void setJustificada(Boolean justificada) {
+        this.justificada = justificada;
     }
 
     public String getMotivo() {
