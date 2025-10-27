@@ -23,6 +23,7 @@ public class AgendamentoGeradoService {
     }
     
     public List<AgendamentoGerado> getFiltered(UUID idProfissional, LocalDate data, UUID idPaciente, Boolean status) {
-        return repository.findByFilter(idProfissional, data, idPaciente, status);
+        List<AgendamentoGerado> agendamentos = repository.findByFilter(idProfissional, data, idPaciente, status);
+        return agendamentos;
     }
 }
