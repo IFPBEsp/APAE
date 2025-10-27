@@ -31,14 +31,11 @@ export async function removeSessionCookie(): Promise<void> {
 
 export async function setSessionCookie(payload: {
   accessToken: string;
-  expiresIn: number;
 }): Promise<void> {
   try {
     const cookieStore = await cookies();
-    const expires = new Date(Date.now() + payload.expiresIn * 1000);
 
     cookieStore.set("session", JSON.stringify(payload), {
-      expires,
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
       sameSite: "lax",
