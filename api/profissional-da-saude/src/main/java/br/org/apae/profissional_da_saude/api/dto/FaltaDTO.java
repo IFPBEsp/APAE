@@ -15,6 +15,7 @@ public class FaltaDTO {
     private String motivo;
 
     public FaltaDTO(UUID id, String motivo) {
-        //TODO Auto-generated constructor stub
+        this.id = id;
+        this.motivo = motivo;
     }
 }

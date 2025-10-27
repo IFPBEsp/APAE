@@ -14,7 +14,7 @@ public interface AgendamentoGeradoRepositoryJpa extends JpaRepository<Agendament
     @Query(value = "SELECT * FROM agendamentos_gerados", nativeQuery = true)
     List<AgendamentoGerado> findAll();
 
-    @Query(value = "SELECT * FROM agendamentos_gerados " +
+    @Query(value = "SELECT * FROM view_agendamentos_gerados " +
                    "WHERE (:profissional IS NULL OR fk_profissional = :profissional) " +
                    "AND (:data IS NULL OR data_inicial = :data) " +
                    "AND (:paciente IS NULL OR fk_cadastro_anual = :paciente) " +

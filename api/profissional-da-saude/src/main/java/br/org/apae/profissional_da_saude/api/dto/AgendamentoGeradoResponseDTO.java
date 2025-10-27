@@ -14,7 +14,6 @@ import lombok.AllArgsConstructor;
 @Getter
 @Setter
 @NoArgsConstructor
-@AllArgsConstructor
 public class AgendamentoGeradoResponseDTO {
 
     private UUID id;
@@ -29,5 +28,20 @@ public class AgendamentoGeradoResponseDTO {
     private UUID fk_cadastro_anual;
 
     private List<FaltaDTO> faltas;
+
+    public AgendamentoGeradoResponseDTO(UUID id, Integer frequencia_dias, LocalDate data_inicial, LocalTime hora,
+                                        LocalDate data_fim, Boolean ativo, UUID fk_atendimento,
+                                        UUID fk_profissional, UUID fk_cadastro_anual, List<FaltaDTO> faltas) {
+        this.id = id;
+        this.frequencia_dias = frequencia_dias;
+        this.data_inicial = data_inicial;
+        this.hora = hora;
+        this.data_fim = data_fim;
+        this.ativo = ativo;
+        this.fk_atendimento = fk_atendimento;
+        this.fk_profissional = fk_profissional;
+        this.fk_cadastro_anual = fk_cadastro_anual;
+        this.faltas = faltas;
+    }
     
 }

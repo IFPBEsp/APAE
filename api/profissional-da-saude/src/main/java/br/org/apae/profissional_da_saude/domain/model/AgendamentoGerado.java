@@ -4,7 +4,7 @@ import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.Immutable;
 
-import java.beans.Transient;
+import jakarta.persistence.Transient; 
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
@@ -14,7 +14,7 @@ import br.org.apae.profissional_da_saude.api.dto.FaltaDTO;
 
 @Entity
 @Immutable
-@Table(name = "view-agendamentos-gerados")
+@Table(name = "view_agendamentos_gerados")
 @NoArgsConstructor
 public class AgendamentoGerado {
 
