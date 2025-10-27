@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { createAuthAPI } from "@/lib/axios";
 import { AxiosError } from "axios";
-import { setSessionCookie } from "@/lib/cookies";
+import { setSessionCookie } from "@/lib/cookies"; // Importa a função async
 
 export async function POST(req: Request) {
   try {
@@ -14,50 +14,48 @@ export async function POST(req: Request) {
       );
     }
     const api = await createAuthAPI();
-    const response = await api.post("/signin", { username, password });
+    const response = await api.post("/signin", { username, password }); 
 
-    if (!response.status || response.status !== 200) {
+    if (response.status !== 200) {
       return NextResponse.json(
-        { message: response.data?.message || "Erro ao fazer login do usuário" },
+        { message: response.data?.message || "Erro ao fazer login" },
         { status: response.status }
       );
     }
 
+    const { token } = response.data; 
+
     const payload = {
-      accessToken: response.data.access_token,
-      expiresIn: 60 * 1000,
-      refreshToken: response.data.refresh_token,
+      accessToken: token,
+      expiresIn: 60 * 60 * 1000,
     };
 
-    setSessionCookie(payload);
+    await setSessionCookie(payload);
 
     return NextResponse.json(
-      {
-        message: "Login bem-sucedido",
-      },
+      { message: "Login bem-sucedido" },
       { status: 200 }
     );
   } catch (error) {
-    console.error("Erro ao fazer login: ", error);
-    if (error instanceof Error && error.message.includes("401")) {
+    if (error instanceof AxiosError) {
+      if (error.response?.status === 401) {
+        return NextResponse.json(
+          { message: "Credenciais inválidas" },
+          { status: 401 }
+        );
+      }
       return NextResponse.json(
-        { message: "Credenciais inválidas" },
-        { status: 401 }
+        {
+          message:
+            error.response?.data?.message || "Erro no servidor de autenticação",
+        },
+        { status: error.response?.status || 500 }
       );
     }
 
     return NextResponse.json(
-      {
-        message: `Erro: ${
-          error && (error as AxiosError).response?.data
-            ? ((error as AxiosError).response?.data as { message?: string })
-                .message
-            : "Erro ao fazer o login do usuário"
-        }`,
-      },
-      {
-        status: (error as AxiosError).response?.status,
-      }
+      { message: "Erro interno ao processar o login" },
+      { status: 500 }
     );
   }
 }
