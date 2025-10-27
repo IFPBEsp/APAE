@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { createAuthAPI } from "@/lib/axios";
 import { AxiosError } from "axios";
-import { setSessionCookie } from "@/lib/cookies"; // Importa a função async
+import { setSessionCookie } from "@/lib/cookies";
 
 export async function POST(req: Request) {
   try {
