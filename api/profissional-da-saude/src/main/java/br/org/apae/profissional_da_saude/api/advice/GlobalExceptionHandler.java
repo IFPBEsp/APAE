@@ -1,11 +1,13 @@
 package br.org.apae.profissional_da_saude.api.advice;
 
 import br.org.apae.profissional_da_saude.application.service.exceptions.AgendamentoNaoEncontradoException;
+import br.org.apae.profissional_da_saude.application.service.exceptions.FaltaDuplicadaException;
 import br.org.apae.profissional_da_saude.application.service.exceptions.PacienteNaoEncontradoException;
 import br.org.apae.profissional_da_saude.domain.exception.DadosInvalidosException;
 import br.org.apae.profissional_da_saude.domain.exception.EntidadeNaoEncontradaException;
 import br.org.apae.profissional_da_saude.domain.exception.ValidacaoNegocioException;
 
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
@@ -42,6 +44,22 @@ public class GlobalExceptionHandler {
         body.put("status", HttpStatus.NOT_FOUND.value());
         body.put("error", ex.getMessage());
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(body);
+    }
+
+    @ExceptionHandler(FaltaDuplicadaException.class)
+    public ResponseEntity<Object> handleFaltaDuplicada(FaltaDuplicadaException ex) {
+        return buildErrorResponse(ex.getMessage(), null, HttpStatus.CONFLICT);
+    }
+
+    @ExceptionHandler(DataIntegrityViolationException.class)
+    public ResponseEntity<Object> handleDataIntegrityViolation(DataIntegrityViolationException ex) {
+        String mensagem = "Violação de integridade de dados. Verifique se as chaves estrangeiras são válidas.";
+
+        if (ex.getMessage() != null && ex.getMessage().contains("Duplicate entry")) {
+            mensagem = "Tentativa de criar um registro duplicado (violação de restrição UNIQUE).";
+            return buildErrorResponse(mensagem, ex.getMessage(), HttpStatus.CONFLICT);
+        }
+        return buildErrorResponse(mensagem, ex.getMessage(), HttpStatus.BAD_REQUEST);
     }
 
     // 400 - Validação (ex: campo inválido no DTO)
