@@ -18,5 +18,7 @@ public interface HealthProfessionalService {
 
     HealthProfessionalResponseDTO findById(UUID id);
 
+
+
     HealthProfessionalResponseDTO update(UUID id, UpdateHealthProfessionalDTO dto);
 }
