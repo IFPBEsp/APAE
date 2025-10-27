@@ -1,5 +1,10 @@
 package br.org.apae.profissional_da_saude.domain.model;
 
+import jakarta.persistence.*;
+import lombok.*;
+import org.hibernate.annotations.Immutable;
+
+import java.beans.Transient;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
@@ -7,19 +12,40 @@ import java.util.UUID;
 
 import br.org.apae.profissional_da_saude.api.dto.FaltaDTO;
 
+@Entity
+@Immutable
+@Table(name = "view-agendamentos-gerados")
+@NoArgsConstructor
 public class AgendamentoGerado {
 
+    @Id
     private UUID id;
+
+    @Column(name = "frequencia_dias", nullable = false)
     private Integer frequencia_dias;
+
+    @Column(name = "data_inicial", nullable = false)
     private LocalDate data_inicial;
+
+    @Column(name = "hora", nullable = false)
     private LocalTime hora;
+
+    @Column(name = "data_fim", nullable = false)
     private LocalDate data_fim;
+
+    @Column(name = "ativo", nullable = false)
     private Boolean ativo;
 
+    @Column(name = "fk_atendimento", nullable = false)
     private UUID fk_atendimento;
+
+    @Column(name = "fk_profissional", nullable = false)
     private UUID fk_profissional;
+
+    @Column(name = "fk_cadastro_anual", nullable = false)
     private UUID fk_cadastro_anual;
 
+    @Transient
     private List<FaltaDTO> faltas;
 
 
