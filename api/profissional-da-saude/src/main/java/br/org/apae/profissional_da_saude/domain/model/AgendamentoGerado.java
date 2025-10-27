@@ -2,6 +2,7 @@ package br.org.apae.profissional_da_saude.domain.model;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.List;
 import java.util.UUID;
 
 public class AgendamentoGerado {
@@ -17,6 +18,8 @@ public class AgendamentoGerado {
     private UUID fk_profissional;
     private UUID fk_cadastro_anual;
 
+    private List<Falta> faltas;
+
 
     public AgendamentoGerado(Integer frequencia_dias, LocalDate data_inicial, LocalTime hora, LocalDate data_fim, Boolean ativo, UUID fk_atendimento, UUID fk_profissional, UUID fk_cadastro_anual) {
         this.frequencia_dias = frequencia_dias;
@@ -29,7 +32,7 @@ public class AgendamentoGerado {
         this.fk_cadastro_anual = fk_cadastro_anual;
     }
 
-    public AgendamentoGerado(UUID id, Integer frequencia_dias, LocalDate data_inicial, LocalTime hora, LocalDate data_fim, Boolean ativo, UUID fk_atendimento, UUID fk_profissional, UUID fk_cadastro_anual) {
+    public AgendamentoGerado(UUID id, Integer frequencia_dias, LocalDate data_inicial, LocalTime hora, LocalDate data_fim, Boolean ativo, UUID fk_atendimento, UUID fk_profissional, UUID fk_cadastro_anual, List<Falta> faltas)) {
         this.id = id;
         this.frequencia_dias = frequencia_dias;
         this.data_inicial = data_inicial;
@@ -39,6 +42,7 @@ public class AgendamentoGerado {
         this.fk_atendimento = fk_atendimento;
         this.fk_profissional = fk_profissional;
         this.fk_cadastro_anual = fk_cadastro_anual;
+        this.faltas = faltas;
     }
 
     public UUID getId() {
@@ -70,7 +74,8 @@ public class AgendamentoGerado {
     public void setFkCadastroAnual(UUID fk_cadastro_anual) {
         this.fk_cadastro_anual = fk_cadastro_anual;
     }
-
+    //
+    
     public Integer getFrequenciaDias() {
         return frequencia_dias;
     }
@@ -104,6 +109,13 @@ public class AgendamentoGerado {
     }
     public void setAtivo(Boolean ativo) {
         this.ativo = ativo;
+    }
+
+    public List<Falta> getFaltas(){ 
+        return faltas; 
+    }
+    public void setFaltas(List<Falta> faltas){ 
+        this.faltas = faltas; 
     }
 
 }
