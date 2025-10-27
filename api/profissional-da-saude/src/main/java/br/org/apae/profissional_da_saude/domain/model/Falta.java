@@ -1,10 +1,11 @@
 package br.org.apae.profissional_da_saude.domain.model;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.UUID;
 
-public class FaltaPaciente {
+public class Falta {
 
     private UUID id;
 
@@ -12,12 +13,13 @@ public class FaltaPaciente {
     private LocalTime hora;
     private Boolean justificativa;
     private String motivo;
+    private LocalDateTime dataCriacao;
 
     private UUID fk_atendimento;
     private UUID fk_profissional;
     private UUID fk_cadastro_anual;
 
-    public FaltaPaciente(LocalDate data, LocalTime hora, Boolean justificativa, String motivo, UUID fk_atendimento,
+    public Falta(LocalDate data, LocalTime hora, Boolean justificativa, String motivo, UUID fk_atendimento,
             UUID fk_profissional, UUID fk_cadastro_anual) {
         this.data = data;
         this.hora = hora;
@@ -28,8 +30,8 @@ public class FaltaPaciente {
         this.fk_cadastro_anual = fk_cadastro_anual;
     }
 
-    public FaltaPaciente(UUID id, LocalDate data, LocalTime hora, Boolean justificativa, String motivo,
-            UUID fk_atendimento, UUID fk_profissional, UUID fk_cadastro_anual) {
+    public Falta(UUID id, LocalDate data, LocalTime hora, Boolean justificativa, String motivo,
+            UUID fk_atendimento, UUID fk_profissional, UUID fk_cadastro_anual, LocalDateTime dataCriacao) {
         this.id = id;
         this.data = data;
         this.hora = hora;
@@ -38,7 +40,10 @@ public class FaltaPaciente {
         this.fk_atendimento = fk_atendimento;
         this.fk_profissional = fk_profissional;
         this.fk_cadastro_anual = fk_cadastro_anual;
+        this.dataCriacao = dataCriacao;
+
     }
+
     // Getters e Setters
 
     public UUID getId() {
@@ -79,6 +84,14 @@ public class FaltaPaciente {
 
     public void setMotivo(String motivo) {
         this.motivo = motivo;
+    }
+
+    public LocalDateTime getDataCriacao() {
+        return dataCriacao;
+    }
+
+    public void setDataCriacao(LocalDateTime dataCriacao) {
+        this.dataCriacao = dataCriacao;
     }
 
     // Chaves Estrangeiras
