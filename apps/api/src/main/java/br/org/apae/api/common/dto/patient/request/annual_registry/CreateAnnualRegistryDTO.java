@@ -15,7 +15,7 @@ public record CreateAnnualRegistryDTO(
 
                 @NotNull @Positive BigDecimal familyIncome,
 
-                @NotNull int year,
+                @NotNull Integer year,
 
                 Set<CreateDisorderDTO> disorders) {
 }

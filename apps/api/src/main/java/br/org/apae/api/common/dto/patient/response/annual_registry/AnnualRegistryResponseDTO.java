@@ -12,7 +12,7 @@ public record AnnualRegistryResponseDTO(
                 String bpc,
                 String diseases,
                 BigDecimal familyIncome,
-                int year,
+                Integer year,
                 UUID patientId,
                 Set<DisorderResponseDTO> disorders) {
 

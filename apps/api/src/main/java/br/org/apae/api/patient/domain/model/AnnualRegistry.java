@@ -22,7 +22,7 @@ public class AnnualRegistry {
     private BigDecimal familyIncome;
 
     @Column(name = "ano", nullable = false)
-    private int year;
+    private Integer year;
 
     @Column(name = "paciente_id", nullable = false)
     private UUID patientId;
