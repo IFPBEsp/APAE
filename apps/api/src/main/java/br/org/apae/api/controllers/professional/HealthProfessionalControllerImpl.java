@@ -24,7 +24,7 @@ public class HealthProfessionalControllerImpl implements HealthProfessionalContr
     @Override
     public ResponseEntity<Void> createHealthProfessional(
             @RequestBody @Valid CreateHealthProfessionalDTO dto) {
-        this.service.create(dto);
+        this.service.save(dto);
         return ResponseEntity.status(201).build();
     }
 
