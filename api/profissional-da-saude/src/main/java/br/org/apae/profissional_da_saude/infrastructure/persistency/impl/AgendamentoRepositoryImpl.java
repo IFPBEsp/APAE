@@ -9,8 +9,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 
-import java.time.LocalDate;
-import java.time.LocalTime;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -43,11 +41,21 @@ public class AgendamentoRepositoryImpl implements AgendamentoRepository {
     @Override
     public Agendamento update(Agendamento agendamento) {
         AgendamentoEntity entity = AgendamentoMapper.toEntity(agendamento);
+        if (agendamento.getId() != null) {
+            repository.findById(agendamento.getId()).ifPresent(existingEntity -> {
+                entity.setDataCriacao(existingEntity.getDataCriacao());
+            });
+        }
         return AgendamentoMapper.toModel(this.repository.save(entity));
     }
 
     @Override
     public void deleteById(UUID id) {
         this.repository.deleteById(id);
+    }
+
+     @Override
+    public void updateStatus(UUID id, Boolean ativo) {
+        this.repository.updateStatus(id, ativo);
     }
 }

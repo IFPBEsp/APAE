@@ -1,7 +1,5 @@
 package br.org.apae.profissional_da_saude.api.controller;
 
-import java.time.LocalDate;
-import java.time.LocalTime;
 import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,10 +30,17 @@ public class AgendamentoController {
         return ResponseEntity.ok(service.create(dto));
     }
 
+    @PatchMapping("/{id}")
+    public ResponseEntity<AgendamentoResponseDTO> deactivateAndCreateNew(
+            @PathVariable UUID id,
+            @RequestBody @Valid AgendamentoCreateDTO newAgendamentoDTO) {
+
+        AgendamentoResponseDTO novoAgendamento = service.deactivateAndCreateNew(id, newAgendamentoDTO);
+        return ResponseEntity.ok(novoAgendamento);
+    }
+
     @GetMapping
-    public ResponseEntity<Page<AgendamentoResponseDTO>> getAll(
-            Pageable pageable
-    ) {
+    public ResponseEntity<Page<AgendamentoResponseDTO>> getAll(Pageable pageable) {
         return ResponseEntity.ok(service.findAll(pageable));
     }
 

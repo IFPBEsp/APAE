@@ -10,9 +10,8 @@ import br.org.apae.profissional_da_saude.infrastructure.persistency.mapper.Agend
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDate;
-import java.time.LocalTime;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -46,18 +45,14 @@ public class AgendamentoService {
         Agendamento agendamentoSaved = this.repository.findById(id)
                 .orElseThrow(AgendamentoNaoEncontradoException::new);
 
-        Optional.ofNullable(dto.getIdPaciente())
-                .ifPresent(agendamentoSaved::setIdPaciente);
-
-        Optional.ofNullable(dto.getIdProfissional())
-                .ifPresent(agendamentoSaved::setIdProfissional);
-
-        // Novos campos
         Optional.ofNullable(dto.getIdAtendimento())
                 .ifPresent(agendamentoSaved::setIdAtendimento);
 
         Optional.ofNullable(dto.getIdCadastroAnual())
                 .ifPresent(agendamentoSaved::setIdCadastroAnual);
+
+        Optional.ofNullable(dto.getIdProfissional())
+                .ifPresent(agendamentoSaved::setIdProfissional);
 
         Optional.ofNullable(dto.getFrequenciaDias())
                 .ifPresent(agendamentoSaved::setFrequenciaDias);
@@ -73,20 +68,22 @@ public class AgendamentoService {
 
         Optional.ofNullable(dto.getAtivo())
                 .ifPresent(agendamentoSaved::setAtivo);
-        // Fim Novos campos
-
-        Optional.ofNullable(dto.getConfirmado())
-                .ifPresent(agendamentoSaved::setConfirmado);
-
-        Optional.ofNullable(dto.getDescricao())
-                .ifPresent(agendamentoSaved::setDescricao);
-
-        Optional.ofNullable(dto.getJustificativa())
-                .ifPresent(agendamentoSaved::setJustificativa);
 
         Agendamento agendamentoUpdated = this.repository.update(agendamentoSaved);
         return AgendamentoMapper.toResponseDTO(agendamentoUpdated);
     }
+
+    @Transactional
+    public AgendamentoResponseDTO deactivateAndCreateNew(UUID idToDeactivate, AgendamentoCreateDTO newAgendamentoDTO) {
+        Agendamento agendamentoAntigo = this.repository.findById(idToDeactivate)
+                .orElseThrow(AgendamentoNaoEncontradoException::new);
+        repository.updateStatus(idToDeactivate, false);
+        Agendamento novoAgendamento = AgendamentoMapper.toDomain(newAgendamentoDTO);
+        novoAgendamento.setAtivo(true);
+        Agendamento agendamentoSaved = this.repository.save(novoAgendamento);
+        return AgendamentoMapper.toResponseDTO(agendamentoSaved);
+    }
+
     public void remove(UUID id) {
         this.repository.deleteById(id);
     }
