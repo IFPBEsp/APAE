@@ -2,7 +2,9 @@ package br.org.apae.api.controllers.annual_registry;
 
 import java.util.UUID;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.RestController;
 
 import br.org.apae.api.common.dto.patient.request.annual_registry.CreateAnnualRegistryDTO;
 import br.org.apae.api.common.dto.patient.response.annual_registry.AnnualRegistryResponseDTO;
@@ -10,6 +12,7 @@ import br.org.apae.api.patient.application.interfaces.AnnualRegistryApplicationS
 import br.org.apae.api.patient.interfaces.controllers.AnnualRegistryController;
 import jakarta.validation.Valid;
 
+@RestController
 public class AnnualRegistryControllerImpl implements AnnualRegistryController {
 
   private final AnnualRegistryApplicationService annualRegistryApplicationService;
@@ -24,7 +27,8 @@ public class AnnualRegistryControllerImpl implements AnnualRegistryController {
     AnnualRegistryResponseDTO registryCreated = annualRegistryApplicationService.createRegistry(createAnnualRegistryDTO,
         patientId);
 
-    return ResponseEntity.ok(registryCreated);
+    return ResponseEntity
+        .status(HttpStatus.CREATED)
+        .body(registryCreated);
   }
-
 }

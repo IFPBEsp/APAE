@@ -9,6 +9,7 @@ import br.org.apae.api.patient.interfaces.controllers.PatientController;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -28,7 +29,7 @@ public class PatientControllerImpl implements PatientController {
     @Override
     public ResponseEntity<PatientResponseDTO> createPatient(CreatePatientDTO createPatientDTO) {
         PatientResponseDTO patientCreated = patientService.createPatient(createPatientDTO);
-        return ResponseEntity.ok(patientCreated);
+        return ResponseEntity.status(HttpStatus.CREATED).body(patientCreated);
     }
 
     @Override

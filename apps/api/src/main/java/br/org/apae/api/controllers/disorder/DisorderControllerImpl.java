@@ -6,11 +6,11 @@ import br.org.apae.api.common.dto.patient.response.disorder.DisorderResponseDTO;
 import br.org.apae.api.patient.application.interfaces.DisorderApplicationService;
 import br.org.apae.api.patient.interfaces.controllers.DisorderController;
 import jakarta.validation.Valid;
+
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.util.UriComponentsBuilder;
 
-import java.net.URI;
 import java.util.List;
 import java.util.UUID;
 
@@ -27,11 +27,7 @@ public class DisorderControllerImpl implements DisorderController {
     public ResponseEntity<DisorderResponseDTO> createDisorder(@Valid CreateDisorderDTO dto) {
         DisorderResponseDTO createdDisorder = service.createDisorder(dto);
 
-        URI location = UriComponentsBuilder.fromPath("/transtornos/{id}")
-                .buildAndExpand(createdDisorder.id())
-                .toUri();
-
-        return ResponseEntity.created(location).body(createdDisorder);
+        return ResponseEntity.status(HttpStatus.CREATED).body(createdDisorder);
     }
 
     @Override

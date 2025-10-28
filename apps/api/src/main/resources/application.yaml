@@ -17,6 +17,10 @@ spring:
         globally_quoted_identifiers: true
         format_sql: true
 
+  mvc:
+    servlet:
+      path: /api
+
 logging:
   level:
     org:
