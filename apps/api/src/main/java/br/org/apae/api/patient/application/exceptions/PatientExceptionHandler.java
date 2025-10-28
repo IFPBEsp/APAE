@@ -1,5 +1,7 @@
 package br.org.apae.api.patient.application.exceptions;
 
+import org.springframework.core.Ordered;
+import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -7,6 +9,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 
 import br.org.apae.api.common.exceptions.types.ErrorResponse;
 import br.org.apae.api.patient.domain.exceptions.DisorderConflictException;
+import br.org.apae.api.patient.domain.exceptions.DisorderMismatchException;
 import br.org.apae.api.patient.domain.exceptions.DisorderNotFoundException;
 import br.org.apae.api.patient.domain.exceptions.GuardianNotFoundException;
 import br.org.apae.api.patient.domain.exceptions.InvalidDataException;
@@ -20,6 +23,7 @@ import br.org.apae.api.patient.domain.exceptions.VaccineNotFoundException;
 import jakarta.servlet.http.HttpServletRequest;
 
 @ControllerAdvice
+@Order(Ordered.HIGHEST_PRECEDENCE)
 public class PatientExceptionHandler {
   @ExceptionHandler(InvalidDataException.class)
   public ResponseEntity<ErrorResponse> handleInvalidData(InvalidDataException ex, HttpServletRequest request) {
@@ -132,5 +136,16 @@ public class PatientExceptionHandler {
         ex.getMessage(),
         request.getRequestURI());
     return new ResponseEntity<>(error, HttpStatus.CONFLICT);
+  }
+
+  @ExceptionHandler(DisorderMismatchException.class)
+  public ResponseEntity<ErrorResponse> handleDisorderMismatch(DisorderMismatchException ex,
+      HttpServletRequest request) {
+    ErrorResponse error = new ErrorResponse(
+        HttpStatus.NOT_FOUND.value(),
+        HttpStatus.NOT_FOUND.getReasonPhrase(),
+        ex.getMessage(),
+        request.getRequestURI());
+    return new ResponseEntity<>(error, HttpStatus.NOT_FOUND);
   }
 }
