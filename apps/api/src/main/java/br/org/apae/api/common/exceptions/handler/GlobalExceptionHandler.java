@@ -16,7 +16,6 @@ import br.org.apae.api.common.exceptions.types.ErrorResponse;
 public class GlobalExceptionHandler {
   @ExceptionHandler(Exception.class)
   public ResponseEntity<ErrorResponse> handleGenericException(Exception ex, HttpServletRequest request) {
-    System.out.println("Caught exception: " + ex.getClass().getName());
     ErrorResponse errorResponse = new ErrorResponse(
         HttpStatus.INTERNAL_SERVER_ERROR.value(),
         HttpStatus.INTERNAL_SERVER_ERROR.getReasonPhrase(),
