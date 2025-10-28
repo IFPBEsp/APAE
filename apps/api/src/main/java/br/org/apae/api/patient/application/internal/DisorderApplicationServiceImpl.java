@@ -29,8 +29,11 @@ public class DisorderApplicationServiceImpl implements DisorderApplicationServic
     }
 
     @Override
+    @Transactional
     public DisorderResponseDTO createDisorder(CreateDisorderDTO createDisorderDto) {
-        validateNameUniqueness(createDisorderDto.name());
+        if (repository.findByNameIgnoreCase(createDisorderDto.name()).isPresent()) {
+            throw new DisorderConflictException(createDisorderDto.name());
+        }
 
         Disorder disorder = mapper.toEntity(createDisorderDto);
         Disorder savedDisorder = repository.save(disorder);
@@ -68,6 +71,7 @@ public class DisorderApplicationServiceImpl implements DisorderApplicationServic
     }
 
     @Override
+    @Transactional
     public DisorderResponseDTO updateDisorder(UUID id, UpdateDisorderDTO dto) {
         Disorder disorder = findDisorderOrThrow(id);
 
@@ -82,15 +86,10 @@ public class DisorderApplicationServiceImpl implements DisorderApplicationServic
     }
 
     @Override
+    @Transactional
     public void deleteDisorder(UUID id) {
         Disorder disorder = findDisorderOrThrow(id);
         repository.delete(disorder);
-    }
-
-    private void validateNameUniqueness(String name) {
-        if (repository.findByNameIgnoreCase(name).isPresent()) {
-            throw new DisorderConflictException(name);
-        }
     }
 
     private Disorder findDisorderOrThrow(UUID id) {
