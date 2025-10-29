@@ -1,5 +1,17 @@
 package br.org.apae.api.patient.application.internal;
 
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
+import java.util.stream.Collectors;
+
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import br.org.apae.api.common.dto.patient.create.CreateDocumentsDTO;
 import br.org.apae.api.common.dto.patient.create.CreatePatientDTO;
 import br.org.apae.api.common.dto.patient.response.PatientResponseDTO;
 import br.org.apae.api.common.dto.patient.update.UpdatePatientDTO;
@@ -10,25 +22,20 @@ import br.org.apae.api.patient.domain.model.Vaccine;
 import br.org.apae.api.patient.domain.repository.PatientRepository;
 import br.org.apae.api.patient.domain.repository.PatientSpecification;
 import br.org.apae.api.patient.exception.types.PatientNotFoundException;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.jpa.domain.Specification;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
-import java.util.stream.Collectors;
 
 @Service
 public class PatientService implements PatientApplicationService {
 
+    private final PatientDocumentsService documentService;
     private final PatientRepository patientRepository;
     private final VaccineService vaccineService;
     private final PatientMapper patientMapper;
 
-    public PatientService(PatientRepository patientRepository, VaccineService vaccineService, PatientMapper patientMapper) {
+    public PatientService(
+            PatientDocumentsService documentService,
+            PatientRepository patientRepository, VaccineService vaccineService,
+            PatientMapper patientMapper) {
+        this.documentService = documentService;
         this.patientRepository = patientRepository;
         this.vaccineService = vaccineService;
         this.patientMapper = patientMapper;
@@ -36,12 +43,14 @@ public class PatientService implements PatientApplicationService {
 
     @Override
     @Transactional
-    public void createPatient(CreatePatientDTO createPatientDTO) {
+    public void createPatient(CreatePatientDTO createPatientDTO, CreateDocumentsDTO documents) {
         Patient patient = patientMapper.toEntity(createPatientDTO);
         List<Vaccine> vaccines = vaccineService.findAndValidateVaccinesByNames(createPatientDTO.vaccineNames());
+
         vaccines.forEach(patient::addVaccine);
 
         patientRepository.save(patient);
+        documentService.storePatientDocuments(patient, documents);
     }
 
     @Override
