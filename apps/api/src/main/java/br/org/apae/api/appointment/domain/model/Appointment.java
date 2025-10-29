@@ -1,123 +1,77 @@
 package br.org.apae.api.appointment.domain.model;
 
+import jakarta.persistence.*;
+import jakarta.persistence.Index;
+import jakarta.persistence.Table;
+
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.UUID;
 
-import org.hibernate.annotations.CreationTimestamp;
-
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
-
 @Entity
-@Table(name = "agendamentos")
+@Table(name = "agendamento",
+        indexes = {
+                @Index(name = "idx_agendamento_cadastro", columnList = "cadastro_anual_id"),
+                @Index(name = "idx_agendamento_ativo", columnList = "ativo,data_fim_regra")
+        })
 public class Appointment {
-  @Id
-  @GeneratedValue(strategy = GenerationType.UUID)
-  private UUID id;
 
-  @Column(name = "paciente_id", nullable = false)
-  private UUID patientId;
+    @Id @GeneratedValue
+    private UUID id;
 
-  @Column(name = "profissional_id", nullable = false)
-  private UUID professionalId;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "cadastro_anual_id", nullable = false)
+    private AnnualRegistration annualRegistration;
 
-  @Column(name = "frequencia_dias", nullable = false)
-  private Integer frequencyDays;
+    @Column(name = "frequencia_dias", nullable = false)
+    private Integer frequencyDays;
 
-  @Column(name = "proxima_consulta", nullable = false)
-  private LocalDate nextAppointment;
+    @Column(name = "hora_consulta", nullable = false)
+    private LocalTime appointmentTime;
 
-  @Column(name = "hora_proxima_consulta", nullable = false)
-  private LocalTime nextAppointmentTime;
+    @Column(name = "ativo", nullable = false)
+    private Boolean active = true;
 
-  @Column(name = "confirmado", nullable = false)
-  private Boolean confirmed;
+    @Column(name = "data_inicio", nullable = false)
+    private LocalDate startDate;
 
-  @Column(name = "descricao")
-  private String description;
+    @Column(name = "data_fim")
+    private LocalDate endDate;
 
-  @Column(name = "justificativa")
-  private String justification;
+    public Appointment() {}
 
-  @CreationTimestamp
-  @Column(name = "data_criacao")
-  private LocalDateTime creationDate;
+    public Appointment(AnnualRegistration annualRegistration, Integer frequencyDays, LocalTime appointmentTime,
+                       LocalDate startDate) {
+        this.annualRegistration = annualRegistration;
+        this.frequencyDays = frequencyDays;
+        this.appointmentTime = appointmentTime;
+        this.startDate = startDate;
+        this.active = true;
+    }
 
-  public Appointment() {
-  }
+    @PrePersist
+    private void prePersist() {
+        if (active == null) active = true;
+    }
 
-  public Appointment(UUID patientId, UUID professionalId, Integer frequencyDays, LocalDate nextAppointment,
-      LocalTime nextAppointmentTime, Boolean confirmed, String description, String justification,
-      LocalDateTime creationDate) {
-    this.patientId = patientId;
-    this.professionalId = professionalId;
-    this.frequencyDays = frequencyDays;
-    this.nextAppointment = nextAppointment;
-    this.nextAppointmentTime = nextAppointmentTime;
-    this.confirmed = confirmed;
-    this.description = description;
-    this.justification = justification;
-    this.creationDate = creationDate;
-  }
+    public UUID getId() { return id; }
+    public void setId(UUID id) { this.id = id; }
 
-  public Appointment(UUID id, UUID patientId, UUID professionalId, Integer frequencyDays, LocalDate nextAppointment,
-      LocalTime nextAppointmentTime, Boolean confirmed, String description, String justification,
-      LocalDateTime creationDate) {
-    this.id = id;
-    this.patientId = patientId;
-    this.professionalId = professionalId;
-    this.frequencyDays = frequencyDays;
-    this.nextAppointment = nextAppointment;
-    this.nextAppointmentTime = nextAppointmentTime;
-    this.confirmed = confirmed;
-    this.description = description;
-    this.justification = justification;
-    this.creationDate = creationDate;
-  }
+    public AnnualRegistration getAnnualRegistration() { return annualRegistration; }
+    public void setAnnualRegistration(AnnualRegistration annualRegistration) { this.annualRegistration = annualRegistration; }
 
-  public UUID getId() {
-    return id;
-  }
+    public Integer getFrequencyDays() { return frequencyDays; }
+    public void setFrequencyDays(Integer frequencyDays) { this.frequencyDays = frequencyDays; }
 
-  public UUID getPatientId() {
-    return patientId;
-  }
+    public LocalTime getAppointmentTime() { return appointmentTime; }
+    public void setAppointmentTime(LocalTime appointmentTime) { this.appointmentTime = appointmentTime; }
 
-  public UUID getProfessionalId() {
-    return professionalId;
-  }
+    public Boolean getActive() { return active; }
+    public void setActive(Boolean active) { this.active = active; }
 
-  public Integer getFrequencyDays() {
-    return frequencyDays;
-  }
+    public LocalDate getStartDate() { return startDate; }
+    public void setStartDate(LocalDate startDate) { this.startDate = startDate; }
 
-  public LocalDate getNextAppointment() {
-    return nextAppointment;
-  }
-
-  public LocalTime getNextAppointmentTime() {
-    return nextAppointmentTime;
-  }
-
-  public Boolean getConfirmed() {
-    return confirmed;
-  }
-
-  public String getDescription() {
-    return description;
-  }
-
-  public String getJustification() {
-    return justification;
-  }
-
-  public LocalDateTime getCreationDate() {
-    return creationDate;
-  }
+    public LocalDate getEndDate() { return endDate; }
+    public void setEndDate(LocalDate endDate) { this.endDate = endDate; }
 }

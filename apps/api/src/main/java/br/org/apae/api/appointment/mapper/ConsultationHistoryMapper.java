@@ -4,7 +4,6 @@ import java.time.LocalDateTime;
 
 import org.springframework.stereotype.Component;
 
-import br.org.apae.api.appointment.domain.model.ConsultationHistory;
 import br.org.apae.api.common.dto.appointment.request.consultation_history.CreateConsultationHistoryDTO;
 import br.org.apae.api.common.dto.appointment.request.consultation_history.UpdateConsultationHistoryDTO;
 import br.org.apae.api.common.dto.appointment.response.consultation_history.ConsultationHistoryResponseDTO;
