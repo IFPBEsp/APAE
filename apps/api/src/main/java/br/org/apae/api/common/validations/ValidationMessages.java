@@ -5,7 +5,7 @@ public final class ValidationMessages {
 
     public static final String INVALID_PHONE = "Invalid phone number. Expected format: (xx) xxxxx-xxxx";
     public static final String INVALID_PROFESSIONAL_DOCUMENT = "Invalid professional document";
-    public static final String INVALID_EMAIL = "Invalid email address";
+    public static final String INVALID_EMAIL = "Invalid username address";
     public static final String INVALID_NAME = "Invalid name";
     public static final String INVALID_IDENTITY_DOCUMENT = "Invalid RG (Identity Document)";
     public static final String INVALID_STATE = "Invalid state/province. Expected format: XX";

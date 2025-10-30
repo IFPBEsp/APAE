@@ -1,11 +1,11 @@
 import { NextResponse } from "next/server";
 import { AxiosError } from "axios";
-import { createPersonApi } from "@/lib/axios";
+import { createBaseApi } from "@/lib/axios";
 
 export async function GET() {
   try {
-    const api = await createPersonApi();
-    const response = await api.get("", {
+    const api = await createBaseApi();
+    const response = await api.get("/patients", {
       params: { size: 100, page: 0 },
     });
 
@@ -34,7 +34,7 @@ export async function GET() {
 
     return NextResponse.json(formattedData, { status: 200 });
   } catch (error) {
-    console.error("Erro na API Route (/api/pessoas):", error);
+    console.error("Erro na API Route (/api/patients):", error);
 
     if (error instanceof AxiosError && error.response) {
       return NextResponse.json(
@@ -53,9 +53,9 @@ export async function GET() {
 export async function POST(req: Request) {
   try {
     const data = await req.formData();
-    const api = await createPersonApi();
+    const api = await createBaseApi();
 
-    const response = await api.postForm("", data);
+    const response = await api.postForm("/patients", data);
 
     if (response.status !== 201) {
       return NextResponse.json(
