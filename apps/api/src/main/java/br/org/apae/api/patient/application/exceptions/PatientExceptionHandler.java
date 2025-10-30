@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
 import br.org.apae.api.common.exceptions.types.ErrorResponse;
+import br.org.apae.api.patient.domain.exceptions.AnnualRegistryConflictException;
 import br.org.apae.api.patient.domain.exceptions.DisorderConflictException;
 import br.org.apae.api.patient.domain.exceptions.DisorderMismatchException;
 import br.org.apae.api.patient.domain.exceptions.DisorderNotFoundException;
@@ -147,5 +148,16 @@ public class PatientExceptionHandler {
         ex.getMessage(),
         request.getRequestURI());
     return new ResponseEntity<>(error, HttpStatus.NOT_FOUND);
+  }
+
+  @ExceptionHandler(AnnualRegistryConflictException.class)
+  public ResponseEntity<ErrorResponse> handleDisorderMismatch(AnnualRegistryConflictException ex,
+      HttpServletRequest request) {
+    ErrorResponse error = new ErrorResponse(
+        HttpStatus.CONFLICT.value(),
+        HttpStatus.CONFLICT.getReasonPhrase(),
+        ex.getMessage(),
+        request.getRequestURI());
+    return new ResponseEntity<>(error, HttpStatus.CONFLICT);
   }
 }

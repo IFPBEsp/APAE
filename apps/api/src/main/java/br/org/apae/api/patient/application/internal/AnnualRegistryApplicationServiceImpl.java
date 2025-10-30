@@ -11,6 +11,7 @@ import br.org.apae.api.common.dto.patient.response.disorder.DisorderResponseDTO;
 import br.org.apae.api.patient.application.interfaces.AnnualRegistryApplicationService;
 import br.org.apae.api.patient.application.interfaces.DisorderApplicationService;
 import br.org.apae.api.patient.application.mappers.AnnualRegistryMapper;
+import br.org.apae.api.patient.domain.exceptions.AnnualRegistryConflictException;
 import br.org.apae.api.patient.domain.exceptions.DisorderMismatchException;
 import br.org.apae.api.patient.domain.model.AnnualRegistry;
 import br.org.apae.api.patient.domain.repository.AnnualRegistryRepository;
@@ -37,6 +38,10 @@ public class AnnualRegistryApplicationServiceImpl implements AnnualRegistryAppli
   @Transactional
   public AnnualRegistryResponseDTO createRegistry(CreateAnnualRegistryDTO createAnnualRegistryDTO, UUID patientId) {
     patientDomainService.getByIdOrThrow(patientId);
+
+    annualRegistryRepository
+        .findByPatientIdAndYear(patientId, createAnnualRegistryDTO.year())
+        .orElseThrow(() -> new AnnualRegistryConflictException(createAnnualRegistryDTO.year()));
 
     Set<DisorderResponseDTO> disorderDtos = disorderService
         .findDisorders(createAnnualRegistryDTO.disorders());
