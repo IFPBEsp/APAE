@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="br.org.apae.documentos_medicos.UploadFileTest" tests="3" skipped="0" failures="0" errors="0" timestamp="2025-08-12T02:14:55.227Z" hostname="pedrogregorio-acer" time="0.055">
+  <properties/>
+  <testcase name="saveFileShouldThrowWhenFileIsEmpty()" classname="br.org.apae.documentos_medicos.UploadFileTest" time="0.042"/>
+  <testcase name="saveFileShouldThrowWhenBucketDoesNotExist()" classname="br.org.apae.documentos_medicos.UploadFileTest" time="0.003"/>
+  <testcase name="saveFileShouldUploadFileSuccessfully()" classname="br.org.apae.documentos_medicos.UploadFileTest" time="0.008"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

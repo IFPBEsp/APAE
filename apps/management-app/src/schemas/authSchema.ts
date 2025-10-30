@@ -10,7 +10,7 @@ export const patientSchema = z.object({
   id: z.string().uuid(),
   nome: z.string().min(1, "Nome é obrigatório").optional(),
   cpf: cpfSchema,
-  status: z.enum(['Ativo', 'Inativo', 'Em Fila']),
+  status: z.enum(["Ativo", "Inativo", "Em Fila"]),
   urlFoto: z.string().url({ message: "URL da foto inválida" }).optional(),
   contato: z.object({
     telefone: z.string().min(10, { message: "Telefone inválido" }),
@@ -50,12 +50,11 @@ export const loginSchema = z.object({
     .trim()
     .refine(
       (value) => {
-        const isEmail = z.string().email().safeParse(value).success;
-        const isCpf = cpfRegex.test(value);
-        return isEmail || isCpf;
+        const isEmail = z.email().safeParse(value).success;
+        return isEmail;
       },
       {
-        message: "Digite um CPF (XXX.XXX.XXX-XX) ou email válido",
+        message: "Digite um email válido",
       }
     ),
   password: z

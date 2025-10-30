@@ -100,15 +100,6 @@ entity "Agendamento" as Schedule {
 	data_criacao
 }
 
-entity "Faltas" as Absence {
-	id
-	--
-	data_falta
-	justificativa
-	justificada
-	data_criacao
-}
-
 entity "Profissional da saúde" as HealthProfessional {
 	id
 	--
@@ -119,11 +110,10 @@ entity "Profissional da saúde" as HealthProfessional {
 	rg
 }
 
-entity "Consulta" as Appointment {
+entity "Histórico de agendamento" as Appointment {
 	id
 	--
-	data_consulta
-	data_criacao
+	fk_consulta
 	justificativa
 	foi_realizada
 }
@@ -147,11 +137,8 @@ Historic "N" -RIGHT- "N" Service
 
 'Relacionamentos de Profissional
 HealthProfessional "1" -UP- "1" Address
-HealthProfessional "1" -LEFT- "N" Service
+HealthProfessional "N" -LEFT- "1" Service
 HealthProfessional "1" -DOWN- "N" Schedule
-
-'Relacionamentos de consulta
-Appointment "1" -RIGHT- "N" Absence
 
 'Relacionamentos de Schedule
 Schedule "1" -RIGHT- "N" Appointment
