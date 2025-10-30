@@ -2,6 +2,7 @@ package br.org.apae.api.patient.application.internal;
 
 import br.org.apae.api.address.application.interfaces.AddressService;
 import br.org.apae.api.common.dto.address.AddressResponseDTO;
+import br.org.apae.api.common.dto.patient.create.CreateDocumentsDTO;
 import br.org.apae.api.common.dto.patient.request.patient.CreatePatientDTO;
 import br.org.apae.api.common.dto.patient.request.patient.UpdatePatientDTO;
 import br.org.apae.api.common.dto.patient.response.guardian.GuardianResponseDTO;
@@ -43,13 +44,15 @@ public class PatientApplicationServiceImpl implements PatientApplicationService 
     private final VaccineApplicationService vaccineService;
     private final ParentApplicationService parentService;
     private final AnnualRegistryApplicationService annualRegistryService;
+    private final PatientDocumentsService documentService;
 
     public PatientApplicationServiceImpl(PatientRepository patientRepository, PatientMapper patientMapper,
             PatientDomainService patientDomainService,
             AddressService addressService,
             GuardianApplicationService guardianService, VaccineApplicationService vaccineService,
             ParentApplicationService parentService,
-            AnnualRegistryApplicationService annualRegistryService) {
+            AnnualRegistryApplicationService annualRegistryService,
+            PatientDocumentsService documentService) {
         this.patientRepository = patientRepository;
         this.patientMapper = patientMapper;
         this.patientDomainService = patientDomainService;
@@ -58,11 +61,12 @@ public class PatientApplicationServiceImpl implements PatientApplicationService 
         this.vaccineService = vaccineService;
         this.parentService = parentService;
         this.annualRegistryService = annualRegistryService;
+        this.documentService = documentService;
     }
 
     @Override
     @Transactional
-    public PatientResponseDTO createPatient(CreatePatientDTO createPatientDTO) {
+    public PatientResponseDTO createPatient(CreatePatientDTO createPatientDTO, CreateDocumentsDTO documents) {
         boolean existingPatient = patientRepository.existsByCpfOrRg(createPatientDTO.cpf(), createPatientDTO.rg());
 
         if (existingPatient) {
@@ -76,6 +80,7 @@ public class PatientApplicationServiceImpl implements PatientApplicationService 
 
         patientRepository.save(patient);
 
+        documentService.storePatientDocuments(patient, documents);
         annualRegistryService.createRegistry(createPatientDTO.annualRegistry(), patient.getId());
         GuardianResponseDTO guardianDto = guardianService.createGuardian(createPatientDTO.guardian(), patient.getId());
         List<ParentResponseDTO> parentDtos = parentService.createParents(createPatientDTO.parents(), patient.getId());

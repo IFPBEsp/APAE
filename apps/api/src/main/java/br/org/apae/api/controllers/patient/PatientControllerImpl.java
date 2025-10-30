@@ -5,9 +5,6 @@ import br.org.apae.api.common.dto.patient.request.patient.UpdatePatientDTO;
 import br.org.apae.api.common.dto.patient.response.patient.PatientResponseDTO;
 import br.org.apae.api.common.dto.patient.response.patient.PatientSummaryResponseDTO;
 import br.org.apae.api.common.dto.patient.create.CreateDocumentsDTO;
-import br.org.apae.api.common.dto.patient.create.CreatePatientDTO;
-import br.org.apae.api.common.dto.patient.response.PatientResponseDTO;
-import br.org.apae.api.common.dto.patient.update.UpdatePatientDTO;
 import br.org.apae.api.patient.application.interfaces.PatientApplicationService;
 import br.org.apae.api.patient.interfaces.controllers.PatientController;
 
@@ -31,12 +28,9 @@ public class PatientControllerImpl implements PatientController {
     }
 
     @Override
-    public ResponseEntity<PatientResponseDTO> createPatient(CreatePatientDTO createPatientDTO) {
-        PatientResponseDTO patientCreated = patientService.createPatient(createPatientDTO);
+    public ResponseEntity<PatientResponseDTO> createPatient(CreatePatientDTO patient, CreateDocumentsDTO documents) {
+        PatientResponseDTO patientCreated = patientService.createPatient(patient, documents);
         return ResponseEntity.status(HttpStatus.CREATED).body(patientCreated);
-    public ResponseEntity<Void> createPatient(CreatePatientDTO patient, CreateDocumentsDTO documents) {
-        patientService.createPatient(patient, documents);
-        return ResponseEntity.status(201).build();
     }
 
     @Override

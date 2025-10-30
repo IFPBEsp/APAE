@@ -17,9 +17,6 @@ import br.org.apae.api.common.dto.patient.request.patient.UpdatePatientDTO;
 import br.org.apae.api.common.dto.patient.response.patient.PatientResponseDTO;
 import br.org.apae.api.common.dto.patient.response.patient.PatientSummaryResponseDTO;
 import br.org.apae.api.common.dto.patient.create.CreateDocumentsDTO;
-import br.org.apae.api.common.dto.patient.create.CreatePatientDTO;
-import br.org.apae.api.common.dto.patient.response.PatientResponseDTO;
-import br.org.apae.api.common.dto.patient.update.UpdatePatientDTO;
 
 import java.util.List;
 import java.util.Map;
@@ -34,16 +31,9 @@ public interface PatientController {
                         @ApiResponse(responseCode = "201", description = "Paciente cadastrado com sucesso"),
                         @ApiResponse(responseCode = "400", description = "Dados inválidos fornecidos")
         })
-        @PostMapping
-        ResponseEntity<PatientResponseDTO> createPatient(@RequestBody @Valid CreatePatientDTO createPatientDTO);
-    @Operation(summary = "Cadastrar um novo paciente", description = "Cria um novo paciente no sistema com todos os seus dados.")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "201", description = "Paciente cadastrado com sucesso"),
-            @ApiResponse(responseCode = "400", description = "Dados inválidos fornecidos")
-    })
-    @PostMapping(consumes = { MediaType.MULTIPART_FORM_DATA_VALUE })
-    ResponseEntity<Void> createPatient(@RequestPart("patient") @Valid CreatePatientDTO patient,
-            @ModelAttribute @Valid CreateDocumentsDTO documents);
+        @PostMapping(consumes = { MediaType.MULTIPART_FORM_DATA_VALUE })
+        ResponseEntity<PatientResponseDTO> createPatient(@RequestPart("patient") @Valid CreatePatientDTO patient,
+                        @ModelAttribute @Valid CreateDocumentsDTO documents);
 
         @Operation(summary = "Buscar paciente por ID", description = "Retorna os dados completos de um paciente específico pelo seu ID.")
         @ApiResponses(value = {
