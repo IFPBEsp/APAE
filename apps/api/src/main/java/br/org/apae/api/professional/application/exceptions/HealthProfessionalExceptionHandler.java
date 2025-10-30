@@ -1,5 +1,7 @@
-package br.org.apae.api.professional.exceptions;
+package br.org.apae.api.professional.application.exceptions;
 
+import org.springframework.core.Ordered;
+import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -11,6 +13,7 @@ import br.org.apae.api.professional.domain.exceptions.ProfessionalDocumentConfli
 import jakarta.servlet.http.HttpServletRequest;
 
 @ControllerAdvice
+@Order(Ordered.HIGHEST_PRECEDENCE)
 public class HealthProfessionalExceptionHandler {
   @ExceptionHandler(ProfessionalDocumentConflictException.class)
   public ResponseEntity<ErrorResponse> handleProfessionalDocumentConflictException(

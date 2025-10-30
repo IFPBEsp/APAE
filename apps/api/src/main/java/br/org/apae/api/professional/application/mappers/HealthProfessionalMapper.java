@@ -3,6 +3,7 @@ package br.org.apae.api.professional.application.mappers;
 import br.org.apae.api.common.dto.professional.response.HealthProfessionalResponseDTO;
 import br.org.apae.api.address.application.mapper.AddressMapper;
 import br.org.apae.api.address.domain.model.Address;
+import br.org.apae.api.common.dto.address.AddressResponseDTO;
 import br.org.apae.api.common.dto.professional.request.CreateHealthProfessionalDTO;
 import br.org.apae.api.common.dto.professional.request.UpdateHealthProfessionalDTO;
 import br.org.apae.api.professional.domain.model.HealthProfessional;
@@ -17,47 +18,34 @@ public class HealthProfessionalMapper {
         this.addressMapper = addressMapper;
     }
 
-    public HealthProfessional toEntity(CreateHealthProfessionalDTO dto) {
-        if (dto == null) {
-            return null;
-        }
-
-        HealthProfessional professional = new HealthProfessional(
+    public HealthProfessional toEntity(CreateHealthProfessionalDTO dto, AddressResponseDTO addressDto) {
+        Address address = addressMapper.toEntityFromResponse(addressDto);
+        return new HealthProfessional(
                 dto.name(),
                 dto.email(),
                 dto.healthSector(),
                 dto.phoneNumber(),
-                dto.professionalDocument());
-
-        professional.setIdentityDocument(dto.identityDocument());
-
-        Address address = addressMapper.toEntity(dto.address());
-        professional.setAddress(address);
-
-        return professional;
+                dto.identityDocument(),
+                dto.professionalDocument(),
+                address);
     }
 
-    public void updateEntityFromDto(HealthProfessional professional, UpdateHealthProfessionalDTO dto) {
-        if (dto == null || professional == null) {
-            return;
-        }
+    public HealthProfessional updateEntityFromDto(HealthProfessional professional, UpdateHealthProfessionalDTO dto,
+            AddressResponseDTO addressDto) {
+        Address address = addressMapper.toEntityFromResponse(addressDto);
 
-        professional.setName(dto.name());
-        professional.setEmail(dto.email());
-        professional.setHealthSector(dto.healthSector());
-        professional.setPhoneNumber(dto.phoneNumber());
-        professional.setProfessionalDocument(dto.professionalDocument());
-        professional.setIdentityDocument(dto.identityDocument());
-
-        if (professional.getAddress() != null && dto.address() != null) {
-            addressMapper.updateEntityFromDto(professional.getAddress(), dto.address());
-        }
+        return new HealthProfessional(
+                professional.getId(),
+                dto.name(),
+                dto.email(),
+                dto.healthSector(),
+                dto.phoneNumber(),
+                dto.identityDocument(),
+                dto.professionalDocument(),
+                address);
     }
 
     public HealthProfessionalResponseDTO toResponseDTO(HealthProfessional professional) {
-        if (professional == null) {
-            return null;
-        }
         return new HealthProfessionalResponseDTO(professional);
     }
 }

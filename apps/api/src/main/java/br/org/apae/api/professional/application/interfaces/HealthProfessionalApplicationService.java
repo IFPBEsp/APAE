@@ -8,17 +8,15 @@ import org.springframework.data.domain.Pageable;
 
 import java.util.UUID;
 
-public interface HealthProfessionalService {
+public interface HealthProfessionalApplicationService {
 
-    HealthProfessionalResponseDTO create(CreateHealthProfessionalDTO dto);
+    HealthProfessionalResponseDTO createProfessional(CreateHealthProfessionalDTO dto);
 
-    Page<HealthProfessionalResponseDTO> findAll(Pageable pageable);
+    Page<HealthProfessionalResponseDTO> findAllProfessionals(Pageable pageable);
 
-    void delete(UUID id);
+    void deleteProfessional(UUID id);
 
-    HealthProfessionalResponseDTO findById(UUID id);
+    HealthProfessionalResponseDTO findProfessionalById(UUID id);
 
-
-
-    HealthProfessionalResponseDTO update(UUID id, UpdateHealthProfessionalDTO dto);
+    HealthProfessionalResponseDTO updateProfessional(UUID id, UpdateHealthProfessionalDTO dto);
 }
