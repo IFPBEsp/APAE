@@ -21,7 +21,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
-@RequestMapping("/patients")
+@RequestMapping("/api/patients")
 @Tag(name = "Patients", description = "Endpoints para gerenciamento de pacientes")
 public interface PatientController {
 

@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.UUID;
 
-@RequestMapping("/vaccines")
+@RequestMapping("/api/vaccines")
 @Tag(name = "Vaccines", description = "Endpoints para gerenciamento de vacinas")
 public interface VaccineController {
 

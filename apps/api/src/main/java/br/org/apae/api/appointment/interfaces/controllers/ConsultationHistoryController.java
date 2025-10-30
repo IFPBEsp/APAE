@@ -17,7 +17,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import jakarta.validation.Valid;
 
-@RequestMapping("/consultation-histories")
+@RequestMapping("/api/consultation-histories")
 public interface ConsultationHistoryController {
 
   @Operation(summary = "Criar um novo histórico de consulta", description = "Registra um novo histórico de consulta para um agendamento. "

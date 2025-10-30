@@ -20,7 +20,7 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 
-@RequestMapping("/professionals")
+@RequestMapping("/api/professionals")
 public interface HealthProfessionalController {
   @Operation(summary = "Cadastrar profissional de saúde", description = "Cria um novo profissional de saúde no sistema.", responses = {
       @ApiResponse(responseCode = "201", description = "Profissional criado com sucesso", content = @Content(schema = @Schema(implementation = HealthProfessionalResponseDTO.class))),

@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.UUID;
 
-@RequestMapping("/transtornos")
+@RequestMapping("/api/transtornos")
 public interface DisorderController {
 
     @Operation(summary = "Cadastrar Transtorno", description = "Cria um novo registro de transtorno no sistema. Falha se o nome já existir.", responses = {
