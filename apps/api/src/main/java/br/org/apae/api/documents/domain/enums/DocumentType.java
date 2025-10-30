@@ -1,8 +1,16 @@
 package br.org.apae.api.documents.domain.enums;
 
 public enum DocumentType {
-    REPORT("LAUDO"),
-    CPF("CPF");
+    BIRTH_CERTIFICATE("CERTIDAO_DE_NASCIMENTO"),
+    CPF("CPF"),
+    EXAMINATION("EXAME"),
+    MEDICAL_REPORT("LAUDO"),
+    OTHER("OUTRO"),
+    PHOTO("FOTO"),
+    PROOF_OF_ADDRESS("COMPROVANTE_DE_RESIDENCIA"),
+    PROGRESS_REPORT("RELATORIO"),
+    REFERRAL("ENCAMINHAMENTO"),
+    RG("RG");
 
     private String value;
 

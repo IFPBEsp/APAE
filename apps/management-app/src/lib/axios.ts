@@ -57,7 +57,7 @@ const makeInterceptors = (api: AxiosInstance) => {
 
 export const createAuthAPI = async () => {
   const api = createAxiosInstance(
-    process.env.NEXT_PUBLIC_API_URL_AUTH || "http://localhost:8091/api/auth"
+    process.env.NEXT_PUBLIC_API_URL_AUTH || "http://localhost:8090/auth"
   );
 
   return makeInterceptors(api);
@@ -72,10 +72,10 @@ export const createDocumentsAPI = async () => {
   return makeInterceptors(api);
 };
 
-export const createPersonApi = async () => {
-  const api_pessoas = createAxiosInstance(
-    process.env.NEXT_PUBLIC_API_URL_PERSON || "http://localhost:8090/pessoas"
+export const createBaseApi = async () => {
+  const api = createAxiosInstance(
+    process.env.NEXT_PUBLIC_API_URL_DISORDERS || "http://localhost:8090"
   );
 
-  return makeInterceptors(api_pessoas);
+  return makeInterceptors(api);
 };
