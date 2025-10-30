@@ -70,9 +70,9 @@ public class HealthProfessionalApplicationServiceImpl implements HealthProfessio
         AddressResponseDTO addressDto = addressService.updateAddress(entityToUpdate.getAddress().getId(),
                 dto.address());
 
-        mapper.updateEntityFromDto(entityToUpdate, dto, addressDto);
+        HealthProfessional updatedProfessional = mapper.updateEntityFromDto(entityToUpdate, dto, addressDto);
 
-        HealthProfessional updatedProfessional = repository.save(entityToUpdate);
+        repository.save(updatedProfessional);
 
         return mapper.toResponseDTO(updatedProfessional);
     }

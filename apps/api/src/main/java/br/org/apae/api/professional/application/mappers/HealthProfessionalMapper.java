@@ -46,6 +46,8 @@ public class HealthProfessionalMapper {
     }
 
     public HealthProfessionalResponseDTO toResponseDTO(HealthProfessional professional) {
-        return new HealthProfessionalResponseDTO(professional);
+        AddressResponseDTO addressResponseDTO = new AddressResponseDTO(professional.getAddress());
+
+        return new HealthProfessionalResponseDTO(professional, addressResponseDTO);
     }
 }

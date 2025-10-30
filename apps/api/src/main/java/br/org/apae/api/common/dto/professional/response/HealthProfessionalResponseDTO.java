@@ -15,7 +15,7 @@ public record HealthProfessionalResponseDTO(
         String identityDocument,
         AddressResponseDTO address) {
 
-    public HealthProfessionalResponseDTO(HealthProfessional entity) {
+    public HealthProfessionalResponseDTO(HealthProfessional entity, AddressResponseDTO addressResponseDTO) {
         this(
                 entity.getId(),
                 entity.getHealthSector(),
@@ -24,8 +24,6 @@ public record HealthProfessionalResponseDTO(
                 entity.getEmail(),
                 entity.getName(),
                 entity.getIdentityDocument(),
-                entity.getAddress() != null
-                        ? new AddressResponseDTO(entity.getAddress())
-                        : null);
+                addressResponseDTO);
     }
 }
