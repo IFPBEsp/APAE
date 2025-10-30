@@ -16,7 +16,7 @@ public class AnnualRegistry {
     @Column(name = "bpc")
     private String bpc; // Benefício de Prestação Continuada
 
-    @Column(name = "doencas", columnDefinition = "TEXT")
+    @Column(name = "doencas")
     private String diseases;
 
     @Column(name = "renda_familiar")
