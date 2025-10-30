@@ -27,8 +27,14 @@ public class User implements UserDetails {
   @Column(nullable = false, unique = true)
   private String username;
 
+  @Column(nullable = false, unique = true)
+  private String cpf;
+
   @Column(name = "senha", nullable = false)
   private String password;
+
+  @Column(name = "nome_completo")
+  private String fullName;
 
   @Enumerated(EnumType.STRING)
   @Column(name = "cargo", nullable = false)
@@ -37,14 +43,18 @@ public class User implements UserDetails {
   protected User() {
   }
 
-  public User(String username, String password) {
+  public User(String username, String password, String cpf, String fullName) {
     this.username = username;
     this.password = password;
+    this.cpf = cpf;
+    this.fullName = fullName;
   }
 
-  public User(String username, String password, UserRole role) {
+  public User(String username, String password, String cpf, String fullName, UserRole role) {
     this.username = username;
     this.password = password;
+    this.cpf = cpf;
+    this.fullName = fullName;
     this.role = role;
   }
 
@@ -52,16 +62,25 @@ public class User implements UserDetails {
     return id;
   }
 
-  public String getUsername() {
-    return username;
-  }
-
   public String getPassword() {
     return password;
   }
 
-  public UserRole getRole() {
+    @Override
+    public String getUsername() {
+        return username;
+    }
+
+    public UserRole getRole() {
     return role;
+  }
+
+  public String getCpf() {
+    return cpf;
+  }
+
+  public String getFullName() {
+    return fullName;
   }
 
   @Override
