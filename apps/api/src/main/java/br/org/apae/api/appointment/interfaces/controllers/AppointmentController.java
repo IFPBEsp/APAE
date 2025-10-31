@@ -19,7 +19,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import jakarta.validation.Valid;
 
-@RequestMapping("/api/appointments")
+@RequestMapping("/appointments")
 public interface AppointmentController {
 
   @Operation(summary = "Criar um novo agendamento", description = "Cadastra um novo agendamento no sistema.", responses = {
