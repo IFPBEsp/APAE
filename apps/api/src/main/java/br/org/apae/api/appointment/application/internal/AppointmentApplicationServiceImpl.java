@@ -1,6 +1,7 @@
 package br.org.apae.api.appointment.application.internal;
 
 import br.org.apae.api.appointment.application.interfaces.AppointmentApplicationService;
+import br.org.apae.api.appointment.domain.exceptions.AnnualRegistrationNotFound;
 import br.org.apae.api.appointment.domain.exceptions.AppointmentNotFoundException;
 import br.org.apae.api.appointment.domain.model.*;
 import br.org.apae.api.appointment.domain.repository.*;
@@ -22,12 +23,14 @@ import java.util.*;
 @Transactional
 public class AppointmentApplicationServiceImpl implements AppointmentApplicationService {
 
+  public static final String APPOINTMENT_NOT_FOUND = "Appointment not found";
   private final AppointmentRepository appointmentRepo;
   private final GeneratedAppointmentRepository generatedRepo;
   private final AnnualRegistryRepository registryRepo;
   private final HealthProfessionalRepository professionalRepo;
   private final AbsenceRepository absenceRepo;
   private final AppointmentMapper mapper;
+
 
   public AppointmentApplicationServiceImpl(
           AppointmentRepository appointmentRepo,
@@ -47,7 +50,13 @@ public class AppointmentApplicationServiceImpl implements AppointmentApplication
   @Override
   public void create(CreateAppointmentDTO dto) {
     Appointment appointment = mapper.toEntity(dto);
+
+    AnnualRegistry annualRegistry = this.registryRepo.findById(dto.annualRegistration())
+        .orElseThrow(AnnualRegistrationNotFound::new);
+
+    appointment.setAnnualRegistration(annualRegistry);
     appointmentRepo.save(appointment);
+    generateAppointments(annualRegistry.getId(), appointment.getInitialDate(), appointment.getEndDate());
   }
 
   @Override
@@ -90,6 +99,13 @@ public class AppointmentApplicationServiceImpl implements AppointmentApplication
             .orElseThrow(AppointmentNotFoundException::new);
 
     Appointment toUpdate = mapper.updateEntity(appointment, dto);
+
+    if (dto.annualRegistrationId() != null) {
+      AnnualRegistry annualRegistry = this.registryRepo.findById(dto.annualRegistrationId())
+          .orElseThrow(AnnualRegistrationNotFound::new);
+
+      appointment.setAnnualRegistration(annualRegistry);
+    }
     Appointment updated = appointmentRepo.save(toUpdate);
     return mapper.toResponse(updated);
   }
@@ -117,9 +133,6 @@ public class AppointmentApplicationServiceImpl implements AppointmentApplication
    */
   public List<GeneratedAppointmentResponseDTO> generateAppointments(
           UUID annualRegistrationId, LocalDate start, LocalDate end) {
-
-    AnnualRegistry registry = registryRepo.findById(annualRegistrationId)
-            .orElseThrow(() -> new IllegalArgumentException("Annual registration not found"));
 
     Appointment activeRule = appointmentRepo.findByAnnualRegistrationIdAndIsActiveTrue(annualRegistrationId)
             .stream().findFirst()
@@ -235,7 +248,7 @@ public class AppointmentApplicationServiceImpl implements AppointmentApplication
    */
   public GeneratedAppointmentResponseDTO reschedule(UUID generatedId, LocalDateTime newDateTime) {
     GeneratedAppointment appt = generatedRepo.findById(generatedId)
-            .orElseThrow(() -> new IllegalArgumentException("Appointment not found"));
+            .orElseThrow(() -> new IllegalArgumentException(APPOINTMENT_NOT_FOUND));
     appt.setOverriddenDateTime(newDateTime);
     return mapper.toGeneratedResponse(generatedRepo.save(appt));
   }
@@ -249,7 +262,7 @@ public class AppointmentApplicationServiceImpl implements AppointmentApplication
    */
   public GeneratedAppointmentResponseDTO markAsPerformed(UUID generatedId) {
     GeneratedAppointment appt = generatedRepo.findById(generatedId)
-            .orElseThrow(() -> new IllegalArgumentException("Appointment not found"));
+            .orElseThrow(() -> new IllegalArgumentException(APPOINTMENT_NOT_FOUND));
     appt.setPerformed(true);
     return mapper.toGeneratedResponse(generatedRepo.save(appt));
   }
@@ -264,7 +277,7 @@ public class AppointmentApplicationServiceImpl implements AppointmentApplication
    */
   public GeneratedAppointmentResponseDTO cancel(UUID generatedId, String reason) {
     GeneratedAppointment appt = generatedRepo.findById(generatedId)
-            .orElseThrow(() -> new IllegalArgumentException("Appointment not found"));
+            .orElseThrow(() -> new IllegalArgumentException(APPOINTMENT_NOT_FOUND));
     appt.setCancelled(true);
     appt.setCancellationReason(reason);
     return mapper.toGeneratedResponse(generatedRepo.save(appt));

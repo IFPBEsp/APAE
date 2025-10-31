@@ -12,7 +12,7 @@ import jakarta.validation.constraints.Positive;
 public record UpdateAppointmentDTO(
 
     UUID professionalId,
-    AnnualRegistry annualRegistrationId,
+    UUID annualRegistrationId,
     UUID serviceId,
 
     @Positive(message = "A frequência de dias deve ser maior que 0")

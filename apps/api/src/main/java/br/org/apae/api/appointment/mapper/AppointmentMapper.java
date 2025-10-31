@@ -17,7 +17,7 @@ public class AppointmentMapper {
     return new Appointment(
         dto.professionalId(),
         dto.serviceId(),
-        dto.annualRegistration(),
+        null,
         dto.frequencyDays(),
         dto.hour(),
         dto.initialDate(),
@@ -28,9 +28,6 @@ public class AppointmentMapper {
   public Appointment updateEntity(Appointment appointment, UpdateAppointmentDTO dto) {
     appointment.setProfessionalId(
         dto.professionalId() != null ? dto.professionalId() : appointment.getProfessionalId()
-    );
-    appointment.setAnnualRegistration(
-        dto.annualRegistrationId() != null ? dto.annualRegistrationId() : appointment.getAnnualRegistration()
     );
     appointment.setServiceId(
         dto.serviceId() != null ? dto.serviceId() : appointment.getServiceId()

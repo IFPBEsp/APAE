@@ -1,6 +1,5 @@
 package br.org.apae.api.common.dto.appointment.request.appointment;
 
-import br.org.apae.api.patient.domain.model.AnnualRegistry;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.validation.constraints.FutureOrPresent;
 import jakarta.validation.constraints.NotNull;
@@ -18,7 +17,7 @@ public record CreateAppointmentDTO(
     UUID serviceId,
 
     @NotNull(message = "O ID do cadastro anual é obrigatório")
-    AnnualRegistry annualRegistration,
+    UUID annualRegistration,
 
     @NotNull(message = "A frequência em dias é obrigatória")
     @Positive(message = "A frequência de dias deve ser maior que 0")
