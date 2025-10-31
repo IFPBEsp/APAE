@@ -1,5 +1,7 @@
 package br.org.apae.api.common.dto.appointment.response.appointment;
 
+import br.org.apae.api.patient.domain.model.AnnualRegistry;
+
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -9,7 +11,7 @@ public record AppointmentResponseDTO(
   UUID id,
   UUID professionalId,
   UUID serviceId,
-  UUID annualRegistrationId,
+  AnnualRegistry annualRegistration,
   Integer frequencyDays,
   LocalDate initialDate,
   LocalDate endDate,

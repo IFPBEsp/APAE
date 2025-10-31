@@ -5,14 +5,9 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.UUID;
 
+import br.org.apae.api.patient.domain.model.AnnualRegistry;
+import jakarta.persistence.*;
 import org.hibernate.annotations.CreationTimestamp;
-
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
 
 @Entity
 @Table(name = "agendamentos")
@@ -26,8 +21,9 @@ public class Appointment {
   @Column(name = "atendimento_id", nullable = false)
   private UUID serviceId;
 
-  @Column(name = "cadastro_anual_id", nullable = false)
-  private UUID annualRegistrationId;
+  @ManyToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "cadastro_anual_id", nullable = false)
+  private AnnualRegistry annualRegistration;
 
   @Column(name = "frequencia_dias", nullable = false)
   private Integer frequencyDays;
@@ -52,10 +48,10 @@ public class Appointment {
   }
 
 
-  public Appointment(UUID professionalId, UUID serviceId, UUID annualRegistrationId, Integer frequencyDays, LocalTime hour, LocalDate initialDate, LocalDate endDate) {
+  public Appointment(UUID professionalId, UUID serviceId, AnnualRegistry annualRegistration, Integer frequencyDays, LocalTime hour, LocalDate initialDate, LocalDate endDate) {
     this.professionalId = professionalId;
     this.serviceId = serviceId;
-    this.annualRegistrationId = annualRegistrationId;
+    this.annualRegistration = annualRegistration;
     this.frequencyDays = frequencyDays;
     this.hour = hour;
     this.initialDate = initialDate;
@@ -91,12 +87,12 @@ public class Appointment {
     this.serviceId = serviceId;
   }
 
-  public UUID getAnnualRegistrationId() {
-    return annualRegistrationId;
+  public AnnualRegistry getAnnualRegistration() {
+    return annualRegistration;
   }
 
-  public void setAnnualRegistrationId(UUID annualRegistrationId) {
-    this.annualRegistrationId = annualRegistrationId;
+  public void setAnnualRegistration(AnnualRegistry annualRegistration) {
+    this.annualRegistration = annualRegistration;
   }
 
   public Integer getFrequencyDays() {

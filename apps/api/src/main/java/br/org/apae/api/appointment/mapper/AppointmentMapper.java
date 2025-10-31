@@ -1,11 +1,13 @@
 package br.org.apae.api.appointment.mapper;
 
 import br.org.apae.api.appointment.domain.model.Appointment;
+import br.org.apae.api.appointment.domain.model.GeneratedAppointment;
 import br.org.apae.api.common.dto.appointment.request.appointment.CreateAppointmentDTO;
 import br.org.apae.api.common.dto.appointment.request.appointment.UpdateAppointmentDTO;
 import br.org.apae.api.common.dto.appointment.response.appointment.AppointmentResponseDTO;
 
 
+import br.org.apae.api.common.dto.appointment.response.appointment.GeneratedAppointmentResponseDTO;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -15,7 +17,7 @@ public class AppointmentMapper {
     return new Appointment(
         dto.professionalId(),
         dto.serviceId(),
-        dto.annualRegistrationId(),
+        dto.annualRegistration(),
         dto.frequencyDays(),
         dto.hour(),
         dto.initialDate(),
@@ -27,8 +29,8 @@ public class AppointmentMapper {
     appointment.setProfessionalId(
         dto.professionalId() != null ? dto.professionalId() : appointment.getProfessionalId()
     );
-    appointment.setAnnualRegistrationId(
-        dto.annualRegistrationId() != null ? dto.annualRegistrationId() : appointment.getAnnualRegistrationId()
+    appointment.setAnnualRegistration(
+        dto.annualRegistrationId() != null ? dto.annualRegistrationId() : appointment.getAnnualRegistration()
     );
     appointment.setServiceId(
         dto.serviceId() != null ? dto.serviceId() : appointment.getServiceId()
@@ -49,12 +51,26 @@ public class AppointmentMapper {
     return appointment;
   }
 
+  public GeneratedAppointmentResponseDTO toGeneratedResponse(GeneratedAppointment entity) {
+    return new GeneratedAppointmentResponseDTO(
+            entity.getId(),
+            entity.getAppointment().getId(),
+            entity.getScheduledDateTime(),
+            entity.getOverriddenDateTime(),
+            entity.getPerformed(),
+            entity.getCancelled(),
+            entity.getCancellationReason(),
+            entity.getPatientId(),
+            entity.getEffectiveDateTime()
+    );
+  }
+
   public AppointmentResponseDTO toResponse(Appointment appointment) {
     return new AppointmentResponseDTO(
         appointment.getId(),
         appointment.getProfessionalId(),
         appointment.getServiceId(),
-        appointment.getAnnualRegistrationId(),
+        appointment.getAnnualRegistration(),
         appointment.getFrequencyDays(),
         appointment.getInitialDate(),
         appointment.getEndDate(),
