@@ -6,14 +6,14 @@ import java.time.LocalTime;
 import java.util.UUID;
 
 public record AppointmentResponseDTO(
-    UUID id,
-    UUID patientId,
-    UUID professionalId,
-    Integer frequencyDays,
-    LocalDate nextAppointmentDate,
-    LocalTime nextAppointmentTime,
-    Boolean confirmed,
-    String description,
-    String justification,
-    LocalDateTime creationDate) {
-}
+  UUID id,
+  UUID professionalId,
+  UUID serviceId,
+  UUID annualRegistrationId,
+  Integer frequencyDays,
+  LocalDate initialDate,
+  LocalDate endDate,
+  LocalTime hour,
+  boolean isActive,
+  LocalDateTime creationDate
+) {}

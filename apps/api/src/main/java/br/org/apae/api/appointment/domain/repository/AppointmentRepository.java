@@ -14,8 +14,8 @@ import java.util.UUID;
 @Repository
 public interface AppointmentRepository extends JpaRepository<Appointment, UUID> {
 
-  Page<Appointment> findAllByNextAppointment(LocalDate date, Pageable pageable);
+  Page<Appointment> findAllByInitialDate(LocalDate date, Pageable pageable);
 
-  Page<Appointment> findAllByNextAppointmentAndNextAppointmentTime(LocalDate date, LocalTime time,
+  Page<Appointment> findAllByInitialDateAndHour(LocalDate date, LocalTime hour,
       Pageable pageable);
 }
