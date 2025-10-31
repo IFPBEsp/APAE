@@ -2,7 +2,7 @@ package br.org.apae.api.patient.application.internal;
 
 import br.org.apae.api.address.application.interfaces.AddressService;
 import br.org.apae.api.common.dto.address.AddressResponseDTO;
-import br.org.apae.api.common.dto.patient.create.CreateDocumentsDTO;
+import br.org.apae.api.common.dto.patient.request.documents.CreateDocumentsDTO;
 import br.org.apae.api.common.dto.patient.request.patient.CreatePatientDTO;
 import br.org.apae.api.common.dto.patient.request.patient.UpdatePatientDTO;
 import br.org.apae.api.common.dto.patient.response.guardian.GuardianResponseDTO;
@@ -80,10 +80,10 @@ public class PatientApplicationServiceImpl implements PatientApplicationService 
 
         patientRepository.save(patient);
 
-        documentService.storePatientDocuments(patient, documents);
         annualRegistryService.createRegistry(createPatientDTO.annualRegistry(), patient.getId());
         GuardianResponseDTO guardianDto = guardianService.createGuardian(createPatientDTO.guardian(), patient.getId());
         List<ParentResponseDTO> parentDtos = parentService.createParents(createPatientDTO.parents(), patient.getId());
+        documentService.storePatientDocuments(patient, documents);
 
         return patientMapper.toResponseDTO(patient, guardianDto, parentDtos);
     }
@@ -136,10 +136,23 @@ public class PatientApplicationServiceImpl implements PatientApplicationService 
 
     @Override
     @Transactional
+    public void disablePatient(UUID id) {
+        Patient patient = patientDomainService.getByIdOrThrow(id);
+        patient.setDeleted(true);
+
+        patientRepository.save(patient);
+    }
+
+    @Override
+    @Transactional
     public void deletePatient(UUID id) {
         Patient patient = patientDomainService.getByIdOrThrow(id);
 
-        patient.setDeleted(true);
+        addressService.deleteAddress(patient.getAddress().getId());
+        guardianService.deleteGuardian(patient.getId());
+        parentService.deleteParents(patient.getId());
+        annualRegistryService.deleteRegistry(patient.getId());
+
         patientRepository.save(patient);
     }
 }

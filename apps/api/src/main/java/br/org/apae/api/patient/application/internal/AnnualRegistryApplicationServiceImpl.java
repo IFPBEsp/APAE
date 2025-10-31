@@ -1,5 +1,6 @@
 package br.org.apae.api.patient.application.internal;
 
+import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
@@ -54,5 +55,17 @@ public class AnnualRegistryApplicationServiceImpl implements AnnualRegistryAppli
     AnnualRegistry registrySaved = annualRegistryRepository.save(registry);
 
     return annualRegistryMapper.toResponseDTO(registrySaved);
+  }
+
+  @Override
+  @Transactional
+  public void deleteRegistry(UUID patientId) {
+    List<AnnualRegistry> registries = annualRegistryRepository.findAllByPatientId(patientId);
+
+    if (registries.isEmpty()) {
+      return;
+    }
+
+    annualRegistryRepository.deleteAll(registries);
   }
 }
