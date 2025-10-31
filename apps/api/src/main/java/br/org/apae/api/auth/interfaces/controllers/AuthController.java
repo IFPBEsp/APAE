@@ -12,7 +12,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import jakarta.validation.Valid;
 
-@RequestMapping("/api/auth")
+@RequestMapping("/auth")
 public interface AuthController {
   @Operation(summary = "Registra um novo usuário", description = "Cria um novo usuário no sistema com username e senha.")
   @ApiResponse(responseCode = "201", description = "Usuário criado com sucesso")

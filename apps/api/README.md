@@ -10,7 +10,7 @@ Antes de escrever qualquer linha de código, seu ambiente precisa estar preparad
 
 | Ferramenta | Descrição | Como Instalar / Verificar                                                                                                                                                                                                                                                                                                                                                                                                           |
 | :--- | :--- |:------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| **Java (JDK)** | A linguagem de programação base do projeto. | **Versão 17 ou superior.** <br/> 1. Verifique se já tem: `java -version` <br/> 2. [Link para instalar](https://www.oracle.com/java/technologies/downloads/)                                                                                                                                                                                                                                                                         |
+| **Java (JDK)** | A linguagem de programação base do projeto. | **Versão 21 ou superior.** <br/> 1. Verifique se já tem: `java -version` <br/> 2. [Link para instalar](https://www.oracle.com/java/technologies/downloads/)                                                                                                                                                                                                                                                                         |
 | **Git** | Sistema de controle de versão para baixar o código. | 1. Verifique se já tem: `git --version` <br/> 2. [Link para instalar](https://git-scm.com/downloads)                                                                                                                                                                                                                                                                                                                                |
 | **Docker** | Plataforma para rodar nosso banco de dados em um contêiner. | 1. O **Docker Desktop** (Windows/Mac) já inclui o `docker compose`. <br/> 2. [Link para instalar (Windows)](https://docs.docker.com/desktop/install/windows-install/) <br/> 3. [Link para instalar (Mac)](https://docs.docker.com/desktop/install/mac-install/) <br/> 4. [Link para instalar (Linux)](https://docs.docker.com/engine/install/ubuntu/) e ([docker-compose separado](https://docs.docker.com/compose/install/linux/)) |
 | **IDE** | Um editor de código para facilitar o desenvolvimento. | **Altamente recomendado:** <br/> 1. [IntelliJ IDEA Community (Gratuito)](https://www.jetbrains.com/idea/download/) <br/> 2. [Visual Studio Code (com Java Extension Pack)](https://code.visualstudio.com/docs/java/java-tutorial)                                                                                                                                                                                                   |
@@ -39,9 +39,9 @@ cd apps/api
 
 Nossa API precisa de um banco de dados para funcionar. Nós usamos o Docker para "simular" esse banco em sua máquina sem precisar instalá-lo manualmente.
 
-O arquivo `docker-compose.yml` (que deve estar nesta pasta `apps/api`) é a receita que diz ao Docker como criar esse banco.
+O arquivo `docker-compose.yml` é a receita que diz ao Docker como criar esse banco.
 
-**Abra um terminal (dentro de `apps/api`) e execute:**
+**Abra um terminal (em qualquer lugar dentro da pasta `APAE`, que pode ser na padrão, onde sua IDE vai abrir o terminal ao abrir o projeto na pasta `api`: `.../APAE/apps/api`) e execute:**
 
 ```bash
 # Este comando vai baixar a imagem do banco (ex: Postgres/MySQL)
@@ -97,7 +97,7 @@ Após a aplicação iniciar, a forma mais fácil de verificar se os endpoints es
 
 Abra seu navegador e acesse:
 
-[http://localhost:8090/swagger-ui/index.html](https://www.google.com/search?q=http://localhost:8090/swagger-ui/index.html)
+[http://localhost:8090/api/swagger-ui/index.html](http://localhost:8090/api/swagger-ui/index.html)
 
 Você deverá ver a interface do Swagger listando todos os "Controllers" (como Patient, Auth, Appointment, etc.) e seus respectivos endpoints.
 
