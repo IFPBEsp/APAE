@@ -1,27 +1,33 @@
 package br.org.apae.api.common.dto.appointment.request.appointment;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-
-import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.FutureOrPresent;
 import jakarta.validation.constraints.NotNull;
-
+import jakarta.validation.constraints.Positive;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.UUID;
 
 public record CreateAppointmentDTO(
 
-        @NotNull(message = "O ID do paciente não pode ser nulo") UUID patientId,
+    @NotNull(message = "O ID do profissional é obrigatório")
+    UUID professionalId,
 
-        @NotNull(message = "O ID do profissional não pode ser nulo") UUID professionalId,
+    @NotNull(message = "O ID do atendimento é obrigatório")
+    UUID serviceId,
 
-        @NotNull(message = "A frequência em dias não pode ser nula") Integer frequencyDays,
+    @NotNull(message = "O ID do cadastro anual é obrigatório")
+    UUID annualRegistration,
 
-        @NotNull(message = "A data da próxima consulta não pode ser nula") LocalDate nextAppointmentDate,
+    @NotNull(message = "A frequência em dias é obrigatória")
+    @Positive(message = "A frequência de dias deve ser maior que 0")
+    Integer frequencyDays,
 
-        @NotNull(message = "O horário da próxima consulta não pode ser nulo") @JsonFormat(pattern = "HH:mm:ss") LocalTime nextAppointmentTime,
+    @NotNull(message = "A data inicial é obrigatória")
+    @FutureOrPresent(message = "A data inicial não pode ser no passado")
+    LocalDate initialDate,
 
-        @NotNull(message = "O status de confirmação não pode ser nulo") Boolean confirmed,
-
-        @NotBlank(message = "A descrição não pode estar em branco") String description) {
-}
+    @NotNull(message = "A hora é obrigatória")
+    @JsonFormat(pattern = "HH:mm:ss")
+    LocalTime hour
+) {}

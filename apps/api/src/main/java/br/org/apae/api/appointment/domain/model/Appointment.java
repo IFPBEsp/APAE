@@ -5,14 +5,9 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.UUID;
 
+import br.org.apae.api.patient.domain.model.AnnualRegistry;
+import jakarta.persistence.*;
 import org.hibernate.annotations.CreationTimestamp;
-
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
 
 @Entity
 @Table(name = "agendamentos")
@@ -20,30 +15,30 @@ public class Appointment {
   @Id
   @GeneratedValue(strategy = GenerationType.UUID)
   private UUID id;
-
-  @Column(name = "paciente_id", nullable = false)
-  private UUID patientId;
-
   @Column(name = "profissional_id", nullable = false)
   private UUID professionalId;
+
+  @Column(name = "atendimento_id", nullable = false)
+  private UUID serviceId;
+
+  @ManyToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "cadastro_anual_id", nullable = false)
+  private AnnualRegistry annualRegistration;
 
   @Column(name = "frequencia_dias", nullable = false)
   private Integer frequencyDays;
 
-  @Column(name = "proxima_consulta", nullable = false)
-  private LocalDate nextAppointment;
+  @Column(name = "hora", nullable = false)
+  private LocalTime hour;
 
-  @Column(name = "hora_proxima_consulta", nullable = false)
-  private LocalTime nextAppointmentTime;
+  @Column(name = "data_inicial", nullable = false)
+  private LocalDate initialDate;
 
-  @Column(name = "confirmado", nullable = false)
-  private Boolean confirmed;
+  @Column(name = "data_final", nullable = true)
+  private LocalDate endDate;
 
-  @Column(name = "descricao")
-  private String description;
-
-  @Column(name = "justificativa")
-  private String justification;
+  @Column(name = "ativo")
+  private boolean isActive;
 
   @CreationTimestamp
   @Column(name = "data_criacao")
@@ -52,69 +47,83 @@ public class Appointment {
   public Appointment() {
   }
 
-  public Appointment(UUID patientId, UUID professionalId, Integer frequencyDays, LocalDate nextAppointment,
-      LocalTime nextAppointmentTime, Boolean confirmed, String description, String justification,
-      LocalDateTime creationDate) {
-    this.patientId = patientId;
+  public Appointment(UUID professionalId, UUID serviceId, AnnualRegistry annualRegistration, Integer frequencyDays, LocalTime hour, LocalDate initialDate, LocalDate endDate) {
     this.professionalId = professionalId;
+    this.serviceId = serviceId;
+    this.annualRegistration = annualRegistration;
     this.frequencyDays = frequencyDays;
-    this.nextAppointment = nextAppointment;
-    this.nextAppointmentTime = nextAppointmentTime;
-    this.confirmed = confirmed;
-    this.description = description;
-    this.justification = justification;
-    this.creationDate = creationDate;
+    this.hour = hour;
+    this.initialDate = initialDate;
+    this.endDate = endDate;
+    this.isActive = true;
   }
 
-  public Appointment(UUID id, UUID patientId, UUID professionalId, Integer frequencyDays, LocalDate nextAppointment,
-      LocalTime nextAppointmentTime, Boolean confirmed, String description, String justification,
-      LocalDateTime creationDate) {
-    this.id = id;
-    this.patientId = patientId;
-    this.professionalId = professionalId;
-    this.frequencyDays = frequencyDays;
-    this.nextAppointment = nextAppointment;
-    this.nextAppointmentTime = nextAppointmentTime;
-    this.confirmed = confirmed;
-    this.description = description;
-    this.justification = justification;
-    this.creationDate = creationDate;
+  public LocalTime getHour() {
+    return hour;
+  }
+
+  public void setHour(LocalTime hour) {
+    this.hour = hour;
   }
 
   public UUID getId() {
     return id;
   }
 
-  public UUID getPatientId() {
-    return patientId;
-  }
-
   public UUID getProfessionalId() {
     return professionalId;
+  }
+
+  public void setProfessionalId(UUID professionalId) {
+    this.professionalId = professionalId;
+  }
+
+  public UUID getServiceId() {
+    return serviceId;
+  }
+
+  public void setServiceId(UUID serviceId) {
+    this.serviceId = serviceId;
+  }
+
+  public AnnualRegistry getAnnualRegistration() {
+    return annualRegistration;
+  }
+
+  public void setAnnualRegistration(AnnualRegistry annualRegistration) {
+    this.annualRegistration = annualRegistration;
   }
 
   public Integer getFrequencyDays() {
     return frequencyDays;
   }
 
-  public LocalDate getNextAppointment() {
-    return nextAppointment;
+  public void setFrequencyDays(Integer frequencyDays) {
+    this.frequencyDays = frequencyDays;
   }
 
-  public LocalTime getNextAppointmentTime() {
-    return nextAppointmentTime;
+  public LocalDate getInitialDate() {
+    return initialDate;
   }
 
-  public Boolean getConfirmed() {
-    return confirmed;
+  public void setInitialDate(LocalDate initialDate) {
+    this.initialDate = initialDate;
   }
 
-  public String getDescription() {
-    return description;
+  public LocalDate getEndDate() {
+    return endDate;
   }
 
-  public String getJustification() {
-    return justification;
+  public void setEndDate(LocalDate endDate) {
+    this.endDate = endDate;
+  }
+
+  public boolean isActive() {
+    return isActive;
+  }
+
+  public void setActive(boolean active) {
+    isActive = active;
   }
 
   public LocalDateTime getCreationDate() {
