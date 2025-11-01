@@ -45,6 +45,41 @@ const VaccinesContext = createContext<VaccinesContextData | undefined>(
     undefined,
 );
 
+type WithFeedbackMessages = {
+    success: string;
+};
+
+function withFeedback<TArgs extends readonly unknown[], TReturn>(
+    fn: (...args: TArgs) => Promise<TReturn>,
+    setLoading: (loading: boolean) => void,
+    setFeedback: (feedback: Feedback) => void,
+    messages: WithFeedbackMessages,
+) {
+    return async (...args: TArgs): Promise<TReturn | void> => {
+        setLoading(true);
+        try {
+            const result = await fn(...args);
+            setFeedback({
+                message: messages.success,
+                success: true,
+                error: false,
+            });
+            return result;
+        } catch (error) {
+            const message =
+                error instanceof Error ? error.message : "Erro desconhecido.";
+            setFeedback({
+                message,
+                success: false,
+                error: true,
+            });
+            throw error;
+        } finally {
+            setLoading(false);
+        }
+    };
+}
+
 function VaccinesProvider({
     children,
 }: Readonly<{
@@ -56,25 +91,94 @@ function VaccinesProvider({
         success: false,
         error: false,
     });
-    const [vaccines, setVaccines] = useState<Vaccine[]>([{
-        id: "1",
-        name: "teste"
-    }]);
+    const [vaccines, setVaccines] = useState<Vaccine[]>([]);
 
-    const fetchVaccines = useCallback(async () => { }, []);
+    const fetchVaccines = useCallback(
+        withFeedback(
+            async () => {
+                const response = await fetch("/api/vacinas");
+
+                if (!response.ok) {
+                    throw Error("Ocorreu um erro ao carregar as vacinas.");
+                }
+
+                const data = await response.json();
+                setVaccines(data);
+            },
+            setLoading,
+            setFeedback,
+            {
+                success: "Vacinas carregadas com sucesso.",
+            },
+        ),
+        [],
+    );
 
     const createVaccine = useCallback(
-        async (params: CreateVaccineParams) => { },
+        withFeedback(
+            async (params: CreateVaccineParams): Promise<void> => {
+                const response = await fetch("/api/vacinas", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify(params),
+                });
+
+                if (!response.ok) {
+                    throw new Error("Ocorreu um erro ao criar vacina.");
+                }
+
+                fetchVaccines();
+            },
+            setLoading,
+            setFeedback,
+            { success: "Vacina criada com sucesso." },
+        ),
         [],
     );
 
     const updateVaccine = useCallback(
-        async (params: UpdateVaccineParams) => { },
+        withFeedback(
+            async ({ id, ...data }: UpdateVaccineParams) => {
+                const response = await fetch(`/api/vacinas/${id}`, {
+                    method: "PUT",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify(data),
+                });
+
+                if (!response.ok) {
+                    throw new Error("Ocorreu um erro ao atualizar vacina.");
+                }
+
+                fetchVaccines();
+            },
+            setLoading,
+            setFeedback,
+            {
+                success: "Vacina atualizada com sucesso.",
+            },
+        ),
         [],
     );
 
     const deleteVaccine = useCallback(
-        async (params: DeleteVaccineParams) => { },
+        withFeedback(
+            async (params: DeleteVaccineParams) => {
+                const response = await fetch(`/api/vacinas/${params.id}`, {
+                    method: "DELETE",
+                });
+
+                if (!response.ok) {
+                    throw new Error("Ocorreu um erro ao excluir vacina.");
+                }
+
+                fetchVaccines();
+            },
+            setLoading,
+            setFeedback,
+            {
+                success: "Vacina excluída com sucesso.",
+            },
+        ),
         [],
     );
 

@@ -1,8 +1,7 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import Link from "next/link";
-import { toast } from "react-toastify";
 import { Button } from "@/components/ui/button";
 import { Plus, Loader2, Edit, Trash2 } from "lucide-react";
 import { SearchFilters } from "@/components/search-filters";
@@ -96,13 +95,7 @@ function VaccinesList() {
 }
 
 export default function VaccinesPage() {
-    const { feedback } = useVaccinesContext();
     const [searchName, setSearchName] = useState<string>("");
-
-    useEffect(() => {
-        feedback.error && toast.error(feedback.message);
-        feedback.success && toast.success(feedback.message);
-    }, [feedback]);
 
     return (
         <div className="!bg-slate-100 min-h-screen">
