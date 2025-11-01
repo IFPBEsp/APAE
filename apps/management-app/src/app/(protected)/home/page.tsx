@@ -4,36 +4,55 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Plus } from "lucide-react";
-import { PatientCard } from "@/components/patient-card";
-import { Patient } from "@/schemas/authSchema";
+import { PatientCard } from "@/components/patient-card"; 
+import { PatientCardData } from "@/schemas/patientSchema";
 import { SearchFilters } from "@/components/search-filters";
 import { toast } from "react-toastify";
+import { useDebounce } from "@/hooks/use-debounce";
 
 export default function PatientsAndStudentsScreen() {
-  const [patients, setPatients] = useState<Patient[]>([]);
+  const [patients, setPatients] = useState<PatientCardData[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [activeFilter, setActiveFilter] = useState<string>("paciente");
-  const [activeStatus, setActiveStatus] = useState<string>("Todos");
+
   const [searchName, setSearchName] = useState<string>("");
+  const [tipoAtendimento, setTipoAtendimento] = useState<string>("");
+  const [transtorno, setTranstorno] = useState<string>("");
+  const [ano, setAno] = useState<string>("");
+  const [cidade, setCidade] = useState<string>("");
+  const debouncedSearchName = useDebounce(searchName, 500);
 
   useEffect(() => {
     const loadData = async () => {
+      setIsLoading(true);
       try {
-        const response = await fetch("/api/pessoas");
+        const params = new URLSearchParams();
+        if (debouncedSearchName) params.append("Nome", debouncedSearchName);
+        if (tipoAtendimento) params.append("tipo_atendimento", tipoAtendimento);
+        if (transtorno) params.append("transtorno", transtorno);
+        if (ano) params.append("ano", ano);
+        if (cidade) params.append("cidade", cidade);
+
+        const queryString = params.toString();
+        const response = await fetch(`/api/pessoas?${queryString}`); 
+        
         if (!response.ok) throw new Error("Erro ao buscar dados");
-        const data = await response.json();
+
+        const data: PatientCardData[] = await response.json();
         setPatients(data);
+        setError(null);
       } catch (err) {
         console.error("Erro ao buscar dados:", err);
-        setError("Não foi possível carregar os dados.");
-        toast.error(error);
+        const errorMsg = "Não foi possível carregar os dados.";
+        setError(errorMsg);
+        toast.error(errorMsg);
       } finally {
         setIsLoading(false);
       }
     };
+    
     loadData();
-  }, []);
+  }, [debouncedSearchName, tipoAtendimento, transtorno, ano, cidade]); 
 
   const renderContent = () => {
     if (isLoading) {
@@ -43,22 +62,8 @@ export default function PatientsAndStudentsScreen() {
       return <p className="text-center text-red-500">{error}</p>;
     }
 
-    const filteredPatients = patients.filter((patient) => {
-      const isCorrectType =
-        (activeFilter === "paciente" && patient.status === "Ativo") ||
-        (activeFilter === "aluno" && patient.status !== "Ativo");
 
-      const isCorrectStatus =
-        activeStatus === "Todos" || patient.status === activeStatus;
-
-      const matchesSearch =
-        searchName.trim() === "" ||
-        patient.nome?.toLowerCase().includes(searchName.toLowerCase());
-
-      return isCorrectType && isCorrectStatus && matchesSearch;
-    });
-
-    if (filteredPatients.length === 0) {
+    if (patients.length === 0) {
       return (
         <p className="text-center text-gray-500">
           Nenhum resultado encontrado.
@@ -68,7 +73,7 @@ export default function PatientsAndStudentsScreen() {
 
     return (
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-        {filteredPatients.map((patient) => (
+        {patients.map((patient) => (
           <PatientCard key={patient.id} patient={patient} />
         ))}
       </div>
@@ -82,10 +87,14 @@ export default function PatientsAndStudentsScreen() {
           <SearchFilters
             searchName={searchName}
             setSearchName={setSearchName}
-            activeFilter={activeFilter}
-            setActiveFilter={setActiveFilter}
-            activeStatus={activeStatus}
-            setActiveStatus={setActiveStatus}
+            tipoAtendimento={tipoAtendimento}
+            setTipoAtendimento={setTipoAtendimento}
+            transtorno={transtorno}
+            setTranstorno={setTranstorno}
+            ano={ano}
+            setAno={setAno}
+            cidade={cidade}
+            setCidade={setCidade}
           />
         </div>
 
