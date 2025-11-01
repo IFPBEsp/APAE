@@ -34,7 +34,7 @@ public class Appointment {
   @Column(name = "data_inicial", nullable = false)
   private LocalDate initialDate;
 
-  @Column(name = "data_final", nullable = false)
+  @Column(name = "data_final", nullable = true)
   private LocalDate endDate;
 
   @Column(name = "ativo")
@@ -46,7 +46,6 @@ public class Appointment {
 
   public Appointment() {
   }
-
 
   public Appointment(UUID professionalId, UUID serviceId, AnnualRegistry annualRegistration, Integer frequencyDays, LocalTime hour, LocalDate initialDate, LocalDate endDate) {
     this.professionalId = professionalId;

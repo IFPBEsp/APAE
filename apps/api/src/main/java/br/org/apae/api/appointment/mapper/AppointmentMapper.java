@@ -21,7 +21,7 @@ public class AppointmentMapper {
         dto.frequencyDays(),
         dto.hour(),
         dto.initialDate(),
-        dto.endDate()
+        null
     );
   }
 

@@ -56,7 +56,10 @@ public class AppointmentApplicationServiceImpl implements AppointmentApplication
 
     appointment.setAnnualRegistration(annualRegistry);
     appointmentRepo.save(appointment);
-    generateAppointments(annualRegistry.getId(), appointment.getInitialDate(), appointment.getEndDate());
+
+    int year = annualRegistry.getYear().getValue();;
+    LocalDate end = LocalDate.of(year, 12, 31);
+    generateAppointments(annualRegistry.getId(), appointment.getInitialDate(), end);
   }
 
   @Override
@@ -91,23 +94,6 @@ public class AppointmentApplicationServiceImpl implements AppointmentApplication
     Appointment appointment = appointmentRepo.findById(id)
             .orElseThrow(AppointmentNotFoundException::new);
     return mapper.toResponse(appointment);
-  }
-
-  @Override
-  public AppointmentResponseDTO update(UUID id, UpdateAppointmentDTO dto) {
-    Appointment appointment = appointmentRepo.findById(id)
-            .orElseThrow(AppointmentNotFoundException::new);
-
-    Appointment toUpdate = mapper.updateEntity(appointment, dto);
-
-    if (dto.annualRegistrationId() != null) {
-      AnnualRegistry annualRegistry = this.registryRepo.findById(dto.annualRegistrationId())
-          .orElseThrow(AnnualRegistrationNotFound::new);
-
-      appointment.setAnnualRegistration(annualRegistry);
-    }
-    Appointment updated = appointmentRepo.save(toUpdate);
-    return mapper.toResponse(updated);
   }
 
   @Override
@@ -197,15 +183,15 @@ public class AppointmentApplicationServiceImpl implements AppointmentApplication
    * <p>
    * This creates a historical trail of rule changes.
    *
-   * @param ruleId the ID of the active rule to update
+   * @param appointmentId the ID of the active rule to update
    * @param newFrequency optional new frequency in days (null to keep current)
    * @param newTime optional new appointment time (null to keep current)
    * @return the newly created active rule
    * @throws IllegalArgumentException if the rule is not found
    * @throws IllegalStateException if the rule is not active
    */
-  public AppointmentResponseDTO updateRule(UUID ruleId, Integer newFrequency, LocalTime newTime) {
-    Appointment current = appointmentRepo.findById(ruleId)
+    public AppointmentResponseDTO updateAppointment(UUID appointmentId, Integer newFrequency, LocalTime newTime) {
+    Appointment current = appointmentRepo.findById(appointmentId)
             .orElseThrow(() -> new IllegalArgumentException("Rule not found"));
 
     if (!current.isActive()) {
@@ -231,8 +217,11 @@ public class AppointmentApplicationServiceImpl implements AppointmentApplication
     );
     newRule = appointmentRepo.save(newRule);
 
+    int year = current.getAnnualRegistration().getYear().getValue();
+    LocalDate end = LocalDate.of(year, 12, 31);
+
     // Regenerate future appointments and clean up old ones
-    generateAppointments(current.getAnnualRegistration().getId(), editDate, editDate.plusYears(1));
+    generateAppointments(current.getAnnualRegistration().getId(), editDate, end);
     generatedRepo.deleteFutureByAppointmentId(current.getId(), editDate.atStartOfDay());
 
     return mapper.toResponse(newRule);

@@ -29,9 +29,5 @@ public record CreateAppointmentDTO(
 
     @NotNull(message = "A hora é obrigatória")
     @JsonFormat(pattern = "HH:mm:ss")
-    LocalTime hour,
-
-    @NotNull(message = "A data final é obrigatória")
-    @FutureOrPresent(message = "A data final não pode ser no passado")
-    LocalDate endDate
+    LocalTime hour
 ) {}
