@@ -36,37 +36,45 @@ interface PageProps {
 export default async function viewAppointment({ params }: PageProps) {
   const { id } = await params;
   const appointment: Appointment = await getAppointmentById(id);
-  const [ano, mes, dia] = separaETransformaEmNumero(
-    appointment.proximaConsulta,
+
+  // prox consulta -> data inicial
+  const [year, month, day] = separaETransformaEmNumero(
+    appointment.initialDate,
     "-"
   );
-  const [hora, minuto, segundo] = separaETransformaEmNumero(
-    appointment.horaProximaConsulta,
+  // hora da prox consulta -> hora do agendamento
+  const [hour, minute, second] = separaETransformaEmNumero(
+    appointment.hour,
     ":"
   );
   const dataHoraDate =
-    !isNaN(ano) &&
-    !isNaN(mes) &&
-    !isNaN(dia) &&
-    !isNaN(hora) &&
-    !isNaN(minuto) &&
-    !isNaN(segundo)
-      ? new Date(ano, mes, dia, hora, minuto, segundo)
+    !isNaN(year) &&
+    !isNaN(month) &&
+    !isNaN(day) &&
+    !isNaN(hour) &&
+    !isNaN(minute) &&
+    !isNaN(second)
+      ? new Date(year, month, day, hour, minute, second)
       : null;
 
   const getStatusStyle = (status: boolean | undefined, data: Date | null) => {
     if (!data) {
-      return { class: "bg-gray-400", text: "Data Inválida" };
+      return { class: "bg-gray-400", text: "Invalid date" };
     }
-    const dataAtual = new Date();
+
+// COMO É A LÓGICA DAS CONSULTAS???
+    const dataCurrent = new Date();
     if (status) {
-      return { class: "bg-[#0D4F97]", text: "Consulta Confirmada" };
-    } else if (data > dataAtual) {
-      return { class: "bg-[#f0bc1f]", text: "Consulta Pendente" };
+      return { class: "bg-[#0D4F97]", text: "Confirmed Consultation" };
+    } else if (data > dataCurrent) {
+      return { class: "bg-[#f0bc1f]", text: "Pending Consultation" };
     } else {
-      return { class: "bg-[#970D0D]", text: "Consulta Não Realizada" };
+      return { class: "bg-[#970D0D]", text: "Consultation Not Performed" };
     }
   };
+
+  // SERIA ATIVA(AGENDAMENTO) OU REALIZADA(AGENDAMENTO GERADO)???
+  
   const statusInfo = getStatusStyle(appointment.confirmado, dataHoraDate);
 
   return (
