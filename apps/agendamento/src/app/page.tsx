@@ -40,7 +40,7 @@ import {
 import { AppointmentForm } from "@/components/forms/AppointmentForm";
 import { InfoCard } from "@/components/shared/InfoCard";
 import Link from "next/link";
-import {Agendamento, getAgendamentos, toggleConfirmacao} from "./services/agendamentoService";
+import {Agendamento, getAgendamentos, toggleConfirmacao} from "./services/AppointmentService";
 import { Checkbox } from "@/components/ui/checkbox";
 
 export default function DashboardPage() {

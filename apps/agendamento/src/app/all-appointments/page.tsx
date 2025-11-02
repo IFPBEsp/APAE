@@ -39,10 +39,10 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import {
-  Agendamento,
-  getAgendamentos,
+  Appointment,
+  getAppointments,
   getAreasDaSaude,
-} from "../services/agendamentoService";
+} from "../services/AppointmentService";
 import { separaETransformaEmNumero } from "@/lib/utils";
 import Link from "next/link";
 import {
@@ -65,11 +65,11 @@ export default function AllApointments() {
   const [selectedArea, setSelectedArea] = useState("");
   const [searchName, setSearchName] = useState("");
   const [areas, setAreas] = useState<Area[]>([]);
-  const [appointments, setAppointments] = useState<Agendamento[]>([]);
+  const [appointments, setAppointments] = useState<Appointment[]>([]);
 
   useEffect(() => {
     const fetchAppointments = async () => {
-      const response = await getAgendamentos();
+      const response = await getAppointments();
       setAppointments(response);
       const areasExistentes: Area[] = (await getAreasDaSaude()).map(
         (area, index) => ({ id: index, name: area } as Area)

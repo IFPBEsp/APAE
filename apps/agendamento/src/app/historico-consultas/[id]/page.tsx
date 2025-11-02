@@ -8,9 +8,9 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import {
-  Agendamento,
-  getAgendamentoRealizadoById,
-} from "@/app/services/agendamentoService";
+  Appointment,
+  getAppointmentRealizadoById,
+} from "@/app/services/AppointmentService";
 import TrashButton from "@/components/buttons/trashButton";
 import { separaETransformaEmNumero } from "@/lib/utils";
 
@@ -22,7 +22,7 @@ interface PageProps {
 
 export default async function VisualizarAgendamento({ params }: PageProps) {
   const { id } = await params;
-  const agendamento: Agendamento = await getAgendamentoRealizadoById(id);
+  const agendamento: Appointment = await getAppointmentRealizadoById(id);
   console.log(agendamento.proximaConsulta, agendamento.horaProximaConsulta);
   const [ano, mes, dia] = separaETransformaEmNumero(
     agendamento.proximaConsulta,

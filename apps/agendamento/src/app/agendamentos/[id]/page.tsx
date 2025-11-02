@@ -21,7 +21,7 @@ import { Button } from "@/components/ui/button";
 import {
   getAgendamentoById,
   Agendamento,
-} from "@/app/services/agendamentoService";
+} from "@/app/services/AppointmentService";
 import { AppointmentForm } from "@/components/forms/AppointmentForm";
 import TrashButton from "@/components/buttons/trashButton";
 import ConfirmaRealizacaoButton from "@/components/buttons/ConfirmaRealizacaoButton";
