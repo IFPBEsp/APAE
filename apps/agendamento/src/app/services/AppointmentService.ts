@@ -669,45 +669,45 @@ export async function registerAbsence(
 //   }
 // }
 
-// export async function getProfissionaisDaSaude(): Promise<Professional[]> {
-//   try {
-//     const response = await fetch(
-//       `${API_BASE_URL}/profissionais?page=0&size=100`
-//     ).then((res) => res.json());
-//     let profissionaisRetornados: Professional[] = response.content || [];
-//     const existentes = new Set(
-//       profissionaisRetornados.map((p: Professional) => p.professionalDoc)
-//     );
+export async function getProfissionaisDaSaude(): Promise<Professional[]> {
+  try {
+    const response = await fetch(
+      `${API_BASE_URL}/profissionais?page=0&size=100`
+    ).then((res) => res.json());
+    let profissionaisRetornados: Professional[] = response.content || [];
+    const existentes = new Set(
+      profissionaisRetornados.map((p: Professional) => p.professionalDoc)
+    );
 
-//     for (const profissional of professionals) {
-//       if (!existentes.has(profissional.professionalDoc)) {
-//         const res = await fetch(`${API_BASE_URL}/profissionais`, {
-//           method: "POST",
-//           headers: { "Content-Type": "application/json" },
-//           body: JSON.stringify(profissional),
-//         });
+    for (const profissional of professionals) {
+      if (!existentes.has(profissional.professionalDoc)) {
+        const res = await fetch(`${API_BASE_URL}/profissionais`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(profissional),
+        });
 
-//         if (!res.ok) {
-//           continue;
-//         }
+        if (!res.ok) {
+          continue;
+        }
 
-//         const createdProfissional = await res.json();
-//         profissionaisRetornados.push(createdProfissional);
-//       }
-//     }
+        const createdProfissional = await res.json();
+        profissionaisRetornados.push(createdProfissional);
+      }
+    }
 
-//     return profissionaisRetornados.filter((profissional, index, self) => {
-//       return (
-//         self.findIndex(
-//           (p) => p.professionalDoc === profissional.professionalDoc
-//         ) === index
-//       );
-//     });
-//   } catch (error) {
-//     console.error("Error fetching professionals:", error);
-//     throw error;
-//   }
-// }
+    return profissionaisRetornados.filter((profissional, index, self) => {
+      return (
+        self.findIndex(
+          (p) => p.professionalDoc === profissional.professionalDoc
+        ) === index
+      );
+    });
+  } catch (error) {
+    console.error("Error fetching professionals:", error);
+    throw error;
+  }
+}
 
 // export async function getProfissionalDaSaude(
 //   id: string
@@ -724,19 +724,19 @@ export async function registerAbsence(
 //   }
 // }
 
-// export async function getAreasDaSaude(): Promise<string[]> {
-//   try {
-//     const profissionais = await getProfissionaisDaSaude();
-//     const areas = profissionais.map((p) => p.healthArea);
-//     const setList: string[] = [];
-//     new Set(areas).forEach((e) => setList.push(e as string));
+export async function getAreasDaSaude(): Promise<string[]> {
+  try {
+    const profissionais = await getProfissionaisDaSaude();
+    const areas = profissionais.map((p) => p.healthArea);
+    const setList: string[] = [];
+    new Set(areas).forEach((e) => setList.push(e as string));
 
-//     return setList;
-//   } catch (error) {
-//     console.log(error);
-//     throw error;
-//   }
-// }
+    return setList;
+  } catch (error) {
+    console.log(error);
+    throw error;
+  }
+}
 
 export const toggleConfirmacao = async (id: UUID) => {
   

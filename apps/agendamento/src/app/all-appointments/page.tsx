@@ -60,6 +60,10 @@ type Area = {
   name: string;
 };
 
+// PRECISA SER "REFEITO" DE ACORDO COM O FLUXO DE AGENDAMENTOS
+
+// AGENDAMENTO X AGENDAMENTO GERADO?
+
 export default function AllApointments() {
   const [selectedDate, setSelectedDate] = useState<Date | undefined>(undefined);
   const [selectedArea, setSelectedArea] = useState("");
@@ -67,10 +71,11 @@ export default function AllApointments() {
   const [areas, setAreas] = useState<Area[]>([]);
   const [appointments, setAppointments] = useState<Appointment[]>([]);
 
-  useEffect(() => {
+  useEffect(() =>{
     const fetchAppointments = async () => {
       const response = await getAppointments();
-      setAppointments(response);
+      setAppointments(response.content as Appointment[]);
+
       const areasExistentes: Area[] = (await getAreasDaSaude()).map(
         (area, index) => ({ id: index, name: area } as Area)
       );
@@ -80,17 +85,39 @@ export default function AllApointments() {
   }, []);
 
   const filteredAppointments = appointments.filter((appointment) => {
-    const matchesArea = selectedArea
-      ? appointment.profissional.areaDaSaude === selectedArea
-      : true;
-    const matchesPatientName = appointment.paciente.nome
-      .toLowerCase()
-      .includes(searchName.trim().toLowerCase());
-    const matchesProfessionalName = appointment.profissional.nome
-      .toLowerCase()
-      .includes(searchName.trim().toLowerCase());
+
+    // O agendamento não guarda mais a area do profissional
+
+    // const matchesArea = selectedArea
+    //   ? appointment.profissional.areaDaSaude === selectedArea
+    //   : true;
+
+    
+    const matchesProfessionalId = appointment.professionalId;
+    
+     const matchesFrequencyDays = appointment.frequencyDays;
+
+// O agendamento não guarda mais o id relacionado ao paciente
+//  nem o nome outras informações além do id do profissional
+
+    // const matchesPatientName = appointment.paciente.nome
+    //   .toLowerCase()
+    //   .includes(searchName.trim().toLowerCase());
+    // const matchesProfessionalName = appointment.profissional.nome
+    //   .toLowerCase()
+    //   .includes(searchName.trim().toLowerCase());
+
+
+// O agendamento não guarda mais a data da proxima consulta e sim
+//  a data de inicio, data de fim e data de criação.
+
+    // const dateAppointment = separaETransformaEmNumero(
+    //   appointment.proximaConsulta,
+    //   "-"
+    // );
+
     const dateAppointment = separaETransformaEmNumero(
-      appointment.proximaConsulta,
+      appointment.creationDate,
       "-"
     );
     const matchesDate = selectedDate
@@ -101,11 +128,19 @@ export default function AllApointments() {
         ).toDateString() === selectedDate.toDateString()
       : true;
     return (
-      matchesArea &&
-      (matchesPatientName || matchesProfessionalName) &&
-      matchesDate
-    );
+    //   matchesArea &&
+    //   (matchesPatientName || matchesProfessionalName) &&
+    //   matchesDate
+    // );
+      matchesProfessionalId &&
+      (matchesFrequencyDays) &&
+      matchesDate);
   });
+
+
+  // PRECISA EDITAR DE ACORDO COM A LÓGICA DE AGENDAMENTO
+
+  // EXPLICAÇÃO DE COMO SERÁ ESSE GERENCIAMENTO?
 
   const dataPassou = (data: string, horario: string) => {
     const [ano, mes, dia] = data.split("-");
@@ -115,7 +150,7 @@ export default function AllApointments() {
 
     return agora > emDate;
   }
-
+// APAGAR?
   const semJustificativa = appointments.filter(
     (appointment) => dataPassou(appointment.proximaConsulta, appointment.horaProximaConsulta) && !appointment.justificativa
   );
