@@ -28,4 +28,8 @@ public interface PatientApplicationService {
     void disablePatient(UUID id);
 
     void deletePatient(UUID id);
+
+    List<String> findAllPatientCities();
+
+//    List<String> findAllTiposAtendimento();
 }

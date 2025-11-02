@@ -50,8 +50,8 @@ public interface PatientController {
                 @Parameter(description = "Filtrar por nome parcial do paciente")
                 @RequestParam(name = "Nome", required = false) String nome,
 
-                @Parameter(description = "Filtrar por tipo de atendimento (ex: paciente, aluno)")
-                @RequestParam(name = "tipo_atendimento", required = false) String tipoAtendimento,
+//                @Parameter(description = "Filtrar por tipo de atendimento (ex: paciente, aluno)")
+//                @RequestParam(name = "tipo_atendimento", required = false) String tipoAtendimento,
 
                 @Parameter(description = "Filtrar por transtorno")
                 @RequestParam(name = "transtorno", required = false) String transtorno,
@@ -80,4 +80,20 @@ public interface PatientController {
         })
         @PatchMapping("/{id}")
         ResponseEntity<Void> deletePatient(@PathVariable UUID id);
+//
+//        @Operation(summary = "Lista os tipos de atendimento para o filtro")
+//        @GetMapping("/filtros/tipos-atendimento")
+//        ResponseEntity<List<String>> getTiposAtendimento();
+
+        @Operation(summary = "Lista os transtornos para o filtro")
+        @GetMapping("/filtros/transtornos")
+        ResponseEntity<List<String>> getTranstornos();
+
+        @Operation(summary = "Lista os anos para o filtro")
+        @GetMapping("/filtros/anos")
+        ResponseEntity<List<String>> getAnos();
+
+        @Operation(summary = "Lista as cidades para o filtro")
+        @GetMapping("/filtros/cidades")
+        ResponseEntity<List<String>> getCidades();
 }

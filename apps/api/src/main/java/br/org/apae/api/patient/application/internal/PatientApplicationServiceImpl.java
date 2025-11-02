@@ -155,4 +155,10 @@ public class PatientApplicationServiceImpl implements PatientApplicationService 
 
         patientRepository.save(patient);
     }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<String> findAllPatientCities() {
+        return patientRepository.findDistinctCities();
+    }
 }
