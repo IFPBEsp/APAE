@@ -1,14 +1,16 @@
 package br.org.apae.api.controllers.patient;
 
-import br.org.apae.api.common.dto.patient.create.CreateDocumentsDTO;
-import br.org.apae.api.common.dto.patient.create.CreatePatientDTO;
-import br.org.apae.api.common.dto.patient.response.PatientResponseDTO;
-import br.org.apae.api.common.dto.patient.update.UpdatePatientDTO;
+import br.org.apae.api.common.dto.patient.request.documents.CreateDocumentsDTO;
+import br.org.apae.api.common.dto.patient.request.patient.CreatePatientDTO;
+import br.org.apae.api.common.dto.patient.request.patient.UpdatePatientDTO;
+import br.org.apae.api.common.dto.patient.response.patient.PatientResponseDTO;
+import br.org.apae.api.common.dto.patient.response.patient.PatientSummaryResponseDTO;
 import br.org.apae.api.patient.application.interfaces.PatientApplicationService;
 import br.org.apae.api.patient.interfaces.controllers.PatientController;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -26,26 +28,26 @@ public class PatientControllerImpl implements PatientController {
     }
 
     @Override
-    public ResponseEntity<Void> createPatient(CreatePatientDTO patient, CreateDocumentsDTO documents) {
-        patientService.createPatient(patient, documents);
-        return ResponseEntity.status(201).build();
+    public ResponseEntity<PatientResponseDTO> createPatient(CreatePatientDTO patient, CreateDocumentsDTO documents) {
+        PatientResponseDTO patientCreated = patientService.createPatient(patient, documents);
+        return ResponseEntity.status(HttpStatus.CREATED).body(patientCreated);
     }
 
     @Override
     public ResponseEntity<PatientResponseDTO> findById(UUID id) {
-        PatientResponseDTO patient = patientService.findById(id);
+        PatientResponseDTO patient = patientService.findPatientById(id);
         return ResponseEntity.ok(patient);
     }
 
     @Override
-    public ResponseEntity<Page<PatientResponseDTO>> findAll(Pageable pageable) {
-        Page<PatientResponseDTO> patientsPage = patientService.findAll(pageable);
+    public ResponseEntity<Page<PatientSummaryResponseDTO>> findAll(Pageable pageable) {
+        Page<PatientSummaryResponseDTO> patientsPage = patientService.findAllPatients(pageable);
         return ResponseEntity.ok(patientsPage);
     }
 
     @Override
-    public ResponseEntity<List<PatientResponseDTO>> findByFilter(Map<String, String> filters) {
-        List<PatientResponseDTO> patients = patientService.findByFilter(filters);
+    public ResponseEntity<List<PatientSummaryResponseDTO>> findByFilter(Map<String, String> filters) {
+        List<PatientSummaryResponseDTO> patients = patientService.findPatientByFilter(filters);
         return ResponseEntity.ok(patients);
     }
 
