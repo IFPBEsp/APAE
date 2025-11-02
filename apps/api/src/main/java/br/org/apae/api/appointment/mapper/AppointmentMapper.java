@@ -8,16 +8,18 @@ import br.org.apae.api.common.dto.appointment.response.appointment.AppointmentRe
 
 
 import br.org.apae.api.common.dto.appointment.response.appointment.GeneratedAppointmentResponseDTO;
+import br.org.apae.api.patient.domain.model.AnnualRegistry;
+import br.org.apae.api.professional.domain.model.HealthProfessional;
 import org.springframework.stereotype.Component;
 
 @Component
 public class AppointmentMapper {
 
-  public Appointment toEntity(CreateAppointmentDTO dto) {
+  public Appointment toEntity(CreateAppointmentDTO dto, HealthProfessional professional, AnnualRegistry annualRegistry) {
     return new Appointment(
-        dto.professionalId(),
+        professional,
         dto.serviceId(),
-        null,
+        annualRegistry,
         dto.frequencyDays(),
         dto.hour(),
         dto.initialDate(),
@@ -25,12 +27,16 @@ public class AppointmentMapper {
     );
   }
 
-  public Appointment updateEntity(Appointment appointment, UpdateAppointmentDTO dto) {
-    appointment.setProfessionalId(
-        dto.professionalId() != null ? dto.professionalId() : appointment.getProfessionalId()
+  public Appointment updateEntity(Appointment appointment, UpdateAppointmentDTO dto, HealthProfessional professional, AnnualRegistry annualRegistry) {
+    appointment.setProfessional(
+        dto.professionalId() != null ? professional : appointment.getProfessional()
     );
     appointment.setServiceId(
         dto.serviceId() != null ? dto.serviceId() : appointment.getServiceId()
+    );
+
+    appointment.setAnnualRegistration(
+        dto.annualRegistrationId() != null ? annualRegistry : appointment.getAnnualRegistration()
     );
 
     appointment.setHour(
@@ -65,9 +71,9 @@ public class AppointmentMapper {
   public AppointmentResponseDTO toResponse(Appointment appointment) {
     return new AppointmentResponseDTO(
         appointment.getId(),
-        appointment.getProfessionalId(),
+        appointment.getProfessional().getId(),
         appointment.getServiceId(),
-        appointment.getAnnualRegistration(),
+        appointment.getAnnualRegistration().getId(),
         appointment.getFrequencyDays(),
         appointment.getInitialDate(),
         appointment.getEndDate(),
