@@ -202,10 +202,10 @@ export default function DashboardPage() {
                       <Badge
                         variant="outline"
                         className={`text-xs ${
-                          item.confirmado ? "text-green-400" : "text-red-400"
+                          item.isActive ? "text-green-400" : "text-red-400"
                         } sm:text-sm`}
                       >
-                        {item.confirmado ? "Sim" : "Não"}
+                        {item.isActive ? "Sim" : "Não"}
                       </Badge>
                     </TableCell>
                     <TableCell className="px-3 py-2 text-xs sm:px-4 sm:py-3 sm:text-sm">
@@ -221,7 +221,7 @@ export default function DashboardPage() {
                     </TableCell>
                     <TableCell className="px-3 py-2 text-xs sm:px-4 sm:py-3 sm:text-sm">
                       <Checkbox
-                          checked={item.confirmado}
+                          checked={item.isActive}
                           onCheckedChange={() => confirmarAgendamento(item.id)}
                       />
                     </TableCell>

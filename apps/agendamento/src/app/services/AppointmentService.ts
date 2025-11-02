@@ -592,7 +592,7 @@ export async function listByPatient(patientId: UUID, start: string,
       query.append("end", end);
     }
 
-    const response = await fetch(`${API_BASE_URL}/patient?${query}`);
+    const response = await fetch(`${API_BASE_URL}/patient?${patientId}`);
     if (!response.ok) {
       throw new Error("Error searching for appointments");
     }

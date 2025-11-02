@@ -200,7 +200,7 @@ export default function AllApointments() {
             title="Não confirmados"
             icon={CalendarX}
             value={
-              appointments.filter((appointment) => !appointment.confirmado)
+              appointments.filter((appointment) => !appointment.isActive)
                 .length
             }
             subtitle="Consultas que não foram confirmadas"

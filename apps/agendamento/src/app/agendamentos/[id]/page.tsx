@@ -19,8 +19,8 @@ import { Pencil } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 import {
-  getAgendamentoById,
-  Agendamento,
+  getAppointmentById,
+  Appointment,
 } from "@/app/services/AppointmentService";
 import { AppointmentForm } from "@/components/forms/AppointmentForm";
 import TrashButton from "@/components/buttons/trashButton";
@@ -33,15 +33,15 @@ interface PageProps {
   };
 }
 
-export default async function VisualizarAgendamento({ params }: PageProps) {
+export default async function viewAppointment({ params }: PageProps) {
   const { id } = await params;
-  const agendamento: Agendamento = await getAgendamentoById(id);
+  const appointment: Appointment = await getAppointmentById(id);
   const [ano, mes, dia] = separaETransformaEmNumero(
-    agendamento.proximaConsulta,
+    appointment.proximaConsulta,
     "-"
   );
   const [hora, minuto, segundo] = separaETransformaEmNumero(
-    agendamento.horaProximaConsulta,
+    appointment.horaProximaConsulta,
     ":"
   );
   const dataHoraDate =
@@ -67,7 +67,7 @@ export default async function VisualizarAgendamento({ params }: PageProps) {
       return { class: "bg-[#970D0D]", text: "Consulta Não Realizada" };
     }
   };
-  const statusInfo = getStatusStyle(agendamento.confirmado, dataHoraDate);
+  const statusInfo = getStatusStyle(appointment.confirmado, dataHoraDate);
 
   return (
     <div className="mt-20 w-full mr-17 ml-10">
@@ -80,12 +80,12 @@ export default async function VisualizarAgendamento({ params }: PageProps) {
                 alt="avatar"
               />
               <AvatarFallback>
-                {agendamento.paciente.nome.charAt(0) || "?"}
+                {appointment.paciente.nome.charAt(0) || "?"}
               </AvatarFallback>
             </Avatar>
           </div>
           <h1 className="ml-10 text-[#0D4F97] text-xl md:text-2xl font-bold mr-5">
-            {agendamento.paciente.nome}
+            {appointment.paciente.nome}
           </h1>
         </div>
         <Badge
@@ -96,6 +96,7 @@ export default async function VisualizarAgendamento({ params }: PageProps) {
       </header>
 
       <main className="mt-7 mb-15">
+
         {/* Card Agendamento */}
         <Card className="text-[#0D4F97] mb-7">
           <CardHeader>
@@ -116,7 +117,7 @@ export default async function VisualizarAgendamento({ params }: PageProps) {
                       Edite os detalhes abaixo para agendar uma consulta.
                     </DialogDescription>
                   </DialogHeader>
-                  <AppointmentForm agendamentoAEditar={agendamento} />
+                  <AppointmentForm agendamentoAEditar={appointment} />
                 </DialogContent>
               </Dialog>
               <TrashButton id={id} realizado={false} />
@@ -136,8 +137,8 @@ export default async function VisualizarAgendamento({ params }: PageProps) {
               <div className="flex">
                 <p className="font-medium mr-2">Período: </p>
                 <p>
-                  {agendamento.frequenciaDias !== undefined
-                    ? `${agendamento.frequenciaDias} dias`
+                  {appointment.frequencyDays !== undefined
+                    ? `${appointment.frequencyDays} dias`
                     : "—"}
                 </p>
               </div>
@@ -155,22 +156,22 @@ export default async function VisualizarAgendamento({ params }: PageProps) {
             </div>
             <div className="flex mb-2">
               <p className="font-medium mr-2">Área de atendimento: </p>
-              <p>{agendamento.profissional.areaDaSaude || "—"}</p>
+              <p>{appointment.profissional.areaDaSaude || "—"}</p>
             </div>
             <div className="flex mb-2">
               <p className="font-medium mr-2">Confirmada: </p>
-              <p>{agendamento.confirmado ? "Sim" : "Não"}</p>
+              <p>{appointment.isActive ? "Sim" : "Não"}</p>
             </div>
             <div className="mb-2">
               <p className="font-medium mb-1">Descrição: </p>
               <p className="break-words whitespace-pre-wrap">
-                {agendamento.descricao || "—"}
+                {appointment.descricao || "—"}
               </p>
             </div>
             <div className="mb-3">
               <p className="font-medium mb-1">Justificativa: </p>
               <p className="break-words whitespace-pre-wrap">
-                {agendamento.justificativa || "—"}
+                {appointment.justificativa || "—"}
               </p>
             </div>
           </CardContent>
@@ -186,15 +187,15 @@ export default async function VisualizarAgendamento({ params }: PageProps) {
           <CardContent>
             <div className="flex mb-2">
               <p className="font-medium mr-2">Nome: </p>
-              <p>{agendamento.profissional.nome || "—"}</p>
+              <p>{appointment.profissional.nome || "—"}</p>
             </div>
             <div className="flex mb-2">
               <p className="font-medium mr-2">Email: </p>
-              <p>{agendamento.profissional.email || "—"}</p>
+              <p>{appointment.profissional.email || "—"}</p>
             </div>
             <div className="flex mb-3">
               <p className="font-medium mr-2">Telefone: </p>
-              <p>{agendamento.profissional.telefone || "—"}</p>
+              <p>{appointment.profissional.telefone || "—"}</p>
             </div>
           </CardContent>
         </Card>
@@ -209,13 +210,13 @@ export default async function VisualizarAgendamento({ params }: PageProps) {
           <CardContent>
             <div className="flex mb-2">
               <p className="font-medium mr-2">Contato: </p>
-              <p>{agendamento.paciente.telefone || "—"}</p>
+              <p>{appointment.paciente.telefone || "—"}</p>
             </div>
             <div className="flex mb-2">
               <p className="font-medium mr-2">Data de Nascimento: </p>
               <p>
                 {separaETransformaEmNumero(
-                  agendamento.paciente.dateNascimento,
+                  appointment.paciente.dateNascimento,
                   "-"
                 )
                   .map((n, i) => (i == 0 ? n : n.toString().padStart(2, "0")))
@@ -224,7 +225,7 @@ export default async function VisualizarAgendamento({ params }: PageProps) {
               </p>
               <p>
                 {separaETransformaEmNumero(
-                  agendamento.paciente.dateNascimento,
+                  appointment.paciente.dateNascimento,
                   "-"
                 )
                   .map((n, i) => (i == 0 ? n : n.toString().padStart(2, "0")))
@@ -234,11 +235,11 @@ export default async function VisualizarAgendamento({ params }: PageProps) {
             </div>
             <div className="flex mb-3">
               <p className="font-medium mr-2">CPF: </p>
-              <p>{agendamento.paciente.cpf || "—"}</p>
+              <p>{appointment.paciente.cpf || "—"}</p>
             </div>
             <div className="flex mb-3">
               <p className="font-medium mr-2">RG: </p>
-              <p>{agendamento.paciente.rg || "—"}</p>
+              <p>{appointment.paciente.rg || "—"}</p>
             </div>
 
             <CardTitle className="font-bold text-center text-lg md:text-xl">
@@ -247,23 +248,23 @@ export default async function VisualizarAgendamento({ params }: PageProps) {
 
             <div className="flex mb-3">
               <p className="font-medium mr-2">Endereço: </p>
-              <p>{agendamento.paciente.endereco || "—"}</p>
+              <p>{appointment.paciente.endereco || "—"}</p>
             </div>
             <div className="flex mb-3">
               <p className="font-medium mr-2">Bairro: </p>
-              <p>{agendamento.paciente.bairro || "—"}</p>
+              <p>{appointment.paciente.bairro || "—"}</p>
             </div>
             <div className="flex mb-3">
               <p className="font-medium mr-2">Cidade: </p>
-              <p>{agendamento.paciente.cidade || "—"}</p>
+              <p>{appointment.paciente.cidade || "—"}</p>
             </div>
             <div className="flex mb-3">
               <p className="font-medium mr-2">Estado: </p>
-              <p>{agendamento.paciente.estado || "—"}</p>
+              <p>{appointment.paciente.estado || "—"}</p>
             </div>
             <div className="flex mb-3">
               <p className="font-medium mr-2">CEP: </p>
-              <p>{agendamento.paciente.cep || "—"}</p>
+              <p>{appointment.paciente.cep || "—"}</p>
             </div>
           </CardContent>
         </Card>
