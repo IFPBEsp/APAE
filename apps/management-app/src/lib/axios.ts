@@ -68,3 +68,30 @@ export const createBaseApi = async () => {
 
   return makeInterceptors(api);
 };
+
+export const fetchTipoAtendimentoOptions = async (): Promise<string[]> => {
+  const api = await createBaseApi(); 
+  const response = await api.get('/filtros/tipos-atendimento');
+  return response.data;
+};
+
+
+export const fetchTranstornoOptions = async (): Promise<string[]> => {
+  const api = await createBaseApi();
+  const response = await api.get('/filtros/transtornos');
+  return response.data;
+};
+
+
+export const fetchAnoOptions = async (): Promise<string[]> => {
+  const api = await createBaseApi();
+  const response = await api.get('/filtros/anos');
+  return response.data;
+};
+
+
+export const fetchCidadeOptions = async (): Promise<string[]> => {
+  const api = await createBaseApi();
+  const response = await api.get('/filtros/cidades');
+  return response.data;
+};

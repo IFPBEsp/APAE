@@ -4,33 +4,57 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Plus } from "lucide-react";
-import { PatientCard } from "@/components/patient-card"; 
-import { PatientCardData } from "@/schemas/patientSchema";
+import { PatientCard } from "@/components/patient-card";
+import { PatientCardData } from "@/schemas/patientSchema"; 
 import { SearchFilters } from "@/components/search-filters";
 import { toast } from "react-toastify";
 import { useDebounce } from "@/hooks/use-debounce"; 
+
+import { 
+  createBaseApi, 
+  fetchTipoAtendimentoOptions, 
+  fetchTranstornoOptions, 
+  fetchAnoOptions, 
+  fetchCidadeOptions 
+} from '@/lib/axios';
 
 export default function PatientsAndStudentsScreen() {
   const [patients, setPatients] = useState<PatientCardData[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+
   const [searchName, setSearchName] = useState<string>("");
   const [tipoAtendimento, setTipoAtendimento] = useState<string>(""); 
   const [transtorno, setTranstorno] = useState<string>("");
   const [ano, setAno] = useState<string>("");
   const [cidade, setCidade] = useState<string>("");
+  
   const debouncedSearchName = useDebounce(searchName, 500);
+
   const [tipoAtendimentoOptions, setTipoAtendimentoOptions] = useState<string[]>([]);
   const [transtornoOptions, setTranstornoOptions] = useState<string[]>([]);
   const [anoOptions, setAnoOptions] = useState<string[]>([]);
   const [cidadeOptions, setCidadeOptions] = useState<string[]>([]);
+
   useEffect(() => {
     const fetchFilterOptions = async () => {
       try {
-        setTipoAtendimentoOptions(["Paciente", "Aluno"]); 
-        setTranstornoOptions(["TEA", "TDAH", "Síndrome de Down"]);
-        setAnoOptions(["2025", "2024", "2023", "2022"]);
-        setCidadeOptions(["Campina Grande", "João Pessoa", "Recife", "Patos"]);
+        const [
+          tiposData, 
+          transtornosData, 
+          anosData, 
+          cidadesData
+        ] = await Promise.all([
+          fetchTipoAtendimentoOptions(),
+          fetchTranstornoOptions(),
+          fetchAnoOptions(),
+          fetchCidadeOptions()
+        ]);
+        
+        setTipoAtendimentoOptions(tiposData);
+        setTranstornoOptions(transtornosData);
+        setAnoOptions(anosData);
+        setCidadeOptions(cidadesData);
 
       } catch (err) {
         console.error("Erro ao buscar opções de filtro:", err);
@@ -45,23 +69,20 @@ export default function PatientsAndStudentsScreen() {
     const loadData = async () => {
       setIsLoading(true); 
       try {
-        const params = new URLSearchParams();
-        if (debouncedSearchName) params.append("Nome", debouncedSearchName);
+        const params = {
+          Nome: debouncedSearchName || undefined,
+          tipo_atendimento: tipoAtendimento || undefined,
+          transtorno: transtorno || undefined,
+          ano: ano || undefined,
+          cidade: cidade || undefined,
+        };
 
-        if (tipoAtendimento) params.append("tipo_atendimento", tipoAtendimento); 
-
-        if (transtorno) params.append("transtorno", transtorno);
-
-        if (ano) params.append("ano", ano);
-
-        if (cidade) params.append("cidade", cidade);
-
-        const queryString = params.toString();
-        const response = await fetch(`/api/pessoas?${queryString}`); 
-      
-        if (!response.ok) throw new Error("Erro ao buscar dados");
-
-        const data: PatientCardData[] = await response.json();
+        const api = await createBaseApi();
+        
+        const response = await api.get('/patients', { params }); 
+        
+        const data: PatientCardData[] = response.data; 
+        
         setPatients(data);
         setError(null); 
       } catch (err) {
@@ -75,8 +96,8 @@ export default function PatientsAndStudentsScreen() {
     };
     
     loadData();
-  }, [debouncedSearchName, tipoAtendimento, transtorno, ano, cidade]); 
-  
+  }, [debouncedSearchName, tipoAtendimento, transtorno, ano, cidade]);
+
   const renderContent = () => {
     if (isLoading) {
       return <p className="text-center text-gray-500">Carregando...</p>;
