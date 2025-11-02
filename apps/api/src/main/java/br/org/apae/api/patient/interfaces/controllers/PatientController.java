@@ -33,7 +33,7 @@ public interface PatientController {
         })
         @PostMapping(consumes = { MediaType.MULTIPART_FORM_DATA_VALUE })
         ResponseEntity<PatientResponseDTO> createPatient(@RequestPart("patient") @Valid CreatePatientDTO patient,
-                        @RequestPart("documents") @Valid CreateDocumentsDTO documents);
+                        @ModelAttribute @Valid CreateDocumentsDTO documents);
 
         @Operation(summary = "Buscar paciente por ID", description = "Retorna os dados completos de um paciente específico pelo seu ID.")
         @ApiResponses(value = {
