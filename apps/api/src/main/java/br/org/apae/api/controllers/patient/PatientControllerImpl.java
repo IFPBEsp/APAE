@@ -8,12 +8,11 @@ import br.org.apae.api.common.dto.patient.response.patient.PatientSummaryRespons
 import br.org.apae.api.patient.application.interfaces.PatientApplicationService;
 import br.org.apae.api.patient.interfaces.controllers.PatientController;
 
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -40,13 +39,15 @@ public class PatientControllerImpl implements PatientController {
     }
 
     @Override
-    public ResponseEntity<Page<PatientSummaryResponseDTO>> findAll(Pageable pageable) {
-        Page<PatientSummaryResponseDTO> patientsPage = patientService.findAllPatients(pageable);
-        return ResponseEntity.ok(patientsPage);
-    }
+    public ResponseEntity<List<PatientSummaryResponseDTO>> findWithFilters(
+            String nome, String tipoAtendimento, String transtorno, String ano, String cidade) {
+        Map<String, String> filters = new HashMap<>();
+        if (nome != null) filters.put("Nome", nome);
+        if (tipoAtendimento != null) filters.put("tipo_atendimento", tipoAtendimento);
+        if (transtorno != null) filters.put("transtorno", transtorno);
+        if (ano != null) filters.put("ano", ano);
+        if (cidade != null) filters.put("cidade", cidade);
 
-    @Override
-    public ResponseEntity<List<PatientSummaryResponseDTO>> findByFilter(Map<String, String> filters) {
         List<PatientSummaryResponseDTO> patients = patientService.findPatientByFilter(filters);
         return ResponseEntity.ok(patients);
     }
