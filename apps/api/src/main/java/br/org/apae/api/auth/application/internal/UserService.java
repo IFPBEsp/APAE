@@ -16,14 +16,14 @@ public class UserService {
     this.userRepository = userRepository;
   }
 
-  public void createUser(String username, String password) {
+  public void createUser(String username, String password, String cpf, String fullName) {
     boolean exists = userRepository.existsByUsername(username);
 
     if (exists) {
       throw new UserConflictException();
     }
 
-    User user = new User(username, password, UserRole.ADMIN);
+    User user = new User(username, password, cpf, fullName, UserRole.ADMIN);
     userRepository.save(user);
   }
 
