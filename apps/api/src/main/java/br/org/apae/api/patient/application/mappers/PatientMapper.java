@@ -1,101 +1,117 @@
 package br.org.apae.api.patient.application.mappers;
 
-import br.org.apae.api.common.mappers.AddressMapper;
-import br.org.apae.api.common.dto.patient.create.CreatePatientDTO;
-import br.org.apae.api.common.dto.patient.response.PatientResponseDTO;
-import br.org.apae.api.common.dto.patient.update.UpdatePatientDTO;
-import br.org.apae.api.common.model.Address;
-import br.org.apae.api.patient.domain.model.Guardian;
-import br.org.apae.api.patient.domain.model.Parent;
+import br.org.apae.api.address.application.mapper.AddressMapper;
+import br.org.apae.api.address.domain.model.Address;
+import br.org.apae.api.common.dto.address.AddressResponseDTO;
+import br.org.apae.api.common.dto.patient.request.patient.CreatePatientDTO;
+import br.org.apae.api.common.dto.patient.request.patient.UpdatePatientDTO;
+import br.org.apae.api.common.dto.patient.response.guardian.GuardianResponseDTO;
+import br.org.apae.api.common.dto.patient.response.parent.ParentResponseDTO;
+import br.org.apae.api.common.dto.patient.response.patient.PatientResponseDTO;
+import br.org.apae.api.common.dto.patient.response.patient.PatientSummaryResponseDTO;
+import br.org.apae.api.common.dto.patient.response.vaccine.VaccineResponseDTO;
 import br.org.apae.api.patient.domain.model.Patient;
+import br.org.apae.api.patient.domain.model.Vaccine;
+import br.org.apae.api.patient.domain.model.patient.BirthRecord;
+import br.org.apae.api.patient.domain.model.patient.Identification;
+import br.org.apae.api.patient.domain.model.patient.PersonalInfo;
+
+import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
+
 import org.springframework.stereotype.Component;
 
 @Component
 public class PatientMapper {
 
-    private final ParentMapper parentMapper;
-    private final GuardianMapper guardianMapper;
-    private final AddressMapper addressMapper;
+        private final AddressMapper addressMapper;
+        private final VaccineMapper vaccineMapper;
 
-    public PatientMapper(ParentMapper parentMapper, GuardianMapper guardianMapper, AddressMapper addressMapper) {
-        this.parentMapper = parentMapper;
-        this.guardianMapper = guardianMapper;
-        this.addressMapper = addressMapper;
-    }
-
-    public Patient toEntity(CreatePatientDTO dto) {
-        if (dto == null) {
-            return null;
+        public PatientMapper(AddressMapper addressMapper,
+                        VaccineMapper vaccineMapper) {
+                this.addressMapper = addressMapper;
+                this.vaccineMapper = vaccineMapper;
         }
 
-        Address address = addressMapper.toEntity(dto.address());
-        Guardian guardian = guardianMapper.toEntity(dto.guardian());
-        Patient patient = new Patient(dto.fullName(), dto.birthDate(), dto.registrationDate(), address, guardian);
-        patient.setBirthplace(dto.nationality());
-        patient.setContact(dto.contact());
-        patient.setBirthCertificateNumber(dto.birthCertificateNumber());
-        patient.setRegistryOffice(dto.registryOffice());
-        patient.setFls(dto.fls());
-        patient.setBook(dto.book());
-        patient.setRg(dto.rg());
-        patient.setIssueDate(dto.issueDate());
-        patient.setIssuingAgency(dto.issuingAgency());
-        patient.setCpf(dto.cpf());
-        patient.setCns(dto.cns());
-        patient.setNis(dto.nis());
-        patient.setAllergies(dto.allergies());
-        patient.setStudent(dto.isStudent());
+        public Patient toEntity(CreatePatientDTO dto, AddressResponseDTO addressDto,
+                        Set<VaccineResponseDTO> vaccineDtos) {
 
-        if (dto.parents() != null) {
-            dto.parents().forEach(parentDTO -> {
-                Parent parent = parentMapper.toEntity(parentDTO, patient);
-                patient.addParent(parent);
-            });
-        }
-        return patient;
-    }
+                Address address = addressMapper.toEntityFromResponse(addressDto);
+                Set<Vaccine> vaccines = vaccineMapper.toEntitySetFromResponse(vaccineDtos);
 
-    public void updateEntityFromDto(Patient patient, UpdatePatientDTO dto) {
-        if (dto == null || patient == null) {
-            return;
-        }
+                PersonalInfo personalInfo = new PersonalInfo(
+                                dto.fullName(),
+                                dto.nationality(),
+                                dto.birthDate(),
+                                dto.contact(),
+                                dto.allergies(),
+                                dto.isStudent());
 
-        patient.setFullName(dto.fullName());
-        patient.setBirthplace(dto.nationality());
-        patient.setBirthDate(dto.birthDate());
-        patient.setContact(dto.contact());
-        patient.setBirthCertificateNumber(dto.birthCertificateNumber());
-        patient.setRegistryOffice(dto.registryOffice());
-        patient.setFls(dto.fls());
-        patient.setBook(dto.book());
-        patient.setRg(dto.rg());
-        patient.setIssueDate(dto.issueDate());
-        patient.setIssuingAgency(dto.issuingAgency());
-        patient.setCpf(dto.cpf());
-        patient.setCns(dto.cns());
-        patient.setNis(dto.nis());
-        patient.setRegistrationDate(dto.registrationDate());
-        patient.setAllergies(dto.allergies());
-        patient.setStudent(dto.isStudent());
+                BirthRecord birthRecord = new BirthRecord(
+                                dto.birthCertificateNumber(),
+                                dto.registryOffice(),
+                                dto.fls(),
+                                dto.book(),
+                                dto.registrationDate());
 
-        if (patient.getAddress() != null && dto.address() != null) {
-            addressMapper.updateEntityFromDto(patient.getAddress(), dto.address());
+                Identification identification = new Identification(
+                                dto.rg(),
+                                dto.cpf(),
+                                dto.cns(),
+                                dto.nis(),
+                                dto.issueDate(),
+                                dto.issuingAgency());
+
+                return new Patient(personalInfo, birthRecord, identification, address, vaccines);
         }
 
-        if (patient.getGuardian() != null && dto.guardian() != null) {
-            guardianMapper.updateEntityFromDto(patient.getGuardian(), dto.guardian());
+        public Patient updateEntityFromDto(Patient patient, UpdatePatientDTO dto, AddressResponseDTO addressDto,
+                        Set<VaccineResponseDTO> vaccinesDto) {
+
+                Address address = addressMapper.toEntityFromResponse(addressDto);
+                Set<Vaccine> vaccines = vaccineMapper.toEntitySetFromResponse(vaccinesDto);
+
+                PersonalInfo personalInfo = new PersonalInfo(
+                                dto.fullName(),
+                                dto.nationality(),
+                                dto.birthDate(),
+                                dto.contact(),
+                                dto.allergies(),
+                                dto.isStudent());
+
+                BirthRecord birthRecord = new BirthRecord(
+                                dto.birthCertificateNumber(),
+                                dto.registryOffice(),
+                                dto.fls(),
+                                dto.book(),
+                                dto.registrationDate());
+
+                Identification identification = new Identification(
+                                dto.rg(),
+                                dto.cpf(),
+                                dto.cns(),
+                                dto.nis(),
+                                dto.issueDate(),
+                                dto.issuingAgency());
+
+                return new Patient(patient.getId(), personalInfo, birthRecord, identification, address, vaccines);
         }
 
-        patient.clearParents();
-        if (dto.parents() != null) {
-            dto.parents().forEach(parentDTO -> {
-                Parent parent = parentMapper.toEntity(parentDTO, patient);
-                patient.addParent(parent);
-            });
-        }
-    }
+        public PatientSummaryResponseDTO toSummaryResponseDTO(Patient patient) {
+                AddressResponseDTO addressResponseDTO = new AddressResponseDTO(patient.getAddress());
 
-    public PatientResponseDTO toResponseDTO(Patient patient) {
-        return new PatientResponseDTO(patient);
-    }
+                return new PatientSummaryResponseDTO(patient, addressResponseDTO);
+        }
+
+        public PatientResponseDTO toResponseDTO(Patient patient, GuardianResponseDTO guardianResponseDTO,
+                        List<ParentResponseDTO> parentResponseDTOs) {
+                AddressResponseDTO addressResponseDTO = new AddressResponseDTO(patient.getAddress());
+                Set<VaccineResponseDTO> vaccineResponseDTOs = patient.getVaccines().stream()
+                                .map(VaccineResponseDTO::new)
+                                .collect(Collectors.toSet());
+
+                return new PatientResponseDTO(patient, addressResponseDTO, guardianResponseDTO, parentResponseDTOs,
+                                vaccineResponseDTOs);
+        }
 }

@@ -1,10 +1,10 @@
 package br.org.apae.api.professional.application.mappers;
 
 import br.org.apae.api.common.dto.professional.response.HealthProfessionalResponseDTO;
-import br.org.apae.api.common.mappers.AddressMapper;
+import br.org.apae.api.address.application.mapper.AddressMapper;
+import br.org.apae.api.address.domain.model.Address;
 import br.org.apae.api.common.dto.professional.request.CreateHealthProfessionalDTO;
 import br.org.apae.api.common.dto.professional.request.UpdateHealthProfessionalDTO;
-import br.org.apae.api.common.model.Address;
 import br.org.apae.api.professional.domain.model.HealthProfessional;
 import org.springframework.stereotype.Component;
 
@@ -27,8 +27,7 @@ public class HealthProfessionalMapper {
                 dto.email(),
                 dto.healthSector(),
                 dto.phoneNumber(),
-                dto.professionalDocument()
-        );
+                dto.professionalDocument());
 
         professional.setIdentityDocument(dto.identityDocument());
 

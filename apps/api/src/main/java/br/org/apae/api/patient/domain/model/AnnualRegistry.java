@@ -2,7 +2,6 @@ package br.org.apae.api.patient.domain.model;
 
 import jakarta.persistence.*;
 import java.math.BigDecimal;
-import java.time.Year;
 import java.util.*;
 
 @Entity
@@ -13,45 +12,47 @@ public class AnnualRegistry {
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
-    @Column(name = "bpc")
+    @Column(name = "bpc", nullable = false)
     private String bpc; // Benefício de Prestação Continuada
 
-    @Column(name = "doencas")
+    @Column(name = "doencas", nullable = false)
     private String diseases;
 
-    @Column(name = "renda_familiar")
+    @Column(name = "renda_familiar", nullable = false)
     private BigDecimal familyIncome;
 
     @Column(name = "ano", nullable = false)
-    private Year year;
+    private Integer year;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "paciente_id", nullable = false)
-    private Patient patient;
+    @Column(name = "paciente_id", nullable = false)
+    private UUID patientId;
 
     @ManyToMany(fetch = FetchType.LAZY)
-    @JoinTable(
-            name = "cadastro_anual_transtorno",
-            joinColumns = @JoinColumn(name = "cadastro_anual_id"),
-            inverseJoinColumns = @JoinColumn(name = "transtorno_id")
-    )
+    @JoinTable(name = "cadastro_anual_transtorno", joinColumns = @JoinColumn(name = "cadastro_anual_id"), inverseJoinColumns = @JoinColumn(name = "transtorno_id"))
     private Set<Disorder> disorders = new HashSet<>();
 
-    @Deprecated
-    protected AnnualRegistry() {}
+    protected AnnualRegistry() {
+    }
 
-    public AnnualRegistry(String bpc, String diseases, BigDecimal familyIncome, Year year, Patient patient) {
-        if (year == null) {
-            throw new IllegalArgumentException("O ano do cadastro não pode ser nulo.");
-        }
-        if (patient == null) {
-            throw new IllegalArgumentException("O paciente associado ao cadastro não pode ser nulo.");
-        }
+    public AnnualRegistry(String bpc, String diseases, BigDecimal familyIncome, int year, UUID patientId,
+            Set<Disorder> disorders) {
         this.bpc = bpc;
         this.diseases = diseases;
         this.familyIncome = familyIncome;
         this.year = year;
-        this.patient = patient;
+        this.patientId = patientId;
+        this.disorders = disorders;
+    }
+
+    public AnnualRegistry(UUID id, String bpc, String diseases, BigDecimal familyIncome, int year, UUID patientId,
+            Set<Disorder> disorders) {
+        this.id = id;
+        this.bpc = bpc;
+        this.diseases = diseases;
+        this.familyIncome = familyIncome;
+        this.year = year;
+        this.patientId = patientId;
+        this.disorders = disorders;
     }
 
     public UUID getId() {
@@ -70,44 +71,24 @@ public class AnnualRegistry {
         return familyIncome;
     }
 
-    public Year getYear() {
+    public int getYear() {
         return year;
     }
 
-    public Patient getPatient() {
-        return patient;
+    public UUID getPatientId() {
+        return patientId;
     }
 
     public Set<Disorder> getDisorders() {
         return Collections.unmodifiableSet(disorders);
     }
 
-    public void updateDetails(String bpc, String diseases, BigDecimal familyIncome, Year year) {
-        this.bpc = bpc;
-        this.diseases = diseases;
-        this.familyIncome = familyIncome;
-        if (year != null) {
-            this.year = year;
-        }
-    }
-
-    public void addDisorder(Disorder disorder) {
-        this.disorders.add(disorder);
-    }
-
-    public void removeDisorder(Disorder disorder) {
-        this.disorders.remove(disorder);
-    }
-
-    public void clearDisorders() {
-        this.disorders.clear();
-    }
-
-
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o)
+            return true;
+        if (o == null || getClass() != o.getClass())
+            return false;
         AnnualRegistry that = (AnnualRegistry) o;
         return Objects.equals(id, that.id);
     }

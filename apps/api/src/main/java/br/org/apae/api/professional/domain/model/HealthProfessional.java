@@ -1,9 +1,10 @@
 package br.org.apae.api.professional.domain.model;
 
-import br.org.apae.api.common.model.Address;
 import jakarta.persistence.*;
 import java.util.Objects;
 import java.util.UUID;
+
+import br.org.apae.api.address.domain.model.Address;
 
 @Entity
 @Table(name = "profissionais_da_saude")
@@ -35,7 +36,6 @@ public class HealthProfessional {
     @JoinColumn(name = "endereco_id", referencedColumnName = "id")
     private Address address;
 
-    @Deprecated
     protected HealthProfessional() {
     }
 
