@@ -1,16 +1,17 @@
+import { Page } from "@/types/pagination";
 
 type UUID = string;
 
 const API_BASE_URL = process.env.API_BASE_URL || "http://localhost:8093";
 
-export interface AnualRegistry{
+export interface AnnualRegistry{
   id: UUID;
   bpc: string;
   diseases: string;
   familyIncome: number;
   year: string;
-  patient?: Patient;
-  disorders?: Disorder;
+  patient: Patient;
+  disorders: Disorder;
   endDate: string;
   professional: Professional;
 
@@ -20,7 +21,7 @@ export interface Appointment {
   id: UUID;
   professionalId: UUID;
   serviceId: UUID;
-  anualRegitration?: AnualRegistry;
+  annualRegistration: AnnualRegistry;
   frequencyDays: number;
   hour: string;
   initialDate: string;
@@ -33,17 +34,17 @@ export interface Appointment {
 export interface CreateAppointmentDTO{
   professionalId: UUID;
   serviceId: UUID;
-  annualRegistration: UUID;
+  annualRegistrationId: UUID;
   frequencyDays: number;
   initialDate: string;
   hour: string;
 }
 
-export interface AppointmentResponseCreateDTO {
+export interface AppointmentResponseDTO {
   id: UUID;
   professionalId: UUID;
   serviceId: UUID;
-  anualRegitration?: AnualRegistry;
+  annualRegistration?: AnnualRegistry;
   frequencyDays: number;
   hour: string;
   initialDate: string;
@@ -148,15 +149,29 @@ export interface Vaccine{
   id: UUID;
   name: string;
 }
+
+export interface UpdateAppointmentRuleDTO {
+  newFrequency: number;
+  newTime: string;
+}
+
+export interface RescheduleGeneratedAppointmentDTO {
+  newDateTime: string;
+}
+
+export interface CancelGeneratedAppointmentDTO {
+  reason: string;
+}
+
 export interface Professional {
   id?: string;
-  healthArea: string; // Corrigido: "areaDaSaude" -> "healthArea"
-  phone: string; // Corrigido: "telefone" -> "phone"
-  professionalDoc: string; // Corrigido: "docProfissional" -> "professionalDoc"
+  healthArea: string;
+  phone: string; 
+  professionalDoc: string; 
   email: string;
-  name: string; // Corrigido: "nome" -> "name"
+  name: string; 
   rg: string;
-  address: Address; // Corrigido: "endereco" -> "address"
+  address: Address; 
 }
 
 export interface Disorder{
@@ -275,7 +290,7 @@ const patients: Patient[] = [
 
 const professionals: Professional[] = [
  {
-    healthArea: "Speech Therapy", // Corrigido para inglês
+    healthArea: "Medicina", 
     phone: "(11) 98765-4321",
     professionalDoc: "CRFa 12345",
     email: "ana.fonou@email.com",
@@ -294,28 +309,29 @@ const professionals: Professional[] = [
   },
 ];
 
+// creat() do back
 export async function saveAppointment(
-  newAppointment: CreateAppointmentDTO,
-  id?: string
-): Promise<Appointment> {
+  dto: CreateAppointmentDTO): Promise<void> {
   try {
-    // Precisa mandar todos os atributos ao criar/reagendar
+    // Precisa mandar todos os atributos ao criar/reagendar?
+
     // if (!id) {
     //   delete newAppointment.justificativa;
     // }
 
-    const res = await fetch(
-      `${API_BASE_URL}/agendamentos${id ? `/${id}` : ""}`,
-      {
-        method: id ? "PUT" : "POST",
+    const res = await fetch(`${API_BASE_URL}/appointments`, {
+        method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify(newAppointment),
+        body: JSON.stringify(dto),
       }
     );
-    const data = await res.json();
-    return data as Appointment;
+
+    if (!res.ok) {
+      throw new Error("Error creating appointment");
+    }
+
   } catch (error) {
     console.log(error);
     throw error;
@@ -371,219 +387,380 @@ export async function saveAppointment(
 //   }
 // }
 
-export async function getAppointments(
-  data?: string,
-  hora?: string
-): Promise<Appointment[]> {
+
+// getAll() do back
+
+
+export async function getAppointments(date?: string, time?: string,
+   page: number = 0, size: number = 20
+): Promise<Page<AppointmentResponseDTO>> {
   try {
-    if (data) {
-      let [ano, mes, dia] = data?.split("-").map(Number);
-      data = `${ano}-${(mes-1).toString().padStart(2, "0")}-${dia.toString().padStart(2, "0")}`;
+    const query = new URLSearchParams({ page: `${page}`, size: `${size}` });
+    if (date) {
+      query.append("date", date);
+      // let [year, month, day] = date?.split("-").map(Number);
+      // date = `${year}-${(month-1).toString().padStart(2, "0")}-${day.toString().padStart(2, "0")}`;
+    }
+    if (time) {
+      query.append("time", time);
     }
 
-    const response = await fetch(
-      `${API_BASE_URL}/agendamentos${data ? `?data=${data}` : ""}${
-        hora ? `&hora=${hora}` : ""
-      }`
-    ).then((res) => res.json());
-
-    console.log(response);
-
-    const appointments: Appointment[] = [];
-    for (let appointment of response.content) {
-      const paciente = await fetch(
-        `${API_BASE_URL}/pacientes/${appointment.idPaciente}`
-      ).then((res) => res.json());
-      const profissional = await fetch(
-        `${API_BASE_URL}/profissionais/${appointment.idProfissional}`
-      ).then((res) => res.json());
-
-      appointments.push({ ...appointment, paciente, profissional });
+    const response = await fetch(`${API_BASE_URL}/appointments?${query}`);
+    if (!response.ok) {
+      throw new Error("Error searching for appointments");
     }
+    return await response.json();
 
-    return appointments;
+    // console.log(response);
+
+    // const appointments: Appointment[] = [];
+    // for (let appointment of response.content) {
+    //   const paciente = await fetch(
+    //     `${API_BASE_URL}/pacientes/${appointment.idPaciente}`
+    //   ).then((res) => res.json());
+    //   const profissional = await fetch(
+    //     `${API_BASE_URL}/profissionais/${appointment.idProfissional}`
+    //   ).then((res) => res.json());
+
+    //   appointments.push({ ...appointment, paciente, profissional });
+    // }
+
+    // return appointments;
   } catch (error) {
     console.log(error);
     throw error;
   }
 }
 
-export async function getAppointmentById(id: string): Promise<Appointment> {
-  try {
-    const appointment = await fetch(`${API_BASE_URL}/agendamentos/${id}`).then(
-      (res) => res.json()
-    );
-    const paciente = await fetch(
-      `${API_BASE_URL}/pacientes/${appointment.idPaciente}`
-    ).then((res) => res.json());
-    const profissional = await fetch(
-      `${API_BASE_URL}/profissionais/${appointment.idProfissional}`
-    ).then((res) => res.json());
 
-    return { ...appointment, paciente, profissional };
-  } catch (error) {
-    console.log(error);
-    throw error;
-  }
-}
-
-export async function getAppointmentRealizadoById(
-  id: string
-) {
-  // : Promise<Appointment>
+// get() no back
+export async function getAppointmentById(id: UUID): Promise<AppointmentResponseDTO> {
   try {
-    // const agendamentoRealizado: HistoricoConsultaResponseDTO = await fetch(
-    //   `${API_BASE_URL}/historico-consultas/${id}`
+    const appointment = await fetch(`${API_BASE_URL}/appointments/${id}`);
+    if (!appointment.ok) {
+      throw new Error("Error fetching appointment");
+    }
+
+    return await appointment.json();
+
+    // const paciente = await fetch(
+    //   `${API_BASE_URL}/patients/${appointment.}`
     // ).then((res) => res.json());
-    // const appointment: Appointment = await getAppointmentById(
-    //   agendamentoRealizado.idAgendamento
-    // );
-    // appointment.proximaConsulta = agendamentoRealizado.dataConsulta;
-    // appointment.horaProximaConsulta = agendamentoRealizado.horaConsulta;
-    // return appointment;
+    // const profissional = await fetch(
+    //   `${API_BASE_URL}/profissionais/${appointment.idProfissional}`
+    // ).then((res) => res.json());
+
+    // return { ...appointment, paciente, profissional };
+
   } catch (error) {
     console.log(error);
     throw error;
   }
 }
 
-export async function deleteAppointment(
-  id: string,
-  realizado: boolean
-): Promise<void> {
+export async function updateAppointmentRule(id: UUID, dto: UpdateAppointmentRuleDTO): Promise<AppointmentResponseDTO> {
   try {
-    await fetch(
-      `${API_BASE_URL}/${
-        realizado ? "historico-consultas" : "agendamentos"
-      }/${id}`,
-      {
+    const response = await fetch(`${API_BASE_URL}/appointments/${id}/rule`, {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" 
+      },
+      body: JSON.stringify(dto),
+    });
+
+    if (!response.ok) {
+      throw new Error("Error updating appointment rule");
+    }
+
+    return await response.json();
+
+  } catch(error) {
+    console.log(error);
+    throw error;
+  }
+}
+
+// export async function getAppointmentRealizadoById(
+//   id: string
+// ) {
+//   // : Promise<Appointment>
+//   try {
+//     // const agendamentoRealizado: HistoricoConsultaResponseDTO = await fetch(
+//     //   `${API_BASE_URL}/historico-consultas/${id}`
+//     // ).then((res) => res.json());
+//     // const appointment: Appointment = await getAppointmentById(
+//     //   agendamentoRealizado.idAgendamento
+//     // );
+//     // appointment.proximaConsulta = agendamentoRealizado.dataConsulta;
+//     // appointment.horaProximaConsulta = agendamentoRealizado.horaConsulta;
+//     // return appointment;
+//   } catch (error) {
+//     console.log(error);
+//     throw error;
+//   }
+// }
+
+// delete() no back
+
+
+export async function deleteAppointment(id: UUID): Promise<void> {
+  try {
+    const response = await fetch(`${API_BASE_URL}/appointments/${id}`,{
         method: "DELETE",
       }
     );
-  } catch (error) {
-    console.log(error);
-    throw error;
-  }
-}
 
-export async function getPacientes(): Promise<Patient[]> {
-  try {
-    const response = await fetch(
-      `${API_BASE_URL}/pacientes?page=0&size=100`
-    ).then((res) => res.json());
-    let pacientesRetornados: Patient[] = response.content;
-    const existentes = new Set(pacientesRetornados.map((p: Patient) => p.cpf));
-
-    if (
-      !pacientesRetornados.length ||
-      !patients.some((p) => !existentes.has(p.cpf))
-    ) {
-      for (const paciente of patients) {
-        if (!existentes.has(paciente.cpf)) {
-          const pacienteCriado = await fetch(
-            `${API_BASE_URL}/pacientes/create`,
-            {
-              method: "POST",
-              headers: { "Content-Type": "application/json" },
-              body: JSON.stringify(paciente),
-            }
-          ).then((res) => res.json());
-
-          pacientesRetornados.push(pacienteCriado);
-        }
-      }
+    if (!response.ok) {
+      throw new Error("Error deleting appointment")
     }
 
-    return pacientesRetornados.filter((paciente, index, self) => {
-      return self.findIndex((p) => p.cpf === paciente.cpf) === index;
-    });
   } catch (error) {
     console.log(error);
     throw error;
   }
 }
 
-export async function getProfissionaisDaSaude(): Promise<Professional[]> {
+export async function rescheduleGeneratedAppointment(id: UUID, dto: RescheduleGeneratedAppointmentDTO): Promise<GeneratedAppointmentResponseDTO>{
   try {
-    const response = await fetch(
-      `${API_BASE_URL}/profissionais?page=0&size=100`
-    ).then((res) => res.json());
-    let profissionaisRetornados: Professional[] = response.content || [];
-    const existentes = new Set(
-      profissionaisRetornados.map((p: Professional) => p.professionalDoc)
-    );
-
-    for (const profissional of professionals) {
-      if (!existentes.has(profissional.professionalDoc)) {
-        const res = await fetch(`${API_BASE_URL}/profissionais`, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(profissional),
-        });
-
-        if (!res.ok) {
-          continue;
-        }
-
-        const createdProfissional = await res.json();
-        profissionaisRetornados.push(createdProfissional);
-      }
+    const response = await fetch(`${API_BASE_URL}/generated/${id}/reschedule`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(dto),
+    });
+    
+    if (!response.ok) {
+      throw new Error("Error rescheduling appointment")
     }
 
-    return profissionaisRetornados.filter((profissional, index, self) => {
-      return (
-        self.findIndex(
-          (p) => p.professionalDoc === profissional.professionalDoc
-        ) === index
-      );
+    return await response.json();
+
+  } catch(error){
+    console.log(error);
+    throw error;
+  }
+
+}
+
+export async function markAsPerformed(id: UUID): 
+  Promise<GeneratedAppointmentResponseDTO>{
+
+    try {
+      const response = await fetch(`${API_BASE_URL}/generated/${id}/performed`, {
+      method: "PUT",
     });
-  } catch (error) {
-    console.error("Error fetching professionals:", error);
-    throw error;
-  }
+
+    if (!response.ok){
+      throw new Error(`Error marking appointment as performed`);
+    }
+    
+    return await response.json();
+    } catch (error) {
+      console.error(error);
+      throw error;
+    }
+
 }
 
-export async function getProfissionalDaSaude(
-  id: string
-): Promise<Professional> {
-  try {
-    const profissional = await fetch(
-      `${API_BASE_URL}/profissionais/${id}`
-    ).then((res) => res.json());
+export async function cancelGeneratedAppointment(id: UUID, dto: CancelGeneratedAppointmentDTO): Promise<GeneratedAppointmentResponseDTO>{
 
-    return profissional;
+   try {
+    const response = await fetch(`${API_BASE_URL}/generated/${id}/cancel`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(dto),
+    });
+
+    if (!response.ok) throw new Error(`Error cancelling appointment`);
+    return await response.json();
   } catch (error) {
-    console.error(`Error fetching professional with ID ${id}:`, error);
+    console.error(error);
     throw error;
   }
+
 }
 
-export async function getAreasDaSaude(): Promise<string[]> {
-  try {
-    const profissionais = await getProfissionaisDaSaude();
-    const areas = profissionais.map((p) => p.healthArea);
-    const setList: string[] = [];
-    new Set(areas).forEach((e) => setList.push(e as string));
 
-    return setList;
+export async function listByPatient(patientId: UUID, start: string, 
+  end: string, page: 0, size: 20): 
+  Promise<Page<GeneratedAppointmentResponseDTO>>{
+
+    try {
+    const query = new URLSearchParams({ page: `${page}`, size: `${size}` });
+    if (start) {
+      query.append("start", start);
+    }
+    if (end) {
+      query.append("end", end);
+    }
+
+    const response = await fetch(`${API_BASE_URL}/patient?${query}`);
+    if (!response.ok) {
+      throw new Error("Error searching for appointments");
+    }
+    return await response.json();
+
   } catch (error) {
     console.log(error);
     throw error;
   }
+  }
+
+
+export async function registerAbsence(
+  generatedAppointmentId: UUID,
+  justification: string
+): Promise<Absence> {
+  try {
+    const body = {
+      generatedAppointmentId,
+      justification,
+      date: new Date().toISOString(),
+      notified: false,
+    };
+
+    const res = await fetch(`${API_BASE_URL}/absences`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(body),
+    });
+
+    if (!res.ok) throw new Error(`Error registering absence`);
+
+    return await res.json();
+  } catch (error) {
+    console.error(error);
+    throw error;
+  }
 }
 
-export const toggleConfirmacao = async (id: string) => {
-  const appointment = await getAppointmentById(id);
+// export async function getPacientes(): Promise<Patient[]> {
+//   try {
+//     const response = await fetch(
+//       `${API_BASE_URL}/pacientes?page=0&size=100`
+//     ).then((res) => res.json());
+//     let pacientesRetornados: Patient[] = response.content;
+//     const existentes = new Set(pacientesRetornados.map((p: Patient) => p.cpf));
 
-  if (!appointment.professionalId) return;
+//     if (
+//       !pacientesRetornados.length ||
+//       !patients.some((p) => !existentes.has(p.cpf))
+//     ) {
+//       for (const paciente of patients) {
+//         if (!existentes.has(paciente.cpf)) {
+//           const pacienteCriado = await fetch(
+//             `${API_BASE_URL}/pacientes/create`,
+//             {
+//               method: "POST",
+//               headers: { "Content-Type": "application/json" },
+//               body: JSON.stringify(paciente),
+//             }
+//           ).then((res) => res.json());
 
-  const { professionalId, ...dto } = {
-    ...appointment,
-    // idPaciente: appointment.paciente.id,
-    idProfissional: appointment.professionalId,
-  };
+//           pacientesRetornados.push(pacienteCriado);
+//         }
+//       }
+//     }
 
-  // dto. = !dto.confirmado;
+//     return pacientesRetornados.filter((paciente, index, self) => {
+//       return self.findIndex((p) => p.cpf === paciente.cpf) === index;
+//     });
+//   } catch (error) {
+//     console.log(error);
+//     throw error;
+//   }
+// }
 
-  // await saveAppointment(dto, id);
+// export async function getProfissionaisDaSaude(): Promise<Professional[]> {
+//   try {
+//     const response = await fetch(
+//       `${API_BASE_URL}/profissionais?page=0&size=100`
+//     ).then((res) => res.json());
+//     let profissionaisRetornados: Professional[] = response.content || [];
+//     const existentes = new Set(
+//       profissionaisRetornados.map((p: Professional) => p.professionalDoc)
+//     );
+
+//     for (const profissional of professionals) {
+//       if (!existentes.has(profissional.professionalDoc)) {
+//         const res = await fetch(`${API_BASE_URL}/profissionais`, {
+//           method: "POST",
+//           headers: { "Content-Type": "application/json" },
+//           body: JSON.stringify(profissional),
+//         });
+
+//         if (!res.ok) {
+//           continue;
+//         }
+
+//         const createdProfissional = await res.json();
+//         profissionaisRetornados.push(createdProfissional);
+//       }
+//     }
+
+//     return profissionaisRetornados.filter((profissional, index, self) => {
+//       return (
+//         self.findIndex(
+//           (p) => p.professionalDoc === profissional.professionalDoc
+//         ) === index
+//       );
+//     });
+//   } catch (error) {
+//     console.error("Error fetching professionals:", error);
+//     throw error;
+//   }
+// }
+
+// export async function getProfissionalDaSaude(
+//   id: string
+// ): Promise<Professional> {
+//   try {
+//     const profissional = await fetch(
+//       `${API_BASE_URL}/profissionais/${id}`
+//     ).then((res) => res.json());
+
+//     return profissional;
+//   } catch (error) {
+//     console.error(`Error fetching professional with ID ${id}:`, error);
+//     throw error;
+//   }
+// }
+
+// export async function getAreasDaSaude(): Promise<string[]> {
+//   try {
+//     const profissionais = await getProfissionaisDaSaude();
+//     const areas = profissionais.map((p) => p.healthArea);
+//     const setList: string[] = [];
+//     new Set(areas).forEach((e) => setList.push(e as string));
+
+//     return setList;
+//   } catch (error) {
+//     console.log(error);
+//     throw error;
+//   }
+// }
+
+export const toggleConfirmacao = async (id: UUID) => {
+  
+  try {
+    const appointment = await getAppointmentById(id);
+
+    if (!appointment.professionalId) return;
+    
+    // Prepara o DTO para envio
+    const dto: CreateAppointmentDTO = {
+      professionalId: appointment.professionalId,
+      serviceId: appointment.serviceId,
+      annualRegistrationId: appointment.annualRegistration?.id || "",
+      frequencyDays: appointment.frequencyDays,
+      initialDate: appointment.initialDate,
+      hour: appointment.hour,
+    };
+  
+
+    await saveAppointment(dto);
+    console.log("Query updated successfully:", dto);
+
+  } catch (error) {
+    console.error(error);
+    throw error;
+  }
 };

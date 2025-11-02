@@ -40,19 +40,20 @@ import {
 import { AppointmentForm } from "@/components/forms/AppointmentForm";
 import { InfoCard } from "@/components/shared/InfoCard";
 import Link from "next/link";
-import {Agendamento, getAgendamentos, toggleConfirmacao} from "./services/AppointmentService";
+import {Appointment, AppointmentResponseDTO, getAppointments, toggleConfirmacao} from "./services/AppointmentService";
 import { Checkbox } from "@/components/ui/checkbox";
+import { Page } from "@/types/pagination";
 
 export default function DashboardPage() {
   const [selectedDate, setSelectedDate] = useState<Date>(new Date());
-  const [appointments, setAppointments] = useState<Agendamento[]>([]);
-  const [allAppointments, setAllAppointments] = useState<Agendamento[]>([]);
+  const [appointments, setAppointments] = useState<Appointment[]>([]);
+  const [allAppointments, setAllAppointments] = useState<Appointment[]>([]);
 
   const fetchAppointments = async () => {
-    const todayAppointments = await getAgendamentos(
+    const todayAppointments: Page<AppointmentResponseDTO> = await getAppointments(
         format(selectedDate, "yyyy-MM-dd")
     );
-    const allExistingAppointments = await getAgendamentos();
+    const allExistingAppointments = await getAppointments();
     setAppointments(todayAppointments);
     setAllAppointments(allExistingAppointments);
   };
@@ -61,7 +62,7 @@ export default function DashboardPage() {
     fetchAppointments();
   }, [selectedDate]);
 
-  const confirmarAgendamento = async (id: string) => {
+  const confirmarAppointment = async (id: string) => {
     await toggleConfirmacao(id);
     fetchAppointments();
   };
@@ -127,10 +128,10 @@ export default function DashboardPage() {
             icon={Users}
             value={appointments.length}
             subtitle={`${
-              appointments.filter((appointment) => appointment.confirmado)
+              appointments.filter((appointment) => appointment.isActive)
                 .length
             } confirmados, ${
-              appointments.filter((appointment) => !appointment.confirmado)
+              appointments.filter((appointment) => !appointment.isActive)
                 .length
             } pendentes`}
             titleClassName="text-[#0D4F97]"
@@ -149,8 +150,7 @@ export default function DashboardPage() {
             value={
               appointments.filter(
                 (appointment) =>
-                  !appointment.confirmado && !appointment.justificativa
-              ).length
+                  !appointment.isActive).length
             }
             iconColor="text-red-400"
             subtitle="Pacientes que não justificaram suas faltas"
@@ -161,7 +161,7 @@ export default function DashboardPage() {
             title="Não confirmados"
             icon={CalendarX}
             value={
-              appointments.filter((appointment) => !appointment.confirmado)
+              appointments.filter((appointment) => !appointment.isActive)
                 .length
             }
             subtitle="Consultas que não foram confirmadas"
