@@ -42,7 +42,9 @@ public class AnnualRegistryApplicationServiceImpl implements AnnualRegistryAppli
 
     annualRegistryRepository
         .findByPatientIdAndYear(patientId, createAnnualRegistryDTO.year())
-        .orElseThrow(() -> new AnnualRegistryConflictException(createAnnualRegistryDTO.year()));
+        .ifPresent(registry -> {
+          throw new AnnualRegistryConflictException(createAnnualRegistryDTO.year());
+        });
 
     Set<DisorderResponseDTO> disorderDtos = disorderService
         .findDisorders(createAnnualRegistryDTO.disorders());
