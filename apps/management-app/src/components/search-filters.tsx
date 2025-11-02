@@ -33,15 +33,15 @@ interface SearchFiltersProps {
 export function SearchFilters({
   searchName,
   setSearchName,
-  tipoAtendimento,
-  setTipoAtendimento,
+  // tipoAtendimento,
+  // setTipoAtendimento,
   transtorno,
   setTranstorno,
   ano,
   setAno,
   cidade,
   setCidade,
-  tipoAtendimentoOptions = [], 
+  // tipoAtendimentoOptions = [], 
   transtornoOptions = [], 
   anoOptions = [],
   cidadeOptions = [],
@@ -66,7 +66,7 @@ export function SearchFilters({
         />
       </div>
 
-      <DropdownMenu>
+      {/* <DropdownMenu>
         <DropdownMenuTrigger asChild>
           <Button
             className={cn(dropdownTriggerStyle, "w-[120px]")}
@@ -94,7 +94,7 @@ export function SearchFilters({
             </DropdownMenuItem>
           ))}
         </DropdownMenuContent>
-      </DropdownMenu>
+      </DropdownMenu> */}
 
       <DropdownMenu>
         <DropdownMenuTrigger asChild>

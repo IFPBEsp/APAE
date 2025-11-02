@@ -63,35 +63,35 @@ export const createDocumentsAPI = async () => {
 
 export const createBaseApi = async () => {
   const api = createAxiosInstance(
-    process.env.NEXT_PUBLIC_API || "http://localhost:8090"
+    process.env.NEXT_PUBLIC_API || "http://localhost:8090/api"
   );
 
   return makeInterceptors(api);
 };
 
-export const fetchTipoAtendimentoOptions = async (): Promise<string[]> => {
-  const api = await createBaseApi(); 
-  const response = await api.get('/filtros/tipos-atendimento');
-  return response.data;
-};
+// export const fetchTipoAtendimentoOptions = async (): Promise<string[]> => {
+//   const api = await createBaseApi(); 
+//   const response = await api.get('/filtros/tipos-atendimento');
+//   return response.data;
+// };
 
 
 export const fetchTranstornoOptions = async (): Promise<string[]> => {
   const api = await createBaseApi();
-  const response = await api.get('/filtros/transtornos');
+  const response = await api.get('/patients/filtros/transtornos');
   return response.data;
 };
 
 
 export const fetchAnoOptions = async (): Promise<string[]> => {
   const api = await createBaseApi();
-  const response = await api.get('/filtros/anos');
+  const response = await api.get('/patients/filtros/anos');
   return response.data;
 };
 
 
 export const fetchCidadeOptions = async (): Promise<string[]> => {
   const api = await createBaseApi();
-  const response = await api.get('/filtros/cidades');
+  const response = await api.get('/patients/filtros/cidades');
   return response.data;
 };

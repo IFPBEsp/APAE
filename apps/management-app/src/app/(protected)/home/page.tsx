@@ -12,7 +12,7 @@ import { useDebounce } from "@/hooks/use-debounce";
 
 import { 
   createBaseApi, 
-  fetchTipoAtendimentoOptions, 
+  // fetchTipoAtendimentoOptions, 
   fetchTranstornoOptions, 
   fetchAnoOptions, 
   fetchCidadeOptions 
@@ -24,14 +24,14 @@ export default function PatientsAndStudentsScreen() {
   const [error, setError] = useState<string | null>(null);
 
   const [searchName, setSearchName] = useState<string>("");
-  const [tipoAtendimento, setTipoAtendimento] = useState<string>(""); 
+  // const [tipoAtendimento, setTipoAtendimento] = useState<string>(""); 
   const [transtorno, setTranstorno] = useState<string>("");
   const [ano, setAno] = useState<string>("");
   const [cidade, setCidade] = useState<string>("");
   
   const debouncedSearchName = useDebounce(searchName, 500);
 
-  const [tipoAtendimentoOptions, setTipoAtendimentoOptions] = useState<string[]>([]);
+  // const [tipoAtendimentoOptions, setTipoAtendimentoOptions] = useState<string[]>([]);
   const [transtornoOptions, setTranstornoOptions] = useState<string[]>([]);
   const [anoOptions, setAnoOptions] = useState<string[]>([]);
   const [cidadeOptions, setCidadeOptions] = useState<string[]>([]);
@@ -40,18 +40,18 @@ export default function PatientsAndStudentsScreen() {
     const fetchFilterOptions = async () => {
       try {
         const [
-          tiposData, 
+          // tiposData, 
           transtornosData, 
           anosData, 
           cidadesData
         ] = await Promise.all([
-          fetchTipoAtendimentoOptions(),
+          // fetchTipoAtendimentoOptions(),
           fetchTranstornoOptions(),
           fetchAnoOptions(),
           fetchCidadeOptions()
         ]);
         
-        setTipoAtendimentoOptions(tiposData);
+        // setTipoAtendimentoOptions(tiposData);
         setTranstornoOptions(transtornosData);
         setAnoOptions(anosData);
         setCidadeOptions(cidadesData);
@@ -71,7 +71,7 @@ export default function PatientsAndStudentsScreen() {
       try {
         const params = {
           Nome: debouncedSearchName || undefined,
-          tipo_atendimento: tipoAtendimento || undefined,
+          // tipo_atendimento: tipoAtendimento || undefined,
           transtorno: transtorno || undefined,
           ano: ano || undefined,
           cidade: cidade || undefined,
@@ -96,7 +96,7 @@ export default function PatientsAndStudentsScreen() {
     };
     
     loadData();
-  }, [debouncedSearchName, tipoAtendimento, transtorno, ano, cidade]);
+  }, [debouncedSearchName, transtorno, ano, cidade]); // tipoAtendimento,
 
   const renderContent = () => {
     if (isLoading) {
@@ -130,8 +130,8 @@ export default function PatientsAndStudentsScreen() {
             searchName={searchName}
             setSearchName={setSearchName}
             
-            tipoAtendimento={tipoAtendimento}
-            setTipoAtendimento={setTipoAtendimento}
+            // tipoAtendimento={tipoAtendimento}
+            // setTipoAtendimento={setTipoAtendimento}
             
             transtorno={transtorno}
             setTranstorno={setTranstorno}
@@ -142,7 +142,7 @@ export default function PatientsAndStudentsScreen() {
             cidade={cidade}
             setCidade={setCidade}
 
-            tipoAtendimentoOptions={tipoAtendimentoOptions}
+            // tipoAtendimentoOptions={tipoAtendimentoOptions}
             transtornoOptions={transtornoOptions}
             anoOptions={anoOptions}
             cidadeOptions={cidadeOptions}
