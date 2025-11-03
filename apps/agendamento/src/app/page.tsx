@@ -53,9 +53,9 @@ export default function DashboardPage() {
     const todayAppointments: Page<AppointmentResponseDTO> = await getAppointments(
         format(selectedDate, "yyyy-MM-dd")
     );
-    const allExistingAppointments = await getAppointments();
-    setAppointments(todayAppointments);
-    setAllAppointments(allExistingAppointments);
+    // const allExistingAppointments = await getAppointments();
+    // setAppointments(todayAppointments);
+    // setAllAppointments(allExistingAppointments);
   };
 
   useEffect(() => {
@@ -196,7 +196,7 @@ export default function DashboardPage() {
                 {appointments.map((item, index) => (
                   <TableRow key={index}>
                     <TableCell className="px-3 py-2 text-xs sm:px-4 sm:py-3 sm:text-sm">
-                      {item.paciente.nome}
+                      {item.annualRegistration.patient.fullName}
                     </TableCell>
                     <TableCell className="px-3 py-2">
                       <Badge
@@ -209,7 +209,7 @@ export default function DashboardPage() {
                       </Badge>
                     </TableCell>
                     <TableCell className="px-3 py-2 text-xs sm:px-4 sm:py-3 sm:text-sm">
-                      {item.profissional.nome}
+                      {item.professionalId}
                     </TableCell>
                     <TableCell className="px-3 py-2">
                       <Link
@@ -219,12 +219,12 @@ export default function DashboardPage() {
                         Detalhes
                       </Link>
                     </TableCell>
-                    <TableCell className="px-3 py-2 text-xs sm:px-4 sm:py-3 sm:text-sm">
+                    {/* <TableCell className="px-3 py-2 text-xs sm:px-4 sm:py-3 sm:text-sm">
                       <Checkbox
                           checked={item.isActive}
                           onCheckedChange={() => confirmarAgendamento(item.id)}
                       />
-                    </TableCell>
+                    </TableCell> */}
                   </TableRow>
                 ))}
               </TableBody>

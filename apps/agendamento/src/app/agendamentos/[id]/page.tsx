@@ -24,7 +24,7 @@ import {
 } from "@/app/services/AppointmentService";
 import { AppointmentForm } from "@/components/forms/AppointmentForm";
 import TrashButton from "@/components/buttons/trashButton";
-import ConfirmaRealizacaoButton from "@/components/buttons/ConfirmaRealizacaoButton";
+// import ConfirmaRealizacaoButton from "@/components/buttons/ConfirmaRealizacaoButton";
 import { separaETransformaEmNumero } from "@/lib/utils";
 
 interface PageProps {
@@ -75,7 +75,7 @@ export default async function viewAppointment({ params }: PageProps) {
 
   // SERIA ATIVA(AGENDAMENTO) OU REALIZADA(AGENDAMENTO GERADO)???
   
-  const statusInfo = getStatusStyle(appointment.confirmado, dataHoraDate);
+  // const statusInfo = getStatusStyle(appointment., dataHoraDate);
 
   return (
     <div className="mt-20 w-full mr-17 ml-10">
@@ -88,19 +88,19 @@ export default async function viewAppointment({ params }: PageProps) {
                 alt="avatar"
               />
               <AvatarFallback>
-                {appointment.paciente.nome.charAt(0) || "?"}
+                {appointment.annualRegistration.patient.fullName.charAt(0) || "?"}
               </AvatarFallback>
             </Avatar>
           </div>
           <h1 className="ml-10 text-[#0D4F97] text-xl md:text-2xl font-bold mr-5">
-            {appointment.paciente.nome}
+            {appointment.annualRegistration.patient.fullName}
           </h1>
         </div>
-        <Badge
+        {/* <Badge
           className={`${statusInfo.class} text-white py-1 px-2 rounded-md text-xs cursor-default font-medium text-center`}
         >
           {statusInfo.text}
-        </Badge>
+        </Badge> */}
       </header>
 
       <main className="mt-7 mb-15">
@@ -125,11 +125,11 @@ export default async function viewAppointment({ params }: PageProps) {
                       Edite os detalhes abaixo para agendar uma consulta.
                     </DialogDescription>
                   </DialogHeader>
-                  <AppointmentForm agendamentoAEditar={appointment} />
+                  {/* <AppointmentForm agendamentoAEditar={appointment} /> */}
                 </DialogContent>
               </Dialog>
               <TrashButton id={id} realizado={false} />
-              <ConfirmaRealizacaoButton id={id} />
+              {/* <ConfirmaRealizacaoButton id={id} /> */}
             </CardAction>
           </CardHeader>
           <CardContent>
@@ -164,29 +164,29 @@ export default async function viewAppointment({ params }: PageProps) {
             </div>
             <div className="flex mb-2">
               <p className="font-medium mr-2">Área de atendimento: </p>
-              <p>{appointment.profissional.areaDaSaude || "—"}</p>
+              <p>{appointment.professionalId || "—"}</p>
             </div>
-            <div className="flex mb-2">
+            {/* <div className="flex mb-2">
               <p className="font-medium mr-2">Confirmada: </p>
               <p>{appointment.isActive ? "Sim" : "Não"}</p>
-            </div>
-            <div className="mb-2">
+            </div> */}
+            {/* <div className="mb-2">
               <p className="font-medium mb-1">Descrição: </p>
               <p className="break-words whitespace-pre-wrap">
                 {appointment.descricao || "—"}
               </p>
-            </div>
-            <div className="mb-3">
+            </div> */}
+            {/* <div className="mb-3">
               <p className="font-medium mb-1">Justificativa: </p>
               <p className="break-words whitespace-pre-wrap">
                 {appointment.justificativa || "—"}
               </p>
-            </div>
+            </div> */}
           </CardContent>
         </Card>
 
         {/* Card Profissional da Saúde */}
-        <Card className="text-[#0D4F97] mb-7">
+        {/* <Card className="text-[#0D4F97] mb-7">
           <CardHeader>
             <CardTitle className="font-bold text-center text-lg md:text-xl">
               Profissional da Saúde
@@ -203,10 +203,10 @@ export default async function viewAppointment({ params }: PageProps) {
             </div>
             <div className="flex mb-3">
               <p className="font-medium mr-2">Telefone: </p>
-              <p>{appointment.profissional.telefone || "—"}</p>
+              <p>{appointment.serviceId. || "—"}</p>
             </div>
           </CardContent>
-        </Card>
+        </Card> */}
 
         {/* Card Dados Pessoais do Paciente */}
         <Card className="text-[#0D4F97] mb-7">
@@ -218,13 +218,13 @@ export default async function viewAppointment({ params }: PageProps) {
           <CardContent>
             <div className="flex mb-2">
               <p className="font-medium mr-2">Contato: </p>
-              <p>{appointment.paciente.telefone || "—"}</p>
+              <p>{appointment.annualRegistration.patient.contact || "—"}</p>
             </div>
             <div className="flex mb-2">
               <p className="font-medium mr-2">Data de Nascimento: </p>
               <p>
                 {separaETransformaEmNumero(
-                  appointment.paciente.dateNascimento,
+                  appointment.annualRegistration.patient.birthDate,
                   "-"
                 )
                   .map((n, i) => (i == 0 ? n : n.toString().padStart(2, "0")))
@@ -233,7 +233,7 @@ export default async function viewAppointment({ params }: PageProps) {
               </p>
               <p>
                 {separaETransformaEmNumero(
-                  appointment.paciente.dateNascimento,
+                  appointment.annualRegistration.patient.birthDate,
                   "-"
                 )
                   .map((n, i) => (i == 0 ? n : n.toString().padStart(2, "0")))
@@ -243,11 +243,11 @@ export default async function viewAppointment({ params }: PageProps) {
             </div>
             <div className="flex mb-3">
               <p className="font-medium mr-2">CPF: </p>
-              <p>{appointment.paciente.cpf || "—"}</p>
+              <p>{appointment.annualRegistration.patient.cpf || "—"}</p>
             </div>
             <div className="flex mb-3">
               <p className="font-medium mr-2">RG: </p>
-              <p>{appointment.paciente.rg || "—"}</p>
+              <p>{appointment.annualRegistration.patient.rg || "—"}</p>
             </div>
 
             <CardTitle className="font-bold text-center text-lg md:text-xl">
@@ -256,23 +256,23 @@ export default async function viewAppointment({ params }: PageProps) {
 
             <div className="flex mb-3">
               <p className="font-medium mr-2">Endereço: </p>
-              <p>{appointment.paciente.endereco || "—"}</p>
+              <p>{appointment.annualRegistration.patient.address?.street || "—"}</p>
             </div>
             <div className="flex mb-3">
               <p className="font-medium mr-2">Bairro: </p>
-              <p>{appointment.paciente.bairro || "—"}</p>
+              <p>{appointment.annualRegistration.patient.address?.neighborhood || "—"}</p>
             </div>
             <div className="flex mb-3">
               <p className="font-medium mr-2">Cidade: </p>
-              <p>{appointment.paciente.cidade || "—"}</p>
+              <p>{appointment.annualRegistration.patient.address?.city || "—"}</p>
             </div>
             <div className="flex mb-3">
               <p className="font-medium mr-2">Estado: </p>
-              <p>{appointment.paciente.estado || "—"}</p>
+              <p>{appointment.annualRegistration.patient.address?.state || "—"}</p>
             </div>
             <div className="flex mb-3">
               <p className="font-medium mr-2">CEP: </p>
-              <p>{appointment.paciente.cep || "—"}</p>
+              <p>{appointment.annualRegistration.patient.address?.cep || "—"}</p>
             </div>
           </CardContent>
         </Card>

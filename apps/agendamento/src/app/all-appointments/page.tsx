@@ -151,9 +151,9 @@ export default function AllApointments() {
     return agora > emDate;
   }
 // APAGAR?
-  const semJustificativa = appointments.filter(
-    (appointment) => dataPassou(appointment.proximaConsulta, appointment.horaProximaConsulta) && !appointment.justificativa
-  );
+  // const semJustificativa = appointments.filter(
+  //   (appointment) => dataPassou(appointment.proximaConsulta, appointment.horaProximaConsulta) && !appointment.justificativa
+  // );
 
   const clearFilter = () => {
     setSelectedArea("");
@@ -222,7 +222,7 @@ export default function AllApointments() {
             titleClassName="text-[#0D4F97]"
             valueClassName="text-[#0D4F97]"
           />
-          <InfoCard
+          {/* <InfoCard
             title="Sem justificativa"
             icon={MessageCircleWarning}
             value={semJustificativa.length}
@@ -230,7 +230,7 @@ export default function AllApointments() {
             subtitle="Pacientes que não justificaram suas faltas"
             titleClassName="text-[#0D4F97]"
             valueClassName="text-[#0D4F97]"
-          />
+          /> */}
           <InfoCard
             title="Não confirmados"
             icon={CalendarX}
@@ -303,13 +303,13 @@ export default function AllApointments() {
               <TableBody>
                 {filteredAppointments.map((item, index) => {
                   const dateAppointment = separaETransformaEmNumero(
-                    item.proximaConsulta,
+                    item.initialDate,
                     "-"
                   );
                   return (
                     <TableRow key={index}>
                       <TableCell className="px-3 py-2 text-xs sm:px-4 sm:py-3 sm:text-sm">
-                        {item.paciente.nome}
+                        {item.annualRegistration.patient.fullName}
                       </TableCell>
                       <TableCell className="px-3 py-2 text-xs sm:px-4 sm:py-3 sm:text-sm text-gray-800">
                         {format(
@@ -323,7 +323,7 @@ export default function AllApointments() {
                         )}
                       </TableCell>
                       <TableCell className="px-3 py-2 text-xs sm:px-4 sm:py-3 sm:text-sm">
-                        {item.profissional.nome}
+                        {item.professionalId}
                       </TableCell>
                       <TableCell className="px-3 py-2">
                         <Link

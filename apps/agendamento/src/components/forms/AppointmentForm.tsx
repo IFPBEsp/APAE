@@ -10,8 +10,8 @@ import { cn } from "@/lib/utils";
 import {
   Appointment,
   getPacientes,
-  getProfissionaisDaSaude,
   getProfissionalDaSaude,
+  getProfissionaisDaSaude,
   Patient,
   Professional,
   saveAppointment,
@@ -62,7 +62,7 @@ export function AppointmentForm({ editAppointment }: PageProps) {
 
   //editar
   const [paciente, setPaciente] = useState<string>(
-    editAppointment?.paciente || ""
+    editAppointment?.annualRegistration.patient.fullName || ""
   );
 
 
@@ -122,7 +122,7 @@ export function AppointmentForm({ editAppointment }: PageProps) {
 
   const [validationErrors, setValidationErrors] = useState({
     dateHour: false,
-    // paciente: false,           EDITAR
+    paciente: false,           
     professional: false,
   });
 
@@ -163,7 +163,7 @@ export function AppointmentForm({ editAppointment }: PageProps) {
       professional: !professional,
     };
 
-    setValidationErrors(errors);
+    // setValidationErrors(errors);
 
     if (Object.values(errors).some(Boolean)) {
       return;
@@ -174,18 +174,17 @@ export function AppointmentForm({ editAppointment }: PageProps) {
 
         
         // editar
-      await saveAgendamento(
+      await saveAppointment(
         {
-          idPaciente: paciente,
-          idProfissional: professional,
-          frequenciadays: 15,
-          proximaConsulta: formatDate(dateHour)[0],
-          confirmado: isActive,
-          horaProximaConsulta: formatDate(dateHour)[1],
+          annualRegistrationId: paciente,
+          serviceId: "service-001", // Exemplo fixo, ajustar conforme necessário
+          professionalId: professional,
+          frequencyDays: 15,
+          initialDate: formatDate(dateHour)[0],
+          hour: formatDate(dateHour)[1],
           // justificativa: justificativa,
           // descricao: descricao,
-        },
-        editAppointment?.id
+        }
       );
       window.location.reload();
     }
@@ -255,7 +254,7 @@ export function AppointmentForm({ editAppointment }: PageProps) {
             )}
           </div>
 {/* EDITAR   */}
-          <div className="space-y-2">
+          {/* <div className="space-y-2">
             <Label htmlFor="descricao">Descrição</Label>
             <Textarea
               id="descricao"
@@ -263,7 +262,7 @@ export function AppointmentForm({ editAppointment }: PageProps) {
               value={descricao}
               onChange={(e) => setDescricao(e.target.value)}
             />
-          </div>
+          </div> */}
 
           {editAppointment && (
             <>
@@ -281,20 +280,22 @@ export function AppointmentForm({ editAppointment }: PageProps) {
               {dataPassou(
 
                 // editar
-                editAppointment.proximaConsulta,
-                editAppointment.horaProximaConsulta
-              ) && (
-                // EDITAR
-                <div className="space-y-2">
-                  <Label htmlFor="justificativa">Justificativa de Falta</Label>
-                  <Textarea
-                    id="justificativa"
-                    placeholder="Informe sua justificativa"
-                    value={justificativa}
-                    onChange={(e) => setJustificativa(e.target.value)}
-                  />
-                </div>
-              )}
+                editAppointment.initialDate,
+                editAppointment.hour
+              ) 
+              // && (
+              //   // EDITAR
+              //   <div className="space-y-2">
+              //     <Label htmlFor="justificativa">Justificativa de Falta</Label>
+              //     <Textarea
+              //       id="justificativa"
+              //       placeholder="Informe sua justificativa"
+              //       value={justificativa}
+              //       onChange={(e) => setJustificativa(e.target.value)}
+              //     />
+              //   </div>
+              // )
+              }
             </>
           )}
 
