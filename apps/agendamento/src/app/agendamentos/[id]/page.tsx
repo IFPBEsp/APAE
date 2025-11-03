@@ -54,7 +54,7 @@ export default async function viewAppointment({ params }: PageProps) {
     !isNaN(hour) &&
     !isNaN(minute) &&
     !isNaN(second)
-      ? new Date(year, month, day, hour, minute, second)
+      ? new Date(year, month-1, day, hour, minute, second)
       : null;
 
   const getStatusStyle = (status: boolean | undefined, data: Date | null) => {
@@ -62,7 +62,7 @@ export default async function viewAppointment({ params }: PageProps) {
       return { class: "bg-gray-400", text: "Invalid date" };
     }
 
-// COMO É A LÓGICA DAS CONSULTAS???
+
     const dataCurrent = new Date();
     if (status) {
       return { class: "bg-[#0D4F97]", text: "Confirmed Consultation" };
@@ -74,8 +74,10 @@ export default async function viewAppointment({ params }: PageProps) {
   };
 
   // SERIA ATIVA(AGENDAMENTO) OU REALIZADA(AGENDAMENTO GERADO)???
-  
-  // const statusInfo = getStatusStyle(appointment., dataHoraDate);
+  //  const statusInfo = getStatusStyle(appointment.isActive, dataHoraDate);
+
+
+  //FAZER CARDS SEPARADOS PARA CADA PARTE DAS INFORMAÇÕES DE PACIENTE, FICA MELHOR DE VISUALIZAR.
 
   return (
     <div className="mt-20 w-full mr-17 ml-10">
@@ -95,26 +97,36 @@ export default async function viewAppointment({ params }: PageProps) {
           <h1 className="ml-10 text-[#0D4F97] text-xl md:text-2xl font-bold mr-5">
             {appointment.annualRegistration.patient.fullName}
           </h1>
+
         </div>
-        {/* <Badge
-          className={`${statusInfo.class} text-white py-1 px-2 rounded-md text-xs cursor-default font-medium text-center`}
-        >
-          {statusInfo.text}
-        </Badge> */}
+
+      {/* Borda do status do agendamento */}
+       <Badge className={`${appointment.isActive 
+                          ? "bg-[#E6F6EC] border-l-4 border-[#16A34A] text-[#166534]"
+                          : "bg-[#FEEAEA] border-l-4 border-[#DC2626] text-[#7F1D1D]"
+                        }
+                px-4 py-2 w-32 flex flex-col items-center justify-center
+                rounded-l-md shadow-sm font-bold text-sm text-center
+              `}>
+          <p className="text-sm font-bold">
+            {appointment.isActive ? "Confirmada" : "Não confirmada"}
+          </p>
+        </Badge>
+
       </header>
 
       <main className="mt-7 mb-15">
 
         {/* Card Agendamento */}
-        <Card className="text-[#0D4F97] mb-7">
-          <CardHeader>
-            <CardTitle className="font-bold text-center text-lg md:text-xl">
+        <Card className="text-[#0D4F97] mb-5">
+          <CardHeader className="relative">
+            <CardTitle className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 font-bold text-center text-lg md:text-xl">
               Agendamento
             </CardTitle>
-            <CardAction>
+            <CardAction className="flex gap-1">
               <Dialog>
                 <DialogTrigger asChild>
-                  <Button className="bg-transparent cursor-pointer text-[#0D4F97] hover:text-[#0d4f55] active:text-[#0d4ffe] hover:bg-[rgba(0,0,0,0.1)] transition-colors">
+                  <Button className="bg-transparent cursor-pointer border-1 border-[#0D4F97] text-[#0D4F97] hover:text-[#0d4f55] active:text-[#0d4ffe] hover:bg-[rgba(0,0,0,0.1)] transition-colors rounded-full overflow-hidden">
                     <Pencil />
                   </Button>
                 </DialogTrigger>
@@ -125,15 +137,18 @@ export default async function viewAppointment({ params }: PageProps) {
                       Edite os detalhes abaixo para agendar uma consulta.
                     </DialogDescription>
                   </DialogHeader>
-                  {/* <AppointmentForm agendamentoAEditar={appointment} /> */}
+                  <AppointmentForm editAppointment={appointment} />
                 </DialogContent>
               </Dialog>
-              <TrashButton id={id} realizado={false} />
+              <div className="rounded-full  overflow-hidden border-1 border-[#0D4F97]">
+                <TrashButton id={id} realizado={false} />
+              </div>
+              
               {/* <ConfirmaRealizacaoButton id={id} /> */}
             </CardAction>
           </CardHeader>
           <CardContent>
-            <div className="flex justify-between mb-2">
+            <div className="flex justify-between">
               <div className="flex">
                 <p className="font-medium mr-2">Data: </p>
                 <p>
@@ -142,7 +157,7 @@ export default async function viewAppointment({ params }: PageProps) {
                     : "—"}
                 </p>
               </div>
-              <div className="flex">
+              <div className="flex items-center w-1/3">
                 <p className="font-medium mr-2">Período: </p>
                 <p>
                   {appointment.frequencyDays !== undefined
@@ -151,7 +166,7 @@ export default async function viewAppointment({ params }: PageProps) {
                 </p>
               </div>
             </div>
-            <div className="flex mb-2">
+            <div className="flex">
               <p className="font-medium mr-2">Horário: </p>
               <p>
                 {dataHoraDate
@@ -162,119 +177,173 @@ export default async function viewAppointment({ params }: PageProps) {
                   : "—"}
               </p>
             </div>
-            <div className="flex mb-2">
+            <div className="flex">
               <p className="font-medium mr-2">Área de atendimento: </p>
-              <p>{appointment.professionalId || "—"}</p>
+              <p>{appointment.annualRegistration.professional.healthArea || "—"}</p>
             </div>
-            {/* <div className="flex mb-2">
-              <p className="font-medium mr-2">Confirmada: </p>
-              <p>{appointment.isActive ? "Sim" : "Não"}</p>
-            </div> */}
-            {/* <div className="mb-2">
-              <p className="font-medium mb-1">Descrição: </p>
-              <p className="break-words whitespace-pre-wrap">
-                {appointment.descricao || "—"}
-              </p>
-            </div> */}
-            {/* <div className="mb-3">
-              <p className="font-medium mb-1">Justificativa: </p>
-              <p className="break-words whitespace-pre-wrap">
-                {appointment.justificativa || "—"}
-              </p>
-            </div> */}
+            <div className="flex">
+              <p className="font-medium mr-2">Status: </p>
+              <p className={`font-bold ${ 
+                  appointment.isActive ? "text-green-700" 
+                  : "text-red-700"}`}
+              >
+                {appointment.isActive ? "Confirmada" : "Não confirmada"}</p>
+            </div> 
+
+
+            
           </CardContent>
         </Card>
 
         {/* Card Profissional da Saúde */}
-        {/* <Card className="text-[#0D4F97] mb-7">
-          <CardHeader>
-            <CardTitle className="font-bold text-center text-lg md:text-xl">
+        <Card className="text-[#0D4F97] mb-4">
+          <CardHeader className="relative">
+            <CardTitle className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 font-bold text-center text-lg md:text-xl">
               Profissional da Saúde
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="flex mb-2">
-              <p className="font-medium mr-2">Nome: </p>
-              <p>{appointment.profissional.nome || "—"}</p>
-            </div>
-            <div className="flex mb-2">
-              <p className="font-medium mr-2">Email: </p>
-              <p>{appointment.profissional.email || "—"}</p>
-            </div>
-            <div className="flex mb-3">
-              <p className="font-medium mr-2">Telefone: </p>
-              <p>{appointment.serviceId. || "—"}</p>
+            <div className="flex justify-between">
+                {/* Lado esquerdo */}
+              <div className="flex flex-col gap-2">
+                  <div className="flex">
+                  <p className="font-medium mr-2">Nome: </p>
+                  <p>{appointment.annualRegistration.professional.name || "—"}</p>
+                </div>
+                <div className="flex">
+                  <p className="font-medium mr-2">Email: </p>
+                  <p>{appointment.annualRegistration.professional.email || "—"}</p>
+                </div>
+                <div className="flex">
+                  <p className="font-medium mr-2">Telefone: </p>
+                  <p>{appointment.annualRegistration.professional.phone || "—"}</p>
+                </div>
+              </div>
+
+                {/* Lado direito */}
+              <div className="flex flex-col gap-2 w-1/3">
+                <div className="flex">
+                  <p className="font-medium mr-2">Documento médico: </p>
+                  <p>{appointment.annualRegistration.professional.professionalDoc || "—"}</p>
+                </div>
+                <div className="flex">
+                  <p className="font-medium mr-2">RG: </p>
+                  <p>{appointment.annualRegistration.professional.rg || "—"}</p>
+                </div>
+                <div className="flex">
+                  <p className="font-medium mr-2">Cidade: </p>
+                  <p>{appointment.annualRegistration.professional.address.city || "—"}</p>
+                </div>
+              </div>
             </div>
           </CardContent>
-        </Card> */}
+        </Card>
 
         {/* Card Dados Pessoais do Paciente */}
-        <Card className="text-[#0D4F97] mb-7">
-          <CardHeader>
-            <CardTitle className="font-bold text-center text-lg md:text-xl">
+        <Card className="text-[#0D4F97] mb-4">
+          <CardHeader className="relative">
+            <CardTitle className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 font-bold text-center text-lg md:text-xl">
               Dados Pessoais do Paciente
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="flex mb-2">
-              <p className="font-medium mr-2">Contato: </p>
-              <p>{appointment.annualRegistration.patient.contact || "—"}</p>
-            </div>
-            <div className="flex mb-2">
-              <p className="font-medium mr-2">Data de Nascimento: </p>
-              <p>
-                {separaETransformaEmNumero(
-                  appointment.annualRegistration.patient.birthDate,
-                  "-"
-                )
-                  .map((n, i) => (i == 0 ? n : n.toString().padStart(2, "0")))
-                  .reverse()
-                  .join("/") || "—"}
-              </p>
-              <p>
-                {separaETransformaEmNumero(
-                  appointment.annualRegistration.patient.birthDate,
-                  "-"
-                )
-                  .map((n, i) => (i == 0 ? n : n.toString().padStart(2, "0")))
-                  .reverse()
-                  .join("/") || "—"}
-              </p>
-            </div>
-            <div className="flex mb-3">
-              <p className="font-medium mr-2">CPF: </p>
-              <p>{appointment.annualRegistration.patient.cpf || "—"}</p>
-            </div>
-            <div className="flex mb-3">
-              <p className="font-medium mr-2">RG: </p>
-              <p>{appointment.annualRegistration.patient.rg || "—"}</p>
+            <div className="flex justify-between">
+              {/* Lado esquerdo */}
+              <div className="flex flex-col gap-2">
+              <div className="flex">
+                  <p className="font-medium mr-2">Data de Nascimento: </p>
+                  <p> {separaETransformaEmNumero(appointment.annualRegistration.patient.birthDate,"-")
+                      .map((n, i) => (i == 0 ? n : n.toString().padStart(2, "0")))
+                      .reverse()
+                      .join("/") || "—"}
+                  </p>
+                </div>
+                <div className="flex">
+                  <p className="font-medium mr-2">CPF: </p>
+                  <p>{appointment.annualRegistration.patient.cpf || "—"}</p>
+                </div>
+                <div className="flex">
+                  <p className="font-medium mr-2">RG: </p>
+                  <p>{appointment.annualRegistration.patient.rg || "—"}</p>
+                </div>
+                
+                <div className="flex">
+                  <p className="font-medium mr-2">Contato: </p>
+                  <p>{appointment.annualRegistration.patient.contact || "—"}</p>
+                </div>
             </div>
 
-            <CardTitle className="font-bold text-center text-lg md:text-xl">
-              Dados Residenciais do Paciente
-            </CardTitle>
+            {/* Lado direito */}
+            <div className="flex flex-col gap-2 w-1/3">
+                <div className="flex">
+                  <p className="font-medium mr-2">NIS: </p>
+                  <p>{appointment.annualRegistration.patient.nis || "—"}</p>
+                </div>
+                <div className="flex">
+                  <p className="font-medium mr-2">Alergias: </p>
+                  <p>{appointment.annualRegistration.patient.allergies || "—"}</p>
+                </div>
+                <div className="flex">
+                  <p className="font-medium mr-2">Estudante: </p>
+                  <p>{appointment.annualRegistration.patient.isStudent ? "Sim" : "Não"}</p>
+                </div>
+                <div className="flex">
+                  <p className="font-medium mr-2">Guardião: </p>
+                  <p>{appointment.annualRegistration.patient.guardian?.name || "Não possui"}</p>
+                </div>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
 
-            <div className="flex mb-3">
-              <p className="font-medium mr-2">Endereço: </p>
-              <p>{appointment.annualRegistration.patient.address?.street || "—"}</p>
-            </div>
-            <div className="flex mb-3">
-              <p className="font-medium mr-2">Bairro: </p>
-              <p>{appointment.annualRegistration.patient.address?.neighborhood || "—"}</p>
-            </div>
-            <div className="flex mb-3">
-              <p className="font-medium mr-2">Cidade: </p>
-              <p>{appointment.annualRegistration.patient.address?.city || "—"}</p>
-            </div>
-            <div className="flex mb-3">
-              <p className="font-medium mr-2">Estado: </p>
-              <p>{appointment.annualRegistration.patient.address?.state || "—"}</p>
-            </div>
-            <div className="flex mb-3">
-              <p className="font-medium mr-2">CEP: </p>
-              <p>{appointment.annualRegistration.patient.address?.cep || "—"}</p>
-            </div>
-          </CardContent>
+          {/* Card dados residenciais */}
+        <Card className="text-[#0D4F97] mb-4">
+            <CardHeader className="relative">
+              <CardTitle className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 font-bold text-center text-lg md:text-xl">
+                  Dados Residenciais
+                </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="flex justify-between">
+                    {/* Lado esquerdo */}
+                    <div className="flex flex-col gap-2">
+                        <div className="flex">
+                          <p className="font-medium mr-2">Endereço: </p>
+                          <p>{appointment.annualRegistration.patient.address?.street || "—"}</p>
+                        </div>
+                        <div className="flex">
+                          <p className="font-medium mr-2">Número da residência: </p>
+                          <p>{appointment.annualRegistration.patient.address?.number || "—"}</p>
+                          
+                        </div>
+                        <div className="flex">
+                          <p className="font-medium mr-2">Bairro: </p>
+                          <p>{appointment.annualRegistration.patient.address?.neighborhood || "—"}</p>
+                        </div>
+                        <div className="flex">
+                          <p className="font-medium mr-2">Cidade: </p>
+                          <p>{appointment.annualRegistration.patient.address?.city || "—"}</p>
+                        </div>
+                    </div>
+                    {/* Lado direito */}
+                    <div className="flex flex-col gap-2 w-1/3">
+                          <div className="flex">
+                            <p className="font-medium mr-2">Complemento: </p>
+                            <p>{appointment.annualRegistration.patient.address?.complement || "—"}</p>
+                          </div>
+
+                          <div className="flex">
+                            <p className="font-medium mr-2">CEP: </p>
+                            <p>{appointment.annualRegistration.patient.address?.cep || "—"}</p>
+                          </div>
+
+                          <div className="flex">
+                            <p className="font-medium mr-2">Estado: </p>
+                            <p>{appointment.annualRegistration.patient.address?.state || "—"}</p>
+                          </div>
+                    </div>
+                  </div>
+                </CardContent>
         </Card>
       </main>
     </div>

@@ -60,12 +60,10 @@ export function AppointmentForm({ editAppointment }: PageProps) {
     existingAppointmentDate
   );
 
-  //editar
-  const [paciente, setPaciente] = useState<string>(
+
+  const [patient, setPatient] = useState<string>(
     editAppointment?.annualRegistration.patient.fullName || ""
   );
-
-
   const [professional, setProfessional] = useState<string>(
     editAppointment?.professionalId || ""
   );
@@ -122,7 +120,7 @@ export function AppointmentForm({ editAppointment }: PageProps) {
 
   const [validationErrors, setValidationErrors] = useState({
     dateHour: false,
-    paciente: false,           
+    patient: false,           
     professional: false,
   });
 
@@ -159,31 +157,27 @@ export function AppointmentForm({ editAppointment }: PageProps) {
 
     const errors = {
       dateHour: !dateHour,
-      // pati: !paciente,       EDITAR  
+      patient: !patient,        
       professional: !professional,
     };
 
-    // setValidationErrors(errors);
+    setValidationErrors(errors);
 
     if (Object.values(errors).some(Boolean)) {
       return;
     }
 
-    if (paciente && professional && dateHour) {
+    if (patient && professional && dateHour) {
 
 
-        
-        // editar
       await saveAppointment(
         {
-          annualRegistrationId: paciente,
-          serviceId: "service-001", // Exemplo fixo, ajustar conforme necessário
+          annualRegistrationId: patient,
+          serviceId: "service-001",
           professionalId: professional,
           frequencyDays: 15,
           initialDate: formatDate(dateHour)[0],
           hour: formatDate(dateHour)[1],
-          // justificativa: justificativa,
-          // descricao: descricao,
         }
       );
       window.location.reload();
@@ -191,7 +185,7 @@ export function AppointmentForm({ editAppointment }: PageProps) {
 
     console.log("Novo agendamento:", {
       dateHour,
-      // paciente,          EDITAR  
+      patient,  
       professional,
     });
   };
@@ -217,16 +211,16 @@ export function AppointmentForm({ editAppointment }: PageProps) {
               </Label>
               <Combobox
                 options={listPatients}
-                value={paciente}
-                onChange={setPaciente}
+                value={patient}
+                onChange={setPatient}
                 placeholder="Pesquisar paciente"
                 className={cn(
-                  validationErrors.paciente && "border-red-500",
+                  validationErrors.patient && "border-red-500",
                   "font-normal",
                   "text-gray-400"
                 )}
               />
-              {validationErrors.paciente && (
+              {validationErrors.patient && (
                 <p className="text-sm text-red-500">
                   Este campo é obrigatório.
                 </p>
@@ -253,16 +247,6 @@ export function AppointmentForm({ editAppointment }: PageProps) {
               <p className="text-sm text-red-500">Este campo é obrigatório.</p>
             )}
           </div>
-{/* EDITAR   */}
-          {/* <div className="space-y-2">
-            <Label htmlFor="descricao">Descrição</Label>
-            <Textarea
-              id="descricao"
-              placeholder="Descreva aqui"
-              value={descricao}
-              onChange={(e) => setDescricao(e.target.value)}
-            />
-          </div> */}
 
           {editAppointment && (
             <>
@@ -283,18 +267,6 @@ export function AppointmentForm({ editAppointment }: PageProps) {
                 editAppointment.initialDate,
                 editAppointment.hour
               ) 
-              // && (
-              //   // EDITAR
-              //   <div className="space-y-2">
-              //     <Label htmlFor="justificativa">Justificativa de Falta</Label>
-              //     <Textarea
-              //       id="justificativa"
-              //       placeholder="Informe sua justificativa"
-              //       value={justificativa}
-              //       onChange={(e) => setJustificativa(e.target.value)}
-              //     />
-              //   </div>
-              // )
               }
             </>
           )}
