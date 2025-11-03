@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { createBaseApi } from "@/lib/axios";
+import { createServerApi } from "@/lib/api-server";
 import { AxiosError } from "axios";
 
 export async function POST(req: Request) {
@@ -13,7 +13,7 @@ export async function POST(req: Request) {
       );
     }
 
-    const api = await createBaseApi();
+    const api = await createServerApi();
     const response = await api.post("/auth/signup", {
       fullName: nomeCompleto,
       username: email,
