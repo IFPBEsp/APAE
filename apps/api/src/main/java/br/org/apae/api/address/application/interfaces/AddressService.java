@@ -10,4 +10,6 @@ public interface AddressService {
   AddressResponseDTO createAddress(CreateAddressDTO createAddressDTO);
 
   AddressResponseDTO updateAddress(UUID addressId, UpdateAddressDTO updateAddressDTO);
+
+  void deleteAddress(UUID id);
 }

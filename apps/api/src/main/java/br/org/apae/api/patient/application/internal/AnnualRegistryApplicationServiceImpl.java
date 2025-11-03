@@ -1,5 +1,6 @@
 package br.org.apae.api.patient.application.internal;
 
+import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
@@ -41,7 +42,9 @@ public class AnnualRegistryApplicationServiceImpl implements AnnualRegistryAppli
 
     annualRegistryRepository
         .findByPatientIdAndYear(patientId, createAnnualRegistryDTO.year())
-        .orElseThrow(() -> new AnnualRegistryConflictException(createAnnualRegistryDTO.year()));
+        .ifPresent(registry -> {
+          throw new AnnualRegistryConflictException(createAnnualRegistryDTO.year());
+        });
 
     Set<DisorderResponseDTO> disorderDtos = disorderService
         .findDisorders(createAnnualRegistryDTO.disorders());
@@ -54,5 +57,17 @@ public class AnnualRegistryApplicationServiceImpl implements AnnualRegistryAppli
     AnnualRegistry registrySaved = annualRegistryRepository.save(registry);
 
     return annualRegistryMapper.toResponseDTO(registrySaved);
+  }
+
+  @Override
+  @Transactional
+  public void deleteRegistry(UUID patientId) {
+    List<AnnualRegistry> registries = annualRegistryRepository.findAllByPatientId(patientId);
+
+    if (registries.isEmpty()) {
+      return;
+    }
+
+    annualRegistryRepository.deleteAll(registries);
   }
 }

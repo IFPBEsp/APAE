@@ -11,7 +11,7 @@ import java.util.UUID;
 @Repository
 public interface AnnualRegistryRepository extends JpaRepository<AnnualRegistry, UUID> {
 
-    Optional<AnnualRegistry> findByPatientIdAndYear(UUID patientId, int year);
+    Optional<AnnualRegistry> findByPatientIdAndYear(UUID patientId, Integer year);
 
     List<AnnualRegistry> findAllByPatientId(UUID patientId);
 }

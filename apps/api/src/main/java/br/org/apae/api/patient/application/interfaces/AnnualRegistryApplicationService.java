@@ -7,4 +7,6 @@ import br.org.apae.api.common.dto.patient.response.annual_registry.AnnualRegistr
 
 public interface AnnualRegistryApplicationService {
   AnnualRegistryResponseDTO createRegistry(CreateAnnualRegistryDTO createAnnualRegistryDto, UUID patientId);
+
+  void deleteRegistry(UUID patientId);
 }

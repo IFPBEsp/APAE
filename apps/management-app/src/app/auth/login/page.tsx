@@ -82,7 +82,7 @@ function LoginPage() {
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel className="text-sm font-medium text-foreground">
-                      Email ou CPF
+                      Email
                     </FormLabel>
                     <FormControl>
                       <Input

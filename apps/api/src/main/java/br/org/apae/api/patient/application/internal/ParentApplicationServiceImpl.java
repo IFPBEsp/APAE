@@ -60,4 +60,16 @@ public class ParentApplicationServiceImpl implements ParentApplicationService {
 
     return parentMapper.toResponseDTOList(updatedParents);
   }
+
+  @Override
+  @Transactional
+  public void deleteParents(UUID patientId) {
+    List<Parent> parents = parentRepository.findAllByPatientId(patientId);
+
+    if (parents.isEmpty()) {
+      return;
+    }
+
+    parentRepository.deleteAll(parents);
+  }
 }

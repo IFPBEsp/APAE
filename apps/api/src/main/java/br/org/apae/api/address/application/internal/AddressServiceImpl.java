@@ -41,4 +41,11 @@ public class AddressServiceImpl implements AddressService {
 
     return addressMapper.toResponseDTO(addressUpdated);
   }
+
+  @Override
+  public void deleteAddress(UUID id) {
+    Address address = addressRepository.findById(id).orElseThrow(AddressNotFoundException::new);
+
+    addressRepository.delete(address);
+  }
 }

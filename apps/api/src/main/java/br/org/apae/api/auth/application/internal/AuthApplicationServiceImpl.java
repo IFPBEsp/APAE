@@ -36,7 +36,7 @@ public class AuthApplicationServiceImpl implements AuthApplicationService {
   @Override
   public void signUp(SignUpDTO signUpDto) {
     String passwordHashed = passwordEncoder.encode(signUpDto.password());
-    userService.createUser(signUpDto.username(), passwordHashed);
+    userService.createUser(signUpDto.username(), passwordHashed, signUpDto.cpf(), signUpDto.fullName());
   }
 
   @Override

@@ -12,8 +12,8 @@ export async function getTokenFromCookie(): Promise<string | null> {
       const sessionData = JSON.parse(sessionCookie.value);
       return sessionData.accessToken || null;
     }
-    
-    return process.env.NEXT_PUBLIC_TOKEN || null; 
+
+    return null;
   } catch (error) {
     console.error("Erro ao obter token do cookie:", error);
     return null;

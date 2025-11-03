@@ -1,4 +1,4 @@
-package br.org.apae.api.common.dto.patient.create;
+package br.org.apae.api.common.dto.patient.request.documents;
 
 import java.util.List;
 
