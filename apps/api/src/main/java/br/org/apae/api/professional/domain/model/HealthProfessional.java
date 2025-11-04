@@ -1,8 +1,8 @@
 package br.org.apae.api.professional.domain.model;
 
 import jakarta.persistence.*;
+import java.util.List;
 import java.util.UUID;
-
 import br.org.apae.api.address.domain.model.Address;
 
 @Entity
@@ -35,12 +35,14 @@ public class HealthProfessional {
     @JoinColumn(name = "endereco_id", referencedColumnName = "id")
     private Address address;
 
-    protected HealthProfessional() {
-    }
+    // ✅ RELACIONAMENTO ADICIONADO
+    @OneToMany(mappedBy = "professional", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    private List<Avaliability> availabilities;
+
+    protected HealthProfessional() {}
 
     public HealthProfessional(String name, String email, String healthSector, String phoneNumber,
-            String identityDocument,
-            String professionalDocument, Address address) {
+                              String identityDocument, String professionalDocument, Address address) {
         this.name = name;
         this.email = email;
         this.healthSector = healthSector;
@@ -51,7 +53,8 @@ public class HealthProfessional {
     }
 
     public HealthProfessional(UUID id, String name, String email, String healthSector, String phoneNumber,
-            String identityDocument, String professionalDocument, Address address) {
+                              String identityDocument, String professionalDocument, Address address,
+                              List<Avaliability> availabilities) {
         this.id = id;
         this.name = name;
         this.email = email;
@@ -60,6 +63,7 @@ public class HealthProfessional {
         this.identityDocument = identityDocument;
         this.professionalDocument = professionalDocument;
         this.address = address;
+        this.availabilities = availabilities;
     }
 
     public UUID getId() {
@@ -92,5 +96,13 @@ public class HealthProfessional {
 
     public Address getAddress() {
         return address;
+    }
+
+    public List<Avaliability> getAvailabilities() {
+        return availabilities;
+    }
+
+    public void setAvailabilities(List<Avaliability> availabilities) {
+        this.availabilities = availabilities;
     }
 }

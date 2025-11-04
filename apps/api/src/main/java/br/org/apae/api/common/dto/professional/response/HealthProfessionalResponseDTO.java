@@ -1,8 +1,10 @@
 package br.org.apae.api.common.dto.professional.response;
 
+import br.org.apae.api.common.dto.Avaliability.Response.AvaliabilityResponseDTO;
 import br.org.apae.api.common.dto.address.AddressResponseDTO;
 import br.org.apae.api.professional.domain.model.HealthProfessional;
 
+import java.util.List;
 import java.util.UUID;
 
 public record HealthProfessionalResponseDTO(
@@ -13,9 +15,15 @@ public record HealthProfessionalResponseDTO(
         String email,
         String name,
         String identityDocument,
-        AddressResponseDTO address) {
+        AddressResponseDTO address,
+        List<AvaliabilityResponseDTO> availability
+) {
 
-    public HealthProfessionalResponseDTO(HealthProfessional entity, AddressResponseDTO addressResponseDTO) {
+    public HealthProfessionalResponseDTO(
+            HealthProfessional entity,
+            AddressResponseDTO addressResponseDTO,
+            List<AvaliabilityResponseDTO> availabilityResponseDTOs
+    ) {
         this(
                 entity.getId(),
                 entity.getHealthSector(),
@@ -24,6 +32,11 @@ public record HealthProfessionalResponseDTO(
                 entity.getEmail(),
                 entity.getName(),
                 entity.getIdentityDocument(),
-                addressResponseDTO);
+                addressResponseDTO,
+                availabilityResponseDTOs
+        );
+    }
+
+    public HealthProfessionalResponseDTO(HealthProfessional professional, AddressResponseDTO addressResponseDTO) {
     }
 }

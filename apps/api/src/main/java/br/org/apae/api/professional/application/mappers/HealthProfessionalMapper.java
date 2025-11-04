@@ -31,7 +31,7 @@ public class HealthProfessionalMapper {
     }
 
     public HealthProfessional updateEntityFromDto(HealthProfessional professional, UpdateHealthProfessionalDTO dto,
-            AddressResponseDTO addressDto) {
+                                                  AddressResponseDTO addressDto) {
         Address address = addressMapper.toEntityFromResponse(addressDto);
 
         return new HealthProfessional(
