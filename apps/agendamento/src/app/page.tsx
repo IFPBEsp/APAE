@@ -40,19 +40,23 @@ import {
 import { AppointmentForm } from "@/components/forms/AppointmentForm";
 import { InfoCard } from "@/components/shared/InfoCard";
 import Link from "next/link";
-import {Agendamento, getAgendamentos, toggleConfirmacao} from "./services/agendamentoService";
+import {
+  Appointment,
+  getAppointments,
+  toggleConfirmation,
+} from "./services/agendamentoService";
 import { Checkbox } from "@/components/ui/checkbox";
 
 export default function DashboardPage() {
   const [selectedDate, setSelectedDate] = useState<Date>(new Date());
-  const [appointments, setAppointments] = useState<Agendamento[]>([]);
-  const [allAppointments, setAllAppointments] = useState<Agendamento[]>([]);
+  const [appointments, setAppointments] = useState<Appointment[]>([]);
+  const [allAppointments, setAllAppointments] = useState<Appointment[]>([]);
 
   const fetchAppointments = async () => {
-    const todayAppointments = await getAgendamentos(
-        format(selectedDate, "yyyy-MM-dd")
+    const todayAppointments = await getAppointments(
+      format(selectedDate, "yyyy-MM-dd")
     );
-    const allExistingAppointments = await getAgendamentos();
+    const allExistingAppointments = await getAppointments();
     setAppointments(todayAppointments);
     setAllAppointments(allExistingAppointments);
   };
@@ -62,7 +66,7 @@ export default function DashboardPage() {
   }, [selectedDate]);
 
   const confirmarAgendamento = async (id: string) => {
-    await toggleConfirmacao(id);
+    await toggleConfirmation(id);
     fetchAppointments();
   };
 
@@ -110,7 +114,9 @@ export default function DashboardPage() {
               </DialogTrigger>
               <DialogContent className="w-full sm:max-w-[425px]">
                 <DialogHeader>
-                  <DialogTitle className="text-[#0D4F97]" >Cadastrar Novo Agendamento</DialogTitle>
+                  <DialogTitle className="text-[#0D4F97]">
+                    Cadastrar Novo Agendamento
+                  </DialogTitle>
                   <DialogDescription className="text-[#0D4F97] opacity-50">
                     Preencha os detalhes abaixo para agendar uma consulta.
                   </DialogDescription>
@@ -127,10 +133,9 @@ export default function DashboardPage() {
             icon={Users}
             value={appointments.length}
             subtitle={`${
-              appointments.filter((appointment) => appointment.confirmado)
-                .length
+              appointments.filter((appointment) => appointment.confirmed).length
             } confirmados, ${
-              appointments.filter((appointment) => !appointment.confirmado)
+              appointments.filter((appointment) => !appointment.confirmed)
                 .length
             } pendentes`}
             titleClassName="text-[#0D4F97]"
@@ -149,7 +154,7 @@ export default function DashboardPage() {
             value={
               appointments.filter(
                 (appointment) =>
-                  !appointment.confirmado && !appointment.justificativa
+                  !appointment.confirmed && !appointment.justification
               ).length
             }
             iconColor="text-red-400"
@@ -161,7 +166,7 @@ export default function DashboardPage() {
             title="Não confirmados"
             icon={CalendarX}
             value={
-              appointments.filter((appointment) => !appointment.confirmado)
+              appointments.filter((appointment) => !appointment.confirmed)
                 .length
             }
             subtitle="Consultas que não foram confirmadas"
@@ -196,20 +201,20 @@ export default function DashboardPage() {
                 {appointments.map((item, index) => (
                   <TableRow key={index}>
                     <TableCell className="px-3 py-2 text-xs sm:px-4 sm:py-3 sm:text-sm">
-                      {item.paciente.nome}
+                      {item.patient.name}
                     </TableCell>
                     <TableCell className="px-3 py-2">
                       <Badge
                         variant="outline"
                         className={`text-xs ${
-                          item.confirmado ? "text-green-400" : "text-red-400"
+                          item.confirmed ? "text-green-400" : "text-red-400"
                         } sm:text-sm`}
                       >
-                        {item.confirmado ? "Sim" : "Não"}
+                        {item.confirmed ? "Sim" : "Não"}
                       </Badge>
                     </TableCell>
                     <TableCell className="px-3 py-2 text-xs sm:px-4 sm:py-3 sm:text-sm">
-                      {item.profissional.nome}
+                      {item.professional.name}
                     </TableCell>
                     <TableCell className="px-3 py-2">
                       <Link
@@ -221,8 +226,8 @@ export default function DashboardPage() {
                     </TableCell>
                     <TableCell className="px-3 py-2 text-xs sm:px-4 sm:py-3 sm:text-sm">
                       <Checkbox
-                          checked={item.confirmado}
-                          onCheckedChange={() => confirmarAgendamento(item.id)}
+                        checked={item.confirmed}
+                        onCheckedChange={() => confirmarAgendamento(item.id)}
                       />
                     </TableCell>
                   </TableRow>

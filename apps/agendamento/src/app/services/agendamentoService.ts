@@ -1,379 +1,379 @@
 const API_BASE_URL = process.env.API_BASE_URL || "http://localhost:8093";
 
-export interface Agendamento {
+export interface Appointment {
   id: string;
-  paciente: Paciente;
-  profissional: ProfissionalSaude;
-  frequenciaDias: number;
-  proximaConsulta: string;
-  horaProximaConsulta: string;
-  confirmado: boolean;
-  descricao: string;
-  justificativa: string;
-  dataCriacao: string;
+  patient: Patient;
+  professional: HealthProfessional;
+  frequencyDays: number;
+  nextAppointment: string;
+  nextAppointmentTime: string;
+  confirmed: boolean;
+  description: string;
+  justification: string;
+  creationDate: string;
 }
 
-export interface AgendamentoCreateDTO {
-  idPaciente: string;
-  idProfissional: string;
-  frequenciaDias: number;
-  proximaConsulta: string;
-  confirmado: boolean;
-  horaProximaConsulta: string;
-  descricao: string;
-  justificativa?: string;
+export interface AppointmentCreateDTO {
+  patientId: string;
+  professionalId: string;
+  frequencyDays: number;
+  nextAppointment: string;
+  confirmed: boolean;
+  nextAppointmentTime: string;
+  description: string;
+  justification?: string;
 }
 
-export interface HistoricoConsultaCreateDTO {
-  idAgendamento: string;
-  dataConsulta: string;
-  horaConsulta: string;
-  foiRealizada: boolean;
-  justificativa?: string;
+export interface ConsultationHistoryCreateDTO {
+  appointmentId: string;
+  consultationDate: string;
+  consultationTime: string;
+  wasPerformed: boolean;
+  justification?: string;
 }
 
-export interface HistoricoConsultaResponseDTO {
+export interface ConsultationHistoryResponseDTO {
   id: string;
-  idAgendamento: string;
-  dataConsulta: string;
-  horaConsulta: string;
-  foiRealizada: boolean;
-  justificativa?: string;
-  dataCriacao: string;
+  appointmentId: string;
+  consultationDate: string;
+  consultationTime: string;
+  wasPerformed: boolean;
+  justification?: string;
+  creationDate: string;
 }
 
-export interface Paciente {
+export interface Patient {
   id?: string;
-  nome: string;
+  name: string;
   email: string;
-  telefone: string;
-  dateNascimento: string;
+  phone: string;
+  birthDate: string;
   cpf: string;
   rg: string;
-  endereco: string;
-  bairro: string;
-  cidade: string;
-  estado: string;
-  cep: string;
+  address: string;
+  neighborhood: string;
+  city: string;
+  state: string;
+  zipCode: string;
 }
 
-export interface Endereco {
-  estado: string;
-  cidade: string;
-  bairro: string;
-  rua: string;
-  numero: string;
-  cep: string;
-  complemento?: string;
+export interface Address {
+  state: string;
+  city: string;
+  neighborhood: string;
+  street: string;
+  number: string;
+  zipCode: string;
+  complement?: string;
 }
 
-export interface ProfissionalSaude {
+export interface HealthProfessional {
   id?: string;
-  areaDaSaude: string;
-  telefone: string;
-  docProfissional: string;
+  healthArea: string;
+  phone: string;
+  professionalDocument: string;
   email: string;
-  nome: string;
+  name: string;
   rg: string;
-  endereco: Endereco;
+  address: Address;
 }
 
-const pacientes: Paciente[] = [
+const patients: Patient[] = [
   {
-    nome: "João Silva",
+    name: "João Silva",
     email: "joao.silva@email.com",
-    telefone: "(11) 91234-5678",
-    dateNascimento: "1990-05-10",
+    phone: "(11) 91234-5678",
+    birthDate: "1990-05-10",
     cpf: "12345678900",
     rg: "12.345.678-9",
-    endereco: "Rua A, 123",
-    bairro: "Centro",
-    cidade: "São Paulo",
-    estado: "SP",
-    cep: "01000000",
+    address: "Rua A, 123",
+    neighborhood: "Centro",
+    city: "São Paulo",
+    state: "SP",
+    zipCode: "01000000",
   },
   {
-    nome: "Maria Oliveira",
+    name: "Maria Oliveira",
     email: "maria.oliveira@email.com",
-    telefone: "(21) 98765-4321",
-    dateNascimento: "1985-07-22",
+    phone: "(21) 98765-4321",
+    birthDate: "1985-07-22",
     cpf: "98765432100",
     rg: "98.765.432-1",
-    endereco: "Rua B, 456",
-    bairro: "Jardim Botânico",
-    cidade: "Rio de Janeiro",
-    estado: "RJ",
-    cep: "20000000",
+    address: "Rua B, 456",
+    neighborhood: "Jardim Botânico",
+    city: "Rio de Janeiro",
+    state: "RJ",
+    zipCode: "20000000",
   },
   {
-    nome: "Carlos Santos",
+    name: "Carlos Santos",
     email: "carlos.santos@email.com",
-    telefone: "(31) 93456-7890",
-    dateNascimento: "1992-11-15",
+    phone: "(31) 93456-7890",
+    birthDate: "1992-11-15",
     cpf: "23456789012",
     rg: "23.456.789-0",
-    endereco: "Avenida C, 789",
-    bairro: "Funcionários",
-    cidade: "Belo Horizonte",
-    estado: "MG",
-    cep: "30123456",
+    address: "Avenida C, 789",
+    neighborhood: "Funcionários",
+    city: "Belo Horizonte",
+    state: "MG",
+    zipCode: "30123456",
   },
   {
-    nome: "Ana Souza",
+    name: "Ana Souza",
     email: "ana.souza@email.com",
-    telefone: "(41) 98123-4567",
-    dateNascimento: "1988-12-02",
+    phone: "(41) 98123-4567",
+    birthDate: "1988-12-02",
     cpf: "34567890123",
     rg: "34.567.890-1",
-    endereco: "Rua D, 101",
-    bairro: "Bigorrilho",
-    cidade: "Curitiba",
-    estado: "PR",
-    cep: "80210100",
+    address: "Rua D, 101",
+    neighborhood: "Bigorrilho",
+    city: "Curitiba",
+    state: "PR",
+    zipCode: "80210100",
   },
   {
-    nome: "Felipe Pereira",
+    name: "Felipe Pereira",
     email: "felipe.pereira@email.com",
-    telefone: "(51) 93567-8912",
-    dateNascimento: "1993-03-30",
+    phone: "(51) 93567-8912",
+    birthDate: "1993-03-30",
     cpf: "45678901234",
     rg: "45.678.901-2",
-    endereco: "Rua E, 202",
-    bairro: "Moinhos de Vento",
-    cidade: "Porto Alegre",
-    estado: "RS",
-    cep: "90035200",
+    address: "Rua E, 202",
+    neighborhood: "Moinhos de Vento",
+    city: "Porto Alegre",
+    state: "RS",
+    zipCode: "90035200",
   },
   {
-    nome: "Patrícia Costa",
+    name: "Patrícia Costa",
     email: "patricia.costa@email.com",
-    telefone: "(61) 98123-0987",
-    dateNascimento: "1995-09-10",
+    phone: "(61) 98123-0987",
+    birthDate: "1995-09-10",
     cpf: "56789012345",
     rg: "56.789.012-3",
-    endereco: "Avenida F, 303",
-    bairro: "Asa Sul",
-    cidade: "Brasília",
-    estado: "DF",
-    cep: "70070100",
+    address: "Avenida F, 303",
+    neighborhood: "Asa Sul",
+    city: "Brasília",
+    state: "DF",
+    zipCode: "70070100",
   },
   {
-    nome: "Lucas Almeida",
+    name: "Lucas Almeida",
     email: "lucas.almeida@email.com",
-    telefone: "(85) 99876-5432",
-    dateNascimento: "1994-06-18",
+    phone: "(85) 99876-5432",
+    birthDate: "1994-06-18",
     cpf: "67890123456",
     rg: "67.890.123-4",
-    endereco: "Rua G, 404",
-    bairro: "Aldeota",
-    cidade: "Fortaleza",
-    estado: "CE",
-    cep: "60160050",
+    address: "Rua G, 404",
+    neighborhood: "Aldeota",
+    city: "Fortaleza",
+    state: "CE",
+    zipCode: "60160050",
   },
   {
-    nome: "Fernanda Rodrigues",
+    name: "Fernanda Rodrigues",
     email: "fernanda.rodrigues@email.com",
-    telefone: "(11) 94321-8765",
-    dateNascimento: "1991-02-25",
+    phone: "(11) 94321-8765",
+    birthDate: "1991-02-25",
     cpf: "78901234567",
     rg: "78.901.234-5",
-    endereco: "Rua H, 505",
-    bairro: "Vila Progredior",
-    cidade: "São Paulo",
-    estado: "SP",
-    cep: "02012030",
+    address: "Rua H, 505",
+    neighborhood: "Vila Progredior",
+    city: "São Paulo",
+    state: "SP",
+    zipCode: "02012030",
   },
   {
-    nome: "Ricardo Martins",
+    name: "Ricardo Martins",
     email: "ricardo.martins@email.com",
-    telefone: "(41) 98765-4321",
-    dateNascimento: "1987-10-05",
+    phone: "(41) 98765-4321",
+    birthDate: "1987-10-05",
     cpf: "89012345678",
     rg: "89.012.345-6",
-    endereco: "Avenida I, 606",
-    bairro: "Água Verde",
-    cidade: "Curitiba",
-    estado: "PR",
-    cep: "81050210",
+    address: "Avenida I, 606",
+    neighborhood: "Água Verde",
+    city: "Curitiba",
+    state: "PR",
+    zipCode: "81050210",
   },
   {
-    nome: "Juliana Rocha",
+    name: "Juliana Rocha",
     email: "juliana.rocha@email.com",
-    telefone: "(21) 96321-0987",
-    dateNascimento: "1996-04-13",
+    phone: "(21) 96321-0987",
+    birthDate: "1996-04-13",
     cpf: "90123456789",
     rg: "90.123.456-7",
-    endereco: "Rua J, 707",
-    bairro: "Copacabana",
-    cidade: "Rio de Janeiro",
-    estado: "RJ",
-    cep: "22010010",
+    address: "Rua J, 707",
+    neighborhood: "Copacabana",
+    city: "Rio de Janeiro",
+    state: "RJ",
+    zipCode: "22010010",
   },
 ];
 
-const profissionais: ProfissionalSaude[] = [
+const professionals: HealthProfessional[] = [
   {
-    areaDaSaude: "Fonoaudiologia",
-    telefone: "(11) 98765-4321",
-    docProfissional: "CRFa 12345",
+    healthArea: "Speech Therapy",
+    phone: "(11) 98765-4321",
+    professionalDocument: "CRFa 12345",
     email: "ana.fonou@email.com",
-    nome: "Ana Fonseca",
+    name: "Ana Fonseca",
     rg: "12.345.678-9",
-    endereco: {
-      estado: "SP",
-      cidade: "São Paulo",
-      bairro: "Centro",
-      rua: "Rua A",
-      numero: "123",
-      cep: "01000-000",
-      complemento: "Apto 101",
+    address: {
+      state: "SP",
+      city: "São Paulo",
+      neighborhood: "Centro",
+      street: "Rua A",
+      number: "123",
+      zipCode: "01000-000",
+      complement: "Apto 101",
     },
   },
   {
-    areaDaSaude: "Fisioterapia",
-    telefone: "(21) 91234-5678",
-    docProfissional: "CREFITO 54321",
+    healthArea: "Physiotherapy",
+    phone: "(21) 91234-5678",
+    professionalDocument: "CREFITO 54321",
     email: "marcos.fisio@email.com",
-    nome: "Marcos Pereira",
+    name: "Marcos Pereira",
     rg: "98.765.432-1",
-    endereco: {
-      estado: "RJ",
-      cidade: "Rio de Janeiro",
-      bairro: "Jardim Botânico",
-      rua: "Rua B",
-      numero: "456",
-      cep: "20000-000",
-      complemento: "",
+    address: {
+      state: "RJ",
+      city: "Rio de Janeiro",
+      neighborhood: "Jardim Botânico",
+      street: "Rua B",
+      number: "456",
+      zipCode: "20000-000",
+      complement: "",
     },
   },
   {
-    areaDaSaude: "Psicologia",
-    telefone: "(31) 93456-7890",
-    docProfissional: "CRP 67890",
+    healthArea: "Psychology",
+    phone: "(31) 93456-7890",
+    professionalDocument: "CRP 67890",
     email: "juliana.psico@email.com",
-    nome: "Juliana Souza",
+    name: "Juliana Souza",
     rg: "23.456.789-0",
-    endereco: {
-      estado: "MG",
-      cidade: "Belo Horizonte",
-      bairro: "Funcionários",
-      rua: "Avenida C",
-      numero: "789",
-      cep: "30123-456",
-      complemento: "Sala 202",
+    address: {
+      state: "MG",
+      city: "Belo Horizonte",
+      neighborhood: "Funcionários",
+      street: "Avenida C",
+      number: "789",
+      zipCode: "30123-456",
+      complement: "Sala 202",
     },
   },
   {
-    areaDaSaude: "Terapia Ocupacional",
-    telefone: "(41) 99876-1234",
-    docProfissional: "CREFITO 13579",
+    healthArea: "Occupational Therapy",
+    phone: "(41) 99876-1234",
+    professionalDocument: "CREFITO 13579",
     email: "roberto.to@email.com",
-    nome: "Roberto Lima",
+    name: "Roberto Lima",
     rg: "34.567.890-1",
-    endereco: {
-      estado: "PR",
-      cidade: "Curitiba",
-      bairro: "Bigorrilho",
-      rua: "Rua D",
-      numero: "101",
-      cep: "80210-100",
-      complemento: "",
+    address: {
+      state: "PR",
+      city: "Curitiba",
+      neighborhood: "Bigorrilho",
+      street: "Rua D",
+      number: "101",
+      zipCode: "80210-100",
+      complement: "",
     },
   },
   {
-    areaDaSaude: "Psicopedagogia",
-    telefone: "(61) 98123-4567",
-    docProfissional: "CRP 24680",
+    healthArea: "Psychopedagogy",
+    phone: "(61) 98123-4567",
+    professionalDocument: "CRP 24680",
     email: "marcia.psi@email.com",
-    nome: "Márcia Andrade",
+    name: "Márcia Andrade",
     rg: "56.789.012-3",
-    endereco: {
-      estado: "DF",
-      cidade: "Brasília",
-      bairro: "Asa Sul",
-      rua: "Avenida F",
-      numero: "303",
-      cep: "70070-100",
-      complemento: "Bloco B",
+    address: {
+      state: "DF",
+      city: "Brasília",
+      neighborhood: "Asa Sul",
+      street: "Avenida F",
+      number: "303",
+      zipCode: "70070-100",
+      complement: "Bloco B",
     },
   },
   {
-    areaDaSaude: "Neurologia",
-    telefone: "(85) 98765-4321",
-    docProfissional: "CRM 112233",
+    healthArea: "Neurology",
+    phone: "(85) 98765-4321",
+    professionalDocument: "CRM 112233",
     email: "carlos.neuro@email.com",
-    nome: "Carlos Moreira",
+    name: "Carlos Moreira",
     rg: "67.890.123-4",
-    endereco: {
-      estado: "CE",
-      cidade: "Fortaleza",
-      bairro: "Aldeota",
-      rua: "Rua G",
-      numero: "404",
-      cep: "60160-050",
-      complemento: "",
+    address: {
+      state: "CE",
+      city: "Fortaleza",
+      neighborhood: "Aldeota",
+      street: "Rua G",
+      number: "404",
+      zipCode: "60160-050",
+      complement: "",
     },
   },
   {
-    areaDaSaude: "Psiquiatria",
-    telefone: "(11) 97654-3210",
-    docProfissional: "CRM 445566",
+    healthArea: "Psychiatry",
+    phone: "(11) 97654-3210",
+    professionalDocument: "CRM 445566",
     email: "luana.psi@email.com",
-    nome: "Luana Rocha",
+    name: "Luana Rocha",
     rg: "78.901.234-5",
-    endereco: {
-      estado: "SP",
-      cidade: "São Paulo",
-      bairro: "Vila Progredior",
-      rua: "Rua H",
-      numero: "505",
-      cep: "02012-030",
-      complemento: "Apto 303",
+    address: {
+      state: "SP",
+      city: "São Paulo",
+      neighborhood: "Vila Progredior",
+      street: "Rua H",
+      number: "505",
+      zipCode: "02012-030",
+      complement: "Apto 303",
     },
   },
   {
-    areaDaSaude: "Enfermagem",
-    telefone: "(71) 92345-6789",
-    docProfissional: "COREN 998877",
+    healthArea: "Nursing",
+    phone: "(71) 92345-6789",
+    professionalDocument: "COREN 998877",
     email: "fernando.enf@email.com",
-    nome: "Fernando Nogueira",
+    name: "Fernando Nogueira",
     rg: "89.012.345-6",
-    endereco: {
-      estado: "BA",
-      cidade: "Salvador",
-      bairro: "Pituba",
-      rua: "Avenida I",
-      numero: "606",
-      cep: "41810-010",
-      complemento: "",
+    address: {
+      state: "BA",
+      city: "Salvador",
+      neighborhood: "Pituba",
+      street: "Avenida I",
+      number: "606",
+      zipCode: "41810-010",
+      complement: "",
     },
   },
   {
-    areaDaSaude: "Pediatria",
-    telefone: "(51) 93456-1234",
-    docProfissional: "CRM 556677",
+    healthArea: "Pediatrics",
+    phone: "(51) 93456-1234",
+    professionalDocument: "CRM 556677",
     email: "claudia.ped@email.com",
-    nome: "Cláudia Martins",
+    name: "Cláudia Martins",
     rg: "90.123.456-7",
-    endereco: {
-      estado: "RS",
-      cidade: "Porto Alegre",
-      bairro: "Moinhos de Vento",
-      rua: "Rua E",
-      numero: "202",
-      cep: "90035-200",
-      complemento: "Sala 101",
+    address: {
+      state: "RS",
+      city: "Porto Alegre",
+      neighborhood: "Moinhos de Vento",
+      street: "Rua E",
+      number: "202",
+      zipCode: "90035-200",
+      complement: "Sala 101",
     },
   },
 ];
 
-export async function saveAgendamento(
-  novoAgendamento: AgendamentoCreateDTO,
+export async function saveAppointment(
+  newAppointment: AppointmentCreateDTO,
   id?: string
-): Promise<Agendamento> {
+): Promise<Appointment> {
   try {
     if (!id) {
-      delete novoAgendamento.justificativa;
+      delete newAppointment.justification;
     }
 
     const res = await fetch(
@@ -383,27 +383,27 @@ export async function saveAgendamento(
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify(novoAgendamento),
+        body: JSON.stringify(newAppointment),
       }
     );
     const data = await res.json();
-    return data as Agendamento;
+    return data as Appointment;
   } catch (error) {
     console.log(error);
     throw error;
   }
 }
 
-export async function saveAgendamentoRealizado(
-  agendamento: Agendamento
-): Promise<HistoricoConsultaResponseDTO> {
+export async function saveCompletedAppointment(
+  appointment: Appointment
+): Promise<ConsultationHistoryResponseDTO> {
   try {
-    const dto: HistoricoConsultaCreateDTO = {
-      idAgendamento: agendamento.id,
-      dataConsulta: agendamento.proximaConsulta,
-      horaConsulta: agendamento.horaProximaConsulta,
-      foiRealizada: true,
-      justificativa: agendamento.justificativa,
+    const dto: ConsultationHistoryCreateDTO = {
+      appointmentId: appointment.id,
+      consultationDate: appointment.nextAppointment,
+      consultationTime: appointment.nextAppointmentTime,
+      wasPerformed: true,
+      justification: appointment.justification,
     };
     const res = await fetch(`${API_BASE_URL}/historico-consultas`, {
       method: "POST",
@@ -415,42 +415,44 @@ export async function saveAgendamentoRealizado(
     console.log(res);
     const data = await res.json();
 
-    const [ano, mes, dia] = agendamento.proximaConsulta.split("-");
+    const [ano, mes, dia] = appointment.nextAppointment.split("-");
     const emDate = new Date(parseInt(ano), parseInt(mes), parseInt(dia));
-    emDate.setDate(emDate.getDate() + 15);
-    const proximaConsulta = `${String(emDate.getFullYear()).padStart(
+    emDate.setDate(emDate.getDate() + appointment.frequencyDays);
+    const nextAppointment = `${String(emDate.getFullYear()).padStart(
       2,
       "0"
     )}-${String(emDate.getMonth()).padStart(2, "0")}-${String(
       emDate.getDate()
     ).padStart(2, "0")}`;
 
-    agendamento.proximaConsulta = proximaConsulta;
-    if (agendamento.paciente?.id && agendamento.profissional?.id) {
-      const { paciente, profissional, id, ...agendamentoDTO } = {
-        ...agendamento,
-        idPaciente: agendamento.paciente.id,
-        idProfissional: agendamento.profissional.id,
+    appointment.nextAppointment = nextAppointment;
+    if (appointment.patient?.id && appointment.professional?.id) {
+      const { patient, professional, id, ...appointmentDTO } = {
+        ...appointment,
+        patientId: appointment.patient.id,
+        professionalId: appointment.professional.id,
       };
-      agendamentoDTO.confirmado = false;
-      await saveAgendamento(agendamentoDTO, agendamento.id);
+      appointmentDTO.confirmed = false;
+      await saveAppointment(appointmentDTO, appointment.id);
     }
 
-    return data as HistoricoConsultaResponseDTO;
+    return data as ConsultationHistoryResponseDTO;
   } catch (error) {
     console.log(error);
     throw error;
   }
 }
 
-export async function getAgendamentos(
+export async function getAppointments(
   data?: string,
   hora?: string
-): Promise<Agendamento[]> {
+): Promise<Appointment[]> {
   try {
     if (data) {
       let [ano, mes, dia] = data?.split("-").map(Number);
-      data = `${ano}-${(mes-1).toString().padStart(2, "0")}-${dia.toString().padStart(2, "0")}`;
+      data = `${ano}-${(mes - 1).toString().padStart(2, "0")}-${dia
+        .toString()
+        .padStart(2, "0")}`;
     }
 
     const response = await fetch(
@@ -461,71 +463,71 @@ export async function getAgendamentos(
 
     console.log(response);
 
-    const agendamentos: Agendamento[] = [];
-    for (let agendamento of response.content) {
-      const paciente = await fetch(
-        `${API_BASE_URL}/pacientes/${agendamento.idPaciente}`
+    const appointments: Appointment[] = [];
+    for (let appointment of response.content) {
+      const patient = await fetch(
+        `${API_BASE_URL}/pacientes/${appointment.patientId}`
       ).then((res) => res.json());
-      const profissional = await fetch(
-        `${API_BASE_URL}/profissionais/${agendamento.idProfissional}`
+      const professional = await fetch(
+        `${API_BASE_URL}/profissionais/${appointment.professionalId}`
       ).then((res) => res.json());
 
-      agendamentos.push({ ...agendamento, paciente, profissional });
+      appointments.push({ ...appointment, patient, professional });
     }
 
-    return agendamentos;
+    return appointments;
   } catch (error) {
     console.log(error);
     throw error;
   }
 }
 
-export async function getAgendamentoById(id: string): Promise<Agendamento> {
+export async function getAppointmentById(id: string): Promise<Appointment> {
   try {
-    const agendamento = await fetch(`${API_BASE_URL}/agendamentos/${id}`).then(
+    const appointment = await fetch(`${API_BASE_URL}/agendamentos/${id}`).then(
       (res) => res.json()
     );
-    const paciente = await fetch(
-      `${API_BASE_URL}/pacientes/${agendamento.idPaciente}`
+    const patient = await fetch(
+      `${API_BASE_URL}/pacientes/${appointment.patientId}`
     ).then((res) => res.json());
-    const profissional = await fetch(
-      `${API_BASE_URL}/profissionais/${agendamento.idProfissional}`
+    const professional = await fetch(
+      `${API_BASE_URL}/profissionais/${appointment.professionalId}`
     ).then((res) => res.json());
 
-    return { ...agendamento, paciente, profissional };
+    return { ...appointment, patient, professional };
   } catch (error) {
     console.log(error);
     throw error;
   }
 }
 
-export async function getAgendamentoRealizadoById(
+export async function getCompletedAppointmentById(
   id: string
-): Promise<Agendamento> {
+): Promise<Appointment> {
   try {
-    const agendamentoRealizado: HistoricoConsultaResponseDTO = await fetch(
+    const completedAppointment: ConsultationHistoryResponseDTO = await fetch(
       `${API_BASE_URL}/historico-consultas/${id}`
     ).then((res) => res.json());
-    const agendamento: Agendamento = await getAgendamentoById(
-      agendamentoRealizado.idAgendamento
+    const appointment: Appointment = await getAppointmentById(
+      completedAppointment.appointmentId
     );
-    agendamento.proximaConsulta = agendamentoRealizado.dataConsulta;
-    agendamento.horaProximaConsulta = agendamentoRealizado.horaConsulta;
-    return agendamento;
+    appointment.nextAppointment = completedAppointment.consultationDate;
+    appointment.nextAppointmentTime = completedAppointment.consultationTime;
+    return appointment;
   } catch (error) {
     console.log(error);
     throw error;
   }
 }
 
-export async function deleteAgendamento(
+export async function deleteAppointment(
   id: string,
-  realizado: boolean
+  completed: boolean
 ): Promise<void> {
   try {
     await fetch(
       `${API_BASE_URL}/${
-        realizado ? "historico-consultas" : "agendamentos"
+        completed ? "historico-consultas" : "agendamentos"
       }/${id}`,
       {
         method: "DELETE",
@@ -537,36 +539,33 @@ export async function deleteAgendamento(
   }
 }
 
-export async function getPacientes(): Promise<Paciente[]> {
+export async function getPatients(): Promise<Patient[]> {
   try {
     const response = await fetch(
       `${API_BASE_URL}/pacientes?page=0&size=100`
     ).then((res) => res.json());
-    let pacientesRetornados: Paciente[] = response.content;
-    const existentes = new Set(pacientesRetornados.map((p: Paciente) => p.cpf));
+    let returndPatients: Patient[] = response.content;
+    const exists = new Set(returndPatients.map((p: Patient) => p.cpf));
 
-    if (
-      !pacientesRetornados.length ||
-      !pacientes.some((p) => !existentes.has(p.cpf))
-    ) {
-      for (const paciente of pacientes) {
-        if (!existentes.has(paciente.cpf)) {
-          const pacienteCriado = await fetch(
+    if (!returndPatients.length || !patients.some((p) => !exists.has(p.cpf))) {
+      for (const patient of patients) {
+        if (!exists.has(patient.cpf)) {
+          const createdPatient = await fetch(
             `${API_BASE_URL}/pacientes/create`,
             {
               method: "POST",
               headers: { "Content-Type": "application/json" },
-              body: JSON.stringify(paciente),
+              body: JSON.stringify(patient),
             }
           ).then((res) => res.json());
 
-          pacientesRetornados.push(pacienteCriado);
+          returndPatients.push(createdPatient);
         }
       }
     }
 
-    return pacientesRetornados.filter((paciente, index, self) => {
-      return self.findIndex((p) => p.cpf === paciente.cpf) === index;
+    return returndPatients.filter((patient, index, self) => {
+      return self.findIndex((p) => p.cpf === patient.cpf) === index;
     });
   } catch (error) {
     console.log(error);
@@ -574,37 +573,39 @@ export async function getPacientes(): Promise<Paciente[]> {
   }
 }
 
-export async function getProfissionaisDaSaude(): Promise<ProfissionalSaude[]> {
+export async function getHealthProfessionals(): Promise<HealthProfessional[]> {
   try {
     const response = await fetch(
       `${API_BASE_URL}/profissionais?page=0&size=100`
     ).then((res) => res.json());
-    let profissionaisRetornados: ProfissionalSaude[] = response.content || [];
-    const existentes = new Set(
-      profissionaisRetornados.map((p: ProfissionalSaude) => p.docProfissional)
+    let returnedProfessionals: HealthProfessional[] = response.content || [];
+    const exists = new Set(
+      returnedProfessionals.map(
+        (p: HealthProfessional) => p.professionalDocument
+      )
     );
 
-    for (const profissional of profissionais) {
-      if (!existentes.has(profissional.docProfissional)) {
+    for (const professional of professionals) {
+      if (!exists.has(professional.professionalDocument)) {
         const res = await fetch(`${API_BASE_URL}/profissionais`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(profissional),
+          body: JSON.stringify(professional),
         });
 
         if (!res.ok) {
           continue;
         }
 
-        const createdProfissional = await res.json();
-        profissionaisRetornados.push(createdProfissional);
+        const createdProfessional = await res.json();
+        returnedProfessionals.push(createdProfessional);
       }
     }
 
-    return profissionaisRetornados.filter((profissional, index, self) => {
+    return returnedProfessionals.filter((professional, index, self) => {
       return (
         self.findIndex(
-          (p) => p.docProfissional === profissional.docProfissional
+          (p) => p.professionalDocument === professional.professionalDocument
         ) === index
       );
     });
@@ -614,25 +615,25 @@ export async function getProfissionaisDaSaude(): Promise<ProfissionalSaude[]> {
   }
 }
 
-export async function getProfissionalDaSaude(
+export async function getHealthProfessional(
   id: string
-): Promise<ProfissionalSaude> {
+): Promise<HealthProfessional> {
   try {
-    const profissional = await fetch(
+    const professional = await fetch(
       `${API_BASE_URL}/profissionais/${id}`
     ).then((res) => res.json());
 
-    return profissional;
+    return professional;
   } catch (error) {
     console.error(`Error fetching professional with ID ${id}:`, error);
     throw error;
   }
 }
 
-export async function getAreasDaSaude(): Promise<string[]> {
+export async function getHealthAreas(): Promise<string[]> {
   try {
-    const profissionais = await getProfissionaisDaSaude();
-    const areas = profissionais.map((p) => p.areaDaSaude);
+    const professionals = await getHealthProfessionals();
+    const areas = professionals.map((p) => p.healthArea);
     const setList: string[] = [];
     new Set(areas).forEach((e) => setList.push(e as string));
 
@@ -643,18 +644,18 @@ export async function getAreasDaSaude(): Promise<string[]> {
   }
 }
 
-export const toggleConfirmacao = async (id: string) => {
-  const agendamento = await getAgendamentoById(id);
+export const toggleConfirmation = async (id: string) => {
+  const appointment = await getAppointmentById(id);
 
-  if (!agendamento.paciente.id || !agendamento.profissional.id) return;
+  if (!appointment.patient.id || !appointment.professional.id) return;
 
-  const { paciente, profissional, ...dto } = {
-    ...agendamento,
-    idPaciente: agendamento.paciente.id,
-    idProfissional: agendamento.profissional.id,
+  const { patient, professional, ...dto } = {
+    ...appointment,
+    patientId: appointment.patient.id,
+    professionalId: appointment.professional.id,
   };
 
-  dto.confirmado = !dto.confirmado;
+  dto.confirmed = !dto.confirmed;
 
-  await saveAgendamento(dto, id);
+  await saveAppointment(dto, id);
 };

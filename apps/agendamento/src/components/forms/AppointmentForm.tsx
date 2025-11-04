@@ -8,13 +8,13 @@ import { DateTimePicker } from "@/components/ui/date-time-picker";
 import { Combobox } from "@/components/ui/combobox";
 import { cn } from "@/lib/utils";
 import {
-  Agendamento,
-  getPacientes,
-  getProfissionaisDaSaude,
-  getProfissionalDaSaude,
-  Paciente,
-  ProfissionalSaude,
-  saveAgendamento,
+  Appointment,
+  getPatients,
+  getHealthProfessionals,
+  getHealthProfessional,
+  Patient,
+  HealthProfessional,
+  saveAppointment,
 } from "@/app/services/agendamentoService";
 import { Textarea } from "../ui/textarea";
 import { Checkbox } from "../ui/checkbox";
@@ -25,7 +25,7 @@ type selectItem = {
 };
 
 interface PageProps {
-  agendamentoAEditar?: Agendamento;
+  agendamentoAEditar?: Appointment;
 }
 
 export function AppointmentForm({ agendamentoAEditar }: PageProps) {
@@ -37,11 +37,11 @@ export function AppointmentForm({ agendamentoAEditar }: PageProps) {
   };
 
   const [ano, mes, dia] = separaETransformaEmNumero(
-    agendamentoAEditar?.proximaConsulta,
+    agendamentoAEditar?.nextAppointment,
     "-"
   );
   const [hora, minuto, segundo] = separaETransformaEmNumero(
-    agendamentoAEditar?.horaProximaConsulta,
+    agendamentoAEditar?.nextAppointmentTime,
     ":"
   );
   const dateAgendamentoExistente =
@@ -57,40 +57,38 @@ export function AppointmentForm({ agendamentoAEditar }: PageProps) {
   const [dataHora, setDataHora] = useState<Date | undefined>(
     dateAgendamentoExistente
   );
-  const [paciente, setPaciente] = useState<string>(
-    agendamentoAEditar?.paciente.id || ""
+  const [patient, setPatient] = useState<string>(
+    agendamentoAEditar?.patient.id || ""
   );
-  const [profissional, setProfissional] = useState<string>(
-    agendamentoAEditar?.profissional.id || ""
+  const [professional, setProfessional] = useState<string>(
+    agendamentoAEditar?.professional.id || ""
   );
-  const [descricao, setDescricao] = useState<string>(
-    agendamentoAEditar?.descricao || ""
+  const [description, setDescription] = useState<string>(
+    agendamentoAEditar?.description || ""
   );
-  const [justificativa, setJustificativa] = useState<string>(
-    agendamentoAEditar?.justificativa || ""
+  const [justification, setJustification] = useState<string>(
+    agendamentoAEditar?.justification || ""
   );
-  const [confirmado, setConfirmado] = useState<boolean>(
-    agendamentoAEditar?.confirmado || false
+  const [confirmed, setConfirmed] = useState<boolean>(
+    agendamentoAEditar?.confirmed || false
   );
-  const [listaPacientes, setListaPacientes] = useState<selectItem[]>([]);
-  const [listaProfissionais, setListaProfissionais] = useState<selectItem[]>(
-    []
-  );
+  const [patientList, setPatientList] = useState<selectItem[]>([]);
+  const [professionalList, setProfessionalList] = useState<selectItem[]>([]);
 
   useEffect(() => {
     const fetchPacientesEProfissionais = async () => {
-      const pacientesCadastrados: Paciente[] = await getPacientes();
-      const profissionaisCadastrados: ProfissionalSaude[] =
-        await getProfissionaisDaSaude();
+      const registedPatients: Patient[] = await getPatients();
+      const registedProfessionals: HealthProfessional[] =
+        await getHealthProfessionals();
 
-      setListaPacientes(
-        pacientesCadastrados.map(
-          (p) => ({ value: p.id, label: p.nome } as selectItem)
+      setPatientList(
+        registedPatients.map(
+          (p) => ({ value: p.id, label: p.name } as selectItem)
         )
       );
-      setListaProfissionais(
-        profissionaisCadastrados.map(
-          (p) => ({ value: p.id, label: p.nome } as selectItem)
+      setProfessionalList(
+        registedProfessionals.map(
+          (p) => ({ value: p.id, label: p.name } as selectItem)
         )
       );
     };
@@ -101,18 +99,17 @@ export function AppointmentForm({ agendamentoAEditar }: PageProps) {
   useEffect(() => {
     const redefineProfissional = async () => {
       if (agendamentoAEditar) {
-        const nomeProfissional = (await getProfissionalDaSaude(profissional)).nome;
-        const idProfissional = listaProfissionais.find(p => p.label === nomeProfissional)?.value;
-        setProfissional(idProfissional || profissional);
-        console.log(
-          profissional,
-          nomeProfissional,
-          idProfissional
-        );
+        const professionalName = (await getHealthProfessional(professional))
+          .name;
+        const professionalId = professionalList.find(
+          (p) => p.label === professionalName
+        )?.value;
+        setProfessional(professionalId || professional);
+        console.log(professional, professionalName, professionalId);
       }
-    }
+    };
     redefineProfissional();
-  }, [listaProfissionais]);
+  }, [professionalList]);
 
   const [validationErrors, setValidationErrors] = useState({
     dataHora: false,
@@ -153,8 +150,8 @@ export function AppointmentForm({ agendamentoAEditar }: PageProps) {
 
     const errors = {
       dataHora: !dataHora,
-      paciente: !paciente,
-      profissional: !profissional,
+      paciente: !patient,
+      profissional: !professional,
     };
 
     setValidationErrors(errors);
@@ -163,17 +160,17 @@ export function AppointmentForm({ agendamentoAEditar }: PageProps) {
       return;
     }
 
-    if (paciente && profissional && dataHora) {
-      await saveAgendamento(
+    if (patient && professional && dataHora) {
+      await saveAppointment(
         {
-          idPaciente: paciente,
-          idProfissional: profissional,
-          frequenciaDias: 15,
-          proximaConsulta: formatDate(dataHora)[0],
-          confirmado: confirmado,
-          horaProximaConsulta: formatDate(dataHora)[1],
-          justificativa: justificativa,
-          descricao: descricao,
+          patientId: patient,
+          professionalId: professional,
+          frequencyDays: 15,
+          nextAppointment: formatDate(dataHora)[0],
+          confirmed: confirmed,
+          nextAppointmentTime: formatDate(dataHora)[1],
+          justification: justification,
+          description: description,
         },
         agendamentoAEditar?.id
       );
@@ -182,8 +179,8 @@ export function AppointmentForm({ agendamentoAEditar }: PageProps) {
 
     console.log("Novo agendamento:", {
       dataHora,
-      paciente,
-      profissional,
+      patient,
+      professional,
     });
   };
 
@@ -207,9 +204,9 @@ export function AppointmentForm({ agendamentoAEditar }: PageProps) {
                 Paciente <span className="text-red-500">*</span>
               </Label>
               <Combobox
-                options={listaPacientes}
-                value={paciente}
-                onChange={setPaciente}
+                options={patientList}
+                value={patient}
+                onChange={setPatient}
                 placeholder="Pesquisar paciente"
                 className={cn(
                   validationErrors.paciente && "border-red-500",
@@ -230,9 +227,9 @@ export function AppointmentForm({ agendamentoAEditar }: PageProps) {
               Profissional da Saúde <span className="text-red-500">*</span>
             </Label>
             <Combobox
-              options={listaProfissionais}
-              value={profissional}
-              onChange={setProfissional}
+              options={professionalList}
+              value={professional}
+              onChange={setProfessional}
               placeholder="Pesquisar área de atendimento"
               className={cn(
                 validationErrors.profissional && "border-red-500",
@@ -250,8 +247,8 @@ export function AppointmentForm({ agendamentoAEditar }: PageProps) {
             <Textarea
               id="descricao"
               placeholder="Descreva aqui"
-              value={descricao}
-              onChange={(e) => setDescricao(e.target.value)}
+              value={description}
+              onChange={(e) => setDescription(e.target.value)}
             />
           </div>
 
@@ -260,8 +257,8 @@ export function AppointmentForm({ agendamentoAEditar }: PageProps) {
               <div className="flex items-center space-x-2">
                 <Checkbox
                   id="confirmado"
-                  checked={confirmado}
-                  onCheckedChange={(checked) => setConfirmado(!!checked)}
+                  checked={confirmed}
+                  onCheckedChange={(checked) => setConfirmed(!!checked)}
                 />
                 <Label htmlFor="confirmado" className="font-normal">
                   Consulta Confirmada
@@ -269,16 +266,16 @@ export function AppointmentForm({ agendamentoAEditar }: PageProps) {
               </div>
 
               {dataPassou(
-                agendamentoAEditar.proximaConsulta,
-                agendamentoAEditar.horaProximaConsulta
+                agendamentoAEditar.nextAppointment,
+                agendamentoAEditar.nextAppointmentTime
               ) && (
                 <div className="space-y-2">
                   <Label htmlFor="justificativa">Justificativa de Falta</Label>
                   <Textarea
                     id="justificativa"
                     placeholder="Informe sua justificativa"
-                    value={justificativa}
-                    onChange={(e) => setJustificativa(e.target.value)}
+                    value={justification}
+                    onChange={(e) => setJustification(e.target.value)}
                   />
                 </div>
               )}

@@ -39,9 +39,9 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import {
-  Agendamento,
-  getAgendamentos,
-  getAreasDaSaude,
+  Appointment,
+  getAppointments,
+  getHealthAreas,
 } from "../services/agendamentoService";
 import { separaETransformaEmNumero } from "@/lib/utils";
 import Link from "next/link";
@@ -65,13 +65,13 @@ export default function AllApointments() {
   const [selectedArea, setSelectedArea] = useState("");
   const [searchName, setSearchName] = useState("");
   const [areas, setAreas] = useState<Area[]>([]);
-  const [appointments, setAppointments] = useState<Agendamento[]>([]);
+  const [appointments, setAppointments] = useState<Appointment[]>([]);
 
   useEffect(() => {
     const fetchAppointments = async () => {
-      const response = await getAgendamentos();
+      const response = await getAppointments();
       setAppointments(response);
-      const areasExistentes: Area[] = (await getAreasDaSaude()).map(
+      const areasExistentes: Area[] = (await getHealthAreas()).map(
         (area, index) => ({ id: index, name: area } as Area)
       );
       setAreas(areasExistentes);
@@ -81,16 +81,16 @@ export default function AllApointments() {
 
   const filteredAppointments = appointments.filter((appointment) => {
     const matchesArea = selectedArea
-      ? appointment.profissional.areaDaSaude === selectedArea
+      ? appointment.professional.healthArea === selectedArea
       : true;
-    const matchesPatientName = appointment.paciente.nome
+    const matchesPatientName = appointment.patient.name
       .toLowerCase()
       .includes(searchName.trim().toLowerCase());
-    const matchesProfessionalName = appointment.profissional.nome
+    const matchesProfessionalName = appointment.professional.name
       .toLowerCase()
       .includes(searchName.trim().toLowerCase());
     const dateAppointment = separaETransformaEmNumero(
-      appointment.proximaConsulta,
+      appointment.nextAppointment,
       "-"
     );
     const matchesDate = selectedDate
@@ -110,14 +110,25 @@ export default function AllApointments() {
   const dataPassou = (data: string, horario: string) => {
     const [ano, mes, dia] = data.split("-");
     const [hora, minuto, segundo] = horario.split(":");
-    const emDate = new Date(parseInt(ano), parseInt(mes), parseInt(dia), parseInt(hora), parseInt(minuto), parseInt(segundo));
+    const emDate = new Date(
+      parseInt(ano),
+      parseInt(mes),
+      parseInt(dia),
+      parseInt(hora),
+      parseInt(minuto),
+      parseInt(segundo)
+    );
     const agora = new Date();
 
     return agora > emDate;
-  }
+  };
 
-  const semJustificativa = appointments.filter(
-    (appointment) => dataPassou(appointment.proximaConsulta, appointment.horaProximaConsulta) && !appointment.justificativa
+  const withoutJustification = appointments.filter(
+    (appointment) =>
+      dataPassou(
+        appointment.nextAppointment,
+        appointment.nextAppointmentTime
+      ) && !appointment.justification
   );
 
   const clearFilter = () => {
@@ -168,7 +179,9 @@ export default function AllApointments() {
               </DialogTrigger>
               <DialogContent className="w-full sm:max-w-[425px]">
                 <DialogHeader>
-                  <DialogTitle className="text-[#0D4F97]">Cadastrar Novo Agendamento</DialogTitle>
+                  <DialogTitle className="text-[#0D4F97]">
+                    Cadastrar Novo Agendamento
+                  </DialogTitle>
                   <DialogDescription className="text-[#0D4F97] opacity-50">
                     Preencha os detalhes abaixo para agendar uma consulta.
                   </DialogDescription>
@@ -190,7 +203,7 @@ export default function AllApointments() {
           <InfoCard
             title="Sem justificativa"
             icon={MessageCircleWarning}
-            value={semJustificativa.length}
+            value={withoutJustification.length}
             iconColor="text-red-400"
             subtitle="Pacientes que não justificaram suas faltas"
             titleClassName="text-[#0D4F97]"
@@ -200,7 +213,7 @@ export default function AllApointments() {
             title="Não confirmados"
             icon={CalendarX}
             value={
-              appointments.filter((appointment) => !appointment.confirmado)
+              appointments.filter((appointment) => !appointment.confirmed)
                 .length
             }
             subtitle="Consultas que não foram confirmadas"
@@ -268,13 +281,13 @@ export default function AllApointments() {
               <TableBody>
                 {filteredAppointments.map((item, index) => {
                   const dateAppointment = separaETransformaEmNumero(
-                    item.proximaConsulta,
+                    item.nextAppointment,
                     "-"
                   );
                   return (
                     <TableRow key={index}>
                       <TableCell className="px-3 py-2 text-xs sm:px-4 sm:py-3 sm:text-sm">
-                        {item.paciente.nome}
+                        {item.patient.name}
                       </TableCell>
                       <TableCell className="px-3 py-2 text-xs sm:px-4 sm:py-3 sm:text-sm text-gray-800">
                         {format(
@@ -288,7 +301,7 @@ export default function AllApointments() {
                         )}
                       </TableCell>
                       <TableCell className="px-3 py-2 text-xs sm:px-4 sm:py-3 sm:text-sm">
-                        {item.profissional.nome}
+                        {item.professional.name}
                       </TableCell>
                       <TableCell className="px-3 py-2">
                         <Link
