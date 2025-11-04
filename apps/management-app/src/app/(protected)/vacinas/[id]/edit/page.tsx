@@ -6,7 +6,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Loader2, ArrowLeft } from "lucide-react";
-import { useVaccinesContext } from "@/hooks/use-vaccines";
+import { useVaccinesContext, Vaccine } from "@/hooks/use-vaccines";
 import { z } from "zod";
 import { UpdateVaccine } from "@/schemas/vaccine-schemas";
 import {
@@ -17,31 +17,33 @@ import {
     FormLabel,
     FormMessage,
 } from "@/components/ui/form";
+import { useEffect, useState } from "react";
 
 export default function EditVaccinePage() {
-    const { vaccines, updateVaccine } = useVaccinesContext();
+    const { fetchVaccine, updateVaccine } = useVaccinesContext();
+    const [vaccine, setVaccine] = useState<Vaccine | null>(null);
     const { id } = useParams();
     const router = useRouter();
-
-    const vaccine = vaccines.find((vaccine) => vaccine.id === id);
-
-    if (!vaccine) {
-        return router.push("/vacinas");
-    }
 
     const form = useForm<z.infer<typeof UpdateVaccine>>({
         resolver: zodResolver(UpdateVaccine),
         mode: "onChange",
         defaultValues: {
-            name: vaccine.name,
+            name: "",
+        },
+        values: {
+            name: vaccine?.name ?? "",
         },
     });
 
     const onSubmit = async (data: z.infer<typeof UpdateVaccine>) => {
+        if (!vaccine) return;
+
         await updateVaccine({
             id: vaccine.id,
             name: data.name,
         });
+
         router.push("/vacinas");
     };
 
@@ -52,6 +54,28 @@ export default function EditVaccinePage() {
             </div>
         );
     }
+
+    useEffect(() => {
+        const loadVaccine = async () => {
+            try {
+                if (typeof id !== "string") {
+                    throw new Error("O id fornecido deve ser uma string");
+                }
+
+                const loaded = await fetchVaccine({
+                    id,
+                });
+
+                setVaccine(loaded);
+            } catch (error) {
+                router.push("/vacinas");
+
+                throw error;
+            }
+        };
+
+        loadVaccine();
+    }, []);
 
     return (
         <div className="!bg-slate-100 min-h-screen">

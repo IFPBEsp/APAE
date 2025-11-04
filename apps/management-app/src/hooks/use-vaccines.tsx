@@ -13,6 +13,10 @@ type Vaccine = Readonly<{
     name: string;
 }>;
 
+type FetchVaccineParams = Readonly<{
+    id: string;
+}>;
+
 type CreateVaccineParams = Readonly<{
     name: string;
 }>;
@@ -36,6 +40,7 @@ interface VaccinesContextData {
     loading: boolean;
     feedback: Feedback;
     vaccines: Vaccine[];
+    fetchVaccine: (params: FetchVaccineParams) => Promise<Vaccine>;
     createVaccine: (params: CreateVaccineParams) => Promise<void>;
     updateVaccine: (params: UpdateVaccineParams) => Promise<void>;
     deleteVaccine: (params: DeleteVaccineParams) => Promise<void>;
@@ -109,6 +114,27 @@ function VaccinesProvider({
             setFeedback,
             {
                 success: "Vacinas carregadas com sucesso.",
+            },
+        ),
+        [],
+    );
+
+    const fetchVaccine = useCallback(
+        withFeedback(
+            async (params: FetchVaccineParams) => {
+                const response = await fetch(`/api/vacinas/${params.id}`);
+
+                console.log("TESTE");
+                if (!response.ok) {
+                    throw Error("Ocorreu um erro ao carregar vacina.");
+                }
+
+                return response.json();
+            },
+            setLoading,
+            setFeedback,
+            {
+                success: "Vacina carregada com sucesso.",
             },
         ),
         [],
@@ -192,6 +218,7 @@ function VaccinesProvider({
                 loading,
                 feedback,
                 vaccines,
+                fetchVaccine,
                 createVaccine,
                 updateVaccine,
                 deleteVaccine,
