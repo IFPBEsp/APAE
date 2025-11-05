@@ -6,7 +6,7 @@ import java.util.logging.Logger;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import br.org.apae.api.common.dto.patient.create.CreateDocumentsDTO;
+import br.org.apae.api.common.dto.patient.request.documents.CreateDocumentsDTO;
 import br.org.apae.api.documents.application.interfaces.DocumentApplicationService;
 import br.org.apae.api.documents.domain.enums.DocumentCategory;
 import br.org.apae.api.documents.domain.enums.DocumentType;

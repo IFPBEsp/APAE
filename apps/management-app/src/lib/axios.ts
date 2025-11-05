@@ -63,7 +63,7 @@ export const createDocumentsAPI = async () => {
 
 export const createBaseApi = async () => {
   const api = createAxiosInstance(
-    process.env.NEXT_PUBLIC_API || "http://localhost:8090"
+    process.env.NEXT_PUBLIC_API || "http://localhost:8090/api"
   );
 
   return makeInterceptors(api);

@@ -1,9 +1,8 @@
 package br.org.apae.api.common.dto.address;
 
-import br.org.apae.api.common.model.Address;
-
 import java.util.UUID;
 
+import br.org.apae.api.address.domain.model.Address;
 
 public record AddressResponseDTO(
         UUID id,
@@ -13,8 +12,7 @@ public record AddressResponseDTO(
         String neighborhood,
         String street,
         String number,
-        String complement
-) {
+        String complement) {
 
     public AddressResponseDTO(Address address) {
         this(
@@ -25,7 +23,6 @@ public record AddressResponseDTO(
                 address.getNeighborhood(),
                 address.getStreet(),
                 address.getNumber(),
-                address.getComplement()
-        );
+                address.getComplement());
     }
 }
