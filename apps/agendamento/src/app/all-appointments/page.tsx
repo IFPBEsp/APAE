@@ -60,10 +60,6 @@ type Area = {
   name: string;
 };
 
-// PRECISA SER "REFEITO" DE ACORDO COM O FLUXO DE AGENDAMENTOS
-
-// AGENDAMENTO X AGENDAMENTO GERADO?
-
 export default function AllApointments() {
   const [selectedDate, setSelectedDate] = useState<Date | undefined>(undefined);
   const [selectedArea, setSelectedArea] = useState('');
@@ -85,33 +81,9 @@ export default function AllApointments() {
   }, []);
 
   const filteredAppointments = appointments.filter(appointment => {
-    // O agendamento não guarda mais a area do profissional
-
-    // const matchesArea = selectedArea
-    //   ? appointment.profissional.areaDaSaude === selectedArea
-    //   : true;
-
     const matchesProfessionalId = appointment.professionalId;
 
     const matchesFrequencyDays = appointment.frequencyDays;
-
-    // O agendamento não guarda mais o id relacionado ao paciente
-    //  nem o nome outras informações além do id do profissional
-
-    // const matchesPatientName = appointment.paciente.nome
-    //   .toLowerCase()
-    //   .includes(searchName.trim().toLowerCase());
-    // const matchesProfessionalName = appointment.profissional.nome
-    //   .toLowerCase()
-    //   .includes(searchName.trim().toLowerCase());
-
-    // O agendamento não guarda mais a data da proxima consulta e sim
-    //  a data de inicio, data de fim e data de criação.
-
-    // const dateAppointment = separaETransformaEmNumero(
-    //   appointment.proximaConsulta,
-    //   "-"
-    // );
 
     const dateAppointment = separaETransformaEmNumero(
       appointment.creationDate,
@@ -124,18 +96,8 @@ export default function AllApointments() {
           dateAppointment[2]
         ).toDateString() === selectedDate.toDateString()
       : true;
-    return (
-      //   matchesArea &&
-      //   (matchesPatientName || matchesProfessionalName) &&
-      //   matchesDate
-      // );
-      matchesProfessionalId && matchesFrequencyDays && matchesDate
-    );
+    return matchesProfessionalId && matchesFrequencyDays && matchesDate;
   });
-
-  // PRECISA EDITAR DE ACORDO COM A LÓGICA DE AGENDAMENTO
-
-  // EXPLICAÇÃO DE COMO SERÁ ESSE GERENCIAMENTO?
 
   const dataPassou = (data: string, horario: string) => {
     const [ano, mes, dia] = data.split('-');
@@ -152,10 +114,6 @@ export default function AllApointments() {
 
     return agora > emDate;
   };
-  // APAGAR?
-  // const semJustificativa = appointments.filter(
-  //   (appointment) => dataPassou(appointment.proximaConsulta, appointment.horaProximaConsulta) && !appointment.justificativa
-  // );
 
   const clearFilter = () => {
     setSelectedArea('');
@@ -226,15 +184,7 @@ export default function AllApointments() {
             titleClassName="text-[#0D4F97]"
             valueClassName="text-[#0D4F97]"
           />
-          {/* <InfoCard
-            title="Sem justificativa"
-            icon={MessageCircleWarning}
-            value={semJustificativa.length}
-            iconColor="text-red-400"
-            subtitle="Pacientes que não justificaram suas faltas"
-            titleClassName="text-[#0D4F97]"
-            valueClassName="text-[#0D4F97]"
-          /> */}
+
           <InfoCard
             title="Não confirmados"
             icon={CalendarX}

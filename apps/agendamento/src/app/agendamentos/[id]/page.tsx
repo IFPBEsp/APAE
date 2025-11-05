@@ -26,6 +26,7 @@ import { AppointmentForm } from '@/components/forms/AppointmentForm';
 import TrashButton from '@/components/buttons/trashButton';
 // import ConfirmaRealizacaoButton from "@/components/buttons/ConfirmaRealizacaoButton";
 import { separaETransformaEmNumero } from '@/lib/utils';
+import { RegistrarFaltaButton } from '@/components/buttons/RegistrarFaltaButton';
 
 interface PageProps {
   params: {
@@ -72,11 +73,6 @@ export default async function viewAppointment({ params }: PageProps) {
     }
   };
 
-  // SERIA ATIVA(AGENDAMENTO) OU REALIZADA(AGENDAMENTO GERADO)???
-  //  const statusInfo = getStatusStyle(appointment.isActive, dataHoraDate);
-
-  //FAZER CARDS SEPARADOS PARA CADA PARTE DAS INFORMAÇÕES DE PACIENTE, FICA MELHOR DE VISUALIZAR.
-
   return (
     <div className="mt-20 w-full mr-17 ml-10">
       <header className="flex flex-row items-center justify-between">
@@ -110,7 +106,7 @@ export default async function viewAppointment({ params }: PageProps) {
               `}
         >
           <p className="text-sm font-bold">
-            {appointment.isActive ? 'Confirmada' : 'Não confirmada'}
+            {appointment.isActive ? 'Ativa' : 'Não ativa'}
           </p>
         </Badge>
       </header>
@@ -148,49 +144,65 @@ export default async function viewAppointment({ params }: PageProps) {
           </CardHeader>
           <CardContent>
             <div className="flex justify-between">
-              <div className="flex">
-                <p className="font-medium mr-2">Data: </p>
-                <p>
-                  {dataHoraDate
-                    ? new Intl.DateTimeFormat('pt-BR').format(dataHoraDate)
-                    : '—'}
-                </p>
+              {/* LADO ESQUERDO */}
+              <div className="flex flex-col gap-1">
+                <div className="flex">
+                  <p className="font-medium mr-2">Data:</p>
+                  <p>
+                    {dataHoraDate
+                      ? new Intl.DateTimeFormat('pt-BR').format(dataHoraDate)
+                      : '—'}
+                  </p>
+                </div>
+
+                <div className="flex">
+                  <p className="font-medium mr-2">Horário:</p>
+                  <p>
+                    {dataHoraDate
+                      ? dataHoraDate.toLocaleTimeString('pt-BR', {
+                          hour: '2-digit',
+                          minute: '2-digit',
+                        })
+                      : '—'}
+                  </p>
+                </div>
+
+                <div className="flex">
+                  <p className="font-medium mr-2">Área de atendimento:</p>
+                  <p>
+                    {appointment.annualRegistration.professional.healthArea ||
+                      '—'}
+                  </p>
+                </div>
+
+                <div className="flex">
+                  <p className="font-medium mr-2">Status:</p>
+                  <p
+                    className={`font-bold ${
+                      appointment.isActive ? 'text-green-700' : 'text-red-700'
+                    }`}
+                  >
+                    {appointment.isActive ? 'Ativo' : 'Não ativo'}
+                  </p>
+                </div>
               </div>
-              <div className="flex items-center w-1/3">
-                <p className="font-medium mr-2">Período: </p>
-                <p>
-                  {appointment.frequencyDays !== undefined
-                    ? `${appointment.frequencyDays} dias`
-                    : '—'}
-                </p>
+
+              {/* LADO DIREITO */}
+              <div className="flex flex-col items-start w-1/3">
+                <div className="flex items-center">
+                  <p className="font-medium mr-2">Período:</p>
+                  <p>
+                    {appointment.frequencyDays !== undefined
+                      ? `${appointment.frequencyDays} dias`
+                      : '—'}
+                  </p>
+                </div>
+
+                {/* Botão logo abaixo do período */}
+                <div className="mt-2">
+                  <RegistrarFaltaButton />
+                </div>
               </div>
-            </div>
-            <div className="flex">
-              <p className="font-medium mr-2">Horário: </p>
-              <p>
-                {dataHoraDate
-                  ? dataHoraDate.toLocaleTimeString('pt-BR', {
-                      hour: '2-digit',
-                      minute: '2-digit',
-                    })
-                  : '—'}
-              </p>
-            </div>
-            <div className="flex">
-              <p className="font-medium mr-2">Área de atendimento: </p>
-              <p>
-                {appointment.annualRegistration.professional.healthArea || '—'}
-              </p>
-            </div>
-            <div className="flex">
-              <p className="font-medium mr-2">Status: </p>
-              <p
-                className={`font-bold ${
-                  appointment.isActive ? 'text-green-700' : 'text-red-700'
-                }`}
-              >
-                {appointment.isActive ? 'Confirmada' : 'Não confirmada'}
-              </p>
             </div>
           </CardContent>
         </Card>
