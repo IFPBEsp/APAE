@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { createAuthAPI } from "@/lib/axios";
+import { createBaseApi } from "@/lib/axios";
 import { AxiosError } from "axios";
 import { setSessionCookie } from "@/lib/cookies";
 
@@ -13,8 +13,8 @@ export async function POST(req: Request) {
         { status: 406 }
       );
     }
-    const api = await createAuthAPI();
-    const response = await api.post("/signin", { username, password }); 
+    const api = await createBaseApi();
+    const response = await api.post("/auth/signin", { username, password });
 
     if (response.status !== 200) {
       return NextResponse.json(
@@ -23,7 +23,7 @@ export async function POST(req: Request) {
       );
     }
 
-    const { token } = response.data; 
+    const { token } = response.data;
 
     const payload = {
       accessToken: token,
