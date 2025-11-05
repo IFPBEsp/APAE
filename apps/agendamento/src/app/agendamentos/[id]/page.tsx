@@ -73,12 +73,6 @@ export default async function viewAppointment({ params }: PageProps) {
     }
   };
 
-  // SERIA ATIVA(AGENDAMENTO) OU REALIZADA(AGENDAMENTO GERADO)???
-  //  const statusInfo = getStatusStyle(appointment.isActive, dataHoraDate);
-
-
-  //FAZER CARDS SEPARADOS PARA CADA PARTE DAS INFORMAÇÕES DE PACIENTE, FICA MELHOR DE VISUALIZAR.
-
   return (
     <div className="mt-20 w-full mr-17 ml-10">
       <header className="flex flex-row items-center justify-between">
@@ -109,7 +103,7 @@ export default async function viewAppointment({ params }: PageProps) {
                 rounded-l-md shadow-sm font-bold text-sm text-center
               `}>
           <p className="text-sm font-bold">
-            {appointment.isActive ? "Confirmada" : "Não confirmada"}
+            {appointment.isActive ? "Ativa" : "Não ativa"}
           </p>
         </Badge>
 
@@ -187,7 +181,7 @@ export default async function viewAppointment({ params }: PageProps) {
                   appointment.isActive ? "text-green-700" 
                   : "text-red-700"}`}
               >
-                {appointment.isActive ? "Confirmada" : "Não confirmada"}</p>
+                {appointment.isActive ? "Ativo" : "Não ativo"}</p>
             </div> 
 
 
