@@ -25,4 +25,8 @@ public record AddressResponseDTO(
                 address.getNumber(),
                 address.getComplement());
     }
+
+    public Address toEntity() {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
 }

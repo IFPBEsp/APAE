@@ -23,11 +23,11 @@ public class HealthProfessionalApplicationServiceImpl implements HealthProfessio
 
     private final HealthProfessionalRepository repository;
     private final HealthProfessionalMapper mapper;
-
     private final AddressService addressService;
 
     public HealthProfessionalApplicationServiceImpl(HealthProfessionalRepository repository,
-            HealthProfessionalMapper mapper, AddressService addressService) {
+                                                    HealthProfessionalMapper mapper,
+                                                    AddressService addressService) {
         this.repository = repository;
         this.mapper = mapper;
         this.addressService = addressService;
@@ -49,7 +49,7 @@ public class HealthProfessionalApplicationServiceImpl implements HealthProfessio
 
         HealthProfessional savedProfessional = repository.save(professionalToSave);
 
-        return mapper.toResponseDTO(savedProfessional);
+        return mapper.toResponseDTO(savedProfessional, addressDto);
     }
 
     @Override
@@ -67,21 +67,21 @@ public class HealthProfessionalApplicationServiceImpl implements HealthProfessio
             throw new ProfessionalDocumentConflictException();
         }
 
-        AddressResponseDTO addressDto = addressService.updateAddress(entityToUpdate.getAddress().getId(),
-                dto.address());
+        AddressResponseDTO addressDto = addressService.updateAddress(entityToUpdate.getAddress().getId(), dto.address());
 
+        // Usa o novo método de atualização que aceita UpdateHealthProfessionalDTO
         HealthProfessional updatedProfessional = mapper.updateEntityFromDto(entityToUpdate, dto, addressDto);
 
         repository.save(updatedProfessional);
 
-        return mapper.toResponseDTO(updatedProfessional);
+        return mapper.toResponseDTO(updatedProfessional, addressDto);
     }
 
     @Override
     @Transactional(readOnly = true)
     public HealthProfessionalResponseDTO findProfessionalById(UUID id) {
         return repository.findById(id)
-                .map(mapper::toResponseDTO)
+                .map(entity -> mapper.toResponseDTO(entity, entity.getAddress() != null ? new AddressResponseDTO(entity.getAddress()) : null))
                 .orElseThrow(HealthProfessionalNotFoundException::new);
     }
 
@@ -97,6 +97,7 @@ public class HealthProfessionalApplicationServiceImpl implements HealthProfessio
     @Override
     @Transactional(readOnly = true)
     public Page<HealthProfessionalResponseDTO> findAllProfessionals(Pageable pageable) {
-        return repository.findAll(pageable).map(mapper::toResponseDTO);
+        return repository.findAll(pageable)
+                .map(entity -> mapper.toResponseDTO(entity, entity.getAddress() != null ? new AddressResponseDTO(entity.getAddress()) : null));
     }
 }
