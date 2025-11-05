@@ -21,6 +21,22 @@ export interface Abscense {
   notified: boolean;
 }
 
+export interface HistoryEntry {
+  id: string;
+  consultationDate: string;
+  consultationTime: string;
+  wasPerformed: boolean;
+  appointmentId: string;
+  justification?: string;
+}
+
+export interface PatientWithAbsences {
+  patient: Patient;
+  absenceCount: number;
+  lastAbsenceDate: string;
+  absences: HistoryEntry[];
+}
+
 export interface AppointmentCreateDTO {
   patientId: string;
   professionalId: string;
@@ -543,6 +559,132 @@ export async function deleteAppointment(
     );
   } catch (error) {
     console.log(error);
+    throw error;
+  }
+}
+
+export async function getAppointmentHistory(
+  appointmentId: string,
+  page: number = 0,
+  size: number = 100
+): Promise<{ content: HistoryEntry[] }> {
+  try {
+    const response = await fetch(
+      `${API_BASE_URL}/historico-consultas?appointmentId=${appointmentId}&page=${page}&size=${size}`
+    );
+
+    if (!response.ok) {
+      throw new Error(`Erro ao buscar histórico: ${response.status}`);
+    }
+
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error("Error fetching appointment history:", error);
+    throw error;
+  }
+}
+
+export async function getPatientsWithAbsences(
+  minAbsences: number = 3
+): Promise<PatientWithAbsences[]> {
+  try {
+    const appointments = await getAppointments();
+
+    const patientAbsenceMap = new Map<
+      string,
+      {
+        patient: Patient;
+        count: number;
+        lastDate: string;
+        absences: HistoryEntry[];
+      }
+    >();
+
+    for (const appointment of appointments) {
+      try {
+        const patientId = appointment.patient.id;
+        if (!patientId) continue;
+
+        const historyResponse = await getAppointmentHistory(appointment.id);
+        const absences = historyResponse.content.filter(
+          (history) => !history.wasPerformed
+        );
+
+        if (absences.length > 0) {
+          const currentData = patientAbsenceMap.get(patientId) || {
+            patient: appointment.patient,
+            count: 0,
+            lastDate: "",
+            absences: [],
+          };
+
+          currentData.count += absences.length;
+          currentData.absences.push(...absences);
+
+          const latestAbsence = absences.reduce((latest, current) =>
+            new Date(current.consultationDate) >
+            new Date(latest.consultationDate)
+              ? current
+              : latest
+          );
+
+          if (
+            !currentData.lastDate ||
+            new Date(latestAbsence.consultationDate) >
+              new Date(currentData.lastDate)
+          ) {
+            currentData.lastDate = latestAbsence.consultationDate;
+          }
+
+          patientAbsenceMap.set(patientId, currentData);
+        }
+      } catch (error) {
+        console.error(
+          `Error processing appointment for patient ${appointment.patient.name}:`,
+          error
+        );
+      }
+    }
+
+    return Array.from(patientAbsenceMap.values())
+      .filter((item) => item.count >= minAbsences)
+      .map((item) => ({
+        patient: item.patient,
+        absenceCount: item.count,
+        lastAbsenceDate: item.lastDate,
+        absences: item.absences.sort(
+          (a, b) =>
+            new Date(b.consultationDate).getTime() -
+            new Date(a.consultationDate).getTime()
+        ),
+      }))
+      .sort((a, b) => b.absenceCount - a.absenceCount);
+  } catch (error) {
+    console.error("Error fetching patients with absences:", error);
+    throw error;
+  }
+}
+
+export async function getAbsenceStatistics(): Promise<{
+  totalPatients: number;
+  totalAppointments: number;
+  patientsWithMinAbsences: number;
+}> {
+  try {
+    const [patients, appointments, patientsWithAbsences] = await Promise.all([
+      getPatients(),
+      getAppointments(),
+      getPatientsWithAbsences(3),
+    ]);
+
+    return {
+      totalPatients: patients.length,
+      totalAppointments: appointments.length,
+      patientsWithMinAbsences: patientsWithAbsences.length,
+    };
+  } catch (error) {
+    console.error("Error fetching absence statistics:", error);
     throw error;
   }
 }
