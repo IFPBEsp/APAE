@@ -9,48 +9,28 @@ import br.org.apae.api.professional.domain.model.HealthProfessional;
 
 public record HealthProfessionalResponseDTO(
         UUID id,
+        String name,
+        String email,
         String healthSector,
         String phoneNumber,
-        String professionalDocument,
-        String email,
-        String name,
         String identityDocument,
+        String professionalDocument,
         AddressResponseDTO address,
-        List<AvaliabilityResponseDTO> availability
+        List<AvaliabilityResponseDTO> availabilities
 ) {
-    public HealthProfessionalResponseDTO(
-            HealthProfessional entity,
-            AddressResponseDTO addressResponseDTO,
-            List<AvaliabilityResponseDTO> availabilityResponseDTOs
-    ) {
+    public HealthProfessionalResponseDTO(HealthProfessional professional,
+                                         AddressResponseDTO addressResponseDTO,
+                                         List<AvaliabilityResponseDTO> availabilities) {
         this(
-                entity.getId(),
-                entity.getHealthSector(),
-                entity.getPhoneNumber(),
-                entity.getProfessionalDocument(),
-                entity.getEmail(),
-                entity.getName(),
-                entity.getIdentityDocument(),
-                addressResponseDTO,
-                availabilityResponseDTOs
-        );
-    }
-
-    public HealthProfessionalResponseDTO(HealthProfessional professional, AddressResponseDTO addressResponseDTO) {
-        this(
-                professional.getId(),
-                professional.getHealthSector(),
-                professional.getPhoneNumber(),
-                professional.getProfessionalDocument(),
-                professional.getEmail(),
-                professional.getName(),
-                professional.getIdentityDocument(),
-                addressResponseDTO,
-                professional.getAvailabilities() != null
-                        ? professional.getAvailabilities().stream()
-                        .map(AvaliabilityResponseDTO::new)
-                        .toList()
-                        : null
+            professional.getId(),
+            professional.getName(),
+            professional.getEmail(),
+            professional.getHealthSector(),
+            professional.getPhoneNumber(),
+            professional.getIdentityDocument(),
+            professional.getProfessionalDocument(),
+            addressResponseDTO,
+            availabilities
         );
     }
 }
