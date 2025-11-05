@@ -35,13 +35,11 @@ cd apps/api
 
 ### 2\. Configurar o Banco de Dados (Docker)
 
-> **⚠️ ATENÇÃO:** Todos os comandos de `docker` e `mvnw` mostrados a seguir devem ser executados de dentro da pasta `apps/api`.
-
 Nossa API precisa de um banco de dados para funcionar. Nós usamos o Docker para "simular" esse banco em sua máquina sem precisar instalá-lo manualmente.
 
 O arquivo `docker-compose.yml` é a receita que diz ao Docker como criar esse banco.
 
-**Abra um terminal (em qualquer lugar dentro da pasta `APAE`, que pode ser na padrão, onde sua IDE vai abrir o terminal ao abrir o projeto na pasta `api`: `.../APAE/apps/api`) e execute:**
+**Abra um terminal (em qualquer lugar dentro da pasta `APAE`) e execute:**
 
 ```bash
 # Este comando vai baixar a imagem do banco (ex: Postgres/MySQL)
