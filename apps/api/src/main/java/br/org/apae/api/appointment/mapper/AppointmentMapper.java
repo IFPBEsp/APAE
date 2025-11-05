@@ -1,12 +1,12 @@
 package br.org.apae.api.appointment.mapper;
 
-import br.org.apae.api.appointment.domain.model.Absence; // <- NOVO IMPORT
+import br.org.apae.api.appointment.domain.model.Absence;
 import br.org.apae.api.appointment.domain.model.Appointment;
 import br.org.apae.api.appointment.domain.model.GeneratedAppointment;
-import br.org.apae.api.common.dto.appointment.request.absence.CreateAbsenceDTO; // <- NOVO IMPORT
+import br.org.apae.api.common.dto.appointment.request.absence.CreateAbsenceDTO;
 import br.org.apae.api.common.dto.appointment.request.appointment.CreateAppointmentDTO;
 import br.org.apae.api.common.dto.appointment.request.appointment.UpdateAppointmentDTO;
-import br.org.apae.api.common.dto.appointment.response.absence.AbsenceResponseDTO; // <- NOVO IMPORT
+import br.org.apae.api.common.dto.appointment.response.absence.AbsenceResponseDTO;
 import br.org.apae.api.common.dto.appointment.response.appointment.AppointmentResponseDTO;
 import br.org.apae.api.common.dto.appointment.response.appointment.GeneratedAppointmentResponseDTO;
 import org.springframework.stereotype.Component;
@@ -15,8 +15,6 @@ import java.util.UUID;
 
 @Component
 public class AppointmentMapper {
-
-    // --- Mapeamentos de Appointment (Regras de Recorrência) ---
 
     public Appointment toEntity(CreateAppointmentDTO dto) {
         return new Appointment(
@@ -68,7 +66,6 @@ public class AppointmentMapper {
         );
     }
 
-    // --- Mapeamento de GeneratedAppointment (Agendamento Gerado) ---
 
     public GeneratedAppointmentResponseDTO toGeneratedResponse(GeneratedAppointment entity) {
         return new GeneratedAppointmentResponseDTO(
@@ -84,26 +81,15 @@ public class AppointmentMapper {
         );
     }
 
-    // --- Mapeamento de Absence (Falta) ---
-
-    /**
-     * Converte um DTO de criação de falta para a entidade Absence.
-     * O GeneratedAppointment é setado no Service, não aqui.
-     */
     public Absence toEntity(CreateAbsenceDTO dto) {
         return new Absence(
-                null, // GeneratedAppointment será setado no Service
+                null,
                 dto.absenceDate(),
                 dto.justification()
         );
     }
 
-    /**
-     * Converte a entidade Absence para o DTO de resposta.
-     * Extrai o ID do Paciente e do Profissional do GeneratedAppointment.
-     */
     public AbsenceResponseDTO toAbsenceResponse(Absence entity) {
-        // Garante que o GeneratedAppointment foi carregado no service antes de chamar
         UUID professionalId = entity.getGeneratedAppointment().getAppointment().getProfessionalId();
         UUID patientId = entity.getGeneratedAppointment().getPatientId();
 
