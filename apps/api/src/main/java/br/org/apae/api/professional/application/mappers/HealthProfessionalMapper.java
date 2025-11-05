@@ -1,13 +1,18 @@
 package br.org.apae.api.professional.application.mappers;
 
-import br.org.apae.api.common.dto.professional.response.HealthProfessionalResponseDTO;
+import java.util.List;
+import java.util.stream.Collectors;
+
+import org.springframework.stereotype.Component;
+
 import br.org.apae.api.address.application.mapper.AddressMapper;
 import br.org.apae.api.address.domain.model.Address;
+import br.org.apae.api.common.dto.Avaliability.Response.AvaliabilityResponseDTO;
 import br.org.apae.api.common.dto.address.AddressResponseDTO;
 import br.org.apae.api.common.dto.professional.request.CreateHealthProfessionalDTO;
 import br.org.apae.api.common.dto.professional.request.UpdateHealthProfessionalDTO;
+import br.org.apae.api.common.dto.professional.response.HealthProfessionalResponseDTO;
 import br.org.apae.api.professional.domain.model.HealthProfessional;
-import org.springframework.stereotype.Component;
 
 @Component
 public class HealthProfessionalMapper {
@@ -27,7 +32,8 @@ public class HealthProfessionalMapper {
                 dto.phoneNumber(),
                 dto.identityDocument(),
                 dto.professionalDocument(),
-                address);
+                address
+        );
     }
 
     public HealthProfessional updateEntityFromDto(HealthProfessional professional, UpdateHealthProfessionalDTO dto,
@@ -42,12 +48,25 @@ public class HealthProfessionalMapper {
                 dto.phoneNumber(),
                 dto.identityDocument(),
                 dto.professionalDocument(),
-                address);
+                address,
+                professional.getAvailabilities() // mantém as disponibilidades existentes
+        );
     }
 
     public HealthProfessionalResponseDTO toResponseDTO(HealthProfessional professional) {
         AddressResponseDTO addressResponseDTO = new AddressResponseDTO(professional.getAddress());
 
-        return new HealthProfessionalResponseDTO(professional, addressResponseDTO);
+        List<AvaliabilityResponseDTO> availabilityResponseDTOs = null;
+        if (professional.getAvailabilities() != null) {
+            availabilityResponseDTOs = professional.getAvailabilities().stream()
+                    .map(AvaliabilityResponseDTO::new)
+                    .collect(Collectors.toList());
+        }
+
+        return new HealthProfessionalResponseDTO(
+                professional,
+                addressResponseDTO,
+                availabilityResponseDTOs
+        );
     }
 }
