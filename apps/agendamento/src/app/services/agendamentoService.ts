@@ -13,6 +13,14 @@ export interface Appointment {
   creationDate: string;
 }
 
+export interface Abscense {
+  id: string;
+  generatedAppointmentId: string;
+  abscenseDate: Date;
+  justification: string;
+  notified: boolean;
+}
+
 export interface AppointmentCreateDTO {
   patientId: string;
   professionalId: string;
