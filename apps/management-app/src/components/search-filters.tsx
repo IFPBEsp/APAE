@@ -49,7 +49,7 @@ export function SearchFilters({
   
   const dropdownTriggerStyle = cn(
     "bg-white border border-gray-300 rounded-[5px] h-[36px]", 
-    "justify-between text-gray-600", 
+    "justify-between text-gray-600",
     "hover:bg-slate-50 hover:text-gray-700", 
     "data-[state=open]:bg-slate-50" 
   );
@@ -66,46 +66,18 @@ export function SearchFilters({
         />
       </div>
 
-      {/* <DropdownMenu>
-        <DropdownMenuTrigger asChild>
-          <Button
-            className={cn(dropdownTriggerStyle, "w-[120px]")}
-          >
-            <span>{
-              (tipoAtendimento 
-                ? tipoAtendimentoOptions.find(o => o.toLowerCase() === tipoAtendimento) 
-                : null) 
-              || "Tipo Atend."
-            }</span>
-            <ChevronDown className="h-4 w-4" />
-          </Button>
-        </DropdownMenuTrigger>
-        <DropdownMenuContent align="end" className="w-[150px]">
-          <DropdownMenuItem onClick={() => setTipoAtendimento?.("")}>
-            Qualquer
-          </DropdownMenuItem>
-          {tipoAtendimentoOptions.map((option) => (
-            <DropdownMenuItem
-              key={option}
-              onClick={() => setTipoAtendimento?.(option.toLowerCase())}
-              className={cn({ "bg-slate-100": tipoAtendimento === option.toLowerCase() })}
-            >
-              {option}
-            </DropdownMenuItem>
-          ))}
-        </DropdownMenuContent>
-      </DropdownMenu> */}
-
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
           <Button
-            className={cn(dropdownTriggerStyle, "w-[120px]")}
+            className={cn(dropdownTriggerStyle, "w-[130px]")}
           >
-            <span>{transtorno || "Transtorno"}</span>
+            <span className="flex-1 w-0 truncate text-left">
+              {transtorno || "Transtorno"}
+            </span>
             <ChevronDown className="h-4 w-4" />
           </Button>
         </DropdownMenuTrigger>
-        <DropdownMenuContent align="end" className="w-[150px]">
+        <DropdownMenuContent align="end" className="w-[130px]">
           <DropdownMenuItem onClick={() => setTranstorno?.("")}>
             Qualquer
           </DropdownMenuItem>
@@ -124,9 +96,11 @@ export function SearchFilters({
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
           <Button
-            className={cn(dropdownTriggerStyle, "w-[80px]")}
+            className={cn(dropdownTriggerStyle, "w-[100px]")}
           >
-            <span>{ano || "Ano"}</span>
+            <span className="flex-1 w-0 truncate text-left">
+              {ano || "Ano"}
+            </span>
             <ChevronDown className="h-4 w-4" />
           </Button>
         </DropdownMenuTrigger>
@@ -151,7 +125,9 @@ export function SearchFilters({
           <Button
             className={cn(dropdownTriggerStyle, "w-[120px]")}
           >
-            <span>{cidade || "Cidade"}</span>
+            <span className="flex-1 w-0 truncate text-left">
+              {cidade || "Cidade"}
+            </span>
             <ChevronDown className="h-4 w-4" />
           </Button>
         </DropdownMenuTrigger>
