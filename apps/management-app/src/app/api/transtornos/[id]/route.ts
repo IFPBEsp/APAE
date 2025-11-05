@@ -10,7 +10,9 @@ interface IParams {
 
 export async function GET(request: Request, { params }: IParams) {
   try {
-    const { id } = params;
+    await params;
+
+    const { id } = params; 
     const api = await createBaseApi();
     const { data } = await api.get(`/transtornos/${id}`);
 
@@ -25,7 +27,9 @@ export async function GET(request: Request, { params }: IParams) {
 
 export async function PUT(request: Request, { params }: IParams) {
   try {
-    const { id } = params;
+    await params;
+
+    const { id } = params; 
     const body = await request.json();
 
     const validation = updateTranstornoSchema.safeParse(body);
@@ -53,7 +57,9 @@ export async function PUT(request: Request, { params }: IParams) {
 
 export async function DELETE(request: Request, { params }: IParams) {
   try {
-    const { id } = params;
+    await params;
+    
+    const { id } = params; 
     const api = await createBaseApi();
     const { data } = await api.delete(`/transtornos/${id}`);
 
