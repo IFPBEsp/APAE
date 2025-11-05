@@ -4,13 +4,14 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Plus } from "lucide-react";
-import { PatientCard } from "@/components/patient-card";
+import { PatientCard } from "@/components/patient-card"; // Corrija o path se necessário
 import { PatientCardData } from "@/schemas/patientSchema"; 
-import { SearchFilters } from "@/components/search-filters";
+import { SearchFilters } from "@/components/search-filters"; // Corrija o path se necessário
 import { toast } from "react-toastify";
 import { useDebounce } from "@/hooks/use-debounce"; 
 
-import { createClientApi } from '@/lib/api-client';
+// A importação do createClientApi não é mais necessária, está correto
+// import { createClientApi } from '@/lib/api-client';
 
 export default function PatientsAndStudentsScreen() {
   const [patients, setPatients] = useState<PatientCardData[]>([]);
@@ -28,14 +29,14 @@ export default function PatientsAndStudentsScreen() {
   const [anoOptions, setAnoOptions] = useState<string[]>([]);
   const [cidadeOptions, setCidadeOptions] = useState<string[]>([]);
 
+  // useEffect (fetchFilterOptions) - CORRIGIDO
   useEffect(() => {
     const fetchFilterOptions = async () => {
       try {
-        const api = createClientApi(); 
-
-        const transtornosPromise = api.get('/patients/filtros/transtornos');
-        const anosPromise = api.get('/patients/filtros/anos');
-        const cidadesPromise = api.get('/patients/filtros/cidades');
+        // CORREÇÃO AQUI: Adicionado o prefixo /api/
+        const transtornosPromise = fetch('/api/patients/filtros/transtornos');
+        const anosPromise = fetch('/api/patients/filtros/anos');
+        const cidadesPromise = fetch('/api/patients/filtros/cidades');
 
         const [
           transtornosResponse,
@@ -46,10 +47,18 @@ export default function PatientsAndStudentsScreen() {
           anosPromise,
           cidadesPromise
         ]);
+
+        if (!transtornosResponse.ok) throw new Error('Falha ao buscar transtornos');
+        if (!anosResponse.ok) throw new Error('Falha ao buscar anos');
+        if (!cidadesResponse.ok) throw new Error('Falha ao buscar cidades');
+
+        const transtornosData = await transtornosResponse.json();
+        const anosData = await anosResponse.json();
+        const cidadesData = await cidadesResponse.json();
         
-        setTranstornoOptions(transtornosResponse.data);
-        setAnoOptions(anosResponse.data);
-        setCidadeOptions(cidadesResponse.data);
+        setTranstornoOptions(transtornosData);
+        setAnoOptions(anosData);
+        setCidadeOptions(cidadesData);
 
       } catch (err) {
         console.error("Erro ao buscar opções de filtro:", err);
@@ -60,30 +69,38 @@ export default function PatientsAndStudentsScreen() {
     fetchFilterOptions();
   }, []); 
 
+
+  // useEffect (Load Data) - CORRIGIDO
   useEffect(() => {
     const loadData = async () => {
       setIsLoading(true); 
       try {
-        const params = {
-          Nome: debouncedSearchName || undefined,
-          transtorno: transtorno || undefined,
-          ano: ano || undefined,
-          cidade: cidade || undefined,
-        };
+        const params = new URLSearchParams();
+        if (debouncedSearchName) params.append("Nome", debouncedSearchName);
+        if (transtorno) params.append("transtorno", transtorno);
+        if (ano) params.append("ano", ano);
+        if (cidade) params.append("cidade", cidade);
         
-        const api = createClientApi(); 
+        const queryString = params.toString();
         
-        console.log("TESTE: Buscando pacientes com params:", params);
+        console.log("TESTE: Buscando pacientes com params:", queryString);
         
-        const response = await api.get('/patients', { params }); 
+        // CORREÇÃO AQUI: Adicionado o prefixo /api/
+        const response = await fetch(`/api/patients?${queryString}`); 
         
-        console.log("Resposta recebida (pacientes):", response.data);
+        if (!response.ok) {
+           const errorData = await response.json();
+           throw new Error(errorData.message || "Erro ao buscar dados");
+        }
+
+        const data: PatientCardData[] = await response.json(); 
+        console.log("Resposta recebida (pacientes):", data);
         
-        setPatients(response.data);
+        setPatients(data);
         setError(null); 
       } catch (err) {
         console.error("Erro ao buscar dados (pacientes):", err);
-        const errorMsg = "Não foi possível carregar os dados.";
+        const errorMsg = (err instanceof Error) ? err.message : "Não foi possível carregar os dados.";
         setError(errorMsg);
         toast.error(errorMsg);
       } finally {
