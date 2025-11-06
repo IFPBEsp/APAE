@@ -55,7 +55,7 @@ export const loginSchema = z.object({
         return isEmail || isCpf;
       },
       {
-        message: "Digite um email ou cpf válido",
+        message: "Digite um email ou CPF válido",
       },
     ),
   password: z

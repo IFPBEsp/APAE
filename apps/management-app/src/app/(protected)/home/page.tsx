@@ -5,7 +5,7 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Plus } from "lucide-react";
 import { PatientCard } from "@/components/patient-card";
-import { Patient } from "@/schemas/authSchema";
+import { Patient } from "@/schemas/auth-schemas";
 import { SearchFilters } from "@/components/search-filters";
 import { toast } from "react-toastify";
 
