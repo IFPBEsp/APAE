@@ -51,11 +51,12 @@ export const loginSchema = z.object({
     .refine(
       (value) => {
         const isEmail = z.email().safeParse(value).success;
-        return isEmail;
+        const isCpf = cpfSchema.safeParse(value).success;
+        return isEmail || isCpf;
       },
       {
-        message: "Digite um email válido",
-      }
+        message: "Digite um email ou cpf válido",
+      },
     ),
   password: z
     .string()
