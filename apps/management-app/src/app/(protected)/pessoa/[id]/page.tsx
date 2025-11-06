@@ -1,333 +1,246 @@
 "use client";
+
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import DocumentCategoriesCard from "@/components/DocumentCategoriesCard";
-import { SquarePen } from "lucide-react";
 import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
+import { toast } from "react-toastify";
+import { Loader2, SquarePen, ArrowLeft } from "lucide-react";
 
-export default function PersonDetails() {
-  const params = useParams();
-  const [pessoa, setPessoa] = useState<any>(null);
-  const router = useRouter();
-  const primeiroResponsavelVivo = pessoa?.responsaveis?.find(
-    (r: any) => r.vivo === "Sim"
+interface InfoRowProps {
+  label: string;
+  value?: string | number | null;
+}
+const InfoRow: React.FC<InfoRowProps> = ({ label, value }) => {
+  const displayValue = value || "Não informado";
+  return (
+    <div className="mb-2">
+      <span className="text-sm font-semibold text-gray-500">{label}</span>
+      <p className="text-base text-black">{displayValue}</p>
+    </div>
   );
+};
+
+export default function PersonDetailsPage() {
+  const params = useParams();
+  const router = useRouter();
+  const [pessoa, setPessoa] = useState<any>(null); // Mudar 'any' para uma interface depois
+  const [loading, setLoading] = useState(true);
+
+  const id = params?.id as string;
 
   useEffect(() => {
-    if (!params?.id) {
-      return;
+    if (!id) return;
+
+    async function fetchPerson() {
+      try {
+        setLoading(true);
+        const response = await fetch(`/api/pessoas/${id}`);
+        if (!response.ok) {
+          throw new Error("Falha ao buscar dados do paciente.");
+        }
+        const data = await response.json();
+        setPessoa(data);
+      } catch (err: any) {
+        console.error(err);
+        toast.error(err.message);
+        router.push("/pessoas");
+      } finally {
+        setLoading(false);
+      }
     }
 
-    fetch(`/api/pessoas/${params.id}`)
-      .then((response) => response.json())
-      .then((data) => setPessoa(data))
-      .catch((err) => console.error(err));
-  }, [params?.id]);
+    fetchPerson();
+  }, [id, router]);
 
-  const handleCategoriaClick = (tipo: string) => {
-    const rotas: Record<string, string> = {
-      pessoais: `/pessoa/${params.id}/documentos/pessoal`,
-      medicos: `/pessoa/${params.id}/documentos/medico`,
-      escolares: `/pessoa/${params.id}/documentos/escolar`,
-    };
+  // Vai precisar de um novo estado e um novo fetch para o Cadastro Anual
+  // const [registroAnual, setRegistroAnual] = useState<any>(null);
+  // useEffect(() => {
+  //   fetch(`/api/pessoas/${id}/cadastro-anual/2025`) // Exemplo
+  //     .then(res => res.json())
+  //     .then(setData);
+  // }, [id]);
+  // E usaria `registroAnual.bpc`, `registroAnual.familyIncome`, etc.
 
-    const rota = rotas[tipo];
-    rota
-      ? router.push(rota)
-      : alert(`O paciente não possui documentos do tipo ${tipo}`);
-  };
+  if (loading) {
+    return (
+      <div className="flex justify-center items-center h-screen">
+        <Loader2 className="h-8 w-8 animate-spin text-primary" />
+      </div>
+    );
+  }
+
+  if (!pessoa) {
+    return (
+      <div className="text-center mt-10">
+        <p>Paciente não encontrado.</p>
+        <Button asChild variant="link">
+          <Link href="/home">Voltar para a lista</Link>
+        </Button>
+      </div>
+    );
+  }
 
   return (
-    <div className="flex flex-col items-center gap-y-4 w-full max-w-full mx-auto px-4 mt-6 mb-6">
-      <Avatar className="h-40 w-40 border">
-        <AvatarImage
-          src={pessoa?.urlFoto ?? "https://via.placeholder.com/150"}
-          alt={pessoa?.nomeCompleto ?? "Foto do paciente"}
-        />
-        <AvatarFallback className="font-baloo font-bold text-[32px]">
-          {pessoa?.nomeCompleto?.charAt(0) ?? "P"}
-        </AvatarFallback>
-      </Avatar>
-      <h3 className="font-baloo font-bold text-[#0D4F97] text-[24px]">
-        {pessoa?.nomeCompleto}
-      </h3>
+    <main className="container mx-auto p-4 md:p-6">
+      <div className="mb-4">
+        <Button
+          variant="outline"
+          onClick={() => router.push("/home")}
+          className="gap-2"
+        >
+          <ArrowLeft className="h-4 w-4" />
+          Voltar para listagem
+        </Button>
+      </div>
 
-      <DocumentCategoriesCard onClickCategoria={handleCategoriaClick} />
+      {/* --- Cabeçalho e Avatar --- */}
+      <div className="flex flex-col items-center gap-y-4 w-full mb-6">
+        <Avatar className="h-40 w-40 border">
+          <AvatarImage
+            src={pessoa?.urlFoto ?? "https://via.placeholder.com/150"} // O JSON ainda não tem foto
+            alt={pessoa?.fullName ?? "Foto do paciente"}
+          />
+          <AvatarFallback className="font-baloo font-bold text-[32px]">
+            {pessoa?.fullName?.charAt(0) ?? "P"}
+          </AvatarFallback>
+        </Avatar>
+        <h3 className="font-baloo font-bold text-[#0D4F97] text-[24px]">
+          {pessoa?.fullName}
+        </h3>
+      </div>
 
-      <Card className="w-full relative font-nunito text-[#0D4F97]">
-        <CardHeader>
-          <CardTitle className="font-semibold text-[18px] text-center">
-            Dados pessoais
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          <Button
-            variant="ghost"
-            size="icon"
-            className="absolute top-2 right-2 !bg-transparent !hover:bg-muted"
-          >
-            <Link href="/">
-              <SquarePen className="w-4 h-4 text-primary mb-5" />
-            </Link>
-          </Button>
-          <p className="text-left">
-            Contato: <span className="text-[#000000]">{pessoa?.telefone}</span>
-          </p>
-          <p className="text-left">
-            Data de nascimento:{" "}
-            <span className="text-[#000000]">{pessoa?.dataNascimento}</span>
-          </p>
-          <p className="text-left">
-            Registro de nascimento:{" "}
-            <span className="text-[#000000]">{pessoa?.numRegistroNasc}</span>
-          </p>
-          <p className="text-left">
-            Fl.s: <span className="text-[#000000]">{pessoa?.fls}</span>
-          </p>
-          <p className="text-left">
-            Livro: <span className="text-[#000000]">{pessoa?.livro}</span>
-          </p>
-          <p className="text-left">
-            RG: <span className="text-[#000000]">{pessoa?.rg}</span>
-          </p>
-          <p className="text-left">
-            Data de emissão:{" "}
-            <span className="text-[#000000]">{pessoa?.dataEmissaoRg}</span>
-          </p>
-          <p className="text-left">
-            Orgão emissor:{" "}
-            <span className="text-[#000000]">{pessoa?.orgaoEmissorRg}</span>
-          </p>
-          <p className="text-left">
-            CPF: <span className="text-[#000000]">{pessoa?.cpf}</span>
-          </p>
-          <p className="text-left">
-            Naturalidade:{" "}
-            <span className="text-[#000000]">{pessoa?.naturalidade}</span>
-          </p>
-          <p className="text-left">
-            CNS: <span className="text-[#000000]">{pessoa?.cns}</span>
-          </p>
-          <p className="text-left">
-            NIS: <span className="text-[#000000]">{pessoa?.nis}</span>
-          </p>
-          <p className="text-left">
-            Possui BPC:{" "}
-            <span className="text-[#000000]">
-              {pessoa?.cadastroAnual?.possuiBpc}
-            </span>
-          </p>
-          <p className="text-left">
-            Renda familiar:{" "}
-            <span className="text-[#000000]">
-              R${pessoa?.cadastroAnual?.rendaFamiliar}
-            </span>
-          </p>
-          <p className="text-left">
-            Data de cadastro:{" "}
-            <span className="text-[#000000]">{pessoa?.dataCadastramento}</span>
-          </p>
-        </CardContent>
-      </Card>
+      {/* --- Cartões de Documentos --- */}
+      <DocumentCategoriesCard
+        onClickCategoria={(tipo: string) => {
+          // Sua lógica de rota aqui
+          router.push(`/pessoa/${id}/documentos/${tipo}`);
+        }}
+      />
 
-      <Card className="w-full relative font-nunito text-[#0D4F97]">
-        <CardHeader>
-          <CardTitle className="font-semibold text-[18px] text-center">
-            Dados residenciais
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          <Button
-            variant="ghost"
-            size="icon"
-            className="absolute top-2 right-2 !bg-transparent !hover:bg-muted"
-          >
-            <Link href="/">
-              <SquarePen className="w-4 h-4 text-primary mb-5" />
-            </Link>
-          </Button>
-          <p className="text-left">
-            Endereço: <span className="text-[#000000]">{pessoa?.endereco}</span>
-          </p>
-          <p className="text-left">
-            Bairro: <span className="text-[#000000]">{pessoa?.bairro}</span>
-          </p>
-          <p className="text-left">
-            Cidade: <span className="text-[#000000]">{pessoa?.cidade}</span>
-          </p>
-          <p className="text-left">
-            Estado: <span className="text-[#000000]">{pessoa?.estado}</span>
-          </p>
-          <p className="text-left">
-            CEP: <span className="text-[#000000]">{pessoa?.cep}</span>
-          </p>
-        </CardContent>
-      </Card>
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-6">
+        {/* --- Card: Dados Pessoais --- */}
+        <Card className="w-full relative font-nunito">
+          <CardHeader>
+            <CardTitle className="text-[#0D4F97]">Dados Pessoais</CardTitle>
+          </CardHeader>
+          <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-x-4">
+            <InfoRow label="Nome Completo" value={pessoa.fullName} />
+            <InfoRow label="Data de Nasc." value={pessoa.birthDate} />
+            <InfoRow label="Naturalidade" value={pessoa.birthplace} />
+            <InfoRow label="Contato" value={pessoa.contact} />
+            <InfoRow label="Alergias" value={pessoa.allergies} />
+            <InfoRow label="Estudante?" value={pessoa.isStudent ? "Sim" : "Não"} />
+            <InfoRow
+              label="Data de Cadastro"
+              value={pessoa.registrationDate}
+            />
+          </CardContent>
+        </Card>
 
-      <Card className="w-full relative font-nunito text-[#0D4F97]">
-        <CardHeader>
-          <CardTitle className="font-semibold text-[18px] text-center">
-            Dados familiares
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          <Button
-            variant="ghost"
-            size="icon"
-            className="absolute top-2 right-2 !bg-transparent !hover:bg-muted"
-          >
-            <Link href="/">
-              <SquarePen className="w-4 h-4 text-primary mb-5" />
-            </Link>
-          </Button>
-          {pessoa?.responsaveis?.length > 0 ? (
-            pessoa.responsaveis.map((resp: any, index: number) => (
-              <div key={index} className="mb-4 border-t border-gray-200 pt-2">
-                <p className="font-semibold text-left">
-                  {resp.tipoResponsavel
-                    ? resp.tipoResponsavel
-                    : `Responsável ${index + 1}`}
-                </p>
-                <p>
-                  Nome: <span className="text-[#000000]">{resp.nome}</span>
-                </p>
-                <p>
-                  Vivo: <span className="text-[#000000]">{resp.vivo}</span>
-                </p>
-                <p>
-                  Profissão:{" "}
-                  <span className="text-[#000000]">{resp.profissao}</span>
-                </p>
-                <p>
-                  RG: <span className="text-[#000000]">{resp.rg}</span>
-                </p>
-                <p>
-                  CPF: <span className="text-[#000000]">{resp.cpf}</span>
-                </p>
-                <p>
-                  Onde procurar:{" "}
-                  <span className="text-[#000000]">{resp.ondeProcurar}</span>
-                </p>
-                <p>
-                  Número para contato:{" "}
-                  <span className="text-[#000000]">{resp.emergencia}</span>
-                </p>
+        {/* --- Card: Documentação --- */}
+        <Card className="w-full relative font-nunito">
+          <CardHeader>
+            <CardTitle className="text-[#0D4F97]">Documentação</CardTitle>
+          </CardHeader>
+          <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-x-4">
+            <InfoRow label="CPF" value={pessoa.cpf} />
+            <InfoRow label="RG" value={pessoa.rg} />
+            <InfoRow label="Orgão Emissor" value={pessoa.issuingAgency} />
+            <InfoRow label="Data de Emissão" value={pessoa.issueDate} />
+            <InfoRow label="CNS" value={pessoa.cns} />
+            <InfoRow label="NIS" value={pessoa.nis} />
+            <InfoRow label="Nº Cert. Nasc." value={pessoa.birthCertificateNumber} />
+            <InfoRow label="Cartório" value={pessoa.registryOffice} />
+            <InfoRow label="Livro" value={pessoa.book} />
+            <InfoRow label="Folha" value={pessoa.fls} />
+          </CardContent>
+        </Card>
+
+        {/* --- Card: Endereço --- */}
+        <Card className="w-full relative font-nunito">
+          <CardHeader>
+            <CardTitle className="text-[#0D4F97]">Endereço Residencial</CardTitle>
+          </CardHeader>
+          <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-x-4">
+            <InfoRow label="Rua" value={pessoa.address?.street} />
+            <InfoRow label="Número" value={pessoa.address?.number} />
+            <InfoRow label="Bairro" value={pessoa.address?.neighborhood} />
+            <InfoRow label="Cidade" value={pessoa.address?.city} />
+            <InfoRow label="Estado" value={pessoa.address?.state} />
+            <InfoRow label="CEP" value={pessoa.address?.cep} />
+            <InfoRow label="Complemento" value={pessoa.address?.complement} />
+          </CardContent>
+        </Card>
+
+        {/* --- Card: Responsáveis --- */}
+        <Card className="w-full relative font-nunito">
+          <CardHeader>
+            <CardTitle className="text-[#0D4F97]">Responsáveis</CardTitle>
+          </CardHeader>
+          <CardContent>
+            {/* O Guardião/Responsável principal */}
+            {pessoa.guardian && (
+              <div className="mb-4 p-2 border rounded-md">
+                <p className="font-bold text-base">Guardião Principal</p>
+                <InfoRow label="Nome" value={pessoa.guardian.name} />
+                <InfoRow label="Parentesco" value={pessoa.guardian.kinship} />
+                <InfoRow label="Contato" value={pessoa.guardian.contact} />
+                <InfoRow
+                  label="Endereço"
+                  value={`${pessoa.guardian.address?.street ?? ""}, ${
+                    pessoa.guardian.address?.number ?? ""
+                  }`}
+                />
               </div>
-            ))
-          ) : (
-            <p>Nenhum responsável cadastrado.</p>
-          )}
-        </CardContent>
-      </Card>
+            )}
+            {/* Os Pais */}
+            {pessoa.parents?.map((parent: any) => (
+              <div
+                key={parent.id}
+                className="mb-2 p-2 border-t border-gray-200"
+              >
+                <p className="font-bold text-base">
+                  {parent.kinship === "PAI"
+                    ? "Pai"
+                    : parent.kinship === "MAE"
+                    ? "Mãe"
+                    : "Parente"}
+                </p>
+                <InfoRow label="Nome" value={parent.name} />
+                <InfoRow label="CPF" value={parent.cpf} />
+                <InfoRow label="Profissão" value={parent.profession} />
+                <InfoRow label="Vivo?" value={parent.isAlive ? "Sim" : "Não"} />
+              </div>
+            ))}
+          </CardContent>
+        </Card>
 
-      <Card className="w-full relative font-nunito text-[#0D4F97]">
-        <CardHeader>
-          <CardTitle className="font-semibold text-[18px] text-center">
-            Informações de saúde
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          <Button
-            variant="ghost"
-            size="icon"
-            className="absolute top-2 right-2 !bg-transparent !hover:bg-muted"
-          >
-            <Link href="/">
-              <SquarePen className="w-4 h-4 text-primary mb-5" />
-            </Link>
-          </Button>
-          <p>
-            Vacinas:{" "}
-            <span className="text-[#000000]">
-              {pessoa?.vacinas?.length
-                ? pessoa.vacinas
-                    .map((v: any) => `${v.nome} (${v.dataAplicacao})`)
-                    .join(", ")
-                : "Não informado"}
-            </span>
-          </p>
-          <p>
-            Doenças que já teve:{" "}
-            <span className="text-[#000000]">
-              {pessoa?.cadastroAnual?.doencas}
-            </span>
-          </p>
-          <p>
-            Alergias:{" "}
-            <span className="text-[#000000]">
-              {pessoa?.cadastroAnual?.alergias}
-            </span>
-          </p>
-          <p>
-            Tipo de medicação que toma:{" "}
-            <span className="text-[#000000]">
-              {pessoa?.cadastroAnual?.medicacao}
-            </span>
-          </p>
-          <p>
-            Tipos de deficiências:{" "}
-            <span className="text-[#000000]">
-              {pessoa?.deficiencias?.length
-                ? pessoa.deficiencias.map((d: any) => d.descricao).join(", ")
-                : "Não informado"}
-            </span>
-          </p>
-          <p>
-            Tipos de atendimento:{" "}
-            <span className="text-[#000000]">
-              {pessoa?.atendimentos?.length
-                ? pessoa.atendimentos.map((a: any) => a.descricao).join(", ")
-                : "Não informado"}
-            </span>
-          </p>
-        </CardContent>
-      </Card>
-
-      <Card className="w-full relative font-nunito text-[#0D4F97]">
-        <CardHeader>
-          <CardTitle className="font-semibold text-[18px] text-center">
-            Em caso de emergência a quem procurar e onde?
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          <Button
-            variant="ghost"
-            size="icon"
-            className="absolute top-2 right-2 !bg-transparent !hover:bg-muted"
-          >
-            <Link href="/">
-              <SquarePen className="w-4 h-4 text-primary mb-5" />
-            </Link>
-          </Button>
-          {primeiroResponsavelVivo ? (
-            <>
-              <p>
-                Quem procurar:{" "}
-                <span className="text-[#000000]">
-                  {primeiroResponsavelVivo?.nome}
-                </span>
-              </p>
-              <p>
-                Onde encontrar:{" "}
-                <span className="text-[#000000]">
-                  {primeiroResponsavelVivo?.ondeProcurar}
-                </span>
-              </p>
-              <p>
-                Contato de emergência:{" "}
-                <span className="text-[#000000]">
-                  {primeiroResponsavelVivo?.emergencia}
-                </span>
-              </p>
-            </>
-          ) : (
-            <p>Nenhum responsável vivo cadastrado.</p>
-          )}
-        </CardContent>
-      </Card>
-    </div>
+        {/* --- Card: Saúde --- */}
+        <Card className="w-full relative font-nunito">
+          <CardHeader>
+            <CardTitle className="text-[#0D4F97]">Informações de Saúde</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <InfoRow label="Alergias" value={pessoa.allergies} />
+            <InfoRow
+              label="Vacinas"
+              value={pessoa.vaccineNames
+                ?.map((v: any) => v.name)
+                .join(", ")}
+            />
+            
+            {/* Campos do Registro Anual (virão da próxima issue) */}
+            <h3 className="text-gray-400 mt-4 text-sm">
+              (BPC, Renda Familiar, Doenças e Transtornos aparecerão aqui após 
+              implementar o fetch do Registro Anual)
+            </h3>
+          </CardContent>
+        </Card>
+      </div>
+    </main>
   );
 }
