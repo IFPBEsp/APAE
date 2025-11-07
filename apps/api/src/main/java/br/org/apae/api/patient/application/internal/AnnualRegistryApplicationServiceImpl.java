@@ -66,7 +66,7 @@ public class AnnualRegistryApplicationServiceImpl implements AnnualRegistryAppli
     @Override
     @Transactional(readOnly = true)
     public AnnualRegistryResponseDTO findRegistryByPatientAndYear(UUID patientId, Integer year) {
-        patientDomainService.getByIdOrThrow(patientId); // Valida paciente
+        patientDomainService.getByIdOrThrow(patientId);
 
         AnnualRegistry registry = annualRegistryRepository
                 .findByPatientIdAndYear(patientId, year)
@@ -78,7 +78,7 @@ public class AnnualRegistryApplicationServiceImpl implements AnnualRegistryAppli
     @Override
     @Transactional
     public AnnualRegistryResponseDTO updateRegistry(UUID patientId, UUID registryId, UpdateAnnualRegistryDTO updateDto) {
-        patientDomainService.getByIdOrThrow(patientId); // 1. Valida paciente
+        patientDomainService.getByIdOrThrow(patientId);
 
         AnnualRegistry registry = annualRegistryRepository.findById(registryId)
                 .orElseThrow(() -> new RegistryNotFoundException(registryId));
@@ -97,16 +97,13 @@ public class AnnualRegistryApplicationServiceImpl implements AnnualRegistryAppli
 
         Set<DisorderResponseDTO> disorderDtos = null;
         if (updateDto.disorders() != null) {
-            // ==========================================================
-            // CONVERSÃO DE TIPO PARA CORRIGIR O ERRO
-            // ==========================================================
+
             Set<CreateDisorderDTO> createDisorderDtos =
                     updateDto.disorders().stream()
                             .map(update -> new CreateDisorderDTO(update.name()))
                             .collect(java.util.stream.Collectors.toSet());
 
-            disorderDtos = disorderService.findDisorders(createDisorderDtos); // <-- AGORA FUNCIONA
-            // ==========================================================
+            disorderDtos = disorderService.findDisorders(createDisorderDtos);
 
             if (updateDto.disorders().size() != disorderDtos.size()) {
                 throw new DisorderMismatchException();
@@ -122,7 +119,7 @@ public class AnnualRegistryApplicationServiceImpl implements AnnualRegistryAppli
     @Override
     @Transactional
     public void deleteRegistry(UUID patientId, UUID registryId) {
-        patientDomainService.getByIdOrThrow(patientId); // Valida paciente
+        patientDomainService.getByIdOrThrow(patientId);
 
         AnnualRegistry registry = annualRegistryRepository.findById(registryId)
                 .orElseThrow(() -> new RegistryNotFoundException(registryId));

@@ -48,11 +48,9 @@ public class AnnualRegistryControllerImpl implements AnnualRegistryController {
             return ResponseEntity.ok(registryDto);
 
         } catch (RegistryNotFoundException e) {
-            // Agora sim, o erro "não encontrado" vira um "404 Not Found"
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
 
         } catch (Exception e) {
-            // Um 'catch' geral para qualquer outro 500
             e.printStackTrace();
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }

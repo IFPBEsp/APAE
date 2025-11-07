@@ -98,9 +98,6 @@ public class AnnualRegistry {
         return Objects.hash(id);
     }
 
-    // ==========================================================
-    // SETTERS ADICIONADOS PARA O MÉTODO UPDATE FUNCIONAR
-    // ==========================================================
     public void setBpc(String bpc) {
         this.bpc = bpc;
     }

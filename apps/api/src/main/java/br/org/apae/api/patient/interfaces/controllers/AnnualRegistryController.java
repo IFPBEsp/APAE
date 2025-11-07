@@ -3,7 +3,7 @@ package br.org.apae.api.patient.interfaces.controllers;
 import java.util.UUID;
 
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*; // Import wildcard
+import org.springframework.web.bind.annotation.*;
 
 import br.org.apae.api.common.dto.patient.request.annual_registry.CreateAnnualRegistryDTO;
 import br.org.apae.api.common.dto.patient.request.annual_registry.UpdateAnnualRegistryDTO;
@@ -15,7 +15,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 
-@RequestMapping("/patients/{id}/annual-registry") // 'id' é o patientId
+@RequestMapping("/patients/{id}/annual-registry")
 @Tag(name = "Annual Registry", description = "Endpoints para gerenciamento dos registros anuais dos pacientes")
 public interface AnnualRegistryController {
 
@@ -47,7 +47,7 @@ public interface AnnualRegistryController {
             @ApiResponse(responseCode = "400", description = "Dados inválidos"),
             @ApiResponse(responseCode = "404", description = "Paciente ou registro não encontrado")
     })
-    @PutMapping("/{registryId}")
+    @PatchMapping("/{registryId}")
     ResponseEntity<AnnualRegistryResponseDTO> updateRegistry(
             @Parameter(description = "ID do paciente") @PathVariable("id") UUID patientId,
             @Parameter(description = "ID do registro a ser atualizado") @PathVariable("registryId") UUID registryId,

@@ -33,10 +33,6 @@ public class AnnualRegistryMapper {
                 disorders);
     }
 
-    /**
-     * Atualiza uma entidade 'AnnualRegistry' existente com dados de um DTO.
-     * Este método é "à prova de nulos" (PATCH).
-     */
     public AnnualRegistry updateEntityFromDto(AnnualRegistry entity, UpdateAnnualRegistryDTO dto, Set<DisorderResponseDTO> disorderDtos) {
 
         if (dto.bpc() != null) {
@@ -52,7 +48,6 @@ public class AnnualRegistryMapper {
             entity.setYear(dto.year());
         }
 
-        // disorderDtos SÓ será não-nulo se o service o tiver processado
         if (disorderDtos != null) {
             Set<Disorder> disorders = this.disorderMapper.toEntitySetFromResponse(disorderDtos);
             entity.setDisorders(disorders);
