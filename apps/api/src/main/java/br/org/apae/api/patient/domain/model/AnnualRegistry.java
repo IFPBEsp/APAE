@@ -35,7 +35,7 @@ public class AnnualRegistry {
     }
 
     public AnnualRegistry(String bpc, String diseases, BigDecimal familyIncome, int year, UUID patientId,
-                          Set<Disorder> disorders) {
+            Set<Disorder> disorders) {
         this.bpc = bpc;
         this.diseases = diseases;
         this.familyIncome = familyIncome;
@@ -45,7 +45,7 @@ public class AnnualRegistry {
     }
 
     public AnnualRegistry(UUID id, String bpc, String diseases, BigDecimal familyIncome, int year, UUID patientId,
-                          Set<Disorder> disorders) {
+            Set<Disorder> disorders) {
         this.id = id;
         this.bpc = bpc;
         this.diseases = diseases;
@@ -96,24 +96,5 @@ public class AnnualRegistry {
     @Override
     public int hashCode() {
         return Objects.hash(id);
-    }
-
-    // ==========================================================
-    // SETTERS ADICIONADOS PARA O MÉTODO UPDATE FUNCIONAR
-    // ==========================================================
-    public void setBpc(String bpc) {
-        this.bpc = bpc;
-    }
-    public void setDiseases(String diseases) {
-        this.diseases = diseases;
-    }
-    public void setFamilyIncome(BigDecimal familyIncome) {
-        this.familyIncome = familyIncome;
-    }
-    public void setYear(Integer year) {
-        this.year = year;
-    }
-    public void setDisorders(Set<Disorder> disorders) {
-        this.disorders = disorders;
     }
 }
