@@ -4,7 +4,7 @@ import java.util.UUID;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
-@ResponseStatus(HttpStatus.FORBIDDEN)
+@ResponseStatus(HttpStatus.BAD_REQUEST)
 public class RegistryOwnershipException extends RuntimeException {
 
     public RegistryOwnershipException(UUID patientId, UUID registryId) {

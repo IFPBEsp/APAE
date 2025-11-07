@@ -3,9 +3,6 @@ package br.org.apae.api.patient.application.internal;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
-import java.util.stream.Collectors;
-
-import br.org.apae.api.common.dto.patient.request.disorder.CreateDisorderDTO;
 import br.org.apae.api.patient.domain.exceptions.RegistryNotFoundException;
 import br.org.apae.api.patient.domain.exceptions.RegistryOwnershipException;
 import org.springframework.stereotype.Service;
@@ -97,16 +94,7 @@ public class AnnualRegistryApplicationServiceImpl implements AnnualRegistryAppli
                     });
         }
 
-        Set<DisorderResponseDTO> disorderDtos = null;
-        if (updateDto.disorders() != null) {
-            disorderDtos = disorderService.findDisordersFromUpdateDTOs(updateDto.disorders());
-
-            if (updateDto.disorders().size() != disorderDtos.size()) {
-                throw new DisorderMismatchException();
-            }
-        }
-
-        AnnualRegistry updatedRegistry = annualRegistryMapper.updateEntityFromDto(registry, updateDto, disorderDtos);
+        AnnualRegistry updatedRegistry = annualRegistryMapper.updateEntityFromDto(registry, updateDto);
 
         AnnualRegistry registrySaved = annualRegistryRepository.save(updatedRegistry);
         return annualRegistryMapper.toResponseDTO(registrySaved);
@@ -157,11 +145,9 @@ public class AnnualRegistryApplicationServiceImpl implements AnnualRegistryAppli
     @Transactional
     public void deleteAllRegistriesByPatient(UUID patientId) {
         List<AnnualRegistry> registries = annualRegistryRepository.findAllByPatientId(patientId);
-
         if (registries.isEmpty()) {
             return;
         }
-
         annualRegistryRepository.deleteAll(registries);
     }
 }

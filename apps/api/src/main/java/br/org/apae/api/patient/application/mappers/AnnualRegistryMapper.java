@@ -34,25 +34,9 @@ public class AnnualRegistryMapper {
                 disorders);
     }
 
-    public AnnualRegistry updateEntityFromDto(AnnualRegistry entity, UpdateAnnualRegistryDTO dto, Set<DisorderResponseDTO> disorderDtos) {
+    public AnnualRegistry updateEntityFromDto(AnnualRegistry entity, UpdateAnnualRegistryDTO dto) {
 
-        if (dto.bpc() != null) {
-            entity.setBpc(dto.bpc());
-        }
-        if (dto.diseases() != null) {
-            entity.setDiseases(dto.diseases());
-        }
-        if (dto.familyIncome() != null) {
-            entity.setFamilyIncome(dto.familyIncome());
-        }
-        if (dto.year() != null) {
-            entity.setYear(dto.year());
-        }
-
-        if (disorderDtos != null) {
-            Set<Disorder> disorders = this.disorderMapper.toEntitySetFromResponse(disorderDtos);
-            entity.setDisorders(disorders);
-        }
+        entity.setYear(dto.year());
 
         return entity;
     }
