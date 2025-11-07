@@ -57,12 +57,10 @@ public class DisorderApplicationServiceImpl implements DisorderApplicationServic
     @Override
     @Transactional(readOnly = true)
     public Set<DisorderResponseDTO> findDisordersFromUpdateDTOs(Set<UpdateDisorderDTO> updateDisorderDtos) {
-        // 1. Converte do DTO de Update para o DTO de Create
         Set<CreateDisorderDTO> createDisorderDtos = updateDisorderDtos.stream()
                 .map(updateDto -> new CreateDisorderDTO(updateDto.name()))
                 .collect(Collectors.toSet());
 
-        // 2. Chama o método findDisorders que já existe e funciona
         return this.findDisorders(createDisorderDtos);
     }
 
