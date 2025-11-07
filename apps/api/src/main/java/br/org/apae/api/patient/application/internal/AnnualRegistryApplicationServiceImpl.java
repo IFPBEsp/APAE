@@ -99,12 +99,7 @@ public class AnnualRegistryApplicationServiceImpl implements AnnualRegistryAppli
 
         Set<DisorderResponseDTO> disorderDtos = null;
         if (updateDto.disorders() != null) {
-            Set<CreateDisorderDTO> createDisorderDtos =
-                    updateDto.disorders().stream()
-                            .map(update -> new CreateDisorderDTO(update.name()))
-                            .collect(Collectors.toSet());
-
-            disorderDtos = disorderService.findDisorders(createDisorderDtos);
+            disorderDtos = disorderService.findDisordersFromUpdateDTOs(updateDto.disorders());
 
             if (updateDto.disorders().size() != disorderDtos.size()) {
                 throw new DisorderMismatchException();
