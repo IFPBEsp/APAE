@@ -13,7 +13,7 @@ public class AnnualRegistry {
     private UUID id;
 
     @Column(name = "bpc", nullable = false)
-    private String bpc; // Benefício de Prestação Continuada
+    private String bpc;
 
     @Column(name = "doencas", nullable = false)
     private String diseases;
@@ -71,7 +71,7 @@ public class AnnualRegistry {
         return familyIncome;
     }
 
-    public int getYear() {
+    public Integer getYear() {
         return year;
     }
 

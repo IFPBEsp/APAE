@@ -2,7 +2,6 @@ package br.org.apae.api.controllers.annual_registry;
 
 import java.util.UUID;
 
-import br.org.apae.api.patient.domain.exceptions.RegistryNotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
@@ -10,6 +9,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 
 import br.org.apae.api.common.dto.patient.request.annual_registry.CreateAnnualRegistryDTO;
+import br.org.apae.api.common.dto.patient.request.annual_registry.ReplaceAnnualRegistryDTO;
 import br.org.apae.api.common.dto.patient.request.annual_registry.UpdateAnnualRegistryDTO;
 import br.org.apae.api.common.dto.patient.response.annual_registry.AnnualRegistryResponseDTO;
 import br.org.apae.api.patient.application.interfaces.AnnualRegistryApplicationService;
@@ -42,18 +42,9 @@ public class AnnualRegistryControllerImpl implements AnnualRegistryController {
             @PathVariable("id") UUID patientId,
             @PathVariable("year") Integer year) {
 
-        try {
-            AnnualRegistryResponseDTO registryDto = annualRegistryApplicationService
-                    .findRegistryByPatientAndYear(patientId, year);
-            return ResponseEntity.ok(registryDto);
-
-        } catch (RegistryNotFoundException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
-
-        } catch (Exception e) {
-            e.printStackTrace();
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
-        }
+        AnnualRegistryResponseDTO registryDto = annualRegistryApplicationService
+                .findRegistryByPatientAndYear(patientId, year);
+        return ResponseEntity.ok(registryDto);
     }
 
     @Override
@@ -64,6 +55,17 @@ public class AnnualRegistryControllerImpl implements AnnualRegistryController {
 
         AnnualRegistryResponseDTO registryDto = annualRegistryApplicationService
                 .updateRegistry(patientId, registryId, updateDto);
+        return ResponseEntity.ok(registryDto);
+    }
+
+    @Override
+    public ResponseEntity<AnnualRegistryResponseDTO> replaceRegistry(
+            @PathVariable("id") UUID patientId,
+            @PathVariable("registryId") UUID registryId,
+            @RequestBody @Valid ReplaceAnnualRegistryDTO replaceDto) {
+
+        AnnualRegistryResponseDTO registryDto = annualRegistryApplicationService
+                .replaceRegistry(patientId, registryId, replaceDto);
         return ResponseEntity.ok(registryDto);
     }
 

@@ -1,7 +1,6 @@
 package br.org.apae.api.patient.domain.exceptions;
 
 import java.util.UUID;
-
 import jakarta.persistence.EntityNotFoundException;
 
 public class RegistryNotFoundException extends EntityNotFoundException {

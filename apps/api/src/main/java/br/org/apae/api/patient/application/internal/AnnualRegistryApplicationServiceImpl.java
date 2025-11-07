@@ -3,14 +3,16 @@ package br.org.apae.api.patient.application.internal;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import br.org.apae.api.common.dto.patient.request.disorder.CreateDisorderDTO;
 import br.org.apae.api.patient.domain.exceptions.RegistryNotFoundException;
+import br.org.apae.api.patient.domain.exceptions.RegistryOwnershipException;
 import org.springframework.stereotype.Service;
-import org.springframework.security.access.AccessDeniedException;
 
 import br.org.apae.api.common.dto.patient.request.annual_registry.CreateAnnualRegistryDTO;
 import br.org.apae.api.common.dto.patient.request.annual_registry.UpdateAnnualRegistryDTO;
+import br.org.apae.api.common.dto.patient.request.annual_registry.ReplaceAnnualRegistryDTO;
 import br.org.apae.api.common.dto.patient.response.annual_registry.AnnualRegistryResponseDTO;
 import br.org.apae.api.common.dto.patient.response.disorder.DisorderResponseDTO;
 import br.org.apae.api.patient.application.interfaces.AnnualRegistryApplicationService;
@@ -84,7 +86,7 @@ public class AnnualRegistryApplicationServiceImpl implements AnnualRegistryAppli
                 .orElseThrow(() -> new RegistryNotFoundException(registryId));
 
         if (!registry.getPatientId().equals(patientId)) {
-            throw new AccessDeniedException("Este registro não pertence ao paciente informado.");
+            throw new RegistryOwnershipException(patientId, registryId);
         }
 
         if (updateDto.year() != null && !updateDto.year().equals(registry.getYear())) {
@@ -97,11 +99,10 @@ public class AnnualRegistryApplicationServiceImpl implements AnnualRegistryAppli
 
         Set<DisorderResponseDTO> disorderDtos = null;
         if (updateDto.disorders() != null) {
-
             Set<CreateDisorderDTO> createDisorderDtos =
                     updateDto.disorders().stream()
                             .map(update -> new CreateDisorderDTO(update.name()))
-                            .collect(java.util.stream.Collectors.toSet());
+                            .collect(Collectors.toSet());
 
             disorderDtos = disorderService.findDisorders(createDisorderDtos);
 
@@ -118,6 +119,32 @@ public class AnnualRegistryApplicationServiceImpl implements AnnualRegistryAppli
 
     @Override
     @Transactional
+    public AnnualRegistryResponseDTO replaceRegistry(UUID patientId, UUID registryId, ReplaceAnnualRegistryDTO replaceDto) {
+        patientDomainService.getByIdOrThrow(patientId);
+
+        AnnualRegistry registry = annualRegistryRepository.findById(registryId)
+                .orElseThrow(() -> new RegistryNotFoundException(registryId));
+
+        if (!registry.getPatientId().equals(patientId)) {
+            throw new RegistryOwnershipException(patientId, registryId);
+        }
+
+        Set<DisorderResponseDTO> disorderDtos = disorderService
+                .findDisorders(replaceDto.disorders());
+
+        if (replaceDto.disorders().size() != disorderDtos.size()) {
+            throw new DisorderMismatchException();
+        }
+
+        AnnualRegistry replacedRegistry = annualRegistryMapper.replaceEntityFromDto(registry, replaceDto, disorderDtos);
+
+        AnnualRegistry registrySaved = annualRegistryRepository.save(replacedRegistry);
+        return annualRegistryMapper.toResponseDTO(registrySaved);
+    }
+
+
+    @Override
+    @Transactional
     public void deleteRegistry(UUID patientId, UUID registryId) {
         patientDomainService.getByIdOrThrow(patientId);
 
@@ -125,7 +152,7 @@ public class AnnualRegistryApplicationServiceImpl implements AnnualRegistryAppli
                 .orElseThrow(() -> new RegistryNotFoundException(registryId));
 
         if (!registry.getPatientId().equals(patientId)) {
-            throw new AccessDeniedException("Este registro não pertence ao paciente informado.");
+            throw new RegistryOwnershipException(patientId, registryId);
         }
 
         annualRegistryRepository.delete(registry);

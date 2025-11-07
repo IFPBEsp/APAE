@@ -7,6 +7,7 @@ import java.util.stream.Collectors;
 import org.springframework.stereotype.Component;
 
 import br.org.apae.api.common.dto.patient.request.annual_registry.CreateAnnualRegistryDTO;
+import br.org.apae.api.common.dto.patient.request.annual_registry.ReplaceAnnualRegistryDTO;
 import br.org.apae.api.common.dto.patient.request.annual_registry.UpdateAnnualRegistryDTO;
 import br.org.apae.api.common.dto.patient.response.annual_registry.AnnualRegistryResponseDTO;
 import br.org.apae.api.common.dto.patient.response.disorder.DisorderResponseDTO;
@@ -52,6 +53,17 @@ public class AnnualRegistryMapper {
             Set<Disorder> disorders = this.disorderMapper.toEntitySetFromResponse(disorderDtos);
             entity.setDisorders(disorders);
         }
+
+        return entity;
+    }
+
+    public AnnualRegistry replaceEntityFromDto(AnnualRegistry entity, ReplaceAnnualRegistryDTO dto, Set<DisorderResponseDTO> disorderDtos) {
+        Set<Disorder> disorders = this.disorderMapper.toEntitySetFromResponse(disorderDtos);
+
+        entity.setBpc(dto.bpc());
+        entity.setDiseases(dto.diseases());
+        entity.setFamilyIncome(dto.familyIncome());
+        entity.setDisorders(disorders);
 
         return entity;
     }
