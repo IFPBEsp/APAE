@@ -1,6 +1,7 @@
 package br.org.apae.api.patient.application.internal;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 import br.org.apae.api.patient.domain.exceptions.RegistryNotFoundException;
@@ -86,12 +87,11 @@ public class AnnualRegistryApplicationServiceImpl implements AnnualRegistryAppli
             throw new RegistryOwnershipException(patientId, registryId);
         }
 
-        if (updateDto.year() != null && !updateDto.year().equals(registry.getYear())) {
-            annualRegistryRepository
-                    .findByPatientIdAndYear(patientId, updateDto.year())
-                    .ifPresent(existing -> {
-                        throw new AnnualRegistryConflictException(updateDto.year());
-                    });
+        Optional<AnnualRegistry> conflictCheck = annualRegistryRepository
+                .findByPatientIdAndYear(patientId, updateDto.year());
+
+        if (conflictCheck.isPresent() && !conflictCheck.get().getId().equals(registryId)) {
+            throw new AnnualRegistryConflictException(updateDto.year());
         }
 
         AnnualRegistry updatedRegistry = annualRegistryMapper.updateEntityFromDto(registry, updateDto);
@@ -99,6 +99,7 @@ public class AnnualRegistryApplicationServiceImpl implements AnnualRegistryAppli
         AnnualRegistry registrySaved = annualRegistryRepository.save(updatedRegistry);
         return annualRegistryMapper.toResponseDTO(registrySaved);
     }
+
 
     @Override
     @Transactional
