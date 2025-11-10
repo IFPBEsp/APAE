@@ -1,6 +1,6 @@
 "use client";
 
-import { Patient } from "@/schemas/authSchema";
+import { Patient } from "@/schemas/auth-schemas";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -19,17 +19,17 @@ const statusTextStyles = {
 };
 
 const statusBorderStyles = {
-    Ativo: "border-2 border-[#5db993]",
-    Inativo: "border-2 border-[#ac3637]",
-    "Em Fila": "border border-[#9f9e9e]"
-}
+  Ativo: "border-2 border-[#5db993]",
+  Inativo: "border-2 border-[#ac3637]",
+  "Em Fila": "border border-[#9f9e9e]",
+};
 
 export function PatientCard({ patient }: PatientCardProps) {
   return (
     <Card
       className={cn(
         "overflow-hidden relative rounded-lg shadow-md/30",
-        statusBorderStyles[patient.status]
+        statusBorderStyles[patient.status],
       )}
     >
       <Button
@@ -46,18 +46,28 @@ export function PatientCard({ patient }: PatientCardProps) {
         <div className="flex items-center gap-4">
           <div className="flex flex-col items-center gap-2 flex-shrink-0">
             <Avatar className="h-20 w-20 border">
-              <AvatarImage src={patient.urlFoto} alt={patient.nome ?? "Foto do paciente"} />
-              <AvatarFallback>{patient.nome?.charAt(0) ?? 'P'}</AvatarFallback>
+              <AvatarImage
+                src={patient.urlFoto}
+                alt={patient.nome ?? "Foto do paciente"}
+              />
+              <AvatarFallback>{patient.nome?.charAt(0) ?? "P"}</AvatarFallback>
             </Avatar>
 
-            <p className={cn("font-semibold text-sm", statusTextStyles[patient.status])}>
+            <p
+              className={cn(
+                "font-semibold text-sm",
+                statusTextStyles[patient.status],
+              )}
+            >
               {patient.status}
             </p>
           </div>
 
           <div className="flex-1 flex flex-col h-full">
             <div>
-              <h3 className="text-base font-bold text-[#235d9b]">{patient.nome ?? "Nome não informado"}</h3>
+              <h3 className="text-base font-bold text-[#235d9b]">
+                {patient.nome ?? "Nome não informado"}
+              </h3>
               <div className="!text-[12px] text-[#235d9b] font-bold mt-1 space-y-0.5">
                 <p>CPF: {patient.cpf}</p>
                 <p>Contato: {patient.contato.telefone}</p>
@@ -67,9 +77,7 @@ export function PatientCard({ patient }: PatientCardProps) {
 
             <div className="mt-auto pt-2 flex justify-end">
               <Button className="w-[106px] h-[23px] rounded-[5px] !bg-[#0D4F97] !hover:bg-[#0b427d] !text-white !text-[12px]">
-                <Link href={`/pessoa/${patient.id}`}>
-                  Ver mais
-                </Link>
+                <Link href={`/pessoa/${patient.id}`}>Ver mais</Link>
               </Button>
             </div>
           </div>
