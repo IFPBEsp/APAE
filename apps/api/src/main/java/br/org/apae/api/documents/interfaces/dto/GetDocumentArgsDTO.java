@@ -67,6 +67,9 @@ public record GetDocumentArgsDTO(UUID id,
                             Optional.ofNullable(id).orElseThrow(InsufficientDataException::new)));
             String owner = Optional.ofNullable(this.owner).orElseThrow(InsufficientDataException::new);
 
+            System.out.println(owner);
+            System.out.println(name);
+
             return new GetDocumentArgsDTO(id, name, category, type, owner, year);
         }
     }
