@@ -1,14 +1,16 @@
-package br.org.apae.api.common.dto.Avaliability.Response;
+package br.org.apae.api.common.dto.availability.response;
+
+import br.org.apae.api.professional.domain.model.Availability;
 
 import java.util.UUID;
 
 
-public record AvaliabilityResponseDTO(
+public record AvailabilityResponseDTO(
         UUID id,
         String day,
         String shift
 ) {
-    public AvaliabilityResponseDTO(br.org.apae.api.professional.domain.model.Avaliability entity) {
+    public AvailabilityResponseDTO(Availability entity) {
         this(
                 entity.getId(),
                 entity.getDay().name(),
