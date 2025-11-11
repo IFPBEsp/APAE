@@ -48,7 +48,7 @@ public class HealthProfessional {
     private Address address;
 
     @OneToMany(mappedBy = "professional", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
-    private List<Avaliability> availabilities;
+    private List<Availability> availabilities;
 
     protected HealthProfessional() {}
 
@@ -75,7 +75,7 @@ public class HealthProfessional {
     public HealthProfessional(UUID id, String name, String email, String healthSector,
                               String phoneNumber, String identityDocument,
                               String professionalDocument, Address address,
-                              List<Avaliability> availabilities) {
+                              List<Availability> availabilities) {
         this(id, name, email, healthSector, phoneNumber, identityDocument, professionalDocument, address);
         this.availabilities = availabilities != null ? new ArrayList<>(availabilities) : new ArrayList<>();
     }
@@ -112,8 +112,8 @@ public class HealthProfessional {
         return address;
     }
 
-    public List<Avaliability> getAvailabilities() {
-        return availabilities != null ? new ArrayList<>(availabilities) : new ArrayList<>();
+    public List<Availability> getAvailabilities() {
+        return availabilities;
     }
 
     public void setId(UUID id) {
@@ -148,7 +148,7 @@ public class HealthProfessional {
         this.address = address;
     }
 
-    public void setAvailabilities(List<Avaliability> availabilities) {
-        this.availabilities = availabilities != null ? new ArrayList<>(availabilities) : new ArrayList<>();
+    public void setAvailabilities(List<Availability> availabilities) {
+        this.availabilities = availabilities != null ? availabilities : new ArrayList<>();
     }
 }
