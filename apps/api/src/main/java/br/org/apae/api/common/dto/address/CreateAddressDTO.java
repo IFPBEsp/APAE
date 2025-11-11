@@ -22,6 +22,4 @@ public record CreateAddressDTO(
         String number,
 
         String complement
-) {
-
-}
+){}
