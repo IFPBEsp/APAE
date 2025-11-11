@@ -1,6 +1,7 @@
 package br.org.apae.api.professional.application.internal;
 
 import br.org.apae.api.address.application.interfaces.AddressService;
+import br.org.apae.api.address.application.mapper.AddressMapper;
 import br.org.apae.api.common.dto.address.AddressResponseDTO;
 import br.org.apae.api.common.dto.professional.request.CreateHealthProfessionalDTO;
 import br.org.apae.api.common.dto.professional.request.UpdateHealthProfessionalDTO;
@@ -9,6 +10,9 @@ import br.org.apae.api.professional.application.interfaces.HealthProfessionalApp
 import br.org.apae.api.professional.application.mappers.HealthProfessionalMapper;
 import br.org.apae.api.professional.domain.exceptions.HealthProfessionalNotFoundException;
 import br.org.apae.api.professional.domain.exceptions.ProfessionalDocumentConflictException;
+import br.org.apae.api.professional.domain.model.Availability;
+import br.org.apae.api.professional.domain.model.Enum.Day;
+import br.org.apae.api.professional.domain.model.Enum.Shift;
 import br.org.apae.api.professional.domain.model.HealthProfessional;
 import br.org.apae.api.professional.domain.repository.HealthProfessionalRepository;
 import org.springframework.data.domain.Page;
@@ -16,6 +20,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -24,13 +29,15 @@ public class HealthProfessionalApplicationServiceImpl implements HealthProfessio
     private final HealthProfessionalRepository repository;
     private final HealthProfessionalMapper mapper;
     private final AddressService addressService;
+    private final AddressMapper addressMapper;
 
     public HealthProfessionalApplicationServiceImpl(HealthProfessionalRepository repository,
                                                     HealthProfessionalMapper mapper,
-                                                    AddressService addressService) {
+                                                    AddressService addressService, AddressMapper addressMapper) {
         this.repository = repository;
         this.mapper = mapper;
         this.addressService = addressService;
+        this.addressMapper = addressMapper;
     }
 
     @Override
@@ -43,13 +50,13 @@ public class HealthProfessionalApplicationServiceImpl implements HealthProfessio
             throw new ProfessionalDocumentConflictException();
         }
 
-        AddressResponseDTO addressDto = addressService.createAddress(dto.address());
+        addressService.createAddress(dto.address());
 
-        HealthProfessional professionalToSave = mapper.toEntity(dto, addressDto);
-
+        HealthProfessional professionalToSave = mapper.toEntity(dto);
+        professionalToSave.setAddress(addressMapper.toEntity(dto.address()));
         HealthProfessional savedProfessional = repository.save(professionalToSave);
 
-        return mapper.toResponseDTO(savedProfessional, addressDto);
+        return mapper.toResponseDTO(savedProfessional);
     }
 
     @Override
@@ -67,21 +74,23 @@ public class HealthProfessionalApplicationServiceImpl implements HealthProfessio
             throw new ProfessionalDocumentConflictException();
         }
 
-        AddressResponseDTO addressDto = addressService.updateAddress(entityToUpdate.getAddress().getId(), dto.address());
+        AddressResponseDTO addressDto = addressService.updateAddress(
+                entityToUpdate.getAddress().getId(), dto.address()
+        );
 
-        // Usa o novo método de atualização que aceita UpdateHealthProfessionalDTO
-        HealthProfessional updatedProfessional = mapper.updateEntityFromDto(entityToUpdate, dto, addressDto);
+        mapper.updateEntityFromDto(entityToUpdate, dto, addressDto);
+        updateAvailabilities(entityToUpdate, dto);
 
-        repository.save(updatedProfessional);
+        repository.save(entityToUpdate);
 
-        return mapper.toResponseDTO(updatedProfessional, addressDto);
+        return mapper.toResponseDTO(entityToUpdate);
     }
 
     @Override
     @Transactional(readOnly = true)
     public HealthProfessionalResponseDTO findProfessionalById(UUID id) {
         return repository.findById(id)
-                .map(entity -> mapper.toResponseDTO(entity, entity.getAddress() != null ? new AddressResponseDTO(entity.getAddress()) : null))
+                .map(mapper::toResponseDTO)
                 .orElseThrow(HealthProfessionalNotFoundException::new);
     }
 
@@ -98,6 +107,23 @@ public class HealthProfessionalApplicationServiceImpl implements HealthProfessio
     @Transactional(readOnly = true)
     public Page<HealthProfessionalResponseDTO> findAllProfessionals(Pageable pageable) {
         return repository.findAll(pageable)
-                .map(entity -> mapper.toResponseDTO(entity, entity.getAddress() != null ? new AddressResponseDTO(entity.getAddress()) : null));
+                .map(mapper::toResponseDTO);
+    }
+
+
+    private void updateAvailabilities(HealthProfessional entity, UpdateHealthProfessionalDTO dto) {
+        if (dto.availabilities() == null) return;
+
+        entity.getAvailabilities().clear();
+
+        List<Availability> updatedAvailabilities = dto.availabilities().stream()
+                .map(a -> {
+                    Day day = Day.valueOf(a.day().toUpperCase());
+                    Shift shift = Shift.valueOf(a.shift().toUpperCase());
+                    return new Availability(shift, day, entity);
+                })
+                .toList();
+
+        entity.getAvailabilities().addAll(updatedAvailabilities);
     }
 }
