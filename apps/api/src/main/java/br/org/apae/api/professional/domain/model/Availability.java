@@ -4,12 +4,11 @@ import br.org.apae.api.professional.domain.model.Enum.Day;
 import br.org.apae.api.professional.domain.model.Enum.Shift;
 import jakarta.persistence.*;
 
-import java.nio.channels.FileChannel;
 import java.util.UUID;
 
 @Entity
 @Table(name = "disponibilidades")
-public class Avaliability {
+public class Availability {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
@@ -25,11 +24,12 @@ public class Avaliability {
     @JoinColumn(name = "professional_id")
     private HealthProfessional professional;
 
-    protected Avaliability() {}
+    protected Availability() {}
 
-    public Avaliability(Day day, Shift shift) {
-        this.day = day;
+    public Availability(Shift shift, Day day, HealthProfessional professional) {
         this.shift = shift;
+        this.day = day;
+        this.professional = professional;
     }
 
     public UUID getId() { return id; }
@@ -38,8 +38,4 @@ public class Avaliability {
     public HealthProfessional getProfessional() { return professional; }
     public void setProfessional(HealthProfessional professional) { this.professional = professional; }
 
-
-    public FileChannel stream() {
-        return null;
-    }
 }
