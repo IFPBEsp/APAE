@@ -1,25 +1,31 @@
 package br.org.apae.api.professional.application.mappers;
 
-import br.org.apae.api.common.dto.Avaliability.Request.AvaliabilityRequestCreateDTO;
-import br.org.apae.api.common.dto.Avaliability.Response.AvaliabilityResponseDTO;
+import br.org.apae.api.address.application.mapper.AddressMapper;
+import br.org.apae.api.common.dto.availability.response.AvailabilityResponseDTO;
 import br.org.apae.api.common.dto.address.AddressResponseDTO;
 import br.org.apae.api.common.dto.professional.request.CreateHealthProfessionalDTO;
 import br.org.apae.api.common.dto.professional.request.UpdateHealthProfessionalDTO;
 import br.org.apae.api.common.dto.professional.response.HealthProfessionalResponseDTO;
-import br.org.apae.api.professional.domain.model.Avaliability;
+import br.org.apae.api.professional.domain.model.Availability;
 import br.org.apae.api.professional.domain.model.Enum.Day;
 import br.org.apae.api.professional.domain.model.Enum.Shift;
 import br.org.apae.api.professional.domain.model.HealthProfessional;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
-import java.util.stream.Collectors;
+import java.util.Optional;
 
 @Component
 public class HealthProfessionalMapper {
 
+    private final AddressMapper addressMapper;
+
+    public HealthProfessionalMapper(AddressMapper addressMapper) {
+        this.addressMapper = addressMapper;
+    }
+
     // Converte CreateHealthProfessionalDTO em HealthProfessional
-    public HealthProfessional toEntity(CreateHealthProfessionalDTO dto, AddressResponseDTO addressDto) {
+    public HealthProfessional toEntity(CreateHealthProfessionalDTO dto) {
         HealthProfessional professional = new HealthProfessional(
                 dto.name(),
                 dto.email(),
@@ -31,15 +37,15 @@ public class HealthProfessionalMapper {
         );
 
         if (dto.availabilities() != null) {
-            List<Avaliability> availabilities = dto.availabilities().stream()
+            List<Availability> availabilities = dto.availabilities().stream()
                     .map(a -> {
                         Day dayEnum = Day.valueOf(a.day().toUpperCase());
                         Shift shiftEnum = Shift.valueOf(a.shift().toUpperCase());
-                        Avaliability availability = new Avaliability(dayEnum, shiftEnum);
+                        Availability availability = new Availability(shiftEnum, dayEnum,professional);
                         availability.setProfessional(professional);
                         return availability;
                     })
-                    .collect(Collectors.toList());
+                    .toList();
             professional.setAvailabilities(availabilities);
         }
 
@@ -47,10 +53,18 @@ public class HealthProfessionalMapper {
     }
 
     // Converte HealthProfessional em DTO de resposta
-    public HealthProfessionalResponseDTO toResponseDTO(HealthProfessional entity, AddressResponseDTO addressDto) {
-        List<AvaliabilityResponseDTO> availabilities = entity.getAvailabilities().stream()
-                .map(AvaliabilityResponseDTO::new)
-                .collect(Collectors.toList());
+    public HealthProfessionalResponseDTO toResponseDTO(HealthProfessional entity) {
+        if (entity == null) return null;
+
+        AddressResponseDTO addressDto = entity.getAddress() != null
+                ? new AddressResponseDTO(entity.getAddress())
+                : null;
+
+        List<AvailabilityResponseDTO> availabilities = Optional.ofNullable(entity.getAvailabilities())
+                .orElseGet(List::of)
+                .stream()
+                .map(AvailabilityResponseDTO::new)
+                .toList();
 
         return new HealthProfessionalResponseDTO(
                 entity.getId(),
@@ -65,59 +79,21 @@ public class HealthProfessionalMapper {
         );
     }
 
-    // Atualiza HealthProfessional com CreateHealthProfessionalDTO
-    public HealthProfessional updateEntityFromDto(HealthProfessional entity,
-                                                   CreateHealthProfessionalDTO dto,
-                                                   AddressResponseDTO addressDto) {
-        entity.setName(dto.name());
-        entity.setEmail(dto.email());
-        entity.setHealthSector(dto.healthSector());
-        entity.setPhoneNumber(dto.phoneNumber());
-        entity.setIdentityDocument(dto.identityDocument());
-        entity.setProfessionalDocument(dto.professionalDocument());
-        entity.setAddress(addressDto != null ? addressDto.toEntity() : entity.getAddress());
-
-        if (dto.availabilities() != null) {
-            List<Avaliability> availabilities = dto.availabilities().stream()
-                    .map(a -> {
-                        Day dayEnum = Day.valueOf(a.day().toUpperCase());
-                        Shift shiftEnum = Shift.valueOf(a.shift().toUpperCase());
-                        Avaliability availability = new Avaliability(dayEnum, shiftEnum);
-                        availability.setProfessional(entity);
-                        return availability;
-                    })
-                    .collect(Collectors.toList());
-            entity.setAvailabilities(availabilities);
-        }
-
-        return entity;
-    }
-
     // Atualiza HealthProfessional com UpdateHealthProfessionalDTO
-    public HealthProfessional updateEntityFromDto(HealthProfessional entity,
-                                                   UpdateHealthProfessionalDTO dto,
-                                                   AddressResponseDTO addressDto) {
+    public void updateEntityFromDto(
+            HealthProfessional entity,
+            UpdateHealthProfessionalDTO dto,
+            AddressResponseDTO addressDto
+    ) {
         entity.setName(dto.name());
         entity.setEmail(dto.email());
         entity.setHealthSector(dto.healthSector());
         entity.setPhoneNumber(dto.phoneNumber());
         entity.setIdentityDocument(dto.identityDocument());
         entity.setProfessionalDocument(dto.professionalDocument());
-        entity.setAddress(addressDto != null ? addressDto.toEntity() : entity.getAddress());
 
-        if (dto.availabilities() != null) {
-            List<Avaliability> availabilities = dto.availabilities().stream()
-                    .map(a -> {
-                        Day dayEnum = Day.valueOf(a.day().toUpperCase());
-                        Shift shiftEnum = Shift.valueOf(a.shift().toUpperCase());
-                        Avaliability availability = new Avaliability(dayEnum, shiftEnum);
-                        availability.setProfessional(entity);
-                        return availability;
-                    })
-                    .collect(Collectors.toList());
-            entity.setAvailabilities(availabilities);
+        if (addressDto != null) {
+            entity.setAddress(addressMapper.toEntityFromResponse(addressDto));
         }
-
-        return entity;
     }
 }
