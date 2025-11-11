@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestPart;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import br.org.apae.api.common.dto.professional.request.CreateHealthProfessionalDTO;
 import br.org.apae.api.common.dto.professional.request.UpdateHealthProfessionalDTO;
@@ -76,4 +77,17 @@ public interface HealthProfessionalController {
   @PostMapping(value = "/{id}/documents", consumes = { MediaType.MULTIPART_FORM_DATA_VALUE })
   ResponseEntity<Void> uploadDocuments(@PathVariable UUID id,
       @RequestPart("documents") @Valid CreateProfessionalDocumentsDTO documents);
+
+  @Operation(summary = "Listar documentos do profissional", description = "Lista documentos anexados a um profissional. Pode filtrar por ano e tipo.")
+  @GetMapping("/{id}/documents")
+  ResponseEntity<?> listDocuments(
+      @PathVariable UUID id,
+      @RequestParam(required = false) Integer year,
+      @RequestParam(required = false) String type);
+
+  @Operation(summary = "Download de documento do profissional", description = "Faz download do documento pelo nome gerado.")
+  @GetMapping("/{id}/documents/download")
+  ResponseEntity<byte[]> downloadDocument(
+      @PathVariable UUID id,
+      @RequestParam String name);
 }

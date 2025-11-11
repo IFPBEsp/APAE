@@ -4,8 +4,14 @@ import br.org.apae.api.common.dto.professional.request.CreateHealthProfessionalD
 import br.org.apae.api.common.dto.professional.request.UpdateHealthProfessionalDTO;
 import br.org.apae.api.common.dto.professional.request.documents.CreateProfessionalDocumentsDTO;
 import br.org.apae.api.common.dto.professional.response.HealthProfessionalResponseDTO;
+import br.org.apae.api.documents.interfaces.dto.DocumentDTO;
+import br.org.apae.api.documents.interfaces.dto.GetDocumentArgsDTO;
+import br.org.apae.api.documents.interfaces.dto.ListDocumentsArgsDTO;
 import br.org.apae.api.documents.interfaces.exceptions.InsufficientDataException;
 import br.org.apae.api.documents.interfaces.exceptions.InvalidResponseException;
+import br.org.apae.api.documents.application.interfaces.DocumentApplicationService;
+import br.org.apae.api.documents.domain.enums.DocumentCategory;
+import br.org.apae.api.documents.domain.enums.DocumentType;
 import br.org.apae.api.professional.application.interfaces.HealthProfessionalApplicationService;
 import br.org.apae.api.professional.application.internal.ProfessionalDocumentsService;
 import br.org.apae.api.professional.domain.exceptions.HealthProfessionalNotFoundException;
@@ -32,14 +38,17 @@ public class HealthProfessionalControllerImpl implements HealthProfessionalContr
     private final HealthProfessionalApplicationService service;
     private final HealthProfessionalRepository repository;
     private final ProfessionalDocumentsService documentsService;
+    private final DocumentApplicationService documentService;
 
     public HealthProfessionalControllerImpl(
             HealthProfessionalApplicationService service,
             HealthProfessionalRepository repository,
-            ProfessionalDocumentsService documentsService) {
+            ProfessionalDocumentsService documentsService,
+            DocumentApplicationService documentService) {
         this.service = service;
         this.repository = repository;
         this.documentsService = documentsService;
+        this.documentService = documentService;
     }
 
     @Override
@@ -94,6 +103,55 @@ public class HealthProfessionalControllerImpl implements HealthProfessionalContr
                             id, e.getMessage()),
                     e);
             throw new RuntimeException("Erro ao processar upload de documentos: " + e.getMessage(), e);
+        }
+    }
+
+    @Override
+    public ResponseEntity<?> listDocuments(UUID id, Integer year, String type) {
+        // garante existência do profissional
+        HealthProfessional professional = repository.findById(id)
+                .orElseThrow(HealthProfessionalNotFoundException::new);
+
+        try {
+            ListDocumentsArgsDTO.Builder builder = ListDocumentsArgsDTO.builder()
+                    .owner(professional.getId().toString());
+
+            if (year != null) {
+                builder = builder.category(DocumentCategory.PROFESSIONAL)
+                        .year(java.time.Year.of(year));
+                if (type != null && !type.isBlank()) {
+                    builder = builder.type(DocumentType.valueOf(type.toUpperCase()));
+                }
+            }
+
+            Iterable<DocumentDTO> docs = documentService.listDocuments(builder.build());
+            return ResponseEntity.ok(docs);
+        } catch (Exception e) {
+            logger.log(Level.SEVERE, "Erro ao listar documentos do profissional", e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
+
+    @Override
+    public ResponseEntity<byte[]> downloadDocument(UUID id, String name) {
+        HealthProfessional professional = repository.findById(id)
+                .orElseThrow(HealthProfessionalNotFoundException::new);
+
+        try {
+            var dto = GetDocumentArgsDTO.builder()
+                    .name(name)
+                    .owner(professional.getId().toString())
+                    .build();
+
+            try (var is = documentService.getDocument(dto)) {
+                byte[] bytes = is.readAllBytes();
+                return ResponseEntity.ok()
+                        .header("Content-Disposition", "attachment; filename=\"" + name + "\"")
+                        .body(bytes);
+            }
+        } catch (Exception e) {
+            logger.log(Level.SEVERE, "Erro ao baixar documento do profissional", e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
 }
