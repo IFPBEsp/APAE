@@ -24,6 +24,10 @@ public record UpdateHealthProfessionalDTO(
 
         @NotBlank(message = "O nome é obrigatório.")
         @Size(min = 3, max = 100)
+        @Pattern(
+                regexp = "^[A-Za-zÀ-ÿ ]+$",
+                message = "O nome não pode conter números ou caracteres especiais."
+        )
         String name,
 
         @NotBlank(message = "O documento de identidade é obrigatório.")
