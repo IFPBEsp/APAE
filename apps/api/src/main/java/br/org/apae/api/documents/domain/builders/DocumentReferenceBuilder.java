@@ -1,7 +1,6 @@
 package br.org.apae.api.documents.domain.builders;
 
 import java.time.Year;
-import java.util.Optional;
 import java.util.UUID;
 
 import br.org.apae.api.documents.domain.enums.DocumentCategory;
@@ -9,6 +8,9 @@ import br.org.apae.api.documents.domain.enums.DocumentType;
 
 public class DocumentReferenceBuilder {
     private static final String REFERENCE_PREFIX = "DOCUMENTO";
+
+    private DocumentReferenceBuilder() {
+    }
 
     public static String buildDocumentPath(
             DocumentCategory category,

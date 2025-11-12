@@ -59,18 +59,16 @@ public record GetDocumentArgsDTO(UUID id,
         }
 
         public GetDocumentArgsDTO build() {
-            String name = Optional.ofNullable(this.name)
+            String presentName = Optional.ofNullable(this.name)
                     .orElseGet(() -> DocumentReferenceBuilder.buildDocumentName(
                             Optional.ofNullable(category).orElseThrow(InsufficientDataException::new),
                             Optional.ofNullable(type).orElseThrow(InsufficientDataException::new),
                             Optional.ofNullable(year).orElseThrow(InsufficientDataException::new),
                             Optional.ofNullable(id).orElseThrow(InsufficientDataException::new)));
-            String owner = Optional.ofNullable(this.owner).orElseThrow(InsufficientDataException::new);
+            String presentOwner = Optional.ofNullable(this.owner)
+                    .orElseThrow(InsufficientDataException::new);
 
-            System.out.println(owner);
-            System.out.println(name);
-
-            return new GetDocumentArgsDTO(id, name, category, type, owner, year);
+            return new GetDocumentArgsDTO(id, presentName, category, type, presentOwner, year);
         }
     }
 }
