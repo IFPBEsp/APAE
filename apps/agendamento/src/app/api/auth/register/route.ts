@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
-import { createBaseApi } from "@/lib/axios";
 import { AxiosError } from "axios";
+import { createBaseApi } from "@/lib/axios";
 
 export async function POST(req: Request) {
   try {
