@@ -9,28 +9,28 @@ export async function POST(req: Request) {
     if (!email || !nomeCompleto || !cpf || !senha) {
       return NextResponse.json(
         { message: "Todos os campos são obrigatórios" },
-        { status: 406 }
+        { status: 406 },
       );
     }
 
     const api = await createBaseApi();
     const response = await api.post("/auth/signup", {
       fullName: nomeCompleto,
-      username: email,
-      cpf,
       password: senha,
+      email,
+      cpf,
     });
 
     if (response.status !== 201) {
       return NextResponse.json(
         { message: response.data?.message || "Erro ao cadastrar usuário" },
-        { status: response.status }
+        { status: response.status },
       );
     }
 
     return NextResponse.json(
       { message: "Cadastro bem-sucedido" },
-      { status: 201 }
+      { status: 201 },
     );
   } catch (error) {
     console.error(error);
@@ -38,7 +38,7 @@ export async function POST(req: Request) {
     if (error instanceof AxiosError && error.response) {
       return NextResponse.json(
         { message: error.response.data?.message || "Erro ao cadastrar" },
-        { status: error.response.status }
+        { status: error.response.status },
       );
     }
 
@@ -53,7 +53,7 @@ export async function POST(req: Request) {
       },
       {
         status: (error as AxiosError).response?.status,
-      }
+      },
     );
   }
 }
