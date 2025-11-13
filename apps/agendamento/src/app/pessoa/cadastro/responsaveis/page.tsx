@@ -12,9 +12,9 @@ import { Input } from "@/components/ui/input";
 import {
   MembersRegisterStep,
   useMembersRegisterContext,
-} from "@/hooks/use-members-register-context";
+} from "@/../../management-app/src/hooks/use-members-register-context";
 import { formatCPF, formatCurrency, formatRG } from "@/lib/formats";
-import { Guardians } from "@/schemas/member-schemas";
+import { Guardians } from "@/app/schemas/member-schemas";
 import { zodResolver } from "@hookform/resolvers/zod";
 import React from "react";
 import { useForm, UseFormReturn } from "react-hook-form";

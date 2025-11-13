@@ -1,5 +1,5 @@
 import { createBaseApi } from "@/lib/axios";
-import { updateTranstornoSchema } from "@/schemas/transtornosSchema";
+import { updateTranstornoSchema } from "@/app/schemas/transtornosSchema";
 import { NextResponse } from "next/server";
 
 interface IParams {

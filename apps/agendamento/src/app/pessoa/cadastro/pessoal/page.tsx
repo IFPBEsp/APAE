@@ -12,7 +12,7 @@ import { Input } from "@/components/ui/input";
 import {
   MembersRegisterStep,
   useMembersRegisterContext,
-} from "@/hooks/use-members-register-context";
+} from "@/../../management-app/src/hooks/use-members-register-context";
 import {
   formatBirthCertificate,
   formatCNS,
@@ -21,7 +21,7 @@ import {
   formatPhone,
   formatRG,
 } from "@/lib/formats";
-import { Personal } from "@/schemas/member-schemas";
+import { Personal } from "@/app/schemas/member-schemas";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import z from "zod";

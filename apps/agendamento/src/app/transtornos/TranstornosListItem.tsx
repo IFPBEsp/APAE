@@ -2,7 +2,7 @@
 
 import { Button } from "@/components/ui/button";
 import { Edit, Trash2 } from "lucide-react";
-import { Transtorno } from "@/schemas/transtornosSchema";
+import { Transtorno } from "@/app/schemas/transtornosSchema";
 
 interface TranstornoListItemProps {
   transtorno: Transtorno; 

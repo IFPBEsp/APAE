@@ -11,8 +11,8 @@ import {
 import {
   MembersRegisterStep,
   useMembersRegisterContext,
-} from "@/hooks/use-members-register-context";
-import { Profile } from "@/schemas/member-schemas";
+} from "@/../../management-app/src/hooks/use-members-register-context";
+import { Profile } from "@/app/schemas/member-schemas";
 import { zodResolver } from "@hookform/resolvers/zod";
 import React, { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";

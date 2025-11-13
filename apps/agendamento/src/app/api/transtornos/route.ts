@@ -1,5 +1,5 @@
 import { createBaseApi } from "@/lib/axios";
-import { createTranstornoSchema } from "@/schemas/transtornosSchema";
+import { createTranstornoSchema } from "@/app/schemas/transtornosSchema";
 import { NextResponse } from "next/server";
 
 export async function POST(request: Request) {

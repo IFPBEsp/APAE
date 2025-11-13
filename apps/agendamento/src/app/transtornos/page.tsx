@@ -7,7 +7,7 @@ import { toast } from "react-toastify";
 import { Button } from "@/components/ui/button";
 import { Plus } from "lucide-react";
 import { TranstornoListItem } from "./TranstornosListItem";
-import { Transtorno } from "@/schemas/transtornosSchema";
+import { Transtorno } from "@/app/schemas/transtornosSchema";
 import { Loader2 } from "lucide-react";
 import { SearchFilters } from "@/components/search-filters";
 
@@ -95,7 +95,7 @@ export default function TranstornosPage() {
   };
 
   return (
-    <div className="!bg-slate-100 min-h-screen">
+    <div className="flex-1 !bg-slate-100 min-h-screen">
       <main className="container mx-auto p-4 md:p-6">
         <div className="bg-white rounded-xl shadow-md border-2 p-6 mb-4">
           <SearchFilters

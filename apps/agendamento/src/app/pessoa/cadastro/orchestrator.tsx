@@ -3,7 +3,7 @@
 import {
   MembersRegisterStep,
   useMembersRegisterContext,
-} from "@/hooks/use-members-register-context";
+} from "@/../../management-app/src/hooks/use-members-register-context";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 
