@@ -1,6 +1,5 @@
 "use client";
 
-import { Patient } from "@/schemas/auth-schemas";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -9,27 +8,37 @@ import { cn } from "@/lib/utils";
 import Link from "next/link";
 
 interface PatientCardProps {
-  patient: Patient;
+  patient: any;
 }
 
-const statusTextStyles = {
-  Ativo: "text-[#468f71]",
+const getStatus = (patient: any) => {
+  if (patient.isDeleted) return "Inativo";
+  if (patient.isStudent) return "Aluno";
+  return "Paciente";
+};
+
+const statusTextStyles: { [key: string]: string } = {
+  Paciente: "text-[#468f71]",
+  Aluno: "text-[#003B93]",
   Inativo: "text-[#871d1e]",
   "Em Fila": "text-[#9f9e9e]",
 };
 
-const statusBorderStyles = {
-  Ativo: "border-2 border-[#5db993]",
+const statusBorderStyles: { [key: string]: string } = {
+  Paciente: "border-2 border-[#5db993]",
+  Aluno: "border-2 border-[#0D4F97]",
   Inativo: "border-2 border-[#ac3637]",
   "Em Fila": "border border-[#9f9e9e]",
 };
 
 export function PatientCard({ patient }: PatientCardProps) {
+  const patientStatus = getStatus(patient);
+
   return (
     <Card
       className={cn(
         "overflow-hidden relative rounded-lg shadow-md/30",
-        statusBorderStyles[patient.status],
+        statusBorderStyles[patientStatus]
       )}
     >
       <Button
@@ -48,30 +57,32 @@ export function PatientCard({ patient }: PatientCardProps) {
             <Avatar className="h-20 w-20 border">
               <AvatarImage
                 src={patient.urlFoto}
-                alt={patient.nome ?? "Foto do paciente"}
+                alt={patient.fullName ?? "Foto do paciente"} 
               />
-              <AvatarFallback>{patient.nome?.charAt(0) ?? "P"}</AvatarFallback>
+              <AvatarFallback>
+                {patient.fullName?.charAt(0) ?? "P"}
+              </AvatarFallback>
             </Avatar>
 
             <p
               className={cn(
                 "font-semibold text-sm",
-                statusTextStyles[patient.status],
+                statusTextStyles[patientStatus]
               )}
             >
-              {patient.status}
+              {patientStatus}
             </p>
           </div>
 
           <div className="flex-1 flex flex-col h-full">
             <div>
               <h3 className="text-base font-bold text-[#235d9b]">
-                {patient.nome ?? "Nome não informado"}
+                {patient.fullName ?? "Nome não informado"}
               </h3>
               <div className="!text-[12px] text-[#235d9b] font-bold mt-1 space-y-0.5">
-                <p>CPF: {patient.cpf}</p>
-                <p>Contato: {patient.contato.telefone}</p>
-                <p>Cidade: {patient.cidade}</p>
+                <p>CPF: {patient.cpf ?? "Não informado"}</p>
+                <p>Contato: {patient.contact ?? "Não informado"}</p> 
+                <p>Cidade: {patient.address?.city ?? "Não informado"}</p>
               </div>
             </div>
 

@@ -12,10 +12,36 @@ import { Loader2, SquarePen, ArrowLeft } from "lucide-react";
 
 interface InfoRowProps {
   label: string;
-  value?: string | number | null;
+  value?: string | number | null | boolean;
 }
+
+// --- InfoRow ATUALIZADO PARA FORMATAR BPC E RENDA ---
 const InfoRow: React.FC<InfoRowProps> = ({ label, value }) => {
-  const displayValue = value || "Não informado";
+  let displayValue: string | number = "Não informado";
+
+  if (value === null || value === undefined || value === "") {
+    displayValue = "Não informado";
+  
+  } else if (label === "Recebe BPC?") {
+    // Converte 'true' (string ou boolean) para "Sim", e qualquer outra coisa para "Não"
+    displayValue = (value === true || String(value).toLowerCase() === 'true') ? "Sim" : "Não";
+  
+  } else if (label === "Renda Familiar" && typeof value === 'number') {
+    // Formata o número para Reais (BRL)
+    displayValue = value.toLocaleString('pt-BR', {
+      style: 'currency',
+      currency: 'BRL',
+    });
+
+  } else if (typeof value === 'boolean') {
+    // Fallback para outros booleanos (ex: "Vivo?")
+    displayValue = value ? "Sim" : "Não";
+  
+  } else {
+    // Padrão para todos os outros valores
+    displayValue = value;
+  }
+
   return (
     <div className="mb-2">
       <span className="text-sm font-semibold text-gray-500">{label}</span>
@@ -23,11 +49,13 @@ const InfoRow: React.FC<InfoRowProps> = ({ label, value }) => {
     </div>
   );
 };
+// --- FIM DA ATUALIZAÇÃO ---
 
 export default function PersonDetailsPage() {
   const params = useParams();
   const router = useRouter();
-  const [pessoa, setPessoa] = useState<any>(null); // Mudar 'any' para uma interface depois
+  const [pessoa, setPessoa] = useState<any>(null);
+  const [registroAnual, setRegistroAnual] = useState<any>(null);
   const [loading, setLoading] = useState(true);
 
   const id = params?.id as string;
@@ -35,35 +63,44 @@ export default function PersonDetailsPage() {
   useEffect(() => {
     if (!id) return;
 
-    async function fetchPerson() {
+    const currentYear = new Date().getFullYear().toString();
+
+    async function fetchData() {
       try {
         setLoading(true);
-        const response = await fetch(`/api/pessoas/${id}`);
-        if (!response.ok) {
+        
+        const [pessoaResponse, registroResponse] = await Promise.all([
+          fetch(`/api/pessoas/${id}`),
+          fetch(`/api/pessoas/${id}/registro-anual/${currentYear}`)
+        ]);
+
+        if (!pessoaResponse.ok) {
           throw new Error("Falha ao buscar dados do paciente.");
         }
-        const data = await response.json();
-        setPessoa(data);
+        
+        const pessoaData = await pessoaResponse.json();
+        setPessoa(pessoaData);
+
+        if (registroResponse.ok) {
+          const registroData = await registroResponse.json();
+          setRegistroAnual(registroData);
+        } else {
+          console.warn("Nenhum registro anual encontrado para o ano " + currentYear);
+          setRegistroAnual(null);
+        }
+
       } catch (err: any) {
         console.error(err);
         toast.error(err.message);
-        router.push("/pessoas");
+        router.push("/home");
       } finally {
         setLoading(false);
       }
     }
 
-    fetchPerson();
+    fetchData();
   }, [id, router]);
 
-  // Vai precisar de um novo estado e um novo fetch para o Cadastro Anual
-  // const [registroAnual, setRegistroAnual] = useState<any>(null);
-  // useEffect(() => {
-  //   fetch(`/api/pessoas/${id}/cadastro-anual/2025`) // Exemplo
-  //     .then(res => res.json())
-  //     .then(setData);
-  // }, [id]);
-  // E usaria `registroAnual.bpc`, `registroAnual.familyIncome`, etc.
 
   if (loading) {
     return (
@@ -97,11 +134,10 @@ export default function PersonDetailsPage() {
         </Button>
       </div>
 
-      {/* --- Cabeçalho e Avatar --- */}
       <div className="flex flex-col items-center gap-y-4 w-full mb-6">
         <Avatar className="h-40 w-40 border">
           <AvatarImage
-            src={pessoa?.urlFoto ?? "https://via.placeholder.com/150"} // O JSON ainda não tem foto
+            src={pessoa?.urlFoto ?? "https://via.placeholder.com/150"}
             alt={pessoa?.fullName ?? "Foto do paciente"}
           />
           <AvatarFallback className="font-baloo font-bold text-[32px]">
@@ -113,16 +149,13 @@ export default function PersonDetailsPage() {
         </h3>
       </div>
 
-      {/* --- Cartões de Documentos --- */}
       <DocumentCategoriesCard
         onClickCategoria={(tipo: string) => {
-          // Sua lógica de rota aqui
           router.push(`/pessoa/${id}/documentos/${tipo}`);
         }}
       />
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-6">
-        {/* --- Card: Dados Pessoais --- */}
         <Card className="w-full relative font-nunito">
           <CardHeader>
             <CardTitle className="text-[#0D4F97]">Dados Pessoais</CardTitle>
@@ -133,7 +166,7 @@ export default function PersonDetailsPage() {
             <InfoRow label="Naturalidade" value={pessoa.birthplace} />
             <InfoRow label="Contato" value={pessoa.contact} />
             <InfoRow label="Alergias" value={pessoa.allergies} />
-            <InfoRow label="Estudante?" value={pessoa.isStudent ? "Sim" : "Não"} />
+            <InfoRow label="Estudante?" value={pessoa.isStudent} />
             <InfoRow
               label="Data de Cadastro"
               value={pessoa.registrationDate}
@@ -141,7 +174,6 @@ export default function PersonDetailsPage() {
           </CardContent>
         </Card>
 
-        {/* --- Card: Documentação --- */}
         <Card className="w-full relative font-nunito">
           <CardHeader>
             <CardTitle className="text-[#0D4F97]">Documentação</CardTitle>
@@ -160,7 +192,6 @@ export default function PersonDetailsPage() {
           </CardContent>
         </Card>
 
-        {/* --- Card: Endereço --- */}
         <Card className="w-full relative font-nunito">
           <CardHeader>
             <CardTitle className="text-[#0D4F97]">Endereço Residencial</CardTitle>
@@ -176,13 +207,11 @@ export default function PersonDetailsPage() {
           </CardContent>
         </Card>
 
-        {/* --- Card: Responsáveis --- */}
         <Card className="w-full relative font-nunito">
           <CardHeader>
             <CardTitle className="text-[#0D4F97]">Responsáveis</CardTitle>
           </CardHeader>
           <CardContent>
-            {/* O Guardião/Responsável principal */}
             {pessoa.guardian && (
               <div className="mb-4 p-2 border rounded-md">
                 <p className="font-bold text-base">Guardião Principal</p>
@@ -197,29 +226,24 @@ export default function PersonDetailsPage() {
                 />
               </div>
             )}
-            {/* Os Pais */}
             {pessoa.parents?.map((parent: any) => (
               <div
                 key={parent.id}
                 className="mb-2 p-2 border-t border-gray-200"
               >
                 <p className="font-bold text-base">
-                  {parent.kinship === "PAI"
-                    ? "Pai"
-                    : parent.kinship === "MAE"
-                    ? "Mãe"
-                    : "Parente"}
+                  {parent.kinship === "PAI" ? "Pai" : "Mãe"}
                 </p>
                 <InfoRow label="Nome" value={parent.name} />
                 <InfoRow label="CPF" value={parent.cpf} />
                 <InfoRow label="Profissão" value={parent.profession} />
-                <InfoRow label="Vivo?" value={parent.isAlive ? "Sim" : "Não"} />
+                <InfoRow label="Vivo?" value={parent.isAlive} />
               </div>
             ))}
           </CardContent>
         </Card>
 
-        {/* --- Card: Saúde --- */}
+
         <Card className="w-full relative font-nunito">
           <CardHeader>
             <CardTitle className="text-[#0D4F97]">Informações de Saúde</CardTitle>
@@ -233,13 +257,25 @@ export default function PersonDetailsPage() {
                 .join(", ")}
             />
             
-            {/* Campos do Registro Anual (virão da próxima issue) */}
-            <h3 className="text-gray-400 mt-4 text-sm">
-              (BPC, Renda Familiar, Doenças e Transtornos aparecerão aqui após 
-              implementar o fetch do Registro Anual)
+            <h3 className="font-bold text-base mt-4 pt-4 border-t">
+              Registro Anual ({new Date().getFullYear()})
             </h3>
+            {registroAnual ? (
+              <>
+                <InfoRow label="Recebe BPC?" value={registroAnual.bpc} />
+                <InfoRow label="Renda Familiar" value={registroAnual.familyIncome} />
+                <InfoRow label="Doenças" value={registroAnual.diseases} />
+                <InfoRow label="Medicamentos Contínuos" value={registroAnual.continuousMedication} />
+                <InfoRow label="Transtornos" value={registroAnual.disorders?.map((d: any) => d.name).join(", ")} />
+              </>
+            ) : (
+              <p className="text-sm text-gray-500">
+                Nenhum registro anual encontrado para este ano.
+              </p>
+            )}
           </CardContent>
         </Card>
+
       </div>
     </main>
   );

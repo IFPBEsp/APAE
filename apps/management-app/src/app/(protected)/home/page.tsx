@@ -5,12 +5,11 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Plus } from "lucide-react";
 import { PatientCard } from "@/components/patient-card";
-import { Patient } from "@/schemas/auth-schemas";
 import { SearchFilters } from "@/components/search-filters";
 import { toast } from "react-toastify";
 
 export default function PatientsAndStudentsScreen() {
-  const [patients, setPatients] = useState<Patient[]>([]);
+  const [patients, setPatients] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [activeFilter, setActiveFilter] = useState<string>("paciente");
@@ -26,8 +25,9 @@ export default function PatientsAndStudentsScreen() {
         setPatients(data);
       } catch (err) {
         console.error("Erro ao buscar dados:", err);
-        setError("Não foi possível carregar os dados.");
-        toast.error(error);
+        const errorMessage = "Não foi possível carregar os dados.";
+        setError(errorMessage);
+        toast.error(errorMessage);
       } finally {
         setIsLoading(false);
       }
@@ -45,17 +45,14 @@ export default function PatientsAndStudentsScreen() {
 
     const filteredPatients = patients.filter((patient) => {
       const isCorrectType =
-        (activeFilter === "paciente" && patient.status === "Ativo") ||
-        (activeFilter === "aluno" && patient.status !== "Ativo");
-
-      const isCorrectStatus =
-        activeStatus === "Todos" || patient.status === activeStatus;
+        (activeFilter === "paciente" && !patient.isStudent) ||
+        (activeFilter === "aluno" && patient.isStudent);
 
       const matchesSearch =
         searchName.trim() === "" ||
-        patient.nome?.toLowerCase().includes(searchName.toLowerCase());
+        patient.fullName?.toLowerCase().includes(searchName.toLowerCase());
 
-      return isCorrectType && isCorrectStatus && matchesSearch;
+      return isCorrectType && matchesSearch;
     });
 
     if (filteredPatients.length === 0) {
