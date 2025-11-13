@@ -51,7 +51,7 @@ export default function FileCard({ file }: Props) {
               variant="secondary"
               onClick={() => window.open(file.link, file.fileName)}
             >
-              Instalar o arquivo
+              Baixar Arquivo
             </Button>
           </DialogFooter>
         </DialogContent>
