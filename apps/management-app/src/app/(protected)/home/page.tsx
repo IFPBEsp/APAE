@@ -4,88 +4,42 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Plus } from "lucide-react";
-import { PatientCard } from "@/components/patient-card"; // Corrija o path se necessário
+import { PatientCard } from "@/components/patient-card";
 import { PatientCardData } from "@/schemas/patientSchema"; 
-import { SearchFilters } from "@/components/search-filters"; // Corrija o path se necessário
+import { SearchFilters } from "@/components/search-filters";
 import { toast } from "react-toastify";
 import { useDebounce } from "@/hooks/use-debounce"; 
-
-// A importação do createClientApi não é mais necessária, está correto
-// import { createClientApi } from '@/lib/api-client';
+import { usePatientFilters } from "@/hooks/use-patients-filters";
 
 export default function PatientsAndStudentsScreen() {
   const [patients, setPatients] = useState<PatientCardData[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(true); 
   const [error, setError] = useState<string | null>(null);
-
   const [searchName, setSearchName] = useState<string>("");
   const [transtorno, setTranstorno] = useState<string>("");
   const [ano, setAno] = useState<string>("");
   const [cidade, setCidade] = useState<string>("");
-  
   const debouncedSearchName = useDebounce(searchName, 500);
+  const { 
+    transtornoOptions, 
+    anoOptions, 
+    cidadeOptions 
+  } = usePatientFilters();
 
-  const [transtornoOptions, setTranstornoOptions] = useState<string[]>([]);
-  const [anoOptions, setAnoOptions] = useState<string[]>([]);
-  const [cidadeOptions, setCidadeOptions] = useState<string[]>([]);
-
-  // useEffect (fetchFilterOptions) - CORRIGIDO
-  useEffect(() => {
-    const fetchFilterOptions = async () => {
-      try {
-        // CORREÇÃO AQUI: Adicionado o prefixo /api/
-        const transtornosPromise = fetch('/api/patients/filtros/transtornos');
-        const anosPromise = fetch('/api/patients/filtros/anos');
-        const cidadesPromise = fetch('/api/patients/filtros/cidades');
-
-        const [
-          transtornosResponse,
-          anosResponse,
-          cidadesResponse
-        ] = await Promise.all([
-          transtornosPromise,
-          anosPromise,
-          cidadesPromise
-        ]);
-
-        if (!transtornosResponse.ok) throw new Error('Falha ao buscar transtornos');
-        if (!anosResponse.ok) throw new Error('Falha ao buscar anos');
-        if (!cidadesResponse.ok) throw new Error('Falha ao buscar cidades');
-
-        const transtornosData = await transtornosResponse.json();
-        const anosData = await anosResponse.json();
-        const cidadesData = await cidadesResponse.json();
-        
-        setTranstornoOptions(transtornosData);
-        setAnoOptions(anosData);
-        setCidadeOptions(cidadesData);
-
-      } catch (err) {
-        console.error("Erro ao buscar opções de filtro:", err);
-        toast.error("Não foi possível carregar os filtros.");
-      }
-    };
-    
-    fetchFilterOptions();
-  }, []); 
-
-
-  // useEffect (Load Data) - CORRIGIDO
   useEffect(() => {
     const loadData = async () => {
       setIsLoading(true); 
       try {
         const params = new URLSearchParams();
-        if (debouncedSearchName) params.append("Nome", debouncedSearchName);
-        if (transtorno) params.append("transtorno", transtorno);
-        if (ano) params.append("ano", ano);
-        if (cidade) params.append("cidade", cidade);
+        if (debouncedSearchName) params.append("name", debouncedSearchName);
+        if (transtorno) params.append("disorder", transtorno);
+        if (ano) params.append("year", ano);
+        if (cidade) params.append("city", cidade);
         
         const queryString = params.toString();
         
         console.log("TESTE: Buscando pacientes com params:", queryString);
         
-        // CORREÇÃO AQUI: Adicionado o prefixo /api/
         const response = await fetch(`/api/patients?${queryString}`); 
         
         if (!response.ok) {

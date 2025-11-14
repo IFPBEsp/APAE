@@ -1,10 +1,10 @@
 export interface PatientCardData {
-  id: string; 
-  urlFoto: string | null; 
-  nome: string;    
-  cpf: string;
-  cidade: string;
-  contato: {
-    telefone: string;
-  };
+  id: string;
+  urlFoto: string | null;
+  fullName: string | null;
+  cpf: string | null;      
+  contact: string | null;  
+  address: {               
+    city: string | null;
+  } | null;               
 }

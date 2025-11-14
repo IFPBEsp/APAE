@@ -4,10 +4,11 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { SquarePen } from "lucide-react";
+import { PatientCardData } from "@/schemas/patientSchema";
 import Link from "next/link";
 
 interface PatientCardProps {
-  patient: any;
+  patient: PatientCardData;
 }
 
 export function PatientCard({ patient }: PatientCardProps) {
