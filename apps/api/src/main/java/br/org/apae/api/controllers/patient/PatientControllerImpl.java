@@ -54,13 +54,15 @@ public class PatientControllerImpl implements PatientController {
 
     @Override
     public ResponseEntity<List<PatientSummaryResponseDTO>> findWithFilters(
-            String nome, String transtorno, String ano, String cidade) {
+            String name, String disorder, String year, String city) {
+
         Map<String, String> filters = new HashMap<>();
-        if (nome != null) filters.put("Nome", nome);
+        if (name != null) filters.put("name", name);
+        if (disorder != null) filters.put("disorder", disorder);
+        if (year != null) filters.put("year", year);
+        if (city != null) filters.put("city", city);
+        // TODO: Implementar a busca por Tipos de Atendimento (que é uma tabela separada)
 //        if (tipoAtendimento != null) filters.put("tipo_atendimento", tipoAtendimento);
-        if (transtorno != null) filters.put("transtorno", transtorno);
-        if (ano != null) filters.put("ano", ano);
-        if (cidade != null) filters.put("cidade", cidade);
 
         List<PatientSummaryResponseDTO> patients = patientService.findPatientByFilter(filters);
         return ResponseEntity.ok(patients);

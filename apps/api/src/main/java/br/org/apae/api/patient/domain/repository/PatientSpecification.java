@@ -23,14 +23,14 @@ public class PatientSpecification {
             filters.forEach((key, value) -> {
                 if (value != null && !value.isBlank()) {
                     switch (key) {
-                        case "Nome":
+                        case "name":
                             predicates.add(criteriaBuilder.like(criteriaBuilder.lower(root.get("fullName")), "%" + value.toLowerCase() + "%"));
                             break;
 
-                        case "cidade":
+                        case "city":
                             predicates.add(criteriaBuilder.like(criteriaBuilder.lower(root.get("address").get("city")), "%" + value.toLowerCase() + "%"));
                             break;
-                        case "ano":
+                        case "year":
                             Integer anoValor = Integer.parseInt(value);
 
                             Subquery<UUID> anoSubQuery = query.subquery(UUID.class);
@@ -44,7 +44,7 @@ public class PatientSpecification {
                             predicates.add(root.get("id").in(anoSubQuery));
                             break;
 
-                        case "transtorno":
+                        case "disorder":
                             Subquery<UUID> transtornoSubQuery = query.subquery(UUID.class);
                             Root<AnnualRegistry> transtornoRoot = transtornoSubQuery.from(AnnualRegistry.class);
                             Join<AnnualRegistry, Disorder> disorderJoin = transtornoRoot.join("disorders");
