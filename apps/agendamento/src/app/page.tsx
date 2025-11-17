@@ -37,17 +37,12 @@ import {
   DialogDescription,
 } from '@/components/ui/dialog';
 
-import { AppointmentForm } from '@/components/forms/AppointmentForm';
-import { InfoCard } from '@/components/shared/InfoCard';
-import Link from 'next/link';
-import {
-  Appointment,
-  AppointmentResponseDTO,
-  getAppointments,
-  toggleConfirmacao,
-} from './services/appointmentService';
-import { Checkbox } from '@/components/ui/checkbox';
-import { Page } from '@/types/pagination';
+import { AppointmentForm } from "@/components/forms/AppointmentForm";
+import { InfoCard } from "@/components/shared/InfoCard";
+import Link from "next/link";
+import {Appointment, AppointmentResponseDTO, getAppointments, toggleConfirmacao} from "./services/AppointmentService";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Page } from "@/types/pagination";
 
 export default function DashboardPage() {
   const [selectedDate, setSelectedDate] = useState<Date>(new Date());
@@ -55,8 +50,9 @@ export default function DashboardPage() {
   const [allAppointments, setAllAppointments] = useState<Appointment[]>([]);
 
   const fetchAppointments = async () => {
-    const todayAppointments: Page<AppointmentResponseDTO> =
-      await getAppointments(format(selectedDate, 'yyyy-MM-dd'));
+    const todayAppointments: Page<AppointmentResponseDTO> = await getAppointments(
+        format(selectedDate, "yyyy-MM-dd")
+    );
     // const allExistingAppointments = await getAppointments();
     // setAppointments(todayAppointments);
     // setAllAppointments(allExistingAppointments);
@@ -134,9 +130,11 @@ export default function DashboardPage() {
             icon={Users}
             value={appointments.length}
             subtitle={`${
-              appointments.filter(appointment => appointment.isActive).length
+              appointments.filter((appointment) => appointment.isActive)
+                .length
             } confirmados, ${
-              appointments.filter(appointment => !appointment.isActive).length
+              appointments.filter((appointment) => !appointment.isActive)
+                .length
             } pendentes`}
             titleClassName="text-[#0D4F97]"
             valueClassName="text-[#0D4F97]"
@@ -152,7 +150,9 @@ export default function DashboardPage() {
             title="Sem justificativa"
             icon={MessageCircleWarning}
             value={
-              appointments.filter(appointment => !appointment.isActive).length
+              appointments.filter(
+                (appointment) =>
+                  !appointment.isActive).length
             }
             iconColor="text-red-400"
             subtitle="Pacientes que não justificaram suas faltas"
@@ -163,7 +163,8 @@ export default function DashboardPage() {
             title="Não confirmados"
             icon={CalendarX}
             value={
-              appointments.filter(appointment => !appointment.isActive).length
+              appointments.filter((appointment) => !appointment.isActive)
+                .length
             }
             subtitle="Consultas que não foram confirmadas"
             titleClassName="text-[#0D4F97]"
@@ -203,10 +204,10 @@ export default function DashboardPage() {
                       <Badge
                         variant="outline"
                         className={`text-xs ${
-                          item.isActive ? 'text-green-400' : 'text-red-400'
+                          item.isActive ? "text-green-400" : "text-red-400"
                         } sm:text-sm`}
                       >
-                        {item.isActive ? 'Sim' : 'Não'}
+                        {item.isActive ? "Sim" : "Não"}
                       </Badge>
                     </TableCell>
                     <TableCell className="px-3 py-2 text-xs sm:px-4 sm:py-3 sm:text-sm">

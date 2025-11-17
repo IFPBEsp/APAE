@@ -1,7 +1,7 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
-import { Button } from '@/components/ui/button';
+import { useState } from "react";
+import { Button } from "@/components/ui/button";
 import {
   Dialog,
   DialogTrigger,
@@ -9,22 +9,25 @@ import {
   DialogHeader,
   DialogTitle,
   DialogDescription,
-} from '@/components/ui/dialog';
-import { Label } from '@/components/ui/label';
-import { Textarea } from '@/components/ui/textarea';
-import { DialogClose } from '@radix-ui/react-dialog';
+} from "@/components/ui/dialog";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import { DialogClose } from "@radix-ui/react-dialog";
 
 export function RegistrarFaltaButton() {
-  const [motivo, setMotivo] = useState('');
+  const [motivo, setMotivo] = useState("");
 
   const handleConfirm = () => {
-    console.log('Motivo da falta:', motivo);
+    console.log("Motivo da falta:", motivo);
   };
 
   return (
     <Dialog>
+
       <DialogTrigger asChild>
-        <Button className="bg-[#0D4F97] hover:bg-[#0b417f] text-white font-semibold px-4 py-2 rounded-md w-fit">
+        <Button
+          className="bg-[#0D4F97] hover:bg-[#0b417f] text-white font-semibold px-4 py-2 rounded-md w-fit"
+        >
           Registrar falta
         </Button>
       </DialogTrigger>
@@ -46,7 +49,7 @@ export function RegistrarFaltaButton() {
             id="motivo"
             placeholder="Digite o motivo da falta..."
             value={motivo}
-            onChange={e => setMotivo(e.target.value)}
+            onChange={(e) => setMotivo(e.target.value)}
             className="mt-2"
           />
         </div>

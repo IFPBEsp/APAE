@@ -42,9 +42,9 @@ import {
   Appointment,
   getAppointments,
   getAreasDaSaude,
-} from '../services/appointmentService';
-import { separaETransformaEmNumero } from '@/lib/utils';
-import Link from 'next/link';
+} from "../services/AppointmentService";
+import { separaETransformaEmNumero } from "@/lib/utils";
+import Link from "next/link";
 import {
   Dialog,
   DialogContent,
@@ -67,7 +67,7 @@ export default function AllApointments() {
   const [areas, setAreas] = useState<Area[]>([]);
   const [appointments, setAppointments] = useState<Appointment[]>([]);
 
-  useEffect(() => {
+  useEffect(() =>{
     const fetchAppointments = async () => {
       const response = await getAppointments();
       setAppointments(response.content as Appointment[]);
@@ -80,14 +80,15 @@ export default function AllApointments() {
     fetchAppointments();
   }, []);
 
-  const filteredAppointments = appointments.filter(appointment => {
-    const matchesProfessionalId = appointment.professionalId;
+  const filteredAppointments = appointments.filter((appointment) => {
 
-    const matchesFrequencyDays = appointment.frequencyDays;
+    const matchesProfessionalId = appointment.professionalId;
+    
+     const matchesFrequencyDays = appointment.frequencyDays;
 
     const dateAppointment = separaETransformaEmNumero(
       appointment.creationDate,
-      '-'
+      "-"
     );
     const matchesDate = selectedDate
       ? new Date(
@@ -96,8 +97,13 @@ export default function AllApointments() {
           dateAppointment[2]
         ).toDateString() === selectedDate.toDateString()
       : true;
-    return matchesProfessionalId && matchesFrequencyDays && matchesDate;
+    return (
+      matchesProfessionalId &&
+      (matchesFrequencyDays) &&
+      matchesDate);
   });
+
+
 
   const dataPassou = (data: string, horario: string) => {
     const [ano, mes, dia] = data.split('-');
@@ -113,7 +119,7 @@ export default function AllApointments() {
     const agora = new Date();
 
     return agora > emDate;
-  };
+  }
 
   const clearFilter = () => {
     setSelectedArea('');
@@ -189,7 +195,8 @@ export default function AllApointments() {
             title="Não confirmados"
             icon={CalendarX}
             value={
-              appointments.filter(appointment => !appointment.isActive).length
+              appointments.filter((appointment) => !appointment.isActive)
+                .length
             }
             subtitle="Consultas que não foram confirmadas"
             titleClassName="text-[#0D4F97]"
@@ -257,7 +264,7 @@ export default function AllApointments() {
                 {filteredAppointments.map((item, index) => {
                   const dateAppointment = separaETransformaEmNumero(
                     item.initialDate,
-                    '-'
+                    "-"
                   );
                   return (
                     <TableRow key={index}>

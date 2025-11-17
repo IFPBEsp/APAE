@@ -10,7 +10,6 @@ import { cn } from '@/lib/utils';
 import {
   Appointment,
   getPacientes,
-  getProfissionaisDaSaude,
   getProfissionalDaSaude,
   Patient,
   Professional,

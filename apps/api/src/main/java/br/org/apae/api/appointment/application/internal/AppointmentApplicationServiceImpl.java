@@ -10,6 +10,8 @@ import br.org.apae.api.common.dto.appointment.request.appointment.*;
 import br.org.apae.api.common.dto.appointment.response.appointment.*;
 import br.org.apae.api.patient.domain.model.AnnualRegistry;
 import br.org.apae.api.patient.domain.repository.AnnualRegistryRepository;
+import br.org.apae.api.professional.domain.exceptions.HealthProfessionalNotFoundException;
+import br.org.apae.api.professional.domain.model.HealthProfessional;
 import br.org.apae.api.professional.domain.repository.HealthProfessionalRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.data.domain.Page;
@@ -49,15 +51,17 @@ public class AppointmentApplicationServiceImpl implements AppointmentApplication
 
   @Override
   public void create(CreateAppointmentDTO dto) {
-    Appointment appointment = mapper.toEntity(dto);
-
     AnnualRegistry annualRegistry = this.registryRepo.findById(dto.annualRegistration())
         .orElseThrow(AnnualRegistrationNotFound::new);
 
-    appointment.setAnnualRegistration(annualRegistry);
+    HealthProfessional professional = this.professionalRepo.findById(dto.professionalId())
+        .orElseThrow(HealthProfessionalNotFoundException::new);
+
+    Appointment appointment = mapper.toEntity(dto, professional, annualRegistry);
+
     appointmentRepo.save(appointment);
 
-    int year = annualRegistry.getYear().getValue();;
+    int year = annualRegistry.getYear().getValue();
     LocalDate end = LocalDate.of(year, 12, 31);
     generateAppointments(annualRegistry.getId(), appointment.getInitialDate(), end);
   }
@@ -207,7 +211,7 @@ public class AppointmentApplicationServiceImpl implements AppointmentApplication
 
     // Create new rule
     Appointment newRule = new Appointment(
-            current.getProfessionalId(),
+            current.getProfessional(),
             current.getServiceId(),
             current.getAnnualRegistration(),
             newFrequency != null ? newFrequency : current.getFrequencyDays(),
