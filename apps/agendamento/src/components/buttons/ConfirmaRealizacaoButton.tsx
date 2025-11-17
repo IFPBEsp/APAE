@@ -6,7 +6,7 @@ import {
   Agendamento,
   getAgendamentoById,
   saveAgendamentoRealizado,
-} from "@/app/services/agendamentoService";
+} from "@/app/services/AppointmentService";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import {

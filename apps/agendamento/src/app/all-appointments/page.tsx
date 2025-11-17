@@ -39,10 +39,10 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import {
-  Agendamento,
-  getAgendamentos,
+  Appointment,
+  getAppointments,
   getAreasDaSaude,
-} from "../services/agendamentoService";
+} from "../services/AppointmentService";
 import { separaETransformaEmNumero } from "@/lib/utils";
 import Link from "next/link";
 import {
@@ -65,12 +65,13 @@ export default function AllApointments() {
   const [selectedArea, setSelectedArea] = useState("");
   const [searchName, setSearchName] = useState("");
   const [areas, setAreas] = useState<Area[]>([]);
-  const [appointments, setAppointments] = useState<Agendamento[]>([]);
+  const [appointments, setAppointments] = useState<Appointment[]>([]);
 
-  useEffect(() => {
+  useEffect(() =>{
     const fetchAppointments = async () => {
-      const response = await getAgendamentos();
-      setAppointments(response);
+      const response = await getAppointments();
+      setAppointments(response.content as Appointment[]);
+
       const areasExistentes: Area[] = (await getAreasDaSaude()).map(
         (area, index) => ({ id: index, name: area } as Area)
       );
@@ -80,17 +81,13 @@ export default function AllApointments() {
   }, []);
 
   const filteredAppointments = appointments.filter((appointment) => {
-    const matchesArea = selectedArea
-      ? appointment.profissional.areaDaSaude === selectedArea
-      : true;
-    const matchesPatientName = appointment.paciente.nome
-      .toLowerCase()
-      .includes(searchName.trim().toLowerCase());
-    const matchesProfessionalName = appointment.profissional.nome
-      .toLowerCase()
-      .includes(searchName.trim().toLowerCase());
+
+    const matchesProfessionalId = appointment.professionalId;
+    
+     const matchesFrequencyDays = appointment.frequencyDays;
+
     const dateAppointment = separaETransformaEmNumero(
-      appointment.proximaConsulta,
+      appointment.creationDate,
       "-"
     );
     const matchesDate = selectedDate
@@ -101,11 +98,12 @@ export default function AllApointments() {
         ).toDateString() === selectedDate.toDateString()
       : true;
     return (
-      matchesArea &&
-      (matchesPatientName || matchesProfessionalName) &&
-      matchesDate
-    );
+      matchesProfessionalId &&
+      (matchesFrequencyDays) &&
+      matchesDate);
   });
+
+
 
   const dataPassou = (data: string, horario: string) => {
     const [ano, mes, dia] = data.split("-");
@@ -115,10 +113,6 @@ export default function AllApointments() {
 
     return agora > emDate;
   }
-
-  const semJustificativa = appointments.filter(
-    (appointment) => dataPassou(appointment.proximaConsulta, appointment.horaProximaConsulta) && !appointment.justificativa
-  );
 
   const clearFilter = () => {
     setSelectedArea("");
@@ -187,20 +181,12 @@ export default function AllApointments() {
             titleClassName="text-[#0D4F97]"
             valueClassName="text-[#0D4F97]"
           />
-          <InfoCard
-            title="Sem justificativa"
-            icon={MessageCircleWarning}
-            value={semJustificativa.length}
-            iconColor="text-red-400"
-            subtitle="Pacientes que não justificaram suas faltas"
-            titleClassName="text-[#0D4F97]"
-            valueClassName="text-[#0D4F97]"
-          />
+
           <InfoCard
             title="Não confirmados"
             icon={CalendarX}
             value={
-              appointments.filter((appointment) => !appointment.confirmado)
+              appointments.filter((appointment) => !appointment.isActive)
                 .length
             }
             subtitle="Consultas que não foram confirmadas"
@@ -268,13 +254,13 @@ export default function AllApointments() {
               <TableBody>
                 {filteredAppointments.map((item, index) => {
                   const dateAppointment = separaETransformaEmNumero(
-                    item.proximaConsulta,
+                    item.initialDate,
                     "-"
                   );
                   return (
                     <TableRow key={index}>
                       <TableCell className="px-3 py-2 text-xs sm:px-4 sm:py-3 sm:text-sm">
-                        {item.paciente.nome}
+                        {item.annualRegistration.patient.fullName}
                       </TableCell>
                       <TableCell className="px-3 py-2 text-xs sm:px-4 sm:py-3 sm:text-sm text-gray-800">
                         {format(
@@ -288,7 +274,7 @@ export default function AllApointments() {
                         )}
                       </TableCell>
                       <TableCell className="px-3 py-2 text-xs sm:px-4 sm:py-3 sm:text-sm">
-                        {item.profissional.nome}
+                        {item.professionalId}
                       </TableCell>
                       <TableCell className="px-3 py-2">
                         <Link

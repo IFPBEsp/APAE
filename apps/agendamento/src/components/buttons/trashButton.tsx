@@ -2,7 +2,7 @@
 
 import { Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { deleteAgendamento } from "@/app/services/agendamentoService";
+import { deleteAppointment } from "@/app/services/AppointmentService";
 import { useRouter } from "next/navigation";
 import {
   Dialog,
@@ -15,11 +15,11 @@ import {
   DialogTrigger,
 } from "../ui/dialog";
 
-export default function TrashButton({ id, realizado }: { id: string, realizado: boolean }) {
+export default function TrashButton({ id }: { id: string, realizado: boolean }) {
   const router = useRouter();
 
   const deletarAgendamento = async () => {
-    await deleteAgendamento(id, realizado);
+    await deleteAppointment(id);
     router.back();
   };
 
