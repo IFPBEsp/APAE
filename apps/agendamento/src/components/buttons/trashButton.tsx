@@ -1,4 +1,4 @@
-"use client";
+'use client';
 
 import { Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -13,7 +13,7 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from "../ui/dialog";
+} from '../ui/dialog';
 
 export default function TrashButton({ id }: { id: string, realizado: boolean }) {
   const router = useRouter();
@@ -26,9 +26,7 @@ export default function TrashButton({ id }: { id: string, realizado: boolean }) 
   return (
     <Dialog>
       <DialogTrigger asChild>
-        <Button
-          className="bg-transparent cursor-pointer text-[#970D0D] active:text-[#c21111] hover:bg-[rgba(0,0,0,0.1)] transition-colors"
-        >
+        <Button className="bg-transparent cursor-pointer text-[#970D0D] active:text-[#c21111] hover:bg-[rgba(0,0,0,0.1)] transition-colors">
           <Trash2 />
         </Button>
       </DialogTrigger>

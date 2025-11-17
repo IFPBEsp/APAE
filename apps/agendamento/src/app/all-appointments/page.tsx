@@ -1,18 +1,18 @@
-"use client";
+'use client';
 
-import { useState, useEffect } from "react";
-import { format } from "date-fns";
-import { ptBR } from "date-fns/locale";
+import { useState, useEffect } from 'react';
+import { format } from 'date-fns';
+import { ptBR } from 'date-fns/locale';
 import {
   CalendarDays,
   MessageCircleWarning,
   CalendarX,
   SearchIcon,
   Users,
-} from "lucide-react";
+} from 'lucide-react';
 
-import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
+import { Button } from '@/components/ui/button';
+import { Card, CardContent } from '@/components/ui/card';
 import {
   Table,
   TableBody,
@@ -20,24 +20,24 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/components/ui/table";
-import { Calendar } from "@/components/ui/calendar";
+} from '@/components/ui/table';
+import { Calendar } from '@/components/ui/calendar';
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
-} from "@/components/ui/popover";
+} from '@/components/ui/popover';
 
-import { InfoCard } from "@/components/shared/InfoCard";
-import { Input } from "@/components/ui/input";
-import { Select, SelectItem } from "@/components/ui/select";
+import { InfoCard } from '@/components/shared/InfoCard';
+import { Input } from '@/components/ui/input';
+import { Select, SelectItem } from '@/components/ui/select';
 import {
   SelectContent,
   SelectGroup,
   SelectLabel,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select";
+} from '@/components/ui/select';
 import {
   Appointment,
   getAppointments,
@@ -52,8 +52,8 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from "@/components/ui/dialog";
-import { AppointmentForm } from "@/components/forms/AppointmentForm";
+} from '@/components/ui/dialog';
+import { AppointmentForm } from '@/components/forms/AppointmentForm';
 
 type Area = {
   id: number;
@@ -62,8 +62,8 @@ type Area = {
 
 export default function AllApointments() {
   const [selectedDate, setSelectedDate] = useState<Date | undefined>(undefined);
-  const [selectedArea, setSelectedArea] = useState("");
-  const [searchName, setSearchName] = useState("");
+  const [selectedArea, setSelectedArea] = useState('');
+  const [searchName, setSearchName] = useState('');
   const [areas, setAreas] = useState<Area[]>([]);
   const [appointments, setAppointments] = useState<Appointment[]>([]);
 
@@ -106,17 +106,24 @@ export default function AllApointments() {
 
 
   const dataPassou = (data: string, horario: string) => {
-    const [ano, mes, dia] = data.split("-");
-    const [hora, minuto, segundo] = horario.split(":");
-    const emDate = new Date(parseInt(ano), parseInt(mes), parseInt(dia), parseInt(hora), parseInt(minuto), parseInt(segundo));
+    const [ano, mes, dia] = data.split('-');
+    const [hora, minuto, segundo] = horario.split(':');
+    const emDate = new Date(
+      parseInt(ano),
+      parseInt(mes),
+      parseInt(dia),
+      parseInt(hora),
+      parseInt(minuto),
+      parseInt(segundo)
+    );
     const agora = new Date();
 
     return agora > emDate;
   }
 
   const clearFilter = () => {
-    setSelectedArea("");
-    setSearchName("");
+    setSelectedArea('');
+    setSearchName('');
     setSelectedDate(undefined);
   };
 
@@ -162,7 +169,9 @@ export default function AllApointments() {
               </DialogTrigger>
               <DialogContent className="w-full sm:max-w-[425px]">
                 <DialogHeader>
-                  <DialogTitle className="text-[#0D4F97]">Cadastrar Novo Agendamento</DialogTitle>
+                  <DialogTitle className="text-[#0D4F97]">
+                    Cadastrar Novo Agendamento
+                  </DialogTitle>
                   <DialogDescription className="text-[#0D4F97] opacity-50">
                     Preencha os detalhes abaixo para agendar uma consulta.
                   </DialogDescription>
@@ -202,7 +211,7 @@ export default function AllApointments() {
               placeholder="Buscar paciente ou profissional..."
               className="pl-10 pr-3 border-[#0D4F97]"
               value={searchName}
-              onChange={(e) => setSearchName(e.target.value)}
+              onChange={e => setSearchName(e.target.value)}
             />
           </div>
 
@@ -213,7 +222,7 @@ export default function AllApointments() {
             <SelectContent>
               <SelectGroup>
                 <SelectLabel>Áreas da saúde</SelectLabel>
-                {areas.map((area) => (
+                {areas.map(area => (
                   <SelectItem key={area.id} value={area.name}>
                     {area.name}
                   </SelectItem>

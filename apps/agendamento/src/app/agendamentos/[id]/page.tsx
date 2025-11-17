@@ -8,7 +8,7 @@ import {
   CardContent,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card";
+} from '@/components/ui/card';
 import {
   Dialog,
   DialogContent,
@@ -16,9 +16,9 @@ import {
   DialogTitle,
   DialogTrigger,
   DialogDescription,
-} from "@/components/ui/dialog";
-import { Pencil } from "lucide-react";
-import { Button } from "@/components/ui/button";
+} from '@/components/ui/dialog';
+import { Pencil } from 'lucide-react';
+import { Button } from '@/components/ui/button';
 
 import {
   getAppointmentById,
