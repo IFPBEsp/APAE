@@ -183,7 +183,7 @@ export function AppointmentForm({ editAppointment }: PageProps) {
       window.location.reload();
     }
 
-    console.log('Novo agendamento:', {
+    console.log('Novo agendamento: ', {
       dateHour,
       patient,
       professional,
