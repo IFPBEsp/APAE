@@ -9,6 +9,8 @@ import br.org.apae.api.common.dto.appointment.request.appointment.UpdateAppointm
 import br.org.apae.api.common.dto.appointment.response.absence.AbsenceResponseDTO;
 import br.org.apae.api.common.dto.appointment.response.appointment.AppointmentResponseDTO;
 import br.org.apae.api.common.dto.appointment.response.appointment.GeneratedAppointmentResponseDTO;
+import br.org.apae.api.patient.domain.model.AnnualRegistry;
+import br.org.apae.api.professional.domain.model.HealthProfessional;
 import org.springframework.stereotype.Component;
 
 import java.util.UUID;
@@ -16,11 +18,11 @@ import java.util.UUID;
 @Component
 public class AppointmentMapper {
 
-    public Appointment toEntity(CreateAppointmentDTO dto) {
+    public Appointment toEntity(CreateAppointmentDTO dto, HealthProfessional professional, AnnualRegistry annualRegistry) {
         return new Appointment(
-                dto.professionalId(),
+                professional,
                 dto.serviceId(),
-                null,
+                annualRegistry,
                 dto.frequencyDays(),
                 dto.hour(),
                 dto.initialDate(),
@@ -28,12 +30,16 @@ public class AppointmentMapper {
         );
     }
 
-    public Appointment updateEntity(Appointment appointment, UpdateAppointmentDTO dto) {
-        appointment.setProfessionalId(
-                dto.professionalId() != null ? dto.professionalId() : appointment.getProfessionalId()
+    public Appointment updateEntity(Appointment appointment, UpdateAppointmentDTO dto, HealthProfessional professional, AnnualRegistry annualRegistry) {
+        appointment.setProfessional(
+                dto.professionalId() != null ? professional : appointment.getProfessional()
         );
         appointment.setServiceId(
                 dto.serviceId() != null ? dto.serviceId() : appointment.getServiceId()
+        );
+
+        appointment.setAnnualRegistration(
+                dto.annualRegistrationId() != null ? annualRegistry : appointment.getAnnualRegistration()
         );
 
         appointment.setHour(
@@ -51,22 +57,6 @@ public class AppointmentMapper {
         return appointment;
     }
 
-    public AppointmentResponseDTO toResponse(Appointment appointment) {
-        return new AppointmentResponseDTO(
-                appointment.getId(),
-                appointment.getProfessionalId(),
-                appointment.getServiceId(),
-                appointment.getAnnualRegistration(),
-                appointment.getFrequencyDays(),
-                appointment.getInitialDate(),
-                appointment.getEndDate(),
-                appointment.getHour(),
-                appointment.isActive(),
-                appointment.getCreationDate()
-        );
-    }
-
-
     public GeneratedAppointmentResponseDTO toGeneratedResponse(GeneratedAppointment entity) {
         return new GeneratedAppointmentResponseDTO(
                 entity.getId(),
@@ -81,6 +71,22 @@ public class AppointmentMapper {
         );
     }
 
+    public AppointmentResponseDTO toResponse(Appointment appointment) {
+        return new AppointmentResponseDTO(
+                appointment.getId(),
+                appointment.getProfessional().getId(),
+                appointment.getServiceId(),
+                appointment.getAnnualRegistration().getId(),
+                appointment.getFrequencyDays(),
+                appointment.getInitialDate(),
+                appointment.getEndDate(),
+                appointment.getHour(),
+                appointment.isActive(),
+                appointment.getCreationDate()
+        );
+    }
+
+
     public Absence toEntity(CreateAbsenceDTO dto) {
         return new Absence(
                 null,
@@ -90,7 +96,7 @@ public class AppointmentMapper {
     }
 
     public AbsenceResponseDTO toAbsenceResponse(Absence entity) {
-        UUID professionalId = entity.getGeneratedAppointment().getAppointment().getProfessionalId();
+        UUID professionalId = entity.getGeneratedAppointment().getAppointment().getProfessional().getId();
         UUID patientId = entity.getGeneratedAppointment().getPatientId();
 
         return new AbsenceResponseDTO(

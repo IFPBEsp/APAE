@@ -6,6 +6,7 @@ import br.org.apae.api.appointment.domain.exceptions.AnnualRegistrationNotFound;
 import br.org.apae.api.appointment.domain.exceptions.AppointmentNotFoundException;
 import br.org.apae.api.appointment.domain.model.*;
 import br.org.apae.api.appointment.domain.repository.*;
+import br.org.apae.api.appointment.mapper.AbsenceMapper;
 import br.org.apae.api.appointment.mapper.AppointmentMapper;
 import br.org.apae.api.common.dto.appointment.request.absence.CreateAbsenceDTO;
 import br.org.apae.api.common.dto.appointment.request.appointment.*;
@@ -13,6 +14,7 @@ import br.org.apae.api.common.dto.appointment.response.absence.AbsenceResponseDT
 import br.org.apae.api.common.dto.appointment.response.appointment.*;
 import br.org.apae.api.patient.domain.model.AnnualRegistry;
 import br.org.apae.api.patient.domain.repository.AnnualRegistryRepository;
+import br.org.apae.api.professional.domain.model.HealthProfessional;
 import br.org.apae.api.professional.domain.repository.HealthProfessionalRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.context.annotation.Primary;
@@ -34,8 +36,8 @@ public class AbsenceApplicationServiceImpl implements AbsenceApplicationService,
     private final AnnualRegistryRepository registryRepo;
     private final HealthProfessionalRepository professionalRepo;
     private final AbsenceRepository absenceRepo;
-    private final AppointmentMapper mapper;
-
+    private final AppointmentMapper appointmentMapper;
+    private final AbsenceMapper absenceMapper;
 
     public AbsenceApplicationServiceImpl(
             AppointmentRepository appointmentRepo,
@@ -43,15 +45,16 @@ public class AbsenceApplicationServiceImpl implements AbsenceApplicationService,
             AnnualRegistryRepository registryRepo,
             HealthProfessionalRepository professionalRepo,
             AbsenceRepository absenceRepo,
-            AppointmentMapper mapper) {
+            AppointmentMapper appointmentMapper,
+            AbsenceMapper absenceMapper) {
         this.appointmentRepo = appointmentRepo;
         this.generatedRepo = generatedRepo;
         this.registryRepo = registryRepo;
         this.professionalRepo = professionalRepo;
         this.absenceRepo = absenceRepo;
-        this.mapper = mapper;
+        this.appointmentMapper = appointmentMapper;
+        this.absenceMapper = absenceMapper;
     }
-
 
     @Override
     public AbsenceResponseDTO register(CreateAbsenceDTO dto) {
@@ -66,7 +69,7 @@ public class AbsenceApplicationServiceImpl implements AbsenceApplicationService,
             throw new IllegalArgumentException("A data da falta deve ser igual à data efetiva do agendamento gerado: " + generatedAppointment.getEffectiveDateTime().toLocalDate());
         }
 
-        Absence absence = mapper.toEntity(dto);
+        Absence absence = absenceMapper.toEntity(dto);
         absence.setGeneratedAppointment(generatedAppointment);
 
         generatedAppointment.setPerformed(false);
@@ -74,7 +77,7 @@ public class AbsenceApplicationServiceImpl implements AbsenceApplicationService,
         generatedRepo.save(generatedAppointment);
 
         absence = absenceRepo.save(absence);
-        return mapper.toAbsenceResponse(absence);
+        return absenceMapper.toAbsenceResponse(absence);
     }
 
     @Override
@@ -82,17 +85,19 @@ public class AbsenceApplicationServiceImpl implements AbsenceApplicationService,
             UUID generatedId, UUID patientId, UUID professionalId, Pageable pageable) {
 
         return absenceRepo.findByFilters(generatedId, patientId, professionalId, pageable)
-                .map(mapper::toAbsenceResponse);
+                .map(absenceMapper::toAbsenceResponse);
     }
 
     @Override
     public void create(CreateAppointmentDTO dto) {
-        Appointment appointment = mapper.toEntity(dto);
-
         AnnualRegistry annualRegistry = this.registryRepo.findById(dto.annualRegistration())
                 .orElseThrow(AnnualRegistrationNotFound::new);
 
-        appointment.setAnnualRegistration(annualRegistry);
+        HealthProfessional professional = this.professionalRepo.findById(dto.professionalId())
+                .orElseThrow(() -> new IllegalStateException("HealthProfessional not found"));
+
+        Appointment appointment = appointmentMapper.toEntity(dto, professional, annualRegistry);
+
         appointmentRepo.save(appointment);
 
         int year = annualRegistry.getYear().getValue();
@@ -102,19 +107,19 @@ public class AbsenceApplicationServiceImpl implements AbsenceApplicationService,
 
     @Override
     public Page<AppointmentResponseDTO> findAll(Pageable pageable) {
-        return appointmentRepo.findAll(pageable).map(mapper::toResponse);
+        return appointmentRepo.findAll(pageable).map(appointmentMapper::toResponse);
     }
 
     @Override
     public Page<AppointmentResponseDTO> findAllByDate(LocalDate date, Pageable pageable) {
         return appointmentRepo.findAllByInitialDate(date, pageable)
-                .map(mapper::toResponse);
+                .map(appointmentMapper::toResponse);
     }
 
     @Override
     public Page<AppointmentResponseDTO> findAllByDateAndTime(LocalDate date, LocalTime time, Pageable pageable) {
         return appointmentRepo.findAllByInitialDateAndHour(date, time, pageable)
-                .map(mapper::toResponse);
+                .map(appointmentMapper::toResponse);
     }
 
     @Override
@@ -131,7 +136,7 @@ public class AbsenceApplicationServiceImpl implements AbsenceApplicationService,
     public AppointmentResponseDTO findById(UUID id) {
         Appointment appointment = appointmentRepo.findById(id)
                 .orElseThrow(AppointmentNotFoundException::new);
-        return mapper.toResponse(appointment);
+        return appointmentMapper.toResponse(appointment);
     }
 
     @Override
@@ -174,7 +179,7 @@ public class AbsenceApplicationServiceImpl implements AbsenceApplicationService,
         }
 
         return generated.stream()
-                .map(mapper::toGeneratedResponse)
+                .map(appointmentMapper::toGeneratedResponse)
                 .toList();
     }
 
@@ -207,7 +212,7 @@ public class AbsenceApplicationServiceImpl implements AbsenceApplicationService,
         appointmentRepo.save(current);
 
         Appointment newRule = new Appointment(
-                current.getProfessionalId(),
+                current.getProfessional(),
                 current.getServiceId(),
                 current.getAnnualRegistration(),
                 newFrequency != null ? newFrequency : current.getFrequencyDays(),
@@ -223,21 +228,21 @@ public class AbsenceApplicationServiceImpl implements AbsenceApplicationService,
         generateAppointments(current.getAnnualRegistration().getId(), editDate, end);
         generatedRepo.deleteFutureByAppointmentId(current.getId(), editDate.atStartOfDay());
 
-        return mapper.toResponse(newRule);
+        return appointmentMapper.toResponse(newRule);
     }
 
     public GeneratedAppointmentResponseDTO reschedule(UUID generatedId, LocalDateTime newDateTime) {
         GeneratedAppointment appt = generatedRepo.findById(generatedId)
                 .orElseThrow(() -> new IllegalArgumentException(APPOINTMENT_NOT_FOUND));
         appt.setOverriddenDateTime(newDateTime);
-        return mapper.toGeneratedResponse(generatedRepo.save(appt));
+        return appointmentMapper.toGeneratedResponse(generatedRepo.save(appt));
     }
 
     public GeneratedAppointmentResponseDTO markAsPerformed(UUID generatedId) {
         GeneratedAppointment appt = generatedRepo.findById(generatedId)
                 .orElseThrow(() -> new IllegalArgumentException(APPOINTMENT_NOT_FOUND));
         appt.setPerformed(true);
-        return mapper.toGeneratedResponse(generatedRepo.save(appt));
+        return appointmentMapper.toGeneratedResponse(generatedRepo.save(appt));
     }
 
     public GeneratedAppointmentResponseDTO cancel(UUID generatedId, String reason) {
@@ -245,7 +250,7 @@ public class AbsenceApplicationServiceImpl implements AbsenceApplicationService,
                 .orElseThrow(() -> new IllegalArgumentException(APPOINTMENT_NOT_FOUND));
         appt.setCancelled(true);
         appt.setCancellationReason(reason);
-        return mapper.toGeneratedResponse(generatedRepo.save(appt));
+        return appointmentMapper.toGeneratedResponse(generatedRepo.save(appt));
     }
 
     public Page<GeneratedAppointmentResponseDTO> listByPatient(
@@ -255,6 +260,6 @@ public class AbsenceApplicationServiceImpl implements AbsenceApplicationService,
         LocalDateTime e = end.atTime(23, 59, 59);
 
         return generatedRepo.findByPatientIdAndScheduledDateTimeBetween(patientId, s, e, pageable)
-                .map(mapper::toGeneratedResponse);
+                .map(appointmentMapper::toGeneratedResponse);
     }
 }
