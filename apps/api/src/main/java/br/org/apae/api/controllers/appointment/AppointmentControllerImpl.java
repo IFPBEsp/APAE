@@ -8,6 +8,7 @@ import java.util.UUID;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.RestController;
 
 import br.org.apae.api.appointment.application.interfaces.AppointmentApplicationService;
@@ -17,6 +18,7 @@ import br.org.apae.api.common.dto.appointment.response.appointment.*;
 import jakarta.validation.Valid;
 
 @RestController
+@CrossOrigin(origins = "http://localhost:3000")
 public class AppointmentControllerImpl implements AppointmentController {
 
   private final AppointmentApplicationService service;
