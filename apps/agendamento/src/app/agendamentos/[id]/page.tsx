@@ -23,7 +23,7 @@ import { Button } from '@/components/ui/button';
 import {
   getAppointmentById,
   Appointment,
-} from "@/app/services/AppointmentService";
+} from "@/app/services/appointmentService";
 import { AppointmentForm } from "@/components/forms/AppointmentForm";
 import TrashButton from "@/components/buttons/trashButton";
 // import ConfirmaRealizacaoButton from "@/components/buttons/ConfirmaRealizacaoButton";
@@ -171,7 +171,7 @@ export default async function viewAppointment({ params }: PageProps) {
 
                   <div className="flex">
                     <p className="font-medium mr-2">Área de atendimento:</p>
-                    <p>{appointment.annualRegistration.professional.healthArea || "—"}</p>
+                    <p>{appointment.professional.healthSector || "—"}</p>
                   </div>
 
                   <div className="flex">
@@ -219,15 +219,15 @@ export default async function viewAppointment({ params }: PageProps) {
               <div className="flex flex-col gap-2">
                   <div className="flex">
                   <p className="font-medium mr-2">Nome: </p>
-                  <p>{appointment.annualRegistration.professional.name || "—"}</p>
+                  <p>{appointment.professional.name || "—"}</p>
                 </div>
                 <div className="flex">
                   <p className="font-medium mr-2">Email: </p>
-                  <p>{appointment.annualRegistration.professional.email || "—"}</p>
+                  <p>{appointment.professional.email || "—"}</p>
                 </div>
                 <div className="flex">
                   <p className="font-medium mr-2">Telefone: </p>
-                  <p>{appointment.annualRegistration.professional.phone || "—"}</p>
+                  <p>{appointment.professional.phoneNumber || "—"}</p>
                 </div>
               </div>
 
@@ -235,15 +235,15 @@ export default async function viewAppointment({ params }: PageProps) {
               <div className="flex flex-col gap-2 w-1/3">
                 <div className="flex">
                   <p className="font-medium mr-2">Documento médico: </p>
-                  <p>{appointment.annualRegistration.professional.professionalDoc || "—"}</p>
+                  <p>{appointment.professional.professionalDocument || "—"}</p>
                 </div>
                 <div className="flex">
                   <p className="font-medium mr-2">RG: </p>
-                  <p>{appointment.annualRegistration.professional.rg || "—"}</p>
+                  <p>{appointment.professional.identityDocument || "—"}</p>
                 </div>
                 <div className="flex">
                   <p className="font-medium mr-2">Cidade: </p>
-                  <p>{appointment.annualRegistration.professional.address.city || "—"}</p>
+                  <p>{appointment.professional.address.city || "—"}</p>
                 </div>
               </div>
             </div>

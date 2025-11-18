@@ -42,7 +42,7 @@ import {
   Appointment,
   getAppointments,
   getAreasDaSaude,
-} from "../services/AppointmentService";
+} from "../services/appointmentService";
 import { separaETransformaEmNumero } from "@/lib/utils";
 import Link from "next/link";
 import {
@@ -82,7 +82,7 @@ export default function AllApointments() {
 
   const filteredAppointments = appointments.filter((appointment) => {
 
-    const matchesProfessionalId = appointment.professionalId;
+    const matchesProfessionalId = appointment.professional.id;
     
      const matchesFrequencyDays = appointment.frequencyDays;
 
@@ -283,7 +283,7 @@ export default function AllApointments() {
                         )}
                       </TableCell>
                       <TableCell className="px-3 py-2 text-xs sm:px-4 sm:py-3 sm:text-sm">
-                        {item.professionalId}
+                        {item.professional.id}
                       </TableCell>
                       <TableCell className="px-3 py-2">
                         <Link

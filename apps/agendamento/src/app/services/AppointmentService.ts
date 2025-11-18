@@ -2,8 +2,8 @@ import { Page } from "@/types/pagination";
 
 type UUID = string;
 
-const API_BASE_URL = process.env.API_BASE_URL || "http://localhost:8093";
-const USE_MOCK_DATA = process.env.NEXT_PUBLIC_USE_MOCK_DATA === 'true' || true; // Forçar true para desenvolvimento
+const API_BASE_URL = process.env.API_BASE_URL || "http://localhost:8090";
+const USE_MOCK_DATA = process.env.NEXT_PUBLIC_USE_MOCK_DATA === 'false' || false; // Forçar true para desenvolvimento
 const MOCK_DELAY = 500; // delay simulado em ms
 
 // ========== DADOS MOCKADOS ==========
@@ -482,28 +482,29 @@ export async function getAppointments(
     return mockFetch(mockPage(filteredAppointments));
   }
 
-  try {
-    const query = new URLSearchParams({ 
-      page: `${page}`, 
-      size: `${size}` 
-    });
-    
-    if (date) {
-      query.append("date", date);
-    }
-    if (time) {
-      query.append("time", time);
-    }
+  const query = new URLSearchParams({
+    page: `${page}`,
+    size: `${size}`
+  });
 
-    const response = await fetch(`${API_BASE_URL}/appointments?${query}`);
-    if (!response.ok) {
-      throw new Error("Error searching for appointments");
-    }
-    return await response.json();
-  } catch (error) {
-    console.error('Error in getAppointments, falling back to mock:', error);
-    return mockFetch(mockPage(mockAppointments));
+  if (date) {
+    query.append("date", date);
   }
+  if (time) {
+    query.append("time", time);
+  }
+
+  return fetch(`${API_BASE_URL}/appointments?${query}`)
+    .then(response => {
+      if (!response.ok) {
+        throw new Error("Error searching for appointments");
+      }
+      return response.json();
+    })
+    .catch(error => {
+      console.error('Error in getAppointments, falling back to mock:', error);
+      return mockFetch(mockPage(mockAppointments));
+    });
 }
 
 // Buscar agendamento por ID

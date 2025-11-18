@@ -16,6 +16,7 @@ import {
   saveAppointment,
 } from '@/app/services/appointmentService';
 import { Input } from '../ui/input';
+import { getProfissionaisDaSaude } from '@/app/services/appointmentService';
 
 type selectItem = {
   value: string;
@@ -60,7 +61,7 @@ export function AppointmentForm({ editAppointment }: PageProps) {
     editAppointment?.annualRegistration.patient.fullName || ''
   );
   const [professional, setProfessional] = useState<string>(
-    editAppointment?.professionalId || ''
+    editAppointment?.professional.id || ''
   );
   const [endDate, setEndDate] = useState<string>(
     editAppointment?.endDate || ''
@@ -81,8 +82,7 @@ export function AppointmentForm({ editAppointment }: PageProps) {
   useEffect(() => {
     const fetchPatientsAndProfessionals = async () => {
       const registeredPatients: Patient[] = await getPacientes();
-      const registeredProfessionals: Professional[] =
-        await getProfissionaisDaSaude();
+      const registeredProfessionals: Professional[] = await getProfissionaisDaSaude();
 
       setListPatients(
         registeredPatients.map(

@@ -2,8 +2,8 @@ import { Page } from '@/types/pagination';
 
 type UUID = string;
 
-const API_BASE_URL = process.env.API_BASE_URL || 'http://localhost:8093';
-const USE_MOCK_DATA = process.env.NEXT_PUBLIC_USE_MOCK_DATA === 'true' || true; // Forçar true para desenvolvimento
+const API_BASE_URL = process.env.API_BASE_URL || 'http://localhost:8090';
+const USE_MOCK_DATA = process.env.NEXT_PUBLIC_USE_MOCK_DATA === 'false' || false; // Forçar true para desenvolvimento
 const MOCK_DELAY = 500; // delay simulado em ms
 
 // ========== DADOS MOCKADOS ==========
@@ -143,7 +143,6 @@ const mockAnnualRegistries: AnnualRegistry[] = [
     patient: mockPatients[0],
     disorders: { id: 'disorder-1', name: 'TEA' },
     endDate: '2024-12-31',
-    professional: mockProfessionals[0],
   },
   {
     id: 'annual-2',
@@ -154,14 +153,13 @@ const mockAnnualRegistries: AnnualRegistry[] = [
     patient: mockPatients[1],
     disorders: { id: 'disorder-2', name: 'TDAH' },
     endDate: '2024-12-31',
-    professional: mockProfessionals[1],
   },
 ];
 
 const mockAppointments: AppointmentResponseDTO[] = [
   {
     id: 'appointment-1',
-    professionalId: 'professional-1',
+    professional: mockProfessionals[2],
     serviceId: 'service-1',
     annualRegistration: mockAnnualRegistries[0],
     frequencyDays: 15,
@@ -173,7 +171,7 @@ const mockAppointments: AppointmentResponseDTO[] = [
   },
   {
     id: 'appointment-2',
-    professionalId: 'professional-2',
+    professional: mockProfessionals[0],
     serviceId: 'service-2',
     annualRegistration: mockAnnualRegistries[1],
     frequencyDays: 30,
@@ -185,7 +183,7 @@ const mockAppointments: AppointmentResponseDTO[] = [
   },
   {
     id: 'appointment-3',
-    professionalId: 'professional-3',
+    professional: mockProfessionals[1],
     serviceId: 'service-3',
     annualRegistration: mockAnnualRegistries[0],
     frequencyDays: 7,
@@ -233,12 +231,11 @@ export interface AnnualRegistry {
   patient: Patient;
   disorders: Disorder;
   endDate: string;
-  professional: Professional;
 }
 
 export interface Appointment {
   id: UUID;
-  professionalId: UUID;
+  professional: Professional;
   serviceId: UUID;
   annualRegistration: AnnualRegistry;
   frequencyDays: number;
@@ -260,7 +257,7 @@ export interface CreateAppointmentDTO {
 
 export interface AppointmentResponseDTO {
   id: UUID;
-  professionalId: UUID;
+  professional: Professional;
   serviceId: UUID;
   annualRegistration: AnnualRegistry;
   frequencyDays: number;
@@ -377,13 +374,13 @@ export interface CancelGeneratedAppointmentDTO {
 }
 
 export interface Professional {
-  id?: string;
-  healthArea: string;
-  phone: string;
-  professionalDoc: string;
+  id: string;
+  healthSector: string;
+  phoneNumber: string;
+  professionalDocument: string;
   email: string;
   name: string;
-  rg: string;
+  identityDocument: string;
   address: Address;
 }
 
@@ -503,7 +500,9 @@ export async function getAppointments(
     if (!response.ok) {
       throw new Error('Error searching for appointments');
     }
-    return await response.json();
+    const res = await response.json()
+    console.log(res)
+    return res;
   } catch (error) {
     console.error('Error in getAppointments, falling back to mock:', error);
     return mockFetch(mockPage(mockAppointments));
@@ -835,6 +834,7 @@ export async function getPacientes(): Promise<Patient[]> {
   try {
     const response = await fetch(`${API_BASE_URL}/patients?page=0&size=100`);
     const data = await response.json();
+    console.log(data)
     return data.content || [];
   } catch (error) {
     console.error('Error in getPacientes, falling back to mock:', error);
@@ -909,12 +909,12 @@ export const toggleConfirmacao = async (id: UUID) => {
   try {
     const appointment = await getAppointmentById(id);
 
-    if (!appointment.professionalId || !appointment.annualRegistration?.id) {
+    if (!appointment.professional || !appointment.annualRegistration?.id) {
       throw new Error('Appointment data is incomplete');
     }
 
     const dto: CreateAppointmentDTO = {
-      professionalId: appointment.professionalId,
+      professionalId: appointment.professional.id,
       serviceId: appointment.serviceId,
       annualRegistrationId: appointment.annualRegistration.id,
       frequencyDays: appointment.frequencyDays,
