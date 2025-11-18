@@ -76,12 +76,12 @@ const mockPatients: Patient[] = [
 const mockProfessionals: Professional[] = [
   {
     id: 'professional-1',
-    healthArea: 'Fisioterapia',
-    phone: '(11) 3456-7890',
-    professionalDoc: 'CREFITO 12345/SP',
+    healthSector: 'Fisioterapia',
+    phoneNumber: '(11) 3456-7890',
+    professionalDocument: 'CREFITO 12345/SP',
     email: 'ana.fisio@email.com',
     name: 'Ana Fonseca',
-    rg: '11.223.344-5',
+    identityDocument: '11.223.344-5',
     address: {
       id: 'address-prof-1',
       city: 'São Paulo',
@@ -95,12 +95,12 @@ const mockProfessionals: Professional[] = [
   },
   {
     id: 'professional-2',
-    healthArea: 'Psicologia',
-    phone: '(11) 4567-8901',
-    professionalDoc: 'CRP 06/123456',
+    healthSector: 'Psicologia',
+    phoneNumber: '(11) 4567-8901',
+    professionalDocument: 'CRP 06/123456',
     email: 'carlos.psi@email.com',
     name: 'Carlos Mendes',
-    rg: '22.334.455-6',
+    identityDocument: '22.334.455-6',
     address: {
       id: 'address-prof-2',
       city: 'São Paulo',
@@ -114,12 +114,12 @@ const mockProfessionals: Professional[] = [
   },
   {
     id: 'professional-3',
-    healthArea: 'Terapia Ocupacional',
-    phone: '(11) 5678-9012',
-    professionalDoc: 'CREFITO 54321/SP',
+    healthSector: 'Terapia Ocupacional',
+    phoneNumber: '(11) 5678-9012',
+    professionalDocument: 'CREFITO 54321/SP',
     email: 'beatriz.to@email.com',
     name: 'Beatriz Lima',
-    rg: '33.445.566-7',
+    identityDocument: '33.445.566-7',
     address: {
       id: 'address-prof-3',
       city: 'São Paulo',
@@ -884,17 +884,17 @@ export async function getProfissionalDaSaude(
 
 export async function getAreasDaSaude(): Promise<string[]> {
   if (USE_MOCK_DATA) {
-    const areas = mockProfessionals.map(p => p.healthArea);
+    const areas = mockProfessionals.map(p => p.healthSector);
     return mockFetch([...new Set(areas)]);
   }
 
   try {
     const profissionais = await getProfissionaisDaSaude();
-    const areas = profissionais.map(p => p.healthArea);
+    const areas = profissionais.map(p => p.healthSector);
     return [...new Set(areas)].filter(Boolean) as string[];
   } catch (error) {
     console.error('Error in getAreasDaSaude, falling back to mock:', error);
-    const areas = mockProfessionals.map(p => p.healthArea);
+    const areas = mockProfessionals.map(p => p.healthSector);
     return mockFetch([...new Set(areas)]);
   }
 }
