@@ -42,7 +42,7 @@ import {
   Appointment,
   getAppointments,
   getAreasDaSaude,
-} from "../services/AppointmentService";
+} from "../services/appointmentService";
 import { separaETransformaEmNumero } from "@/lib/utils";
 import Link from "next/link";
 import {

@@ -40,7 +40,7 @@ import {
 import { AppointmentForm } from "@/components/forms/AppointmentForm";
 import { InfoCard } from "@/components/shared/InfoCard";
 import Link from "next/link";
-import {Appointment, AppointmentResponseDTO, getAppointments, toggleConfirmacao} from "./services/AppointmentService";
+import {Appointment, AppointmentResponseDTO, getAppointments, toggleConfirmacao} from "./services/appointmentService";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Page } from "@/types/pagination";
 
