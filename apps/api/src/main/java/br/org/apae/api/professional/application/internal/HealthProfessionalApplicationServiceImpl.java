@@ -7,7 +7,9 @@ import br.org.apae.api.common.dto.professional.request.UpdateHealthProfessionalD
 import br.org.apae.api.common.dto.professional.response.HealthProfessionalResponseDTO;
 import br.org.apae.api.professional.application.interfaces.HealthProfessionalApplicationService;
 import br.org.apae.api.professional.application.mappers.HealthProfessionalMapper;
+import br.org.apae.api.professional.domain.exceptions.EmailConflictException;
 import br.org.apae.api.professional.domain.exceptions.HealthProfessionalNotFoundException;
+import br.org.apae.api.professional.domain.exceptions.IdentityDocumentConflictException;
 import br.org.apae.api.professional.domain.exceptions.ProfessionalDocumentConflictException;
 import br.org.apae.api.professional.domain.model.HealthProfessional;
 import br.org.apae.api.professional.domain.repository.HealthProfessionalRepository;
@@ -40,7 +42,10 @@ public class HealthProfessionalApplicationServiceImpl implements HealthProfessio
             throw new ProfessionalDocumentConflictException();
         }
         if (repository.existsByEmail(dto.email())) {
-            throw new ProfessionalDocumentConflictException();
+            throw new EmailConflictException();
+        }
+        if (repository.existsByIdentityDocument(dto.identityDocument())){
+            throw new IdentityDocumentConflictException();
         }
 
         AddressResponseDTO addressDto = addressService.createAddress(dto.address());
