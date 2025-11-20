@@ -11,7 +11,6 @@ import { cn } from '@/lib/utils';
 import {
   Appointment,
   getPacientes,
-  getProfissionalDaSaude,
   Patient,
   Professional,
   saveAppointment,
@@ -53,21 +52,25 @@ export function AppointmentForm({ editAppointment }: PageProps) {
       ? new Date(year, month, day, hour, minute)
       : undefined;
 
-  const [dateHour, setDateHour] = useState<Date | undefined>(
-    existingAppointmentDate
+  const [dateHour, setDateHour] = useState<Date | undefined>(existingAppointmentDate);
+
+  const [patient, setPatient] = useState<selectItem>(() => {
+      const patient = editAppointment?.annualRegistration.patient;
+      return patient ? { value: patient.id,  label: patient.fullName } : { value: "", label: "" }
+    }
   );
 
-  const [patient, setPatient] = useState<string>(
-    editAppointment?.annualRegistration.patient.fullName || ''
+  const [professional, setProfessional] = useState<selectItem>(() => {
+      const professional = editAppointment?.professional;
+      return professional ? {value: professional.id, label: professional.name } : { value: "", label: "" }
+    }
   );
-  const [professional, setProfessional] = useState<string>(
-    editAppointment?.professional.id || ''
-  );
+
   const [listPatients, setListPatients] = useState<selectItem[]>([]);
   const [listaProfessional, setListaProfessionals] = useState<selectItem[]>([]);
 
-  const [frequencyDays, setFrequencyDays] = useState<string | number>(
-    editAppointment?.frequencyDays || ''
+  const [frequencyDays, setFrequencyDays] = useState<number>(
+    editAppointment?.frequencyDays || 0
   );
 
   useEffect(() => {
@@ -89,20 +92,19 @@ export function AppointmentForm({ editAppointment }: PageProps) {
   }, []);
 
   // Apenas necessário devido à existência de duplicatas nos dados mockados
-  useEffect(() => {
-    const redefineProfissional = async () => {
-      if (editAppointment) {
-        const nameProfessional = (await getProfissionalDaSaude(professional))
-          .name;
-        const idProfessional = listaProfessional.find(
-          p => p.label === nameProfessional
-        )?.value;
-        setProfessional(idProfessional || professional);
-        console.log(professional, nameProfessional, idProfessional);
-      }
-    };
-    redefineProfissional();
-  }, [listaProfessional]);
+  //useEffect(() => {
+    //const redefineProfissional = async () => {
+      //if (editAppointment) {
+        //const nameProfessional = (await getProfissionalDaSaude(professional.value))
+          //.name;
+        //const idProfessional = listaProfessional.find(
+          //p => p.label === nameProfessional
+        //)?.value;
+        //setProfessional(idProfessional || professional.value);
+      //}
+    //};
+    //redefineProfissional();
+  //}, [listaProfessional]);
 
   const [validationErrors, setValidationErrors] = useState({
     dateHour: false,
@@ -136,8 +138,8 @@ export function AppointmentForm({ editAppointment }: PageProps) {
       professional: !professional,
       frequencyDays:
         !frequencyDays ||
-        isNaN(Number(frequencyDays)) ||
-        Number(frequencyDays) <= 0,
+        isNaN(frequencyDays) ||
+        frequencyDays <= 0,
     };
 
     setValidationErrors(errors);
@@ -146,17 +148,15 @@ export function AppointmentForm({ editAppointment }: PageProps) {
       return;
     }
 
-    const frequency = Number(frequencyDays);
 
-
-    if (patient && professional && dateHour && frequency > 0) {
+    if (patient && professional && dateHour && frequencyDays > 0) {
       const initialDate = format(dateHour, "yyyy-MM-dd");   
       const hour = format(dateHour, "HH:mm:ss");  
       await saveAppointment({
-        patientId: patient,
+        patientId: patient.value,
         serviceId: "c2a2c8d1-0fa5-4a76-b1ad-097069b9f779",
-        professionalId: professional,
-        frequencyDays: frequency,
+        professionalId: professional.value,
+        frequencyDays,
         initialDate,
         hour,
       });
@@ -184,8 +184,11 @@ export function AppointmentForm({ editAppointment }: PageProps) {
               </Label>
               <Combobox
                 options={listPatients}
-                value={patient}
-                onChange={setPatient}
+                value={patient.value}
+                onChange={(value) => {
+                  const selected = listPatients.find((p) => p.value === value);
+                  if (selected) setPatient(selected);
+                }}
                 placeholder="Pesquisar paciente"
                 className={cn(
                   validationErrors.patient && 'border-red-500',
@@ -206,8 +209,11 @@ export function AppointmentForm({ editAppointment }: PageProps) {
             </Label>
             <Combobox
               options={listaProfessional}
-              value={professional}
-              onChange={setProfessional}
+              value={professional.value}
+              onChange={(value) => {
+                const selected = listaProfessional.find((p) => p.value == value);
+                if (selected) setProfessional(selected);
+              }}
               placeholder="Pesquisar área de atendimento"
               className={cn(
                 validationErrors.professional && 'border-red-500',
@@ -229,7 +235,7 @@ export function AppointmentForm({ editAppointment }: PageProps) {
               min="1"
               placeholder="Adicionar frequência"
               value={frequencyDays}
-              onChange={e => setFrequencyDays(e.target.value)}
+              onChange={e => setFrequencyDays(Number(e.target.value))}
               className={cn(validationErrors.frequencyDays && 'border-red-500')}
             />
             {validationErrors.frequencyDays && (

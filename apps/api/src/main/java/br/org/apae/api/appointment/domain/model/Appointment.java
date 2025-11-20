@@ -3,6 +3,8 @@ package br.org.apae.api.appointment.domain.model;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.UUID;
 
 import br.org.apae.api.patient.domain.model.AnnualRegistry;
@@ -37,11 +39,18 @@ public class Appointment {
   @Column(name = "data_inicial", nullable = false)
   private LocalDate initialDate;
 
-  @Column(name = "data_final", nullable = true)
+  @Column(name = "data_final")
   private LocalDate endDate;
 
   @Column(name = "ativo")
   private boolean isActive;
+
+  @OneToMany(
+      mappedBy = "appointment",
+      cascade = CascadeType.ALL,
+      orphanRemoval = true
+  )
+  private Set<GeneratedAppointment>  generatedAppointments = new HashSet<>();
 
   @CreationTimestamp
   @Column(name = "data_criacao")
@@ -131,5 +140,13 @@ public class Appointment {
 
   public LocalDateTime getCreationDate() {
     return creationDate;
+  }
+
+  public Set<GeneratedAppointment> getGeneratedAppointments() {
+    return generatedAppointments;
+  }
+
+  public void setGeneratedAppointments(Set<GeneratedAppointment> generatedAppointments) {
+    this.generatedAppointments = generatedAppointments;
   }
 }

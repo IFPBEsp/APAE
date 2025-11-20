@@ -3,8 +3,6 @@ package br.org.apae.api.appointment.domain.model;
 import jakarta.persistence.*;
 import jakarta.persistence.Index;
 import jakarta.persistence.Table;
-import org.hibernate.annotations.*;
-
 import java.time.LocalDateTime;
 import java.util.UUID;
 
