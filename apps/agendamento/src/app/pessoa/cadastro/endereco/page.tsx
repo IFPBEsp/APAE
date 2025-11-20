@@ -12,7 +12,7 @@ import { Input } from "@/components/ui/input";
 import {
   MembersRegisterStep,
   useMembersRegisterContext,
-} from "@/hooks/use-members-register-context";
+} from "@/./../management-app/src/hooks/use-members-register-context";
 import { formatCEP } from "@/lib/formats";
 import { Address } from "@/schemas/member-schemas";
 import { zodResolver } from "@hookform/resolvers/zod";

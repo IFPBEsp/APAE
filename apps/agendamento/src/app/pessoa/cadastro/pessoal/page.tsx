@@ -12,7 +12,7 @@ import { Input } from "@/components/ui/input";
 import {
   MembersRegisterStep,
   useMembersRegisterContext,
-} from "@/hooks/use-members-register-context";
+} from "@/./../management-app/src/hooks/use-members-register-context";
 import {
   formatBirthCertificate,
   formatCNS,

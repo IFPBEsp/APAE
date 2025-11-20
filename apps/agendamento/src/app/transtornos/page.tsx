@@ -9,7 +9,7 @@ import { Plus } from "lucide-react";
 import { TranstornoListItem } from "./TranstornosListItem";
 import { Transtorno } from "@/schemas/transtornosSchema";
 import { Loader2 } from "lucide-react";
-import { SearchFilters } from "@/components/search-filters";
+import { SearchFilters } from "@/./../management-app/src/components/search-filters";
 
 export default function TranstornosPage() {
   const router = useRouter();

@@ -1,5 +1,5 @@
-import Image from "@/app/assets/background_image.jpg";
-import { MembersRegisterProvider } from "@/hooks/use-members-register-context";
+import Image from "@/app/assets/background_image.jpg"
+import { MembersRegisterProvider } from "@/./../management-app/src/hooks/use-members-register-context";
 import { PageOrchestrator } from "./orchestrator";
 import { Nunito } from "next/font/google";
 
@@ -9,8 +9,7 @@ const nunito = Nunito({
 });
 
 export default function MembersRegisterLayout({
-  children,
-}: {
+  children,}: {
   readonly children: React.ReactNode;
 }) {
   return (
