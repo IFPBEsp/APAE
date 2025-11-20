@@ -36,10 +36,7 @@ export default function PatientsAndStudentsScreen() {
         if (ano) params.append("year", ano);
         if (cidade) params.append("city", cidade);
         
-        const queryString = params.toString();
-        
-        console.log("TESTE: Buscando pacientes com params:", queryString);
-        
+        const queryString = params.toString();        
         const response = await fetch(`/api/patients?${queryString}`); 
         
         if (!response.ok) {
