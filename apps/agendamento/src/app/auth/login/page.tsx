@@ -19,11 +19,11 @@ import { Input } from "@/components/ui/input";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import Link from "next/link";
-import { PrimaryButton } from "@/./../management-app/src/components/ButtonPrimary";
-import { PasswordInput } from "@/./../management-app/src/components/PasswordInputs";
 import { loginSchema, FormLogin } from "@/schemas/authSchema";
 import { toast } from "react-toastify";
 import { useRouter } from "next/navigation";
+import { PrimaryButton } from "@/components/buttons/ButtonPrimary";
+import { PasswordInput } from "@/components/forms/PasswordInputs";
 
 function LoginPage() {
   const router = useRouter();

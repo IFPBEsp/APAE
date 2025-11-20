@@ -1,9 +1,6 @@
 "use client";
 
-import {
-  MembersRegisterStep,
-  useMembersRegisterContext,
-} from "@/./../management-app/src/hooks/use-members-register-context";
+import { useMembersRegisterContext, MembersRegisterStep } from "@/hooks/use-members-register-context";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 

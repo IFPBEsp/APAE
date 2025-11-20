@@ -4,10 +4,10 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Plus } from "lucide-react";
-import { PatientCard } from "@/components/patient-card";
 import { Patient } from "@/schemas/authSchema";
-import { SearchFilters } from "@/components/search-filters";
 import { toast } from "react-toastify";
+import { SearchFilters } from "@/components/shared/filters/search-filters";
+import { PatientCard } from "@/components/shared/patient-card";
 
 export default function PatientsAndStudentsScreen() {
   const [patients, setPatients] = useState<Patient[]>([]);

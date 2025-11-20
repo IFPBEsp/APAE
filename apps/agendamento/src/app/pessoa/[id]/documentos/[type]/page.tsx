@@ -4,9 +4,9 @@ import * as React from "react";
 import { useRouter, useParams } from "next/navigation";
 import { ArrowLeft } from "lucide-react";
 
-import FileCard from "@/./../management-app/src/components/fileCard";
-import FileFilter from "@/./../management-app/src/components/fileFilter";
 import { toast } from "react-toastify";
+import FileCard from "@/components/shared/fileCard";
+import FileFilter from "@/components/shared/filters/fileFilter";
 
 export interface FileItem {
   id: string;

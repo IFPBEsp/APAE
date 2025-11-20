@@ -9,10 +9,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import {
-  MembersRegisterStep,
-  useMembersRegisterContext,
-} from "@/./../management-app/src/hooks/use-members-register-context";
+
 import { formatCPF, formatCurrency, formatRG } from "@/lib/formats";
 import { Guardians } from "@/schemas/member-schemas";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -26,6 +23,7 @@ import {
   FormButton,
   MembersRegisterForm,
 } from "../form";
+import { useMembersRegisterContext, MembersRegisterStep } from "@/hooks/use-members-register-context";
 
 function GuardianFormFields({
   form,

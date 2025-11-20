@@ -1,7 +1,7 @@
 import Image from "@/app/assets/background_image.jpg"
-import { MembersRegisterProvider } from "@/./../management-app/src/hooks/use-members-register-context";
 import { PageOrchestrator } from "./orchestrator";
 import { Nunito } from "next/font/google";
+import { MembersRegisterProvider } from "@/hooks/use-members-register-context";
 
 const nunito = Nunito({
   subsets: ["latin"],

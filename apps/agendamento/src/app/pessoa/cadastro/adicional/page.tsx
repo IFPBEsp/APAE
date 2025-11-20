@@ -9,10 +9,6 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import {
-  MembersRegisterStep,
-  useMembersRegisterContext,
-} from "@/./../management-app/src/hooks/use-members-register-context";
 import { Additionals } from "@/schemas/member-schemas";
 import { zodResolver } from "@hookform/resolvers/zod";
 import React from "react";
@@ -26,6 +22,7 @@ import {
   FormButton,
   MembersRegisterForm,
 } from "../form";
+import { useMembersRegisterContext, MembersRegisterStep } from "@/hooks/use-members-register-context";
 
 export default function MembersRegisterAdditionalsPage() {
   const {

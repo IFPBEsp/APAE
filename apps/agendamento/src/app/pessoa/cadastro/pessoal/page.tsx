@@ -9,10 +9,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import {
-  MembersRegisterStep,
-  useMembersRegisterContext,
-} from "@/./../management-app/src/hooks/use-members-register-context";
+
 import {
   formatBirthCertificate,
   formatCNS,
@@ -27,6 +24,7 @@ import { useForm } from "react-hook-form";
 import z from "zod";
 
 import { DoubleColumn, FormButton, MembersRegisterForm } from "../form";
+import { useMembersRegisterContext, MembersRegisterStep } from "@/hooks/use-members-register-context";
 
 export default function MembersRegisterPersonalPage() {
   const {

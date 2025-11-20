@@ -8,10 +8,7 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import {
-  MembersRegisterStep,
-  useMembersRegisterContext,
-} from "@/./../management-app/src/hooks/use-members-register-context";
+
 import { Profile } from "@/schemas/member-schemas";
 import { zodResolver } from "@hookform/resolvers/zod";
 import React, { useEffect, useState } from "react";
@@ -21,6 +18,7 @@ import z from "zod";
 import { FileInputButton, FormButton, MembersRegisterForm } from "../form";
 import { Checkbox } from "@/components/ui/checkbox";
 import { useRouter } from "next/navigation";
+import { useMembersRegisterContext, MembersRegisterStep } from "@/hooks/use-members-register-context";
 
 export default function MembersRegisterProfilePage() {
   const {
