@@ -17,6 +17,8 @@ import {
   IdBadgeIcon,
   TasklistIcon,
   ArrowLeftIcon,
+  PeopleIcon,
+  PersonIcon,
 } from "@primer/octicons-react";
 import Image from "next/image";
 import Link from "next/link";
@@ -38,10 +40,13 @@ export function AppSidebar() {
   return (
     <Sidebar className={styles.sidebar}>
       <SidebarHeader className={styles.header}>
-        <button className={styles.closeButton} onClick={() => {
-          if (isMobile) setOpenMobile(false);
-          else setOpen(false);
-        }}>
+        <button
+          className={styles.closeButton}
+          onClick={() => {
+            if (isMobile) setOpenMobile(false);
+            else setOpen(false);
+          }}
+        >
           <ArrowLeftIcon size={20} />
         </button>
         <div className={styles.logoContainer}>
@@ -58,6 +63,7 @@ export function AppSidebar() {
           </div>
         </div>
       </SidebarHeader>
+
       <SidebarContent>
         <Collapsible defaultOpen={false} className="group/collapsible">
           <SidebarGroup>
@@ -79,11 +85,11 @@ export function AppSidebar() {
                   <Link href="/" passHref>
                     <SidebarMenuButton
                       className={`${styles.menuButton} font-base gap-2 ${cn(
-                                "h-10 transition-colors",
-                                pathname == "/"
-                                  ? "bg-[#FFFFFF] !text-[#000000]"
-                                  : "text-[#0D4F97] hover:bg-[#0D4F97] hover:!text-white"
-                              )}`}
+                        "h-10 transition-colors",
+                        pathname == "/"
+                          ? "bg-[#FFFFFF] !text-[#000000]"
+                          : "text-[#0D4F97] hover:bg-[#0D4F97] hover:!text-white"
+                      )}`}
                     >
                       <ChecklistIcon size={16} />
                       <span className="text-base">Agendamentos do dia</span>
@@ -94,11 +100,11 @@ export function AppSidebar() {
                   <Link href="/all-appointments" passHref>
                     <SidebarMenuButton
                       className={`${styles.menuButton} font-base gap-2 ${cn(
-                                "h-10 transition-colors",
-                                pathname == "/all-appointments"
-                                  ? "bg-[#FFFFFF] !text-[#000000]"
-                                  : "text-[#0D4F97] hover:bg-[#0D4F97] hover:!text-white"
-                              )}`}
+                        "h-10 transition-colors",
+                        pathname == "/all-appointments"
+                          ? "bg-[#FFFFFF] !text-[#000000]"
+                          : "text-[#0D4F97] hover:bg-[#0D4F97] hover:!text-white"
+                      )}`}
                     >
                       <TasklistIcon size={16} />
                       <span className="text-base">Todos os agendamentos</span>
@@ -109,21 +115,73 @@ export function AppSidebar() {
             </CollapsibleContent>
           </SidebarGroup>
         </Collapsible>
+
         <SidebarGroup className="m-0 pt-0">
           <Link href="/visualization-professional" passHref>
             <SidebarMenuButton
               className={`${styles.menuButton} font-base gap-2 ${cn(
-                        "h-10 transition-colors",
-                        pathname == "/visualization-professional"
-                          ? "bg-[#FFFFFF] !text-[#000000]"
-                          : "text-[#0D4F97] hover:bg-[#0D4F97] hover:!text-white"
-                      )}`}
+                "h-10 transition-colors",
+                pathname == "/visualization-professional"
+                  ? "bg-[#FFFFFF] !text-[#000000]"
+                  : "text-[#0D4F97] hover:bg-[#0D4F97] hover:!text-white"
+              )}`}
             >
               <IdBadgeIcon size={20} />
               <span className="text-base">Profissionais da Saúde</span>
             </SidebarMenuButton>
           </Link>
         </SidebarGroup>
+
+        <Collapsible defaultOpen={false} className="group/collapsible">
+          <SidebarGroup>
+            <SidebarGroupLabel asChild>
+              <CollapsibleTrigger
+                className={`${styles.menuButton} font-base gap-2`}
+              >
+                <PeopleIcon size={20} />
+                <span className="text-base">Pacientes</span>
+                <ChevronDownIcon
+                  size={16}
+                  className="ml-auto transition-transform group-data-[state=open]/collapsible:rotate-180"
+                />
+              </CollapsibleTrigger>
+            </SidebarGroupLabel>
+            <CollapsibleContent>
+              <SidebarMenu>
+                <SidebarMenuItem>
+                  <Link href="/visualization-patients" passHref>
+                    <SidebarMenuButton
+                      className={`${styles.menuButton} font-base gap-2 ${cn(
+                        "h-10 transition-colors",
+                        pathname == "/visualization-patients"
+                          ? "bg-[#FFFFFF] !text-[#000000]"
+                          : "text-[#0D4F97] hover:bg-[#0D4F97] hover:!text-white"
+                      )}`}
+                    >
+                      <PersonIcon size={16} />
+                      <span className="text-base">Pessoas</span>
+                    </SidebarMenuButton>
+                  </Link>
+                </SidebarMenuItem>
+                <SidebarMenuItem>
+                  <Link href="/transtornos" passHref>
+                    <SidebarMenuButton
+                      className={`${styles.menuButton} font-base gap-2 ${cn(
+                        "h-10 transition-colors",
+                        pathname == "/transtornos"
+                          ? "bg-[#FFFFFF] !text-[#000000]"
+                          : "text-[#0D4F97] hover:bg-[#0D4F97] hover:!text-white"
+                      )}`}
+                    >
+                      <TasklistIcon size={16} />
+                      <span className="text-base">Transtornos</span>
+                    </SidebarMenuButton>
+                  </Link>
+                </SidebarMenuItem>
+              </SidebarMenu>
+            </CollapsibleContent>
+          </SidebarGroup>
+        </Collapsible>
       </SidebarContent>
       <SidebarFooter />
     </Sidebar>
