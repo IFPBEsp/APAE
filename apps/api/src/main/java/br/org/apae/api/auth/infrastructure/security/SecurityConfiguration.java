@@ -26,11 +26,16 @@ public class SecurityConfiguration {
         .csrf(AbstractHttpConfigurer::disable)
         .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
         .authorizeHttpRequests(authorize -> authorize
-            .requestMatchers("/auth/**").permitAll()
+            // Permite sem autenticação as rotas de auth (com e sem prefixo de servlet /api)
+            .requestMatchers("/auth/**", "/api/auth/**").permitAll()
             .requestMatchers(
+                // Swagger/OpenAPI (com e sem /api)
                 "/v3/api-docs/**",
                 "/swagger-ui/**",
-                "/swagger-ui.html"
+                "/swagger-ui.html",
+                "/api/v3/api-docs/**",
+                "/api/swagger-ui/**",
+                "/api/swagger-ui.html"
             ).permitAll()
             .anyRequest().authenticated())
         .addFilterBefore(securityFilter, UsernamePasswordAuthenticationFilter.class)
