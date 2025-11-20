@@ -7,7 +7,7 @@ import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
 import { DateTimePicker } from '@/components/ui/date-time-picker';
 import { Combobox } from '@/components/ui/combobox';
-import { cn } from '@/lib/utils';
+import { cn, separaETransformaEmNumero } from '@/lib/utils';
 import {
   Appointment,
   getPacientes,
@@ -28,13 +28,6 @@ interface PageProps {
 }
 
 export function AppointmentForm({ editAppointment }: PageProps) {
-  const separaETransformaEmNumero = (valor: unknown, separador: string) => {
-    if (typeof valor == 'string' && valor.length) {
-      return (valor as string).split(separador).map(n => parseInt(n));
-    }
-    return [NaN, NaN, NaN];
-  };
-
   const [year, month, day] = separaETransformaEmNumero(
     editAppointment?.initialDate,
     '-'
@@ -112,22 +105,6 @@ export function AppointmentForm({ editAppointment }: PageProps) {
     professional: false,
     frequencyDays: false,
   });
-
-  const dataPassou = (data: string, horario: string) => {
-    const [year, month, day] = data.split('-');
-    const [hour, minute, second] = horario.split(':');
-    const emDate = new Date(
-      parseInt(year),
-      parseInt(month),
-      parseInt(day),
-      parseInt(hour),
-      parseInt(minute),
-      parseInt(second)
-    );
-    const agora = new Date();
-
-    return agora > emDate;
-  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();

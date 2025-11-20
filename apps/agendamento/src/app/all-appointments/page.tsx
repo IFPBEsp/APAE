@@ -1,11 +1,8 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { format } from 'date-fns';
-import { ptBR } from 'date-fns/locale';
 import {
   CalendarDays,
-  MessageCircleWarning,
   CalendarX,
   SearchIcon,
   Users,
@@ -43,7 +40,6 @@ import {
   getAppointments,
   getAreasDaSaude,
 } from "../services/appointmentService";
-import { separaETransformaEmNumero } from "@/lib/utils";
 import Link from "next/link";
 import {
   Dialog,
@@ -54,6 +50,8 @@ import {
   DialogTrigger,
 } from '@/components/ui/dialog';
 import { AppointmentForm } from '@/components/forms/AppointmentForm';
+import { ptBR } from 'date-fns/locale';
+import { formatDatePTBR } from '@/lib/utils';
 
 type Area = {
   id: number;
@@ -73,7 +71,7 @@ export default function AllApointments() {
       setAppointments(response.content as Appointment[]);
 
       const areasExistentes: Area[] = (await getAreasDaSaude()).map(
-        (area, index) => ({ id: index, name: area } as Area)
+        (area, index) => ({ id: index, name: area })
       );
       setAreas(areasExistentes);
     };
@@ -81,45 +79,14 @@ export default function AllApointments() {
   }, []);
 
   const filteredAppointments = appointments.filter((appointment) => {
-
     const matchesProfessionalId = appointment.professional.id;
-    
-     const matchesFrequencyDays = appointment.frequencyDays;
-
-    const dateAppointment = separaETransformaEmNumero(
-      appointment.creationDate,
-      "-"
-    );
-    const matchesDate = selectedDate
-      ? new Date(
-          dateAppointment[0],
-          dateAppointment[1],
-          dateAppointment[2]
-        ).toDateString() === selectedDate.toDateString()
-      : true;
+    const matchesFrequencyDays = appointment.frequencyDays;
+    const matchesDate = selectedDate ? formatDatePTBR(appointment.initialDate) === formatDatePTBR(selectedDate.toString()) : true;
     return (
       matchesProfessionalId &&
       (matchesFrequencyDays) &&
       matchesDate);
   });
-
-
-
-  const dataPassou = (data: string, horario: string) => {
-    const [ano, mes, dia] = data.split('-');
-    const [hora, minuto, segundo] = horario.split(':');
-    const emDate = new Date(
-      parseInt(ano),
-      parseInt(mes),
-      parseInt(dia),
-      parseInt(hora),
-      parseInt(minuto),
-      parseInt(segundo)
-    );
-    const agora = new Date();
-
-    return agora > emDate;
-  }
 
   const clearFilter = () => {
     setSelectedArea('');
@@ -142,13 +109,7 @@ export default function AllApointments() {
                   className="w-full justify-start bg-white text-left font-normal text-xs sm:w-[220px] sm:text-sm border-[#0D4F97]"
                 >
                   <CalendarDays className="mr-2 h-4 w-4 text-[#0D4F97]" />
-                  {selectedDate ? (
-                    format(selectedDate, "dd 'de' MMMM 'de' yyyy", {
-                      locale: ptBR,
-                    })
-                  ) : (
-                    <span className="text-[#0D4F97]">Escolha uma data</span>
-                  )}
+                  {selectedDate ? (formatDatePTBR(selectedDate.toString())) : (<span className="text-[#0D4F97]">Escolha uma data</span>)}
                 </Button>
               </PopoverTrigger>
               <PopoverContent className="w-auto p-0 bg-white">
@@ -156,7 +117,6 @@ export default function AllApointments() {
                   mode="single"
                   selected={selectedDate}
                   onSelect={setSelectedDate}
-                  initialFocus
                   locale={ptBR}
                 />
               </PopoverContent>
@@ -194,10 +154,7 @@ export default function AllApointments() {
           <InfoCard
             title="Não confirmados"
             icon={CalendarX}
-            value={
-              appointments.filter((appointment) => !appointment.isActive)
-                .length
-            }
+            value={ appointments.filter((appointment) => !appointment.isActive).length }
             subtitle="Consultas que não foram confirmadas"
             titleClassName="text-[#0D4F97]"
             valueClassName="text-[#0D4F97]"
@@ -262,28 +219,16 @@ export default function AllApointments() {
               </TableHeader>
               <TableBody>
                 {filteredAppointments.map((item, index) => {
-                  const dateAppointment = separaETransformaEmNumero(
-                    item.initialDate,
-                    "-"
-                  );
                   return (
                     <TableRow key={index}>
                       <TableCell className="px-3 py-2 text-xs sm:px-4 sm:py-3 sm:text-sm">
                         {item.annualRegistration.patient.fullName}
                       </TableCell>
                       <TableCell className="px-3 py-2 text-xs sm:px-4 sm:py-3 sm:text-sm text-gray-800">
-                        {format(
-                          new Date(
-                            dateAppointment[0],
-                            dateAppointment[1],
-                            dateAppointment[2]
-                          ),
-                          "dd 'de' MMMM 'de' yyyy",
-                          { locale: ptBR }
-                        )}
+                        {formatDatePTBR(item.initialDate)}
                       </TableCell>
                       <TableCell className="px-3 py-2 text-xs sm:px-4 sm:py-3 sm:text-sm">
-                        {item.professional.id}
+                        {item.professional.name}
                       </TableCell>
                       <TableCell className="px-3 py-2">
                         <Link

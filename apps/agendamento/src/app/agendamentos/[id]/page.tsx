@@ -1,5 +1,5 @@
 
-
+import { format } from "date-fns";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import {
@@ -26,9 +26,9 @@ import {
 } from "@/app/services/appointmentService";
 import { AppointmentForm } from "@/components/forms/AppointmentForm";
 import TrashButton from "@/components/buttons/trashButton";
-// import ConfirmaRealizacaoButton from "@/components/buttons/ConfirmaRealizacaoButton";
 import { separaETransformaEmNumero } from "@/lib/utils";
 import { RegistrarFaltaButton } from "@/components/buttons/RegistrarFaltaButton";
+import { da, ptBR } from "date-fns/locale";
 
 interface PageProps {
   params: {
@@ -37,8 +37,9 @@ interface PageProps {
 }
 
 export default async function viewAppointment({ params }: PageProps) {
-  const { id } = await params;
+  const { id } = params;
   const appointment: Appointment = await getAppointmentById(id);
+  const patient = appointment.annualRegistration.patient;
 
   // prox consulta -> data inicial
   const [year, month, day] = separaETransformaEmNumero(
@@ -60,13 +61,18 @@ export default async function viewAppointment({ params }: PageProps) {
       ? new Date(year, month-1, day, hour, minute, second)
       : null;
 
+  const formatDatePTBR = (date: string) => {
+    const dateUtc = new Date(date).setUTCHours(12);
+    return format(dateUtc, "dd 'de' MMMM 'de' yyyy" , { locale: ptBR })
+  }
+
+
   const getStatusStyle = (status: boolean | undefined, data: Date | null) => {
     if (!data) {
       return { class: "bg-gray-400", text: "Invalid date" };
     }
 
-
-    const dataCurrent = new Date();
+  const dataCurrent = new Date();
     if (status) {
       return { class: "bg-[#0D4F97]", text: "Confirmed Consultation" };
     } else if (data > dataCurrent) {
@@ -263,11 +269,7 @@ export default async function viewAppointment({ params }: PageProps) {
               <div className="flex flex-col gap-2">
               <div className="flex">
                   <p className="font-medium mr-2">Data de Nascimento: </p>
-                  <p> {separaETransformaEmNumero(appointment.annualRegistration.patient.birthDate,"-")
-                      .map((n, i) => (i == 0 ? n : n.toString().padStart(2, "0")))
-                      .reverse()
-                      .join("/") || "—"}
-                  </p>
+                  <p> { formatDatePTBR(patient.birthDate) } </p>
                 </div>
                 <div className="flex">
                   <p className="font-medium mr-2">CPF: </p>
