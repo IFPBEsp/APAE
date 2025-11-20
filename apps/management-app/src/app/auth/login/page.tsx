@@ -21,9 +21,10 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import Link from "next/link";
 import { PrimaryButton } from "@/components/ButtonPrimary";
 import { PasswordInput } from "@/components/PasswordInputs";
-import { loginSchema, FormLogin } from "@/schemas/authSchema";
+import { loginSchema, FormLogin } from "@/schemas/auth-schemas";
 import { toast } from "react-toastify";
 import { useRouter } from "next/navigation";
+import { formatCPF } from "@/lib/formats";
 
 function LoginPage() {
   const router = useRouter();
@@ -82,11 +83,23 @@ function LoginPage() {
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel className="text-sm font-medium text-foreground">
-                      Email
+                      Usuário
                     </FormLabel>
                     <FormControl>
                       <Input
                         {...field}
+                        onChange={(e) => {
+                          const regexForPossibleCPF = new RegExp(
+                            /(^\d{4,}$)|(^\d{3}\.\d{4,}$)|(^\d{3}\.\d{3}\.\d{4,}$)|^\d{3}\.\d{3}\.\d{3}\-\d{2,}$/,
+                          );
+                          const formatted = regexForPossibleCPF.test(
+                            e.target.value,
+                          )
+                            ? formatCPF(e.target.value)
+                            : e.target.value;
+
+                          field.onChange(formatted);
+                        }}
                         placeholder="Digite seu email ou CPF"
                         className="w-full bg-white border border-border rounded-md h-12 px-3"
                       />

@@ -10,7 +10,6 @@ import Link from "next/link";
 interface PatientCardProps {
   patient: PatientCardData;
 }
-
 export function PatientCard({ patient }: PatientCardProps) {
   return (
     <Card
@@ -38,12 +37,12 @@ export function PatientCard({ patient }: PatientCardProps) {
                 {patient.fullName?.charAt(0) ?? 'P'}
               </AvatarFallback>
             </Avatar>
-
           </div>
           <div className="flex-1 flex flex-col h-full">
             <div>
               <h3 className="text-base font-bold text-[#235d9b]">
                 {patient.fullName ?? "Nome não informado"}
+
               </h3>
               <div className="!text-[12px] text-[#235d9b] font-bold mt-1 space-y-0.5">
                 <p>CPF: {patient.cpf ?? 'N/A'}</p>
@@ -65,4 +64,3 @@ export function PatientCard({ patient }: PatientCardProps) {
     </Card>
   );
 }
-

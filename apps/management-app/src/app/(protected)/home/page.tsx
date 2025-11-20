@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Plus } from "lucide-react";
 import { PatientCard } from "@/components/patient-card";
 import { PatientCardData } from "@/schemas/patientSchema"; 
+import { Patient } from "@/schemas/auth-schemas";
 import { SearchFilters } from "@/components/search-filters";
 import { toast } from "react-toastify";
 import { useDebounce } from "@/hooks/use-debounce"; 
