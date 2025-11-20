@@ -249,7 +249,7 @@ export interface Appointment {
 export interface CreateAppointmentDTO {
   professionalId: UUID;
   serviceId: UUID;
-  annualRegistrationId: UUID;
+  patientId: UUID;
   frequencyDays: number;
   initialDate: string;
   hour: string;
@@ -300,7 +300,7 @@ export interface Absence {
 }
 
 export interface Patient {
-  id?: string;
+  id: string;
   name: string;
   fullName: string;
   birthplace: string;
@@ -427,21 +427,12 @@ export async function saveAppointment(
   }
 
   try {
-    const backendDto = {
-      professionalId: dto.professionalId,
-      serviceId: dto.serviceId,
-      annualRegistration: dto.annualRegistrationId,
-      frequencyDays: dto.frequencyDays,
-      initialDate: dto.initialDate,
-      hour: `${dto.hour}:00`,
-    };
-
     const res = await fetch(`${API_BASE_URL}/appointments`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify(backendDto),
+      body: JSON.stringify(dto),
     });
 
     if (!res.ok) {
@@ -556,6 +547,7 @@ export async function updateAppointmentRule(
       newTime: `${dto.newTime}:00`,
     };
 
+    console.log(backendDto)
     const response = await fetch(`${API_BASE_URL}/appointments/${id}/rule`, {
       method: 'PATCH',
       headers: {
@@ -916,7 +908,7 @@ export const toggleConfirmacao = async (id: UUID) => {
     const dto: CreateAppointmentDTO = {
       professionalId: appointment.professional.id,
       serviceId: appointment.serviceId,
-      annualRegistrationId: appointment.annualRegistration.id,
+      patientId: appointment.annualRegistration.patient.id,
       frequencyDays: appointment.frequencyDays,
       initialDate: appointment.initialDate,
       hour: appointment.hour.replace(':00', ''),

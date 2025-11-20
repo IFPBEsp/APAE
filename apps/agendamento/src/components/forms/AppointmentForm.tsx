@@ -1,6 +1,7 @@
 'use client';
 
-import React, { useContext, useEffect, useState } from 'react';
+import { format } from "date-fns";
+import React, { useEffect, useState } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
@@ -39,7 +40,7 @@ export function AppointmentForm({ editAppointment }: PageProps) {
     editAppointment?.initialDate,
     '-'
   );
-  const [hour, minute, second] = separaETransformaEmNumero(
+  const [hour, minute] = separaETransformaEmNumero(
     editAppointment?.hour,
     ':'
   );
@@ -48,9 +49,8 @@ export function AppointmentForm({ editAppointment }: PageProps) {
     !isNaN(month) &&
     !isNaN(day) &&
     !isNaN(hour) &&
-    !isNaN(minute) &&
-    !isNaN(second)
-      ? new Date(year, month, day, hour, minute, second)
+    !isNaN(minute)
+      ? new Date(year, month, day, hour, minute)
       : undefined;
 
   const [dateHour, setDateHour] = useState<Date | undefined>(
@@ -63,15 +63,6 @@ export function AppointmentForm({ editAppointment }: PageProps) {
   const [professional, setProfessional] = useState<string>(
     editAppointment?.professional.id || ''
   );
-  const [endDate, setEndDate] = useState<string>(
-    editAppointment?.endDate || ''
-  );
-  const [creationDate, setCreationDate] = useState<string>(
-    editAppointment?.creationDate || ''
-  );
-  const [isActive, setIsActive] = useState<boolean>(
-    editAppointment?.isActive || false
-  );
   const [listPatients, setListPatients] = useState<selectItem[]>([]);
   const [listaProfessional, setListaProfessionals] = useState<selectItem[]>([]);
 
@@ -83,10 +74,9 @@ export function AppointmentForm({ editAppointment }: PageProps) {
     const fetchPatientsAndProfessionals = async () => {
       const registeredPatients: Patient[] = await getPacientes();
       const registeredProfessionals: Professional[] = await getProfissionaisDaSaude();
-
       setListPatients(
         registeredPatients.map(
-          p => ({ value: p.id, label: p.name } as selectItem)
+          p => ({ value: p.id, label: p.fullName } as selectItem)
         )
       );
       setListaProfessionals(
@@ -120,18 +110,6 @@ export function AppointmentForm({ editAppointment }: PageProps) {
     professional: false,
     frequencyDays: false,
   });
-
-  const formatDate = (date: Date) => {
-    const year = date.getFullYear();
-    const month = String(date.getMonth()).padStart(2, '0');
-    const day = String(date.getDate()).padStart(2, '0');
-
-    const hours = String(date.getHours()).padStart(2, '0');
-    const minutes = String(date.getMinutes()).padStart(2, '0');
-    const seconds = String(date.getSeconds()).padStart(2, '0');
-
-    return [`${year}-${month}-${day}`, `${hours}:${minutes}:${seconds}`];
-  };
 
   const dataPassou = (data: string, horario: string) => {
     const [year, month, day] = data.split('-');
@@ -170,24 +148,20 @@ export function AppointmentForm({ editAppointment }: PageProps) {
 
     const frequency = Number(frequencyDays);
 
+
     if (patient && professional && dateHour && frequency > 0) {
+      const initialDate = format(dateHour, "yyyy-MM-dd");   
+      const hour = format(dateHour, "HH:mm:ss");  
       await saveAppointment({
-        annualRegistrationId: patient,
-        serviceId: 'service-001',
+        patientId: patient,
+        serviceId: "c2a2c8d1-0fa5-4a76-b1ad-097069b9f779",
         professionalId: professional,
-        frequencyDays: 15,
-        initialDate: formatDate(dateHour)[0],
-        hour: formatDate(dateHour)[1],
+        frequencyDays: frequency,
+        initialDate,
+        hour,
       });
       window.location.reload();
     }
-
-    console.log('Novo agendamento: ', {
-      dateHour,
-      patient,
-      professional,
-      frequencyDays,
-    });
   };
 
   return (
