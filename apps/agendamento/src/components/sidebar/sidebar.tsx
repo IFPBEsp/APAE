@@ -14,6 +14,7 @@ import {
   ChecklistIcon,
   ChevronDownIcon,
   ClockIcon,
+  AlertIcon,
   IdBadgeIcon,
   TasklistIcon,
   ArrowLeftIcon,
@@ -38,10 +39,13 @@ export function AppSidebar() {
   return (
     <Sidebar className={styles.sidebar}>
       <SidebarHeader className={styles.header}>
-        <button className={styles.closeButton} onClick={() => {
-          if (isMobile) setOpenMobile(false);
-          else setOpen(false);
-        }}>
+        <button
+          className={styles.closeButton}
+          onClick={() => {
+            if (isMobile) setOpenMobile(false);
+            else setOpen(false);
+          }}
+        >
           <ArrowLeftIcon size={20} />
         </button>
         <div className={styles.logoContainer}>
@@ -79,11 +83,11 @@ export function AppSidebar() {
                   <Link href="/" passHref>
                     <SidebarMenuButton
                       className={`${styles.menuButton} font-base gap-2 ${cn(
-                                "h-10 transition-colors",
-                                pathname == "/"
-                                  ? "bg-[#FFFFFF] !text-[#000000]"
-                                  : "text-[#0D4F97] hover:bg-[#0D4F97] hover:!text-white"
-                              )}`}
+                        "h-10 transition-colors",
+                        pathname == "/"
+                          ? "bg-[#FFFFFF] !text-[#000000]"
+                          : "text-[#0D4F97] hover:bg-[#0D4F97] hover:!text-white"
+                      )}`}
                     >
                       <ChecklistIcon size={16} />
                       <span className="text-base">Agendamentos do dia</span>
@@ -94,14 +98,29 @@ export function AppSidebar() {
                   <Link href="/all-appointments" passHref>
                     <SidebarMenuButton
                       className={`${styles.menuButton} font-base gap-2 ${cn(
-                                "h-10 transition-colors",
-                                pathname == "/all-appointments"
-                                  ? "bg-[#FFFFFF] !text-[#000000]"
-                                  : "text-[#0D4F97] hover:bg-[#0D4F97] hover:!text-white"
-                              )}`}
+                        "h-10 transition-colors",
+                        pathname == "/all-appointments"
+                          ? "bg-[#FFFFFF] !text-[#000000]"
+                          : "text-[#0D4F97] hover:bg-[#0D4F97] hover:!text-white"
+                      )}`}
                     >
                       <TasklistIcon size={16} />
                       <span className="text-base">Todos os agendamentos</span>
+                    </SidebarMenuButton>
+                  </Link>
+                </SidebarMenuItem>
+                <SidebarMenuItem>
+                  <Link href="/absence" passHref>
+                    <SidebarMenuButton
+                      className={`${styles.menuButton} font-base gap-2 ${cn(
+                        "h-10 transition-colors",
+                        pathname == "/absence"
+                          ? "bg-[#FFFFFF] !text-[#000000]"
+                          : "text-[#0D4F97] hover:bg-[#0D4F97] hover:!text-white"
+                      )}`}
+                    >
+                      <AlertIcon size={16} />
+                      <span className="text-base">Faltas</span>
                     </SidebarMenuButton>
                   </Link>
                 </SidebarMenuItem>
@@ -113,11 +132,11 @@ export function AppSidebar() {
           <Link href="/visualization-professional" passHref>
             <SidebarMenuButton
               className={`${styles.menuButton} font-base gap-2 ${cn(
-                        "h-10 transition-colors",
-                        pathname == "/visualization-professional"
-                          ? "bg-[#FFFFFF] !text-[#000000]"
-                          : "text-[#0D4F97] hover:bg-[#0D4F97] hover:!text-white"
-                      )}`}
+                "h-10 transition-colors",
+                pathname == "/visualization-professional"
+                  ? "bg-[#FFFFFF] !text-[#000000]"
+                  : "text-[#0D4F97] hover:bg-[#0D4F97] hover:!text-white"
+              )}`}
             >
               <IdBadgeIcon size={20} />
               <span className="text-base">Profissionais da Saúde</span>

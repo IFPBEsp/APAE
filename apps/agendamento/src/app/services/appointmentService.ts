@@ -1,8 +1,9 @@
+import { Absence } from '@/types/absence';
 import { Page } from '@/types/pagination';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 
-type UUID = string;
+export type UUID = string;
 
 const API_BASE_URL = process.env.API_BASE_URL || 'http://localhost:8090';
 const USE_MOCK_DATA = process.env.NEXT_PUBLIC_USE_MOCK_DATA === 'false' || false; // Forçar true para desenvolvimento
@@ -293,14 +294,6 @@ export interface GeneratedAppointmentResponseDTO {
   effectiveDateTime: string;
 }
 
-export interface Absence {
-  id: UUID;
-  generatedAppointment?: GeneratedAppointment;
-  absenceDate: string;
-  justification: string;
-  notified: boolean;
-}
-
 export interface Patient {
   id: string;
   name: string;
@@ -415,6 +408,7 @@ const mockPage = <T>(content: T[]): Page<T> => ({
   first: true,
   last: true,
   empty: content.length === 0,
+  length: 0
 });
 
 // ========== FUNÇÕES PRINCIPAIS COM MOCK ==========
