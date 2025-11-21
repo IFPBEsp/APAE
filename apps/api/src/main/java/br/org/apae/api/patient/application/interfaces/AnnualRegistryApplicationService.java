@@ -1,5 +1,6 @@
 package br.org.apae.api.patient.application.interfaces;
 
+import java.util.List;
 import java.util.UUID;
 import br.org.apae.api.common.dto.patient.request.annual_registry.CreateAnnualRegistryDTO;
 import br.org.apae.api.common.dto.patient.request.annual_registry.ReplaceAnnualRegistryDTO;
@@ -17,6 +18,8 @@ public interface AnnualRegistryApplicationService {
     AnnualRegistryResponseDTO replaceRegistry(UUID patientId, UUID registryId, ReplaceAnnualRegistryDTO replaceDto);
 
     void deleteRegistry(UUID patientId, UUID registryId);
+
+    List<String> findAllRegistryYears();
 
     void deleteAllRegistriesByPatient(UUID patientId);
 }
