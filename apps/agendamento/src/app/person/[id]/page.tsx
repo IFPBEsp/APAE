@@ -29,9 +29,9 @@ export default function PersonDetails() {
 
   const handleCategoriaClick = (tipo: string) => {
     const rotas: Record<string, string> = {
-      pessoais: `/pessoa/${params.id}/documentos/pessoal`,
-      medicos: `/pessoa/${params.id}/documentos/medico`,
-      escolares: `/pessoa/${params.id}/documentos/escolar`,
+      pessoais: `/person/${params.id}/documents/pessoal`,
+      medicos: `/person/${params.id}/documents/medico`,
+      escolares: `/person/${params.id}/documents/escolar`,
     };
 
     const rota = rotas[tipo];

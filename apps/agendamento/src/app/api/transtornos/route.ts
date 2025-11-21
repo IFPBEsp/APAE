@@ -19,7 +19,7 @@ export async function POST(request: Request) {
 
     const api = await createBaseApi();
 
-    const { data } = await api.post("/transtornos", validation.data);
+    const { data } = await api.post("/disorders", validation.data);
 
     return NextResponse.json(data);
   } catch (error: any) {
@@ -33,7 +33,7 @@ export async function POST(request: Request) {
 export async function GET() {
   try {
     const api = await createBaseApi();
-    const { data } = await api.get("/transtornos");
+    const { data } = await api.get("/disorders");
     return NextResponse.json(data);
   } catch (error: any) {
     return new NextResponse(

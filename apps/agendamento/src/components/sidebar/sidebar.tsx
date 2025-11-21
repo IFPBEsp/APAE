@@ -164,11 +164,11 @@ export function AppSidebar() {
                   </Link>
                 </SidebarMenuItem>
                 <SidebarMenuItem>
-                  <Link href="/transtornos" passHref>
+                  <Link href="/disorders" passHref>
                     <SidebarMenuButton
                       className={`${styles.menuButton} font-base gap-2 ${cn(
                         "h-10 transition-colors",
-                        pathname == "/transtornos"
+                        pathname == "/disorders"
                           ? "bg-[#FFFFFF] !text-[#000000]"
                           : "text-[#0D4F97] hover:bg-[#0D4F97] hover:!text-white"
                       )}`}
