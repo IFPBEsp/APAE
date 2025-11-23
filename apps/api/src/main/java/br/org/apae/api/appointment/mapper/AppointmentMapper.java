@@ -9,6 +9,7 @@ import br.org.apae.api.common.dto.appointment.response.appointment.AppointmentRe
 
 
 import br.org.apae.api.common.dto.appointment.response.appointment.GeneratedAppointmentResponseDTO;
+import br.org.apae.api.common.dto.appointment.response.appointment.TodayAppointmentsResponseDTO;
 import br.org.apae.api.common.dto.disorder.response.DisorderResponseDTO;
 import br.org.apae.api.common.dto.patient.response.PatientResponseDTO;
 import br.org.apae.api.common.dto.professional.response.HealthProfessionalResponseDTO;
@@ -104,6 +105,23 @@ public class AppointmentMapper {
         annualRegistry.getYear(),
         new PatientResponseDTO(annualRegistry.getPatient()),
         disorderResponseDTOS
+    );
+  }
+
+  public TodayAppointmentsResponseDTO toTodayResponseDTO(GeneratedAppointment generatedAppointment) {
+    Appointment appointment = generatedAppointment.getAppointment();
+    Patient patient = appointment.getAnnualRegistration().getPatient();
+    HealthProfessional professional = appointment.getProfessional();
+    return new TodayAppointmentsResponseDTO(
+        new PatientResponseDTO(patient),
+        new HealthProfessionalResponseDTO(professional),
+        generatedAppointment.getScheduledDateTime(),
+        generatedAppointment.getOverriddenDateTime(),
+        generatedAppointment.getPerformed(),
+        generatedAppointment.getCancelled(),
+        generatedAppointment.getCancellationReason(),
+        generatedAppointment.getEffectiveDateTime(),
+        appointment.getId()
     );
   }
 }

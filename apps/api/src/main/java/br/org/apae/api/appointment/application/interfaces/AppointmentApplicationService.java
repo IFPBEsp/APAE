@@ -40,4 +40,6 @@ public interface AppointmentApplicationService {
 
   List<GeneratedAppointmentResponseDTO> generateAppointments(
           UUID annualRegistrationId, LocalDate start, LocalDate end);
+
+  Page<TodayAppointmentsResponseDTO> listAppointmentForToday(Pageable pageable);
 }

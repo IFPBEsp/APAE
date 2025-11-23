@@ -158,6 +158,11 @@ public class AppointmentApplicationServiceImpl implements AppointmentApplication
             .toList();
   }
 
+  @Override
+  public Page<TodayAppointmentsResponseDTO> listAppointmentForToday(Pageable pageable) {
+    return this.generatedRepo.listAppointmentsForToday(pageable).map(this.mapper::toTodayResponseDTO);
+  }
+
   /**
    * Calculates recurring appointment dates based on a rule's start date, frequency, and time.
    *

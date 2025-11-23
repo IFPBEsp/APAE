@@ -1,7 +1,6 @@
 package br.org.apae.api.controllers.appointment;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.UUID;
 
@@ -81,5 +80,10 @@ public class AppointmentControllerImpl implements AppointmentController {
           UUID patientId, LocalDate start, LocalDate end, Pageable pageable) {
     Page<GeneratedAppointmentResponseDTO> page = service.listByPatient(patientId, start, end, pageable);
     return ResponseEntity.ok(page);
+  }
+
+  @Override
+  public ResponseEntity<Page<TodayAppointmentsResponseDTO>> listTodayAppointment(Pageable pageable) {
+    return ResponseEntity.ok(this.service.listAppointmentForToday(pageable));
   }
 }
