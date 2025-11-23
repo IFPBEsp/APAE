@@ -211,7 +211,7 @@ export function AppointmentForm({ editAppointment }: PageProps) {
               type="number"
               min="1"
               placeholder="Adicionar frequência"
-              value={frequencyDays}
+              value={frequencyDays < 1 ? "" : frequencyDays}
               onChange={e => setFrequencyDays(Number(e.target.value))}
               className={cn(validationErrors.frequencyDays && 'border-red-500')}
             />

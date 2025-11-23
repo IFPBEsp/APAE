@@ -40,22 +40,17 @@ import {
 import { AppointmentForm } from "@/components/forms/AppointmentForm";
 import { InfoCard } from "@/components/shared/InfoCard";
 import Link from "next/link";
-import {Appointment, AppointmentResponseDTO, getAppointments, toggleConfirmacao} from "./services/appointmentService";
-import { Checkbox } from "@/components/ui/checkbox";
-import { Page } from "@/types/pagination";
+import { listTodayAppointment, toggleConfirmacao } from "./services/appointmentService";
+import { Page } from '@/types/pagination';
+import { TodayAppointment } from '@/types/appointment';
 
 export default function DashboardPage() {
   const [selectedDate, setSelectedDate] = useState<Date>(new Date());
-  const [appointments, setAppointments] = useState<Appointment[]>([]);
-  const [allAppointments, setAllAppointments] = useState<Appointment[]>([]);
-
+  const [appointments, setAppointments] = useState<TodayAppointment[]>([]);
+  
   const fetchAppointments = async () => {
-    const todayAppointments: Page<AppointmentResponseDTO> = await getAppointments(
-        format(selectedDate, "yyyy-MM-dd")
-    );
-    // const allExistingAppointments = await getAppointments();
-    // setAppointments(todayAppointments);
-    // setAllAppointments(allExistingAppointments);
+    const todayAppointments: Page<TodayAppointment> = await listTodayAppointment();
+    setAppointments(todayAppointments.content)
   };
 
   useEffect(() => {
@@ -130,11 +125,9 @@ export default function DashboardPage() {
             icon={Users}
             value={appointments.length}
             subtitle={`${
-              appointments.filter((appointment) => appointment.isActive)
-                .length
+              appointments.length
             } confirmados, ${
-              appointments.filter((appointment) => !appointment.isActive)
-                .length
+              appointments.length
             } pendentes`}
             titleClassName="text-[#0D4F97]"
             valueClassName="text-[#0D4F97]"
@@ -142,18 +135,14 @@ export default function DashboardPage() {
           <InfoCard
             title="Todos os agendamentos"
             icon={Users}
-            value={allAppointments.length}
+            value={10}
             titleClassName="text-[#0D4F97]"
             valueClassName="text-[#0D4F97]"
           />
           <InfoCard
             title="Sem justificativa"
             icon={MessageCircleWarning}
-            value={
-              appointments.filter(
-                (appointment) =>
-                  !appointment.isActive).length
-            }
+            value={10}
             iconColor="text-red-400"
             subtitle="Pacientes que não justificaram suas faltas"
             titleClassName="text-[#0D4F97]"
@@ -162,10 +151,7 @@ export default function DashboardPage() {
           <InfoCard
             title="Não confirmados"
             icon={CalendarX}
-            value={
-              appointments.filter((appointment) => !appointment.isActive)
-                .length
-            }
+            value={10}
             subtitle="Consultas que não foram confirmadas"
             titleClassName="text-[#0D4F97]"
             valueClassName="text-[#0D4F97]"
@@ -198,24 +184,24 @@ export default function DashboardPage() {
                 {appointments.map((item, index) => (
                   <TableRow key={index}>
                     <TableCell className="px-3 py-2 text-xs sm:px-4 sm:py-3 sm:text-sm">
-                      {item.annualRegistration.patient.fullName}
+                      {item.patient.fullName}
                     </TableCell>
                     <TableCell className="px-3 py-2">
                       <Badge
                         variant="outline"
                         className={`text-xs ${
-                          item.isActive ? "text-green-400" : "text-red-400"
+                          true ? "text-green-400" : "text-red-400"
                         } sm:text-sm`}
                       >
-                        {item.isActive ? "Sim" : "Não"}
+                        {true ? "Sim" : "Não"}
                       </Badge>
                     </TableCell>
                     <TableCell className="px-3 py-2 text-xs sm:px-4 sm:py-3 sm:text-sm">
-                      {item.professionalId}
+                      {item.professional.name}
                     </TableCell>
                     <TableCell className="px-3 py-2">
                       <Link
-                        href={`/agendamentos/${item.id}`}
+                        href={`/agendamentos/${item.ruleId}`}
                         className="cursor-pointer text-xs text-blue-800 underline hover:underline sm:text-sm"
                       >
                         Detalhes

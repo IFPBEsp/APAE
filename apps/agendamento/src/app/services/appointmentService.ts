@@ -1,7 +1,6 @@
 import { Absence } from '@/types/absence';
+import { TodayAppointment } from '@/types/appointment';
 import { Page } from '@/types/pagination';
-import { format } from 'date-fns';
-import { ptBR } from 'date-fns/locale';
 
 export type UUID = string;
 
@@ -935,3 +934,17 @@ export const parseTimeFromBackend = (timeString: string): string => {
 export const isUsingMockData = (): boolean => {
   return USE_MOCK_DATA;
 };
+
+export async function listTodayAppointment(): Promise<Page<TodayAppointment>> {
+  return fetch(`${API_BASE_URL}/appointments/today`)
+    .then(res => {
+      if (!res.ok) {
+        throw new Error(`Erro na requisição: ${res.status}`);
+      }
+      return res.json();
+    })
+    .then((data: Page<TodayAppointment>) => data)
+    .catch(error => {
+      throw error;
+    });
+}

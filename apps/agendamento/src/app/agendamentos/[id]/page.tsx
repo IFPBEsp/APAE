@@ -26,7 +26,7 @@ import {
 } from "@/app/services/appointmentService";
 import { AppointmentForm } from "@/components/forms/AppointmentForm";
 import TrashButton from "@/components/buttons/trashButton";
-import { separaETransformaEmNumero } from "@/lib/utils";
+import { formatDatePTBR, separaETransformaEmNumero } from "@/lib/utils";
 import { RegistrarFaltaButton } from "@/components/buttons/RegistrarFaltaButton";
 import { da, ptBR } from "date-fns/locale";
 
@@ -60,11 +60,6 @@ export default async function viewAppointment({ params }: PageProps) {
     !isNaN(second)
       ? new Date(year, month-1, day, hour, minute, second)
       : null;
-
-  const formatDatePTBR = (date: string) => {
-    const dateUtc = new Date(date).setUTCHours(12);
-    return format(dateUtc, "dd 'de' MMMM 'de' yyyy" , { locale: ptBR })
-  }
 
 
   const getStatusStyle = (status: boolean | undefined, data: Date | null) => {
