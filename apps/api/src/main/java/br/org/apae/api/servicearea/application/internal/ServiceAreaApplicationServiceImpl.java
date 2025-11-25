@@ -1,20 +1,21 @@
 package br.org.apae.api.servicearea.application.internal;
 
-import br.org.apae.api.common.dto.servicearea.request.CreateServiceAreaDTO;
-import br.org.apae.api.common.dto.servicearea.request.UpdateServiceAreaDTO;
-import br.org.apae.api.common.dto.servicearea.response.ServiceAreaResponseDTO;
-import br.org.apae.api.servicearea.application.interfaces.ServiceAreaApplicationService;
-import br.org.apae.api.servicearea.application.mappers.ServiceAreaMapper;
-import br.org.apae.api.servicearea.domain.exceptions.ServiceAreaConflictException;
-import br.org.apae.api.servicearea.domain.exceptions.ServiceAreaNotFoundException;
-import br.org.apae.api.servicearea.domain.model.ServiceArea;
-import br.org.apae.api.servicearea.domain.repository.ServiceAreaRepository;
+import java.util.UUID;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.UUID;
+import br.org.apae.api.common.dto.servicearea.request.CreateServiceAreaDTO;
+import br.org.apae.api.common.dto.servicearea.request.UpdateServiceAreaDTO;
+import br.org.apae.api.common.dto.servicearea.response.ServiceAreaResponseDTO;
+import br.org.apae.api.professional.domain.exceptions.ServiceAreaConflictException;
+import br.org.apae.api.professional.domain.exceptions.ServiceAreaNotFoundException;
+import br.org.apae.api.servicearea.application.interfaces.ServiceAreaApplicationService;
+import br.org.apae.api.servicearea.application.mappers.ServiceAreaMapper;
+import br.org.apae.api.servicearea.domain.model.ServiceArea;
+import br.org.apae.api.servicearea.domain.repository.ServiceAreaRepository;
 
 @Service
 public class ServiceAreaApplicationServiceImpl implements ServiceAreaApplicationService {
