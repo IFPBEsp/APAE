@@ -1,5 +1,7 @@
 package br.org.apae.api.professional.application.exceptions;
 
+import br.org.apae.api.professional.domain.exceptions.EmailConflictException;
+import br.org.apae.api.professional.domain.exceptions.IdentityDocumentConflictException;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpStatus;
@@ -59,5 +61,25 @@ public class HealthProfessionalExceptionHandler {
         ex.getMessage(),
         request.getRequestURI());
     return new ResponseEntity<>(error, HttpStatus.NOT_FOUND);
+  @ExceptionHandler(EmailConflictException.class)
+  public ResponseEntity<ErrorResponse> handleEmailConflictException(
+          EmailConflictException ex, HttpServletRequest request) {
+    ErrorResponse error = new ErrorResponse(
+            HttpStatus.CONFLICT.value(),
+            HttpStatus.CONFLICT.getReasonPhrase(),
+            ex.getMessage(),
+            request.getRequestURI());
+    return new ResponseEntity<>(error, HttpStatus.CONFLICT);
+  }
+
+  @ExceptionHandler(IdentityDocumentConflictException.class)
+  public ResponseEntity<ErrorResponse> handleIdentityDocumentConflictException(
+          IdentityDocumentConflictException ex, HttpServletRequest request) {
+    ErrorResponse error = new ErrorResponse(
+            HttpStatus.CONFLICT.value(),
+            HttpStatus.CONFLICT.getReasonPhrase(),
+            ex.getMessage(),
+            request.getRequestURI());
+    return new ResponseEntity<>(error, HttpStatus.CONFLICT);
   }
 }
