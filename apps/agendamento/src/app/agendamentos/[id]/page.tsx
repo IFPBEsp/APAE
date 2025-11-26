@@ -1,3 +1,4 @@
+import { format } from "date-fns";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import {
@@ -24,9 +25,9 @@ import {
 } from "@/app/services/appointmentService";
 import { AppointmentForm } from "@/components/forms/AppointmentForm";
 import TrashButton from "@/components/buttons/trashButton";
-// import ConfirmaRealizacaoButton from "@/components/buttons/ConfirmaRealizacaoButton";
-import { separaETransformaEmNumero } from "@/lib/utils";
+import { formatDatePTBR, separaETransformaEmNumero } from "@/lib/utils";
 import { RegistrarFaltaButton } from "@/components/buttons/RegistrarFaltaButton";
+import { da, ptBR } from "date-fns/locale";
 
 interface PageProps {
   params: {
@@ -35,8 +36,9 @@ interface PageProps {
 }
 
 export default async function viewAppointment({ params }: PageProps) {
-  const { id } = await params;
+  const { id } = params;
   const appointment: Appointment = await getAppointmentById(id);
+  const patient = appointment.annualRegistration.patient;
 
   // prox consulta -> data inicial
   const [year, month, day] = separaETransformaEmNumero(
@@ -58,12 +60,13 @@ export default async function viewAppointment({ params }: PageProps) {
       ? new Date(year, month - 1, day, hour, minute, second)
       : null;
 
+
   const getStatusStyle = (status: boolean | undefined, data: Date | null) => {
     if (!data) {
       return { class: "bg-gray-400", text: "Invalid date" };
     }
 
-    const dataCurrent = new Date();
+  const dataCurrent = new Date();
     if (status) {
       return { class: "bg-[#0D4F97]", text: "Confirmed Consultation" };
     } else if (data > dataCurrent) {
@@ -167,13 +170,10 @@ export default async function viewAppointment({ params }: PageProps) {
                   </p>
                 </div>
 
-                <div className="flex">
-                  <p className="font-medium mr-2">Área de atendimento:</p>
-                  <p>
-                    {appointment.annualRegistration.professional.healthArea ||
-                      "—"}
-                  </p>
-                </div>
+                  <div className="flex">
+                    <p className="font-medium mr-2">Área de atendimento:</p>
+                    <p>{appointment.professional.healthSector || "—"}</p>
+                  </div>
 
                 <div className="flex">
                   <p className="font-medium mr-2">Status:</p>
@@ -220,21 +220,15 @@ export default async function viewAppointment({ params }: PageProps) {
               <div className="flex flex-col gap-2">
                 <div className="flex">
                   <p className="font-medium mr-2">Nome: </p>
-                  <p>
-                    {appointment.annualRegistration.professional.name || "—"}
-                  </p>
+                  <p>{appointment.professional.name || "—"}</p>
                 </div>
                 <div className="flex">
                   <p className="font-medium mr-2">Email: </p>
-                  <p>
-                    {appointment.annualRegistration.professional.email || "—"}
-                  </p>
+                  <p>{appointment.professional.email || "—"}</p>
                 </div>
                 <div className="flex">
                   <p className="font-medium mr-2">Telefone: </p>
-                  <p>
-                    {appointment.annualRegistration.professional.phone || "—"}
-                  </p>
+                  <p>{appointment.professional.phoneNumber || "—"}</p>
                 </div>
               </div>
 
@@ -242,21 +236,15 @@ export default async function viewAppointment({ params }: PageProps) {
               <div className="flex flex-col gap-2 w-1/3">
                 <div className="flex">
                   <p className="font-medium mr-2">Documento médico: </p>
-                  <p>
-                    {appointment.annualRegistration.professional
-                      .professionalDoc || "—"}
-                  </p>
+                  <p>{appointment.professional.professionalDocument || "—"}</p>
                 </div>
                 <div className="flex">
                   <p className="font-medium mr-2">RG: </p>
-                  <p>{appointment.annualRegistration.professional.rg || "—"}</p>
+                  <p>{appointment.professional.identityDocument || "—"}</p>
                 </div>
                 <div className="flex">
                   <p className="font-medium mr-2">Cidade: </p>
-                  <p>
-                    {appointment.annualRegistration.professional.address.city ||
-                      "—"}
-                  </p>
+                  <p>{appointment.professional.address.city || "—"}</p>
                 </div>
               </div>
             </div>
@@ -276,18 +264,7 @@ export default async function viewAppointment({ params }: PageProps) {
               <div className="flex flex-col gap-2">
                 <div className="flex">
                   <p className="font-medium mr-2">Data de Nascimento: </p>
-                  <p>
-                    {" "}
-                    {separaETransformaEmNumero(
-                      appointment.annualRegistration.patient.birthDate,
-                      "-"
-                    )
-                      .map((n, i) =>
-                        i == 0 ? n : n.toString().padStart(2, "0")
-                      )
-                      .reverse()
-                      .join("/") || "—"}
-                  </p>
+                  <p> { formatDatePTBR(patient.birthDate) } </p>
                 </div>
                 <div className="flex">
                   <p className="font-medium mr-2">CPF: </p>

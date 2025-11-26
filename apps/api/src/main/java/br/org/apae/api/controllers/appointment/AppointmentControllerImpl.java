@@ -1,13 +1,13 @@
 package br.org.apae.api.controllers.appointment;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.UUID;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.RestController;
 
 import br.org.apae.api.appointment.application.interfaces.AppointmentApplicationService;
@@ -17,6 +17,7 @@ import br.org.apae.api.common.dto.appointment.response.appointment.*;
 import jakarta.validation.Valid;
 
 @RestController
+@CrossOrigin(origins = "http://localhost:3000")
 public class AppointmentControllerImpl implements AppointmentController {
 
   private final AppointmentApplicationService service;
@@ -79,5 +80,10 @@ public class AppointmentControllerImpl implements AppointmentController {
           UUID patientId, LocalDate start, LocalDate end, Pageable pageable) {
     Page<GeneratedAppointmentResponseDTO> page = service.listByPatient(patientId, start, end, pageable);
     return ResponseEntity.ok(page);
+  }
+
+  @Override
+  public ResponseEntity<Page<TodayAppointmentsResponseDTO>> listTodayAppointment(Pageable pageable) {
+    return ResponseEntity.ok(this.service.listAppointmentForToday(pageable));
   }
 }

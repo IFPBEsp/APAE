@@ -1,9 +1,11 @@
-import { Page } from "@/types/pagination";
+import { Absence } from '@/types/absence';
+import { TodayAppointment } from '@/types/appointment';
+import { Page } from '@/types/pagination';
 
 export type UUID = string;
 
-const API_BASE_URL = process.env.API_BASE_URL || "http://localhost:8093";
-const USE_MOCK_DATA = process.env.NEXT_PUBLIC_USE_MOCK_DATA === "true" || true; // Forçar true para desenvolvimento
+const API_BASE_URL = process.env.API_BASE_URL || 'http://localhost:8090';
+const USE_MOCK_DATA = process.env.NEXT_PUBLIC_USE_MOCK_DATA === 'false' || false; // Forçar true para desenvolvimento
 const MOCK_DELAY = 500; // delay simulado em ms
 
 // ========== DADOS MOCKADOS ==========
@@ -75,13 +77,13 @@ const mockPatients: Patient[] = [
 
 const mockProfessionals: Professional[] = [
   {
-    id: "professional-1",
-    healthArea: "Fisioterapia",
-    phone: "(11) 3456-7890",
-    professionalDoc: "CREFITO 12345/SP",
-    email: "ana.fisio@email.com",
-    name: "Ana Fonseca",
-    rg: "11.223.344-5",
+    id: 'professional-1',
+    healthSector: 'Fisioterapia',
+    phoneNumber: '(11) 3456-7890',
+    professionalDocument: 'CREFITO 12345/SP',
+    email: 'ana.fisio@email.com',
+    name: 'Ana Fonseca',
+    identityDocument: '11.223.344-5',
     address: {
       id: "address-prof-1",
       city: "São Paulo",
@@ -94,13 +96,13 @@ const mockProfessionals: Professional[] = [
     },
   },
   {
-    id: "professional-2",
-    healthArea: "Psicologia",
-    phone: "(11) 4567-8901",
-    professionalDoc: "CRP 06/123456",
-    email: "carlos.psi@email.com",
-    name: "Carlos Mendes",
-    rg: "22.334.455-6",
+    id: 'professional-2',
+    healthSector: 'Psicologia',
+    phoneNumber: '(11) 4567-8901',
+    professionalDocument: 'CRP 06/123456',
+    email: 'carlos.psi@email.com',
+    name: 'Carlos Mendes',
+    identityDocument: '22.334.455-6',
     address: {
       id: "address-prof-2",
       city: "São Paulo",
@@ -113,13 +115,13 @@ const mockProfessionals: Professional[] = [
     },
   },
   {
-    id: "professional-3",
-    healthArea: "Terapia Ocupacional",
-    phone: "(11) 5678-9012",
-    professionalDoc: "CREFITO 54321/SP",
-    email: "beatriz.to@email.com",
-    name: "Beatriz Lima",
-    rg: "33.445.566-7",
+    id: 'professional-3',
+    healthSector: 'Terapia Ocupacional',
+    phoneNumber: '(11) 5678-9012',
+    professionalDocument: 'CREFITO 54321/SP',
+    email: 'beatriz.to@email.com',
+    name: 'Beatriz Lima',
+    identityDocument: '33.445.566-7',
     address: {
       id: "address-prof-3",
       city: "São Paulo",
@@ -141,9 +143,8 @@ const mockAnnualRegistries: AnnualRegistry[] = [
     familyIncome: 2500.0,
     year: "2024",
     patient: mockPatients[0],
-    disorders: { id: "disorder-1", name: "TEA" },
-    endDate: "2024-12-31",
-    professional: mockProfessionals[0],
+    disorders: { id: 'disorder-1', name: 'TEA' },
+    endDate: '2024-12-31',
   },
   {
     id: "annual-2",
@@ -152,17 +153,16 @@ const mockAnnualRegistries: AnnualRegistry[] = [
     familyIncome: 1800.0,
     year: "2024",
     patient: mockPatients[1],
-    disorders: { id: "disorder-2", name: "TDAH" },
-    endDate: "2024-12-31",
-    professional: mockProfessionals[1],
+    disorders: { id: 'disorder-2', name: 'TDAH' },
+    endDate: '2024-12-31',
   },
 ];
 
 const mockAppointments: AppointmentResponseDTO[] = [
   {
-    id: "appointment-1",
-    professionalId: "professional-1",
-    serviceId: "service-1",
+    id: 'appointment-1',
+    professional: mockProfessionals[2],
+    serviceId: 'service-1',
     annualRegistration: mockAnnualRegistries[0],
     frequencyDays: 15,
     hour: "14:30:00",
@@ -172,9 +172,9 @@ const mockAppointments: AppointmentResponseDTO[] = [
     creationDate: "2024-01-01T10:00:00",
   },
   {
-    id: "appointment-2",
-    professionalId: "professional-2",
-    serviceId: "service-2",
+    id: 'appointment-2',
+    professional: mockProfessionals[0],
+    serviceId: 'service-2',
     annualRegistration: mockAnnualRegistries[1],
     frequencyDays: 30,
     hour: "09:00:00",
@@ -184,9 +184,9 @@ const mockAppointments: AppointmentResponseDTO[] = [
     creationDate: "2024-01-02T14:30:00",
   },
   {
-    id: "appointment-3",
-    professionalId: "professional-3",
-    serviceId: "service-3",
+    id: 'appointment-3',
+    professional: mockProfessionals[1],
+    serviceId: 'service-3',
     annualRegistration: mockAnnualRegistries[0],
     frequencyDays: 7,
     hour: "16:00:00",
@@ -233,12 +233,11 @@ export interface AnnualRegistry {
   patient: Patient;
   disorders: Disorder;
   endDate: string;
-  professional: Professional;
 }
 
 export interface Appointment {
   id: UUID;
-  professionalId: UUID;
+  professional: Professional;
   serviceId: UUID;
   annualRegistration: AnnualRegistry;
   frequencyDays: number;
@@ -252,7 +251,7 @@ export interface Appointment {
 export interface CreateAppointmentDTO {
   professionalId: UUID;
   serviceId: UUID;
-  annualRegistrationId: UUID;
+  patientId: UUID;
   frequencyDays: number;
   initialDate: string;
   hour: string;
@@ -260,7 +259,7 @@ export interface CreateAppointmentDTO {
 
 export interface AppointmentResponseDTO {
   id: UUID;
-  professionalId: UUID;
+  professional: Professional;
   serviceId: UUID;
   annualRegistration: AnnualRegistry;
   frequencyDays: number;
@@ -303,7 +302,7 @@ export interface Absence {
 }
 
 export interface Patient {
-  id?: string;
+  id: string;
   name: string;
   fullName: string;
   birthplace: string;
@@ -377,13 +376,13 @@ export interface CancelGeneratedAppointmentDTO {
 }
 
 export interface Professional {
-  id?: string;
-  healthArea: string;
-  phone: string;
-  professionalDoc: string;
+  id: string;
+  healthSector: string;
+  phoneNumber: string;
+  professionalDocument: string;
   email: string;
   name: string;
-  rg: string;
+  identityDocument: string;
   address: Address;
 }
 
@@ -431,21 +430,12 @@ export async function saveAppointment(
   }
 
   try {
-    const backendDto = {
-      professionalId: dto.professionalId,
-      serviceId: dto.serviceId,
-      annualRegistration: dto.annualRegistrationId,
-      frequencyDays: dto.frequencyDays,
-      initialDate: dto.initialDate,
-      hour: `${dto.hour}:00`,
-    };
-
     const res = await fetch(`${API_BASE_URL}/appointments`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify(backendDto),
+      body: JSON.stringify(dto),
     });
 
     if (!res.ok) {
@@ -504,7 +494,9 @@ export async function getAppointments(
     if (!response.ok) {
       throw new Error("Error searching for appointments");
     }
-    return await response.json();
+    const res = await response.json()
+    console.log(res)
+    return res;
   } catch (error) {
     console.error("Error in getAppointments, falling back to mock:", error);
     return mockFetch(mockPage(mockAppointments));
@@ -558,6 +550,7 @@ export async function updateAppointmentRule(
       newTime: `${dto.newTime}:00`,
     };
 
+    console.log(backendDto)
     const response = await fetch(`${API_BASE_URL}/appointments/${id}/rule`, {
       method: "PATCH",
       headers: {
@@ -670,8 +663,8 @@ export async function markAsPerformed(
   }
 
   try {
-    const response = await fetch(`${API_BASE_URL}/generated/${id}/performed`, {
-      method: "PUT",
+    const response = await fetch(`${API_BASE_URL}/appointments/generated/${id}/performed`, {
+      method: 'PATCH',
     });
 
     if (!response.ok) {
@@ -836,6 +829,7 @@ export async function getPacientes(): Promise<Patient[]> {
   try {
     const response = await fetch(`${API_BASE_URL}/patients?page=0&size=100`);
     const data = await response.json();
+    console.log(data)
     return data.content || [];
   } catch (error) {
     console.error("Error in getPacientes, falling back to mock:", error);
@@ -885,17 +879,17 @@ export async function getProfissionalDaSaude(
 
 export async function getAreasDaSaude(): Promise<string[]> {
   if (USE_MOCK_DATA) {
-    const areas = mockProfessionals.map((p) => p.healthArea);
+    const areas = mockProfessionals.map(p => p.healthSector);
     return mockFetch([...new Set(areas)]);
   }
 
   try {
     const profissionais = await getProfissionaisDaSaude();
-    const areas = profissionais.map((p) => p.healthArea);
+    const areas = profissionais.map(p => p.healthSector);
     return [...new Set(areas)].filter(Boolean) as string[];
   } catch (error) {
-    console.error("Error in getAreasDaSaude, falling back to mock:", error);
-    const areas = mockProfessionals.map((p) => p.healthArea);
+    console.error('Error in getAreasDaSaude, falling back to mock:', error);
+    const areas = mockProfessionals.map(p => p.healthSector);
     return mockFetch([...new Set(areas)]);
   }
 }
@@ -910,14 +904,14 @@ export const toggleConfirmacao = async (id: UUID) => {
   try {
     const appointment = await getAppointmentById(id);
 
-    if (!appointment.professionalId || !appointment.annualRegistration?.id) {
-      throw new Error("Appointment data is incomplete");
+    if (!appointment.professional || !appointment.annualRegistration?.id) {
+      throw new Error('Appointment data is incomplete');
     }
 
     const dto: CreateAppointmentDTO = {
-      professionalId: appointment.professionalId,
+      professionalId: appointment.professional.id,
       serviceId: appointment.serviceId,
-      annualRegistrationId: appointment.annualRegistration.id,
+      patientId: appointment.annualRegistration.patient.id,
       frequencyDays: appointment.frequencyDays,
       initialDate: appointment.initialDate,
       hour: appointment.hour.replace(":00", ""),
@@ -948,3 +942,17 @@ export const parseTimeFromBackend = (timeString: string): string => {
 export const isUsingMockData = (): boolean => {
   return USE_MOCK_DATA;
 };
+
+export async function listTodayAppointment(): Promise<Page<TodayAppointment>> {
+  return fetch(`${API_BASE_URL}/appointments/today`)
+    .then(res => {
+      if (!res.ok) {
+        throw new Error(`Erro na requisição: ${res.status}`);
+      }
+      return res.json();
+    })
+    .then((data: Page<TodayAppointment>) => data)
+    .catch(error => {
+      throw error;
+    });
+}

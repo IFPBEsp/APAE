@@ -1,21 +1,22 @@
 'use client';
 
-import React, { useContext, useEffect, useState } from 'react';
+import { format } from "date-fns";
+import React, { useEffect, useState } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
 import { DateTimePicker } from '@/components/ui/date-time-picker';
 import { Combobox } from '@/components/ui/combobox';
-import { cn } from '@/lib/utils';
+import { cn, separaETransformaEmNumero } from '@/lib/utils';
 import {
   Appointment,
   getPacientes,
-  getProfissionalDaSaude,
   Patient,
   Professional,
   saveAppointment,
 } from '@/app/services/appointmentService';
 import { Input } from '../ui/input';
+import { getProfissionaisDaSaude } from '@/app/services/appointmentService';
 
 type selectItem = {
   value: string;
@@ -27,18 +28,11 @@ interface PageProps {
 }
 
 export function AppointmentForm({ editAppointment }: PageProps) {
-  const separaETransformaEmNumero = (valor: unknown, separador: string) => {
-    if (typeof valor == 'string' && valor.length) {
-      return (valor as string).split(separador).map(n => parseInt(n));
-    }
-    return [NaN, NaN, NaN];
-  };
-
   const [year, month, day] = separaETransformaEmNumero(
     editAppointment?.initialDate,
     '-'
   );
-  const [hour, minute, second] = separaETransformaEmNumero(
+  const [hour, minute] = separaETransformaEmNumero(
     editAppointment?.hour,
     ':'
   );
@@ -47,46 +41,38 @@ export function AppointmentForm({ editAppointment }: PageProps) {
     !isNaN(month) &&
     !isNaN(day) &&
     !isNaN(hour) &&
-    !isNaN(minute) &&
-    !isNaN(second)
-      ? new Date(year, month, day, hour, minute, second)
+    !isNaN(minute)
+      ? new Date(year, month, day, hour, minute)
       : undefined;
 
-  const [dateHour, setDateHour] = useState<Date | undefined>(
-    existingAppointmentDate
+  const [dateHour, setDateHour] = useState<Date | undefined>(existingAppointmentDate);
+
+  const [patient, setPatient] = useState<selectItem>(() => {
+      const patient = editAppointment?.annualRegistration.patient;
+      return patient ? { value: patient.id,  label: patient.fullName } : { value: "", label: "" }
+    }
   );
 
-  const [patient, setPatient] = useState<string>(
-    editAppointment?.annualRegistration.patient.fullName || ''
+  const [professional, setProfessional] = useState<selectItem>(() => {
+      const professional = editAppointment?.professional;
+      return professional ? {value: professional.id, label: professional.name } : { value: "", label: "" }
+    }
   );
-  const [professional, setProfessional] = useState<string>(
-    editAppointment?.professionalId || ''
-  );
-  const [endDate, setEndDate] = useState<string>(
-    editAppointment?.endDate || ''
-  );
-  const [creationDate, setCreationDate] = useState<string>(
-    editAppointment?.creationDate || ''
-  );
-  const [isActive, setIsActive] = useState<boolean>(
-    editAppointment?.isActive || false
-  );
+
   const [listPatients, setListPatients] = useState<selectItem[]>([]);
   const [listaProfessional, setListaProfessionals] = useState<selectItem[]>([]);
 
-  const [frequencyDays, setFrequencyDays] = useState<string | number>(
-    editAppointment?.frequencyDays || ''
+  const [frequencyDays, setFrequencyDays] = useState<number>(
+    editAppointment?.frequencyDays || 0
   );
 
   useEffect(() => {
     const fetchPatientsAndProfessionals = async () => {
       const registeredPatients: Patient[] = await getPacientes();
-      const registeredProfessionals: Professional[] =
-        await getProfissionaisDaSaude();
-
+      const registeredProfessionals: Professional[] = await getProfissionaisDaSaude();
       setListPatients(
         registeredPatients.map(
-          p => ({ value: p.id, label: p.name } as selectItem)
+          p => ({ value: p.id, label: p.fullName } as selectItem)
         )
       );
       setListaProfessionals(
@@ -99,20 +85,19 @@ export function AppointmentForm({ editAppointment }: PageProps) {
   }, []);
 
   // Apenas necessário devido à existência de duplicatas nos dados mockados
-  useEffect(() => {
-    const redefineProfissional = async () => {
-      if (editAppointment) {
-        const nameProfessional = (await getProfissionalDaSaude(professional))
-          .name;
-        const idProfessional = listaProfessional.find(
-          p => p.label === nameProfessional
-        )?.value;
-        setProfessional(idProfessional || professional);
-        console.log(professional, nameProfessional, idProfessional);
-      }
-    };
-    redefineProfissional();
-  }, [listaProfessional]);
+  //useEffect(() => {
+    //const redefineProfissional = async () => {
+      //if (editAppointment) {
+        //const nameProfessional = (await getProfissionalDaSaude(professional.value))
+          //.name;
+        //const idProfessional = listaProfessional.find(
+          //p => p.label === nameProfessional
+        //)?.value;
+        //setProfessional(idProfessional || professional.value);
+      //}
+    //};
+    //redefineProfissional();
+  //}, [listaProfessional]);
 
   const [validationErrors, setValidationErrors] = useState({
     dateHour: false,
@@ -120,34 +105,6 @@ export function AppointmentForm({ editAppointment }: PageProps) {
     professional: false,
     frequencyDays: false,
   });
-
-  const formatDate = (date: Date) => {
-    const year = date.getFullYear();
-    const month = String(date.getMonth()).padStart(2, '0');
-    const day = String(date.getDate()).padStart(2, '0');
-
-    const hours = String(date.getHours()).padStart(2, '0');
-    const minutes = String(date.getMinutes()).padStart(2, '0');
-    const seconds = String(date.getSeconds()).padStart(2, '0');
-
-    return [`${year}-${month}-${day}`, `${hours}:${minutes}:${seconds}`];
-  };
-
-  const dataPassou = (data: string, horario: string) => {
-    const [year, month, day] = data.split('-');
-    const [hour, minute, second] = horario.split(':');
-    const emDate = new Date(
-      parseInt(year),
-      parseInt(month),
-      parseInt(day),
-      parseInt(hour),
-      parseInt(minute),
-      parseInt(second)
-    );
-    const agora = new Date();
-
-    return agora > emDate;
-  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -158,8 +115,8 @@ export function AppointmentForm({ editAppointment }: PageProps) {
       professional: !professional,
       frequencyDays:
         !frequencyDays ||
-        isNaN(Number(frequencyDays)) ||
-        Number(frequencyDays) <= 0,
+        isNaN(frequencyDays) ||
+        frequencyDays <= 0,
     };
 
     setValidationErrors(errors);
@@ -168,26 +125,20 @@ export function AppointmentForm({ editAppointment }: PageProps) {
       return;
     }
 
-    const frequency = Number(frequencyDays);
 
-    if (patient && professional && dateHour && frequency > 0) {
+    if (patient && professional && dateHour && frequencyDays > 0) {
+      const initialDate = format(dateHour, "yyyy-MM-dd");   
+      const hour = format(dateHour, "HH:mm:ss");  
       await saveAppointment({
-        annualRegistrationId: patient,
-        serviceId: 'service-001',
-        professionalId: professional,
-        frequencyDays: 15,
-        initialDate: formatDate(dateHour)[0],
-        hour: formatDate(dateHour)[1],
+        patientId: patient.value,
+        serviceId: "c2a2c8d1-0fa5-4a76-b1ad-097069b9f779",
+        professionalId: professional.value,
+        frequencyDays,
+        initialDate,
+        hour,
       });
       window.location.reload();
     }
-
-    console.log('Novo agendamento: ', {
-      dateHour,
-      patient,
-      professional,
-      frequencyDays,
-    });
   };
 
   return (
@@ -210,8 +161,11 @@ export function AppointmentForm({ editAppointment }: PageProps) {
               </Label>
               <Combobox
                 options={listPatients}
-                value={patient}
-                onChange={setPatient}
+                value={patient.value}
+                onChange={(value) => {
+                  const selected = listPatients.find((p) => p.value === value);
+                  if (selected) setPatient(selected);
+                }}
                 placeholder="Pesquisar paciente"
                 className={cn(
                   validationErrors.patient && 'border-red-500',
@@ -232,8 +186,11 @@ export function AppointmentForm({ editAppointment }: PageProps) {
             </Label>
             <Combobox
               options={listaProfessional}
-              value={professional}
-              onChange={setProfessional}
+              value={professional.value}
+              onChange={(value) => {
+                const selected = listaProfessional.find((p) => p.value == value);
+                if (selected) setProfessional(selected);
+              }}
               placeholder="Pesquisar área de atendimento"
               className={cn(
                 validationErrors.professional && 'border-red-500',
@@ -254,8 +211,8 @@ export function AppointmentForm({ editAppointment }: PageProps) {
               type="number"
               min="1"
               placeholder="Adicionar frequência"
-              value={frequencyDays}
-              onChange={e => setFrequencyDays(e.target.value)}
+              value={frequencyDays < 1 ? "" : frequencyDays}
+              onChange={e => setFrequencyDays(Number(e.target.value))}
               className={cn(validationErrors.frequencyDays && 'border-red-500')}
             />
             {validationErrors.frequencyDays && (
