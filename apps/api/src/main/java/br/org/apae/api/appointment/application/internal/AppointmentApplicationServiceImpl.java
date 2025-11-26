@@ -35,12 +35,12 @@ public class AppointmentApplicationServiceImpl implements AppointmentApplication
 
 
   public AppointmentApplicationServiceImpl(
-          AppointmentRepository appointmentRepo,
-          GeneratedAppointmentRepository generatedRepo,
-          AnnualRegistryRepository registryRepo,
-          HealthProfessionalRepository professionalRepo,
-          AbsenceRepository absenceRepo,
-          AppointmentMapper mapper) {
+      AppointmentRepository appointmentRepo,
+      GeneratedAppointmentRepository generatedRepo,
+      AnnualRegistryRepository registryRepo,
+      HealthProfessionalRepository professionalRepo,
+      AbsenceRepository absenceRepo,
+      AppointmentMapper mapper) {
     this.appointmentRepo = appointmentRepo;
     this.generatedRepo = generatedRepo;
     this.registryRepo = registryRepo;
@@ -51,7 +51,7 @@ public class AppointmentApplicationServiceImpl implements AppointmentApplication
 
   @Override
   public void create(CreateAppointmentDTO dto) {
-    AnnualRegistry annualRegistry = this.registryRepo.findById(dto.annualRegistration())
+     AnnualRegistry annualRegistry = this.registryRepo.findByPatientIdAndYear(dto.patientId(), Year.now())
         .orElseThrow(AnnualRegistrationNotFound::new);
 
     HealthProfessional professional = this.professionalRepo.findById(dto.professionalId())
@@ -155,6 +155,11 @@ public class AppointmentApplicationServiceImpl implements AppointmentApplication
     return generated.stream()
             .map(mapper::toGeneratedResponse)
             .toList();
+  }
+
+  @Override
+  public Page<TodayAppointmentsResponseDTO> listAppointmentForToday(Pageable pageable) {
+    return this.generatedRepo.listAppointmentsForToday(pageable).map(this.mapper::toTodayResponseDTO);
   }
 
   /**

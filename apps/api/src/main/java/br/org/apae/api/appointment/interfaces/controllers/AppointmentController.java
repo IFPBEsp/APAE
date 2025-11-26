@@ -74,4 +74,8 @@ public interface AppointmentController {
           @RequestParam LocalDate start,
           @RequestParam LocalDate end,
           Pageable pageable);
+
+  @Operation(summary = "Lista agendamentos de hoje")
+  @GetMapping("/today")
+  ResponseEntity<Page<TodayAppointmentsResponseDTO>> listTodayAppointment(Pageable pageable);
 }

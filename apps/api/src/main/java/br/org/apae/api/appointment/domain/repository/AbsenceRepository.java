@@ -20,17 +20,27 @@ public interface AbsenceRepository extends JpaRepository<Absence, UUID> {
     @Query("SELECT a FROM Absence a JOIN a.generatedAppointment ga WHERE ga.patientId = :patientId")
     Page<Absence> findByPatientId(UUID patientId, Pageable pageable);
 
-    @Query("SELECT a FROM Absence a JOIN a.generatedAppointment ga JOIN ga.appointment app WHERE app.professionalId = :professionalId")
+    @Query("""
+        SELECT a FROM Absence a 
+        JOIN a.generatedAppointment ga 
+        JOIN ga.appointment app 
+        WHERE app.professional.id = :professionalId
+    """)
     Page<Absence> findByProfessionalId(UUID professionalId, Pageable pageable);
 
-    @Query("SELECT a FROM Absence a JOIN a.generatedAppointment ga JOIN ga.appointment app " +
-            "WHERE (:generatedId IS NULL OR ga.id = :generatedId) " +
-            "AND (:patientId IS NULL OR ga.patientId = :patientId) " +
-            "AND (:professionalId IS NULL OR app.professionalId = :professionalId)")
+    @Query("""
+        SELECT a FROM Absence a 
+        JOIN a.generatedAppointment ga 
+        JOIN ga.appointment app 
+        WHERE (:generatedId IS NULL OR ga.id = :generatedId)
+          AND (:patientId IS NULL OR ga.patientId = :patientId)
+          AND (:professionalId IS NULL OR app.professional.id = :professionalId)
+    """)
     Page<Absence> findByFilters(
             UUID generatedId,
             UUID patientId,
             UUID professionalId,
             Pageable pageable
     );
+
 }
