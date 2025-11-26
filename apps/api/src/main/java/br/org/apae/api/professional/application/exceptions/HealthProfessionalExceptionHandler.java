@@ -41,7 +41,7 @@ public class HealthProfessionalExceptionHandler {
     return new ResponseEntity<>(error, HttpStatus.NOT_FOUND);
   }
 
-    @ExceptionHandler(ServiceAreaConflictException.class)
+  @ExceptionHandler(ServiceAreaConflictException.class)
   public ResponseEntity<ErrorResponse> handleServiceAreaConflictException(
       ServiceAreaConflictException ex, HttpServletRequest request) {
     ErrorResponse error = new ErrorResponse(
@@ -61,25 +61,27 @@ public class HealthProfessionalExceptionHandler {
         ex.getMessage(),
         request.getRequestURI());
     return new ResponseEntity<>(error, HttpStatus.NOT_FOUND);
+  }
+
   @ExceptionHandler(EmailConflictException.class)
   public ResponseEntity<ErrorResponse> handleEmailConflictException(
-          EmailConflictException ex, HttpServletRequest request) {
+      EmailConflictException ex, HttpServletRequest request) {
     ErrorResponse error = new ErrorResponse(
-            HttpStatus.CONFLICT.value(),
-            HttpStatus.CONFLICT.getReasonPhrase(),
-            ex.getMessage(),
-            request.getRequestURI());
+        HttpStatus.CONFLICT.value(),
+        HttpStatus.CONFLICT.getReasonPhrase(),
+        ex.getMessage(),
+        request.getRequestURI());
     return new ResponseEntity<>(error, HttpStatus.CONFLICT);
   }
 
   @ExceptionHandler(IdentityDocumentConflictException.class)
   public ResponseEntity<ErrorResponse> handleIdentityDocumentConflictException(
-          IdentityDocumentConflictException ex, HttpServletRequest request) {
+      IdentityDocumentConflictException ex, HttpServletRequest request) {
     ErrorResponse error = new ErrorResponse(
-            HttpStatus.CONFLICT.value(),
-            HttpStatus.CONFLICT.getReasonPhrase(),
-            ex.getMessage(),
-            request.getRequestURI());
+        HttpStatus.CONFLICT.value(),
+        HttpStatus.CONFLICT.getReasonPhrase(),
+        ex.getMessage(),
+        request.getRequestURI());
     return new ResponseEntity<>(error, HttpStatus.CONFLICT);
   }
 }
