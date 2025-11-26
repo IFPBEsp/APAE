@@ -1,28 +1,18 @@
 package br.org.apae.api.appointment.application.internal;
 
 import br.org.apae.api.appointment.application.interfaces.AbsenceApplicationService;
-import br.org.apae.api.appointment.application.interfaces.AppointmentApplicationService;
-import br.org.apae.api.appointment.domain.exceptions.AnnualRegistrationNotFound;
 import br.org.apae.api.appointment.domain.exceptions.AppointmentNotFoundException;
 import br.org.apae.api.appointment.domain.model.*;
 import br.org.apae.api.appointment.domain.repository.*;
 import br.org.apae.api.appointment.mapper.AbsenceMapper;
-import br.org.apae.api.appointment.mapper.AppointmentMapper;
 import br.org.apae.api.common.dto.appointment.request.absence.CreateAbsenceDTO;
-import br.org.apae.api.common.dto.appointment.request.appointment.*;
 import br.org.apae.api.common.dto.appointment.response.absence.AbsenceResponseDTO;
-import br.org.apae.api.common.dto.appointment.response.appointment.*;
-import br.org.apae.api.patient.domain.model.AnnualRegistry;
-import br.org.apae.api.patient.domain.repository.AnnualRegistryRepository;
-import br.org.apae.api.professional.domain.model.HealthProfessional;
-import br.org.apae.api.professional.domain.repository.HealthProfessionalRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.context.annotation.Primary;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import java.time.*;
 import java.util.*;
 
 @Service

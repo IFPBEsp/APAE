@@ -9,7 +9,6 @@ import br.org.apae.api.appointment.mapper.AppointmentMapper;
 import br.org.apae.api.common.dto.appointment.request.appointment.*;
 import br.org.apae.api.common.dto.appointment.response.appointment.*;
 import br.org.apae.api.patient.domain.model.AnnualRegistry;
-import br.org.apae.api.patient.domain.model.Patient;
 import br.org.apae.api.patient.domain.repository.AnnualRegistryRepository;
 import br.org.apae.api.professional.domain.exceptions.HealthProfessionalNotFoundException;
 import br.org.apae.api.professional.domain.model.HealthProfessional;
