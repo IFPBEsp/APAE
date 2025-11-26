@@ -6,9 +6,9 @@ import {
   Agendamento,
   getAgendamentoById,
   saveAgendamentoRealizado,
-} from "@/app/services/AppointmentService";
-import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+} from '@/app/services/appointmentService';
+import { useRouter } from 'next/navigation';
+import { useEffect, useState } from 'react';
 import {
   Dialog,
   DialogClose,
