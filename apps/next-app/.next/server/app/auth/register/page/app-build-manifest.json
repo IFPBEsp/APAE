@@ -1,0 +1,20 @@
+{
+  "pages": {
+    "/auth/register/page": [
+      "static/chunks/32a9e_next_dist_8bfaaeec._.js",
+      "static/chunks/apps_next-app_src_app_favicon_ico_mjs_599da1f4._.js",
+      "static/chunks/[root-of-the-server]__1a1a459b._.css",
+      "static/chunks/apps_next-app_src_app_layout_tsx_e0c3d4b4._.js",
+      "static/chunks/node_modules__pnpm_9bebb06a._.js",
+      "static/chunks/apps_next-app_src_a6b60eca._.js",
+      "static/chunks/apps_next-app_src_app_auth_register_page_tsx_af0c45ff._.js",
+      "static/chunks/[turbopack]_browser_dev_hmr-client_hmr-client_ts_60b49885._.js",
+      "static/chunks/32a9e_next_dist_compiled_e64c8dbd._.js",
+      "static/chunks/32a9e_next_dist_client_56a827c2._.js",
+      "static/chunks/32a9e_next_dist_1143052f._.js",
+      "static/chunks/61dca_@swc_helpers_cjs_e27e0aca._.js",
+      "static/chunks/apps_next-app_e69f0d32._.js",
+      "static/chunks/apps_next-app_98bd08c6._.js"
+    ]
+  }
+}

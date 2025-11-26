@@ -1,4 +1,4 @@
-import { createPersonApi } from "@/lib/axios";
+import { createBaseApi } from "@/lib/axios";
 import { AxiosError } from "axios";
 import { NextResponse } from "next/server";
 
@@ -7,9 +7,9 @@ export async function GET(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const api = await createPersonApi();
+    const api = await createBaseApi();
     const { id } = await params;
-    const response = await api.get(`/${id}`);
+    const response = await api.get(`/patients/${id}`);
     const p = response.data;
 
     const primeiroContato =
@@ -107,7 +107,7 @@ export async function GET(
 
     return NextResponse.json(pessoa, { status: 200 });
   } catch (error) {
-    console.error("Erro na API Route (/api/pessoas/[id]):", error);
+    console.error("Erro na API Route (/api/patients/[id]):", error);
 
     if (error instanceof AxiosError && error.response) {
       return NextResponse.json(

@@ -337,8 +337,8 @@ export default function CadastroProfissional(): JSX.Element {
             </Button>
             <Button
               type="submit"
-              className="bg-blue-800 hover:bg-blue-900"
-              disabled={form.formState.isSubmitting || loading}
+              className="bg-[#0D4F97] hover:bg-blue-900"
+              disabled={loading}
             >
               Cadastrar
             </Button>

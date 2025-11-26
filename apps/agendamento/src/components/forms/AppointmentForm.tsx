@@ -286,7 +286,7 @@ export function AppointmentForm({ agendamentoAEditar }: PageProps) {
           )}
 
           <div className="flex justify-end">
-            <Button className="w-full bg-blue-800 text-white hover:bg-blue-900 text-xs sm:w-auto sm:text-sm">
+            <Button className="w-full bg-[#0D4F97]  text-white hover:bg-blue-900 text-xs sm:w-auto sm:text-sm">
               {agendamentoAEditar ? "Atualizar" : "Cadastrar"}
             </Button>
           </div>
