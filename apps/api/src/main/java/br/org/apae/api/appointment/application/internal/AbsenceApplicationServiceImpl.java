@@ -28,31 +28,19 @@ import java.util.*;
 @Service
 @Transactional
 @Primary
-public class AbsenceApplicationServiceImpl implements AbsenceApplicationService, AppointmentApplicationService {
+public class AbsenceApplicationServiceImpl implements AbsenceApplicationService {
 
     public static final String APPOINTMENT_NOT_FOUND = "Appointment not found";
-    private final AppointmentRepository appointmentRepo;
     private final GeneratedAppointmentRepository generatedRepo;
-    private final AnnualRegistryRepository registryRepo;
-    private final HealthProfessionalRepository professionalRepo;
     private final AbsenceRepository absenceRepo;
-    private final AppointmentMapper appointmentMapper;
     private final AbsenceMapper absenceMapper;
 
     public AbsenceApplicationServiceImpl(
-            AppointmentRepository appointmentRepo,
             GeneratedAppointmentRepository generatedRepo,
-            AnnualRegistryRepository registryRepo,
-            HealthProfessionalRepository professionalRepo,
             AbsenceRepository absenceRepo,
-            AppointmentMapper appointmentMapper,
             AbsenceMapper absenceMapper) {
-        this.appointmentRepo = appointmentRepo;
         this.generatedRepo = generatedRepo;
-        this.registryRepo = registryRepo;
-        this.professionalRepo = professionalRepo;
         this.absenceRepo = absenceRepo;
-        this.appointmentMapper = appointmentMapper;
         this.absenceMapper = absenceMapper;
     }
 
@@ -88,178 +76,4 @@ public class AbsenceApplicationServiceImpl implements AbsenceApplicationService,
                 .map(absenceMapper::toAbsenceResponse);
     }
 
-    @Override
-    public void create(CreateAppointmentDTO dto) {
-        AnnualRegistry annualRegistry = this.registryRepo.findById(dto.annualRegistration())
-                .orElseThrow(AnnualRegistrationNotFound::new);
-
-        HealthProfessional professional = this.professionalRepo.findById(dto.professionalId())
-                .orElseThrow(() -> new IllegalStateException("HealthProfessional not found"));
-
-        Appointment appointment = appointmentMapper.toEntity(dto, professional, annualRegistry);
-
-        appointmentRepo.save(appointment);
-
-        int year = annualRegistry.getYear().getValue();
-        LocalDate end = LocalDate.of(year, 12, 31);
-        generateAppointments(annualRegistry.getId(), appointment.getInitialDate(), end);
-    }
-
-    @Override
-    public Page<AppointmentResponseDTO> findAll(Pageable pageable) {
-        return appointmentRepo.findAll(pageable).map(appointmentMapper::toResponse);
-    }
-
-    @Override
-    public Page<AppointmentResponseDTO> findAllByDate(LocalDate date, Pageable pageable) {
-        return appointmentRepo.findAllByInitialDate(date, pageable)
-                .map(appointmentMapper::toResponse);
-    }
-
-    @Override
-    public Page<AppointmentResponseDTO> findAllByDateAndTime(LocalDate date, LocalTime time, Pageable pageable) {
-        return appointmentRepo.findAllByInitialDateAndHour(date, time, pageable)
-                .map(appointmentMapper::toResponse);
-    }
-
-    @Override
-    public Page<AppointmentResponseDTO> findAll(LocalDate date, LocalTime time, Pageable pageable) {
-        if (date != null && time == null) {
-            return findAllByDate(date, pageable);
-        } else if (date != null) {
-            return findAllByDateAndTime(date, time, pageable);
-        }
-        return findAll(pageable);
-    }
-
-    @Override
-    public AppointmentResponseDTO findById(UUID id) {
-        Appointment appointment = appointmentRepo.findById(id)
-                .orElseThrow(AppointmentNotFoundException::new);
-        return appointmentMapper.toResponse(appointment);
-    }
-
-    @Override
-    public void delete(UUID id) {
-        if (!appointmentRepo.existsById(id)) {
-            throw new AppointmentNotFoundException();
-        }
-        appointmentRepo.deleteById(id);
-    }
-
-    public List<GeneratedAppointmentResponseDTO> generateAppointments(
-            UUID annualRegistrationId, LocalDate start, LocalDate end) {
-
-        Appointment activeRule = appointmentRepo.findByAnnualRegistrationIdAndIsActiveTrue(annualRegistrationId)
-                .stream().findFirst()
-                .orElseThrow(() -> new IllegalStateException("No active rule found"));
-
-        List<LocalDateTime> dates = calculateRecurrence(
-                activeRule.getInitialDate(),
-                activeRule.getFrequencyDays(),
-                activeRule.getHour(),
-                start, end);
-
-        LocalDateTime startDt = start.atStartOfDay();
-        LocalDateTime endDt = end.atTime(23, 59, 59);
-
-        List<GeneratedAppointment> generated = new ArrayList<>();
-        for (LocalDateTime dt : dates) {
-            if (dt.isBefore(startDt) || dt.isAfter(endDt)) continue;
-
-            GeneratedAppointment existing = generatedRepo
-                    .findByAppointmentIdAndScheduledDateTime(activeRule.getId(), dt)
-                    .orElse(null);
-
-            if (existing == null) {
-                existing = new GeneratedAppointment(activeRule, dt);
-                generatedRepo.save(existing);
-            }
-            generated.add(existing);
-        }
-
-        return generated.stream()
-                .map(appointmentMapper::toGeneratedResponse)
-                .toList();
-    }
-
-    private List<LocalDateTime> calculateRecurrence(
-            LocalDate ruleStart, int frequencyDays, LocalTime time,
-            LocalDate queryStart, LocalDate queryEnd) {
-
-        List<LocalDateTime> result = new ArrayList<>();
-        LocalDate date = ruleStart.isBefore(queryStart) ? queryStart : ruleStart;
-
-        while (!date.isAfter(queryEnd)) {
-            result.add(date.atTime(time));
-            date = date.plusDays(frequencyDays);
-        }
-        return result;
-    }
-
-    public AppointmentResponseDTO updateAppointment(UUID appointmentId, Integer newFrequency, LocalTime newTime) {
-        Appointment current = appointmentRepo.findById(appointmentId)
-                .orElseThrow(() -> new IllegalArgumentException("Rule not found"));
-
-        if (!current.isActive()) {
-            throw new IllegalStateException("Only active rules can be edited");
-        }
-
-        LocalDate editDate = LocalDate.now();
-
-        current.setActive(false);
-        current.setEndDate(editDate.minusDays(1));
-        appointmentRepo.save(current);
-
-        Appointment newRule = new Appointment(
-                current.getProfessional(),
-                current.getServiceId(),
-                current.getAnnualRegistration(),
-                newFrequency != null ? newFrequency : current.getFrequencyDays(),
-                newTime != null ? newTime : current.getHour(),
-                editDate,
-                null
-        );
-        newRule = appointmentRepo.save(newRule);
-
-        int year = current.getAnnualRegistration().getYear().getValue();
-        LocalDate end = LocalDate.of(year, 12, 31);
-
-        generateAppointments(current.getAnnualRegistration().getId(), editDate, end);
-        generatedRepo.deleteFutureByAppointmentId(current.getId(), editDate.atStartOfDay());
-
-        return appointmentMapper.toResponse(newRule);
-    }
-
-    public GeneratedAppointmentResponseDTO reschedule(UUID generatedId, LocalDateTime newDateTime) {
-        GeneratedAppointment appt = generatedRepo.findById(generatedId)
-                .orElseThrow(() -> new IllegalArgumentException(APPOINTMENT_NOT_FOUND));
-        appt.setOverriddenDateTime(newDateTime);
-        return appointmentMapper.toGeneratedResponse(generatedRepo.save(appt));
-    }
-
-    public GeneratedAppointmentResponseDTO markAsPerformed(UUID generatedId) {
-        GeneratedAppointment appt = generatedRepo.findById(generatedId)
-                .orElseThrow(() -> new IllegalArgumentException(APPOINTMENT_NOT_FOUND));
-        appt.setPerformed(true);
-        return appointmentMapper.toGeneratedResponse(generatedRepo.save(appt));
-    }
-
-    public GeneratedAppointmentResponseDTO cancel(UUID generatedId, String reason) {
-        GeneratedAppointment appt = generatedRepo.findById(generatedId)
-                .orElseThrow(() -> new IllegalArgumentException(APPOINTMENT_NOT_FOUND));
-        appt.setCancelled(true);
-        appt.setCancellationReason(reason);
-        return appointmentMapper.toGeneratedResponse(generatedRepo.save(appt));
-    }
-
-    public Page<GeneratedAppointmentResponseDTO> listByPatient(
-            UUID patientId, LocalDate start, LocalDate end, Pageable pageable) {
-
-        LocalDateTime s = start.atStartOfDay();
-        LocalDateTime e = end.atTime(23, 59, 59);
-
-        return generatedRepo.findByPatientIdAndScheduledDateTimeBetween(patientId, s, e, pageable)
-                .map(appointmentMapper::toGeneratedResponse);
-    }
 }
