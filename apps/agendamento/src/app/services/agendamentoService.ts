@@ -1,4 +1,4 @@
-const API_BASE_URL = process.env.API_BASE_URL || "http://localhost:8093";
+const API_BASE_URL = process.env.API_BASE_URL || "http://localhost:8090/api";
 
 export interface Agendamento {
   id: string;
@@ -377,7 +377,7 @@ export async function saveAgendamento(
     }
 
     const res = await fetch(
-      `${API_BASE_URL}/agendamentos${id ? `/${id}` : ""}`,
+      `${API_BASE_URL}/appointments${id ? `/${id}` : ""}`,
       {
         method: id ? "PUT" : "POST",
         headers: {
@@ -405,7 +405,7 @@ export async function saveAgendamentoRealizado(
       foiRealizada: true,
       justificativa: agendamento.justificativa,
     };
-    const res = await fetch(`${API_BASE_URL}/historico-consultas`, {
+    const res = await fetch(`${API_BASE_URL}/consultation-histories`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -454,7 +454,7 @@ export async function getAgendamentos(
     }
 
     const response = await fetch(
-      `${API_BASE_URL}/agendamentos${data ? `?data=${data}` : ""}${
+      `${API_BASE_URL}/appointments${data ? `?date=${data}` : ""}${
         hora ? `&hora=${hora}` : ""
       }`
     ).then((res) => res.json());
@@ -464,10 +464,10 @@ export async function getAgendamentos(
     const agendamentos: Agendamento[] = [];
     for (let agendamento of response.content) {
       const paciente = await fetch(
-        `${API_BASE_URL}/pacientes/${agendamento.idPaciente}`
+        `${API_BASE_URL}/patients/${agendamento.idPaciente}`
       ).then((res) => res.json());
       const profissional = await fetch(
-        `${API_BASE_URL}/profissionais/${agendamento.idProfissional}`
+        `${API_BASE_URL}/professionals/${agendamento.idProfissional}`
       ).then((res) => res.json());
 
       agendamentos.push({ ...agendamento, paciente, profissional });
@@ -482,14 +482,14 @@ export async function getAgendamentos(
 
 export async function getAgendamentoById(id: string): Promise<Agendamento> {
   try {
-    const agendamento = await fetch(`${API_BASE_URL}/agendamentos/${id}`).then(
+    const agendamento = await fetch(`${API_BASE_URL}/appointments/${id}`).then(
       (res) => res.json()
     );
     const paciente = await fetch(
-      `${API_BASE_URL}/pacientes/${agendamento.idPaciente}`
+      `${API_BASE_URL}/patients/${agendamento.idPaciente}`
     ).then((res) => res.json());
     const profissional = await fetch(
-      `${API_BASE_URL}/profissionais/${agendamento.idProfissional}`
+      `${API_BASE_URL}/professionals/${agendamento.idProfissional}`
     ).then((res) => res.json());
 
     return { ...agendamento, paciente, profissional };
@@ -504,7 +504,7 @@ export async function getAgendamentoRealizadoById(
 ): Promise<Agendamento> {
   try {
     const agendamentoRealizado: HistoricoConsultaResponseDTO = await fetch(
-      `${API_BASE_URL}/historico-consultas/${id}`
+      `${API_BASE_URL}/consultation-histories/${id}`
     ).then((res) => res.json());
     const agendamento: Agendamento = await getAgendamentoById(
       agendamentoRealizado.idAgendamento
@@ -525,7 +525,7 @@ export async function deleteAgendamento(
   try {
     await fetch(
       `${API_BASE_URL}/${
-        realizado ? "historico-consultas" : "agendamentos"
+        realizado ? "consultation-histories" : "appointments"
       }/${id}`,
       {
         method: "DELETE",
@@ -540,7 +540,7 @@ export async function deleteAgendamento(
 export async function getPacientes(): Promise<Paciente[]> {
   try {
     const response = await fetch(
-      `${API_BASE_URL}/pacientes?page=0&size=100`
+      `${API_BASE_URL}/patients?page=0&size=100`
     ).then((res) => res.json());
     let pacientesRetornados: Paciente[] = response.content;
     const existentes = new Set(pacientesRetornados.map((p: Paciente) => p.cpf));
@@ -552,7 +552,7 @@ export async function getPacientes(): Promise<Paciente[]> {
       for (const paciente of pacientes) {
         if (!existentes.has(paciente.cpf)) {
           const pacienteCriado = await fetch(
-            `${API_BASE_URL}/pacientes/create`,
+            `${API_BASE_URL}/patients/create`,
             {
               method: "POST",
               headers: { "Content-Type": "application/json" },
@@ -577,7 +577,7 @@ export async function getPacientes(): Promise<Paciente[]> {
 export async function getProfissionaisDaSaude(): Promise<ProfissionalSaude[]> {
   try {
     const response = await fetch(
-      `${API_BASE_URL}/profissionais?page=0&size=100`
+      `${API_BASE_URL}/professionals?page=0&size=100`
     ).then((res) => res.json());
     let profissionaisRetornados: ProfissionalSaude[] = response.content || [];
     const existentes = new Set(
@@ -586,7 +586,7 @@ export async function getProfissionaisDaSaude(): Promise<ProfissionalSaude[]> {
 
     for (const profissional of profissionais) {
       if (!existentes.has(profissional.docProfissional)) {
-        const res = await fetch(`${API_BASE_URL}/profissionais`, {
+        const res = await fetch(`${API_BASE_URL}/professionals`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(profissional),
@@ -619,7 +619,7 @@ export async function getProfissionalDaSaude(
 ): Promise<ProfissionalSaude> {
   try {
     const profissional = await fetch(
-      `${API_BASE_URL}/profissionais/${id}`
+      `${API_BASE_URL}/professionals/${id}`
     ).then((res) => res.json());
 
     return profissional;
