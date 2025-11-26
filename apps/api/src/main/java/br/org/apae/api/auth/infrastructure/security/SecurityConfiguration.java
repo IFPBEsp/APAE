@@ -27,7 +27,7 @@ public class SecurityConfiguration {
         .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
         .authorizeHttpRequests(authorize -> authorize
             // Permite sem autenticação as rotas de auth (com e sem prefixo de servlet /api)
-            .requestMatchers("/auth/**", "/api/auth/**").permitAll()
+            .requestMatchers("/auth/**", "/api/auth/**", "/api/professionals/**", "/professionals", "/api/professionals").permitAll()
             .requestMatchers(
                 // Swagger/OpenAPI (com e sem /api)
                 "/v3/api-docs/**",
@@ -35,8 +35,8 @@ public class SecurityConfiguration {
                 "/swagger-ui.html",
                 "/api/v3/api-docs/**",
                 "/api/swagger-ui/**",
-                "/api/swagger-ui.html"
-            ).permitAll()
+                "/api/swagger-ui.html")
+            .permitAll()
             .anyRequest().authenticated())
         .addFilterBefore(securityFilter, UsernamePasswordAuthenticationFilter.class)
         .build();
