@@ -1,4 +1,3 @@
-
 import { format } from "date-fns";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
@@ -8,7 +7,7 @@ import {
   CardContent,
   CardHeader,
   CardTitle,
-} from '@/components/ui/card';
+} from "@/components/ui/card";
 import {
   Dialog,
   DialogContent,
@@ -16,9 +15,9 @@ import {
   DialogTitle,
   DialogTrigger,
   DialogDescription,
-} from '@/components/ui/dialog';
-import { Pencil } from 'lucide-react';
-import { Button } from '@/components/ui/button';
+} from "@/components/ui/dialog";
+import { Pencil } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
 import {
   getAppointmentById,
@@ -58,7 +57,7 @@ export default async function viewAppointment({ params }: PageProps) {
     !isNaN(hour) &&
     !isNaN(minute) &&
     !isNaN(second)
-      ? new Date(year, month-1, day, hour, minute, second)
+      ? new Date(year, month - 1, day, hour, minute, second)
       : null;
 
 
@@ -88,33 +87,34 @@ export default async function viewAppointment({ params }: PageProps) {
                 alt="avatar"
               />
               <AvatarFallback>
-                {appointment.annualRegistration.patient.fullName.charAt(0) || "?"}
+                {appointment.annualRegistration.patient.fullName.charAt(0) ||
+                  "?"}
               </AvatarFallback>
             </Avatar>
           </div>
           <h1 className="ml-10 text-[#0D4F97] text-xl md:text-2xl font-bold mr-5">
             {appointment.annualRegistration.patient.fullName}
           </h1>
-
         </div>
 
-      {/* Borda do status do agendamento */}
-       <Badge className={`${appointment.isActive 
-                          ? "bg-[#E6F6EC] border-l-4 border-[#16A34A] text-[#166534]"
-                          : "bg-[#FEEAEA] border-l-4 border-[#DC2626] text-[#7F1D1D]"
-                        }
+        {/* Borda do status do agendamento */}
+        <Badge
+          className={`${
+            appointment.isActive
+              ? "bg-[#E6F6EC] border-l-4 border-[#16A34A] text-[#166534]"
+              : "bg-[#FEEAEA] border-l-4 border-[#DC2626] text-[#7F1D1D]"
+          }
                 px-4 py-2 w-32 flex flex-col items-center justify-center
                 rounded-l-md shadow-sm font-bold text-sm text-center
-              `}>
+              `}
+        >
           <p className="text-sm font-bold">
             {appointment.isActive ? "Ativa" : "Não ativa"}
           </p>
         </Badge>
-
       </header>
 
       <main className="mt-7 mb-15">
-
         {/* Card Agendamento */}
         <Card className="text-[#0D4F97] mb-5">
           <CardHeader className="relative">
@@ -141,69 +141,69 @@ export default async function viewAppointment({ params }: PageProps) {
               <div className="rounded-full  overflow-hidden border-1 border-[#0D4F97]">
                 <TrashButton id={id} realizado={false} />
               </div>
-              
+
               {/* <ConfirmaRealizacaoButton id={id} /> */}
             </CardAction>
           </CardHeader>
-            <CardContent>
-              <div className="flex justify-between">
-                {/* LADO ESQUERDO */}
-                <div className="flex flex-col gap-1">
-                  <div className="flex">
-                    <p className="font-medium mr-2">Data:</p>
-                    <p>
-                      {dataHoraDate
-                        ? new Intl.DateTimeFormat("pt-BR").format(dataHoraDate)
-                        : "—"}
-                    </p>
-                  </div>
+          <CardContent>
+            <div className="flex justify-between">
+              {/* LADO ESQUERDO */}
+              <div className="flex flex-col gap-1">
+                <div className="flex">
+                  <p className="font-medium mr-2">Data:</p>
+                  <p>
+                    {dataHoraDate
+                      ? new Intl.DateTimeFormat("pt-BR").format(dataHoraDate)
+                      : "—"}
+                  </p>
+                </div>
 
-                  <div className="flex">
-                    <p className="font-medium mr-2">Horário:</p>
-                    <p>
-                      {dataHoraDate
-                        ? dataHoraDate.toLocaleTimeString("pt-BR", {
-                            hour: "2-digit",
-                            minute: "2-digit",
-                          })
-                        : "—"}
-                    </p>
-                  </div>
+                <div className="flex">
+                  <p className="font-medium mr-2">Horário:</p>
+                  <p>
+                    {dataHoraDate
+                      ? dataHoraDate.toLocaleTimeString("pt-BR", {
+                          hour: "2-digit",
+                          minute: "2-digit",
+                        })
+                      : "—"}
+                  </p>
+                </div>
 
                   <div className="flex">
                     <p className="font-medium mr-2">Área de atendimento:</p>
                     <p>{appointment.professional.healthSector || "—"}</p>
                   </div>
 
-                  <div className="flex">
-                    <p className="font-medium mr-2">Status:</p>
-                    <p
-                      className={`font-bold ${
-                        appointment.isActive ? "text-green-700" : "text-red-700"
-                      }`}
-                    >
-                      {appointment.isActive ? "Ativo" : "Não ativo"}
-                    </p>
-                  </div>
-                </div>
-
-                {/* LADO DIREITO */}
-                <div className="flex flex-col items-start w-1/3">
-                  <div className="flex items-center">
-                    <p className="font-medium mr-2">Período:</p>
-                    <p>
-                      {appointment.frequencyDays !== undefined
-                        ? `${appointment.frequencyDays} dias`
-                        : "—"}
-                    </p>
-                  </div>
-
-                  {/* Botão logo abaixo do período */}
-                  <div className="mt-2">
-                    <RegistrarFaltaButton />
-                  </div>
+                <div className="flex">
+                  <p className="font-medium mr-2">Status:</p>
+                  <p
+                    className={`font-bold ${
+                      appointment.isActive ? "text-green-700" : "text-red-700"
+                    }`}
+                  >
+                    {appointment.isActive ? "Ativo" : "Não ativo"}
+                  </p>
                 </div>
               </div>
+
+              {/* LADO DIREITO */}
+              <div className="flex flex-col items-start w-1/3">
+                <div className="flex items-center">
+                  <p className="font-medium mr-2">Período:</p>
+                  <p>
+                    {appointment.frequencyDays !== undefined
+                      ? `${appointment.frequencyDays} dias`
+                      : "—"}
+                  </p>
+                </div>
+
+                {/* Botão logo abaixo do período */}
+                <div className="mt-2">
+                  <RegistrarFaltaButton />
+                </div>
+              </div>
+            </div>
           </CardContent>
         </Card>
 
@@ -216,9 +216,9 @@ export default async function viewAppointment({ params }: PageProps) {
           </CardHeader>
           <CardContent>
             <div className="flex justify-between">
-                {/* Lado esquerdo */}
+              {/* Lado esquerdo */}
               <div className="flex flex-col gap-2">
-                  <div className="flex">
+                <div className="flex">
                   <p className="font-medium mr-2">Nome: </p>
                   <p>{appointment.professional.name || "—"}</p>
                 </div>
@@ -232,7 +232,7 @@ export default async function viewAppointment({ params }: PageProps) {
                 </div>
               </div>
 
-                {/* Lado direito */}
+              {/* Lado direito */}
               <div className="flex flex-col gap-2 w-1/3">
                 <div className="flex">
                   <p className="font-medium mr-2">Documento médico: </p>
@@ -262,7 +262,7 @@ export default async function viewAppointment({ params }: PageProps) {
             <div className="flex justify-between">
               {/* Lado esquerdo */}
               <div className="flex flex-col gap-2">
-              <div className="flex">
+                <div className="flex">
                   <p className="font-medium mr-2">Data de Nascimento: </p>
                   <p> { formatDatePTBR(patient.birthDate) } </p>
                 </div>
@@ -274,84 +274,112 @@ export default async function viewAppointment({ params }: PageProps) {
                   <p className="font-medium mr-2">RG: </p>
                   <p>{appointment.annualRegistration.patient.rg || "—"}</p>
                 </div>
-                
+
                 <div className="flex">
                   <p className="font-medium mr-2">Contato: </p>
                   <p>{appointment.annualRegistration.patient.contact || "—"}</p>
                 </div>
-            </div>
+              </div>
 
-            {/* Lado direito */}
-            <div className="flex flex-col gap-2 w-1/3">
+              {/* Lado direito */}
+              <div className="flex flex-col gap-2 w-1/3">
                 <div className="flex">
                   <p className="font-medium mr-2">NIS: </p>
                   <p>{appointment.annualRegistration.patient.nis || "—"}</p>
                 </div>
                 <div className="flex">
                   <p className="font-medium mr-2">Alergias: </p>
-                  <p>{appointment.annualRegistration.patient.allergies || "—"}</p>
+                  <p>
+                    {appointment.annualRegistration.patient.allergies || "—"}
+                  </p>
                 </div>
                 <div className="flex">
                   <p className="font-medium mr-2">Estudante: </p>
-                  <p>{appointment.annualRegistration.patient.isStudent ? "Sim" : "Não"}</p>
+                  <p>
+                    {appointment.annualRegistration.patient.isStudent
+                      ? "Sim"
+                      : "Não"}
+                  </p>
                 </div>
                 <div className="flex">
                   <p className="font-medium mr-2">Guardião: </p>
-                  <p>{appointment.annualRegistration.patient.guardian?.name || "Não possui"}</p>
+                  <p>
+                    {appointment.annualRegistration.patient.guardian?.name ||
+                      "Não possui"}
+                  </p>
                 </div>
+              </div>
             </div>
-          </div>
-        </CardContent>
-      </Card>
+          </CardContent>
+        </Card>
 
-          {/* Card dados residenciais */}
+        {/* Card dados residenciais */}
         <Card className="text-[#0D4F97] mb-4">
-            <CardHeader className="relative">
-              <CardTitle className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 font-bold text-center text-lg md:text-xl">
-                  Dados Residenciais
-                </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="flex justify-between">
-                    {/* Lado esquerdo */}
-                    <div className="flex flex-col gap-2">
-                        <div className="flex">
-                          <p className="font-medium mr-2">Endereço: </p>
-                          <p>{appointment.annualRegistration.patient.address?.street || "—"}</p>
-                        </div>
-                        <div className="flex">
-                          <p className="font-medium mr-2">Número da residência: </p>
-                          <p>{appointment.annualRegistration.patient.address?.number || "—"}</p>
-                          
-                        </div>
-                        <div className="flex">
-                          <p className="font-medium mr-2">Bairro: </p>
-                          <p>{appointment.annualRegistration.patient.address?.neighborhood || "—"}</p>
-                        </div>
-                        <div className="flex">
-                          <p className="font-medium mr-2">Cidade: </p>
-                          <p>{appointment.annualRegistration.patient.address?.city || "—"}</p>
-                        </div>
-                    </div>
-                    {/* Lado direito */}
-                    <div className="flex flex-col gap-2 w-1/3">
-                          <div className="flex">
-                            <p className="font-medium mr-2">Complemento: </p>
-                            <p>{appointment.annualRegistration.patient.address?.complement || "—"}</p>
-                          </div>
+          <CardHeader className="relative">
+            <CardTitle className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 font-bold text-center text-lg md:text-xl">
+              Dados Residenciais
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="flex justify-between">
+              {/* Lado esquerdo */}
+              <div className="flex flex-col gap-2">
+                <div className="flex">
+                  <p className="font-medium mr-2">Endereço: </p>
+                  <p>
+                    {appointment.annualRegistration.patient.address?.street ||
+                      "—"}
+                  </p>
+                </div>
+                <div className="flex">
+                  <p className="font-medium mr-2">Número da residência: </p>
+                  <p>
+                    {appointment.annualRegistration.patient.address?.number ||
+                      "—"}
+                  </p>
+                </div>
+                <div className="flex">
+                  <p className="font-medium mr-2">Bairro: </p>
+                  <p>
+                    {appointment.annualRegistration.patient.address
+                      ?.neighborhood || "—"}
+                  </p>
+                </div>
+                <div className="flex">
+                  <p className="font-medium mr-2">Cidade: </p>
+                  <p>
+                    {appointment.annualRegistration.patient.address?.city ||
+                      "—"}
+                  </p>
+                </div>
+              </div>
+              {/* Lado direito */}
+              <div className="flex flex-col gap-2 w-1/3">
+                <div className="flex">
+                  <p className="font-medium mr-2">Complemento: </p>
+                  <p>
+                    {appointment.annualRegistration.patient.address
+                      ?.complement || "—"}
+                  </p>
+                </div>
 
-                          <div className="flex">
-                            <p className="font-medium mr-2">CEP: </p>
-                            <p>{appointment.annualRegistration.patient.address?.cep || "—"}</p>
-                          </div>
+                <div className="flex">
+                  <p className="font-medium mr-2">CEP: </p>
+                  <p>
+                    {appointment.annualRegistration.patient.address?.cep || "—"}
+                  </p>
+                </div>
 
-                          <div className="flex">
-                            <p className="font-medium mr-2">Estado: </p>
-                            <p>{appointment.annualRegistration.patient.address?.state || "—"}</p>
-                          </div>
-                    </div>
-                  </div>
-                </CardContent>
+                <div className="flex">
+                  <p className="font-medium mr-2">Estado: </p>
+                  <p>
+                    {appointment.annualRegistration.patient.address?.state ||
+                      "—"}
+                  </p>
+                </div>
+              </div>
+            </div>
+          </CardContent>
         </Card>
       </main>
     </div>

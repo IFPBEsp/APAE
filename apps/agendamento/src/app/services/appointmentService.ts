@@ -12,65 +12,65 @@ const MOCK_DELAY = 500; // delay simulado em ms
 
 const mockPatients: Patient[] = [
   {
-    id: 'patient-1',
-    name: 'João',
-    fullName: 'João Silva Santos',
-    birthplace: 'São Paulo',
-    birthDate: '1990-05-10',
-    contact: '(11) 91234-5678',
-    birthCertificateNumber: '112233858000099999',
-    registryOffice: 'Cartório Silva',
-    fls: '4',
-    book: '1',
-    rg: '12.345.678-9',
-    issueDate: '2010-05-10',
-    issuingAgency: 'SSP-SP',
-    cpf: '123.456.789-00',
-    cns: '123456789012345',
-    nis: '12345678901',
-    registrationDate: '2020-05-10',
-    allergies: 'Dipirona, Penicilina',
+    id: "patient-1",
+    name: "João",
+    fullName: "João Silva Santos",
+    birthplace: "São Paulo",
+    birthDate: "1990-05-10",
+    contact: "(11) 91234-5678",
+    birthCertificateNumber: "112233858000099999",
+    registryOffice: "Cartório Silva",
+    fls: "4",
+    book: "1",
+    rg: "12.345.678-9",
+    issueDate: "2010-05-10",
+    issuingAgency: "SSP-SP",
+    cpf: "123.456.789-00",
+    cns: "123456789012345",
+    nis: "12345678901",
+    registrationDate: "2020-05-10",
+    allergies: "Dipirona, Penicilina",
     isStudent: false,
     address: {
-      id: 'address-1',
-      city: 'São Paulo',
-      cep: '01234-567',
-      state: 'SP',
-      neighborhood: 'Centro',
-      street: 'Rua das Flores',
-      number: '123',
-      complement: 'Apto 45',
+      id: "address-1",
+      city: "São Paulo",
+      cep: "01234-567",
+      state: "SP",
+      neighborhood: "Centro",
+      street: "Rua das Flores",
+      number: "123",
+      complement: "Apto 45",
     },
   },
   {
-    id: 'patient-2',
-    name: 'Maria',
-    fullName: 'Maria Oliveira Costa',
-    birthplace: 'Rio de Janeiro',
-    birthDate: '1985-08-15',
-    contact: '(21) 99876-5432',
-    birthCertificateNumber: '998877665500011111',
-    registryOffice: 'Cartório Central',
-    fls: '2',
-    book: '3',
-    rg: '98.765.432-1',
-    issueDate: '2005-08-15',
-    issuingAgency: 'SSP-RJ',
-    cpf: '987.654.321-00',
-    cns: '987654321098765',
-    nis: '98765432109',
-    registrationDate: '2019-03-20',
-    allergies: 'Nenhuma',
+    id: "patient-2",
+    name: "Maria",
+    fullName: "Maria Oliveira Costa",
+    birthplace: "Rio de Janeiro",
+    birthDate: "1985-08-15",
+    contact: "(21) 99876-5432",
+    birthCertificateNumber: "998877665500011111",
+    registryOffice: "Cartório Central",
+    fls: "2",
+    book: "3",
+    rg: "98.765.432-1",
+    issueDate: "2005-08-15",
+    issuingAgency: "SSP-RJ",
+    cpf: "987.654.321-00",
+    cns: "987654321098765",
+    nis: "98765432109",
+    registrationDate: "2019-03-20",
+    allergies: "Nenhuma",
     isStudent: true,
     address: {
-      id: 'address-2',
-      city: 'Rio de Janeiro',
-      cep: '22345-678',
-      state: 'RJ',
-      neighborhood: 'Copacabana',
-      street: 'Avenida Atlântica',
-      number: '456',
-      complement: 'Bloco B',
+      id: "address-2",
+      city: "Rio de Janeiro",
+      cep: "22345-678",
+      state: "RJ",
+      neighborhood: "Copacabana",
+      street: "Avenida Atlântica",
+      number: "456",
+      complement: "Bloco B",
     },
   },
 ];
@@ -85,14 +85,14 @@ const mockProfessionals: Professional[] = [
     name: 'Ana Fonseca',
     identityDocument: '11.223.344-5',
     address: {
-      id: 'address-prof-1',
-      city: 'São Paulo',
-      cep: '01234-000',
-      state: 'SP',
-      neighborhood: 'Centro',
-      street: 'Rua Augusta',
-      number: '789',
-      complement: 'Sala 501',
+      id: "address-prof-1",
+      city: "São Paulo",
+      cep: "01234-000",
+      state: "SP",
+      neighborhood: "Centro",
+      street: "Rua Augusta",
+      number: "789",
+      complement: "Sala 501",
     },
   },
   {
@@ -104,14 +104,14 @@ const mockProfessionals: Professional[] = [
     name: 'Carlos Mendes',
     identityDocument: '22.334.455-6',
     address: {
-      id: 'address-prof-2',
-      city: 'São Paulo',
-      cep: '01345-000',
-      state: 'SP',
-      neighborhood: 'Jardins',
-      street: 'Alameda Santos',
-      number: '1001',
-      complement: 'Conjunto 302',
+      id: "address-prof-2",
+      city: "São Paulo",
+      cep: "01345-000",
+      state: "SP",
+      neighborhood: "Jardins",
+      street: "Alameda Santos",
+      number: "1001",
+      complement: "Conjunto 302",
     },
   },
   {
@@ -123,35 +123,35 @@ const mockProfessionals: Professional[] = [
     name: 'Beatriz Lima',
     identityDocument: '33.445.566-7',
     address: {
-      id: 'address-prof-3',
-      city: 'São Paulo',
-      cep: '01456-000',
-      state: 'SP',
-      neighborhood: 'Moema',
-      street: 'Rua Groenlândia',
-      number: '200',
-      complement: 'Sala 101',
+      id: "address-prof-3",
+      city: "São Paulo",
+      cep: "01456-000",
+      state: "SP",
+      neighborhood: "Moema",
+      street: "Rua Groenlândia",
+      number: "200",
+      complement: "Sala 101",
     },
   },
 ];
 
 const mockAnnualRegistries: AnnualRegistry[] = [
   {
-    id: 'annual-1',
-    bpc: 'Sim',
-    diseases: 'Hipertensão, Diabetes',
+    id: "annual-1",
+    bpc: "Sim",
+    diseases: "Hipertensão, Diabetes",
     familyIncome: 2500.0,
-    year: '2024',
+    year: "2024",
     patient: mockPatients[0],
     disorders: { id: 'disorder-1', name: 'TEA' },
     endDate: '2024-12-31',
   },
   {
-    id: 'annual-2',
-    bpc: 'Não',
-    diseases: 'Ansiedade',
+    id: "annual-2",
+    bpc: "Não",
+    diseases: "Ansiedade",
     familyIncome: 1800.0,
-    year: '2024',
+    year: "2024",
     patient: mockPatients[1],
     disorders: { id: 'disorder-2', name: 'TDAH' },
     endDate: '2024-12-31',
@@ -165,11 +165,11 @@ const mockAppointments: AppointmentResponseDTO[] = [
     serviceId: 'service-1',
     annualRegistration: mockAnnualRegistries[0],
     frequencyDays: 15,
-    hour: '14:30:00',
-    initialDate: '2024-01-15',
-    endDate: '2024-12-31',
+    hour: "14:30:00",
+    initialDate: "2024-01-15",
+    endDate: "2024-12-31",
     isActive: true,
-    creationDate: '2024-01-01T10:00:00',
+    creationDate: "2024-01-01T10:00:00",
   },
   {
     id: 'appointment-2',
@@ -177,11 +177,11 @@ const mockAppointments: AppointmentResponseDTO[] = [
     serviceId: 'service-2',
     annualRegistration: mockAnnualRegistries[1],
     frequencyDays: 30,
-    hour: '09:00:00',
-    initialDate: '2024-01-20',
-    endDate: '2024-12-31',
+    hour: "09:00:00",
+    initialDate: "2024-01-20",
+    endDate: "2024-12-31",
     isActive: false,
-    creationDate: '2024-01-02T14:30:00',
+    creationDate: "2024-01-02T14:30:00",
   },
   {
     id: 'appointment-3',
@@ -189,36 +189,36 @@ const mockAppointments: AppointmentResponseDTO[] = [
     serviceId: 'service-3',
     annualRegistration: mockAnnualRegistries[0],
     frequencyDays: 7,
-    hour: '16:00:00',
-    initialDate: '2024-02-01',
-    endDate: '2024-06-30',
+    hour: "16:00:00",
+    initialDate: "2024-02-01",
+    endDate: "2024-06-30",
     isActive: true,
-    creationDate: '2024-01-15T09:00:00',
+    creationDate: "2024-01-15T09:00:00",
   },
 ];
 
 const mockGeneratedAppointments: GeneratedAppointmentResponseDTO[] = [
   {
-    id: 'generated-1',
-    appointmentId: 'appointment-1',
-    scheduledDateTime: '2024-01-15T14:30:00',
-    overriddenDateTime: '2024-01-15T15:00:00',
+    id: "generated-1",
+    appointmentId: "appointment-1",
+    scheduledDateTime: "2024-01-15T14:30:00",
+    overriddenDateTime: "2024-01-15T15:00:00",
     performed: true,
     cancelled: false,
-    cancellationReason: '',
-    patientId: 'patient-1',
-    effectiveDateTime: '2024-01-15T15:00:00',
+    cancellationReason: "",
+    patientId: "patient-1",
+    effectiveDateTime: "2024-01-15T15:00:00",
   },
   {
-    id: 'generated-2',
-    appointmentId: 'appointment-2',
-    scheduledDateTime: '2024-01-20T09:00:00',
-    overriddenDateTime: '2024-01-20T09:00:00',
+    id: "generated-2",
+    appointmentId: "appointment-2",
+    scheduledDateTime: "2024-01-20T09:00:00",
+    overriddenDateTime: "2024-01-20T09:00:00",
     performed: false,
     cancelled: false,
-    cancellationReason: '',
-    patientId: 'patient-2',
-    effectiveDateTime: '2024-01-20T09:00:00',
+    cancellationReason: "",
+    patientId: "patient-2",
+    effectiveDateTime: "2024-01-20T09:00:00",
   },
 ];
 
@@ -291,6 +291,14 @@ export interface GeneratedAppointmentResponseDTO {
   cancellationReason: string;
   patientId: UUID;
   effectiveDateTime: string;
+}
+
+export interface Absence {
+  id: UUID;
+  generatedAppointment?: GeneratedAppointment;
+  absenceDate: string;
+  justification: string;
+  notified: boolean;
 }
 
 export interface Patient {
@@ -389,10 +397,10 @@ const mockFetch = <T>(data: T, success: boolean = true): Promise<T> => {
   return new Promise((resolve, reject) => {
     setTimeout(() => {
       if (success) {
-        console.log('📦 [MOCK] Retornando dados mockados');
+        console.log("📦 [MOCK] Retornando dados mockados");
         resolve(data);
       } else {
-        reject(new Error('Erro simulado do mock'));
+        reject(new Error("Erro simulado do mock"));
       }
     }, MOCK_DELAY);
   });
@@ -407,7 +415,7 @@ const mockPage = <T>(content: T[]): Page<T> => ({
   first: true,
   last: true,
   empty: content.length === 0,
-  length: 0
+  length: 0,
 });
 
 // ========== FUNÇÕES PRINCIPAIS COM MOCK ==========
@@ -417,15 +425,15 @@ export async function saveAppointment(
   dto: CreateAppointmentDTO
 ): Promise<void> {
   if (USE_MOCK_DATA) {
-    console.log('📦 [MOCK] Criando agendamento:', dto);
+    console.log("📦 [MOCK] Criando agendamento:", dto);
     return mockFetch(undefined);
   }
 
   try {
     const res = await fetch(`${API_BASE_URL}/appointments`, {
-      method: 'POST',
+      method: "POST",
       headers: {
-        'Content-Type': 'application/json',
+        "Content-Type": "application/json",
       },
       body: JSON.stringify(dto),
     });
@@ -437,7 +445,7 @@ export async function saveAppointment(
       );
     }
   } catch (error) {
-    console.error('Error in saveAppointment, falling back to mock:', error);
+    console.error("Error in saveAppointment, falling back to mock:", error);
     return mockFetch(undefined);
   }
 }
@@ -455,13 +463,13 @@ export async function getAppointments(
     // Filtro por data
     if (date) {
       filteredAppointments = filteredAppointments.filter(
-        appointment => appointment.initialDate === date
+        (appointment) => appointment.initialDate === date
       );
     }
 
     // Filtro por hora
     if (time) {
-      filteredAppointments = filteredAppointments.filter(appointment =>
+      filteredAppointments = filteredAppointments.filter((appointment) =>
         appointment.hour.startsWith(time)
       );
     }
@@ -476,21 +484,21 @@ export async function getAppointments(
     });
 
     if (date) {
-      query.append('date', date);
+      query.append("date", date);
     }
     if (time) {
-      query.append('time', time);
+      query.append("time", time);
     }
 
     const response = await fetch(`${API_BASE_URL}/appointments?${query}`);
     if (!response.ok) {
-      throw new Error('Error searching for appointments');
+      throw new Error("Error searching for appointments");
     }
     const res = await response.json()
     console.log(res)
     return res;
   } catch (error) {
-    console.error('Error in getAppointments, falling back to mock:', error);
+    console.error("Error in getAppointments, falling back to mock:", error);
     return mockFetch(mockPage(mockAppointments));
   }
 }
@@ -501,20 +509,20 @@ export async function getAppointmentById(
 ): Promise<AppointmentResponseDTO> {
   if (USE_MOCK_DATA) {
     const appointment =
-      mockAppointments.find(a => a.id === id) || mockAppointments[0];
+      mockAppointments.find((a) => a.id === id) || mockAppointments[0];
     return mockFetch(appointment);
   }
 
   try {
     const response = await fetch(`${API_BASE_URL}/appointments/${id}`);
     if (!response.ok) {
-      throw new Error('Error fetching appointment');
+      throw new Error("Error fetching appointment");
     }
     return await response.json();
   } catch (error) {
-    console.error('Error in getAppointmentById, falling back to mock:', error);
+    console.error("Error in getAppointmentById, falling back to mock:", error);
     const appointment =
-      mockAppointments.find(a => a.id === id) || mockAppointments[0];
+      mockAppointments.find((a) => a.id === id) || mockAppointments[0];
     return mockFetch(appointment);
   }
 }
@@ -525,9 +533,9 @@ export async function updateAppointmentRule(
   dto: UpdateAppointmentRuleDTO
 ): Promise<AppointmentResponseDTO> {
   if (USE_MOCK_DATA) {
-    console.log('📦 [MOCK] Atualizando regra do agendamento:', id, dto);
+    console.log("📦 [MOCK] Atualizando regra do agendamento:", id, dto);
     const appointment =
-      mockAppointments.find(a => a.id === id) || mockAppointments[0];
+      mockAppointments.find((a) => a.id === id) || mockAppointments[0];
     const updatedAppointment = {
       ...appointment,
       frequencyDays: dto.newFrequency,
@@ -544,9 +552,9 @@ export async function updateAppointmentRule(
 
     console.log(backendDto)
     const response = await fetch(`${API_BASE_URL}/appointments/${id}/rule`, {
-      method: 'PATCH',
+      method: "PATCH",
       headers: {
-        'Content-Type': 'application/json',
+        "Content-Type": "application/json",
       },
       body: JSON.stringify(backendDto),
     });
@@ -561,11 +569,11 @@ export async function updateAppointmentRule(
     return await response.json();
   } catch (error) {
     console.error(
-      'Error in updateAppointmentRule, falling back to mock:',
+      "Error in updateAppointmentRule, falling back to mock:",
       error
     );
     const appointment =
-      mockAppointments.find(a => a.id === id) || mockAppointments[0];
+      mockAppointments.find((a) => a.id === id) || mockAppointments[0];
     return mockFetch(appointment);
   }
 }
@@ -573,20 +581,20 @@ export async function updateAppointmentRule(
 // Deletar agendamento
 export async function deleteAppointment(id: UUID): Promise<void> {
   if (USE_MOCK_DATA) {
-    console.log('📦 [MOCK] Deletando agendamento:', id);
+    console.log("📦 [MOCK] Deletando agendamento:", id);
     return mockFetch(undefined);
   }
 
   try {
     const response = await fetch(`${API_BASE_URL}/appointments/${id}`, {
-      method: 'DELETE',
+      method: "DELETE",
     });
 
     if (!response.ok) {
-      throw new Error('Error deleting appointment');
+      throw new Error("Error deleting appointment");
     }
   } catch (error) {
-    console.error('Error in deleteAppointment, falling back to mock:', error);
+    console.error("Error in deleteAppointment, falling back to mock:", error);
     return mockFetch(undefined);
   }
 }
@@ -597,9 +605,9 @@ export async function rescheduleGeneratedAppointment(
   dto: RescheduleGeneratedAppointmentDTO
 ): Promise<GeneratedAppointmentResponseDTO> {
   if (USE_MOCK_DATA) {
-    console.log('📦 [MOCK] Reagendando agendamento:', id, dto);
+    console.log("📦 [MOCK] Reagendando agendamento:", id, dto);
     const generatedAppointment =
-      mockGeneratedAppointments.find(g => g.id === id) ||
+      mockGeneratedAppointments.find((g) => g.id === id) ||
       mockGeneratedAppointments[0];
     const updatedAppointment = {
       ...generatedAppointment,
@@ -615,23 +623,23 @@ export async function rescheduleGeneratedAppointment(
     };
 
     const response = await fetch(`${API_BASE_URL}/generated/${id}/reschedule`, {
-      method: 'PUT',
-      headers: { 'Content-Type': 'application/json' },
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
       body: JSON.stringify(backendDto),
     });
 
     if (!response.ok) {
-      throw new Error('Error rescheduling appointment');
+      throw new Error("Error rescheduling appointment");
     }
 
     return await response.json();
   } catch (error) {
     console.error(
-      'Error in rescheduleGeneratedAppointment, falling back to mock:',
+      "Error in rescheduleGeneratedAppointment, falling back to mock:",
       error
     );
     const generatedAppointment =
-      mockGeneratedAppointments.find(g => g.id === id) ||
+      mockGeneratedAppointments.find((g) => g.id === id) ||
       mockGeneratedAppointments[0];
     return mockFetch(generatedAppointment);
   }
@@ -642,9 +650,9 @@ export async function markAsPerformed(
   id: UUID
 ): Promise<GeneratedAppointmentResponseDTO> {
   if (USE_MOCK_DATA) {
-    console.log('📦 [MOCK] Marcando como realizado:', id);
+    console.log("📦 [MOCK] Marcando como realizado:", id);
     const generatedAppointment =
-      mockGeneratedAppointments.find(g => g.id === id) ||
+      mockGeneratedAppointments.find((g) => g.id === id) ||
       mockGeneratedAppointments[0];
     const updatedAppointment = {
       ...generatedAppointment,
@@ -665,9 +673,9 @@ export async function markAsPerformed(
 
     return await response.json();
   } catch (error) {
-    console.error('Error in markAsPerformed, falling back to mock:', error);
+    console.error("Error in markAsPerformed, falling back to mock:", error);
     const generatedAppointment =
-      mockGeneratedAppointments.find(g => g.id === id) ||
+      mockGeneratedAppointments.find((g) => g.id === id) ||
       mockGeneratedAppointments[0];
     return mockFetch({ ...generatedAppointment, performed: true });
   }
@@ -679,9 +687,9 @@ export async function cancelGeneratedAppointment(
   dto: CancelGeneratedAppointmentDTO
 ): Promise<GeneratedAppointmentResponseDTO> {
   if (USE_MOCK_DATA) {
-    console.log('📦 [MOCK] Cancelando agendamento:', id, dto);
+    console.log("📦 [MOCK] Cancelando agendamento:", id, dto);
     const generatedAppointment =
-      mockGeneratedAppointments.find(g => g.id === id) ||
+      mockGeneratedAppointments.find((g) => g.id === id) ||
       mockGeneratedAppointments[0];
     const updatedAppointment = {
       ...generatedAppointment,
@@ -693,8 +701,8 @@ export async function cancelGeneratedAppointment(
 
   try {
     const response = await fetch(`${API_BASE_URL}/generated/${id}/cancel`, {
-      method: 'PUT',
-      headers: { 'Content-Type': 'application/json' },
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
       body: JSON.stringify(dto),
     });
 
@@ -702,11 +710,11 @@ export async function cancelGeneratedAppointment(
     return await response.json();
   } catch (error) {
     console.error(
-      'Error in cancelGeneratedAppointment, falling back to mock:',
+      "Error in cancelGeneratedAppointment, falling back to mock:",
       error
     );
     const generatedAppointment =
-      mockGeneratedAppointments.find(g => g.id === id) ||
+      mockGeneratedAppointments.find((g) => g.id === id) ||
       mockGeneratedAppointments[0];
     return mockFetch({
       ...generatedAppointment,
@@ -726,7 +734,7 @@ export async function listByPatient(
 ): Promise<Page<GeneratedAppointmentResponseDTO>> {
   if (USE_MOCK_DATA) {
     const patientAppointments = mockGeneratedAppointments.filter(
-      g => g.patientId === patientId
+      (g) => g.patientId === patientId
     );
     return mockFetch(mockPage(patientAppointments));
   }
@@ -738,23 +746,23 @@ export async function listByPatient(
     });
 
     if (start) {
-      query.append('start', start);
+      query.append("start", start);
     }
     if (end) {
-      query.append('end', end);
+      query.append("end", end);
     }
 
     const response = await fetch(
       `${API_BASE_URL}/appointments/patient/${patientId}?${query}`
     );
     if (!response.ok) {
-      throw new Error('Error searching for patient appointments');
+      throw new Error("Error searching for patient appointments");
     }
     return await response.json();
   } catch (error) {
-    console.error('Error in listByPatient, falling back to mock:', error);
+    console.error("Error in listByPatient, falling back to mock:", error);
     const patientAppointments = mockGeneratedAppointments.filter(
-      g => g.patientId === patientId
+      (g) => g.patientId === patientId
     );
     return mockFetch(mockPage(patientAppointments));
   }
@@ -767,14 +775,14 @@ export async function registerAbsence(
 ): Promise<Absence> {
   if (USE_MOCK_DATA) {
     console.log(
-      '📦 [MOCK] Registrando ausência:',
+      "📦 [MOCK] Registrando ausência:",
       generatedAppointmentId,
       justification
     );
     const mockAbsence: Absence = {
       id: `absence-${Date.now()}`,
       generatedAppointment: mockGeneratedAppointments.find(
-        g => g.id === generatedAppointmentId
+        (g) => g.id === generatedAppointmentId
       ),
       absenceDate: new Date().toISOString(),
       justification,
@@ -792,15 +800,15 @@ export async function registerAbsence(
     };
 
     const res = await fetch(`${API_BASE_URL}/absences`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
       body: JSON.stringify(body),
     });
 
     if (!res.ok) throw new Error(`Error registering absence`);
     return await res.json();
   } catch (error) {
-    console.error('Error in registerAbsence, falling back to mock:', error);
+    console.error("Error in registerAbsence, falling back to mock:", error);
     const mockAbsence: Absence = {
       id: `absence-${Date.now()}`,
       absenceDate: new Date().toISOString(),
@@ -824,7 +832,7 @@ export async function getPacientes(): Promise<Patient[]> {
     console.log(data)
     return data.content || [];
   } catch (error) {
-    console.error('Error in getPacientes, falling back to mock:', error);
+    console.error("Error in getPacientes, falling back to mock:", error);
     return mockFetch(mockPatients);
   }
 }
@@ -841,7 +849,7 @@ export async function getProfissionaisDaSaude(): Promise<Professional[]> {
     const data = await response.json();
     return data.content || [];
   } catch (error) {
-    console.error('Error fetching professionals:', error);
+    console.error("Error fetching professionals:", error);
     return mockFetch(mockProfessionals);
   }
 }
@@ -851,7 +859,7 @@ export async function getProfissionalDaSaude(
 ): Promise<Professional> {
   if (USE_MOCK_DATA) {
     const professional =
-      mockProfessionals.find(p => p.id === id) || mockProfessionals[0];
+      mockProfessionals.find((p) => p.id === id) || mockProfessionals[0];
     return mockFetch(professional);
   }
 
@@ -864,7 +872,7 @@ export async function getProfissionalDaSaude(
   } catch (error) {
     console.error(`Error fetching professional with ID ${id}:`, error);
     const professional =
-      mockProfessionals.find(p => p.id === id) || mockProfessionals[0];
+      mockProfessionals.find((p) => p.id === id) || mockProfessionals[0];
     return mockFetch(professional);
   }
 }
@@ -889,7 +897,7 @@ export async function getAreasDaSaude(): Promise<string[]> {
 // Toggle confirmação (reativar agendamento)
 export const toggleConfirmacao = async (id: UUID) => {
   if (USE_MOCK_DATA) {
-    console.log('📦 [MOCK] Confirmando agendamento:', id);
+    console.log("📦 [MOCK] Confirmando agendamento:", id);
     return mockFetch(undefined);
   }
 
@@ -906,13 +914,13 @@ export const toggleConfirmacao = async (id: UUID) => {
       patientId: appointment.annualRegistration.patient.id,
       frequencyDays: appointment.frequencyDays,
       initialDate: appointment.initialDate,
-      hour: appointment.hour.replace(':00', ''),
+      hour: appointment.hour.replace(":00", ""),
     };
 
     await saveAppointment(dto);
-    console.log('Appointment confirmed successfully');
+    console.log("Appointment confirmed successfully");
   } catch (error) {
-    console.error('Error in toggleConfirmacao, falling back to mock:', error);
+    console.error("Error in toggleConfirmacao, falling back to mock:", error);
     return mockFetch(undefined);
   }
 };

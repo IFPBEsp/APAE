@@ -5,10 +5,7 @@ import { InfoCard } from "@/components/shared/InfoCard";
 import { Users, SearchIcon, Calendar } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import {
-  getPatientsWithAbsences,
-  getAbsenceStatistics,
-} from "@/app/services/absenceService";
+import AbsenceService from "@/app/services/absenceService";
 import { PatientWithAbsences } from "@/types/absence";
 
 interface PaginationInfo {
@@ -32,7 +29,7 @@ export default function AbsenceDetails() {
     currentPage: 1,
     totalPages: 1,
     totalItems: 0,
-    itemsPerPage: 5,
+    itemsPerPage: 6,
   });
   const [statistics, setStatistics] = useState({
     totalPatients: 0,
@@ -46,8 +43,8 @@ export default function AbsenceDetails() {
         setLoading(true);
 
         const [absencesData, statsData] = await Promise.all([
-          getPatientsWithAbsences(3),
-          getAbsenceStatistics(),
+          AbsenceService.getPatientsWithAbsences(3),
+          AbsenceService.getAbsenceStatistics(),
         ]);
 
         setPatientsWithAbsences(absencesData);
@@ -268,22 +265,15 @@ export default function AbsenceDetails() {
                                           <div className="flex items-center gap-4">
                                             <Calendar className="h-4 w-4 text-red-500" />
                                             <span className="font-medium">
-                                              {formatDate(
-                                                absence.scheduledDateTime
-                                              )}
-                                            </span>
-                                            <span className="text-gray-500">
-                                              {formatTime(
-                                                absence.effectiveDateTime
-                                              )}
+                                              {formatDate(absence.absenceDate)}
                                             </span>
                                           </div>
-                                          {absence.cancellationReason && (
+                                          {absence.justification && (
                                             <div className="text-sm text-gray-600 max-w-md">
                                               <span className="font-medium">
                                                 Justificativa:{" "}
                                               </span>
-                                              {absence.cancellationReason}
+                                              {absence.justification}
                                             </div>
                                           )}
                                         </div>

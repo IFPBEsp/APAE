@@ -1,4 +1,4 @@
-'use client';
+"use client";
 
 import { Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -13,9 +13,14 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from '../ui/dialog';
+} from "../ui/dialog";
 
-export default function TrashButton({ id }: { id: string, realizado: boolean }) {
+export default function TrashButton({
+  id,
+}: {
+  id: string;
+  realizado: boolean;
+}) {
   const router = useRouter();
 
   const deletarAgendamento = async () => {
