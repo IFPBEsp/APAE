@@ -13,7 +13,6 @@ import br.org.apae.api.common.dto.appointment.response.appointment.TodayAppointm
 import br.org.apae.api.common.dto.disorder.response.DisorderResponseDTO;
 import br.org.apae.api.common.dto.patient.response.PatientResponseDTO;
 import br.org.apae.api.common.dto.professional.response.HealthProfessionalResponseDTO;
-import br.org.apae.api.patient.application.mappers.PatientMapper;
 import br.org.apae.api.patient.domain.model.AnnualRegistry;
 import br.org.apae.api.patient.domain.model.Patient;
 import br.org.apae.api.professional.domain.model.HealthProfessional;
@@ -113,6 +112,7 @@ public class AppointmentMapper {
     Patient patient = appointment.getAnnualRegistration().getPatient();
     HealthProfessional professional = appointment.getProfessional();
     return new TodayAppointmentsResponseDTO(
+        generatedAppointment.getId(),
         new PatientResponseDTO(patient),
         new HealthProfessionalResponseDTO(professional),
         generatedAppointment.getScheduledDateTime(),

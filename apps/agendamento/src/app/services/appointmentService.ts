@@ -655,8 +655,8 @@ export async function markAsPerformed(
   }
 
   try {
-    const response = await fetch(`${API_BASE_URL}/generated/${id}/performed`, {
-      method: 'PUT',
+    const response = await fetch(`${API_BASE_URL}/appointments/generated/${id}/performed`, {
+      method: 'PATCH',
     });
 
     if (!response.ok) {

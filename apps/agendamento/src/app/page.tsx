@@ -40,9 +40,10 @@ import {
 import { AppointmentForm } from "@/components/forms/AppointmentForm";
 import { InfoCard } from "@/components/shared/InfoCard";
 import Link from "next/link";
-import { listTodayAppointment, toggleConfirmacao } from "./services/appointmentService";
+import { listTodayAppointment, markAsPerformed, toggleConfirmacao, UUID } from "./services/appointmentService";
 import { Page } from '@/types/pagination';
 import { TodayAppointment } from '@/types/appointment';
+import { Checkbox } from '@/components/ui/checkbox';
 
 export default function DashboardPage() {
   const [selectedDate, setSelectedDate] = useState<Date>(new Date());
@@ -57,10 +58,10 @@ export default function DashboardPage() {
     fetchAppointments();
   }, [selectedDate]);
 
-  const confirmarAppointment = async (id: string) => {
-    await toggleConfirmacao(id);
-    fetchAppointments();
-  };
+  const markAsPerformedHandle = async (id: UUID) => {
+    await markAsPerformed(id);
+    window.location.reload();
+  }
 
   return (
     <div className="min-h-screen w-full text-sm overflow-x-hidden">
@@ -176,7 +177,7 @@ export default function DashboardPage() {
                     Ações
                   </TableHead>
                   <TableHead className="px-3 py-2 text-xs text-[#0D4F97] sm:px-4 sm:py-3 sm:text-sm">
-                    Confirmada
+                    Realizada
                   </TableHead>
                 </TableRow>
               </TableHeader>
@@ -207,12 +208,12 @@ export default function DashboardPage() {
                         Detalhes
                       </Link>
                     </TableCell>
-                    {/* <TableCell className="px-3 py-2 text-xs sm:px-4 sm:py-3 sm:text-sm">
+                    <TableCell className="px-3 py-2 text-xs sm:px-4 sm:py-3 sm:text-sm">
                       <Checkbox
-                          checked={item.isActive}
-                          onCheckedChange={() => confirmarAgendamento(item.id)}
+                          checked={item.performed}
+                          onCheckedChange={() => markAsPerformedHandle(item.id)}
                       />
-                    </TableCell> */}
+                    </TableCell> 
                   </TableRow>
                 ))}
               </TableBody>
