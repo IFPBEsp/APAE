@@ -1,35 +1,31 @@
-import { GeneratedAppointment, Patient, UUID } from "@/app/services/appointmentService";
+import { UUID } from "@/app/services/appointmentService";
 
-
-export interface PatientHistoryEntry {
-  id: UUID;
-  scheduledDateTime: string;
-  effectiveDateTime: string;
-  performed: boolean;
-  cancelled: boolean;
-  cancellationReason?: string;
-  appointmentId: UUID;
-  patientId: UUID;
+export interface CreateAbsenceDTO {
+  generatedAppointmentId: UUID;
+  absenceDate: string;
+  justification: string;
 }
 
-export interface PatientHistory {
-  patient: Patient;
-  appointments: PatientHistoryEntry[];
-  absenceCount: number;
-  lastAbsenceDate?: string;
+export interface AbsenceResponseDTO {
+  id: UUID;
+  generatedAppointmentId: UUID;
+  patientId: UUID;
+  professionalId: UUID;
+  absenceDate: string;
+  justification: string;
+  notified: boolean;
+}
+
+export interface Patient {
+  id: UUID;
+  name: string;
+  contact: string;
+  birthDate: string;
 }
 
 export interface PatientWithAbsences {
   patient: Patient;
   absenceCount: number;
   lastAbsenceDate: string;
-  absences: PatientHistoryEntry[];
-}
-
-export interface Absence {
-  id: UUID;
-  generatedAppointment?: GeneratedAppointment;
-  absenceDate: string;
-  justification: string;
-  notified: boolean;
+  absences: AbsenceResponseDTO[];
 }
