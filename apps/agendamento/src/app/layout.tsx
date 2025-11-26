@@ -3,6 +3,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/sidebar/sidebar";
 import "./globals.css";
+import ToastProvider from "@/components/shared/ToastProvider";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -29,11 +30,11 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased bg-white`}
       >
-        <SidebarProvider>
-          <AppSidebar />
-            <SidebarTrigger/>
-            {children}
-        </SidebarProvider>
+          <SidebarProvider>
+            <AppSidebar />
+              <SidebarTrigger/>
+              <ToastProvider>{children}</ToastProvider>
+          </SidebarProvider>
       </body>
     </html>
   );
