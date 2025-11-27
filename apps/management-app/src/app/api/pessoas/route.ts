@@ -71,6 +71,8 @@ export async function POST(req: Request) {
   } catch (error) {
     console.error(error);
 
+    console.log(error.response);
+
     if (error instanceof AxiosError && error.response) {
       return NextResponse.json(
         { message: error.response.data?.message || "Erro ao cadastrar" },
