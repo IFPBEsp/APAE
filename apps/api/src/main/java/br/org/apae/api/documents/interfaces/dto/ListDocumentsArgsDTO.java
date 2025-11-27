@@ -47,10 +47,10 @@ public record ListDocumentsArgsDTO(
             Optional.ofNullable(owner)
                     .orElseThrow(InsufficientDataException::new);
             Optional.ofNullable(year)
-                    .ifPresent((year) -> Optional.ofNullable(category)
+                    .ifPresent(presentYear -> Optional.ofNullable(category)
                             .orElseThrow(InsufficientDataException::new));
             Optional.ofNullable(type)
-                    .ifPresent((type) -> Optional.ofNullable(year)
+                    .ifPresent(presentType -> Optional.ofNullable(year)
                             .orElseThrow(InsufficientDataException::new));
 
             return new ListDocumentsArgsDTO(
