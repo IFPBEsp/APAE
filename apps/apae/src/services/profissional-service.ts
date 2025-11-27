@@ -3,7 +3,11 @@ import { getApiBaseUrl } from "@/lib/client-service";
 const API_URL = getApiBaseUrl();
 
 export async function getAllProfissionais() {
+<<<<<<< Updated upstream:apps/agendamento/src/services/profissional-service.ts
   const response = await fetch(API_URL + "/profissionais", { method: "GET" });
+=======
+  const response = await fetch(API_URL + "/professionals", { method: "GET" });
+>>>>>>> Stashed changes:apps/apae/src/services/profissional-service.ts
   return response;
 }
 
