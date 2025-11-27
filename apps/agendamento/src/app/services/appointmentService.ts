@@ -1,4 +1,3 @@
-import { Absence } from '@/types/absence';
 import { TodayAppointment } from '@/types/appointment';
 import { Page } from '@/types/pagination';
 

@@ -1,17 +1,22 @@
 'use client';
 
-import { useEffect, useState } from 'react';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import {
   CalendarDays,
-  Users,
-  MessageCircleWarning,
-  CalendarX,
+  Users
 } from 'lucide-react';
+import { useEffect, useState } from 'react';
 
+import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import { Calendar } from '@/components/ui/calendar';
 import { Card, CardContent } from '@/components/ui/card';
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from '@/components/ui/popover';
 import {
   Table,
   TableBody,
@@ -20,42 +25,43 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
-import { Calendar } from '@/components/ui/calendar';
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from '@/components/ui/popover';
-import { Badge } from '@/components/ui/badge';
 
 import {
   Dialog,
   DialogContent,
+  DialogDescription,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-  DialogDescription,
 } from '@/components/ui/dialog';
 
 import { AppointmentForm } from "@/components/forms/AppointmentForm";
 import { InfoCard } from "@/components/shared/InfoCard";
-import Link from "next/link";
-import { listTodayAppointment, markAsPerformed, toggleConfirmacao, UUID } from "./services/appointmentService";
-import { Page } from '@/types/pagination';
-import { TodayAppointment } from '@/types/appointment';
 import { Checkbox } from '@/components/ui/checkbox';
+import { TodayAppointment } from '@/types/appointment';
+import { Page } from '@/types/pagination';
+import Link from "next/link";
+import { getAppointments, listTodayAppointment, markAsPerformed, UUID, type AppointmentResponseDTO } from "./services/appointmentService";
 
 export default function DashboardPage() {
   const [selectedDate, setSelectedDate] = useState<Date>(new Date());
-  const [appointments, setAppointments] = useState<TodayAppointment[]>([]);
-  
-  const fetchAppointments = async () => {
-    const todayAppointments: Page<TodayAppointment> = await listTodayAppointment();
-    setAppointments(todayAppointments.content)
+  const [todayAppointments, setTodayAppointments] = useState<TodayAppointment[]>([]);
+
+  const [allAppointments, setAllAppointments] = useState<AppointmentResponseDTO[]>([]);
+
+  const fetchTodayAppointments = async () => {
+    const todayAppointmentsPage: Page<TodayAppointment> = await listTodayAppointment();
+    setTodayAppointments(todayAppointmentsPage.content);
+  };
+
+  const fetchAllAppointments = async () => {
+    const allAppointmentsPage: Page<AppointmentResponseDTO> = await getAppointments();
+    setAllAppointments(allAppointmentsPage.content);
   };
 
   useEffect(() => {
-    fetchAppointments();
+    fetchTodayAppointments();
+    fetchAllAppointments();
   }, [selectedDate]);
 
   const markAsPerformedHandle = async (id: UUID) => {
@@ -124,11 +130,11 @@ export default function DashboardPage() {
           <InfoCard
             title="Agendados pra hoje"
             icon={Users}
-            value={appointments.length}
+            value={todayAppointments.length}
             subtitle={`${
-              appointments.length
+              todayAppointments.length
             } confirmados, ${
-              appointments.length
+              todayAppointments.length
             } pendentes`}
             titleClassName="text-[#0D4F97]"
             valueClassName="text-[#0D4F97]"
@@ -136,24 +142,7 @@ export default function DashboardPage() {
           <InfoCard
             title="Todos os agendamentos"
             icon={Users}
-            value={10}
-            titleClassName="text-[#0D4F97]"
-            valueClassName="text-[#0D4F97]"
-          />
-          <InfoCard
-            title="Sem justificativa"
-            icon={MessageCircleWarning}
-            value={10}
-            iconColor="text-red-400"
-            subtitle="Pacientes que não justificaram suas faltas"
-            titleClassName="text-[#0D4F97]"
-            valueClassName="text-[#0D4F97]"
-          />
-          <InfoCard
-            title="Não confirmados"
-            icon={CalendarX}
-            value={10}
-            subtitle="Consultas que não foram confirmadas"
+            value={allAppointments.length}
             titleClassName="text-[#0D4F97]"
             valueClassName="text-[#0D4F97]"
           />
@@ -182,7 +171,7 @@ export default function DashboardPage() {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {appointments.map((item, index) => (
+                {todayAppointments.map((item, index) => (
                   <TableRow key={index}>
                     <TableCell className="px-3 py-2 text-xs sm:px-4 sm:py-3 sm:text-sm">
                       {item.patient.fullName}
@@ -202,7 +191,7 @@ export default function DashboardPage() {
                     </TableCell>
                     <TableCell className="px-3 py-2">
                       <Link
-                        href={`/agendamentos/${item.ruleId}`}
+                        href={`/agendamentos/${item.id}`}
                         className="cursor-pointer text-xs text-blue-800 underline hover:underline sm:text-sm"
                       >
                         Detalhes

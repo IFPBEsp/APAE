@@ -1,15 +1,20 @@
 'use client';
 
-import { useState, useEffect } from 'react';
 import {
   CalendarDays,
-  CalendarX,
   SearchIcon,
-  Users,
+  Users
 } from 'lucide-react';
+import { useEffect, useState } from 'react';
 
 import { Button } from '@/components/ui/button';
+import { Calendar } from '@/components/ui/calendar';
 import { Card, CardContent } from '@/components/ui/card';
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from '@/components/ui/popover';
 import {
   Table,
   TableBody,
@@ -18,29 +23,9 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
-import { Calendar } from '@/components/ui/calendar';
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from '@/components/ui/popover';
 
+import { AppointmentForm } from '@/components/forms/AppointmentForm';
 import { InfoCard } from '@/components/shared/InfoCard';
-import { Input } from '@/components/ui/input';
-import { Select, SelectItem } from '@/components/ui/select';
-import {
-  SelectContent,
-  SelectGroup,
-  SelectLabel,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
-import {
-  Appointment,
-  getAppointments,
-  getAreasDaSaude,
-} from "../services/appointmentService";
-import Link from "next/link";
 import {
   Dialog,
   DialogContent,
@@ -49,9 +34,21 @@ import {
   DialogTitle,
   DialogTrigger,
 } from '@/components/ui/dialog';
-import { AppointmentForm } from '@/components/forms/AppointmentForm';
-import { ptBR } from 'date-fns/locale';
+import { Input } from '@/components/ui/input';
+import {
+  Select, SelectContent,
+  SelectGroup, SelectItem, SelectLabel,
+  SelectTrigger,
+  SelectValue
+} from '@/components/ui/select';
 import { formatDatePTBR } from '@/lib/utils';
+import { ptBR } from 'date-fns/locale';
+import Link from "next/link";
+import {
+  Appointment,
+  getAppointments,
+  getAreasDaSaude,
+} from "../services/appointmentService";
 
 type Area = {
   id: number;
@@ -147,15 +144,6 @@ export default function AllApointments() {
             title="Todos os agendamentos"
             icon={Users}
             value={appointments.length}
-            titleClassName="text-[#0D4F97]"
-            valueClassName="text-[#0D4F97]"
-          />
-
-          <InfoCard
-            title="Não confirmados"
-            icon={CalendarX}
-            value={ appointments.filter((appointment) => !appointment.isActive).length }
-            subtitle="Consultas que não foram confirmadas"
             titleClassName="text-[#0D4F97]"
             valueClassName="text-[#0D4F97]"
           />

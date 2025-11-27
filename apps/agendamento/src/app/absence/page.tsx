@@ -1,12 +1,12 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { InfoCard } from "@/components/shared/InfoCard";
-import { Users, SearchIcon, Calendar } from "lucide-react";
-import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
 import AbsenceService from "@/app/services/absenceService";
+import { InfoCard } from "@/components/shared/InfoCard";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { PatientWithAbsences } from "@/types/absence";
+import { Calendar, SearchIcon, Users } from "lucide-react";
+import { useEffect, useState } from "react";
 
 interface PaginationInfo {
   currentPage: number;
@@ -46,6 +46,8 @@ export default function AbsenceDetails() {
           AbsenceService.getPatientsWithAbsences(3),
           AbsenceService.getAbsenceStatistics(),
         ]);
+
+        console.dir(absencesData, {depht: null})
 
         setPatientsWithAbsences(absencesData);
         setFilteredPatients(absencesData);
@@ -87,8 +89,11 @@ export default function AbsenceDetails() {
   );
 
   const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString("pt-BR");
-  };
+
+  return new Date(dateString + "Z").toLocaleDateString("pt-BR", {
+    timeZone: "UTC",
+  });
+};
 
   const formatTime = (timeString: string) => {
     return timeString.substring(0, 5);

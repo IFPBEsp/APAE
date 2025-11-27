@@ -1,78 +1,111 @@
 "use client";
 
-import { useState } from "react";
+import AbsenceService from "@/app/services/absenceService";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
-  DialogTrigger,
+  DialogClose,
   DialogContent,
+  DialogDescription,
+  DialogFooter,
   DialogHeader,
   DialogTitle,
-  DialogDescription,
+  DialogTrigger,
 } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { DialogClose } from "@radix-ui/react-dialog";
+import { useState } from "react";
 
-export function RegistrarFaltaButton() {
+interface RegistrarFaltaButtonProps {
+  generatedAppointmentId: string;
+  absenceDate: string;
+}
+
+export function RegistrarFaltaButton({
+  generatedAppointmentId,
+  absenceDate,
+}: RegistrarFaltaButtonProps) {
   const [motivo, setMotivo] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+  const [open, setOpen] = useState(false); // controla abertura do dialog
 
-  const handleConfirm = () => {
-    console.log("Motivo da falta:", motivo);
+  const handleConfirm = async () => {
+    if (!motivo.trim()) {
+      return;
+    }
+
+    setIsLoading(true);
+
+    try {
+      const dto = {
+        generatedAppointmentId,
+        absenceDate,
+        justification: motivo.trim(),
+      };
+
+      await AbsenceService.registerAbsence(dto);
+      setMotivo("");
+      setOpen(false);
+    } catch (error: any) {
+      console.error("Erro ao registrar falta:", error);
+
+      const message =
+        error.message?.includes("Já existe uma falta")
+          ? "Esta consulta já possui uma falta registrada."
+          : error.message || "Erro ao registrar a falta. Tente novamente.";
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
-    <Dialog>
-
+    <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
         <Button
-          className="bg-[#0D4F97] hover:bg-[#0b417f] text-white font-semibold px-4 py-2 rounded-md w-fit"
+          className="bg-[#0D4F97] hover:bg-[#0b417f] text-white font-semibold px-4 py-2 rounded-md text-sm"
+          size="sm"
         >
           Registrar falta
         </Button>
       </DialogTrigger>
 
-      <DialogContent className="w-full sm:max-w-[425px]">
+      <DialogContent className="sm:max-w-[500px]">
         <DialogHeader>
-          <DialogTitle>Registrar falta</DialogTitle>
+          <DialogTitle>Registrar Falta</DialogTitle>
           <DialogDescription>
-            Descreva o motivo da falta e confirme o registro.
+            Confirme o registro da falta para o agendamento.
           </DialogDescription>
         </DialogHeader>
 
-        {/* Campo de texto para o motivo */}
-        <div className="mt-4">
-          <Label htmlFor="motivo" className="font-medium">
-            Motivo da falta
-          </Label>
-          <Textarea
-            id="motivo"
-            placeholder="Digite o motivo da falta..."
-            value={motivo}
-            onChange={(e) => setMotivo(e.target.value)}
-            className="mt-2"
-          />
+        <div className="grid gap-4 py-4">
+          <div className="space-y-2">
+            <Label htmlFor="motivo">Motivo da falta</Label>
+            <Textarea
+              id="motivo"
+              placeholder="Ex: Paciente não compareceu, problema de saúde, esquecimento..."
+              value={motivo}
+              onChange={(e) => setMotivo(e.target.value)}
+              className="min-h-[100px] resize-none"
+              disabled={isLoading}
+            />
+          </div>
         </div>
 
-        {/* Botões de ação */}
-        <div className="flex justify-end gap-3 mt-6">
+        <DialogFooter className="flex gap-3 sm:justify-end">
           <DialogClose asChild>
-            <Button
-              variant="outline"
-              className="border-[#0D4F97] text-[#0D4F97] hover:bg-[#E6F0FA]"
-            >
+            <Button variant="outline" disabled={isLoading}>
               Cancelar
             </Button>
           </DialogClose>
 
-          {/* CONFIRMAR */}
           <Button
-            className="bg-[#0D4F97] hover:bg-[#0b417f] text-white font-semibold"
             onClick={handleConfirm}
+            disabled={isLoading || !motivo.trim()}
+            className="bg-[#0D4F97] hover:bg-[#0b417f] text-white"
           >
-            Confirmar
+            {isLoading ? "Registrando..." : "Confirmar Falta"}
           </Button>
-        </div>
+        </DialogFooter>
       </DialogContent>
     </Dialog>
   );

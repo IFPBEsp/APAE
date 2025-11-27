@@ -1,6 +1,6 @@
-import { format } from "date-fns";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import {
   Card,
   CardAction,
@@ -11,23 +11,22 @@ import {
 import {
   Dialog,
   DialogContent,
+  DialogDescription,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-  DialogDescription,
 } from "@/components/ui/dialog";
+import { format } from "date-fns";
 import { Pencil } from "lucide-react";
-import { Button } from "@/components/ui/button";
 
 import {
-  getAppointmentById,
   Appointment,
+  getAppointmentById,
 } from "@/app/services/appointmentService";
-import { AppointmentForm } from "@/components/forms/AppointmentForm";
-import TrashButton from "@/components/buttons/trashButton";
-import { formatDatePTBR, separaETransformaEmNumero } from "@/lib/utils";
 import { RegistrarFaltaButton } from "@/components/buttons/RegistrarFaltaButton";
-import { da, ptBR } from "date-fns/locale";
+import TrashButton from "@/components/buttons/trashButton";
+import { AppointmentForm } from "@/components/forms/AppointmentForm";
+import { formatDatePTBR, separaETransformaEmNumero } from "@/lib/utils";
 
 interface PageProps {
   params: {
@@ -200,7 +199,7 @@ export default async function viewAppointment({ params }: PageProps) {
 
                 {/* Botão logo abaixo do período */}
                 <div className="mt-2">
-                  <RegistrarFaltaButton />
+                  <RegistrarFaltaButton generatedAppointmentId={id} absenceDate={format(new Date(), "yyyy-MM-dd")}/>
                 </div>
               </div>
             </div>
