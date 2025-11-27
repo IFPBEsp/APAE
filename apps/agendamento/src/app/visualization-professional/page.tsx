@@ -73,15 +73,15 @@ export default function VisualizationProfessionalPage() {
 
   const filteredProfissionais = profissionais.filter((prof) => {
     const matchesSearch =
-      prof.nome.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      prof.docProfissional.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesArea = areaFilter === "all" || prof.areaDaSaude === areaFilter;
+      prof.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      prof.professionalDocument.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesArea = areaFilter === "all" || prof.healthSector === areaFilter;
     return matchesSearch && matchesArea;
   });
 
   const uniqueAreas = [
     "all",
-    ...Array.from(new Set(profissionais.map((p) => p.areaDaSaude))),
+    ...Array.from(new Set(profissionais.map((p) => p.healthSector))),
   ];
 
   return (
@@ -147,11 +147,11 @@ export default function VisualizationProfessionalPage() {
                 {filteredProfissionais.length > 0 ? (
                   filteredProfissionais.map((prof) => (
                     <TableRow key={prof.id}>
-                      <TableCell className="font-medium">{prof.nome}</TableCell>
-                      <TableCell>{prof.docProfissional}</TableCell>
-                      <TableCell>{prof.areaDaSaude}</TableCell>
+                      <TableCell className="font-medium">{prof.name}</TableCell>
+                      <TableCell>{prof.professionalDocument}</TableCell>
+                      <TableCell>{prof.healthSector}</TableCell>
                       <TableCell className="hidden md:table-cell">
-                        {prof.telefone}
+                        {prof.phoneNumber}
                       </TableCell>
                       <TableCell className="text-right">
                         <AlertDialog>
@@ -196,7 +196,7 @@ export default function VisualizationProfessionalPage() {
                                 Esta ação não pode ser desfeita. Isso irá
                                 excluir permanentemente o profissional{" "}
                                 <strong className="font-medium">
-                                  {prof.nome}
+                                  {prof.name}
                                 </strong>
                                 .
                               </AlertDialogDescription>

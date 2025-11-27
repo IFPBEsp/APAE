@@ -69,19 +69,19 @@ export default function AtualizarProfissional(): JSX.Element {
     if (!profissional) return;
 
     form.reset({
-      nomeCompleto: profissional.nome,
+      nomeCompleto: profissional.name,
       email: profissional.email,
-      documentoProfissional: profissional.docProfissional,
-      areaSaude: profissional.areaDaSaude,
-      telefone: profissional.telefone,
-      rg: profissional.rg,
-      estado: profissional.endereco.estado,
-      cidade: profissional.endereco.cidade,
-      bairro: profissional.endereco.bairro,
-      rua: profissional.endereco.rua,
-      numero: profissional.endereco.numero,
-      complemento: profissional.endereco.complemento,
-      cep: profissional.endereco.cep,
+      documentoProfissional: profissional.professionalDocument,
+      areaSaude: profissional.healthSector,
+      telefone: profissional.phoneNumber,
+      rg: profissional.identityDocument,
+      estado: profissional.address.state,
+      cidade: profissional.address.city,
+      bairro: profissional.address.neighborhood,
+      rua: profissional.address.street,
+      numero: profissional.address.number,
+      complemento: profissional.address.complement,
+      cep: profissional.address.cep,
     });
   }, [profissional, form]);
 
@@ -90,19 +90,19 @@ export default function AtualizarProfissional(): JSX.Element {
     if (!profissional?.id) return;
 
     const payload = {
-      nome: values.nomeCompleto.trim(),
+      name: values.nomeCompleto.trim(),
       email: values.email.trim(),
-      docProfissional: values.documentoProfissional.trim(),
-      areaDaSaude: values.areaSaude,
-      telefone: values.telefone,
-      rg: values.rg.trim(),
-      endereco: {
-        estado: values.estado,
-        cidade: values.cidade.trim(),
-        bairro: values.bairro.trim(),
-        rua: values.rua.trim(),
-        numero: values.numero?.trim(),
-        complemento: values.complemento?.trim(),
+      professionalDocument: values.documentoProfissional.trim(),
+      healthSector: values.areaSaude,
+      phoneNumber: values.telefone,
+      identityDocument: values.rg.trim(),
+      address: {
+        state: values.estado,
+        city: values.cidade.trim(),
+        neighborhood: values.bairro.trim(),
+        street: values.rua.trim(),
+        number: values.numero?.trim(),
+        complement: values.complemento?.trim(),
         cep: values.cep,
       },
     };

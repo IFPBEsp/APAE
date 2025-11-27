@@ -70,20 +70,20 @@ export default function CadastroProfissional(): JSX.Element {
 
   const onSubmit: SubmitHandler<CadastroFormValues> = async (values) => {
     const payload = {
-      nome: values.nomeCompleto.trim(),
+      healthSector: values.areaSaude,
+      phoneNumber: values.telefone,
+      professionalDocument: values.documentoProfissional.trim(),
       email: values.email.trim(),
-      docProfissional: values.documentoProfissional.trim(),
-      areaDaSaude: values.areaSaude,
-      telefone: values.telefone,
-      rg: values.rg.trim(),
-      endereco: {
-        estado: values.estado,
-        cidade: values.cidade.trim(),
-        bairro: values.bairro.trim(),
-        rua: values.rua.trim(),
-        numero: values.numero?.trim(),
-        complemento: values.complemento?.trim(),
-        cep: values.cep,
+      name: values.nomeCompleto.trim(),
+      identityDocument: values.rg.trim(),
+      address: {
+        state: values.estado,
+        city: values.cidade.trim(),
+        neighborhood: values.bairro.trim(),
+        street: values.rua.trim(),
+        number: values.numero?.trim(),
+        complement: values.complemento?.trim(),
+        cep: values.cep
       },
     };
 

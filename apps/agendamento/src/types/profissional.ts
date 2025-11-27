@@ -1,21 +1,20 @@
 export interface Endereco {
-  estado: string;
-  cidade: string;
-  bairro: string;
-  rua: string;
-  numero?: string;
-  complemento?: string;
   cep: string;
+  city: string;
+  state: string;
+  neighborhood: string;
+  street: string;
+  number?: string;
+  complement?: string;
 }
 
 export interface Profissional {
   id: string;
-  nome: string;
+  healthSector: string;
+  phoneNumber: string;
+  professionalDocument: string;
   email: string;
-  docProfissional: string;
-  areaDaSaude: string;
-  telefone: string;
-  cpf: string;
-  rg: string;
-  endereco: Endereco;
+  name: string;
+  identityDocument: string;
+  address: Endereco;
 }

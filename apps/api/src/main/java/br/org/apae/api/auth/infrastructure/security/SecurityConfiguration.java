@@ -27,7 +27,7 @@ public class SecurityConfiguration {
         .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
         .authorizeHttpRequests(authorize -> authorize
             // Permite sem autenticação as rotas de auth (com e sem prefixo de servlet /api)
-            .requestMatchers("/auth/**", "/api/auth/**", "/api/professionals/**", "/professionals", "/api/professionals").permitAll()
+            .requestMatchers("/auth/**", "/api/auth/**", "/api/professionals/**", "/professionals/**", "/professionals", "/api/professionals").permitAll()
             .requestMatchers(
                 // Swagger/OpenAPI (com e sem /api)
                 "/v3/api-docs/**",
