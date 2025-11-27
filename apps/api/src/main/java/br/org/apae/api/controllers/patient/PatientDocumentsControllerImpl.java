@@ -1,74 +1,80 @@
 package br.org.apae.api.controllers.patient;
 
-import br.org.apae.api.common.dto.patient.response.patient.PatientResponseDTO;
+import br.org.apae.api.common.dto.patient.response.documents.DocumentWithUrlResponseDTO;
+import br.org.apae.api.documents.application.interfaces.DocumentApplicationService;
 import br.org.apae.api.documents.domain.enums.DocumentCategory;
 import br.org.apae.api.documents.interfaces.dto.DocumentDTO;
+import br.org.apae.api.documents.interfaces.dto.GetPresignedDocumentUrlArgsDTO;
+import br.org.apae.api.documents.interfaces.dto.ListDocumentsArgsDTO;
 import br.org.apae.api.patient.application.interfaces.PatientDocumentsApplicationService;
 import br.org.apae.api.patient.interfaces.controllers.PatientDocumentsController;
-import jakarta.servlet.http.HttpServletRequest;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.io.InputStreamResource;
-import org.springframework.core.io.Resource;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.servlet.mvc.method.annotation.MvcUriComponentsBuilder;
-
-import java.io.IOException;
-import java.io.InputStream;
-import java.nio.file.Files;
 import java.util.List;
+import java.util.Objects;
 import java.util.UUID;
-import java.util.stream.Collectors;
-
-record FileResponse(String filename, String url) {}
+import java.util.concurrent.TimeUnit;
+import java.util.stream.StreamSupport;
 
 @RestController
 public class PatientDocumentsControllerImpl implements PatientDocumentsController{
 
+    private final DocumentApplicationService documentService;
 
-    private final PatientDocumentsApplicationService patientDocumentsApplicationService;
+    public PatientDocumentsControllerImpl(DocumentApplicationService documentService, PatientDocumentsApplicationService patientDocumentsService) {
+        this.documentService = documentService;
+    }
 
-    public PatientDocumentsControllerImpl(PatientDocumentsApplicationService patientDocumentsService) {
-        this.patientDocumentsApplicationService = patientDocumentsService;
+    private DocumentWithUrlResponseDTO generatePresignedUrl(DocumentDTO dto) {
+        try {
+            String url = this.documentService.getPresignedDocumentUrl(
+                    GetPresignedDocumentUrlArgsDTO.builder()
+                            .name(dto.name())
+                            .owner(dto.owner())
+                            .expiry(1, TimeUnit.HOURS)
+                            .build()
+            );
+
+            return new DocumentWithUrlResponseDTO(
+                    dto.id(), dto.name(), dto.category(),
+                    dto.type(), dto.owner(), dto.year(), url
+            );
+        } catch (Exception e) {
+            System.err.println("Falha ao gerar URL para documento: " + dto.name() + " - " + e.getMessage());
+            return null;
+        }
+    }
+
+    private List<DocumentWithUrlResponseDTO> findDocumentsByCategory(UUID ownerId, DocumentCategory category) {
+        try {
+            Iterable<DocumentDTO> documents = this.documentService.listDocuments(
+                    ListDocumentsArgsDTO.builder()
+                            .owner(ownerId.toString())
+                            .category(category)
+                            .build()
+            );
+
+            return StreamSupport.stream(documents.spliterator(), false)
+                    .map(this::generatePresignedUrl)
+                    .filter(Objects::nonNull)
+                    .toList();
+        } catch (Exception e) {
+            throw new RuntimeException("Erro ao buscar documentos", e);
+        }
     }
 
     @Override
-    public ResponseEntity<List<DocumentDTO>> findMedicalDocuments(UUID id) {
-        return ResponseEntity.ok(patientDocumentsApplicationService.findPatientDocuments(id, DocumentCategory.MEDICAL));
-
+    public ResponseEntity<List<DocumentWithUrlResponseDTO>> findMedicalDocuments(UUID id) {
+        return ResponseEntity.ok(findDocumentsByCategory(id, DocumentCategory.MEDICAL));
     }
 
     @Override
-    public ResponseEntity<Resource> downloadDocument(HttpServletRequest request, @PathVariable UUID id) {
-        String requestURL = request.getRequestURL().toString();
-
-        System.out.println();
-        String name = requestURL.split("/download/")[1];
-        System.out.println(request);
-        InputStream document = this.patientDocumentsApplicationService.findPatientDocumentByName(id, name);
-
-        Resource resource = new InputStreamResource(document);
-
-        return ResponseEntity.ok()
-                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + name + "\"")
-                .body(resource);
-
-
-    }
-
-
-    @Override
-    public ResponseEntity<PatientResponseDTO> findPersonalDocuments(UUID id) {
-        patientDocumentsApplicationService.findPatientDocuments(id, DocumentCategory.PERSONAL);
-        return null;
+    public ResponseEntity<List<DocumentWithUrlResponseDTO>> findPersonalDocuments(UUID id) {
+        return ResponseEntity.ok(findDocumentsByCategory(id, DocumentCategory.PERSONAL));
     }
 
     @Override
-    public ResponseEntity<PatientResponseDTO> findSchoolDocuments(UUID id) {
-        patientDocumentsApplicationService.findPatientDocuments(id, DocumentCategory.SCHOOL);
-        return null;
+    public ResponseEntity<List<DocumentWithUrlResponseDTO>> findSchoolDocuments(UUID id) {
+        return ResponseEntity.ok(findDocumentsByCategory(id, DocumentCategory.SCHOOL));
     }
 }

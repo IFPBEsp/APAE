@@ -6,14 +6,13 @@ import br.org.apae.api.documents.interfaces.dto.DocumentDTO;
 import br.org.apae.api.documents.interfaces.dto.GetDocumentArgsDTO;
 import br.org.apae.api.documents.interfaces.dto.ListDocumentsArgsDTO;
 import br.org.apae.api.patient.application.interfaces.PatientDocumentsApplicationService;
-import com.google.common.collect.Iterables;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import java.io.InputStream;
+import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
-import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
 @Service
@@ -29,7 +28,7 @@ public class PatientDocumentsApplicationServiceImpl implements PatientDocumentsA
     public List<DocumentDTO> findPatientDocuments(UUID id, DocumentCategory documentCategory) {
 
         try{
-            var documents = this.documentApplicationService.listDocuments(
+            Iterable<DocumentDTO> documents = this.documentApplicationService.listDocuments(
                     ListDocumentsArgsDTO.builder()
                             .category(documentCategory)
                             .owner(id.toString())
@@ -40,7 +39,7 @@ public class PatientDocumentsApplicationServiceImpl implements PatientDocumentsA
             LoggerFactory.getLogger(PatientDocumentsApplicationServiceImpl.class).error(e.getMessage());
         }
 
-        return null;
+        return Collections.emptyList();
     }
 
     @Override
