@@ -52,7 +52,7 @@ export default function FileCard({ file }: Props) {
               onClick={() => window.open(file.link, file.fileName)}
               className="cursor-pointer hover:bg-gray-300 hover:text-black transition-colors"
             >
-              Baixar Arquivo
+              Visualizar Arquivo
             </Button>
           </DialogFooter>
         </DialogContent>
