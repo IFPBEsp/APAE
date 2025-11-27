@@ -57,7 +57,6 @@ const makeInterceptors = (api: AxiosInstance) => {
 
 export const createDocumentsAPI = async () => {
   const api = createAxiosInstance("http://localhost:8092/api/documents");
-
   return makeInterceptors(api);
 };
 
