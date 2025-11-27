@@ -12,9 +12,6 @@ interface PatientCardProps {
     patient: PatientCardData;
 }
 
-// CORREÇÃO AQUI:
-// Usamos (patient: any) temporariamente para o TypeScript não travar o merge,
-// já que o tipo PatientCardData ainda não tem os campos isDeleted/isStudent declarados.
 const getStatus = (patient: any) => {
     if (patient.isDeleted) return "Inativo";
     if (patient.isStudent) return "Aluno";
@@ -95,7 +92,6 @@ export function PatientCard({ patient }: PatientCardProps) {
                                 asChild
                                 className="w-[106px] h-[23px] rounded-[5px] !bg-[#0D4F97] !hover:bg-[#0b427d] !text-white !text-[12px]"
                             >
-                                {/* Rota ajustada para /pessoa para bater com suas pastas */}
                                 <Link href={`/pessoa/${patient.id}`}>Ver mais</Link>
                             </Button>
                         </div>

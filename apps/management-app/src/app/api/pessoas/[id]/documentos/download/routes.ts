@@ -4,9 +4,9 @@ import { NextRequest, NextResponse } from "next/server";
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
-  const { id: patientId } = params;
+  const { id: patientId } = await params;
   const documentName = request.nextUrl.searchParams.get("name");
 
   if (!patientId || !documentName) {
@@ -16,7 +16,7 @@ export async function GET(
   try {
     const api = await createBaseApi();
     const response = await api.get(
-      `/patients/${patientId}/documentos/download`,
+      `/patients/${patientId}/documents/download`,
       {
         params: { documentName },
         responseType: "stream", 
@@ -27,9 +27,7 @@ export async function GET(
     let filename = "download.bin";
     if (contentDisposition) {
       const match = /filename="([^"]+)"/.exec(contentDisposition);
-      if (match && match[1]) {
-        filename = match[1];
-      }
+      if (match && match[1]) filename = match[1];
     }
 
     const headers = new Headers();

@@ -6,7 +6,6 @@ import { Button } from "@/components/ui/button";
 import { Plus } from "lucide-react";
 import { PatientCard } from "@/components/patient-card";
 import { PatientCardData } from "@/schemas/patientSchema";
-import { Patient } from "@/schemas/auth-schemas";
 import { SearchFilters } from "@/components/search-filters";
 import { toast } from "react-toastify";
 import { useDebounce } from "@/hooks/use-debounce";
@@ -46,7 +45,6 @@ export default function PatientsAndStudentsScreen() {
         }
 
         const data: PatientCardData[] = await response.json();
-        console.log("Resposta recebida (pacientes):", data);
 
         setPatients(data);
         setError(null);
@@ -71,26 +69,13 @@ export default function PatientsAndStudentsScreen() {
       return <p className="text-center text-red-500">{error}</p>;
     }
     if (patients.length === 0) {
-
-    const filteredPatients = patients.filter((patient) => {
-      const isCorrectType =
-        (activeFilter === "paciente" && !patient.isStudent) ||
-        (activeFilter === "aluno" && patient.isStudent);
-
-      const matchesSearch =
-        searchName.trim() === "" ||
-        patient.fullName?.toLowerCase().includes(searchName.toLowerCase());
-
-      return isCorrectType && matchesSearch;
-    });
-
-    if (filteredPatients.length === 0) {
       return (
         <p className="text-center text-gray-500">
           Nenhum resultado encontrado.
         </p>
       );
     }
+
     return (
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
         {patients.map((patient) => (
@@ -144,5 +129,4 @@ export default function PatientsAndStudentsScreen() {
       </Button>
     </div>
   );
-    }
 }
