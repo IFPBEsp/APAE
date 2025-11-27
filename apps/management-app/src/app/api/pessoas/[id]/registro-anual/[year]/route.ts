@@ -2,13 +2,12 @@ export const dynamic = 'force-dynamic';
 
 import { createBaseApi } from "@/lib/axios";
 import { AxiosError } from "axios";
-import { NextRequest, NextResponse } from "next/server";
+import { NextResponse } from "next/server";
 
 export async function GET(
-  request: NextRequest,
-  { params }: { params: { id: string, year: string } }
+  { params }: { params: Promise<{ id: string, year: string}>}
 ) {
-  const { id: patientId, year } = params; 
+  const { id: patientId, year } = await params; 
 
   if (!patientId || !year) {
     return NextResponse.json({ message: "ID do paciente e Ano são obrigatórios" }, { status: 400 });

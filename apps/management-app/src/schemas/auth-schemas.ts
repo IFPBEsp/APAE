@@ -8,6 +8,8 @@ const cpfSchema = z
 
 export const patientSchema = z.object({
   id: z.string().uuid(),
+  fullName: z.string().optional(),
+  isStudent: z.boolean().optional(),
   nome: z.string().min(1, "Nome é obrigatório").optional(),
   cpf: cpfSchema,
   status: z.enum(["Ativo", "Inativo", "Em Fila"]),

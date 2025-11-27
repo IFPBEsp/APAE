@@ -7,9 +7,10 @@ import { Plus } from "lucide-react";
 import { PatientCard } from "@/components/patient-card";
 import { SearchFilters } from "@/components/search-filters";
 import { toast } from "react-toastify";
+import { Patient } from "@/schemas/auth-schemas";
 
 export default function PatientsAndStudentsScreen() {
-  const [patients, setPatients] = useState<any[]>([]);
+  const [patients, setPatients] = useState<Patient[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [activeFilter, setActiveFilter] = useState<string>("paciente");

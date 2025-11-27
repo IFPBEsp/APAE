@@ -8,37 +8,28 @@ import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
-import { Loader2, SquarePen, ArrowLeft } from "lucide-react";
+import { Loader2, ArrowLeft } from "lucide-react";
 
 interface InfoRowProps {
   label: string;
   value?: string | number | null | boolean;
 }
 
-// --- InfoRow ATUALIZADO PARA FORMATAR BPC E RENDA ---
 const InfoRow: React.FC<InfoRowProps> = ({ label, value }) => {
   let displayValue: string | number = "Não informado";
 
   if (value === null || value === undefined || value === "") {
     displayValue = "Não informado";
-  
   } else if (label === "Recebe BPC?") {
-    // Converte 'true' (string ou boolean) para "Sim", e qualquer outra coisa para "Não"
     displayValue = (value === true || String(value).toLowerCase() === 'true') ? "Sim" : "Não";
-  
   } else if (label === "Renda Familiar" && typeof value === 'number') {
-    // Formata o número para Reais (BRL)
     displayValue = value.toLocaleString('pt-BR', {
       style: 'currency',
       currency: 'BRL',
     });
-
   } else if (typeof value === 'boolean') {
-    // Fallback para outros booleanos (ex: "Vivo?")
     displayValue = value ? "Sim" : "Não";
-  
   } else {
-    // Padrão para todos os outros valores
     displayValue = value;
   }
 
@@ -49,60 +40,75 @@ const InfoRow: React.FC<InfoRowProps> = ({ label, value }) => {
     </div>
   );
 };
-// --- FIM DA ATUALIZAÇÃO ---
 
 export default function PersonDetailsPage() {
   const params = useParams();
   const router = useRouter();
+  const id = params?.id as string;
+
   const [pessoa, setPessoa] = useState<any>(null);
   const [registroAnual, setRegistroAnual] = useState<any>(null);
-  const [loading, setLoading] = useState(true);
+  
+  const [selectedYear, setSelectedYear] = useState<string>(new Date().getFullYear().toString());
+  
+  const [loadingPessoa, setLoadingPessoa] = useState(true);
+  const [loadingRegistro, setLoadingRegistro] = useState(false);
 
-  const id = params?.id as string;
+  const currentYearInt = new Date().getFullYear();
+  const years = Array.from({ length: 11 }, (_, i) => (currentYearInt - i).toString());
 
   useEffect(() => {
     if (!id) return;
 
-    const currentYear = new Date().getFullYear().toString();
-
-    async function fetchData() {
+    async function fetchPessoa() {
       try {
-        setLoading(true);
+        setLoadingPessoa(true);
+        const response = await fetch(`/api/pessoas/${id}`);
         
-        const [pessoaResponse, registroResponse] = await Promise.all([
-          fetch(`/api/pessoas/${id}`),
-          fetch(`/api/pessoas/${id}/registro-anual/${currentYear}`)
-        ]);
-
-        if (!pessoaResponse.ok) {
-          throw new Error("Falha ao buscar dados do paciente.");
-        }
+        if (!response.ok) throw new Error("Falha ao buscar dados do paciente.");
         
-        const pessoaData = await pessoaResponse.json();
-        setPessoa(pessoaData);
-
-        if (registroResponse.ok) {
-          const registroData = await registroResponse.json();
-          setRegistroAnual(registroData);
-        } else {
-          console.warn("Nenhum registro anual encontrado para o ano " + currentYear);
-          setRegistroAnual(null);
-        }
-
+        const data = await response.json();
+        setPessoa(data);
       } catch (err: any) {
         console.error(err);
         toast.error(err.message);
         router.push("/home");
       } finally {
-        setLoading(false);
+        setLoadingPessoa(false);
       }
     }
 
-    fetchData();
+    fetchPessoa();
   }, [id, router]);
 
+  useEffect(() => {
+    if (!id) return;
 
-  if (loading) {
+    async function fetchRegistro() {
+      try {
+        setLoadingRegistro(true);
+        setRegistroAnual(null);
+
+        const response = await fetch(`/api/pessoas/${id}/registro-anual/${selectedYear}`);
+
+        if (response.ok) {
+          const data = await response.json();
+          setRegistroAnual(data);
+        } else {
+          setRegistroAnual(null);
+        }
+      } catch (err) {
+        console.error("Erro ao buscar registro anual:", err);
+      } finally {
+        setLoadingRegistro(false);
+      }
+    }
+
+    fetchRegistro();
+  }, [id, selectedYear]);
+
+
+  if (loadingPessoa) {
     return (
       <div className="flex justify-center items-center h-screen">
         <Loader2 className="h-8 w-8 animate-spin text-primary" />
@@ -156,6 +162,7 @@ export default function PersonDetailsPage() {
       />
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-6">
+        {/* Card: Dados Pessoais */}
         <Card className="w-full relative font-nunito">
           <CardHeader>
             <CardTitle className="text-[#0D4F97]">Dados Pessoais</CardTitle>
@@ -167,13 +174,11 @@ export default function PersonDetailsPage() {
             <InfoRow label="Contato" value={pessoa.contact} />
             <InfoRow label="Alergias" value={pessoa.allergies} />
             <InfoRow label="Estudante?" value={pessoa.isStudent} />
-            <InfoRow
-              label="Data de Cadastro"
-              value={pessoa.registrationDate}
-            />
+            <InfoRow label="Data de Cadastro" value={pessoa.registrationDate} />
           </CardContent>
         </Card>
 
+        {/* Card: Documentação */}
         <Card className="w-full relative font-nunito">
           <CardHeader>
             <CardTitle className="text-[#0D4F97]">Documentação</CardTitle>
@@ -192,6 +197,7 @@ export default function PersonDetailsPage() {
           </CardContent>
         </Card>
 
+        {/* Card: Endereço */}
         <Card className="w-full relative font-nunito">
           <CardHeader>
             <CardTitle className="text-[#0D4F97]">Endereço Residencial</CardTitle>
@@ -207,6 +213,7 @@ export default function PersonDetailsPage() {
           </CardContent>
         </Card>
 
+        {/* Card: Responsáveis */}
         <Card className="w-full relative font-nunito">
           <CardHeader>
             <CardTitle className="text-[#0D4F97]">Responsáveis</CardTitle>
@@ -227,10 +234,7 @@ export default function PersonDetailsPage() {
               </div>
             )}
             {pessoa.parents?.map((parent: any) => (
-              <div
-                key={parent.id}
-                className="mb-2 p-2 border-t border-gray-200"
-              >
+              <div key={parent.id} className="mb-2 p-2 border-t border-gray-200">
                 <p className="font-bold text-base">
                   {parent.kinship === "PAI" ? "Pai" : "Mãe"}
                 </p>
@@ -243,11 +247,29 @@ export default function PersonDetailsPage() {
           </CardContent>
         </Card>
 
-
+        {/* --- CARD DE SAÚDE --- */}
         <Card className="w-full relative font-nunito">
-          <CardHeader>
+          <CardHeader className="flex flex-row items-center justify-between">
             <CardTitle className="text-[#0D4F97]">Informações de Saúde</CardTitle>
+            <div className="flex items-center gap-2">
+              <label htmlFor="year-select" className="text-sm font-semibold text-gray-600">
+                Ano:
+              </label>
+              <select
+                id="year-select"
+                value={selectedYear}
+                onChange={(e) => setSelectedYear(e.target.value)}
+                className="border border-gray-300 rounded-md px-2 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-[#0D4F97]"
+              >
+                {years.map((year) => (
+                  <option key={year} value={year}>
+                    {year}
+                  </option>
+                ))}
+              </select>
+            </div>
           </CardHeader>
+          
           <CardContent>
             <InfoRow label="Alergias" value={pessoa.allergies} />
             <InfoRow
@@ -257,25 +279,32 @@ export default function PersonDetailsPage() {
                 .join(", ")}
             />
             
-            <h3 className="font-bold text-base mt-4 pt-4 border-t">
-              Registro Anual ({new Date().getFullYear()})
+            <h3 className="font-bold text-base mt-4 pt-4 border-t text-[#0D4F97]">
+              Registro Anual ({selectedYear})
             </h3>
-            {registroAnual ? (
-              <>
+
+            {loadingRegistro ? (
+              <div className="py-4 flex justify-center">
+                <Loader2 className="h-6 w-6 animate-spin text-[#0D4F97]" />
+              </div>
+            ) : registroAnual ? (
+              <div className="mt-2 animate-in fade-in slide-in-from-bottom-2">
                 <InfoRow label="Recebe BPC?" value={registroAnual.bpc} />
                 <InfoRow label="Renda Familiar" value={registroAnual.familyIncome} />
                 <InfoRow label="Doenças" value={registroAnual.diseases} />
                 <InfoRow label="Medicamentos Contínuos" value={registroAnual.continuousMedication} />
-                <InfoRow label="Transtornos" value={registroAnual.disorders?.map((d: any) => d.name).join(", ")} />
-              </>
+                <InfoRow 
+                  label="Transtornos" 
+                  value={registroAnual.disorders?.map((d: any) => d.name).join(", ")} 
+                />
+              </div>
             ) : (
-              <p className="text-sm text-gray-500">
-                Nenhum registro anual encontrado para este ano.
+              <p className="text-sm text-gray-500 mt-2 italic">
+                Nenhum registro anual encontrado para o ano de {selectedYear}.
               </p>
             )}
           </CardContent>
         </Card>
-
       </div>
     </main>
   );
