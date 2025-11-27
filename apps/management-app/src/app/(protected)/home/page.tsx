@@ -5,36 +5,63 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Plus } from "lucide-react";
 import { PatientCard } from "@/components/patient-card";
+import { PatientCardData } from "@/schemas/patientSchema";
+import { Patient } from "@/schemas/auth-schemas";
 import { SearchFilters } from "@/components/search-filters";
 import { toast } from "react-toastify";
-import { Patient } from "@/schemas/auth-schemas";
+import { useDebounce } from "@/hooks/use-debounce";
+import { usePatientFilters } from "@/hooks/use-patients-filters";
 
 export default function PatientsAndStudentsScreen() {
-  const [patients, setPatients] = useState<Patient[]>([]);
+  const [patients, setPatients] = useState<PatientCardData[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [activeFilter, setActiveFilter] = useState<string>("paciente");
-  const [activeStatus, setActiveStatus] = useState<string>("Todos");
   const [searchName, setSearchName] = useState<string>("");
+  const [transtorno, setTranstorno] = useState<string>("");
+  const [ano, setAno] = useState<string>("");
+  const [cidade, setCidade] = useState<string>("");
+  const debouncedSearchName = useDebounce(searchName, 500);
+  const {
+    transtornoOptions,
+    anoOptions,
+    cidadeOptions
+  } = usePatientFilters();
 
   useEffect(() => {
     const loadData = async () => {
+      setIsLoading(true);
       try {
-        const response = await fetch("/api/pessoas");
-        if (!response.ok) throw new Error("Erro ao buscar dados");
-        const data = await response.json();
+        const params = new URLSearchParams();
+        if (debouncedSearchName) params.append("name", debouncedSearchName);
+        if (transtorno) params.append("disorder", transtorno);
+        if (ano) params.append("year", ano);
+        if (cidade) params.append("city", cidade);
+
+        const queryString = params.toString();
+        const response = await fetch(`/api/patients?${queryString}`);
+
+        if (!response.ok) {
+           const errorData = await response.json();
+           throw new Error(errorData.message || "Erro ao buscar dados");
+        }
+
+        const data: PatientCardData[] = await response.json();
+        console.log("Resposta recebida (pacientes):", data);
+
         setPatients(data);
+        setError(null);
       } catch (err) {
-        console.error("Erro ao buscar dados:", err);
-        const errorMessage = "Não foi possível carregar os dados.";
-        setError(errorMessage);
-        toast.error(errorMessage);
+        console.error("Erro ao buscar dados (pacientes):", err);
+        const errorMsg = (err instanceof Error) ? err.message : "Não foi possível carregar os dados.";
+        setError(errorMsg);
+        toast.error(errorMsg);
       } finally {
         setIsLoading(false);
       }
     };
+
     loadData();
-  }, []);
+  }, [debouncedSearchName, transtorno, ano, cidade]);
 
   const renderContent = () => {
     if (isLoading) {
@@ -43,6 +70,7 @@ export default function PatientsAndStudentsScreen() {
     if (error) {
       return <p className="text-center text-red-500">{error}</p>;
     }
+    if (patients.length === 0) {
 
     const filteredPatients = patients.filter((patient) => {
       const isCorrectType =
@@ -63,10 +91,9 @@ export default function PatientsAndStudentsScreen() {
         </p>
       );
     }
-
     return (
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-        {filteredPatients.map((patient) => (
+        {patients.map((patient) => (
           <PatientCard key={patient.id} patient={patient} />
         ))}
       </div>
@@ -80,13 +107,17 @@ export default function PatientsAndStudentsScreen() {
           <SearchFilters
             searchName={searchName}
             setSearchName={setSearchName}
-            activeFilter={activeFilter}
-            setActiveFilter={setActiveFilter}
-            activeStatus={activeStatus}
-            setActiveStatus={setActiveStatus}
+            transtorno={transtorno}
+            setTranstorno={setTranstorno}
+            ano={ano}
+            setAno={setAno}
+            cidade={cidade}
+            setCidade={setCidade}
+            transtornoOptions={transtornoOptions}
+            anoOptions={anoOptions}
+            cidadeOptions={cidadeOptions}
           />
         </div>
-
         <section className="relative md:bg-white md:rounded-xl md:shadow-md md:border-2 md:p-6">
           <div className="hidden md:flex justify-between items-center mb-4">
             <h2 className="text-xl font-bold text-[#003B93]">
@@ -102,10 +133,9 @@ export default function PatientsAndStudentsScreen() {
           {renderContent()}
         </section>
       </main>
-
       <Button
         asChild
-        className="fixed bottom-6 right-6 h-[53px] w-[53px] rounded-full shadow-lg md:hidden bg-[#0D4F97] hover:bg-[#0b427d]"
+        className="fixed bottom-6 right-6 h-[53px] w-[53px] rounded-full shadow-lg md:hidden bg-[#0D4F97] !hover:bg-[#0b427d]"
       >
         <Link href="/pessoa/cadastro">
           <Plus className="h-7 w-7" />
@@ -114,4 +144,5 @@ export default function PatientsAndStudentsScreen() {
       </Button>
     </div>
   );
+    }
 }

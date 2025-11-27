@@ -7,7 +7,7 @@ import java.util.UUID;
 import br.org.apae.api.patient.domain.exceptions.RegistryNotFoundException;
 import br.org.apae.api.patient.domain.exceptions.RegistryOwnershipException;
 import org.springframework.stereotype.Service;
-
+import org.springframework.transaction.annotation.Transactional;
 import br.org.apae.api.common.dto.patient.request.annual_registry.CreateAnnualRegistryDTO;
 import br.org.apae.api.common.dto.patient.request.annual_registry.UpdateAnnualRegistryDTO;
 import br.org.apae.api.common.dto.patient.request.annual_registry.ReplaceAnnualRegistryDTO;
@@ -20,8 +20,6 @@ import br.org.apae.api.patient.domain.exceptions.AnnualRegistryConflictException
 import br.org.apae.api.patient.domain.exceptions.DisorderMismatchException;
 import br.org.apae.api.patient.domain.model.AnnualRegistry;
 import br.org.apae.api.patient.domain.repository.AnnualRegistryRepository;
-import org.springframework.transaction.annotation.Transactional;
-
 @Service
 public class AnnualRegistryApplicationServiceImpl implements AnnualRegistryApplicationService {
 
@@ -100,6 +98,11 @@ public class AnnualRegistryApplicationServiceImpl implements AnnualRegistryAppli
         return annualRegistryMapper.toResponseDTO(registrySaved);
     }
 
+    @Override
+    @Transactional(readOnly = true)
+    public List<String> findAllRegistryYears() {
+        return annualRegistryRepository.findDistinctYears();
+    }
 
     @Override
     @Transactional

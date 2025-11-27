@@ -18,7 +18,6 @@ function createAxiosInstance(baseURL: string) {
   });
 }
 
-
 const makeInterceptors = (api: AxiosInstance) => {
   api.interceptors.request.use(
     async (config: InternalAxiosRequestConfig) => {
@@ -65,5 +64,6 @@ export const createBaseApi = async () => {
   const api = createAxiosInstance(
     process.env.NEXT_PUBLIC_API || "http://localhost:8090/api"
   );
-  return makeInterceptors(api); 
+
+  return makeInterceptors(api);
 };
