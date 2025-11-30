@@ -14,13 +14,10 @@ export async function deleteProfissional(id: string) {
   return response;
 }
 
-export async function createProfissional(data: any) {
+export async function createProfissional(formData: FormData) {
   const response = await fetch(API_URL + "/professionals", {
     method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify(data),
+    body: formData,
   });
 
   return response;

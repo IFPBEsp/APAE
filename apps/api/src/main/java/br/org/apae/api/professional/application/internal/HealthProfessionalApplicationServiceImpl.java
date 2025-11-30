@@ -4,6 +4,7 @@ import br.org.apae.api.address.application.interfaces.AddressService;
 import br.org.apae.api.common.dto.address.AddressResponseDTO;
 import br.org.apae.api.common.dto.professional.request.CreateHealthProfessionalDTO;
 import br.org.apae.api.common.dto.professional.request.UpdateHealthProfessionalDTO;
+import br.org.apae.api.common.dto.professional.request.documents.CreateProfessionalDocumentsDTO;
 import br.org.apae.api.common.dto.professional.response.HealthProfessionalResponseDTO;
 import br.org.apae.api.professional.application.interfaces.HealthProfessionalApplicationService;
 import br.org.apae.api.professional.application.mappers.HealthProfessionalMapper;
@@ -25,19 +26,21 @@ public class HealthProfessionalApplicationServiceImpl implements HealthProfessio
 
     private final HealthProfessionalRepository repository;
     private final HealthProfessionalMapper mapper;
+    private final ProfessionalDocumentsService documentsService;
 
     private final AddressService addressService;
 
     public HealthProfessionalApplicationServiceImpl(HealthProfessionalRepository repository,
-            HealthProfessionalMapper mapper, AddressService addressService) {
+            HealthProfessionalMapper mapper, ProfessionalDocumentsService documentsService, AddressService addressService) {
         this.repository = repository;
         this.mapper = mapper;
+        this.documentsService = documentsService;
         this.addressService = addressService;
     }
 
     @Override
     @Transactional
-    public HealthProfessionalResponseDTO createProfessional(CreateHealthProfessionalDTO dto) {
+    public HealthProfessionalResponseDTO createProfessional(CreateHealthProfessionalDTO dto, CreateProfessionalDocumentsDTO documentsDTO) {
         if (repository.existsByProfessionalDocument(dto.professionalDocument())) {
             throw new ProfessionalDocumentConflictException();
         }
@@ -54,6 +57,7 @@ public class HealthProfessionalApplicationServiceImpl implements HealthProfessio
 
         HealthProfessional savedProfessional = repository.save(professionalToSave);
 
+        documentsService.storeProfessionalDocuments(professionalToSave, documentsDTO);
         return mapper.toResponseDTO(savedProfessional);
     }
 

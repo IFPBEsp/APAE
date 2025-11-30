@@ -6,12 +6,11 @@ import br.org.apae.api.common.dto.servicearea.response.ServiceAreaResponseDTO;
 import br.org.apae.api.servicearea.application.interfaces.ServiceAreaApplicationService;
 import br.org.apae.api.servicearea.interfaces.controllers.ServiceAreaController;
 import jakarta.validation.Valid;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.UUID;
 
 @RestController
@@ -30,8 +29,8 @@ public class ServiceAreaControllerImpl implements ServiceAreaController {
     }
 
     @Override
-    public ResponseEntity<Page<ServiceAreaResponseDTO>> getAllServiceAreas(Pageable pageable) {
-        return ResponseEntity.ok(this.service.findAllServiceAreas(pageable));
+    public ResponseEntity<List<ServiceAreaResponseDTO>> getAllServiceAreas() {
+        return ResponseEntity.ok(this.service.findAllServiceAreas());
     }
 
     @Override

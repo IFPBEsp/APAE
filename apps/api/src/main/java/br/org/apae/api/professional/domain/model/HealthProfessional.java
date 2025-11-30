@@ -31,7 +31,7 @@ public class HealthProfessional {
     @Column(name = "rg", unique = true)
     private String identityDocument;
 
-    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "endereco_id", referencedColumnName = "id")
     private Address address;
 

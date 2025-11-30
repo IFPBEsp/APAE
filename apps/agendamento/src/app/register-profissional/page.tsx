@@ -21,17 +21,11 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-  FormDescription,
 } from "@/components/ui/form";
 import { useRouter } from "next/navigation";
 import { useCreateProfissional } from "@/hooks/profissional/use-create-profissional";
-import Disponibilidade, {
-  DisponibilidadeType,
-  diasDaSemana,
-  turnos,
-} from "@/components/forms/DisponibilidadeForm";
+import Disponibilidade from "@/components/forms/DisponibilidadeForm";
 import { cadastroSchema } from "@/schemas/profissional.schema";
-import { HEALTH_AREAS } from "@/lib/health-areas";
 import { STATES } from "@/lib/states";
 import { JSX } from "react";
 import HealthAreaSelect from "@/components/shared/HealthAreaSelect";
@@ -42,7 +36,7 @@ export default function CadastroProfissional(): JSX.Element {
   const router = useRouter();
   const { create, loading, error, success } = useCreateProfissional();
 
-  const defaultValues: CadastroFormValues = {
+  const defaultValues: Partial<CadastroFormValues> = {
     nomeCompleto: "",
     email: "",
     documentoProfissional: "",
@@ -69,6 +63,8 @@ export default function CadastroProfissional(): JSX.Element {
   };
 
   const onSubmit: SubmitHandler<CadastroFormValues> = async (values) => {
+    const formData = new FormData();
+
     const payload = {
       healthSector: values.areaSaude,
       phoneNumber: values.telefone,
@@ -83,11 +79,18 @@ export default function CadastroProfissional(): JSX.Element {
         street: values.rua.trim(),
         number: values.numero?.trim(),
         complement: values.complemento?.trim(),
-        cep: values.cep
+        cep: values.cep,
       },
     };
+    formData.append(
+      "professional",
+      new Blob([JSON.stringify(payload)], { type: "application/json" })
+    );
 
-    await create(payload);
+    formData.append("volunteerAgreement", values.termoVoluntariado);
+    formData.append("curriculum", values.curriculo);
+
+    await create(formData);
   };
 
   return (
@@ -323,6 +326,46 @@ export default function CadastroProfissional(): JSX.Element {
               )}
             />
           </div>
+
+          <FormField
+            control={form.control}
+            name="termoVoluntariado"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Termo do Voluntário *</FormLabel>
+                <FormControl>
+                  <Input
+                    type="file"
+                    accept="application/pdf"
+                    onChange={(e) =>
+                      field.onChange(e.target.files?.[0] ?? null)
+                    }
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          <FormField
+            control={form.control}
+            name="curriculo"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Currículo *</FormLabel>
+                <FormControl>
+                  <Input
+                    type="file"
+                    accept="application/pdf"
+                    onChange={(e) =>
+                      field.onChange(e.target.files?.[0] ?? null)
+                    }
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
 
           <Disponibilidade control={form.control} watch={form.watch} />
 

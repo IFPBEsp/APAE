@@ -8,32 +8,22 @@ export function useCreateProfissional() {
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
 
-  async function create(data: any) {
+  async function create(formData: FormData) {
     setLoading(true);
     setError(null);
     setSuccess(false);
 
     try {
-      const response = await createProfissional(data);
+      const response = await createProfissional(formData);
 
       if (!response.ok) {
-        const errorData = await response.json();
-        let message = errorData?.mensagem || "Erro desconhecido";
-        if (errorData?.detalhes) {
-          const detailsStr = Object.entries(errorData.detalhes)
-            .map(([campo, msg]) => `${campo}: ${msg}`)
-            .join("\n");
-          message += "\n" + detailsStr;
-        }
-        throw new Error(message);
+        throw new Error("Erro ao salvar profissional");
       }
 
-      await response.json();
       setSuccess(true);
       router.push("/visualization-professional");
-
-    } catch (err) {
-      setError(err instanceof Error ? err.message : "Erro desconhecido");
+    } catch (err: any) {
+      setError(err.message || "Erro inesperado");
       throw err;
     } finally {
       setLoading(false);

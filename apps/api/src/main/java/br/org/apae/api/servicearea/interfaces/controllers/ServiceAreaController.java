@@ -6,9 +6,8 @@ import br.org.apae.api.common.dto.servicearea.response.ServiceAreaResponseDTO;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -17,6 +16,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
+import java.util.List;
 import java.util.UUID;
 
 @RequestMapping("/service-areas")
@@ -32,11 +32,11 @@ public interface ServiceAreaController {
     ResponseEntity<ServiceAreaResponseDTO> createServiceArea(CreateServiceAreaDTO dto);
 
     @Operation(summary = "Listar áreas de atendimento", description = "Retorna uma lista paginada de todas as áreas de atendimento cadastradas.", responses = {
-            @ApiResponse(responseCode = "200", description = "Lista obtida com sucesso", content = @Content(schema = @Schema(implementation = Page.class))),
+            @ApiResponse(responseCode = "200", description = "Lista obtida com sucesso", content = @Content(array = @ArraySchema(schema = @Schema(implementation = ServiceAreaResponseDTO.class)))),
             @ApiResponse(responseCode = "500", description = "Erro interno no servidor", content = @Content)
     })
     @GetMapping
-    ResponseEntity<Page<ServiceAreaResponseDTO>> getAllServiceAreas(Pageable pageable);
+    ResponseEntity<List<ServiceAreaResponseDTO>> getAllServiceAreas();
 
     @Operation(summary = "Excluir área de atendimento", description = "Remove uma área de atendimento pelo seu identificador (UUID).", responses = {
             @ApiResponse(responseCode = "204", description = "Área de atendimento excluída com sucesso", content = @Content),

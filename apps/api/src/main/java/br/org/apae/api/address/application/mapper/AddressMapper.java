@@ -23,6 +23,7 @@ public class AddressMapper {
     
     public Address toEntityFromResponse(AddressResponseDTO dto) {
         return new Address(
+                dto.id(),
                 dto.city(),
                 dto.cep(),
                 dto.state(),

@@ -13,6 +13,10 @@ const bairroRegex = /^[A-Za-zÀ-ÿ\s]+$/;
 const ruaRegex = /^[A-Za-zÀ-ÿ0-9\s]+$/;
 const numeroRegex = /^[0-9]{1,6}$/;
 
+const fileSchema = z
+  .instanceof(File, { message: "Selecione um arquivo" })
+  .refine((file) => file.size > 0, "Arquivo não pode estar vazio");
+
 export const cadastroSchema = z.object({
   nomeCompleto: z
     .string()
@@ -55,4 +59,6 @@ export const cadastroSchema = z.object({
       })
       .optional()
   ),
+  termoVoluntariado: fileSchema,
+  curriculo: fileSchema,
 });

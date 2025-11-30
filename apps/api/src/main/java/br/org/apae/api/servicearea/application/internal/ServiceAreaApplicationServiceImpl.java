@@ -1,9 +1,8 @@
 package br.org.apae.api.servicearea.application.internal;
 
+import java.util.List;
 import java.util.UUID;
 
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -76,8 +75,8 @@ public class ServiceAreaApplicationServiceImpl implements ServiceAreaApplication
 
     @Override
     @Transactional(readOnly = true)
-    public Page<ServiceAreaResponseDTO> findAllServiceAreas(Pageable pageable) {
-        return repository.findAll(pageable).map(mapper::toResponseDTO);
+    public List<ServiceAreaResponseDTO> findAllServiceAreas() {
+        return repository.findAll().stream().map(mapper::toResponseDTO).toList();
     }
 }
 
