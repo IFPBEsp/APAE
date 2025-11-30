@@ -1,15 +1,14 @@
 package br.org.apae.api.servicearea.domain.model;
 
 import jakarta.persistence.*;
-import java.util.UUID;
 
 @Entity
 @Table(name = "areas_de_atendimento")
 public class ServiceArea {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
-    private UUID id;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Integer id;
 
     @Column(name = "area", nullable = false, unique = true)
     private String area;
@@ -21,12 +20,12 @@ public class ServiceArea {
         this.area = area;
     }
 
-    public ServiceArea(UUID id, String area) {
+    public ServiceArea(Integer id, String area) {
         this.id = id;
         this.area = area;
     }
 
-    public UUID getId() {
+    public Integer getId() {
         return id;
     }
 
@@ -38,4 +37,3 @@ public class ServiceArea {
         this.area = area;
     }
 }
-
