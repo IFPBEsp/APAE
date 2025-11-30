@@ -21,7 +21,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import Link from "next/link";
 import { PrimaryButton } from "@/components/ButtonPrimary";
 import { PasswordInput } from "@/components/PasswordInputs";
-import { FormSignUp, signUpSchema } from "@/schemas/authSchema";
+import { FormSignUp, signUpSchema } from "@/schemas/auth-schemas";
 import { toast } from "react-toastify";
 import { useRouter } from "next/navigation";
 
@@ -46,11 +46,11 @@ function Page() {
       return `${numbers.slice(0, 3)}.${numbers.slice(3)}`;
     if (numbers.length <= 9)
       return `${numbers.slice(0, 3)}.${numbers.slice(3, 6)}.${numbers.slice(
-        6
+        6,
       )}`;
     return `${numbers.slice(0, 3)}.${numbers.slice(3, 6)}.${numbers.slice(
       6,
-      9
+      9,
     )}-${numbers.slice(9, 11)}`;
   };
 
