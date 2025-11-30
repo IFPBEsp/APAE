@@ -1,25 +1,17 @@
-import { getApiBaseUrl } from "@/lib/client-service";
-
-const API_URL = getApiBaseUrl();
-
 export async function getAllProfissionais() {
-<<<<<<< Updated upstream:apps/agendamento/src/services/profissional-service.ts
-  const response = await fetch(API_URL + "/profissionais", { method: "GET" });
-=======
-  const response = await fetch(API_URL + "/professionals", { method: "GET" });
->>>>>>> Stashed changes:apps/apae/src/services/profissional-service.ts
+  const response = await fetch("/api/professionals", { method: "GET" });
   return response;
 }
 
 export async function deleteProfissional(id: string) {
-  const response = await fetch(API_URL + `/profissionais/${id}`, {
+  const response = await fetch(`/api/professionals/${id}`, {
     method: "DELETE",
   });
   return response;
 }
 
 export async function createProfissional(data: any) {
-  const response = await fetch(API_URL + "/profissionais", {
+  const response = await fetch("/api/professionals", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -30,7 +22,7 @@ export async function createProfissional(data: any) {
 }
 
 export async function updateProfissional(id: string, data: any) {
-  const response = await fetch(API_URL + `/profissionais/${id}`, {
+  const response = await fetch(`/api/professionals/${id}`, {
     method: "PUT",
     headers: {
       "Content-Type": "application/json",
@@ -51,7 +43,7 @@ export async function updateProfissional(id: string, data: any) {
 }
 
 export async function getProfissionalById(id: string) {
-  const response = await fetch(`${API_URL}/profissionais/${id}`, {
+  const response = await fetch(`/api/professionals/${id}`, {
     method: "GET",
   });
 

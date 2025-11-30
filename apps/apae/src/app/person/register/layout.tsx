@@ -1,9 +1,5 @@
-<<<<<<< Updated upstream:apps/management-app/src/app/(protected)/pessoa/cadastro/layout.tsx
-import Image from "@/app/assets/background_image.jpg";
 import { MembersRegisterProvider } from "@/hooks/use-members-register-context";
-=======
-import Image from "@/assets/background_image.jpg"
->>>>>>> Stashed changes:apps/apae/src/app/person/register/layout.tsx
+import Image from "@/assets/background_image.jpg";
 import { PageOrchestrator } from "./orchestrator";
 import { Nunito } from "next/font/google";
 

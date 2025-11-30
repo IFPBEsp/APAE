@@ -1,4 +1,3 @@
-import { getAllProfissionais } from "@/services/profissional-service";
 import { Profissional } from "@/types/profissional";
 import { useEffect, useState } from "react";
 
@@ -17,7 +16,7 @@ export function useFetchProfessionals() {
     async function fetchProfessionals() {
       try {
         setLoading(true);
-        const response = await getAllProfissionais();
+        const response = await fetch("/api/professionals", { method: "GET" });
 
         if (!response.ok) {
           throw new Error(`Erro: ${response.status}`);

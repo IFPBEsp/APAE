@@ -1,10 +1,5 @@
-<<<<<<< Updated upstream:apps/management-app/src/app/auth/layout.tsx
-import Image from "@/app/assets/background_image.jpg";
-import Logo from "@/app/assets/logo.png";
-=======
 import Image from "@/assets/background_image.jpg";
 import Logo from "@/assets/logo.png";
->>>>>>> Stashed changes:apps/apae/src/app/auth/layout.tsx
 
 export default function AuthLayout({
   children,
