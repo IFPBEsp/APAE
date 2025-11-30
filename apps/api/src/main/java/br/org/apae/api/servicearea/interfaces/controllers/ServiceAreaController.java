@@ -17,7 +17,6 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import java.util.List;
-import java.util.UUID;
 
 @RequestMapping("/service-areas")
 public interface ServiceAreaController {
@@ -38,21 +37,21 @@ public interface ServiceAreaController {
     @GetMapping
     ResponseEntity<List<ServiceAreaResponseDTO>> getAllServiceAreas();
 
-    @Operation(summary = "Excluir área de atendimento", description = "Remove uma área de atendimento pelo seu identificador (UUID).", responses = {
+    @Operation(summary = "Excluir área de atendimento", description = "Remove uma área de atendimento pelo seu identificador.", responses = {
             @ApiResponse(responseCode = "204", description = "Área de atendimento excluída com sucesso", content = @Content),
             @ApiResponse(responseCode = "404", description = "Área de atendimento não encontrada", content = @Content),
             @ApiResponse(responseCode = "500", description = "Erro interno no servidor", content = @Content)
     })
     @DeleteMapping("/{id}")
-    ResponseEntity<Void> deleteServiceArea(@PathVariable UUID id);
+    ResponseEntity<Void> deleteServiceArea(@PathVariable Integer id);
 
-    @Operation(summary = "Buscar área de atendimento por ID", description = "Obtém os dados de uma área de atendimento específica através do seu identificador (UUID).", responses = {
+    @Operation(summary = "Buscar área de atendimento por ID", description = "Obtém os dados de uma área de atendimento específica através do seu identificador.", responses = {
             @ApiResponse(responseCode = "200", description = "Área de atendimento encontrada", content = @Content(schema = @Schema(implementation = ServiceAreaResponseDTO.class))),
             @ApiResponse(responseCode = "404", description = "Área de atendimento não encontrada", content = @Content),
             @ApiResponse(responseCode = "500", description = "Erro interno no servidor", content = @Content)
     })
     @GetMapping("/{id}")
-    ResponseEntity<ServiceAreaResponseDTO> findByIdServiceArea(@PathVariable UUID id);
+    ResponseEntity<ServiceAreaResponseDTO> findByIdServiceArea(@PathVariable Integer id);
 
     @Operation(summary = "Atualizar área de atendimento", description = "Atualiza as informações de uma área de atendimento existente.", responses = {
             @ApiResponse(responseCode = "200", description = "Área de atendimento atualizada com sucesso", content = @Content(schema = @Schema(implementation = ServiceAreaResponseDTO.class))),
@@ -62,6 +61,6 @@ public interface ServiceAreaController {
             @ApiResponse(responseCode = "500", description = "Erro interno no servidor", content = @Content)
     })
     @PutMapping("/{id}")
-    ResponseEntity<ServiceAreaResponseDTO> updateServiceArea(@PathVariable UUID id, UpdateServiceAreaDTO dto);
+    ResponseEntity<ServiceAreaResponseDTO> updateServiceArea(@PathVariable Integer id, UpdateServiceAreaDTO dto);
 }
 

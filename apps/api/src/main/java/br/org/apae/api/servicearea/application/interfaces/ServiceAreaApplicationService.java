@@ -5,7 +5,6 @@ import br.org.apae.api.common.dto.servicearea.request.UpdateServiceAreaDTO;
 import br.org.apae.api.common.dto.servicearea.response.ServiceAreaResponseDTO;
 
 import java.util.List;
-import java.util.UUID;
 
 public interface ServiceAreaApplicationService {
 
@@ -13,10 +12,12 @@ public interface ServiceAreaApplicationService {
 
     List<ServiceAreaResponseDTO> findAllServiceAreas();
 
-    void deleteServiceArea(UUID id);
+    ServiceAreaResponseDTO findServiceAreaById(Integer id);
+    
+    ServiceAreaResponseDTO findServiceAreaByArea(String area);
+    
+    ServiceAreaResponseDTO updateServiceArea(Integer id, UpdateServiceAreaDTO dto);
 
-    ServiceAreaResponseDTO findServiceAreaById(UUID id);
-
-    ServiceAreaResponseDTO updateServiceArea(UUID id, UpdateServiceAreaDTO dto);
+    void deleteServiceArea(Integer id);
 }
 

@@ -1,3 +1,5 @@
+import { ServiceArea } from "./service-area";
+
 export interface Endereco {
   cep: string;
   city: string;
@@ -10,7 +12,7 @@ export interface Endereco {
 
 export interface Profissional {
   id: string;
-  healthSector: string;
+  serviceArea: ServiceArea;
   phoneNumber: string;
   professionalDocument: string;
   email: string;

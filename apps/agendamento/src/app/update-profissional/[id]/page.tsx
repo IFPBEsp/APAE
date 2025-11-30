@@ -43,11 +43,11 @@ export default function AtualizarProfissional(): JSX.Element {
   const { updateProfissional, loading, error, success } =
     useUpdateProfissional();
 
-  const defaultValues: UpdateFormValues = {
+  const defaultValues: Partial<UpdateFormValues> = {
     nomeCompleto: "",
     email: "",
     documentoProfissional: "",
-    areaSaude: "",
+    areaAtendimento: "",
     telefone: "",
     rg: "",
     estado: "",
@@ -72,7 +72,7 @@ export default function AtualizarProfissional(): JSX.Element {
       nomeCompleto: profissional.name,
       email: profissional.email,
       documentoProfissional: profissional.professionalDocument,
-      areaSaude: profissional.healthSector,
+      areaAtendimento: profissional.serviceArea.area,
       telefone: profissional.phoneNumber,
       rg: profissional.identityDocument,
       estado: profissional.address.state,
@@ -93,7 +93,7 @@ export default function AtualizarProfissional(): JSX.Element {
       name: values.nomeCompleto.trim(),
       email: values.email.trim(),
       professionalDocument: values.documentoProfissional.trim(),
-      healthSector: values.areaSaude,
+      serviceArea: values.areaAtendimento,
       phoneNumber: values.telefone,
       identityDocument: values.rg.trim(),
       address: {
@@ -167,7 +167,7 @@ export default function AtualizarProfissional(): JSX.Element {
             />
             <Controller
               control={form.control}
-              name="areaSaude"
+              name="areaAtendimento"
               render={({ field, fieldState }) => (
                 <FormItem>
                   <FormLabel>Área de atendimento *</FormLabel>

@@ -61,7 +61,7 @@ export default function VisualizarProfissional({ params }: PageProps) {
         </Avatar>
         <div className="text-center sm:text-left">
           <h2 className="text-xl font-bold text-[#0D4F97]">{dados.name}</h2>
-          <p className="text-base text-gray-600">{dados.healthSector}</p>
+          <p className="text-base text-gray-600">{dados.serviceArea.area}</p>
         </div>
       </div>
 

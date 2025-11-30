@@ -40,7 +40,7 @@ export default function CadastroProfissional(): JSX.Element {
     nomeCompleto: "",
     email: "",
     documentoProfissional: "",
-    areaSaude: "",
+    areaAtendimento: "",
     telefone: "",
     rg: "",
     estado: "",
@@ -66,7 +66,7 @@ export default function CadastroProfissional(): JSX.Element {
     const formData = new FormData();
 
     const payload = {
-      healthSector: values.areaSaude,
+      serviceArea: { area: values.areaAtendimento },
       phoneNumber: values.telefone,
       professionalDocument: values.documentoProfissional.trim(),
       email: values.email.trim(),
@@ -82,6 +82,7 @@ export default function CadastroProfissional(): JSX.Element {
         cep: values.cep,
       },
     };
+
     formData.append(
       "professional",
       new Blob([JSON.stringify(payload)], { type: "application/json" })
@@ -148,7 +149,7 @@ export default function CadastroProfissional(): JSX.Element {
 
             <Controller
               control={form.control}
-              name="areaSaude"
+              name="areaAtendimento"
               render={({ field, fieldState }) => (
                 <FormItem>
                   <FormLabel>Área de atendimento *</FormLabel>

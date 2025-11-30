@@ -6,6 +6,7 @@ import br.org.apae.api.common.dto.professional.request.CreateHealthProfessionalD
 import br.org.apae.api.common.dto.professional.request.UpdateHealthProfessionalDTO;
 import br.org.apae.api.common.dto.professional.request.documents.CreateProfessionalDocumentsDTO;
 import br.org.apae.api.common.dto.professional.response.HealthProfessionalResponseDTO;
+import br.org.apae.api.common.dto.servicearea.response.ServiceAreaResponseDTO;
 import br.org.apae.api.professional.application.interfaces.HealthProfessionalApplicationService;
 import br.org.apae.api.professional.application.mappers.HealthProfessionalMapper;
 import br.org.apae.api.professional.domain.exceptions.EmailConflictException;
@@ -14,6 +15,8 @@ import br.org.apae.api.professional.domain.exceptions.IdentityDocumentConflictEx
 import br.org.apae.api.professional.domain.exceptions.ProfessionalDocumentConflictException;
 import br.org.apae.api.professional.domain.model.HealthProfessional;
 import br.org.apae.api.professional.domain.repository.HealthProfessionalRepository;
+import br.org.apae.api.servicearea.application.interfaces.ServiceAreaApplicationService;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -29,13 +32,16 @@ public class HealthProfessionalApplicationServiceImpl implements HealthProfessio
     private final ProfessionalDocumentsService documentsService;
 
     private final AddressService addressService;
+    private final ServiceAreaApplicationService serviceAreaApplicationService;
 
     public HealthProfessionalApplicationServiceImpl(HealthProfessionalRepository repository,
-            HealthProfessionalMapper mapper, ProfessionalDocumentsService documentsService, AddressService addressService) {
+            HealthProfessionalMapper mapper, ProfessionalDocumentsService documentsService, AddressService addressService,
+            ServiceAreaApplicationService serviceAreaApplicationService) {
         this.repository = repository;
         this.mapper = mapper;
         this.documentsService = documentsService;
         this.addressService = addressService;
+        this.serviceAreaApplicationService = serviceAreaApplicationService;
     }
 
     @Override
@@ -52,8 +58,9 @@ public class HealthProfessionalApplicationServiceImpl implements HealthProfessio
         }
 
         AddressResponseDTO addressDto = addressService.createAddress(dto.address());
+        ServiceAreaResponseDTO serviceAreaDto = serviceAreaApplicationService.findServiceAreaByArea(dto.serviceArea().area());
 
-        HealthProfessional professionalToSave = mapper.toEntity(dto, addressDto);
+        HealthProfessional professionalToSave = mapper.toEntity(dto, serviceAreaDto, addressDto);
 
         HealthProfessional savedProfessional = repository.save(professionalToSave);
 
@@ -78,8 +85,9 @@ public class HealthProfessionalApplicationServiceImpl implements HealthProfessio
 
         AddressResponseDTO addressDto = addressService.updateAddress(entityToUpdate.getAddress().getId(),
                 dto.address());
+        ServiceAreaResponseDTO serviceAreaDto = serviceAreaApplicationService.findServiceAreaByArea(entityToUpdate.getServiceArea().getArea());
 
-        HealthProfessional updatedProfessional = mapper.updateEntityFromDto(entityToUpdate, dto, addressDto);
+        HealthProfessional updatedProfessional = mapper.updateEntityFromDto(entityToUpdate, dto, serviceAreaDto, addressDto);
 
         repository.save(updatedProfessional);
 

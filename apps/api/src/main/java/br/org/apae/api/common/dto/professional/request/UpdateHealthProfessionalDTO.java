@@ -1,13 +1,13 @@
 package br.org.apae.api.common.dto.professional.request;
 
 import br.org.apae.api.common.dto.address.UpdateAddressDTO;
+import br.org.apae.api.common.dto.servicearea.request.UpdateServiceAreaDTO;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.*;
 
 public record UpdateHealthProfessionalDTO(
-        @NotBlank(message = "O setor de saúde é obrigatório.")
-        @Size(min = 3, max = 100)
-        String healthSector,
+        @NotNull(message = "Área de atendimento é obrigatório.")
+        @Valid UpdateServiceAreaDTO serviceArea,
 
         @NotBlank(message = "O número de telefone é obrigatório.")
         String phoneNumber,

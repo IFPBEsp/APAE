@@ -1,5 +1,4 @@
 import * as z from "zod";
-import { HEALTH_AREAS } from "@/lib/health-areas";
 
 const nomeRegex = /^[A-Za-zÀ-ÖØ-öø-ÿ ]{3,100}$/;
 const telefoneRegex = /^\(\d{2}\) \d{5}-\d{4}$/;
@@ -28,7 +27,7 @@ export const cadastroSchema = z.object({
   documentoProfissional: z
     .string()
     .regex(docProfissionalRegex, "Documento profissional inválido"),
-  areaSaude: z.string().min(1, "Selecione uma área"),
+  areaAtendimento: z.string().min(1, "Selecione uma área"),
   rg: z
     .string()
     .regex(rgRegex, "RG inválido")

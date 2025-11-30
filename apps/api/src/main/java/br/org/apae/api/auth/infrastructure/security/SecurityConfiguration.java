@@ -26,8 +26,19 @@ public class SecurityConfiguration {
         .csrf(AbstractHttpConfigurer::disable)
         .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
         .authorizeHttpRequests(authorize -> authorize
-            // Permite sem autenticação as rotas de auth (com e sem prefixo de servlet /api)
-            .requestMatchers("/auth/**", "/api/auth/**", "/api/professionals/**", "/professionals/**", "/professionals", "/api/professionals").permitAll()
+            .requestMatchers(
+                // Permite sem autenticação as rotas (com e sem prefixo de servlet /api)
+                "/api/auth/**", 
+                "/api/professionals/**", 
+                "/api/service-areas/**",
+                "/api/professionals", 
+                "/api/service-areas", 
+                "/auth/**", 
+                "/professionals/**", 
+                "/service-areas/**",
+                "/professionals",
+                "/service-areas")
+            .permitAll()
             .requestMatchers(
                 // Swagger/OpenAPI (com e sem /api)
                 "/v3/api-docs/**",

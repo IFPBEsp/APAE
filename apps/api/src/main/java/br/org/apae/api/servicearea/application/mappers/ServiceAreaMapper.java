@@ -13,6 +13,10 @@ public class ServiceAreaMapper {
         return new ServiceArea(dto.area());
     }
 
+    public ServiceArea toEntityFromResponse(ServiceAreaResponseDTO serviceAreaResponseDTO) {
+        return new ServiceArea(serviceAreaResponseDTO.id(), serviceAreaResponseDTO.area());
+    }
+
     public ServiceArea updateEntityFromDto(ServiceArea entity, UpdateServiceAreaDTO dto) {
         entity.setArea(dto.area());
         return entity;

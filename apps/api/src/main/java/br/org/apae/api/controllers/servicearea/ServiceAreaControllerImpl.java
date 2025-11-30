@@ -34,20 +34,20 @@ public class ServiceAreaControllerImpl implements ServiceAreaController {
     }
 
     @Override
-    public ResponseEntity<Void> deleteServiceArea(UUID id) {
+    public ResponseEntity<Void> deleteServiceArea(Integer id) {
         this.service.deleteServiceArea(id);
         return ResponseEntity.noContent().build();
     }
 
     @Override
-    public ResponseEntity<ServiceAreaResponseDTO> findByIdServiceArea(UUID id) {
+    public ResponseEntity<ServiceAreaResponseDTO> findByIdServiceArea(Integer id) {
         ServiceAreaResponseDTO dto = service.findServiceAreaById(id);
         return ResponseEntity.ok(dto);
     }
 
     @Override
     public ResponseEntity<ServiceAreaResponseDTO> updateServiceArea(
-            UUID id,
+            Integer id,
             @RequestBody @Valid UpdateServiceAreaDTO dto) {
         return ResponseEntity.ok(this.service.updateServiceArea(id, dto));
     }

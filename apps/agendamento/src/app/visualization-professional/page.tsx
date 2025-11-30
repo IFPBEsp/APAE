@@ -75,13 +75,13 @@ export default function VisualizationProfessionalPage() {
     const matchesSearch =
       prof.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
       prof.professionalDocument.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesArea = areaFilter === "all" || prof.healthSector === areaFilter;
+    const matchesArea = areaFilter === "all" || prof.serviceArea.area === areaFilter;
     return matchesSearch && matchesArea;
   });
 
   const uniqueAreas = [
     "all",
-    ...Array.from(new Set(profissionais.map((p) => p.healthSector))),
+    ...Array.from(new Set(profissionais.map((p) => p.serviceArea.area))),
   ];
 
   return (
@@ -149,7 +149,7 @@ export default function VisualizationProfessionalPage() {
                     <TableRow key={prof.id}>
                       <TableCell className="font-medium">{prof.name}</TableCell>
                       <TableCell>{prof.professionalDocument}</TableCell>
-                      <TableCell>{prof.healthSector}</TableCell>
+                      <TableCell>{prof.serviceArea.area}</TableCell>
                       <TableCell className="hidden md:table-cell">
                         {prof.phoneNumber}
                       </TableCell>

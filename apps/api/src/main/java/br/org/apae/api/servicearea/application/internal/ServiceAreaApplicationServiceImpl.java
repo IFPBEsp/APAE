@@ -1,7 +1,6 @@
 package br.org.apae.api.servicearea.application.internal;
 
 import java.util.List;
-import java.util.UUID;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -42,7 +41,7 @@ public class ServiceAreaApplicationServiceImpl implements ServiceAreaApplication
 
     @Override
     @Transactional
-    public ServiceAreaResponseDTO updateServiceArea(UUID id, UpdateServiceAreaDTO dto) {
+    public ServiceAreaResponseDTO updateServiceArea(Integer id, UpdateServiceAreaDTO dto) {
         ServiceArea entityToUpdate = repository.findById(id)
                 .orElseThrow(ServiceAreaNotFoundException::new);
 
@@ -58,15 +57,23 @@ public class ServiceAreaApplicationServiceImpl implements ServiceAreaApplication
 
     @Override
     @Transactional(readOnly = true)
-    public ServiceAreaResponseDTO findServiceAreaById(UUID id) {
+    public ServiceAreaResponseDTO findServiceAreaById(Integer id) {
         return repository.findById(id)
                 .map(mapper::toResponseDTO)
                 .orElseThrow(ServiceAreaNotFoundException::new);
     }
 
     @Override
+    @Transactional(readOnly = true)
+    public ServiceAreaResponseDTO findServiceAreaByArea(String area) {
+        return repository.findByArea(area)
+                .map(mapper::toResponseDTO)
+                .orElseThrow(ServiceAreaNotFoundException::new);
+    }
+
+    @Override
     @Transactional
-    public void deleteServiceArea(UUID id) {
+    public void deleteServiceArea(Integer id) {
         if (!repository.existsById(id)) {
             throw new ServiceAreaNotFoundException();
         }

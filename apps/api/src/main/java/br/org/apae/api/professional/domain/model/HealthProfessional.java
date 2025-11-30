@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import java.util.UUID;
 
 import br.org.apae.api.address.domain.model.Address;
+import br.org.apae.api.servicearea.domain.model.ServiceArea;
 
 @Entity
 @Table(name = "profissionais_da_saude")
@@ -19,8 +20,9 @@ public class HealthProfessional {
     @Column(name = "email", nullable = false, unique = true)
     private String email;
 
-    @Column(name = "area_da_saude", nullable = false)
-    private String healthSector;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "area_de_atendimento", referencedColumnName = "area")
+    private ServiceArea serviceArea;
 
     @Column(name = "contato", nullable = false)
     private String phoneNumber;
@@ -38,24 +40,24 @@ public class HealthProfessional {
     protected HealthProfessional() {
     }
 
-    public HealthProfessional(String name, String email, String healthSector, String phoneNumber,
+    public HealthProfessional(String name, String email, ServiceArea serviceArea, String phoneNumber,
             String identityDocument,
             String professionalDocument, Address address) {
         this.name = name;
         this.email = email;
-        this.healthSector = healthSector;
+        this.serviceArea = serviceArea;
         this.phoneNumber = phoneNumber;
         this.identityDocument = identityDocument;
         this.professionalDocument = professionalDocument;
         this.address = address;
     }
 
-    public HealthProfessional(UUID id, String name, String email, String healthSector, String phoneNumber,
+    public HealthProfessional(UUID id, String name, String email, ServiceArea serviceArea, String phoneNumber,
             String identityDocument, String professionalDocument, Address address) {
         this.id = id;
         this.name = name;
         this.email = email;
-        this.healthSector = healthSector;
+        this.serviceArea = serviceArea;
         this.phoneNumber = phoneNumber;
         this.identityDocument = identityDocument;
         this.professionalDocument = professionalDocument;
@@ -74,8 +76,8 @@ public class HealthProfessional {
         return email;
     }
 
-    public String getHealthSector() {
-        return healthSector;
+    public ServiceArea getServiceArea() {
+        return serviceArea;
     }
 
     public String getPhoneNumber() {
