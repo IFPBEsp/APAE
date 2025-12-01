@@ -375,7 +375,7 @@ export async function saveAgendamento(
     }
 
     const res = await fetch(
-      `${API_BASE_URL}/agendamentos${id ? `/${id}` : ""}`,
+      `api/agendamentos${id ? `/${id}` : ""}`,
       {
         method: id ? "PUT" : "POST",
         headers: {

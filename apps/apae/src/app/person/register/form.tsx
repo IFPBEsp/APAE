@@ -10,8 +10,6 @@ import { cn } from "@/lib/utils";
 import React from "react";
 import { ControllerProps, FieldPath, FieldValues } from "react-hook-form";
 
-import * as CheckboxPrimitive from "@radix-ui/react-checkbox";
-
 function MembersRegisterForm({
   title,
   buttons,

@@ -4,9 +4,9 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Plus } from "lucide-react";
-import { PatientCard } from "@/components/patient-card";
+import { PatientCard } from "@/components/shared/patient-card";
 import { Patient } from "@/schemas/authSchema";
-import { SearchFilters } from "@/components/search-filters";
+import { SearchFilters } from "@/components/shared/filters/search-filters";
 import { toast } from "react-toastify";
 
 export default function PatientsAndStudentsScreen() {

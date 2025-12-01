@@ -2,7 +2,7 @@
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import DocumentCategoriesCard from "@/components/DocumentCategoriesCard";
+import DocumentCategoriesCard from "@/components/shared/DocumentCategoriesCard";
 import { SquarePen } from "lucide-react";
 import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
