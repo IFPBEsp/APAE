@@ -12,7 +12,7 @@ export async function GET(request: Request, { params }: IParams) {
   try {
     const { id } = params;
     const api = await createBaseApi();
-    const { data } = await api.get(`/transtornos/${id}`);
+    const { data } = await api.get(`/disorders/${id}`);
 
     return NextResponse.json(data);
   } catch (error: any) {
@@ -40,7 +40,7 @@ export async function PUT(request: Request, { params }: IParams) {
     }
     
     const api = await createBaseApi();
-    const { data } = await api.put(`/transtornos/${id}`, validation.data);
+    const { data } = await api.put(`/disorders/${id}`, validation.data);
 
     return NextResponse.json(data);
   } catch (error: any) {
@@ -55,7 +55,7 @@ export async function DELETE(request: Request, { params }: IParams) {
   try {
     const { id } = params;
     const api = await createBaseApi();
-    const { data } = await api.delete(`/transtornos/${id}`);
+    const { data } = await api.delete(`/disorders/${id}`);
 
     return NextResponse.json(data);
   } catch (error: any) {

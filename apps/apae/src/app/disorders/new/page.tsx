@@ -33,7 +33,7 @@ export default function NewTranstornoPage() {
       }
 
       toast.success("Transtorno criado com sucesso!");
-      router.push("/transtornos");
+      router.push("/disorders");
       router.refresh();
     } catch (error: any) {
       toast.error(error.message);
@@ -41,7 +41,7 @@ export default function NewTranstornoPage() {
   };
 
   return (
-    <div className="!bg-slate-100 min-h-screen">
+    <div className="flex-1 bg-background min-h-screen">
       <main className="container mx-auto p-4 md:p-6">
         <div className="bg-white rounded-xl shadow-md border-2 p-6 mb-4">
           <Button 
