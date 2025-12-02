@@ -1,11 +1,11 @@
 package br.org.apae.api.address.application.mapper;
 
+import org.springframework.stereotype.Component;
+
 import br.org.apae.api.address.domain.model.Address;
 import br.org.apae.api.common.dto.address.AddressResponseDTO;
 import br.org.apae.api.common.dto.address.CreateAddressDTO;
 import br.org.apae.api.common.dto.address.UpdateAddressDTO;
-
-import org.springframework.stereotype.Component;
 
 @Component
 public class AddressMapper {

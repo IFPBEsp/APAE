@@ -1,8 +1,14 @@
 package br.org.apae.api.professional.application.mappers;
 
+import java.util.List;
+import java.util.Optional;
+
+import org.springframework.stereotype.Component;
+
 import br.org.apae.api.address.application.mapper.AddressMapper;
-import br.org.apae.api.common.dto.availability.response.AvailabilityResponseDTO;
 import br.org.apae.api.common.dto.address.AddressResponseDTO;
+import br.org.apae.api.common.dto.address.CreateAddressDTO;
+import br.org.apae.api.common.dto.availability.response.AvailabilityResponseDTO;
 import br.org.apae.api.common.dto.professional.request.CreateHealthProfessionalDTO;
 import br.org.apae.api.common.dto.professional.request.UpdateHealthProfessionalDTO;
 import br.org.apae.api.common.dto.professional.response.HealthProfessionalResponseDTO;
@@ -10,10 +16,6 @@ import br.org.apae.api.professional.domain.model.Availability;
 import br.org.apae.api.professional.domain.model.Enum.Day;
 import br.org.apae.api.professional.domain.model.Enum.Shift;
 import br.org.apae.api.professional.domain.model.HealthProfessional;
-import org.springframework.stereotype.Component;
-
-import java.util.List;
-import java.util.Optional;
 
 @Component
 public class HealthProfessionalMapper {
@@ -41,7 +43,7 @@ public class HealthProfessionalMapper {
                     .map(a -> {
                         Day dayEnum = Day.valueOf(a.day().toUpperCase());
                         Shift shiftEnum = Shift.valueOf(a.shift().toUpperCase());
-                        Availability availability = new Availability(shiftEnum, dayEnum,professional);
+                        Availability availability = new Availability(shiftEnum, dayEnum, professional);
                         availability.setProfessional(professional);
                         return availability;
                     })
@@ -52,7 +54,6 @@ public class HealthProfessionalMapper {
         return professional;
     }
 
-    // Converte HealthProfessional em DTO de resposta
     public HealthProfessionalResponseDTO toResponseDTO(HealthProfessional entity) {
         if (entity == null) return null;
 
@@ -79,11 +80,11 @@ public class HealthProfessionalMapper {
         );
     }
 
-    // Atualiza HealthProfessional com UpdateHealthProfessionalDTO
+
     public void updateEntityFromDto(
             HealthProfessional entity,
             UpdateHealthProfessionalDTO dto,
-            AddressResponseDTO addressDto
+            CreateAddressDTO addressDto
     ) {
         entity.setName(dto.name());
         entity.setEmail(dto.email());
@@ -92,8 +93,9 @@ public class HealthProfessionalMapper {
         entity.setIdentityDocument(dto.identityDocument());
         entity.setProfessionalDocument(dto.professionalDocument());
 
+
         if (addressDto != null) {
-            entity.setAddress(addressMapper.toEntityFromResponse(addressDto));
+            entity.setAddress(addressMapper.toEntity(addressDto));
         }
     }
 }

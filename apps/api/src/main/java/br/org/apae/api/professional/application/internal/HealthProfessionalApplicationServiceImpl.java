@@ -1,8 +1,17 @@
 package br.org.apae.api.professional.application.internal;
 
+import java.util.List;
+import java.util.UUID;
+
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import br.org.apae.api.address.application.interfaces.AddressService;
 import br.org.apae.api.address.application.mapper.AddressMapper;
 import br.org.apae.api.common.dto.address.AddressResponseDTO;
+import br.org.apae.api.common.dto.address.CreateAddressDTO;
 import br.org.apae.api.common.dto.professional.request.CreateHealthProfessionalDTO;
 import br.org.apae.api.common.dto.professional.request.UpdateHealthProfessionalDTO;
 import br.org.apae.api.common.dto.professional.response.HealthProfessionalResponseDTO;
@@ -15,13 +24,6 @@ import br.org.apae.api.professional.domain.model.Enum.Day;
 import br.org.apae.api.professional.domain.model.Enum.Shift;
 import br.org.apae.api.professional.domain.model.HealthProfessional;
 import br.org.apae.api.professional.domain.repository.HealthProfessionalRepository;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
-import java.util.List;
-import java.util.UUID;
 
 @Service
 public class HealthProfessionalApplicationServiceImpl implements HealthProfessionalApplicationService {
@@ -33,7 +35,8 @@ public class HealthProfessionalApplicationServiceImpl implements HealthProfessio
 
     public HealthProfessionalApplicationServiceImpl(HealthProfessionalRepository repository,
                                                     HealthProfessionalMapper mapper,
-                                                    AddressService addressService, AddressMapper addressMapper) {
+                                                    AddressService addressService,
+                                                    AddressMapper addressMapper) {
         this.repository = repository;
         this.mapper = mapper;
         this.addressService = addressService;
@@ -43,29 +46,31 @@ public class HealthProfessionalApplicationServiceImpl implements HealthProfessio
     @Override
     @Transactional
     public HealthProfessionalResponseDTO createProfessional(CreateHealthProfessionalDTO dto) {
-        if (repository.existsByProfessionalDocument(dto.professionalDocument())) {
-            throw new ProfessionalDocumentConflictException();
-        }
-        if (repository.existsByEmail(dto.email())) {
-            throw new ProfessionalDocumentConflictException();
-        }
 
-        addressService.createAddress(dto.address());
+        if (repository.existsByProfessionalDocument(dto.professionalDocument()))
+            throw new ProfessionalDocumentConflictException();
+
+        if (repository.existsByEmail(dto.email()))
+            throw new ProfessionalDocumentConflictException();
+
+        var savedAddress = addressService.createAddress(dto.address());
 
         HealthProfessional professionalToSave = mapper.toEntity(dto);
-        professionalToSave.setAddress(addressMapper.toEntity(dto.address()));
-        HealthProfessional savedProfessional = repository.save(professionalToSave);
+        professionalToSave.setAddress(addressMapper.toEntityFromResponse(savedAddress));
 
+        HealthProfessional savedProfessional = repository.save(professionalToSave);
         return mapper.toResponseDTO(savedProfessional);
     }
 
     @Override
     @Transactional
     public HealthProfessionalResponseDTO updateProfessional(UUID id, UpdateHealthProfessionalDTO dto) {
+
         HealthProfessional entityToUpdate = repository.findById(id)
                 .orElseThrow(HealthProfessionalNotFoundException::new);
 
-        if (!entityToUpdate.getEmail().equalsIgnoreCase(dto.email()) && repository.existsByEmail(dto.email())) {
+        if (!entityToUpdate.getEmail().equalsIgnoreCase(dto.email())
+                && repository.existsByEmail(dto.email())) {
             throw new ProfessionalDocumentConflictException();
         }
 
@@ -74,13 +79,23 @@ public class HealthProfessionalApplicationServiceImpl implements HealthProfessio
             throw new ProfessionalDocumentConflictException();
         }
 
-        AddressResponseDTO addressDto = addressService.updateAddress(
+        AddressResponseDTO updatedAddress = addressService.updateAddress(
                 entityToUpdate.getAddress().getId(), dto.address()
         );
 
-        mapper.updateEntityFromDto(entityToUpdate, dto, addressDto);
-        updateAvailabilities(entityToUpdate, dto);
+        CreateAddressDTO addressDtoForMapper = new CreateAddressDTO(
+                updatedAddress.city(),
+                updatedAddress.cep(),
+                updatedAddress.state(),
+                updatedAddress.neighborhood(),
+                updatedAddress.street(),
+                updatedAddress.number(),
+                updatedAddress.complement()
+        );
 
+        mapper.updateEntityFromDto(entityToUpdate, dto, addressDtoForMapper);
+
+        updateAvailabilities(entityToUpdate, dto);
         repository.save(entityToUpdate);
 
         return mapper.toResponseDTO(entityToUpdate);
@@ -97,9 +112,9 @@ public class HealthProfessionalApplicationServiceImpl implements HealthProfessio
     @Override
     @Transactional
     public void deleteProfessional(UUID id) {
-        if (!repository.existsById(id)) {
+        if (!repository.existsById(id))
             throw new HealthProfessionalNotFoundException();
-        }
+
         repository.deleteById(id);
     }
 
@@ -110,18 +125,18 @@ public class HealthProfessionalApplicationServiceImpl implements HealthProfessio
                 .map(mapper::toResponseDTO);
     }
 
-
     private void updateAvailabilities(HealthProfessional entity, UpdateHealthProfessionalDTO dto) {
+
         if (dto.availabilities() == null) return;
 
         entity.getAvailabilities().clear();
 
         List<Availability> updatedAvailabilities = dto.availabilities().stream()
-                .map(a -> {
-                    Day day = Day.valueOf(a.day().toUpperCase());
-                    Shift shift = Shift.valueOf(a.shift().toUpperCase());
-                    return new Availability(shift, day, entity);
-                })
+                .map(a -> new Availability(
+                        Shift.valueOf(a.shift().toUpperCase()),
+                        Day.valueOf(a.day().toUpperCase()),
+                        entity
+                ))
                 .toList();
 
         entity.getAvailabilities().addAll(updatedAvailabilities);
