@@ -56,6 +56,16 @@ public class DisorderApplicationServiceImpl implements DisorderApplicationServic
 
     @Override
     @Transactional(readOnly = true)
+    public Set<DisorderResponseDTO> findDisordersFromUpdateDTOs(Set<UpdateDisorderDTO> updateDisorderDtos) {
+        Set<CreateDisorderDTO> createDisorderDtos = updateDisorderDtos.stream()
+                .map(updateDto -> new CreateDisorderDTO(updateDto.name()))
+                .collect(Collectors.toSet());
+
+        return this.findDisorders(createDisorderDtos);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
     public List<DisorderResponseDTO> findAllDisorders() {
         return repository.findAll().stream()
                 .map(mapper::toResponseDTO)

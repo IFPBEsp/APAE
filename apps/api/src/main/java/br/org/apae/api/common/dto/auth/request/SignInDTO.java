@@ -1,5 +1,9 @@
 package br.org.apae.api.common.dto.auth.request;
 
-public record SignInDTO(String username, String password) {
+import br.org.apae.api.common.validations.EmailOrCPF;
+
+public record SignInDTO(
+        @EmailOrCPF(checkCpfDigits = false) String username,
+        String password) {
 
 }
