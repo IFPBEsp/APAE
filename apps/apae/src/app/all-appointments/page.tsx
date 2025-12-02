@@ -187,26 +187,6 @@ export default function AllApointments() {
             titleClassName="text-[#0D4F97]"
             valueClassName="text-[#0D4F97]"
           />
-          <InfoCard
-            title="Sem justificativa"
-            icon={MessageCircleWarning}
-            value={semJustificativa.length}
-            iconColor="text-red-400"
-            subtitle="Pacientes que não justificaram suas faltas"
-            titleClassName="text-[#0D4F97]"
-            valueClassName="text-[#0D4F97]"
-          />
-          <InfoCard
-            title="Não confirmados"
-            icon={CalendarX}
-            value={
-              appointments.filter((appointment) => !appointment.confirmado)
-                .length
-            }
-            subtitle="Consultas que não foram confirmadas"
-            titleClassName="text-[#0D4F97]"
-            valueClassName="text-[#0D4F97]"
-          />
         </div>
 
         <div className="flex items-center gap-2 mb-4">

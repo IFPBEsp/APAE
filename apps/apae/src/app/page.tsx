@@ -143,31 +143,6 @@ export default function DashboardPage() {
             titleClassName="text-[#0D4F97]"
             valueClassName="text-[#0D4F97]"
           />
-          <InfoCard
-            title="Sem justificativa"
-            icon={MessageCircleWarning}
-            value={
-              appointments.filter(
-                (appointment) =>
-                  !appointment.confirmado && !appointment.justificativa
-              ).length
-            }
-            iconColor="text-red-400"
-            subtitle="Pacientes que não justificaram suas faltas"
-            titleClassName="text-[#0D4F97]"
-            valueClassName="text-[#0D4F97]"
-          />
-          <InfoCard
-            title="Não confirmados"
-            icon={CalendarX}
-            value={
-              appointments.filter((appointment) => !appointment.confirmado)
-                .length
-            }
-            subtitle="Consultas que não foram confirmadas"
-            titleClassName="text-[#0D4F97]"
-            valueClassName="text-[#0D4F97]"
-          />
         </div>
 
         <Card>
@@ -188,7 +163,7 @@ export default function DashboardPage() {
                     Ações
                   </TableHead>
                   <TableHead className="px-3 py-2 text-xs text-[#0D4F97] sm:px-4 sm:py-3 sm:text-sm">
-                    Confirmada
+                    Realizada
                   </TableHead>
                 </TableRow>
               </TableHeader>
