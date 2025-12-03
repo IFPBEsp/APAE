@@ -1,3 +1,5 @@
+export type UUID = string;
+
 export interface Agendamento {
   id: string;
   paciente: Paciente;

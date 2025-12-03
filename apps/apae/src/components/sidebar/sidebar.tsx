@@ -14,11 +14,10 @@ import {
   ChecklistIcon,
   ChevronDownIcon,
   ClockIcon,
+  AlertIcon,
   IdBadgeIcon,
   TasklistIcon,
   ArrowLeftIcon,
-  PeopleIcon,
-  PersonIcon,
 } from "@primer/octicons-react";
 import Image from "next/image";
 import Link from "next/link";
@@ -63,7 +62,6 @@ export function AppSidebar() {
           </div>
         </div>
       </SidebarHeader>
-
       <SidebarContent>
         <Collapsible defaultOpen={false} className="group/collapsible">
           <SidebarGroup>
@@ -111,11 +109,25 @@ export function AppSidebar() {
                     </SidebarMenuButton>
                   </Link>
                 </SidebarMenuItem>
+                <SidebarMenuItem>
+                  <Link href="/absence" passHref>
+                    <SidebarMenuButton
+                      className={`${styles.menuButton} font-base gap-2 ${cn(
+                        "h-10 transition-colors",
+                        pathname == "/absence"
+                          ? "bg-[#FFFFFF] !text-[#000000]"
+                          : "text-[#0D4F97] hover:bg-[#0D4F97] hover:!text-white"
+                      )}`}
+                    >
+                      <AlertIcon size={16} />
+                      <span className="text-base">Faltas</span>
+                    </SidebarMenuButton>
+                  </Link>
+                </SidebarMenuItem>
               </SidebarMenu>
             </CollapsibleContent>
           </SidebarGroup>
         </Collapsible>
-
         <SidebarGroup className="m-0 pt-0">
           <Link href="/visualization-professional" passHref>
             <SidebarMenuButton
@@ -131,57 +143,6 @@ export function AppSidebar() {
             </SidebarMenuButton>
           </Link>
         </SidebarGroup>
-
-        <Collapsible defaultOpen={false} className="group/collapsible">
-          <SidebarGroup>
-            <SidebarGroupLabel asChild>
-              <CollapsibleTrigger
-                className={`${styles.menuButton} font-base gap-2`}
-              >
-                <PeopleIcon size={20} />
-                <span className="text-base">Pacientes</span>
-                <ChevronDownIcon
-                  size={16}
-                  className="ml-auto transition-transform group-data-[state=open]/collapsible:rotate-180"
-                />
-              </CollapsibleTrigger>
-            </SidebarGroupLabel>
-            <CollapsibleContent>
-              <SidebarMenu>
-                <SidebarMenuItem>
-                  <Link href="/visualization-patients" passHref>
-                    <SidebarMenuButton
-                      className={`${styles.menuButton} font-base gap-2 ${cn(
-                        "h-10 transition-colors",
-                        pathname == "/visualization-patients"
-                          ? "bg-[#FFFFFF] !text-[#000000]"
-                          : "text-[#0D4F97] hover:bg-[#0D4F97] hover:!text-white"
-                      )}`}
-                    >
-                      <PersonIcon size={16} />
-                      <span className="text-base">Pessoas</span>
-                    </SidebarMenuButton>
-                  </Link>
-                </SidebarMenuItem>
-                <SidebarMenuItem>
-                  <Link href="/disorders" passHref>
-                    <SidebarMenuButton
-                      className={`${styles.menuButton} font-base gap-2 ${cn(
-                        "h-10 transition-colors",
-                        pathname == "/disorders"
-                          ? "bg-[#FFFFFF] !text-[#000000]"
-                          : "text-[#0D4F97] hover:bg-[#0D4F97] hover:!text-white"
-                      )}`}
-                    >
-                      <TasklistIcon size={16} />
-                      <span className="text-base">Transtornos</span>
-                    </SidebarMenuButton>
-                  </Link>
-                </SidebarMenuItem>
-              </SidebarMenu>
-            </CollapsibleContent>
-          </SidebarGroup>
-        </Collapsible>
       </SidebarContent>
       <SidebarFooter />
     </Sidebar>
