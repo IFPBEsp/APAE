@@ -114,7 +114,7 @@ export default function PatientsAndStudentsScreen() {
               asChild
               className="!bg-[#0D4F97] !hover:bg-[#0b427d] text-white"
             >
-              <Link href="/pessoa/cadastro">Adicionar</Link>
+              <Link href="/person/register">Adicionar</Link>
             </Button>
           </div>
           {renderContent()}
@@ -124,7 +124,7 @@ export default function PatientsAndStudentsScreen() {
         asChild
         className="fixed bottom-6 right-6 h-[53px] w-[53px] rounded-full shadow-lg md:hidden bg-[#0D4F97] !hover:bg-[#0b427d]"
       >
-        <Link href="/pessoa/cadastro">
+        <Link href="/person/register">
           <Plus className="h-7 w-7" />
           <span className="sr-only">Adicionar Pessoa</span>
         </Link>

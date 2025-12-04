@@ -92,7 +92,7 @@ export function PatientCard({ patient }: PatientCardProps) {
                                 asChild
                                 className="w-[106px] h-[23px] rounded-[5px] !bg-[#0D4F97] !hover:bg-[#0b427d] !text-white !text-[12px]"
                             >
-                                <Link href={`/pessoa/${patient.id}`}>Ver mais</Link>
+                                <Link href={`/person/${patient.id}`}>Ver mais</Link>
                             </Button>
                         </div>
                     </div>

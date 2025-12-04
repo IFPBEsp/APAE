@@ -158,7 +158,7 @@ export default function PersonDetailsPage() {
 
       <DocumentCategoriesCard
         onClickCategoria={(tipo: string) => {
-          router.push(`/pessoa/${id}/documentos/${tipo}`);
+          router.push(`/person/${id}/documentos/${tipo}`);
         }}
       />
 

@@ -4,5 +4,5 @@ export const NAV = [
   { label: "Pessoas", href: "/visualization-patients", icon: Users },
   { label: "Dashboard", href: "/dashboard", icon: BarChart },
   { label: "Transtornos", href: "/disorders", icon: SquareActivity},
-  { label: "Vacinas", href: "/vacinas", icon: BriefcaseMedical},
+  { label: "Vacinas", href: "/vaccines", icon: BriefcaseMedical},
 ]
