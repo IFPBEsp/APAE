@@ -60,4 +60,5 @@ export const cadastroSchema = z.object({
   ),
   termoVoluntariado: fileSchema,
   curriculo: fileSchema,
+  anexoQualquer: fileSchema.optional(),
 });

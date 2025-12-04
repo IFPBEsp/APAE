@@ -30,18 +30,14 @@ import { cadastroSchema } from "@/schemas/profissional.schema";
 import { STATES } from "@/lib/states";
 import { JSX, useEffect } from "react";
 import HealthAreaSelect from "@/components/shared/HealthAreaSelect";
+import Disponibilidade from "@/components/forms/DisponibilidadeForm";
 
 type UpdateFormValues = z.infer<typeof cadastroSchema>;
 
 export default function AtualizarProfissional(): JSX.Element {
   const router = useRouter();
-  const {
-    profissional,
-    loading: loadingProf,
-    error: errorProf,
-  } = useGetByIdProfissional();
-  const { updateProfissional, loading, error, success } =
-    useUpdateProfissional();
+  const { profissional, loading: loadingProf, error: errorProf,} = useGetByIdProfissional();
+  const { updateProfissional, loading, error, success } = useUpdateProfissional();
 
   const defaultValues: Partial<UpdateFormValues> = {
     nomeCompleto: "",
@@ -58,6 +54,9 @@ export default function AtualizarProfissional(): JSX.Element {
     complemento: "",
     cep: "",
     disponibilidade: [],
+    termoVoluntariado: undefined,
+    curriculo: undefined,
+    anexoQualquer: undefined,
   };
 
   const form = useForm<UpdateFormValues>({
@@ -82,33 +81,51 @@ export default function AtualizarProfissional(): JSX.Element {
       numero: profissional.address.number,
       complemento: profissional.address.complement,
       cep: profissional.address.cep,
+      termoVoluntariado: undefined,
+      curriculo: undefined,
+      anexoQualquer: undefined,
     });
   }, [profissional, form]);
 
-  const onSubmit: SubmitHandler<UpdateFormValues> = async (values) => {
-    console.log("Form state:", form.formState);
-    if (!profissional?.id) return;
+const onSubmit: SubmitHandler<UpdateFormValues> = async (values) => {
+  if (!profissional?.id) return;
 
-    const payload = {
-      name: values.nomeCompleto.trim(),
-      email: values.email.trim(),
-      professionalDocument: values.documentoProfissional.trim(),
-      serviceArea: values.areaAtendimento,
-      phoneNumber: values.telefone,
-      identityDocument: values.rg.trim(),
-      address: {
-        state: values.estado,
-        city: values.cidade.trim(),
-        neighborhood: values.bairro.trim(),
-        street: values.rua.trim(),
-        number: values.numero?.trim(),
-        complement: values.complemento?.trim(),
-        cep: values.cep,
-      },
-    };
+  const formData = new FormData();
 
-    await updateProfissional(profissional.id, payload);
+  const payload = {
+    serviceArea: { area: values.areaAtendimento },
+    phoneNumber: values.telefone,
+    professionalDocument: values.documentoProfissional.trim(),
+    email: values.email.trim(),
+    name: values.nomeCompleto.trim(),
+    identityDocument: values.rg.trim(),
+    address: {
+      state: values.estado,
+      city: values.cidade.trim(),
+      neighborhood: values.bairro.trim(),
+      street: values.rua.trim(),
+      number: values.numero?.trim(),
+      complement: values.complemento?.trim(),
+      cep: values.cep,
+    },
   };
+
+  formData.append(
+    "professional",
+    new Blob([JSON.stringify(payload)], { type: "application/json" })
+  );
+
+  if (values.termoVoluntariado)
+    formData.append("volunteerAgreement", values.termoVoluntariado);
+
+  if (values.curriculo)
+    formData.append("curriculum", values.curriculo);
+
+  if (values.anexoQualquer)
+    formData.append("anexoQualquer", values.anexoQualquer);
+
+  await updateProfissional(profissional.id, formData);
+};
 
   const onCancel = () => {
     router.push("/visualization-professional");
@@ -345,6 +362,59 @@ export default function AtualizarProfissional(): JSX.Element {
               )}
             />
           </div>
+          <FormField
+            control={form.control}
+            name="termoVoluntariado"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Termo do Voluntário</FormLabel>
+                <FormControl>
+                  <Input
+                    type="file"
+                    accept="application/pdf"
+                    onChange={(e) => field.onChange(e.target.files?.[0] ?? null)}
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="curriculo"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Currículo</FormLabel>
+                <FormControl>
+                  <Input
+                    type="file"
+                    accept="application/pdf"
+                    onChange={(e) => field.onChange(e.target.files?.[0] ?? null)}
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="anexoQualquer"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Anexo qualquer</FormLabel>
+                <FormControl>
+                  <Input
+                    type="file"
+                    accept="application/pdf"
+                    onChange={(e) => field.onChange(e.target.files?.[0] ?? null)}
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <Disponibilidade control={form.control} watch={form.watch} />
+
 
           {loading && <p className="text-blue-500">Salvando...</p>}
           {error && <p className="text-red-500">{error}</p>}

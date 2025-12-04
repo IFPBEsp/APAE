@@ -23,13 +23,10 @@ export async function createProfissional(formData: FormData) {
   return response;
 }
 
-export async function updateProfissional(id: string, data: any) {
+export async function updateProfissional(id: string, formData: FormData) {
   const response = await fetch(API_URL + `/professionals/${id}`, {
     method: "PUT",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify(data),
+    body: formData,
   });
 
   if (!response.ok) {

@@ -45,5 +45,7 @@ public class ProfessionalDocumentsService {
                 storeDocument(professional, DocumentType.VOLUNTEER_AGREEMENT,
                                 documents.volunteerAgreement());
                 storeDocument(professional, DocumentType.CURRICULUM, documents.curriculum());
+                storeDocument(professional, DocumentType.ATTACHMENTANY, documents.attachmentAny());
         }
 }
+ 
