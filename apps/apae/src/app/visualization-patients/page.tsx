@@ -10,6 +10,7 @@ import { SearchFilters } from "@/components/shared/filters/search-filters";
 import { toast } from "react-toastify";
 import { useDebounce } from "@/hooks/use-debounce";
 import { usePatientFilters } from "@/hooks/use-patients-filters";
+import { PatientCardData } from "@/schemas/patientSchema";
 
 export default function PatientsAndStudentsScreen() {
   const [patients, setPatients] = useState<PatientCardData[]>([]);
