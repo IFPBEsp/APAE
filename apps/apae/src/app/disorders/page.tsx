@@ -57,11 +57,6 @@ export default function TranstornosPage() {
       toast.error(err.message);
     }
   };
-
-  // TODO: Refatorar para usar query params.
-  // A filtragem deve ser movida para o backend. O frontend
-  // deve enviar uma query param (ex: /api/transtornos?search=tdah)
-  // e a API deve retornar apenas os dados já filtrados.
   const filteredTranstornos = transtornos.filter((transtorno) =>
     transtorno.name.toLowerCase().includes(searchName.toLowerCase())
   );

@@ -14,7 +14,7 @@ import br.org.apae.api.documents.interfaces.dto.PutDocumentArgsDTO;
 import br.org.apae.api.patient.domain.model.Patient;
 
 @Service
-class PatientDocumentsService {
+public class PatientDocumentsService {
     private final DocumentApplicationService documentService;
 
     public PatientDocumentsService(

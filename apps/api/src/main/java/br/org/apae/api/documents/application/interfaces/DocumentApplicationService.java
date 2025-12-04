@@ -6,8 +6,8 @@ import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 
 import br.org.apae.api.documents.interfaces.dto.DocumentDTO;
-import br.org.apae.api.documents.interfaces.dto.DocumentWriteResponseDTO;
 import br.org.apae.api.documents.interfaces.dto.GetDocumentArgsDTO;
+import br.org.apae.api.documents.interfaces.dto.GetPresignedDocumentUrlArgsDTO;
 import br.org.apae.api.documents.interfaces.dto.ListDocumentsArgsDTO;
 import br.org.apae.api.documents.interfaces.dto.PutDocumentArgsDTO;
 import br.org.apae.api.documents.interfaces.dto.RemoveDocumentArgsDTO;
@@ -15,11 +15,15 @@ import br.org.apae.api.documents.interfaces.exceptions.InsufficientDataException
 import br.org.apae.api.documents.interfaces.exceptions.InvalidResponseException;
 
 public interface DocumentApplicationService {
-    DocumentWriteResponseDTO putDocument(PutDocumentArgsDTO dto)
+    DocumentDTO putDocument(PutDocumentArgsDTO dto)
             throws InsufficientDataException, IOException, InvalidKeyException,
             InvalidResponseException, NoSuchAlgorithmException;
 
     InputStream getDocument(GetDocumentArgsDTO dto)
+            throws InsufficientDataException, IOException, InvalidKeyException,
+            InvalidResponseException, NoSuchAlgorithmException;
+
+    String getPresignedDocumentUrl(GetPresignedDocumentUrlArgsDTO dto)
             throws InsufficientDataException, IOException, InvalidKeyException,
             InvalidResponseException, NoSuchAlgorithmException;
 
