@@ -1,4 +1,4 @@
-import { UUID } from '@/app/services/agendamentoService';
+import { UUID } from '@/app/services/appointmentService';
 
 export interface CreateAbsenceDTO {
   generatedAppointmentId: UUID;

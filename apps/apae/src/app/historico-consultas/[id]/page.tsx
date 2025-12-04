@@ -10,7 +10,7 @@ import {
 import {
   Agendamento,
   getAgendamentoRealizadoById,
-} from "@/app/services/agendamentoService";
+} from "@/app/services/appointmentService";
 import TrashButton from "@/components/buttons/trashButton";
 import { separaETransformaEmNumero } from "@/lib/utils";
 

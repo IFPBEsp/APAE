@@ -1,16 +1,13 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { format } from "date-fns";
-import { ptBR } from "date-fns/locale";
+import { ptBR } from 'date-fns/locale';
+import { formatDatePTBR } from '@/lib/utils';
 import {
   CalendarDays,
-  MessageCircleWarning,
-  CalendarX,
   SearchIcon,
   Users,
 } from "lucide-react";
-
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import {
@@ -39,11 +36,10 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import {
-  Agendamento,
-  getAgendamentos,
+  Appointment, 
+  getAppointments,
   getAreasDaSaude,
-} from "../services/agendamentoService";
-import { separaETransformaEmNumero } from "@/lib/utils";
+} from "../services/appointmentService";
 import Link from "next/link";
 import {
   Dialog,
@@ -62,17 +58,18 @@ type Area = {
 
 export default function AllApointments() {
   const [selectedDate, setSelectedDate] = useState<Date | undefined>(undefined);
-  const [selectedArea, setSelectedArea] = useState("");
-  const [searchName, setSearchName] = useState("");
+  const [selectedArea, setSelectedArea] = useState('');
+  const [searchName, setSearchName] = useState('');
   const [areas, setAreas] = useState<Area[]>([]);
-  const [appointments, setAppointments] = useState<Agendamento[]>([]);
+  const [appointments, setAppointments] = useState<Appointment[]>([]);
 
-  useEffect(() => {
+  useEffect(() =>{
     const fetchAppointments = async () => {
-      const response = await getAgendamentos();
-      setAppointments(response);
+      const response = await getAppointments();
+      setAppointments(response.content as Appointment[]);
+
       const areasExistentes: Area[] = (await getAreasDaSaude()).map(
-        (area, index) => ({ id: index, name: area } as Area)
+        (area, index) => ({ id: index, name: area })
       );
       setAreas(areasExistentes);
     };
@@ -80,49 +77,18 @@ export default function AllApointments() {
   }, []);
 
   const filteredAppointments = appointments.filter((appointment) => {
-    const matchesArea = selectedArea
-      ? appointment.profissional.areaDaSaude === selectedArea
-      : true;
-    const matchesPatientName = appointment.paciente.nome
-      .toLowerCase()
-      .includes(searchName.trim().toLowerCase());
-    const matchesProfessionalName = appointment.profissional.nome
-      .toLowerCase()
-      .includes(searchName.trim().toLowerCase());
-    const dateAppointment = separaETransformaEmNumero(
-      appointment.proximaConsulta,
-      "-"
-    );
-    const matchesDate = selectedDate
-      ? new Date(
-          dateAppointment[0],
-          dateAppointment[1],
-          dateAppointment[2]
-        ).toDateString() === selectedDate.toDateString()
-      : true;
+    const matchesProfessionalId = appointment.professional.id;
+    const matchesFrequencyDays = appointment.frequencyDays;
+    const matchesDate = selectedDate ? formatDatePTBR(appointment.initialDate) === formatDatePTBR(selectedDate.toString()) : true;
     return (
-      matchesArea &&
-      (matchesPatientName || matchesProfessionalName) &&
-      matchesDate
-    );
+      matchesProfessionalId &&
+      (matchesFrequencyDays) &&
+      matchesDate);
   });
 
-  const dataPassou = (data: string, horario: string) => {
-    const [ano, mes, dia] = data.split("-");
-    const [hora, minuto, segundo] = horario.split(":");
-    const emDate = new Date(parseInt(ano), parseInt(mes), parseInt(dia), parseInt(hora), parseInt(minuto), parseInt(segundo));
-    const agora = new Date();
-
-    return agora > emDate;
-  }
-
-  const semJustificativa = appointments.filter(
-    (appointment) => dataPassou(appointment.proximaConsulta, appointment.horaProximaConsulta) && !appointment.justificativa
-  );
-
   const clearFilter = () => {
-    setSelectedArea("");
-    setSearchName("");
+    setSelectedArea('');
+    setSearchName('');
     setSelectedDate(undefined);
   };
 
@@ -141,13 +107,7 @@ export default function AllApointments() {
                   className="w-full justify-start bg-white text-left font-normal text-xs sm:w-[220px] sm:text-sm border-[#0D4F97]"
                 >
                   <CalendarDays className="mr-2 h-4 w-4 text-[#0D4F97]" />
-                  {selectedDate ? (
-                    format(selectedDate, "dd 'de' MMMM 'de' yyyy", {
-                      locale: ptBR,
-                    })
-                  ) : (
-                    <span className="text-[#0D4F97]">Escolha uma data</span>
-                  )}
+                  {selectedDate ? (formatDatePTBR(selectedDate.toString())) : (<span className="text-[#0D4F97]">Escolha uma data</span>)}
                 </Button>
               </PopoverTrigger>
               <PopoverContent className="w-auto p-0 bg-white">
@@ -155,7 +115,6 @@ export default function AllApointments() {
                   mode="single"
                   selected={selectedDate}
                   onSelect={setSelectedDate}
-                  initialFocus
                   locale={ptBR}
                 />
               </PopoverContent>
@@ -168,7 +127,9 @@ export default function AllApointments() {
               </DialogTrigger>
               <DialogContent className="w-full sm:max-w-[425px]">
                 <DialogHeader>
-                  <DialogTitle className="text-[#0D4F97]">Cadastrar Novo Agendamento</DialogTitle>
+                  <DialogTitle className="text-[#0D4F97]">
+                    Cadastrar Novo Agendamento
+                  </DialogTitle>
                   <DialogDescription className="text-[#0D4F97] opacity-50">
                     Preencha os detalhes abaixo para agendar uma consulta.
                   </DialogDescription>
@@ -196,7 +157,7 @@ export default function AllApointments() {
               placeholder="Buscar paciente ou profissional..."
               className="pl-10 pr-3 border-[#0D4F97]"
               value={searchName}
-              onChange={(e) => setSearchName(e.target.value)}
+              onChange={e => setSearchName(e.target.value)}
             />
           </div>
 
@@ -207,7 +168,7 @@ export default function AllApointments() {
             <SelectContent>
               <SelectGroup>
                 <SelectLabel>Áreas da saúde</SelectLabel>
-                {areas.map((area) => (
+                {areas.map(area => (
                   <SelectItem key={area.id} value={area.name}>
                     {area.name}
                   </SelectItem>
@@ -247,32 +208,20 @@ export default function AllApointments() {
               </TableHeader>
               <TableBody>
                 {filteredAppointments.map((item, index) => {
-                  const dateAppointment = separaETransformaEmNumero(
-                    item.proximaConsulta,
-                    "-"
-                  );
                   return (
                     <TableRow key={index}>
                       <TableCell className="px-3 py-2 text-xs sm:px-4 sm:py-3 sm:text-sm">
-                        {item.paciente.nome}
+                        {item.annualRegistration.patient.fullName}
                       </TableCell>
                       <TableCell className="px-3 py-2 text-xs sm:px-4 sm:py-3 sm:text-sm text-gray-800">
-                        {format(
-                          new Date(
-                            dateAppointment[0],
-                            dateAppointment[1],
-                            dateAppointment[2]
-                          ),
-                          "dd 'de' MMMM 'de' yyyy",
-                          { locale: ptBR }
-                        )}
+                        {formatDatePTBR(item.initialDate)}
                       </TableCell>
                       <TableCell className="px-3 py-2 text-xs sm:px-4 sm:py-3 sm:text-sm">
-                        {item.profissional.nome}
+                        {item.professional.name}
                       </TableCell>
                       <TableCell className="px-3 py-2">
                         <Link
-                          href={`/appointments/${item.id}`}
+                          href={`/agendamentos/${item.id}`}
                           className="cursor-pointer text-xs text-blue-800 underline hover:underline sm:text-sm"
                         >
                           Detalhes
