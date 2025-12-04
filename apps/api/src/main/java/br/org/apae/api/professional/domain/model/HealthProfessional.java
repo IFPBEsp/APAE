@@ -1,6 +1,9 @@
 package br.org.apae.api.professional.domain.model;
 
 import jakarta.persistence.*;
+
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 import br.org.apae.api.address.domain.model.Address;
@@ -36,6 +39,9 @@ public class HealthProfessional {
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "endereco_id", referencedColumnName = "id")
     private Address address;
+
+    @OneToMany(mappedBy = "professional", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Availability> availabilities = new ArrayList<>();
 
     protected HealthProfessional() {
     }
@@ -94,5 +100,23 @@ public class HealthProfessional {
 
     public Address getAddress() {
         return address;
+    }
+
+    public List<Availability> getAvailabilities() { return availabilities; }
+
+    public void setAddress(Address address) {
+        this.address = address;
+    }
+
+    public void setAvailabilities(List<Availability> newAvailabilities) {
+        this.availabilities.clear();
+        if (newAvailabilities != null) {
+            this.availabilities.addAll(newAvailabilities);
+        }
+    }
+
+    public void addAvailability(Availability availability) {
+        this.availabilities.add(availability);
+        availability.setProfessional(this);
     }
 }
