@@ -4,7 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Plus, Loader2, Edit, Trash2 } from "lucide-react";
-import { SearchFilters } from "@/components/search-filters";
+import { SearchFilters } from "@/components/shared/filters/search-filters";
 import { useVaccinesContext, Vaccine } from "@/hooks/use-vaccines";
 import { useRouter } from "next/navigation";
 
@@ -17,7 +17,7 @@ function VaccinesListItem({ vaccine }: VaccinesListItemProps) {
     const router = useRouter();
 
     const onEdit = () => {
-        router.push(`/vacinas/${vaccine.id}/edit`);
+        router.push(`/vaccines/${vaccine.id}/edit`);
     };
 
     const onDelete = () => {
@@ -98,7 +98,7 @@ export default function VaccinesPage() {
     const [searchName, setSearchName] = useState<string>("");
 
     return (
-        <div className="!bg-slate-100 min-h-screen">
+        <div className="!bg-white min-h-screen">
             <main className="container mx-auto p-4 md:p-6">
                 <div className="bg-white rounded-xl shadow-md border-2 p-6 mb-4">
                     <SearchFilters
@@ -116,7 +116,7 @@ export default function VaccinesPage() {
                             asChild
                             className="!bg-[#0D4F97] !hover:bg-[#0b427d] text-white"
                         >
-                            <Link href="/vacinas/new">Adicionar</Link>
+                            <Link href="/vaccines/new">Adicionar</Link>
                         </Button>
                     </div>
 
@@ -135,7 +135,7 @@ export default function VaccinesPage() {
                 asChild
                 className="fixed bottom-6 right-6 h-[53px] w-[53px] rounded-full shadow-lg md:hidden bg-[#0D4F97] hover:bg-[#0b427d]"
             >
-                <Link href="/vacinas/new">
+                <Link href="/vaccines/new">
                     <Plus className="h-7 w-7" />
                     <span className="sr-only">Adicionar Vacina</span>
                 </Link>
