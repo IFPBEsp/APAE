@@ -19,6 +19,7 @@ import {
   ArrowLeftIcon,
   PeopleIcon,
   PersonIcon,
+  PulseIcon,
 } from "@primer/octicons-react";
 import Image from "next/image";
 import Link from "next/link";
@@ -138,7 +139,7 @@ export function AppSidebar() {
               <CollapsibleTrigger
                 className={`${styles.menuButton} font-base gap-2`}
               >
-                <PeopleIcon size={20} />
+                <PersonIcon size={20} />
                 <span className="text-base">Pacientes</span>
                 <ChevronDownIcon
                   size={16}
@@ -158,7 +159,7 @@ export function AppSidebar() {
                           : "text-[#0D4F97] hover:bg-[#0D4F97] hover:!text-white"
                       )}`}
                     >
-                      <PersonIcon size={16} />
+                      <PeopleIcon size={16} />
                       <span className="text-base">Pessoas</span>
                     </SidebarMenuButton>
                   </Link>
@@ -173,11 +174,26 @@ export function AppSidebar() {
                           : "text-[#0D4F97] hover:bg-[#0D4F97] hover:!text-white"
                       )}`}
                     >
-                      <TasklistIcon size={16} />
+                      <PulseIcon size={16} />
                       <span className="text-base">Transtornos</span>
                     </SidebarMenuButton>
                   </Link>
                 </SidebarMenuItem>
+                <SidebarMenuItem>
+                <Link href="/vaccines" passHref>
+                  <SidebarMenuButton
+                    className={`${styles.menuButton} font-base gap-2 ${cn(
+                      "h-10 transition-colors",
+                      pathname == "/vaccines"
+                        ? "bg-[#FFFFFF] !text-[#000000]"
+                        : "text-[#0D4F97] hover:bg-[#0D4F97] hover:!text-white"
+                    )}`}
+                  >
+                    <PulseIcon size={16} />
+                    <span className="text-base">Vacinas</span>
+                  </SidebarMenuButton>
+                </Link>
+              </SidebarMenuItem>
               </SidebarMenu>
             </CollapsibleContent>
           </SidebarGroup>
