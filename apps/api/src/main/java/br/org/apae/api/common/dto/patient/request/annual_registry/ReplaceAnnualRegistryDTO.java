@@ -18,5 +18,8 @@ public record ReplaceAnnualRegistryDTO(
         BigDecimal familyIncome,
 
         @NotNull
+        String continuousMedication,
+
+        @NotNull
         Set<CreateDisorderDTO> disorders
 ) {}

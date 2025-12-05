@@ -1,3 +1,5 @@
+// src/app/api/pessoas/[id]/registro-anual/[year]/route.ts
+
 export const dynamic = 'force-dynamic';
 import { createBaseApi } from "@/lib/axios";
 import { AxiosError } from "axios";
@@ -8,7 +10,6 @@ export async function GET(
   { params }: { params: Promise<{ id: string, year: string }> }
 ) {
   const { id: patientId, year } = await params;
-
   try {
     const api = await createBaseApi();
     const { data } = await api.get(`/patients/${patientId}/annual-registry/${year}`);

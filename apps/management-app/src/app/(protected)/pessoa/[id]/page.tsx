@@ -8,7 +8,8 @@ import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
-import { Loader2, ArrowLeft } from "lucide-react";
+import { Loader2, ArrowLeft, SquarePen } from "lucide-react";
+import AnnualRegistryEditModal from "@/components/AnnualRegistryEditModal";
 
 interface InfoRowProps {
   label: string;
@@ -45,6 +46,8 @@ export default function PersonDetailsPage() {
   const params = useParams();
   const router = useRouter();
   const id = params?.id as string;
+
+  const [isEditingAnnualRegistry, setIsEditingAnnualRegistry] = useState(false);
 
   const [pessoa, setPessoa] = useState<any>(null);
   const [registroAnual, setRegistroAnual] = useState<any>(null);
@@ -251,7 +254,18 @@ export default function PersonDetailsPage() {
         <Card className="w-full relative font-nunito">
           <CardHeader className="flex flex-row items-center justify-between">
             <CardTitle className="text-[#0D4F97]">Informações de Saúde</CardTitle>
+
             <div className="flex items-center gap-2">
+
+              <Button 
+                size="sm" 
+                onClick={() => setIsEditingAnnualRegistry(true)} 
+                className="gap-1 hover:!bg-gray-100 text-[#0D4F97] border-0"
+                variant="outline"
+              >
+                <SquarePen className="h-4 w-4" /> Editar
+              </Button>
+
               <label htmlFor="year-select" className="text-sm font-semibold text-gray-600">
                 Ano:
               </label>
@@ -305,6 +319,13 @@ export default function PersonDetailsPage() {
             )}
           </CardContent>
         </Card>
+        <AnnualRegistryEditModal 
+          isOpen={isEditingAnnualRegistry} 
+          onClose={() => setIsEditingAnnualRegistry(false)} 
+          patientId={id} 
+          currentYear={selectedYear}
+          initialData={registroAnual}
+        />
       </div>
     </main>
   );
