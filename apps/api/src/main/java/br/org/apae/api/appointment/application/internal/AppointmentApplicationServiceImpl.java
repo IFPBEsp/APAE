@@ -3,6 +3,7 @@ package br.org.apae.api.appointment.application.internal;
 import br.org.apae.api.appointment.application.interfaces.AppointmentApplicationService;
 import br.org.apae.api.appointment.domain.exceptions.AnnualRegistrationNotFound;
 import br.org.apae.api.appointment.domain.exceptions.AppointmentNotFoundException;
+import br.org.apae.api.appointment.domain.exceptions.ConflictException;
 import br.org.apae.api.appointment.domain.model.*;
 import br.org.apae.api.appointment.domain.repository.*;
 import br.org.apae.api.appointment.mapper.AppointmentMapper;
@@ -30,7 +31,6 @@ public class AppointmentApplicationServiceImpl implements AppointmentApplication
   private final GeneratedAppointmentRepository generatedRepo;
   private final AnnualRegistryRepository registryRepo;
   private final HealthProfessionalRepository professionalRepo;
-  private final AbsenceRepository absenceRepo;
   private final AppointmentMapper mapper;
 
 
@@ -39,13 +39,11 @@ public class AppointmentApplicationServiceImpl implements AppointmentApplication
       GeneratedAppointmentRepository generatedRepo,
       AnnualRegistryRepository registryRepo,
       HealthProfessionalRepository professionalRepo,
-      AbsenceRepository absenceRepo,
       AppointmentMapper mapper) {
     this.appointmentRepo = appointmentRepo;
     this.generatedRepo = generatedRepo;
     this.registryRepo = registryRepo;
     this.professionalRepo = professionalRepo;
-    this.absenceRepo = absenceRepo;
     this.mapper = mapper;
   }
 
@@ -56,6 +54,12 @@ public class AppointmentApplicationServiceImpl implements AppointmentApplication
 
     HealthProfessional professional = this.professionalRepo.findById(dto.professionalId())
         .orElseThrow(HealthProfessionalNotFoundException::new);
+
+    boolean exists = appointmentRepo.existsByProfessionalIdAndHourAndInitialDate(dto.professionalId(), dto.hour(), dto.initialDate());
+
+    if (exists) {
+      throw new ConflictException();
+    }
 
     Appointment appointment = mapper.toEntity(dto, professional, annualRegistry);
 

@@ -2,6 +2,7 @@ package br.org.apae.api.appointment.application.internal;
 
 import br.org.apae.api.appointment.domain.exceptions.AnnualRegistrationNotFound;
 import br.org.apae.api.appointment.domain.exceptions.AppointmentNotFoundException;
+import br.org.apae.api.appointment.domain.exceptions.ConflictException;
 import br.org.apae.api.appointment.domain.model.Appointment;
 import br.org.apae.api.appointment.domain.repository.AppointmentRepository;
 import br.org.apae.api.appointment.domain.repository.GeneratedAppointmentRepository;
@@ -9,6 +10,7 @@ import br.org.apae.api.common.dto.appointment.request.appointment.CreateAppointm
 import br.org.apae.api.patient.domain.model.AnnualRegistry;
 import br.org.apae.api.patient.domain.repository.AnnualRegistryRepository;
 import br.org.apae.api.professional.domain.exceptions.HealthProfessionalNotFoundException;
+import br.org.apae.api.professional.domain.model.HealthProfessional;
 import br.org.apae.api.professional.domain.repository.HealthProfessionalRepository;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -43,6 +45,8 @@ class AppointmentApplicationServiceImplExceptionTest {
   AnnualRegistry annualRegistry;
   @Mock
   Appointment appointment;
+  @Mock
+  HealthProfessional healthProfessional;
   @Mock
   GeneratedAppointmentRepository generatedAppointmentRepo;
   @Mock
@@ -82,6 +86,32 @@ class AppointmentApplicationServiceImplExceptionTest {
         .thenReturn(Optional.empty());
 
     assertThrows(HealthProfessionalNotFoundException.class,
+        () -> appointmentService.create(createAppointmentDTO));
+  }
+
+  @Test
+  @DisplayName("Deve lança ConflictException quando encontra conflito no horario do profissional")
+  void shouldConflictOnCreate(){
+    UUID patientId = UUID.randomUUID();
+    UUID professionalId = UUID.randomUUID();
+    LocalTime hour = LocalTime.now();
+    LocalDate initialDate = LocalDate.now();
+
+    when(createAppointmentDTO.patientId()).thenReturn(patientId);
+    when(createAppointmentDTO.professionalId()).thenReturn(professionalId);
+    when(createAppointmentDTO.hour()).thenReturn(hour);
+    when(createAppointmentDTO.initialDate()).thenReturn(initialDate);
+
+    when(annualRegistryRepo.findByPatientIdAndYear(patientId, Year.now()))
+        .thenReturn(Optional.of(annualRegistry));
+
+    when(healthProfessionalRepo.findById(professionalId))
+        .thenReturn(Optional.of(healthProfessional));
+
+    when(appointmentRepo.existsByProfessionalIdAndHourAndInitialDate(professionalId, hour, initialDate))
+        .thenReturn(Boolean.TRUE);
+
+    assertThrows(ConflictException.class,
         () -> appointmentService.create(createAppointmentDTO));
   }
 
