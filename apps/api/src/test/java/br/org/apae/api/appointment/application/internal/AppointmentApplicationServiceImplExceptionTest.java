@@ -1,6 +1,7 @@
 package br.org.apae.api.appointment.application.internal;
 
 import br.org.apae.api.appointment.domain.exceptions.AnnualRegistrationNotFound;
+import br.org.apae.api.appointment.domain.exceptions.AppointmentNotFoundException;
 import br.org.apae.api.appointment.domain.model.Appointment;
 import br.org.apae.api.appointment.domain.repository.AppointmentRepository;
 import br.org.apae.api.appointment.domain.repository.GeneratedAppointmentRepository;
@@ -158,5 +159,17 @@ class AppointmentApplicationServiceImplExceptionTest {
 
     assertThrows(IllegalArgumentException.class,
         () -> appointmentService.cancel(aptId, reason));
+  }
+
+  @Test
+  @DisplayName("Deve lançar AppointmentNotFoundException quando o agendamento não existir ao deletar")
+  void shouldThrownAppointmentNotFoundOnDelete(){
+    UUID aptId = UUID.randomUUID();
+
+    when(appointmentRepo.existsById(aptId))
+        .thenReturn(Boolean.FALSE);
+
+    assertThrows(AppointmentNotFoundException.class,
+        () -> appointmentService.delete(aptId));
   }
 }
