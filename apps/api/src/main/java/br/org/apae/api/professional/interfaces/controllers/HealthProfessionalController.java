@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestPart;
 
@@ -67,5 +68,5 @@ public interface HealthProfessionalController {
   })
   @PutMapping("/{id}")
   ResponseEntity<HealthProfessionalResponseDTO> updateHealthProfessional(@PathVariable UUID id,
-      UpdateHealthProfessionalDTO dto);
+      @Valid @RequestBody UpdateHealthProfessionalDTO dto);
 }

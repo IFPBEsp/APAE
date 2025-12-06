@@ -26,13 +26,13 @@ import { useRouter } from "next/navigation";
 
 import { useGetByIdProfissional } from "@/hooks/profissional/use-get-by-id-profissional";
 import { useUpdateProfissional } from "@/hooks/profissional/use-update-profissional";
-import { cadastroSchema } from "@/schemas/profissional.schema";
+import { updateProfessionalSchema } from "@/schemas/profissional.schema";
 import { STATES } from "@/lib/states";
 import { JSX, useEffect } from "react";
 import HealthAreaSelect from "@/components/shared/HealthAreaSelect";
 import Disponibilidade from "@/components/forms/DisponibilidadeForm";
 
-type UpdateFormValues = z.infer<typeof cadastroSchema>;
+type UpdateFormValues = z.infer<typeof updateProfessionalSchema>;
 
 export default function AtualizarProfissional(): JSX.Element {
   const router = useRouter();
@@ -53,14 +53,11 @@ export default function AtualizarProfissional(): JSX.Element {
     numero: "",
     complemento: "",
     cep: "",
-    disponibilidade: [],
-    termoVoluntariado: undefined,
-    curriculo: undefined,
-    anexoQualquer: undefined,
+    disponibilidade: []
   };
 
   const form = useForm<UpdateFormValues>({
-    resolver: zodResolver(cadastroSchema),
+    resolver: zodResolver(updateProfessionalSchema),
     defaultValues,
   });
 
@@ -81,16 +78,11 @@ export default function AtualizarProfissional(): JSX.Element {
       numero: profissional.address.number,
       complemento: profissional.address.complement,
       cep: profissional.address.cep,
-      termoVoluntariado: undefined,
-      curriculo: undefined,
-      anexoQualquer: undefined,
     });
   }, [profissional, form]);
 
 const onSubmit: SubmitHandler<UpdateFormValues> = async (values) => {
   if (!profissional?.id) return;
-
-  const formData = new FormData();
 
   const payload = {
     serviceArea: { area: values.areaAtendimento },
@@ -110,21 +102,7 @@ const onSubmit: SubmitHandler<UpdateFormValues> = async (values) => {
     },
   };
 
-  formData.append(
-    "professional",
-    new Blob([JSON.stringify(payload)], { type: "application/json" })
-  );
-
-  if (values.termoVoluntariado)
-    formData.append("volunteerAgreement", values.termoVoluntariado);
-
-  if (values.curriculo)
-    formData.append("curriculum", values.curriculo);
-
-  if (values.anexoQualquer)
-    formData.append("anexoQualquer", values.anexoQualquer);
-
-  await updateProfissional(profissional.id, formData);
+  await updateProfissional(profissional.id, payload);
 };
 
   const onCancel = () => {
@@ -362,59 +340,8 @@ const onSubmit: SubmitHandler<UpdateFormValues> = async (values) => {
               )}
             />
           </div>
-          <FormField
-            control={form.control}
-            name="termoVoluntariado"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Termo do Voluntário</FormLabel>
-                <FormControl>
-                  <Input
-                    type="file"
-                    accept="application/pdf"
-                    onChange={(e) => field.onChange(e.target.files?.[0] ?? null)}
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <FormField
-            control={form.control}
-            name="curriculo"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Currículo</FormLabel>
-                <FormControl>
-                  <Input
-                    type="file"
-                    accept="application/pdf"
-                    onChange={(e) => field.onChange(e.target.files?.[0] ?? null)}
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <FormField
-            control={form.control}
-            name="anexoQualquer"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Anexo qualquer</FormLabel>
-                <FormControl>
-                  <Input
-                    type="file"
-                    accept="application/pdf"
-                    onChange={(e) => field.onChange(e.target.files?.[0] ?? null)}
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <Disponibilidade control={form.control} watch={form.watch} />
 
+          <Disponibilidade control={form.control} watch={form.watch} />
 
           {loading && <p className="text-blue-500">Salvando...</p>}
           {error && <p className="text-red-500">{error}</p>}

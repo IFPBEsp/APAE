@@ -15,13 +15,13 @@ export function useUpdateProfissional() {
     return err?.message || "Erro desconhecido";
   }
 
-  async function doUpdate(id: string, formData: FormData) {
+  async function doUpdate(id: string, data: any) {
     setLoading(true);
     setError(null);
     setSuccess(false);
 
     try {
-      await updateProfissional(id, formData);
+      await updateProfissional(id, data);
 
       setSuccess(true);
       setLoading(false);

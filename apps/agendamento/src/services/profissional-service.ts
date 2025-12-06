@@ -23,21 +23,23 @@ export async function createProfissional(formData: FormData) {
   return response;
 }
 
-export async function updateProfissional(id: string, formData: FormData) {
+export async function updateProfissional(id: string, data: any) {
   const response = await fetch(API_URL + `/professionals/${id}`, {
     method: "PUT",
-    body: formData,
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(data),
   });
 
   if (!response.ok) {
     const errorData = await response.json().catch(() => null);
-    const message = errorData?.mensagem || `Erro HTTP ${response.status}`;
+    const message = errorData?.message || `Erro HTTP ${response.status}`;
 
     const error = new Error(message);
-    (error as any).details = errorData?.detalhes;
-    (error as any).status = errorData?.status;
     throw error;
   }
+
   return response;
 }
 

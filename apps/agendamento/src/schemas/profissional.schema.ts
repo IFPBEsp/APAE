@@ -16,31 +16,39 @@ const fileSchema = z
   .instanceof(File, { message: "Selecione um arquivo" })
   .refine((file) => file.size > 0, "Arquivo não pode estar vazio");
 
-export const cadastroSchema = z.object({
+const baseSchema = z.object({
   nomeCompleto: z
     .string()
     .regex(
       nomeRegex,
       "Nome inválido. Use apenas letras e espaços, 3-100 caracteres"
     ),
+
   email: z.email("Email inválido"),
+
   documentoProfissional: z
     .string()
     .regex(docProfissionalRegex, "Documento profissional inválido"),
+
   areaAtendimento: z.string().min(1, "Selecione uma área"),
+
   rg: z
     .string()
     .regex(rgRegex, "RG inválido")
     .transform((val) => val.replace(/\W/g, "")),
+
   estado: z.string().regex(estadoRegex, "Estado inválido"),
   cidade: z.string().regex(cidadeRegex, "Cidade inválida"),
   bairro: z.string().regex(bairroRegex, "Bairro inválido"),
   rua: z.string().regex(ruaRegex, "Rua inválida"),
   numero: z.string().regex(numeroRegex, "Número inválido"),
+
   complemento: z.string().optional(),
+
   cep: z
     .string()
     .regex(/^\d{5}-\d{3}$/, "CEP inválido. Formato esperado: XXXXX-XXX"),
+
   telefone: z
     .string()
     .regex(
@@ -49,16 +57,22 @@ export const cadastroSchema = z.object({
     )
     .transform((val) => val.trim()),
 
-  disponibilidade: z.array(
-    z
-      .object({
+  disponibilidade: z
+    .array(
+      z.object({
         dia: z.string(),
         turno: z.string(),
         checked: z.boolean(),
       })
-      .optional()
-  ),
+    )
+    .default([])
+    .optional(),
+});
+
+export const cadastroSchema = baseSchema.extend({
   termoVoluntariado: fileSchema,
   curriculo: fileSchema,
   anexoQualquer: fileSchema.optional(),
 });
+
+export const updateProfessionalSchema = baseSchema;

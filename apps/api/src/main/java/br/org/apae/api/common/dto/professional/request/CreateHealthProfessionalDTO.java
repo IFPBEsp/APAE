@@ -6,26 +6,17 @@ import jakarta.validation.Valid;
 import jakarta.validation.constraints.*;
 
 public record CreateHealthProfessionalDTO(
-    @NotNull(message = "Área de atendimento é obrigatório.")
-    @Valid CreateServiceAreaDTO serviceArea,
+        @NotNull(message = "Área de atendimento é obrigatório.") @Valid CreateServiceAreaDTO serviceArea,
 
-    @NotBlank(message = "O número de telefone é obrigatório.")
-    String phoneNumber,
+        @NotBlank(message = "O número de telefone é obrigatório.") String phoneNumber,
 
-    @NotBlank(message = "O documento profissional é obrigatório.")
-    @Size(min = 3, max = 50)
-    String professionalDocument,
+        @NotBlank(message = "O documento profissional é obrigatório.") @Size(min = 3, max = 50) String professionalDocument,
 
-    @Email(message = "O e-mail informado é inválido.")
-    @NotBlank(message = "O e-mail é obrigatório.")
-    String email,
+        @Email(message = "O e-mail informado é inválido.") @NotBlank(message = "O e-mail é obrigatório.") String email,
 
-    @NotBlank(message = "O nome é obrigatório.")
-    @Size(min = 3, max = 100)
-    String name,
+        @NotBlank(message = "O nome é obrigatório.") @Size(min = 3, max = 100) String name,
 
-    @NotBlank(message = "O documento de identidade é obrigatório.")
-    String identityDocument,
+        @NotBlank(message = "O documento de identidade é obrigatório.") String identityDocument,
 
-    @NotNull(message = "O endereço é obrigatório.") @Valid CreateAddressDTO address) {
+        @NotNull(message = "O endereço é obrigatório.") @Valid CreateAddressDTO address) {
 }
