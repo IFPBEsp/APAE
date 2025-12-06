@@ -26,22 +26,18 @@ import { useRouter } from "next/navigation";
 
 import { useGetByIdProfissional } from "@/hooks/profissional/use-get-by-id-profissional";
 import { useUpdateProfissional } from "@/hooks/profissional/use-update-profissional";
-import { cadastroSchema } from "@/schemas/profissional.schema";
+import { updateProfessionalSchema } from "@/schemas/profissional.schema";
 import { STATES } from "@/lib/states";
 import { JSX, useEffect } from "react";
 import HealthAreaSelect from "@/components/shared/HealthAreaSelect";
+import Disponibilidade from "@/components/forms/DisponibilidadeForm";
 
-type UpdateFormValues = z.infer<typeof cadastroSchema>;
+type UpdateFormValues = z.infer<typeof updateProfessionalSchema>;
 
 export default function AtualizarProfissional(): JSX.Element {
   const router = useRouter();
-  const {
-    profissional,
-    loading: loadingProf,
-    error: errorProf,
-  } = useGetByIdProfissional();
-  const { updateProfissional, loading, error, success } =
-    useUpdateProfissional();
+  const { profissional, loading: loadingProf, error: errorProf,} = useGetByIdProfissional();
+  const { updateProfissional, loading, error, success } = useUpdateProfissional();
 
   const defaultValues: Partial<UpdateFormValues> = {
     nomeCompleto: "",
@@ -57,11 +53,11 @@ export default function AtualizarProfissional(): JSX.Element {
     numero: "",
     complemento: "",
     cep: "",
-    disponibilidade: [],
+    disponibilidade: []
   };
 
   const form = useForm<UpdateFormValues>({
-    resolver: zodResolver(cadastroSchema),
+    resolver: zodResolver(updateProfessionalSchema),
     defaultValues,
   });
 
@@ -85,30 +81,29 @@ export default function AtualizarProfissional(): JSX.Element {
     });
   }, [profissional, form]);
 
-  const onSubmit: SubmitHandler<UpdateFormValues> = async (values) => {
-    console.log("Form state:", form.formState);
-    if (!profissional?.id) return;
+const onSubmit: SubmitHandler<UpdateFormValues> = async (values) => {
+  if (!profissional?.id) return;
 
-    const payload = {
-      name: values.nomeCompleto.trim(),
-      email: values.email.trim(),
-      professionalDocument: values.documentoProfissional.trim(),
-      serviceArea: values.areaAtendimento,
-      phoneNumber: values.telefone,
-      identityDocument: values.rg.trim(),
-      address: {
-        state: values.estado,
-        city: values.cidade.trim(),
-        neighborhood: values.bairro.trim(),
-        street: values.rua.trim(),
-        number: values.numero?.trim(),
-        complement: values.complemento?.trim(),
-        cep: values.cep,
-      },
-    };
-
-    await updateProfissional(profissional.id, payload);
+  const payload = {
+    serviceArea: { area: values.areaAtendimento },
+    phoneNumber: values.telefone,
+    professionalDocument: values.documentoProfissional.trim(),
+    email: values.email.trim(),
+    name: values.nomeCompleto.trim(),
+    identityDocument: values.rg.trim(),
+    address: {
+      state: values.estado,
+      city: values.cidade.trim(),
+      neighborhood: values.bairro.trim(),
+      street: values.rua.trim(),
+      number: values.numero?.trim(),
+      complement: values.complemento?.trim(),
+      cep: values.cep,
+    },
   };
+
+  await updateProfissional(profissional.id, payload);
+};
 
   const onCancel = () => {
     router.push("/visualization-professional");
@@ -345,6 +340,8 @@ export default function AtualizarProfissional(): JSX.Element {
               )}
             />
           </div>
+
+          <Disponibilidade control={form.control} watch={form.watch} />
 
           {loading && <p className="text-blue-500">Salvando...</p>}
           {error && <p className="text-red-500">{error}</p>}

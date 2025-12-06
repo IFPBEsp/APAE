@@ -12,7 +12,9 @@ public enum DocumentType {
     REFERRAL("ENCAMINHAMENTO"),
     RG("RG"),
     VOLUNTEER_AGREEMENT("TERMO_DE_VOLUNTARIADO"),
-    CURRICULUM("CURRICULO");
+    CURRICULUM("CURRICULO"),
+    ATTACHMENTANY("ANEXO_QUALQUER");
+
 
     private String value;
 
