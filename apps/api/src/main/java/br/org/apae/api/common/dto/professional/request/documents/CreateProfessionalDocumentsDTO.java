@@ -5,5 +5,6 @@ import jakarta.validation.constraints.NotNull;
 
 public record CreateProfessionalDocumentsDTO(
                 @NotNull MultipartFile volunteerAgreement,
-                @NotNull MultipartFile curriculum) {
+                @NotNull MultipartFile curriculum,
+                MultipartFile attachmentAny) {
 }

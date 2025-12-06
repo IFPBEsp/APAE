@@ -26,23 +26,18 @@ import { useRouter } from "next/navigation";
 
 import { useGetByIdProfissional } from "@/hooks/profissional/use-get-by-id-profissional";
 import { useUpdateProfissional } from "@/hooks/profissional/use-update-profissional";
-import { cadastroSchema } from "@/schemas/profissional.schema";
+import { updateProfessionalSchema } from "@/schemas/profissional.schema";
 import { STATES } from "@/lib/states";
 import { JSX, useEffect } from "react";
 import HealthAreaSelect from "@/components/shared/HealthAreaSelect";
 import Disponibilidade from "@/components/forms/DisponibilidadeForm";
 
-type UpdateFormValues = z.infer<typeof cadastroSchema>;
+type UpdateFormValues = z.infer<typeof updateProfessionalSchema>;
 
 export default function AtualizarProfissional(): JSX.Element {
   const router = useRouter();
-  const {
-    profissional,
-    loading: loadingProf,
-    error: errorProf,
-  } = useGetByIdProfissional();
-  const { updateProfissional, loading, error, success } =
-    useUpdateProfissional();
+  const { profissional, loading: loadingProf, error: errorProf,} = useGetByIdProfissional();
+  const { updateProfissional, loading, error, success } = useUpdateProfissional();
 
   const defaultValues: Partial<UpdateFormValues> = {
     nomeCompleto: "",
@@ -58,11 +53,11 @@ export default function AtualizarProfissional(): JSX.Element {
     numero: "",
     complemento: "",
     cep: "",
-    disponibilidade: [],
+    disponibilidade: []
   };
 
   const form = useForm<UpdateFormValues>({
-    resolver: zodResolver(cadastroSchema),
+    resolver: zodResolver(updateProfessionalSchema),
     defaultValues,
   });
 
@@ -117,6 +112,9 @@ export default function AtualizarProfissional(): JSX.Element {
 
     await updateProfissional(profissional.id, payload);
   };
+
+  await updateProfissional(profissional.id, payload);
+};
 
   const onCancel = () => {
     router.push("/visualization-professional");

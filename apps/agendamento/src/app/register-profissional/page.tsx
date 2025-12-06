@@ -98,9 +98,9 @@ export default function CadastroProfissional(): JSX.Element {
 
     formData.append("volunteerAgreement", values.termoVoluntariado);
     formData.append("curriculum", values.curriculo);
-
-    console.log(payload);
-
+    if (values.anexoQualquer) {
+      formData.append("anexoQualquer", values.anexoQualquer);
+    }
     await create(formData);
   };
 
@@ -364,6 +364,26 @@ export default function CadastroProfissional(): JSX.Element {
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Currículo *</FormLabel>
+                <FormControl>
+                  <Input
+                    type="file"
+                    accept="application/pdf"
+                    onChange={(e) =>
+                      field.onChange(e.target.files?.[0] ?? null)
+                    }
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+
+          />
+                    <FormField
+            control={form.control}
+            name="anexoQualquer"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Anexo qualquer</FormLabel>
                 <FormControl>
                   <Input
                     type="file"

@@ -1,5 +1,6 @@
 "use client";
 
+import { use } from "react";
 import { useGetByIdProfissional } from "@/hooks/profissional/use-get-by-id-profissional";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -8,13 +9,14 @@ import { Pencil } from "lucide-react";
 import { useRouter } from "next/navigation";
 
 interface PageProps {
-  params: {
-    id: string;
-  };
+  params: Promise<{ id: string }>;
 }
 
 export default function VisualizarProfissional({ params }: PageProps) {
   const router = useRouter();
+
+  const { id } = use(params);
+
   const { profissional, loading, error } = useGetByIdProfissional();
 
   if (loading) return <p className="p-6">Carregando detalhes do profissional...</p>;
@@ -35,7 +37,7 @@ export default function VisualizarProfissional({ params }: PageProps) {
   };
 
   const handleEdit = () => {
-    router.push(`/update-profissional/${params.id}`);
+    router.push(`/update-profissional/${id}`);
   };
 
   return (
