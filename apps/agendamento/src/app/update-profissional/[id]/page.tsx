@@ -30,6 +30,7 @@ import { cadastroSchema } from "@/schemas/profissional.schema";
 import { STATES } from "@/lib/states";
 import { JSX, useEffect } from "react";
 import HealthAreaSelect from "@/components/shared/HealthAreaSelect";
+import Disponibilidade from "@/components/forms/DisponibilidadeForm";
 
 type UpdateFormValues = z.infer<typeof cadastroSchema>;
 
@@ -86,8 +87,14 @@ export default function AtualizarProfissional(): JSX.Element {
   }, [profissional, form]);
 
   const onSubmit: SubmitHandler<UpdateFormValues> = async (values) => {
-    console.log("Form state:", form.formState);
     if (!profissional?.id) return;
+
+    const availabilities = values.disponibilidade
+      .filter((d) => d?.checked)
+      .map((d) => ({
+        day: d?.dia,
+        shift: d?.turno,
+      }));
 
     const payload = {
       name: values.nomeCompleto.trim(),
@@ -105,6 +112,7 @@ export default function AtualizarProfissional(): JSX.Element {
         complement: values.complemento?.trim(),
         cep: values.cep,
       },
+      availabilities,
     };
 
     await updateProfissional(profissional.id, payload);
@@ -345,6 +353,8 @@ export default function AtualizarProfissional(): JSX.Element {
               )}
             />
           </div>
+
+          <Disponibilidade control={form.control} watch={form.watch} />
 
           {loading && <p className="text-blue-500">Salvando...</p>}
           {error && <p className="text-red-500">{error}</p>}

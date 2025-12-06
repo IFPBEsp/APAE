@@ -1,8 +1,8 @@
-package br.org.apae.api.professional.domain.model.Enum;
+package br.org.apae.api.professional.domain.model.enums;
 
 public enum Shift {
-    MORNING("manha"),
-    AFTERNOON("tarde");
+    MANHA("manha"),
+    TARDE("tarde");
 
     private final String valor;
 

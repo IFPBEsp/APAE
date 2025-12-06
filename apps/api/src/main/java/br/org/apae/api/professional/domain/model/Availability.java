@@ -1,10 +1,11 @@
 package br.org.apae.api.professional.domain.model;
 
-import br.org.apae.api.professional.domain.model.Enum.Day;
-import br.org.apae.api.professional.domain.model.Enum.Shift;
 import jakarta.persistence.*;
 
 import java.util.UUID;
+
+import br.org.apae.api.professional.domain.model.enums.Shift;
+import br.org.apae.api.professional.domain.model.enums.Day;
 
 @Entity
 @Table(name = "disponibilidades")

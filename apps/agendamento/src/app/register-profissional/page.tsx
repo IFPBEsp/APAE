@@ -65,6 +65,13 @@ export default function CadastroProfissional(): JSX.Element {
   const onSubmit: SubmitHandler<CadastroFormValues> = async (values) => {
     const formData = new FormData();
 
+    const availabilities = values.disponibilidade
+      .filter((d) => d?.checked)
+      .map((d) => ({
+        day: d?.dia,
+        shift: d?.turno,
+      }));
+
     const payload = {
       serviceArea: { area: values.areaAtendimento },
       phoneNumber: values.telefone,
@@ -81,6 +88,7 @@ export default function CadastroProfissional(): JSX.Element {
         complement: values.complemento?.trim(),
         cep: values.cep,
       },
+      availabilities,
     };
 
     formData.append(
@@ -90,6 +98,8 @@ export default function CadastroProfissional(): JSX.Element {
 
     formData.append("volunteerAgreement", values.termoVoluntariado);
     formData.append("curriculum", values.curriculo);
+
+    console.log(payload);
 
     await create(formData);
   };

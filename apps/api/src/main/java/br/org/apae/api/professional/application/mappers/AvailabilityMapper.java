@@ -4,8 +4,8 @@ import br.org.apae.api.common.dto.availability.request.CreateAvailabilityDTO;
 import br.org.apae.api.common.dto.availability.request.UpdateAvailabilityDTO;
 import br.org.apae.api.common.dto.availability.response.AvailabilityResponseDTO;
 import br.org.apae.api.professional.domain.model.Availability;
-import br.org.apae.api.professional.domain.model.Enum.Day;
-import br.org.apae.api.professional.domain.model.Enum.Shift;
+import br.org.apae.api.professional.domain.model.enums.Day;
+import br.org.apae.api.professional.domain.model.enums.Shift;
 import br.org.apae.api.professional.domain.model.HealthProfessional;
 import org.springframework.stereotype.Component;
 

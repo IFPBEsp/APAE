@@ -1,5 +1,10 @@
 import { ServiceArea } from "./service-area";
 
+export interface Disponibilidade {
+  day: string;
+  shift: string;
+}
+
 export interface Endereco {
   cep: string;
   city: string;
@@ -19,4 +24,5 @@ export interface Profissional {
   name: string;
   identityDocument: string;
   address: Endereco;
+  availabity: Disponibilidade;
 }
