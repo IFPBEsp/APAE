@@ -1,5 +1,24 @@
 import { ServiceArea } from "./service-area";
 
+export const diasDaSemana = [
+  { id: "segunda", label: "Segunda" },
+  { id: "terca", label: "Terça" },
+  { id: "quarta", label: "Quarta" },
+  { id: "quinta", label: "Quinta" },
+  { id: "sexta", label: "Sexta" },
+];
+
+export const turnos = [
+  { id: "manha", label: "Manhã" },
+  { id: "tarde", label: "Tarde" },
+];
+
+export type DisponibilidadeType = {
+  dia: string;
+  turno: string;
+  checked: boolean;
+};
+
 export interface Disponibilidade {
   day: string;
   shift: string;
@@ -24,5 +43,5 @@ export interface Profissional {
   name: string;
   identityDocument: string;
   address: Endereco;
-  availabity: Disponibilidade;
+  availabilities: Disponibilidade[];
 }

@@ -31,13 +31,19 @@ import { STATES } from "@/lib/states";
 import { JSX, useEffect } from "react";
 import HealthAreaSelect from "@/components/shared/HealthAreaSelect";
 import Disponibilidade from "@/components/forms/DisponibilidadeForm";
+import { gerarMatrizDisponibilidade } from "@/utils/disponibilidade.utils";
 
 type UpdateFormValues = z.infer<typeof updateProfessionalSchema>;
 
 export default function AtualizarProfissional(): JSX.Element {
   const router = useRouter();
-  const { profissional, loading: loadingProf, error: errorProf,} = useGetByIdProfissional();
-  const { updateProfissional, loading, error, success } = useUpdateProfissional();
+  const {
+    profissional,
+    loading: loadingProf,
+    error: errorProf,
+  } = useGetByIdProfissional();
+  const { updateProfissional, loading, error, success } =
+    useUpdateProfissional();
 
   const defaultValues: Partial<UpdateFormValues> = {
     nomeCompleto: "",
@@ -53,7 +59,7 @@ export default function AtualizarProfissional(): JSX.Element {
     numero: "",
     complemento: "",
     cep: "",
-    disponibilidade: []
+    disponibilidade: [],
   };
 
   const form = useForm<UpdateFormValues>({
@@ -63,6 +69,16 @@ export default function AtualizarProfissional(): JSX.Element {
 
   useEffect(() => {
     if (!profissional) return;
+
+    const disponibilidadesBackend = profissional.availabilities || [];
+
+    const matrizCompleta = gerarMatrizDisponibilidade(
+      disponibilidadesBackend.map((a) => ({
+        dia: a.day.toLowerCase(),
+        turno: a.shift.toLowerCase(),
+        checked: true,
+      }))
+    );
 
     form.reset({
       nomeCompleto: profissional.name,
@@ -78,6 +94,8 @@ export default function AtualizarProfissional(): JSX.Element {
       numero: profissional.address.number,
       complemento: profissional.address.complement,
       cep: profissional.address.cep,
+
+      disponibilidade: matrizCompleta,
     });
   }, [profissional, form]);
 
@@ -92,11 +110,11 @@ export default function AtualizarProfissional(): JSX.Element {
       }));
 
     const payload = {
-      name: values.nomeCompleto.trim(),
-      email: values.email.trim(),
-      professionalDocument: values.documentoProfissional.trim(),
-      serviceArea: values.areaAtendimento,
+      serviceArea: { area: values.areaAtendimento },
       phoneNumber: values.telefone,
+      professionalDocument: values.documentoProfissional.trim(),
+      email: values.email.trim(),
+      name: values.nomeCompleto.trim(),
       identityDocument: values.rg.trim(),
       address: {
         state: values.estado,
@@ -112,9 +130,6 @@ export default function AtualizarProfissional(): JSX.Element {
 
     await updateProfissional(profissional.id, payload);
   };
-
-  await updateProfissional(profissional.id, payload);
-};
 
   const onCancel = () => {
     router.push("/visualization-professional");

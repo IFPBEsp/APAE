@@ -29,6 +29,7 @@ import { cadastroSchema } from "@/schemas/profissional.schema";
 import { STATES } from "@/lib/states";
 import { JSX } from "react";
 import HealthAreaSelect from "@/components/shared/HealthAreaSelect";
+import { gerarMatrizDisponibilidade } from "@/utils/disponibilidade.utils";
 
 type CadastroFormValues = z.infer<typeof cadastroSchema>;
 
@@ -50,7 +51,7 @@ export default function CadastroProfissional(): JSX.Element {
     numero: "",
     complemento: "",
     cep: "",
-    disponibilidade: [],
+    disponibilidade: gerarMatrizDisponibilidade([]),
   };
 
   const form = useForm<CadastroFormValues>({
@@ -106,7 +107,6 @@ export default function CadastroProfissional(): JSX.Element {
 
   return (
     <div className="p-0">
-      <h1 className="text-2xl font-bold mb-6"></h1>
       <Form {...form}>
         <form
           onSubmit={form.handleSubmit(onSubmit)}
@@ -376,9 +376,8 @@ export default function CadastroProfissional(): JSX.Element {
                 <FormMessage />
               </FormItem>
             )}
-
           />
-                    <FormField
+          <FormField
             control={form.control}
             name="anexoQualquer"
             render={({ field }) => (

@@ -65,8 +65,7 @@ const baseSchema = z.object({
         checked: z.boolean(),
       })
     )
-    .default([])
-    .optional(),
+    .min(0)
 });
 
 export const cadastroSchema = baseSchema.extend({
