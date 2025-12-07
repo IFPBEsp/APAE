@@ -11,6 +11,16 @@ import { toast } from "react-toastify";
 import { useDebounce } from "@/hooks/use-debounce";
 import { usePatientFilters } from "@/hooks/use-patients-filters";
 
+interface PhotoObject {
+  id: string;
+  name: string;
+  category: string;
+  type: string;
+  owner: string;
+  year: string;
+  url: string;
+}
+
 export default function PatientsAndStudentsScreen() {
   const [patients, setPatients] = useState<PatientCardData[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -46,7 +56,40 @@ export default function PatientsAndStudentsScreen() {
 
         const data: PatientCardData[] = await response.json();
 
-        setPatients(data);
+        const patientsWithPhotos = await Promise.all(
+          data.map(async (patient) => {
+            let photoUrl = null;
+
+            try {
+              const docParams = new URLSearchParams({
+                category: "pessoal",
+              });
+              
+              const photoResponse = await fetch(`/api/pessoas/${patient.id}/documentos?${docParams.toString()}`);
+
+              if (photoResponse.ok) {
+                const photoData = await photoResponse.json();
+
+                if (photoData && photoData.length) {
+                  const photoItem = photoData.find((item: any) => item.type === "PHOTO");
+
+                  if (photoItem) {
+                    const photoObject: PhotoObject = photoItem as PhotoObject;
+                    photoUrl = photoObject.url;
+                  }
+                }
+              }
+            } catch (err) {
+              console.error(`Erro ao buscar foto para ${patient.id}`, err);
+            }
+
+            return {
+              ...patient,
+              urlFoto: photoUrl 
+            };
+          })
+        );
+        setPatients(patientsWithPhotos);
         setError(null);
       } catch (err) {
         console.error("Erro ao buscar dados (pacientes):", err);
