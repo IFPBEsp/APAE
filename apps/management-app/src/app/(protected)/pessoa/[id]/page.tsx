@@ -15,16 +15,6 @@ interface InfoRowProps {
   value?: string | number | null | boolean;
 }
 
-interface PhotoObject {
-  id: string,
-  name: string,
-  category: string,
-  type: string,
-  owner: string,
-  year: string,
-  url: string
-}
-
 const InfoRow: React.FC<InfoRowProps> = ({ label, value }) => {
   let displayValue: string | number = "Não informado";
 
@@ -79,35 +69,8 @@ export default function PersonDetailsPage() {
 
         const data = await response.json();
 
-        let photoUrl = "https://via.placeholder.com/150"
-
-        const params = new URLSearchParams({
-        category: "pessoal",
-      });
-
-        const photoResponse = await fetch(`/api/pessoas/${id}/documentos?${params.toString()}`);
-
-        if (photoResponse.ok) {
-          const photoData = await photoResponse.json();
-
-          if (photoData && photoData.length) {
-            const photoItem = photoData.find((item: any) => item.type === "PHOTO");
-
-            if (photoItem) {
-              const photoObject: PhotoObject = photoItem as PhotoObject;
-
-              console.log("Objeto da foto:", photoObject);
-
-              photoUrl = photoObject.url;
-            }
-          }
-        } else {
-          throw new Error("Falha ao buscar foto do paciente.");
-        }
-
         setPessoa({
           ...data,
-          urlFoto: photoUrl
         });
       } catch (err: any) {
         console.error(err);
@@ -183,7 +146,7 @@ export default function PersonDetailsPage() {
       <div className="flex flex-col items-center gap-y-4 w-full mb-6">
         <Avatar className="h-40 w-40 border">
           <AvatarImage
-            src={pessoa?.urlFoto}
+            src={pessoa?.photoUrl}
             alt={pessoa?.fullName ?? "Foto do paciente"}
           />
           <AvatarFallback className="font-baloo font-bold text-[32px]">
