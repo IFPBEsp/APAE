@@ -25,7 +25,7 @@ public class PatientDocumentsControllerImpl implements PatientDocumentsControlle
 
     private final DocumentApplicationService documentService;
 
-    public PatientDocumentsControllerImpl(DocumentApplicationService documentService, PatientDocumentsApplicationService patientDocumentsService) {
+    public PatientDocumentsControllerImpl(DocumentApplicationService documentService) {
         this.documentService = documentService;
     }
 
@@ -67,34 +67,14 @@ public class PatientDocumentsControllerImpl implements PatientDocumentsControlle
         }
     }
 
-    private List<DocumentWithUrlResponseDTO> findDocumentsByCategory(UUID ownerId, DocumentCategory category, String type) {
-        try {
-            Iterable<DocumentDTO> documents = this.documentService.listDocuments(
-                    ListDocumentsArgsDTO.builder()
-                            .owner(ownerId.toString())
-                            .category(category)
-                            .type(Optional.ofNullable(type).isPresent() ? DocumentType.valueOf(type) : null)
-                            .year(Year.now())
-                            .build()
-            );
-
-            return StreamSupport.stream(documents.spliterator(), false)
-                    .map(this::generatePresignedUrl)
-                    .filter(Objects::nonNull)
-                    .toList();
-        } catch (Exception e) {
-            throw new RuntimeException("Erro ao buscar documentos", e);
-        }
-    }
-
     @Override
     public ResponseEntity<List<DocumentWithUrlResponseDTO>> findMedicalDocuments(UUID id) {
         return ResponseEntity.ok(findDocumentsByCategory(id, DocumentCategory.MEDICAL));
     }
 
     @Override
-    public ResponseEntity<List<DocumentWithUrlResponseDTO>> findPersonalDocuments(UUID id, String type) {
-        return ResponseEntity.ok(findDocumentsByCategory(id, DocumentCategory.PERSONAL, type));
+    public ResponseEntity<List<DocumentWithUrlResponseDTO>> findPersonalDocuments(UUID id) {
+        return ResponseEntity.ok(findDocumentsByCategory(id, DocumentCategory.PERSONAL));
     }
 
     @Override

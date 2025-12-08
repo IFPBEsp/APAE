@@ -17,7 +17,7 @@ public interface PatientDocumentsController {
     ResponseEntity<List<DocumentWithUrlResponseDTO>> findMedicalDocuments(@PathVariable UUID id);
 
     @GetMapping("/personals")
-    ResponseEntity<List<DocumentWithUrlResponseDTO>> findPersonalDocuments(@PathVariable UUID id, @RequestParam(required = false, value = "type")  String type);
+    ResponseEntity<List<DocumentWithUrlResponseDTO>> findPersonalDocuments(@PathVariable UUID id);
 
     @GetMapping("/schools")
     ResponseEntity<List<DocumentWithUrlResponseDTO>> findSchoolDocuments(@PathVariable UUID id);
