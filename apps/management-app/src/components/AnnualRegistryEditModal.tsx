@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
@@ -20,13 +21,35 @@ interface AnnualRegistryEditModalProps {
 
 export default function AnnualRegistryEditModal({ isOpen, onClose, patientId, currentYear, initialData }: AnnualRegistryEditModalProps) {
     
-    const cleanAndFormatCurrency = (value: string): string => {
+    const cleanAndFormatCurrencyForSubmit = (value: string): string => {
         if (!value) return "0.00";
-        return value.replace(/R\$/, '').replace(/\./g, '').replace(',', '.').trim();
+        return value.replace(/[^\d,]/g, '')
+                    .replace(',', '.');
     };
 
-    const formatCurrencyForInput = (value: number | string) => {
-        return value ? String(value) : ""; 
+    const formatCurrencyForDisplay = (value: number | string) => {
+        if (!value) return "";
+        return Number(value).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+    };
+
+    const handleMoneyChange = (e: React.ChangeEvent<HTMLInputElement>, onChange: (value: string) => void) => {
+        let value = e.target.value;
+        
+        value = value.replace(/\D/g, "");
+
+        if (value === "") {
+            onChange("");
+            return;
+        }
+
+        const numberValue = parseFloat(value) / 100;
+
+        const formatted = numberValue.toLocaleString("pt-BR", {
+            style: "currency",
+            currency: "BRL",
+        });
+
+        onChange(formatted);
     };
     
     const formatDisordersForInput = (disorders: any[] | undefined): string => {
@@ -36,19 +59,31 @@ export default function AnnualRegistryEditModal({ isOpen, onClose, patientId, cu
     const form = useForm<AnnualRegistryFormData>({
         resolver: zodResolver(AnnualRegistryFormSchema),
         defaultValues: {
-            bpc: initialData?.bpc === 'Sim' || initialData?.bpc === true, 
-            familyIncome: formatCurrencyForInput(initialData?.familyIncome),
-            diseases: initialData?.diseases ?? "",
-            continuousMedication: initialData?.continuousMedication ?? "",
-            disorders: formatDisordersForInput(initialData?.disorders),
+            bpc: false,
+            familyIncome: "",
+            diseases: "",
+            continuousMedication: "",
+            disorders: "",
         },
     });
 
+    useEffect(() => {
+        if (initialData) {
+            form.reset({
+                bpc: initialData.bpc === 'Sim' || initialData.bpc === true,
+                familyIncome: formatCurrencyForDisplay(initialData.familyIncome),
+                diseases: initialData.diseases ?? "",
+                continuousMedication: initialData.continuousMedication ?? "",
+                disorders: formatDisordersForInput(initialData.disorders),
+            });
+        }
+    }, [initialData, form, isOpen]);
+
     const onSubmit = async (data: AnnualRegistryFormData) => {
-        const registryId = initialData?.id;
+        const registryId = initialData?.id; 
 
         if (!registryId) {
-            toast.error("Erro: ID do registro anual ausente. Não é possível atualizar.");
+            toast.error("Erro: ID do registro anual ausente.");
             return;
         }
 
@@ -58,16 +93,15 @@ export default function AnnualRegistryEditModal({ isOpen, onClose, patientId, cu
             
         const payload = {
             bpc: data.bpc ? "true" : "false", 
-            familyIncome: cleanAndFormatCurrency(data.familyIncome), 
+            familyIncome: cleanAndFormatCurrencyForSubmit(data.familyIncome), 
             diseases: data.diseases,
-            
             continuousMedication: data.continuousMedication,
             disorders: formattedDisorders
         };
 
         try {
             const response = await fetch(`/api/pessoas/${patientId}/registro-anual/${registryId}`, {
-                method: 'PUT',
+                method: 'PUT', 
                 headers: {
                     'Content-Type': 'application/json',
                 },
@@ -99,7 +133,7 @@ export default function AnnualRegistryEditModal({ isOpen, onClose, patientId, cu
                 <Form {...form}>
                     <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
                         
-                        {/* Campo 'Recebe BPC' */}
+                        {/* Campo Recebe BPC? */}
                         <FormField
                             control={form.control}
                             name="bpc"
@@ -108,7 +142,7 @@ export default function AnnualRegistryEditModal({ isOpen, onClose, patientId, cu
                                     <FormLabel className="text-[#0D4F97]" >Recebe BPC?</FormLabel>
                                     <Select 
                                         onValueChange={(value) => field.onChange(value === 'true')} 
-                                        defaultValue={String(field.value)}
+                                        value={field.value ? "true" : "false"}
                                     >
                                         <FormControl>
                                             <SelectTrigger>
@@ -133,7 +167,11 @@ export default function AnnualRegistryEditModal({ isOpen, onClose, patientId, cu
                                 <FormItem>
                                     <FormLabel className="text-[#0D4F97]">Renda Familiar *</FormLabel>
                                     <FormControl>
-                                        <Input {...field} placeholder="R$ 0,00" />
+                                        <Input 
+                                            placeholder="R$ 0,00" 
+                                            value={field.value}
+                                            onChange={(e) => handleMoneyChange(e, field.onChange)} // Nossa máscara
+                                        />
                                     </FormControl>
                                     <FormMessage />
                                 </FormItem>
