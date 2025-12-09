@@ -19,7 +19,6 @@ import {
   ArrowLeftIcon,
   PeopleIcon,
   PersonIcon,
-  PulseIcon,
 } from "@primer/octicons-react";
 import Image from "next/image";
 import Link from "next/link";
@@ -33,6 +32,7 @@ import { useSidebar } from "@/components/ui/sidebar";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
 import logo from "../../assets/logo.png";
+import { SquareActivity, BriefcaseMedical } from "lucide-react"
 
 export function AppSidebar() {
   const { open, setOpen, isMobile, setOpenMobile } = useSidebar();
@@ -174,7 +174,7 @@ export function AppSidebar() {
                           : "text-[#0D4F97] hover:bg-[#0D4F97] hover:!text-white"
                       )}`}
                     >
-                      <PulseIcon size={16} />
+                      <SquareActivity  size={16} />
                       <span className="text-base">Transtornos</span>
                     </SidebarMenuButton>
                   </Link>
@@ -189,7 +189,7 @@ export function AppSidebar() {
                         : "text-[#0D4F97] hover:bg-[#0D4F97] hover:!text-white"
                     )}`}
                   >
-                    <PulseIcon size={16} />
+                    <BriefcaseMedical size={16} />
                     <span className="text-base">Vacinas</span>
                   </SidebarMenuButton>
                 </Link>
