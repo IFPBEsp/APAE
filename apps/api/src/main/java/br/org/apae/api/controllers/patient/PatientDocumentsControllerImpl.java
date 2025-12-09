@@ -3,6 +3,7 @@ package br.org.apae.api.controllers.patient;
 import br.org.apae.api.common.dto.patient.response.documents.DocumentWithUrlResponseDTO;
 import br.org.apae.api.documents.application.interfaces.DocumentApplicationService;
 import br.org.apae.api.documents.domain.enums.DocumentCategory;
+import br.org.apae.api.documents.domain.enums.DocumentType;
 import br.org.apae.api.documents.interfaces.dto.DocumentDTO;
 import br.org.apae.api.documents.interfaces.dto.GetPresignedDocumentUrlArgsDTO;
 import br.org.apae.api.documents.interfaces.dto.ListDocumentsArgsDTO;
@@ -10,8 +11,11 @@ import br.org.apae.api.patient.application.interfaces.PatientDocumentsApplicatio
 import br.org.apae.api.patient.interfaces.controllers.PatientDocumentsController;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.time.Year;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.StreamSupport;
@@ -21,7 +25,7 @@ public class PatientDocumentsControllerImpl implements PatientDocumentsControlle
 
     private final DocumentApplicationService documentService;
 
-    public PatientDocumentsControllerImpl(DocumentApplicationService documentService, PatientDocumentsApplicationService patientDocumentsService) {
+    public PatientDocumentsControllerImpl(DocumentApplicationService documentService) {
         this.documentService = documentService;
     }
 

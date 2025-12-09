@@ -8,14 +8,10 @@ export async function GET(request: NextRequest) {
   try {
     const api = await createBaseApi();
     const { searchParams } = new URL(request.url);
-    const backendParams = new URLSearchParams();
-    searchParams.forEach((value, key) => {
-        if (key === 'name') backendParams.append('fullName', value);
-        else backendParams.append(key, value);
-    });
+    const paramsObj = Object.fromEntries(searchParams.entries());
 
     const response = await api.get('/patients', {
-      params: backendParams,
+      params: paramsObj,
     });
 
     // Se for paginado, pega o content. Se for lista, pega direto.
