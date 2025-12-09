@@ -417,7 +417,7 @@ function MembersRegisterProvider({
     );
     formData.append("file", file);
 
-    return fetch("/api/pessoas", {
+    return fetch("/api/patients", {
       method: "POST",
       body: formData,
     });

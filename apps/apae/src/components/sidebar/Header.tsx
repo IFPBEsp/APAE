@@ -3,7 +3,7 @@
 import React from "react";
 import { User } from "lucide-react";
 import { SidebarTrigger } from "@/components/ui/sidebar";
-import Logo from "@/app/assets/logo.png";
+import Logo from "../../assets/logo.png";
 
 export default function Header() {
   return (
