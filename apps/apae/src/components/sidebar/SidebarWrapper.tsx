@@ -14,13 +14,11 @@ export function SidebarWrapper({ children }: SidebarWrapperProps) {
   const pathname = usePathname();
   const isAuthRoute = pathname.startsWith('/auth');
 
+  if(isAuthRoute) return <div>{children}</div>;
+
   return (
     <SidebarProvider>
-      {!isAuthRoute && (
-        <>
-          <AppSidebar />
-        </>
-      )}
+      <AppSidebar />
       <SidebarInset>
         <Header />
         <div>{children}</div>
