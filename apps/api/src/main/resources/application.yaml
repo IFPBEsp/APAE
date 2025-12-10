@@ -10,7 +10,7 @@ spring:
 
   jpa:
     hibernate:
-      ddl-auto: create
+      ddl-auto: update
     show-sql: true
     properties:
       hibernate:
@@ -20,6 +20,12 @@ spring:
   mvc:
     servlet:
       path: /api
+
+  servlet:
+    multipart:
+      enabled: true
+      max-file-size: 10MB
+      max-request-size: 50MB
 
 logging:
   level:
