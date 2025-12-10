@@ -5,7 +5,7 @@ import { AxiosError } from "axios";
 export async function GET() {
   try {
     const api = await createBaseApi();
-    const response = await api.get("/professionals");
+    const response = await api.get("/service-areas");
 
     return NextResponse.json(response.data, { status: 200 });
   } catch (error) {
@@ -13,7 +13,7 @@ export async function GET() {
       return NextResponse.json(
         {
           message:
-            error.response?.data?.message || "Erro ao buscar profissionais",
+            error.response?.data?.message || "Erro ao buscar áreas de atendimento",
         },
         { status: error.response?.status || 500 }
       );
@@ -28,10 +28,10 @@ export async function GET() {
 
 export async function POST(req: Request) {
   try {
-    const body = await req.formData();
+    const body = await req.json();
 
     const api = await createBaseApi();
-    const response = await api.post("/professionals", body, {headers:{'Content-Type':undefined}});
+    const response = await api.post("/service-areas", body);
 
     return NextResponse.json(response.data, { status: 201 });
   } catch (error) {
@@ -40,7 +40,7 @@ export async function POST(req: Request) {
       return NextResponse.json(
         {
           message:
-            data?.message || "Erro ao criar profissional"
+            data?.message || "Erro ao criar área de atendimento"
         },
         { status: error.response?.status || 500 }
       );

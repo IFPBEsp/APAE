@@ -3,11 +3,11 @@ import { getApiBaseUrl } from "@/lib/client-service";
 const API_URL = getApiBaseUrl();
 
 export async function getAllServiceAreas() {
-  return fetch(`${API_URL}/service-areas`, { method: "GET" });
+  return fetch(`/api/service-areas`, { method: "GET" });
 }
 
 export async function createServiceArea(area: string) {
-  return fetch(`${API_URL}/service-areas`, {
+  return fetch(`/api/service-areas`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
