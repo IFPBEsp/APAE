@@ -57,13 +57,12 @@ const makeInterceptors = (api: AxiosInstance) => {
 
 export const createDocumentsAPI = async () => {
   const api = createAxiosInstance("http://localhost:8092/api/documents");
-
   return makeInterceptors(api);
 };
 
 export const createBaseApi = async () => {
   const api = createAxiosInstance(
-    process.env.NEXT_PUBLIC_API || "http://localhost:8090"
+    process.env.NEXT_PUBLIC_API || "http://localhost:8090/api"
   );
 
   return makeInterceptors(api);

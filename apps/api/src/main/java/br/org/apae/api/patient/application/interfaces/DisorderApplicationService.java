@@ -20,5 +20,7 @@ public interface DisorderApplicationService {
 
     Set<DisorderResponseDTO> findDisorders(Set<CreateDisorderDTO> disorderNames);
 
+    Set<DisorderResponseDTO> findDisordersFromUpdateDTOs(Set<UpdateDisorderDTO> disorderNames);
+
     DisorderResponseDTO updateDisorder(UUID id, UpdateDisorderDTO dto);
 }

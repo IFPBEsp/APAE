@@ -13,6 +13,15 @@ public enum DocumentCategory {
         this.value = value;
     }
 
+    public static DocumentCategory fromValue(String value) {
+        for (DocumentCategory c : values()) {
+            if (c.value.equals(value)) {
+                return c;
+            }
+        }
+        throw new IllegalArgumentException("Invalid value: " + value);
+    }
+
     @Override
     public String toString() {
         return value;

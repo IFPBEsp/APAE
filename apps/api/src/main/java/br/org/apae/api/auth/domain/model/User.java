@@ -25,7 +25,7 @@ public class User implements UserDetails {
   private UUID id;
 
   @Column(nullable = false, unique = true)
-  private String username;
+  private String email;
 
   @Column(nullable = false, unique = true)
   private String cpf;
@@ -43,15 +43,15 @@ public class User implements UserDetails {
   protected User() {
   }
 
-  public User(String username, String password, String cpf, String fullName) {
-    this.username = username;
+  public User(String email, String password, String cpf, String fullName) {
+    this.email = email;
     this.password = password;
     this.cpf = cpf;
     this.fullName = fullName;
   }
 
-  public User(String username, String password, String cpf, String fullName, UserRole role) {
-    this.username = username;
+  public User(String email, String password, String cpf, String fullName, UserRole role) {
+    this.email = email;
     this.password = password;
     this.cpf = cpf;
     this.fullName = fullName;
@@ -66,12 +66,12 @@ public class User implements UserDetails {
     return password;
   }
 
-    @Override
-    public String getUsername() {
-        return username;
-    }
+  @Override
+  public String getUsername() {
+    return email;
+  }
 
-    public UserRole getRole() {
+  public UserRole getRole() {
     return role;
   }
 
