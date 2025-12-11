@@ -14,4 +14,6 @@ public interface AnnualRegistryRepository extends JpaRepository<AnnualRegistry, 
     Optional<AnnualRegistry> findByPatientIdAndYear(UUID patientId, Integer year);
 
     List<AnnualRegistry> findAllByPatientId(UUID patientId);
+
+    Optional<AnnualRegistry> findByPatientIdAndYear(UUID patientId, Integer year);
 }

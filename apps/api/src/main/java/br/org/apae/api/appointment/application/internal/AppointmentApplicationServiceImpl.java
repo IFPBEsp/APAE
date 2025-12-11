@@ -1,89 +1,302 @@
 package br.org.apae.api.appointment.application.internal;
 
-import java.time.LocalDate;
-import java.time.LocalTime;
-import java.util.UUID;
-
+import br.org.apae.api.appointment.application.interfaces.AppointmentApplicationService;
+import br.org.apae.api.appointment.domain.exceptions.AnnualRegistrationNotFound;
+import br.org.apae.api.appointment.domain.exceptions.AppointmentNotFoundException;
+import br.org.apae.api.appointment.domain.model.*;
+import br.org.apae.api.appointment.domain.repository.*;
+import br.org.apae.api.appointment.mapper.AppointmentMapper;
+import br.org.apae.api.common.dto.appointment.request.appointment.*;
+import br.org.apae.api.common.dto.appointment.response.appointment.*;
+import br.org.apae.api.patient.domain.model.AnnualRegistry;
+import br.org.apae.api.patient.domain.repository.AnnualRegistryRepository;
+import br.org.apae.api.professional.domain.exceptions.HealthProfessionalNotFoundException;
+import br.org.apae.api.professional.domain.model.HealthProfessional;
+import br.org.apae.api.professional.domain.repository.HealthProfessionalRepository;
+import jakarta.transaction.Transactional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import br.org.apae.api.appointment.application.interfaces.AppointmentApplicationService;
-import br.org.apae.api.appointment.domain.exceptions.AppointmentNotFoundException;
-import br.org.apae.api.appointment.domain.model.Appointment;
-import br.org.apae.api.appointment.domain.repository.AppointmentRepository;
-import br.org.apae.api.appointment.mapper.AppointmentMapper;
-import br.org.apae.api.common.dto.appointment.request.appointment.CreateAppointmentDTO;
-import br.org.apae.api.common.dto.appointment.request.appointment.UpdateAppointmentDTO;
-import br.org.apae.api.common.dto.appointment.response.appointment.AppointmentResponseDTO;
+import java.time.*;
+import java.util.*;
 
 @Service
+@Transactional
 public class AppointmentApplicationServiceImpl implements AppointmentApplicationService {
-  private final AppointmentRepository appointmentRepository;
-  private final AppointmentMapper appointmentMapper;
 
-  public AppointmentApplicationServiceImpl(AppointmentRepository appointmentRepository,
-      AppointmentMapper appointmentMapper) {
-    this.appointmentRepository = appointmentRepository;
-    this.appointmentMapper = appointmentMapper;
+  public static final String APPOINTMENT_NOT_FOUND = "Appointment not found";
+  private final AppointmentRepository appointmentRepo;
+  private final GeneratedAppointmentRepository generatedRepo;
+  private final AnnualRegistryRepository registryRepo;
+  private final HealthProfessionalRepository professionalRepo;
+  private final AbsenceRepository absenceRepo;
+  private final AppointmentMapper mapper;
+
+
+  public AppointmentApplicationServiceImpl(
+      AppointmentRepository appointmentRepo,
+      GeneratedAppointmentRepository generatedRepo,
+      AnnualRegistryRepository registryRepo,
+      HealthProfessionalRepository professionalRepo,
+      AbsenceRepository absenceRepo,
+      AppointmentMapper mapper) {
+    this.appointmentRepo = appointmentRepo;
+    this.generatedRepo = generatedRepo;
+    this.registryRepo = registryRepo;
+    this.professionalRepo = professionalRepo;
+    this.absenceRepo = absenceRepo;
+    this.mapper = mapper;
   }
 
   @Override
   public void create(CreateAppointmentDTO dto) {
-    Appointment appointment = this.appointmentMapper.toEntity(dto);
-    this.appointmentRepository.save(appointment);
+     AnnualRegistry annualRegistry = this.registryRepo.findByPatientIdAndYear(dto.patientId(), Year.now())
+        .orElseThrow(AnnualRegistrationNotFound::new);
+
+    HealthProfessional professional = this.professionalRepo.findById(dto.professionalId())
+        .orElseThrow(HealthProfessionalNotFoundException::new);
+
+    Appointment appointment = mapper.toEntity(dto, professional, annualRegistry);
+
+    appointmentRepo.save(appointment);
+
+    int year = annualRegistry.getYear().getValue();
+    LocalDate end = LocalDate.of(year, 12, 31);
+    generateAppointments(annualRegistry.getId(), appointment.getInitialDate(), end);
   }
 
   @Override
   public Page<AppointmentResponseDTO> findAll(Pageable pageable) {
-    return this.appointmentRepository.findAll(pageable).map(this.appointmentMapper::toResponse);
+    return appointmentRepo.findAll(pageable).map(mapper::toResponse);
   }
 
   @Override
   public Page<AppointmentResponseDTO> findAllByDate(LocalDate date, Pageable pageable) {
-    return this.appointmentRepository.findAllByNextAppointment(date, pageable)
-        .map(this.appointmentMapper::toResponse);
+    return appointmentRepo.findAllByInitialDate(date, pageable)
+            .map(mapper::toResponse);
   }
 
   @Override
   public Page<AppointmentResponseDTO> findAllByDateAndTime(LocalDate date, LocalTime time, Pageable pageable) {
-    return this.appointmentRepository.findAllByNextAppointmentAndNextAppointmentTime(date, time, pageable)
-        .map(this.appointmentMapper::toResponse);
+    return appointmentRepo.findAllByInitialDateAndHour(date, time, pageable)
+            .map(mapper::toResponse);
   }
 
   @Override
   public Page<AppointmentResponseDTO> findAll(LocalDate date, LocalTime time, Pageable pageable) {
     if (date != null && time == null) {
-      return this.findAllByDate(date, pageable);
+      return findAllByDate(date, pageable);
     } else if (date != null) {
-      return this.findAllByDateAndTime(date, time, pageable);
+      return findAllByDateAndTime(date, time, pageable);
     }
-    return this.findAll(pageable);
+    return findAll(pageable);
   }
 
   @Override
   public AppointmentResponseDTO findById(UUID id) {
-    Appointment appointment = this.appointmentRepository.findById(id).orElseThrow(AppointmentNotFoundException::new);
-
-    return this.appointmentMapper.toResponse(appointment);
-  }
-
-  @Override
-  public AppointmentResponseDTO update(UUID id, UpdateAppointmentDTO dto) {
-    Appointment appointment = this.appointmentRepository.findById(id).orElseThrow(AppointmentNotFoundException::new);
-
-    Appointment appointmentToUpdate = this.appointmentMapper.updateEntity(appointment, dto);
-    Appointment updated = this.appointmentRepository.save(appointmentToUpdate);
-
-    return this.appointmentMapper.toResponse(updated);
+    Appointment appointment = appointmentRepo.findById(id)
+            .orElseThrow(AppointmentNotFoundException::new);
+    return mapper.toResponse(appointment);
   }
 
   @Override
   public void delete(UUID id) {
-    if (!this.appointmentRepository.existsById(id)) {
+    if (!appointmentRepo.existsById(id)) {
       throw new AppointmentNotFoundException();
     }
+    appointmentRepo.deleteById(id);
+  }
 
-    this.appointmentRepository.deleteById(id);
+  /**
+   * Generates materialized appointment instances for an annual registration within a date range,
+   * based on the active recurrence rule.
+   * <p>
+   * Existing generated appointments are reused; new ones are created and persisted.
+   *
+   * @param annualRegistrationId the ID of the annual patient registration
+   * @param start the start date (inclusive) of the generation period
+   * @param end the end date (inclusive) of the generation period
+   * @return a list of generated appointment responses
+   * @throws IllegalArgumentException if the annual registration is not found
+   * @throws IllegalStateException if no active rule exists for the registration
+   */
+  public List<GeneratedAppointmentResponseDTO> generateAppointments(
+          UUID annualRegistrationId, LocalDate start, LocalDate end) {
+
+    Appointment activeRule = appointmentRepo.findByAnnualRegistrationIdAndIsActiveTrue(annualRegistrationId)
+            .stream().findFirst()
+            .orElseThrow(() -> new IllegalStateException("No active rule found"));
+
+    List<LocalDateTime> dates = calculateRecurrence(
+            activeRule.getInitialDate(),
+            activeRule.getFrequencyDays(),
+            activeRule.getHour(),
+            start, end);
+
+    LocalDateTime startDt = start.atStartOfDay();
+    LocalDateTime endDt = end.atTime(23, 59, 59);
+
+    List<GeneratedAppointment> generated = new ArrayList<>();
+    for (LocalDateTime dt : dates) {
+      if (dt.isBefore(startDt) || dt.isAfter(endDt)) continue;
+
+      GeneratedAppointment existing = generatedRepo
+              .findByAppointmentIdAndScheduledDateTime(activeRule.getId(), dt)
+              .orElse(null);
+
+      if (existing == null) {
+        existing = new GeneratedAppointment(activeRule, dt);
+        generatedRepo.save(existing);
+      }
+      generated.add(existing);
+    }
+
+    return generated.stream()
+            .map(mapper::toGeneratedResponse)
+            .toList();
+  }
+
+  @Override
+  public Page<TodayAppointmentsResponseDTO> listAppointmentForToday(Pageable pageable) {
+    return this.generatedRepo.listAppointmentsForToday(pageable).map(this.mapper::toTodayResponseDTO);
+  }
+
+  /**
+   * Calculates recurring appointment dates based on a rule's start date, frequency, and time.
+   *
+   * @param ruleStart the start date of the recurrence rule
+   * @param frequencyDays the interval in days between appointments
+   * @param time the time of day for each appointment
+   * @param queryStart the earliest date to include (inclusive)
+   * @param queryEnd the latest date to include (inclusive)
+   * @return a list of scheduled {@link LocalDateTime} instances
+   */
+  private List<LocalDateTime> calculateRecurrence(
+          LocalDate ruleStart, int frequencyDays, LocalTime time,
+          LocalDate queryStart, LocalDate queryEnd) {
+
+    List<LocalDateTime> result = new ArrayList<>();
+    LocalDate date = ruleStart.isBefore(queryStart) ? queryStart : ruleStart;
+
+    while (!date.isAfter(queryEnd)) {
+      result.add(date.atTime(time));
+      date = date.plusDays(frequencyDays);
+    }
+    return result;
+  }
+
+  /**
+   * Updates an active appointment rule by deactivating the current rule and creating a new one
+   * with updated frequency and/or time. Generates new future appointments and removes outdated ones.
+   * <p>
+   * This creates a historical trail of rule changes.
+   *
+   * @param appointmentId the ID of the active rule to update
+   * @param newFrequency optional new frequency in days (null to keep current)
+   * @param newTime optional new appointment time (null to keep current)
+   * @return the newly created active rule
+   * @throws IllegalArgumentException if the rule is not found
+   * @throws IllegalStateException if the rule is not active
+   */
+    public AppointmentResponseDTO updateAppointment(UUID appointmentId, Integer newFrequency, LocalTime newTime) {
+    Appointment current = appointmentRepo.findById(appointmentId)
+            .orElseThrow(() -> new IllegalArgumentException("Rule not found"));
+
+    if (!current.isActive()) {
+      throw new IllegalStateException("Only active rules can be edited");
+    }
+
+    LocalDate editDate = LocalDate.now();
+
+    // Deactivate old rule
+    current.setActive(false);
+    current.setEndDate(editDate.minusDays(1));
+    appointmentRepo.save(current);
+
+    // Create new rule
+    Appointment newRule = new Appointment(
+            current.getProfessional(),
+            current.getServiceId(),
+            current.getAnnualRegistration(),
+            newFrequency != null ? newFrequency : current.getFrequencyDays(),
+            newTime != null ? newTime : current.getHour(),
+            editDate,
+            null // end date will be set on next edit
+    );
+    newRule = appointmentRepo.save(newRule);
+
+    int year = current.getAnnualRegistration().getYear().getValue();
+    LocalDate end = LocalDate.of(year, 12, 31);
+
+    // Regenerate future appointments and clean up old ones
+    generateAppointments(current.getAnnualRegistration().getId(), editDate, end);
+    generatedRepo.deleteFutureByAppointmentId(current.getId(), editDate.atStartOfDay());
+
+    return mapper.toResponse(newRule);
+  }
+
+  /**
+   * Reschedules a single generated appointment to a new date and time.
+   *
+   * @param generatedId the ID of the generated appointment
+   * @param newDateTime the new scheduled date and time
+   * @return the updated generated appointment response
+   * @throws IllegalArgumentException if the appointment is not found
+   */
+  public GeneratedAppointmentResponseDTO reschedule(UUID generatedId, LocalDateTime newDateTime) {
+    GeneratedAppointment appt = generatedRepo.findById(generatedId)
+            .orElseThrow(() -> new IllegalArgumentException(APPOINTMENT_NOT_FOUND));
+    appt.setOverriddenDateTime(newDateTime);
+    return mapper.toGeneratedResponse(generatedRepo.save(appt));
+  }
+
+  /**
+   * Marks a generated appointment as performed/completed.
+   *
+   * @param generatedId the ID of the generated appointment
+   * @return the updated generated appointment response
+   * @throws IllegalArgumentException if the appointment is not found
+   */
+  public GeneratedAppointmentResponseDTO markAsPerformed(UUID generatedId) {
+    GeneratedAppointment appt = generatedRepo.findById(generatedId)
+            .orElseThrow(() -> new IllegalArgumentException(APPOINTMENT_NOT_FOUND));
+    appt.setPerformed(true);
+    return mapper.toGeneratedResponse(generatedRepo.save(appt));
+  }
+
+  /**
+   * Cancels a generated appointment with a reason.
+   *
+   * @param generatedId the ID of the generated appointment
+   * @param reason the reason for cancellation (required)
+   * @return the cancelled appointment response
+   * @throws IllegalArgumentException if the appointment is not found
+   */
+  public GeneratedAppointmentResponseDTO cancel(UUID generatedId, String reason) {
+    GeneratedAppointment appt = generatedRepo.findById(generatedId)
+            .orElseThrow(() -> new IllegalArgumentException(APPOINTMENT_NOT_FOUND));
+    appt.setCancelled(true);
+    appt.setCancellationReason(reason);
+    return mapper.toGeneratedResponse(generatedRepo.save(appt));
+  }
+
+  /**
+   * Lists all generated appointments for a patient within a date range (paginated).
+   *
+   * @param patientId the ID of the patient (from annual registration)
+   * @param start the start date of the range (inclusive)
+   * @param end the end date of the range (inclusive)
+   * @param pageable pagination information
+   * @return a paginated list of generated appointments for the patient
+   */
+  public Page<GeneratedAppointmentResponseDTO> listByPatient(
+          UUID patientId, LocalDate start, LocalDate end, Pageable pageable) {
+
+    LocalDateTime s = start.atStartOfDay();
+    LocalDateTime e = end.atTime(23, 59, 59);
+
+    return generatedRepo.findByPatientIdAndScheduledDateTimeBetween(patientId, s, e, pageable)
+            .map(mapper::toGeneratedResponse);
   }
 }

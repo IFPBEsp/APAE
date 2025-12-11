@@ -1,7 +1,7 @@
 import { clsx, type ClassValue } from "clsx"
-import { twMerge } from "tailwind-merge"
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
+import { twMerge } from "tailwind-merge"
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
@@ -12,7 +12,8 @@ export const separaETransformaEmNumero = (valor: unknown, separador: string) => 
       return (valor as string).split(separador).map((n) => parseInt(n));
     }
     return [NaN, NaN, NaN];
-  };
+};
+
 
 export const formatDatePTBR = (date: string) => {
   const dateUtc = new Date(date).setUTCHours(12);

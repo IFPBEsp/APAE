@@ -1,15 +1,20 @@
-"use client";
+'use client';
 
-import { useState, useEffect } from "react";
-import { ptBR } from 'date-fns/locale';
-import { formatDatePTBR } from '@/lib/utils';
 import {
   CalendarDays,
   SearchIcon,
-  Users,
-} from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
+  Users
+} from 'lucide-react';
+import { useEffect, useState } from 'react';
+
+import { Button } from '@/components/ui/button';
+import { Calendar } from '@/components/ui/calendar';
+import { Card, CardContent } from '@/components/ui/card';
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from '@/components/ui/popover';
 import {
   Table,
   TableBody,
@@ -17,30 +22,10 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/components/ui/table";
-import { Calendar } from "@/components/ui/calendar";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
+} from '@/components/ui/table';
 
-import { InfoCard } from "@/components/shared/InfoCard";
-import { Input } from "@/components/ui/input";
-import { Select, SelectItem } from "@/components/ui/select";
-import {
-  SelectContent,
-  SelectGroup,
-  SelectLabel,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import {
-  Appointment, 
-  getAppointments,
-  getAreasDaSaude,
-} from "../services/appointmentService";
-import Link from "next/link";
+import { AppointmentForm } from '@/components/forms/AppointmentForm';
+import { InfoCard } from '@/components/shared/InfoCard';
 import {
   Dialog,
   DialogContent,
@@ -48,8 +33,22 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from "@/components/ui/dialog";
-import { AppointmentForm } from "@/components/forms/AppointmentForm";
+} from '@/components/ui/dialog';
+import { Input } from '@/components/ui/input';
+import {
+  Select, SelectContent,
+  SelectGroup, SelectItem, SelectLabel,
+  SelectTrigger,
+  SelectValue
+} from '@/components/ui/select';
+import { formatDatePTBR } from '@/lib/utils';
+import { ptBR } from 'date-fns/locale';
+import Link from "next/link";
+import {
+  Appointment,
+  getAppointments,
+  getAreasDaSaude,
+} from "../services/appointmentService";
 
 type Area = {
   id: number;
@@ -58,16 +57,15 @@ type Area = {
 
 export default function AllApointments() {
   const [selectedDate, setSelectedDate] = useState<Date | undefined>(undefined);
-  const [selectedArea, setSelectedArea] = useState('');
-  const [searchName, setSearchName] = useState('');
+  const [selectedArea, setSelectedArea] = useState("");
+  const [searchName, setSearchName] = useState("");
   const [areas, setAreas] = useState<Area[]>([]);
-  const [appointments, setAppointments] = useState<Appointment[]>([]);
+  const [appointments, setAppointments] = useState<Agendamento[]>([]);
 
-  useEffect(() =>{
+  useEffect(() => {
     const fetchAppointments = async () => {
-      const response = await getAppointments();
-      setAppointments(response.content as Appointment[]);
-
+      const response = await getAgendamentos();
+      setAppointments(response);
       const areasExistentes: Area[] = (await getAreasDaSaude()).map(
         (area, index) => ({ id: index, name: area })
       );
@@ -77,9 +75,26 @@ export default function AllApointments() {
   }, []);
 
   const filteredAppointments = appointments.filter((appointment) => {
-    const matchesProfessionalId = appointment.professional.id;
-    const matchesFrequencyDays = appointment.frequencyDays;
-    const matchesDate = selectedDate ? formatDatePTBR(appointment.initialDate) === formatDatePTBR(selectedDate.toString()) : true;
+    const matchesArea = selectedArea
+      ? appointment.profissional.areaDaSaude === selectedArea
+      : true;
+    const matchesPatientName = appointment.paciente.nome
+      .toLowerCase()
+      .includes(searchName.trim().toLowerCase());
+    const matchesProfessionalName = appointment.profissional.nome
+      .toLowerCase()
+      .includes(searchName.trim().toLowerCase());
+    const dateAppointment = separaETransformaEmNumero(
+      appointment.proximaConsulta,
+      "-"
+    );
+    const matchesDate = selectedDate
+      ? new Date(
+          dateAppointment[0],
+          dateAppointment[1],
+          dateAppointment[2]
+        ).toDateString() === selectedDate.toDateString()
+      : true;
     return (
       matchesProfessionalId &&
       (matchesFrequencyDays) &&

@@ -1,14 +1,14 @@
-"use client";
+'use client';
 
-import { Check, X } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { Check, X } from 'lucide-react';
+import { Button } from '@/components/ui/button';
 import {
   Agendamento,
   getAgendamentoById,
   saveAgendamentoRealizado,
-} from "@/app/services/appointmentService";
-import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+} from '@/app/services/appointmentService';
+import { useRouter } from 'next/navigation';
+import { useEffect, useState } from 'react';
 import {
   Dialog,
   DialogClose,
@@ -18,7 +18,7 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from "../ui/dialog";
+} from '../ui/dialog';
 
 export default function ConfirmaRealizacaoButton({ id }: { id: string }) {
   const [agendamento, setAgendamento] = useState<Agendamento>();

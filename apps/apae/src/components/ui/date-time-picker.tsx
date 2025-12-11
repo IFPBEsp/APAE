@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button"
 import { Calendar } from "@/components/ui/calendar"
 import { Input } from "@/components/ui/input"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
+import { ptBR } from "date-fns/locale"
 
 interface DateTimePickerProps {
   value?: Date;
@@ -66,7 +67,7 @@ export function DateTimePicker({ value, onChange }: DateTimePickerProps) {
               id="date-picker"
               className="w-full justify-between font-normal"
             >
-              {dateTime ? format(dateTime, "PPP") : "Selecione"}
+              {dateTime ? format(dateTime, "PPP", { locale: ptBR }) : "Selecione"}
               <ChevronDownIcon className="size-4" />
             </Button>
           </PopoverTrigger>
@@ -76,6 +77,7 @@ export function DateTimePicker({ value, onChange }: DateTimePickerProps) {
               selected={dateTime}
               captionLayout="dropdown"
               onSelect={handleDateSelect}
+              locale={ptBR}
             />
           </PopoverContent>
         </Popover>

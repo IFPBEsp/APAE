@@ -1,17 +1,22 @@
-"use client";
+'use client';
 
-import { useEffect, useState } from "react";
-import { format } from "date-fns";
-import { ptBR } from "date-fns/locale";
+import { format } from 'date-fns';
+import { ptBR } from 'date-fns/locale';
 import {
   CalendarDays,
-  Users,
-  MessageCircleWarning,
-  CalendarX,
-} from "lucide-react";
-import { Page } from '@/types/pagination';
-import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
+  Users
+} from 'lucide-react';
+import { useEffect, useState } from 'react';
+
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Calendar } from '@/components/ui/calendar';
+import { Card, CardContent } from '@/components/ui/card';
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from '@/components/ui/popover';
 import {
   Table,
   TableBody,
@@ -19,18 +24,12 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/components/ui/table";
-import { Calendar } from "@/components/ui/calendar";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
-import { Badge } from "@/components/ui/badge";
+} from '@/components/ui/table';
 
 import {
   Dialog,
   DialogContent,
+  DialogDescription,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
@@ -38,12 +37,15 @@ import {
 } from "@/components/ui/dialog";
 import { TodayAppointment } from '@/types/appointment';
 import { getAppointments, listTodayAppointment, markAsPerformed, UUID, type AppointmentResponseDTO } from "./services/appointmentService";
+} from '@/components/ui/dialog';
 
 import { AppointmentForm } from "@/components/forms/AppointmentForm";
 import { InfoCard } from "@/components/shared/InfoCard";
+import { Checkbox } from '@/components/ui/checkbox';
+import { TodayAppointment } from '@/types/appointment';
+import { Page } from '@/types/pagination';
 import Link from "next/link";
-
-import { Checkbox } from "@/components/ui/checkbox";
+import { getAppointments, listTodayAppointment, markAsPerformed, UUID, type AppointmentResponseDTO } from "./services/appointmentService";
 
 export default function DashboardPage() {
   const [selectedDate, setSelectedDate] = useState<Date>(new Date());
@@ -204,7 +206,7 @@ export default function DashboardPage() {
                           checked={item.performed}
                           onCheckedChange={() => markAsPerformedHandle(item.id)}
                       />
-                    </TableCell> 
+                    </TableCell>
                   </TableRow>
                 ))}
               </TableBody>
