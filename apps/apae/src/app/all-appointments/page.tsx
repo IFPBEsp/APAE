@@ -57,15 +57,16 @@ type Area = {
 
 export default function AllApointments() {
   const [selectedDate, setSelectedDate] = useState<Date | undefined>(undefined);
-  const [selectedArea, setSelectedArea] = useState("");
-  const [searchName, setSearchName] = useState("");
+  const [selectedArea, setSelectedArea] = useState('');
+  const [searchName, setSearchName] = useState('');
   const [areas, setAreas] = useState<Area[]>([]);
-  const [appointments, setAppointments] = useState<Agendamento[]>([]);
+  const [appointments, setAppointments] = useState<Appointment[]>([]);
 
-  useEffect(() => {
+  useEffect(() =>{
     const fetchAppointments = async () => {
-      const response = await getAgendamentos();
-      setAppointments(response);
+      const response = await getAppointments();
+      setAppointments(response.content as Appointment[]);
+
       const areasExistentes: Area[] = (await getAreasDaSaude()).map(
         (area, index) => ({ id: index, name: area })
       );
@@ -75,26 +76,9 @@ export default function AllApointments() {
   }, []);
 
   const filteredAppointments = appointments.filter((appointment) => {
-    const matchesArea = selectedArea
-      ? appointment.profissional.areaDaSaude === selectedArea
-      : true;
-    const matchesPatientName = appointment.paciente.nome
-      .toLowerCase()
-      .includes(searchName.trim().toLowerCase());
-    const matchesProfessionalName = appointment.profissional.nome
-      .toLowerCase()
-      .includes(searchName.trim().toLowerCase());
-    const dateAppointment = separaETransformaEmNumero(
-      appointment.proximaConsulta,
-      "-"
-    );
-    const matchesDate = selectedDate
-      ? new Date(
-          dateAppointment[0],
-          dateAppointment[1],
-          dateAppointment[2]
-        ).toDateString() === selectedDate.toDateString()
-      : true;
+    const matchesProfessionalId = appointment.professional.id;
+    const matchesFrequencyDays = appointment.frequencyDays;
+    const matchesDate = selectedDate ? formatDatePTBR(appointment.initialDate) === formatDatePTBR(selectedDate.toString()) : true;
     return (
       matchesProfessionalId &&
       (matchesFrequencyDays) &&

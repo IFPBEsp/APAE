@@ -1,8 +1,23 @@
 package br.org.apae.api.patient.domain.model;
 
-import jakarta.persistence.*;
 import java.math.BigDecimal;
-import java.util.*;
+import java.time.Year;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Objects;
+import java.util.Set;
+import java.util.UUID;
+
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.JoinTable;
+import jakarta.persistence.ManyToMany;
+import jakarta.persistence.Table;
 
 @Entity
 @Table(name = "cadastros_anuais")
@@ -22,7 +37,7 @@ public class AnnualRegistry {
     private BigDecimal familyIncome;
 
     @Column(name = "ano", nullable = false)
-    private Integer year;
+    private Year year;
 
     @Column(name = "paciente_id", nullable = false)
     private UUID patientId;
@@ -34,7 +49,7 @@ public class AnnualRegistry {
     protected AnnualRegistry() {
     }
 
-    public AnnualRegistry(String bpc, String diseases, BigDecimal familyIncome, int year, UUID patientId,
+    public AnnualRegistry(String bpc, String diseases, BigDecimal familyIncome, Year year, UUID patientId,
             Set<Disorder> disorders) {
         this.bpc = bpc;
         this.diseases = diseases;
@@ -44,7 +59,7 @@ public class AnnualRegistry {
         this.disorders = disorders;
     }
 
-    public AnnualRegistry(UUID id, String bpc, String diseases, BigDecimal familyIncome, int year, UUID patientId,
+    public AnnualRegistry(UUID id, String bpc, String diseases, BigDecimal familyIncome, Year year, UUID patientId,
             Set<Disorder> disorders) {
         this.id = id;
         this.bpc = bpc;
@@ -71,7 +86,7 @@ public class AnnualRegistry {
         return familyIncome;
     }
 
-    public int getYear() {
+    public Year getYear() {
         return year;
     }
 

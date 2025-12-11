@@ -1,6 +1,7 @@
 package br.org.apae.api.common.dto.patient.request.annual_registry;
 
 import java.math.BigDecimal;
+import java.time.Year;
 import java.util.Set;
 
 import br.org.apae.api.common.dto.patient.request.disorder.CreateDisorderDTO;
@@ -15,7 +16,7 @@ public record CreateAnnualRegistryDTO(
 
                 @NotNull @Positive BigDecimal familyIncome,
 
-                @NotNull Integer year,
+                @NotNull Year year,
 
                 Set<CreateDisorderDTO> disorders) {
 }

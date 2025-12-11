@@ -1,25 +1,50 @@
 package br.org.apae.api.appointment.application.internal;
 
-import br.org.apae.api.appointment.application.interfaces.AppointmentApplicationService;
-import br.org.apae.api.appointment.domain.exceptions.AnnualRegistrationNotFound;
-import br.org.apae.api.appointment.domain.exceptions.AppointmentNotFoundException;
-import br.org.apae.api.appointment.domain.model.*;
-import br.org.apae.api.appointment.domain.repository.*;
-import br.org.apae.api.appointment.mapper.AppointmentMapper;
-import br.org.apae.api.common.dto.appointment.request.appointment.*;
-import br.org.apae.api.common.dto.appointment.response.appointment.*;
-import br.org.apae.api.patient.domain.model.AnnualRegistry;
-import br.org.apae.api.patient.domain.repository.AnnualRegistryRepository;
-import br.org.apae.api.professional.domain.exceptions.HealthProfessionalNotFoundException;
-import br.org.apae.api.professional.domain.model.HealthProfessional;
-import br.org.apae.api.professional.domain.repository.HealthProfessionalRepository;
-import jakarta.transaction.Transactional;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.Year;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
+import java.util.UUID;
+import java.util.stream.Collectors;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import java.time.*;
-import java.util.*;
+import br.org.apae.api.appointment.application.interfaces.AppointmentApplicationService;
+import br.org.apae.api.appointment.domain.exceptions.AnnualRegistrationNotFound;
+import br.org.apae.api.appointment.domain.exceptions.AppointmentNotFoundException;
+import br.org.apae.api.appointment.domain.model.Appointment;
+import br.org.apae.api.appointment.domain.model.GeneratedAppointment;
+import br.org.apae.api.appointment.domain.repository.AbsenceRepository;
+import br.org.apae.api.appointment.domain.repository.AppointmentRepository;
+import br.org.apae.api.appointment.domain.repository.GeneratedAppointmentRepository;
+import br.org.apae.api.appointment.mapper.AppointmentMapper;
+import br.org.apae.api.common.dto.address.AddressResponseDTO;
+import br.org.apae.api.common.dto.appointment.request.appointment.CreateAppointmentDTO;
+import br.org.apae.api.common.dto.appointment.response.appointment.AppointmentResponseDTO;
+import br.org.apae.api.common.dto.appointment.response.appointment.GeneratedAppointmentResponseDTO;
+import br.org.apae.api.common.dto.appointment.response.appointment.TodayAppointmentsResponseDTO;
+import br.org.apae.api.common.dto.patient.response.guardian.GuardianResponseDTO;
+import br.org.apae.api.common.dto.patient.response.patient.PatientResponseDTO;
+import br.org.apae.api.patient.application.mappers.ParentMapper;
+import br.org.apae.api.patient.application.mappers.VaccineMapper;
+import br.org.apae.api.patient.domain.model.AnnualRegistry;
+import br.org.apae.api.patient.domain.model.Guardian;
+import br.org.apae.api.patient.domain.model.Parent;
+import br.org.apae.api.patient.domain.model.Patient;
+import br.org.apae.api.patient.domain.model.Vaccine;
+import br.org.apae.api.patient.domain.repository.AnnualRegistryRepository;
+import br.org.apae.api.patient.domain.repository.GuardianRepository;
+import br.org.apae.api.patient.domain.repository.ParentRepository;
+import br.org.apae.api.patient.domain.repository.PatientRepository;
+import br.org.apae.api.professional.domain.exceptions.HealthProfessionalNotFoundException;
+import br.org.apae.api.professional.domain.model.HealthProfessional;
+import br.org.apae.api.professional.domain.repository.HealthProfessionalRepository;
+import jakarta.transaction.Transactional;
 
 @Service
 @Transactional
@@ -31,7 +56,12 @@ public class AppointmentApplicationServiceImpl implements AppointmentApplication
   private final AnnualRegistryRepository registryRepo;
   private final HealthProfessionalRepository professionalRepo;
   private final AbsenceRepository absenceRepo;
+  private final PatientRepository patientRepo;
+  private final GuardianRepository guardianRepo;
+  private final ParentRepository parentRepo;
   private final AppointmentMapper mapper;
+  private final VaccineMapper vaccineMapper;
+  private final ParentMapper parentMapper;
 
 
   public AppointmentApplicationServiceImpl(
@@ -40,13 +70,21 @@ public class AppointmentApplicationServiceImpl implements AppointmentApplication
       AnnualRegistryRepository registryRepo,
       HealthProfessionalRepository professionalRepo,
       AbsenceRepository absenceRepo,
+      PatientRepository patientRepo,
+      GuardianRepository guardianRepo,
+      ParentRepository parentRepo,
       AppointmentMapper mapper) {
     this.appointmentRepo = appointmentRepo;
     this.generatedRepo = generatedRepo;
     this.registryRepo = registryRepo;
     this.professionalRepo = professionalRepo;
     this.absenceRepo = absenceRepo;
+    this.patientRepo = patientRepo;
+    this.guardianRepo = guardianRepo;
+    this.parentRepo = parentRepo;
     this.mapper = mapper;
+    this.vaccineMapper = new VaccineMapper();
+    this.parentMapper = new ParentMapper();
   }
 
   @Override
@@ -61,26 +99,76 @@ public class AppointmentApplicationServiceImpl implements AppointmentApplication
 
     appointmentRepo.save(appointment);
 
-    int year = annualRegistry.getYear().getValue();
-    LocalDate end = LocalDate.of(year, 12, 31);
+    Year year = annualRegistry.getYear();
+    LocalDate end = LocalDate.of(year.getValue(), 12, 31);
     generateAppointments(annualRegistry.getId(), appointment.getInitialDate(), end);
   }
 
   @Override
   public Page<AppointmentResponseDTO> findAll(Pageable pageable) {
-    return appointmentRepo.findAll(pageable).map(mapper::toResponse);
+    return this.appointmentRepo.findAll(pageable).map(appointment -> {
+      Patient patient = patientRepo.findById(appointment.getAnnualRegistration().getPatientId()).get();
+      Guardian guardian = guardianRepo.findByPatientId(patient.getId()).get();
+      List<Parent> pais = parentRepo.findAllByPatientId(patient.getId());
+
+      AddressResponseDTO adto = new AddressResponseDTO(patient.getAddress());
+      Set<Vaccine> vaccines = patient.getVaccines();
+
+      PatientResponseDTO pdto = new PatientResponseDTO(
+        patient,
+        adto,
+        new GuardianResponseDTO(guardian, adto),
+        pais.stream().map(parentMapper::toResponseDTO).collect(Collectors.toList()),
+        vaccines.stream().map(vaccineMapper::toResponseDTO).collect(Collectors.toSet()));
+
+      return mapper.toResponse(appointment, pdto);
+    });
   }
 
   @Override
   public Page<AppointmentResponseDTO> findAllByDate(LocalDate date, Pageable pageable) {
-    return appointmentRepo.findAllByInitialDate(date, pageable)
-            .map(mapper::toResponse);
+      return this.appointmentRepo.findAllByInitialDate(date, pageable)
+          .map(appointment -> {
+              Patient patient = patientRepo.findById(appointment.getAnnualRegistration().getPatientId()).get();
+              Guardian guardian = guardianRepo.findByPatientId(patient.getId()).get();
+              List<Parent> pais = parentRepo.findAllByPatientId(patient.getId());
+
+              AddressResponseDTO adto = new AddressResponseDTO(patient.getAddress());
+              Set<Vaccine> vaccines = patient.getVaccines();
+
+              PatientResponseDTO pdto = new PatientResponseDTO(
+                  patient,
+                  adto,
+                  new GuardianResponseDTO(guardian, adto),
+                  pais.stream().map(parentMapper::toResponseDTO).collect(Collectors.toList()),
+                  vaccines.stream().map(vaccineMapper::toResponseDTO).collect(Collectors.toSet())
+              );
+
+              return mapper.toResponse(appointment, pdto);
+          });
   }
 
   @Override
   public Page<AppointmentResponseDTO> findAllByDateAndTime(LocalDate date, LocalTime time, Pageable pageable) {
-    return appointmentRepo.findAllByInitialDateAndHour(date, time, pageable)
-            .map(mapper::toResponse);
+      return this.appointmentRepo.findAllByInitialDateAndHour(date, time, pageable)
+          .map(appointment -> {
+              Patient patient = patientRepo.findById(appointment.getAnnualRegistration().getPatientId()).get();
+              Guardian guardian = guardianRepo.findByPatientId(patient.getId()).get();
+              List<Parent> pais = parentRepo.findAllByPatientId(patient.getId());
+
+              AddressResponseDTO adto = new AddressResponseDTO(patient.getAddress());
+              Set<Vaccine> vaccines = patient.getVaccines();
+
+              PatientResponseDTO pdto = new PatientResponseDTO(
+                  patient,
+                  adto,
+                  new GuardianResponseDTO(guardian, adto),
+                  pais.stream().map(parentMapper::toResponseDTO).collect(Collectors.toList()),
+                  vaccines.stream().map(vaccineMapper::toResponseDTO).collect(Collectors.toSet())
+              );
+
+              return mapper.toResponse(appointment, pdto);
+          });
   }
 
   @Override
@@ -97,7 +185,22 @@ public class AppointmentApplicationServiceImpl implements AppointmentApplication
   public AppointmentResponseDTO findById(UUID id) {
     Appointment appointment = appointmentRepo.findById(id)
             .orElseThrow(AppointmentNotFoundException::new);
-    return mapper.toResponse(appointment);
+
+    Patient patient = patientRepo.findById(appointment.getAnnualRegistration().getPatientId()).get();
+    Guardian guardian = guardianRepo.findByPatientId(patient.getId()).get();
+    List<Parent> pais = parentRepo.findAllByPatientId(patient.getId());
+
+    AddressResponseDTO adto = new AddressResponseDTO(patient.getAddress());
+    Set<Vaccine> vaccines = patient.getVaccines();
+
+    PatientResponseDTO pdto = new PatientResponseDTO(
+      patient,
+      adto,
+      new GuardianResponseDTO(guardian, adto),
+      pais.stream().map(parentMapper::toResponseDTO).collect(Collectors.toList()),
+      vaccines.stream().map(vaccineMapper::toResponseDTO).collect(Collectors.toSet()));
+      
+    return mapper.toResponse(appointment, pdto);
   }
 
   @Override
@@ -159,7 +262,23 @@ public class AppointmentApplicationServiceImpl implements AppointmentApplication
 
   @Override
   public Page<TodayAppointmentsResponseDTO> listAppointmentForToday(Pageable pageable) {
-    return this.generatedRepo.listAppointmentsForToday(pageable).map(this.mapper::toTodayResponseDTO);
+    return this.generatedRepo.listAppointmentsForToday(pageable).map(appointment -> {
+      Patient patient = patientRepo.findById(appointment.getPatientId()).get();
+      Guardian guardian = guardianRepo.findByPatientId(patient.getId()).get();
+      List<Parent> pais = parentRepo.findAllByPatientId(patient.getId());
+
+      AddressResponseDTO adto = new AddressResponseDTO(patient.getAddress());
+      Set<Vaccine> vaccines = patient.getVaccines();
+
+      PatientResponseDTO pdto = new PatientResponseDTO(
+        patient,
+        adto,
+        new GuardianResponseDTO(guardian, adto),
+        pais.stream().map(parentMapper::toResponseDTO).collect(Collectors.toList()),
+        vaccines.stream().map(vaccineMapper::toResponseDTO).collect(Collectors.toSet()));
+
+      return mapper.toTodayResponseDTO(appointment, pdto);
+    });
   }
 
   /**
@@ -233,7 +352,21 @@ public class AppointmentApplicationServiceImpl implements AppointmentApplication
     generateAppointments(current.getAnnualRegistration().getId(), editDate, end);
     generatedRepo.deleteFutureByAppointmentId(current.getId(), editDate.atStartOfDay());
 
-    return mapper.toResponse(newRule);
+    Patient patient = patientRepo.findById(newRule.getAnnualRegistration().getPatientId()).get();
+    Guardian guardian = guardianRepo.findByPatientId(patient.getId()).get();
+    List<Parent> pais = parentRepo.findAllByPatientId(patient.getId());
+
+    AddressResponseDTO adto = new AddressResponseDTO(patient.getAddress());
+    Set<Vaccine> vaccines = patient.getVaccines();
+
+    PatientResponseDTO pdto = new PatientResponseDTO(
+      patient,
+      adto,
+      new GuardianResponseDTO(guardian, adto),
+      pais.stream().map(parentMapper::toResponseDTO).collect(Collectors.toList()),
+      vaccines.stream().map(vaccineMapper::toResponseDTO).collect(Collectors.toSet()));
+
+    return mapper.toResponse(newRule, pdto);
   }
 
   /**
