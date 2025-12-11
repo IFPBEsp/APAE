@@ -20,19 +20,19 @@ export function PageOrchestrator({
   useEffect(() => {
     switch (step) {
       case MembersRegisterStep.PERSONAL:
-        router.push("/pessoa/cadastro/pessoal");
+        router.push("/person/register/personal");
         break;
       case MembersRegisterStep.ADDRESS:
-        router.push("/pessoa/cadastro/endereco");
+        router.push("/person/register/address");
         break;
       case MembersRegisterStep.ADDITIONALS:
-        router.push("/pessoa/cadastro/adicional");
+        router.push("/person/register/additional");
         break;
       case MembersRegisterStep.GUARDIANS:
-        router.push("/pessoa/cadastro/responsaveis");
+        router.push("/person/register/responsible");
         break;
       case MembersRegisterStep.PROFILE:
-        router.push("/pessoa/cadastro/perfil");
+        router.push("/person/register/profile");
         break;
     }
   }, [step, router]);

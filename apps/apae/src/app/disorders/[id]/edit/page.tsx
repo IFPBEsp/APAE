@@ -70,7 +70,7 @@ export default function EditTranstornoPage() {
 
 
   return (
-    <div className="!bg-slate-100 min-h-screen">
+    <div className="!bg-white min-h-screen">
       <main className="container mx-auto p-4 md:p-6">
         <div className="bg-white rounded-xl shadow-md border-2 p-6 mb-4">
           <Button

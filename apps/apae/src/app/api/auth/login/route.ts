@@ -10,7 +10,7 @@ export async function POST(req: Request) {
     if (!username || !password) {
       return NextResponse.json(
         { message: "Todos os campos são obrigatórios" },
-        { status: 406 }
+        { status: 406 },
       );
     }
     const api = await createBaseApi();
@@ -19,7 +19,7 @@ export async function POST(req: Request) {
     if (response.status !== 200) {
       return NextResponse.json(
         { message: response.data?.message || "Erro ao fazer login" },
-        { status: response.status }
+        { status: response.status },
       );
     }
 
@@ -33,14 +33,14 @@ export async function POST(req: Request) {
 
     return NextResponse.json(
       { message: "Login bem-sucedido" },
-      { status: 200 }
+      { status: 200 },
     );
   } catch (error) {
     if (error instanceof AxiosError) {
       if (error.response?.status === 401) {
         return NextResponse.json(
           { message: "Credenciais inválidas" },
-          { status: 401 }
+          { status: 401 },
         );
       }
       return NextResponse.json(
@@ -48,13 +48,13 @@ export async function POST(req: Request) {
           message:
             error.response?.data?.message || "Erro no servidor de autenticação",
         },
-        { status: error.response?.status || 500 }
+        { status: error.response?.status || 500 },
       );
     }
 
     return NextResponse.json(
       { message: "Erro interno ao processar o login" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

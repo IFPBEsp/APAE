@@ -18,6 +18,15 @@ public enum DocumentType {
         this.value = value;
     }
 
+    public static DocumentType fromValue(String value) {
+        for (DocumentType c : values()) {
+            if (c.value.equals(value)) {
+                return c;
+            }
+        }
+        throw new IllegalArgumentException("Invalid value: " + value);
+    }
+
     @Override
     public String toString() {
         return value;

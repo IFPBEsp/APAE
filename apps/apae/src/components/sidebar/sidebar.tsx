@@ -18,6 +18,8 @@ import {
   IdBadgeIcon,
   TasklistIcon,
   ArrowLeftIcon,
+  PersonIcon,
+  PeopleIcon,
 } from "@primer/octicons-react";
 import Image from "next/image";
 import Link from "next/link";
@@ -31,6 +33,7 @@ import { useSidebar } from "@/components/ui/sidebar";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
 import logo from "../../assets/logo.png";
+import { SquareActivity, BriefcaseMedical } from "lucide-react"
 
 export function AppSidebar() {
   const { open, setOpen, isMobile, setOpenMobile } = useSidebar();
@@ -143,6 +146,72 @@ export function AppSidebar() {
             </SidebarMenuButton>
           </Link>
         </SidebarGroup>
+
+        <Collapsible defaultOpen={false} className="group/collapsible">
+          <SidebarGroup>
+            <SidebarGroupLabel asChild>
+              <CollapsibleTrigger
+                className={`${styles.menuButton} font-base gap-2`}
+              >
+                <PersonIcon size={20} />
+                <span className="text-base">Pacientes</span>
+                <ChevronDownIcon
+                  size={16}
+                  className="ml-auto transition-transform group-data-[state=open]/collapsible:rotate-180"
+                />
+              </CollapsibleTrigger>
+            </SidebarGroupLabel>
+            <CollapsibleContent>
+              <SidebarMenu>
+                <SidebarMenuItem>
+                  <Link href="/visualization-patients" passHref>
+                    <SidebarMenuButton
+                      className={`${styles.menuButton} font-base gap-2 ${cn(
+                        "h-10 transition-colors",
+                        pathname == "/visualization-patients"
+                          ? "bg-[#FFFFFF] !text-[#000000]"
+                          : "text-[#0D4F97] hover:bg-[#0D4F97] hover:!text-white"
+                      )}`}
+                    >
+                      <PeopleIcon size={16} />
+                      <span className="text-base">Pessoas</span>
+                    </SidebarMenuButton>
+                  </Link>
+                </SidebarMenuItem>
+                <SidebarMenuItem>
+                  <Link href="/disorders" passHref>
+                    <SidebarMenuButton
+                      className={`${styles.menuButton} font-base gap-2 ${cn(
+                        "h-10 transition-colors",
+                        pathname == "/disorders"
+                          ? "bg-[#FFFFFF] !text-[#000000]"
+                          : "text-[#0D4F97] hover:bg-[#0D4F97] hover:!text-white"
+                      )}`}
+                    >
+                      <SquareActivity  size={16} />
+                      <span className="text-base">Transtornos</span>
+                    </SidebarMenuButton>
+                  </Link>
+                </SidebarMenuItem>
+                <SidebarMenuItem>
+                <Link href="/vaccines" passHref>
+                  <SidebarMenuButton
+                    className={`${styles.menuButton} font-base gap-2 ${cn(
+                      "h-10 transition-colors",
+                      pathname == "/vaccines"
+                        ? "bg-[#FFFFFF] !text-[#000000]"
+                        : "text-[#0D4F97] hover:bg-[#0D4F97] hover:!text-white"
+                    )}`}
+                  >
+                    <BriefcaseMedical size={16} />
+                    <span className="text-base">Vacinas</span>
+                  </SidebarMenuButton>
+                </Link>
+              </SidebarMenuItem>
+              </SidebarMenu>
+            </CollapsibleContent>
+          </SidebarGroup>
+        </Collapsible>
       </SidebarContent>
       <SidebarFooter />
     </Sidebar>

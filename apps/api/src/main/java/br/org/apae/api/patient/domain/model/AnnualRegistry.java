@@ -28,7 +28,7 @@ public class AnnualRegistry {
     private UUID id;
 
     @Column(name = "bpc", nullable = false)
-    private String bpc; // Benefício de Prestação Continuada
+    private String bpc;
 
     @Column(name = "doencas", nullable = false)
     private String diseases;
@@ -111,5 +111,21 @@ public class AnnualRegistry {
     @Override
     public int hashCode() {
         return Objects.hash(id);
+    }
+
+    public void setBpc(String bpc) {
+        this.bpc = bpc;
+    }
+    public void setDiseases(String diseases) {
+        this.diseases = diseases;
+    }
+    public void setFamilyIncome(BigDecimal familyIncome) {
+        this.familyIncome = familyIncome;
+    }
+    public void setYear(Year year) {
+        this.year = year;
+    }
+    public void setDisorders(Set<Disorder> disorders) {
+        this.disorders = disorders;
     }
 }
