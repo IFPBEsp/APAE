@@ -4,7 +4,7 @@ import { Page } from '@/types/pagination';
 export type UUID = string;
 
 const API_BASE_URL = process.env.API_BASE_URL || 'http://localhost:8090';
-const USE_MOCK_DATA = process.env.NEXT_PUBLIC_USE_MOCK_DATA === 'false' || false; // Forçar true para desenvolvimento
+const USE_MOCK_DATA = process.env.NEXT_PUBLIC_USE_MOCK_DATA === 'false' || true; // Forçar true para desenvolvimento
 const MOCK_DELAY = 500; // delay simulado em ms
 
 // ========== DADOS MOCKADOS ==========
@@ -429,7 +429,7 @@ export async function saveAppointment(
   }
 
   try {
-    const res = await fetch(`${API_BASE_URL}/appointments`, {
+    const res = await fetch(`/api/appointments`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -489,7 +489,7 @@ export async function getAppointments(
       query.append("time", time);
     }
 
-    const response = await fetch(`${API_BASE_URL}/appointments?${query}`);
+    const response = await fetch(`/api/appointments?${query}`);
     if (!response.ok) {
       throw new Error("Error searching for appointments");
     }
@@ -513,7 +513,7 @@ export async function getAppointmentById(
   }
 
   try {
-    const response = await fetch(`${API_BASE_URL}/appointments/${id}`);
+    const response = await fetch(`/api/appointments/${id}`);
     if (!response.ok) {
       throw new Error("Error fetching appointment");
     }
@@ -550,7 +550,7 @@ export async function updateAppointmentRule(
     };
 
     console.log(backendDto)
-    const response = await fetch(`${API_BASE_URL}/appointments/${id}/rule`, {
+    const response = await fetch(`/api/appointments/${id}/rule`, {
       method: "PATCH",
       headers: {
         "Content-Type": "application/json",
@@ -585,7 +585,7 @@ export async function deleteAppointment(id: UUID): Promise<void> {
   }
 
   try {
-    const response = await fetch(`${API_BASE_URL}/appointments/${id}`, {
+    const response = await fetch(`/api/appointments/${id}`, {
       method: "DELETE",
     });
 
@@ -621,7 +621,7 @@ export async function rescheduleGeneratedAppointment(
       newDateTime: new Date(dto.newDateTime).toISOString(),
     };
 
-    const response = await fetch(`${API_BASE_URL}/generated/${id}/reschedule`, {
+    const response = await fetch(`/api/generated/${id}/reschedule`, {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(backendDto),
@@ -662,7 +662,7 @@ export async function markAsPerformed(
   }
 
   try {
-    const response = await fetch(`${API_BASE_URL}/appointments/generated/${id}/performed`, {
+    const response = await fetch(`/api/appointments/generated/${id}/performed`, {
       method: 'PATCH',
     });
 
@@ -699,7 +699,7 @@ export async function cancelGeneratedAppointment(
   }
 
   try {
-    const response = await fetch(`${API_BASE_URL}/generated/${id}/cancel`, {
+    const response = await fetch(`/api/generated/${id}/cancel`, {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(dto),
@@ -752,7 +752,7 @@ export async function listByPatient(
     }
 
     const response = await fetch(
-      `${API_BASE_URL}/appointments/patient/${patientId}?${query}`
+      `/api/appointments/patient/${patientId}?${query}`
     );
     if (!response.ok) {
       throw new Error("Error searching for patient appointments");
@@ -798,7 +798,7 @@ export async function registerAbsence(
       notified: false,
     };
 
-    const res = await fetch(`${API_BASE_URL}/absences`, {
+    const res = await fetch(`/api/absences`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(body),
@@ -826,7 +826,7 @@ export async function getPacientes(): Promise<Patient[]> {
   }
 
   try {
-    const response = await fetch(`${API_BASE_URL}/patients?page=0&size=100`);
+    const response = await fetch(`/api/pessoas?page=0&size=100`);
     const data = await response.json();
     console.log(data)
     return data.content || [];
@@ -843,7 +843,7 @@ export async function getProfissionaisDaSaude(): Promise<Professional[]> {
 
   try {
     const response = await fetch(
-      `${API_BASE_URL}/professionals?page=0&size=100`
+      `/api/professionals?page=0&size=100`
     );
     const data = await response.json();
     return data.content || [];
@@ -863,7 +863,7 @@ export async function getProfissionalDaSaude(
   }
 
   try {
-    const response = await fetch(`${API_BASE_URL}/professionals/${id}`);
+    const response = await fetch(`/api/professionals/${id}`);
     if (!response.ok) {
       throw new Error(`Professional with ID ${id} not found`);
     }
@@ -943,7 +943,7 @@ export const isUsingMockData = (): boolean => {
 };
 
 export async function listTodayAppointment(): Promise<Page<TodayAppointment>> {
-  return fetch(`${API_BASE_URL}/appointments/today`)
+  return fetch(`/api/appointments/today`)
     .then(res => {
       if (!res.ok) {
         throw new Error(`Erro na requisição: ${res.status}`);

@@ -38,8 +38,8 @@ const mockPatients = [
 
 export class AbsenceService {
   private static readonly API_BASE_URL =
-    process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8090';
-  private static readonly API_PATH = '/absences';
+    process.env.NEXT_PUBLIC_API_URL || '/api';
+  private static readonly API_PATH = '/absence';
   private static useMock = false;
 
   private static getAuthHeaders(): HeadersInit {
@@ -189,9 +189,9 @@ static async getPatientsWithAbsences(minAbsences: number = 3): Promise<PatientWi
     if (absences.length < minAbsences) continue;
 
     try {
-      // Chama o endpoint real: GET /patients/{id}
+      // Chama o endpoint real: GET /pessoas/{id}
       const patientResponse = await fetch(
-        `${this.API_BASE_URL}/patients/${patientId}`,
+        `${this.API_BASE_URL}/pessoas/${patientId}`,
         {
           method: 'GET',
           headers: this.getAuthHeaders(),
