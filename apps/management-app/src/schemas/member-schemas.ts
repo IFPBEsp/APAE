@@ -156,3 +156,102 @@ export const Profile = z.object({
   }),
   photo: z.instanceof(File, { error: "A foto é obrigatória." }),
 });
+
+export const EditPersonal = z.object({
+  name: z
+    .string()
+    .min(2, "Nome muito curto")
+    .max(100, "Nome muito longo")
+    .regex(/^[a-zA-ZÀ-ÿ\s]+$/, "Nome deve conter apenas letras e espaços")
+    .refine((val) => val.trim().split(/\s+/).length >= 2, {
+      error: "Digite o nome completo (nome e sobrenome)",
+    }),
+  phone: z
+    .string()
+    .min(1, "Telefone é obrigatório")
+    .min(14, "Telefone deve ter pelo menos 10 dígitos"),
+  birth: z.object({
+    date: z.coerce
+      .date({
+        error: "Data de nascimento inválida",
+      })
+      .refine((date) => date <= new Date(), {
+        error: "Data de nascimento não pode ser futura",
+      })
+      .refine(
+        (date) => {
+          const minDate = new Date();
+          minDate.setFullYear(minDate.getFullYear() - 150);
+          return date >= minDate;
+        },
+        {
+          error: "Data de nascimento inválida",
+        },
+      )
+      .refine(
+        (date) => {
+          const today = new Date();
+          const age = today.getFullYear() - date.getFullYear();
+          return age >= 0;
+        },
+        {
+          error: "Idade deve ser positiva",
+        },
+      ) as ZodCoercedDate<Date>,
+    place: z.string().min(1, "Naturalidade é obrigatória."),
+  }),
+  registrationDate: z.coerce.date({
+    error: "Data de registro inválida",
+  }),
+  student: z.boolean(),
+  allergies: z.string().min(1, "O campo de alergias é obrigatório."),
+});
+
+export const EditDocumentation = z.object({
+  cpf: CPF,
+  rg: z.object({
+    number: RG,
+    issuing: z.object({
+      body: z
+        .string()
+        .min(1, "Órgão emissor é obrigatório")
+        .min(2, "Órgão emissor inválido")
+        .max(10, "Órgão emissor muito longo")
+        .regex(
+          /^[A-Z]{2,4}\/[A-Z]{2}$/,
+          "Formato inválido. Use SSP/UF, PC/UF, etc.",
+        ),
+      date: z.coerce
+        .date({
+          error: "Data de emissão inválida",
+        })
+        .refine((date) => date <= new Date(), {
+          error: "Data de emissão não pode ser futura",
+        })
+        .refine(
+          (date) => {
+            const minDate = new Date();
+            minDate.setFullYear(minDate.getFullYear() - 50);
+            return date >= minDate;
+          },
+          {
+            error: "Data de emissão muito antiga",
+          },
+        ) as ZodCoercedDate<Date>,
+    }),
+  }),
+  cns: CNS,
+  nis: NIS,
+  birthCertificate: z
+    .string()
+    .min(1, "Certidão de nascimento é obrigatória")
+    .min(40, "Número da certidão deve ter pelo menos 32 dígitos"),
+});
+
+export const EditAddress = z.object({
+  cep: z.string().min(1, "CEP é obrigatório.").min(9, "CEP deve ter 8 dígitos"),
+  state: z.string().min(3, "Estado deve ter pelo menos 3 letras (ex: Paraíba)"),
+  city: z.string().min(2, "Cidade inválida"),
+  district: z.string().min(2, "Bairro inválido"),
+  street: z.string().min(2, "Rua inválida"),
+});

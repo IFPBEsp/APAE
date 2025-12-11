@@ -2,36 +2,55 @@
 
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardAction,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import DocumentCategoriesCard from "@/components/DocumentCategoriesCard";
 import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { toast } from "react-toastify";
-import { Loader2, ArrowLeft } from "lucide-react";
+import { Loader2, ArrowLeft, SquarePen } from "lucide-react";
 
-interface InfoRowProps {
+import { DialogType } from "./(dialogs)/dialog-types";
+import { EditPersonalDialog } from "./(dialogs)/edit-personal-dialog";
+import { EditDocumentationDialog } from "./(dialogs)/edit-documentation-dialog";
+import { EditAddressDialog } from "./(dialogs)/edit-address-dialog";
+
+type InfoRowProps = Readonly<{
   label: string;
   value?: string | number | null | boolean;
-}
+}>;
 
-const InfoRow: React.FC<InfoRowProps> = ({ label, value }) => {
-  let displayValue: string | number = "Não informado";
+function InfoRow({ label, value }: InfoRowProps) {
+  const displayValue = useMemo(() => {
+    if (value === null || value === undefined || value === "") {
+      return "Não informado";
+    }
 
-  if (value === null || value === undefined || value === "") {
-    displayValue = "Não informado";
-  } else if (label === "Recebe BPC?") {
-    displayValue = (value === true || String(value).toLowerCase() === 'true') ? "Sim" : "Não";
-  } else if (label === "Renda Familiar" && typeof value === 'number') {
-    displayValue = value.toLocaleString('pt-BR', {
-      style: 'currency',
-      currency: 'BRL',
-    });
-  } else if (typeof value === 'boolean') {
-    displayValue = value ? "Sim" : "Não";
-  } else {
-    displayValue = value;
-  }
+    if (label === "Recebe BPC?") {
+      return value === true || String(value).toLowerCase() === "true"
+        ? "Sim"
+        : "Não";
+    }
+
+    if (label === "Renda Familiar" && typeof value === "number") {
+      return value.toLocaleString("pt-BR", {
+        style: "currency",
+        currency: "BRL",
+      });
+    }
+
+    if (typeof value === "boolean") {
+      return value ? "Sim" : "Não";
+    }
+
+    return value;
+  }, [label, value]);
 
   return (
     <div className="mb-2">
@@ -39,7 +58,43 @@ const InfoRow: React.FC<InfoRowProps> = ({ label, value }) => {
       <p className="text-base text-black">{displayValue}</p>
     </div>
   );
-};
+}
+
+type FieldsCardProps = Readonly<{
+  title: string;
+  rows: InfoRowProps[];
+  onEdit?: () => void;
+}>;
+
+function FieldsCard({ title, rows, onEdit }: FieldsCardProps) {
+  return (
+    <Card className="w-full relative font-nunito">
+      <CardHeader>
+        <CardTitle className="text-[#0D4F97]">{title}</CardTitle>
+        <CardAction>
+          {onEdit && (
+            <Button
+              className="cursor-pointer"
+              variant="ghost"
+              size="icon"
+              onClick={() => onEdit()}
+            >
+              <SquarePen color="#0D4F97" />
+            </Button>
+          )}
+        </CardAction>
+      </CardHeader>
+      <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-x-4">
+        {rows.map((row) => (
+          <InfoRow
+            key={`${title.toLowerCase()}-${row.label.toLowerCase()}`}
+            {...row}
+          />
+        ))}
+      </CardContent>
+    </Card>
+  );
+}
 
 export default function PersonDetailsPage() {
   const params = useParams();
@@ -48,14 +103,19 @@ export default function PersonDetailsPage() {
 
   const [pessoa, setPessoa] = useState<any>(null);
   const [registroAnual, setRegistroAnual] = useState<any>(null);
-  
-  const [selectedYear, setSelectedYear] = useState<string>(new Date().getFullYear().toString());
-  
+  const [dialog, setDialog] = useState<DialogType | null>(null);
+
+  const [selectedYear, setSelectedYear] = useState<string>(
+    new Date().getFullYear().toString(),
+  );
+
   const [loadingPessoa, setLoadingPessoa] = useState(true);
   const [loadingRegistro, setLoadingRegistro] = useState(false);
 
   const currentYearInt = new Date().getFullYear();
-  const years = Array.from({ length: 11 }, (_, i) => (currentYearInt - i).toString());
+  const years = Array.from({ length: 11 }, (_, i) =>
+    (currentYearInt - i).toString(),
+  );
 
   useEffect(() => {
     if (!id) return;
@@ -63,12 +123,12 @@ export default function PersonDetailsPage() {
     async function fetchPessoa() {
       try {
         setLoadingPessoa(true);
-        const response = await fetch(`/api/pessoas/${id}`);
-        
-        if (!response.ok) throw new Error("Falha ao buscar dados do paciente.");
-        
-        const data = await response.json();
-        setPessoa(data);
+        // const response = await fetch(`/api/pessoas/${id}`);
+        //
+        // if (!response.ok) throw new Error("Falha ao buscar dados do paciente.");
+        //
+        // const data = await response.json();
+        setPessoa({});
       } catch (err: any) {
         console.error(err);
         toast.error(err.message);
@@ -89,7 +149,9 @@ export default function PersonDetailsPage() {
         setLoadingRegistro(true);
         setRegistroAnual(null);
 
-        const response = await fetch(`/api/pessoas/${id}/registro-anual/${selectedYear}`);
+        const response = await fetch(
+          `/api/pessoas/${id}/registro-anual/${selectedYear}`,
+        );
 
         if (response.ok) {
           const data = await response.json();
@@ -106,7 +168,6 @@ export default function PersonDetailsPage() {
 
     fetchRegistro();
   }, [id, selectedYear]);
-
 
   if (loadingPessoa) {
     return (
@@ -129,6 +190,24 @@ export default function PersonDetailsPage() {
 
   return (
     <main className="container mx-auto p-4 md:p-6">
+      <EditPersonalDialog
+        open={dialog === DialogType.PERSONAL}
+        member={pessoa}
+        onOpenChange={(open) => setDialog(open ? DialogType.PERSONAL : null)}
+      />
+      <EditDocumentationDialog
+        open={dialog === DialogType.DOCUMENTATION}
+        member={pessoa}
+        onOpenChange={(open) =>
+          setDialog(open ? DialogType.DOCUMENTATION : null)
+        }
+      />
+      <EditAddressDialog
+        open={dialog === DialogType.ADDRESS}
+        member={pessoa}
+        onOpenChange={(open) => setDialog(open ? DialogType.ADDRESS : null)}
+      />
+
       <div className="mb-4">
         <Button
           variant="outline"
@@ -163,55 +242,55 @@ export default function PersonDetailsPage() {
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-6">
         {/* Card: Dados Pessoais */}
-        <Card className="w-full relative font-nunito">
-          <CardHeader>
-            <CardTitle className="text-[#0D4F97]">Dados Pessoais</CardTitle>
-          </CardHeader>
-          <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-x-4">
-            <InfoRow label="Nome Completo" value={pessoa.fullName} />
-            <InfoRow label="Data de Nasc." value={pessoa.birthDate} />
-            <InfoRow label="Naturalidade" value={pessoa.birthplace} />
-            <InfoRow label="Contato" value={pessoa.contact} />
-            <InfoRow label="Alergias" value={pessoa.allergies} />
-            <InfoRow label="Estudante?" value={pessoa.isStudent} />
-            <InfoRow label="Data de Cadastro" value={pessoa.registrationDate} />
-          </CardContent>
-        </Card>
+        <FieldsCard
+          title="Dados Pessoais"
+          onEdit={() => setDialog(DialogType.PERSONAL)}
+          rows={[
+            { label: "Nome Completo", value: pessoa.fullName },
+            { label: "Data de Nasc.", value: pessoa.birthDate },
+            { label: "Naturalidade", value: pessoa.birthplace },
+            { label: "Contato", value: pessoa.contact },
+            { label: "Alergias", value: pessoa.allergies },
+            { label: "Estudante?", value: pessoa.isStudent },
+            { label: "Data de Cadastro", value: pessoa.registrationDate },
+          ]}
+        />
 
         {/* Card: Documentação */}
-        <Card className="w-full relative font-nunito">
-          <CardHeader>
-            <CardTitle className="text-[#0D4F97]">Documentação</CardTitle>
-          </CardHeader>
-          <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-x-4">
-            <InfoRow label="CPF" value={pessoa.cpf} />
-            <InfoRow label="RG" value={pessoa.rg} />
-            <InfoRow label="Orgão Emissor" value={pessoa.issuingAgency} />
-            <InfoRow label="Data de Emissão" value={pessoa.issueDate} />
-            <InfoRow label="CNS" value={pessoa.cns} />
-            <InfoRow label="NIS" value={pessoa.nis} />
-            <InfoRow label="Nº Cert. Nasc." value={pessoa.birthCertificateNumber} />
-            <InfoRow label="Cartório" value={pessoa.registryOffice} />
-            <InfoRow label="Livro" value={pessoa.book} />
-            <InfoRow label="Folha" value={pessoa.fls} />
-          </CardContent>
-        </Card>
+        <FieldsCard
+          title="Documentação"
+          onEdit={() => setDialog(DialogType.DOCUMENTATION)}
+          rows={[
+            { label: "CPF", value: pessoa.cpf },
+            { label: "RG", value: pessoa.rg },
+            { label: "Orgão Emissor", value: pessoa.issuingAgency },
+            { label: "Data de Emissão", value: pessoa.issueDate },
+            { label: "CNS", value: pessoa.cns },
+            { label: "NIS", value: pessoa.nis },
+            {
+              label: "Nº Cert. Nasc.",
+              value: pessoa.birthCertificateNumber,
+            },
+            { label: "Cartório", value: pessoa.registryOffice },
+            { label: "Livro", value: pessoa.book },
+            { label: "Folha", value: pessoa.fls },
+          ]}
+        />
 
         {/* Card: Endereço */}
-        <Card className="w-full relative font-nunito">
-          <CardHeader>
-            <CardTitle className="text-[#0D4F97]">Endereço Residencial</CardTitle>
-          </CardHeader>
-          <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-x-4">
-            <InfoRow label="Rua" value={pessoa.address?.street} />
-            <InfoRow label="Número" value={pessoa.address?.number} />
-            <InfoRow label="Bairro" value={pessoa.address?.neighborhood} />
-            <InfoRow label="Cidade" value={pessoa.address?.city} />
-            <InfoRow label="Estado" value={pessoa.address?.state} />
-            <InfoRow label="CEP" value={pessoa.address?.cep} />
-            <InfoRow label="Complemento" value={pessoa.address?.complement} />
-          </CardContent>
-        </Card>
+        <FieldsCard
+          title="Endereço Residencial"
+          onEdit={() => setDialog(DialogType.ADDRESS)}
+          rows={[
+            { label: "Rua", value: pessoa.address?.street },
+            { label: "Número", value: pessoa.address?.number },
+            { label: "Bairro", value: pessoa.address?.neighborhood },
+            { label: "Cidade", value: pessoa.address?.city },
+            { label: "Estado", value: pessoa.address?.state },
+            { label: "CEP", value: pessoa.address?.cep },
+            { label: "Complemento", value: pessoa.address?.complement },
+          ]}
+        />
 
         {/* Card: Responsáveis */}
         <Card className="w-full relative font-nunito">
@@ -234,7 +313,10 @@ export default function PersonDetailsPage() {
               </div>
             )}
             {pessoa.parents?.map((parent: any) => (
-              <div key={parent.id} className="mb-2 p-2 border-t border-gray-200">
+              <div
+                key={parent.id}
+                className="mb-2 p-2 border-t border-gray-200"
+              >
                 <p className="font-bold text-base">
                   {parent.kinship === "PAI" ? "Pai" : "Mãe"}
                 </p>
@@ -250,9 +332,14 @@ export default function PersonDetailsPage() {
         {/* --- CARD DE SAÚDE --- */}
         <Card className="w-full relative font-nunito">
           <CardHeader className="flex flex-row items-center justify-between">
-            <CardTitle className="text-[#0D4F97]">Informações de Saúde</CardTitle>
+            <CardTitle className="text-[#0D4F97]">
+              Informações de Saúde
+            </CardTitle>
             <div className="flex items-center gap-2">
-              <label htmlFor="year-select" className="text-sm font-semibold text-gray-600">
+              <label
+                htmlFor="year-select"
+                className="text-sm font-semibold text-gray-600"
+              >
                 Ano:
               </label>
               <select
@@ -269,16 +356,14 @@ export default function PersonDetailsPage() {
               </select>
             </div>
           </CardHeader>
-          
+
           <CardContent>
             <InfoRow label="Alergias" value={pessoa.allergies} />
             <InfoRow
               label="Vacinas"
-              value={pessoa.vaccineNames
-                ?.map((v: any) => v.name)
-                .join(", ")}
+              value={pessoa.vaccineNames?.map((v: any) => v.name).join(", ")}
             />
-            
+
             <h3 className="font-bold text-base mt-4 pt-4 border-t text-[#0D4F97]">
               Registro Anual ({selectedYear})
             </h3>
@@ -290,12 +375,20 @@ export default function PersonDetailsPage() {
             ) : registroAnual ? (
               <div className="mt-2 animate-in fade-in slide-in-from-bottom-2">
                 <InfoRow label="Recebe BPC?" value={registroAnual.bpc} />
-                <InfoRow label="Renda Familiar" value={registroAnual.familyIncome} />
+                <InfoRow
+                  label="Renda Familiar"
+                  value={registroAnual.familyIncome}
+                />
                 <InfoRow label="Doenças" value={registroAnual.diseases} />
-                <InfoRow label="Medicamentos Contínuos" value={registroAnual.continuousMedication} />
-                <InfoRow 
-                  label="Transtornos" 
-                  value={registroAnual.disorders?.map((d: any) => d.name).join(", ")} 
+                <InfoRow
+                  label="Medicamentos Contínuos"
+                  value={registroAnual.continuousMedication}
+                />
+                <InfoRow
+                  label="Transtornos"
+                  value={registroAnual.disorders
+                    ?.map((d: any) => d.name)
+                    .join(", ")}
                 />
               </div>
             ) : (
