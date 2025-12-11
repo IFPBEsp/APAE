@@ -4,7 +4,7 @@
   "description": "apae pnpm workspace monorepo",
   "scripts": {
     "dev:backend": "./.scripts/run-app.sh backend",
-    "dev:agendamento": "./.scripts/run-app.sh both agendamento",
+    "dev:apae": "./.scripts/run-app.sh both apae",
     "dev:management": "./.scripts/run-app.sh both management-app",
     "docker:up": "docker compose up -d",
     "docker:down": "docker compose down",
