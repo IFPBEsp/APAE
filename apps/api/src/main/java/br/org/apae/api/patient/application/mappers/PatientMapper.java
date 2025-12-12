@@ -34,10 +34,10 @@ public class PatientMapper {
                 this.vaccineMapper = vaccineMapper;
         }
 
-        public Patient toEntity(CreatePatientDTO dto, AddressResponseDTO addressDto,
+        public Patient toEntity(CreatePatientDTO dto,
                         Set<VaccineResponseDTO> vaccineDtos) {
 
-                Address address = addressMapper.toEntityFromResponse(addressDto);
+                Address address = addressMapper.toEntity(dto.address());
                 Set<Vaccine> vaccines = vaccineMapper.toEntitySetFromResponse(vaccineDtos);
 
                 PersonalInfo personalInfo = new PersonalInfo(
@@ -66,10 +66,10 @@ public class PatientMapper {
                 return new Patient(personalInfo, birthRecord, identification, address, vaccines);
         }
 
-        public Patient updateEntityFromDto(Patient patient, UpdatePatientDTO dto, AddressResponseDTO addressDto,
+        public Patient updateEntityFromDto(Patient patient, UpdatePatientDTO dto,
                         Set<VaccineResponseDTO> vaccinesDto) {
 
-                Address address = addressMapper.toEntityFromResponse(addressDto);
+                Address address = addressMapper.toEntity(dto.address());
                 Set<Vaccine> vaccines = vaccineMapper.toEntitySetFromResponse(vaccinesDto);
 
                 PersonalInfo personalInfo = new PersonalInfo(
