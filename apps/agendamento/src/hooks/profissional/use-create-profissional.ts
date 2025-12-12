@@ -15,9 +15,11 @@ export function useCreateProfissional() {
 
     try {
       const response = await createProfissional(formData);
+      const data = await response.json();
 
       if (!response.ok) {
-        throw new Error("Erro ao salvar profissional");
+        const errorMessage = data.message;
+        throw new Error(errorMessage);
       }
 
       setSuccess(true);

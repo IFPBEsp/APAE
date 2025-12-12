@@ -100,7 +100,7 @@ export default function CadastroProfissional(): JSX.Element {
     formData.append("volunteerAgreement", values.termoVoluntariado);
     formData.append("curriculum", values.curriculo);
     if (values.anexoQualquer) {
-      formData.append("anexoQualquer", values.anexoQualquer);
+      formData.append("attachmentAny", values.anexoQualquer);
     }
     await create(formData);
   };

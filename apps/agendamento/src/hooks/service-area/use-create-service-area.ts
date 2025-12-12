@@ -11,12 +11,13 @@ export function useCreateServiceArea() {
 
     try {
       const response = await createServiceArea(area);
+      const data = await response.json();
 
       if (!response.ok) {
-        throw new Error("Erro ao salvar área de atendimento");
+        const errorMessage = data.message;
+        throw new Error(errorMessage);
       }
 
-      const data = await response.json();
       return data;
     } catch (err: any) {
       setError(err.message || "Erro inesperado");
