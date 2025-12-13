@@ -1,8 +1,14 @@
 package br.org.apae.api.patient.application.internal;
 
+import java.time.Year;
+import java.util.UUID;
+import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import br.org.apae.api.documents.interfaces.dto.DocumentDTO;
+import br.org.apae.api.documents.interfaces.dto.GetPresignedDocumentUrlArgsDTO;
+import br.org.apae.api.documents.interfaces.dto.ListDocumentsArgsDTO;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -14,7 +20,7 @@ import br.org.apae.api.documents.interfaces.dto.PutDocumentArgsDTO;
 import br.org.apae.api.patient.domain.model.Patient;
 
 @Service
-public class PatientDocumentsService {
+class PatientDocumentsService {
     private final DocumentApplicationService documentService;
 
     public PatientDocumentsService(
@@ -65,5 +71,30 @@ public class PatientDocumentsService {
     public void storePatientDocuments(Patient patient, CreateDocumentsDTO documents) {
         this.storePersonalDocuments(patient, documents);
         this.storeMedicalDocuments(patient, documents);
+    }
+
+    public String getPatientPhoto(UUID patientId) {
+        try {
+            Iterable<DocumentDTO> document = this.documentService.listDocuments(
+                    ListDocumentsArgsDTO.builder()
+                            .owner(patientId.toString())
+                            .category(DocumentCategory.PERSONAL)
+                            .type(DocumentType.PHOTO)
+                            .year(Year.now())
+                            .build()
+            );
+
+            return this.documentService.getPresignedDocumentUrl(
+                    GetPresignedDocumentUrlArgsDTO.builder()
+                            .owner(patientId.toString())
+                            .name(document.iterator().next().name())
+                            .expiry(1, TimeUnit.HOURS)
+                            .build()
+            );
+
+        } catch (Exception e) {
+            Logger.getGlobal().log(Level.SEVERE, e.toString());
+        }
+        return null;
     }
 }
