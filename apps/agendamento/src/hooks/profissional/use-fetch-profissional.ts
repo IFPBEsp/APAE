@@ -20,7 +20,9 @@ export function useFetchProfessionals() {
         const response = await getAllProfissionais();
 
         if (!response.ok) {
-          throw new Error(`Erro: ${response.status}`);
+          const errorData = await response.json();
+          const errorMessage = errorData.message;
+          throw new Error(errorMessage);
         }
 
         const data: PaginatedResponse<Profissional> = await response.json();

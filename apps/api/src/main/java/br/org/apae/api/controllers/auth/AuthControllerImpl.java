@@ -20,13 +20,13 @@ public class AuthControllerImpl implements AuthController {
   }
 
   @Override
-  public ResponseEntity<Void> signUp(@Valid SignUpDTO signUpDto) {
+  public ResponseEntity<Void> signUp(@Valid @RequestBody SignUpDTO signUpDto) {
     authService.signUp(signUpDto);
     return ResponseEntity.status(HttpStatus.CREATED).build();
   }
 
   @Override
-  public ResponseEntity<TokenResponseDTO> signIn(@Valid SignInDTO signInDto) {
+  public ResponseEntity<TokenResponseDTO> signIn(@Valid @RequestBody SignInDTO signInDto) {
     TokenResponseDTO tokenResponse = authService.signIn(signInDto);
     return ResponseEntity.ok(tokenResponse);
   }

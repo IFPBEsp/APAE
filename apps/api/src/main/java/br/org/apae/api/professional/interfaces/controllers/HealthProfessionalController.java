@@ -5,16 +5,22 @@ import java.util.UUID;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestPart;
 
 import br.org.apae.api.common.dto.professional.request.CreateHealthProfessionalDTO;
 import br.org.apae.api.common.dto.professional.request.UpdateHealthProfessionalDTO;
+import br.org.apae.api.common.dto.professional.request.documents.CreateProfessionalDocumentsDTO;
 import br.org.apae.api.common.dto.professional.response.HealthProfessionalResponseDTO;
+import jakarta.validation.Valid;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -27,8 +33,9 @@ public interface HealthProfessionalController {
       @ApiResponse(responseCode = "400", description = "Dados inválidos", content = @Content),
       @ApiResponse(responseCode = "500", description = "Erro interno no servidor", content = @Content)
   })
-  @PostMapping
-  ResponseEntity<Void> createHealthProfessional(CreateHealthProfessionalDTO dto);
+  @PostMapping(consumes = { MediaType.MULTIPART_FORM_DATA_VALUE })
+  ResponseEntity<HealthProfessionalResponseDTO> createHealthProfessional(@RequestPart("professional") CreateHealthProfessionalDTO dto,
+    @ModelAttribute @Valid CreateProfessionalDocumentsDTO documentsDTO);
 
   @Operation(summary = "Listar profissionais de saúde", description = "Retorna uma lista paginada de todos os profissionais de saúde cadastrados.", responses = {
       @ApiResponse(responseCode = "200", description = "Lista obtida com sucesso", content = @Content(schema = @Schema(implementation = Page.class))),
@@ -61,5 +68,5 @@ public interface HealthProfessionalController {
   })
   @PutMapping("/{id}")
   ResponseEntity<HealthProfessionalResponseDTO> updateHealthProfessional(@PathVariable UUID id,
-      UpdateHealthProfessionalDTO dto);
+      @Valid @RequestBody UpdateHealthProfessionalDTO dto);
 }
