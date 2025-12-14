@@ -45,6 +45,7 @@ export default function PatientsAndStudentsScreen() {
 
         if (!response.ok) {
            const errorData = await response.json();
+           console.error('[ERRO API PATIENTS]:', errorData.response?.data || errorData.message);
            throw new Error(errorData.message || "Erro ao buscar dados");
         }
 

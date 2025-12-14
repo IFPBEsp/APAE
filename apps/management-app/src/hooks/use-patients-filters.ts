@@ -30,10 +30,6 @@ export function usePatientFilters(): PatientFilterOptions {
         const cidadesPromise = fetch('/api/patients/filtros/cidades');
         const tipoAtendimentosPromise = fetch('/api/patients/filtros/tipos-atendimento');
 
-        console.log("Fetching filter options...");
-        console.log("Transtornos Promise:", transtornosPromise);
-        console.log("Tipo Atendimentos Promise:", tipoAtendimentosPromise);
-
         const [
           transtornosResponse,
           anosResponse,

@@ -17,6 +17,7 @@ import br.org.apae.api.patient.application.interfaces.DisorderApplicationService
 import br.org.apae.api.servicearea.application.interfaces.ServiceAreaApplicationService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.HashMap;
@@ -58,15 +59,8 @@ public class PatientControllerImpl implements PatientController {
     }
 
     @Override
-    public ResponseEntity<List<PatientSummaryResponseDTO>> findWithFilters(
-            String name, String disorder, String year, String city, String treatmentType) {
-
-        Map<String, String> filters = new HashMap<>();
-        if (name != null) filters.put("name", name);
-        if (disorder != null) filters.put("disorder", disorder);
-        if (year != null) filters.put("year", year);
-        if (city != null) filters.put("city", city);
-        if (treatmentType != null) filters.put("treatmentType", treatmentType);
+    public ResponseEntity<List<PatientSummaryResponseDTO>> findWithFilters(@RequestParam Map<String, String> filters) {
+        filters.values().removeIf(value -> value == null || value.isBlank());
 
         List<PatientSummaryResponseDTO> patients = patientService.findPatientByFilter(filters);
         return ResponseEntity.ok(patients);

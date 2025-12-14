@@ -2,6 +2,7 @@ package br.org.apae.api.patient.interfaces.controllers;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -17,6 +18,7 @@ import br.org.apae.api.common.dto.patient.response.patient.PatientResponseDTO;
 import br.org.apae.api.common.dto.patient.response.patient.PatientSummaryResponseDTO;
 
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 @RequestMapping("/patients")
@@ -45,23 +47,17 @@ public interface PatientController {
         @ApiResponses(value = {
                 @ApiResponse(responseCode = "200", description = "Lista de pacientes filtrada retornada com sucesso")
         })
-
+        // DOCUMENTAÇÃO SWAGGER (Para aparecer os campos na tela do Swagger)
+        @Parameter(name = "name", description = "Nome parcial", in = ParameterIn.QUERY)
+        @Parameter(name = "disorder", description = "Transtorno", in = ParameterIn.QUERY)
+        @Parameter(name = "year", description = "Ano", in = ParameterIn.QUERY)
+        @Parameter(name = "city", description = "Cidade", in = ParameterIn.QUERY)
+        @Parameter(name = "treatmentType", description = "Tipo de atendimento", in = ParameterIn.QUERY)
         @GetMapping
         ResponseEntity<List<PatientSummaryResponseDTO>> findWithFilters(
-                @Parameter(description = "Filtrar por tipo de atendimento (ex: nutrição)")
-                @RequestParam(name = "treatmentType", required = false) String treatmentType,
-
-                @Parameter(description = "Filtrar por nome parcial do paciente")
-                @RequestParam(name = "name", required = false) String name,
-
-                @Parameter(description = "Filtrar por transtorno")
-                @RequestParam(name = "disorder", required = false) String disorder,
-
-                @Parameter(description = "Filtrar por ano de cadastro ou referência")
-                @RequestParam(name = "year", required = false) String year,
-
-                @Parameter(description = "Filtrar por cidade")
-                @RequestParam(name = "city", required = false) String city
+                // Ocultamos o Map do Swagger para ele não criar um campo JSON estranho
+                @Parameter(hidden = true)
+                @RequestParam Map<String, String> filters
         );
 
         @Operation(summary = "Atualizar um paciente")
