@@ -20,11 +20,13 @@ export default function PatientsAndStudentsScreen() {
   const [transtorno, setTranstorno] = useState<string>("");
   const [ano, setAno] = useState<string>("");
   const [cidade, setCidade] = useState<string>("");
+  const [tipoAtendimento, setTipoAtendimento] = useState<string>("");
   const debouncedSearchName = useDebounce(searchName, 500);
   const {
     transtornoOptions,
     anoOptions,
-    cidadeOptions
+    cidadeOptions,
+    tipoAtendimentoOptions
   } = usePatientFilters();
 
   useEffect(() => {
@@ -36,6 +38,7 @@ export default function PatientsAndStudentsScreen() {
         if (transtorno) params.append("disorder", transtorno);
         if (ano) params.append("year", ano);
         if (cidade) params.append("city", cidade);
+        if (tipoAtendimento) params.append("treatmentType", tipoAtendimento);
 
         const queryString = params.toString();
         const response = await fetch(`/api/patients?${queryString}`);
@@ -60,7 +63,7 @@ export default function PatientsAndStudentsScreen() {
     };
 
     loadData();
-  }, [debouncedSearchName, transtorno, ano, cidade]);
+  }, [debouncedSearchName, transtorno, ano, cidade, tipoAtendimento]);
 
   const renderContent = () => {
     if (isLoading) {
@@ -99,9 +102,12 @@ export default function PatientsAndStudentsScreen() {
             setAno={setAno}
             cidade={cidade}
             setCidade={setCidade}
+            tipoAtendimento={tipoAtendimento}
+            setTipoAtendimento={setTipoAtendimento}
             transtornoOptions={transtornoOptions}
             anoOptions={anoOptions}
             cidadeOptions={cidadeOptions}
+            tipoAtendimentoOptions={tipoAtendimentoOptions}
           />
         </div>
         <section className="relative md:bg-white md:rounded-xl md:shadow-md md:border-2 md:p-6">

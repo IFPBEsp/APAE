@@ -45,11 +45,11 @@ public interface PatientController {
         @ApiResponses(value = {
                 @ApiResponse(responseCode = "200", description = "Lista de pacientes filtrada retornada com sucesso")
         })
+
         @GetMapping
         ResponseEntity<List<PatientSummaryResponseDTO>> findWithFilters(
-// TODO: Implementar a busca por Tipos de Atendimento (que é uma tabela separada)
-//                @Parameter(description = "Filtrar por tipo de atendimento (ex: paciente, aluno)")
-//                @RequestParam(name = "tipo_atendimento", required = false) String tipoAtendimento,
+                @Parameter(description = "Filtrar por tipo de atendimento (ex: nutrição)")
+                @RequestParam(name = "treatmentType", required = false) String treatmentType,
 
                 @Parameter(description = "Filtrar por nome parcial do paciente")
                 @RequestParam(name = "name", required = false) String name,
@@ -82,10 +82,9 @@ public interface PatientController {
         @PatchMapping("/{id}")
         ResponseEntity<Void> deletePatient(@PathVariable UUID id);
 
-// TODO: Implementar a busca por Tipos de Atendimento (que é uma tabela separada)
-//        @Operation(summary = "Lista os tipos de atendimento para o filtro")
-//        @GetMapping("/filtros/tipos-atendimento")
-//        ResponseEntity<List<String>> getTiposAtendimento();
+        @Operation(summary = "Lista os tipos de atendimento para o filtro")
+        @GetMapping("/filtros/tipos-atendimento")
+        ResponseEntity<List<String>> getTiposAtendimento();
 
         @Operation(summary = "Lista os transtornos para o filtro",
                 description = "Retorna uma lista de nomes de transtornos cadastrados para usar no filtro de pacientes.")
