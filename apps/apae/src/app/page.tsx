@@ -1,4 +1,4 @@
-"use client";
+'use client';
 
 import { useEffect, useState } from "react";
 import { format } from "date-fns";
@@ -9,7 +9,7 @@ import {
   MessageCircleWarning,
   CalendarX,
 } from "lucide-react";
-
+import { Page } from '@/types/pagination';
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import {
@@ -36,35 +36,40 @@ import {
   DialogTrigger,
   DialogDescription,
 } from "@/components/ui/dialog";
+import { TodayAppointment } from '@/types/appointment';
+import { getAppointments, listTodayAppointment, markAsPerformed, UUID, type AppointmentResponseDTO } from "./services/appointmentService";
 
 import { AppointmentForm } from "@/components/forms/AppointmentForm";
 import { InfoCard } from "@/components/shared/InfoCard";
 import Link from "next/link";
-import {Agendamento, getAgendamentos, toggleConfirmacao} from "./services/agendamentoService";
+
 import { Checkbox } from "@/components/ui/checkbox";
 
 export default function DashboardPage() {
   const [selectedDate, setSelectedDate] = useState<Date>(new Date());
-  const [appointments, setAppointments] = useState<Agendamento[]>([]);
-  const [allAppointments, setAllAppointments] = useState<Agendamento[]>([]);
+  const [todayAppointments, setTodayAppointments] = useState<TodayAppointment[]>([]);
 
-  const fetchAppointments = async () => {
-    const todayAppointments = await getAgendamentos(
-        format(selectedDate, "yyyy-MM-dd")
-    );
-    const allExistingAppointments = await getAgendamentos();
-    setAppointments(todayAppointments);
-    setAllAppointments(allExistingAppointments);
+  const [allAppointments, setAllAppointments] = useState<AppointmentResponseDTO[]>([]);
+
+  const fetchTodayAppointments = async () => {
+    const todayAppointmentsPage: Page<TodayAppointment> = await listTodayAppointment();
+    setTodayAppointments(todayAppointmentsPage.content);
+  };
+
+  const fetchAllAppointments = async () => {
+    const allAppointmentsPage: Page<AppointmentResponseDTO> = await getAppointments();
+    setAllAppointments(allAppointmentsPage.content);
   };
 
   useEffect(() => {
-    fetchAppointments();
+    fetchTodayAppointments();
+    fetchAllAppointments();
   }, [selectedDate]);
 
-  const confirmarAgendamento = async (id: string) => {
-    await toggleConfirmacao(id);
-    fetchAppointments();
-  };
+  const markAsPerformedHandle = async (id: UUID) => {
+    await markAsPerformed(id);
+    window.location.reload();
+  }
 
   return (
     <div className="min-h-screen w-full text-sm overflow-x-hidden">
@@ -110,7 +115,9 @@ export default function DashboardPage() {
               </DialogTrigger>
               <DialogContent className="w-full sm:max-w-[425px]">
                 <DialogHeader>
-                  <DialogTitle className="text-[#0D4F97]" >Cadastrar Novo Agendamento</DialogTitle>
+                  <DialogTitle className="text-[#0D4F97]">
+                    Cadastrar Novo Agendamento
+                  </DialogTitle>
                   <DialogDescription className="text-[#0D4F97] opacity-50">
                     Preencha os detalhes abaixo para agendar uma consulta.
                   </DialogDescription>
@@ -125,13 +132,11 @@ export default function DashboardPage() {
           <InfoCard
             title="Agendados pra hoje"
             icon={Users}
-            value={appointments.length}
+            value={todayAppointments.length}
             subtitle={`${
-              appointments.filter((appointment) => appointment.confirmado)
-                .length
+              todayAppointments.length
             } confirmados, ${
-              appointments.filter((appointment) => !appointment.confirmado)
-                .length
+              todayAppointments.length
             } pendentes`}
             titleClassName="text-[#0D4F97]"
             valueClassName="text-[#0D4F97]"
@@ -140,31 +145,6 @@ export default function DashboardPage() {
             title="Todos os agendamentos"
             icon={Users}
             value={allAppointments.length}
-            titleClassName="text-[#0D4F97]"
-            valueClassName="text-[#0D4F97]"
-          />
-          <InfoCard
-            title="Sem justificativa"
-            icon={MessageCircleWarning}
-            value={
-              appointments.filter(
-                (appointment) =>
-                  !appointment.confirmado && !appointment.justificativa
-              ).length
-            }
-            iconColor="text-red-400"
-            subtitle="Pacientes que não justificaram suas faltas"
-            titleClassName="text-[#0D4F97]"
-            valueClassName="text-[#0D4F97]"
-          />
-          <InfoCard
-            title="Não confirmados"
-            icon={CalendarX}
-            value={
-              appointments.filter((appointment) => !appointment.confirmado)
-                .length
-            }
-            subtitle="Consultas que não foram confirmadas"
             titleClassName="text-[#0D4F97]"
             valueClassName="text-[#0D4F97]"
           />
@@ -188,32 +168,32 @@ export default function DashboardPage() {
                     Ações
                   </TableHead>
                   <TableHead className="px-3 py-2 text-xs text-[#0D4F97] sm:px-4 sm:py-3 sm:text-sm">
-                    Confirmada
+                    Realizada
                   </TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {appointments.map((item, index) => (
+                {todayAppointments.map((item, index) => (
                   <TableRow key={index}>
                     <TableCell className="px-3 py-2 text-xs sm:px-4 sm:py-3 sm:text-sm">
-                      {item.paciente.nome}
+                      {item.patient.fullName}
                     </TableCell>
                     <TableCell className="px-3 py-2">
                       <Badge
                         variant="outline"
                         className={`text-xs ${
-                          item.confirmado ? "text-green-400" : "text-red-400"
+                          true ? "text-green-400" : "text-red-400"
                         } sm:text-sm`}
                       >
-                        {item.confirmado ? "Sim" : "Não"}
+                        {true ? "Sim" : "Não"}
                       </Badge>
                     </TableCell>
                     <TableCell className="px-3 py-2 text-xs sm:px-4 sm:py-3 sm:text-sm">
-                      {item.profissional.nome}
+                      {item.professional.name}
                     </TableCell>
                     <TableCell className="px-3 py-2">
                       <Link
-                        href={`/appointments/${item.id}`}
+                        href={`/agendamentos/${item.id}`}
                         className="cursor-pointer text-xs text-blue-800 underline hover:underline sm:text-sm"
                       >
                         Detalhes
@@ -221,8 +201,8 @@ export default function DashboardPage() {
                     </TableCell>
                     <TableCell className="px-3 py-2 text-xs sm:px-4 sm:py-3 sm:text-sm">
                       <Checkbox
-                          checked={item.confirmado}
-                          onCheckedChange={() => confirmarAgendamento(item.id)}
+                          checked={item.performed}
+                          onCheckedChange={() => markAsPerformedHandle(item.id)}
                       />
                     </TableCell>
                   </TableRow>

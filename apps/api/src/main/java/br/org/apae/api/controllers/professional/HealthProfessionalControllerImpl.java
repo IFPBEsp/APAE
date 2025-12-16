@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.UUID;
 
 @RestController
+@CrossOrigin(origins = "http://localhost:3000")
 public class HealthProfessionalControllerImpl implements HealthProfessionalController {
     private final HealthProfessionalApplicationService service;
 

@@ -28,9 +28,4 @@ public interface PatientApplicationService {
     void disablePatient(UUID id);
 
     void deletePatient(UUID id);
-
-    List<String> findAllPatientCities();
-
-    // TODO: Implementar a busca por Tipos de Atendimento (que é uma tabela separada)
-    // List<String> findAllTiposAtendimento();
 }

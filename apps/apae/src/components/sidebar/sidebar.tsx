@@ -14,11 +14,12 @@ import {
   ChecklistIcon,
   ChevronDownIcon,
   ClockIcon,
+  AlertIcon,
   IdBadgeIcon,
   TasklistIcon,
   ArrowLeftIcon,
-  PeopleIcon,
   PersonIcon,
+  PeopleIcon,
 } from "@primer/octicons-react";
 import Image from "next/image";
 import Link from "next/link";
@@ -64,7 +65,6 @@ export function AppSidebar() {
           </div>
         </div>
       </SidebarHeader>
-
       <SidebarContent>
         <Collapsible defaultOpen={false} className="group/collapsible">
           <SidebarGroup>
@@ -112,11 +112,25 @@ export function AppSidebar() {
                     </SidebarMenuButton>
                   </Link>
                 </SidebarMenuItem>
+                <SidebarMenuItem>
+                  <Link href="/absence" passHref>
+                    <SidebarMenuButton
+                      className={`${styles.menuButton} font-base gap-2 ${cn(
+                        "h-10 transition-colors",
+                        pathname == "/absence"
+                          ? "bg-[#FFFFFF] !text-[#000000]"
+                          : "text-[#0D4F97] hover:bg-[#0D4F97] hover:!text-white"
+                      )}`}
+                    >
+                      <AlertIcon size={16} />
+                      <span className="text-base">Faltas</span>
+                    </SidebarMenuButton>
+                  </Link>
+                </SidebarMenuItem>
               </SidebarMenu>
             </CollapsibleContent>
           </SidebarGroup>
         </Collapsible>
-
         <SidebarGroup className="m-0 pt-0">
           <Link href="/visualization-professional" passHref>
             <SidebarMenuButton

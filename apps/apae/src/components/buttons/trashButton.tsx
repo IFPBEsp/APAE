@@ -2,7 +2,7 @@
 
 import { Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { deleteAgendamento } from "@/app/services/agendamentoService";
+import { deleteAppointment } from "@/app/services/appointmentService";
 import { useRouter } from "next/navigation";
 import {
   Dialog,
@@ -15,20 +15,23 @@ import {
   DialogTrigger,
 } from "../ui/dialog";
 
-export default function TrashButton({ id, realizado }: { id: string, realizado: boolean }) {
+export default function TrashButton({
+  id,
+}: {
+  id: string;
+  realizado: boolean;
+}) {
   const router = useRouter();
 
   const deletarAgendamento = async () => {
-    await deleteAgendamento(id, realizado);
+    await deleteAppointment(id);
     router.back();
   };
 
   return (
     <Dialog>
       <DialogTrigger asChild>
-        <Button
-          className="bg-transparent cursor-pointer text-[#970D0D] active:text-[#c21111] hover:bg-[rgba(0,0,0,0.1)] transition-colors"
-        >
+        <Button className="bg-transparent cursor-pointer text-[#970D0D] active:text-[#c21111] hover:bg-[rgba(0,0,0,0.1)] transition-colors">
           <Trash2 />
         </Button>
       </DialogTrigger>

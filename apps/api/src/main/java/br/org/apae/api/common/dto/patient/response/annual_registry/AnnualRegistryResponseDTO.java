@@ -1,6 +1,7 @@
 package br.org.apae.api.common.dto.patient.response.annual_registry;
 
 import java.math.BigDecimal;
+import java.time.Year;
 import java.util.Set;
 import java.util.UUID;
 
@@ -12,7 +13,7 @@ public record AnnualRegistryResponseDTO(
                 String bpc,
                 String diseases,
                 BigDecimal familyIncome,
-                Integer year,
+                Year year,
                 UUID patientId,
                 Set<DisorderResponseDTO> disorders) {
 
