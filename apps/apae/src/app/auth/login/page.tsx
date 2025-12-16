@@ -51,7 +51,6 @@ function LoginPage() {
         toast.success(responseData.message || "Login bem-sucedido!");
         router.push("/");
       } else {
-        console.error("Erro ao fazer login:", responseData.message);
         toast.error(responseData.message || "Credenciais inválidas");
       }
     } catch (err) {

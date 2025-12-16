@@ -53,7 +53,7 @@ export default function EditTranstornoPage() {
         throw new Error("Falha ao atualizar transtorno.");
       }
       toast.success("Transtorno atualizado com sucesso!");
-      router.push("/transtornos");
+      router.push("/disorders");
       router.refresh();
     } catch (error: any) {
       toast.error(error.message);
