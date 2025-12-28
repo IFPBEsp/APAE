@@ -37,23 +37,6 @@ export default function ServiceTypesPage() {
     fetchserviceTypes();
   }, []);
 
-  const handleDelete = async (id: string) => {
-    if (!confirm("Tem certeza que deseja excluir este tipo de atendimento?")) {
-      return;
-    }
-    try {
-      const response = await fetch(`/api/tipo-atendimento/${id}`, {
-        method: "DELETE",
-      });
-      if (!response.ok) {
-        throw new Error("Falha ao excluir o tipo de atendimento.");
-      }
-      setServiceTypes((current) => current.filter((d) => d.id !== id));
-      toast.success("Tipo de atendimento excluído com sucesso!");
-    } catch (err: any) {
-      toast.error(err.message);
-    }
-  };
   const filteredserviceTypes = serviceTypes.filter((serviceType) =>
     serviceType.area.toLowerCase().includes(searchName.toLowerCase())
   );
@@ -79,7 +62,6 @@ export default function ServiceTypesPage() {
             key={service.id}
             service={service}
             onEdit={() => router.push(`/tipo-atendimento/${service.id}/edit`)}
-            onDelete={() => handleDelete(service.id)}
           />
         ))}
       </div>

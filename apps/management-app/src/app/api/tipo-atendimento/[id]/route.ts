@@ -31,14 +31,3 @@ export async function PUT(request: Request, { params }: IParams) {
     return new NextResponse(JSON.stringify(error.response?.data), { status: 500 });
   }
 }
-
-export async function DELETE(request: Request, { params }: IParams) {
-  try {
-    const { id } = await params;
-    const api = await createBaseApi();
-    const { data } = await api.delete(`/service-areas/${id}`);
-    return NextResponse.json(data);
-  } catch (error: any) {
-    return new NextResponse(JSON.stringify(error.response?.data), { status: 500 });
-  }
-}

@@ -1,19 +1,17 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import { Edit, Trash2 } from "lucide-react";
+import { Edit } from "lucide-react";
 import { ServiceType } from "@/schemas/service-type-schemas";
 
 interface ServiceTypeListItemProps {
   service: ServiceType; 
   onEdit: () => void;
-  onDelete: () => void;
 }
 
 export function ServiceTypeListItemItem({
   service,
   onEdit,
-  onDelete,
 }: ServiceTypeListItemProps) {
   return (
     <div className="flex items-center justify-between p-4 border-b hover:bg-gray-50 transition-colors">
@@ -29,15 +27,6 @@ export function ServiceTypeListItemItem({
           aria-label="Editar"
         >
           <Edit className="h-4 w-4" />
-        </Button>
-        <Button
-          variant="outline"
-          size="icon"
-          className="h-8 w-8 hover:bg-red-50 hover:border-red-500"
-          onClick={onDelete}
-          aria-label="Excluir"
-        >
-          <Trash2 className="h-4 w-4 text-red-500" />
         </Button>
       </div>
     </div>
