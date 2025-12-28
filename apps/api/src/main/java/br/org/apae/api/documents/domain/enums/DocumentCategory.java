@@ -4,6 +4,7 @@ public enum DocumentCategory {
     APAE("APAE"),
     MEDICAL("MEDICO"),
     PERSONAL("PESSOAL"),
+    PROFESSIONAL("PROFISSIONAL"),
     SCHOOL("ESCOLAR");
 
     private String value;

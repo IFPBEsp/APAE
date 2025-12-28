@@ -8,16 +8,24 @@ export function useCreateProfissional() {
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
 
-  async function create(data: any) {
+  async function create(formData: FormData) {
     setLoading(true);
     setError(null);
     setSuccess(false);
+
     try {
-      await createProfissional(data);
+      const response = await createProfissional(formData);
+      const data = await response.json();
+
+      if (!response.ok) {
+        const errorMessage = data.message;
+        throw new Error(errorMessage);
+      }
+
       setSuccess(true);
       router.push("/visualization-professional");
-    } catch (err) {
-      setError(err instanceof Error ? err.message : "Erro desconhecido");
+    } catch (err: any) {
+      setError(err.message || "Erro inesperado");
       throw err;
     } finally {
       setLoading(false);
