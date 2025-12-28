@@ -5,6 +5,7 @@ import java.util.Set;
 import java.util.UUID;
 
 import br.org.apae.api.common.dto.patient.response.disorder.DisorderResponseDTO;
+import br.org.apae.api.common.dto.servicearea.response.ServiceAreaResponseDTO;
 import br.org.apae.api.patient.domain.model.AnnualRegistry;
 
 public record AnnualRegistryResponseDTO(
@@ -14,9 +15,10 @@ public record AnnualRegistryResponseDTO(
                 BigDecimal familyIncome,
                 Integer year,
                 UUID patientId,
-                Set<DisorderResponseDTO> disorders) {
+                Set<DisorderResponseDTO> disorders,
+                Set<ServiceAreaResponseDTO> serviceAreas) {
 
-        public AnnualRegistryResponseDTO(AnnualRegistry entity, Set<DisorderResponseDTO> disorderDtos) {
+        public AnnualRegistryResponseDTO(AnnualRegistry entity, Set<DisorderResponseDTO> disorderDtos, Set<ServiceAreaResponseDTO> serviceAreas) {
                 this(
                                 entity.getId(),
                                 entity.getBpc(),
@@ -24,6 +26,7 @@ public record AnnualRegistryResponseDTO(
                                 entity.getFamilyIncome(),
                                 entity.getYear(),
                                 entity.getPatientId(),
-                                disorderDtos);
+                                disorderDtos,
+                                serviceAreas);
         }
 }

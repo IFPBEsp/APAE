@@ -4,6 +4,10 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+import br.org.apae.api.common.dto.servicearea.response.ServiceAreaResponseDTO;
+import br.org.apae.api.servicearea.application.mappers.ServiceAreaMapper;
+import br.org.apae.api.servicearea.domain.model.ServiceArea;
+import org.jspecify.annotations.NonNull;
 import org.springframework.stereotype.Component;
 
 import br.org.apae.api.common.dto.patient.request.annual_registry.CreateAnnualRegistryDTO;
@@ -17,13 +21,16 @@ import br.org.apae.api.patient.domain.model.Disorder;
 @Component
 public class AnnualRegistryMapper {
     private final DisorderMapper disorderMapper;
+    private final ServiceAreaMapper serviceAreaMapper;
 
-    public AnnualRegistryMapper(DisorderMapper disorderMapper) {
+    public AnnualRegistryMapper(DisorderMapper disorderMapper, ServiceAreaMapper serviceAreaMapper) {
         this.disorderMapper = disorderMapper;
+        this.serviceAreaMapper = serviceAreaMapper;
     }
 
-    public AnnualRegistry toEntity(CreateAnnualRegistryDTO dto, Set<DisorderResponseDTO> disorderDtos, UUID patientId) {
+    public AnnualRegistry toEntity(CreateAnnualRegistryDTO dto, Set<DisorderResponseDTO> disorderDtos, Set<ServiceAreaResponseDTO> serviceAreaResponseDTOS, UUID patientId) {
         Set<Disorder> disorders = this.disorderMapper.toEntitySetFromResponse(disorderDtos);
+        Set<ServiceArea> serviceAreas = this.serviceAreaMapper.toEntitySetFromResponse(serviceAreaResponseDTOS);
 
         return new AnnualRegistry(
                 dto.bpc(),
@@ -31,7 +38,9 @@ public class AnnualRegistryMapper {
                 dto.familyIncome(),
                 dto.year(),
                 patientId,
-                disorders);
+                disorders,
+                serviceAreas
+        );
     }
 
     public AnnualRegistry updateEntityFromDto(AnnualRegistry entity, UpdateAnnualRegistryDTO dto) {
@@ -41,20 +50,29 @@ public class AnnualRegistryMapper {
         return entity;
     }
 
-    public AnnualRegistry replaceEntityFromDto(AnnualRegistry entity, ReplaceAnnualRegistryDTO dto, Set<DisorderResponseDTO> disorderDtos) {
+    public AnnualRegistry replaceEntityFromDto(AnnualRegistry entity, ReplaceAnnualRegistryDTO dto, Set<DisorderResponseDTO> disorderDtos, Set<ServiceAreaResponseDTO> serviceAreaResponseDTOS) {
         Set<Disorder> disorders = this.disorderMapper.toEntitySetFromResponse(disorderDtos);
+        Set<ServiceArea> serviceAreas = this.serviceAreaMapper.toEntitySetFromResponse(serviceAreaResponseDTOS);
 
         entity.setBpc(dto.bpc());
         entity.setDiseases(dto.diseases());
         entity.setFamilyIncome(dto.familyIncome());
         entity.setDisorders(disorders);
+        entity.setServiceAreas(serviceAreas);
 
         return entity;
     }
 
     public AnnualRegistryResponseDTO toResponseDTO(AnnualRegistry entity) {
-        Set<DisorderResponseDTO> disorderResponseDtos;
+        Set<DisorderResponseDTO> disorderResponseDtos = getDisorderResponseDTOS(entity);
 
+        Set<ServiceAreaResponseDTO> serviceAreaResponseDTOS = getServiceAreaResponseDTOS(entity);
+
+        return new AnnualRegistryResponseDTO(entity, disorderResponseDtos, serviceAreaResponseDTOS);
+    }
+
+    private Set<DisorderResponseDTO> getDisorderResponseDTOS(AnnualRegistry entity) {
+        Set<DisorderResponseDTO> disorderResponseDtos;
         if (entity.getDisorders() == null) {
             disorderResponseDtos = Set.of();
         } else {
@@ -62,7 +80,19 @@ public class AnnualRegistryMapper {
                     .map(DisorderResponseDTO::new)
                     .collect(Collectors.toSet());
         }
+        return disorderResponseDtos;
+    }
 
-        return new AnnualRegistryResponseDTO(entity, disorderResponseDtos);
+    private Set<ServiceAreaResponseDTO> getServiceAreaResponseDTOS(AnnualRegistry entity) {
+        Set<ServiceAreaResponseDTO> serviceAreaResponseDTOS;
+
+        if (entity.getServiceAreas() == null) {
+            serviceAreaResponseDTOS = Set.of();
+        } else {
+            serviceAreaResponseDTOS = entity.getServiceAreas().stream()
+                    .map(ServiceAreaResponseDTO::new)
+                    .collect(Collectors.toSet());
+        }
+        return serviceAreaResponseDTOS;
     }
 }
