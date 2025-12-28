@@ -145,11 +145,15 @@
   }
 }
 
+/* Desktop */
+
 @media (max-width: 900px) {
   .mainHeader {
     flex-direction: column;
   }
 }
+
+/* Mobile */
 
 @media (max-width: 550px) {
   main {
@@ -189,5 +193,63 @@
 
   .padding10 {
     padding: 10px;
+  }
+}
+
+/* Tablet Portrait */
+@media (min-width: 551px) and (max-width: 768px) {
+  main {
+    padding-top: 50px;
+    padding-left: 20px;
+    padding-right: 20px;
+  }
+
+  .cardsDiv {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 15px;
+  }
+
+  .cards {
+    width: 180px;
+    height: 180px;
+    padding: 8px;
+  }
+
+  .cardsIcons {
+    max-width: 20px;
+    max-height: 20px;
+    min-width: 20px;
+    min-height: 20px;
+  }
+}
+
+/* Tablet Landscape */
+@media (min-width: 769px) and (max-width: 900px) {
+  main {
+    padding-top: 60px;
+    padding-left: 30px;
+    padding-right: 30px;
+  }
+
+  .cardsDiv {
+    grid-template-columns: repeat(4, 1fr);
+    gap: 20px;
+  }
+
+  .cards {
+    width: 200px;
+    height: 200px;
+    padding: 12px;
+  }
+
+  .cardsIcons {
+    max-width: 24px;
+    max-height: 24px;
+    min-width: 24px;
+    min-height: 24px;
+  }
+
+  .headerButtons {
+    gap: 12px;
   }
 }

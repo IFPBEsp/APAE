@@ -14,4 +14,6 @@ public interface HealthProfessionalRepository extends JpaRepository<HealthProfes
     boolean existsByProfessionalDocument(String professionalDocument);
 
     boolean existsByEmail(String email);
+
+    boolean existsByIdentityDocument(String identityDocument);
 }
