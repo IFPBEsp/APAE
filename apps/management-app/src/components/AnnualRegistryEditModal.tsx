@@ -1,4 +1,3 @@
-// src/components/AnnualRegistryEditModal.tsx
 "use client";
 
 import { useEffect, useState, useRef } from "react";
@@ -164,6 +163,25 @@ export default function AnnualRegistryEditModal({ isOpen, onClose, patientId, cu
         const registryId = initialData?.id; 
         
         try {
+            // PASSO 0: GARANTIR QUE OS TRANSTORNOS EXISTEM (CRIAÇÃO AUTOMÁTICA)
+            // Isso resolve o erro 404/500 quando o transtorno é novo.
+            if (data.disorders && data.disorders.length > 0) {
+                await Promise.all(data.disorders.map(async (d) => {
+                    try {
+                        // Tenta criar o transtorno. Se já existir, a API retorna erro (409) ou o objeto.
+                        // Em ambos os casos, garantimos que ele existe no banco para o passo seguinte.
+                        await fetch("/api/transtornos", {
+                            method: "POST",
+                            headers: { "Content-Type": "application/json" },
+                            body: JSON.stringify({ name: d.name })
+                        });
+                    } catch (e) {
+                        // Ignora erros aqui (como duplicidade), pois o objetivo é apenas garantir existência
+                        console.warn(`Transtorno ${d.name} já existe ou houve erro na criação prévia.`);
+                    }
+                }));
+            }
+
             // PASSO 1: REGISTRO ANUAL
             if (registryId) {
                 const income = parseFloat(cleanCurrency(data.familyIncome));
@@ -194,11 +212,9 @@ export default function AnnualRegistryEditModal({ isOpen, onClose, patientId, cu
                     .filter(v => v !== "")
                     .map(v => ({ name: v }));
 
-                // Mapeamento MANUAL para garantir conformidade com UpdatePatientDTO do Java
-                // Resolve o erro de campos mismatch (ex: birthplace vs nationality)
                 const patientPayload = {
                     fullName: fullPatientData.fullName,
-                    nationality: fullPatientData.birthplace, // <--- CORREÇÃO CRÍTICA AQUI
+                    nationality: fullPatientData.birthplace, // Mapeamento correto
                     birthDate: fullPatientData.birthDate,
                     contact: fullPatientData.contact,
                     birthCertificateNumber: fullPatientData.birthCertificateNumber,
@@ -214,34 +230,11 @@ export default function AnnualRegistryEditModal({ isOpen, onClose, patientId, cu
                     registrationDate: fullPatientData.registrationDate,
                     isStudent: fullPatientData.isStudent,
                     
-                    // Campos atualizados pelo formulário
                     allergies: data.allergies,
                     vaccineNames: vaccineList,
 
-                    // Objetos aninhados precisam estar limpos
-                    address: {
-                        street: fullPatientData.address?.street,
-                        number: fullPatientData.address?.number,
-                        neighborhood: fullPatientData.address?.neighborhood,
-                        city: fullPatientData.address?.city,
-                        state: fullPatientData.address?.state,
-                        cep: fullPatientData.address?.cep,
-                        complement: fullPatientData.address?.complement
-                    },
-                    guardian: {
-                        name: fullPatientData.guardian?.name,
-                        contact: fullPatientData.guardian?.contact,
-                        kinship: fullPatientData.guardian?.kinship,
-                        address: {
-                            street: fullPatientData.guardian?.address?.street,
-                            number: fullPatientData.guardian?.address?.number,
-                            neighborhood: fullPatientData.guardian?.address?.neighborhood,
-                            city: fullPatientData.guardian?.address?.city,
-                            state: fullPatientData.guardian?.address?.state,
-                            cep: fullPatientData.guardian?.address?.cep,
-                            complement: fullPatientData.guardian?.address?.complement
-                        }
-                    },
+                    address: fullPatientData.address,
+                    guardian: fullPatientData.guardian,
                     parents: fullPatientData.parents?.map((p: any) => ({
                         name: p.name,
                         rg: p.rg,
@@ -260,7 +253,6 @@ export default function AnnualRegistryEditModal({ isOpen, onClose, patientId, cu
 
                 if (!patRes.ok) {
                     const err = await patRes.json();
-                    console.error("Erro Backend Paciente:", err);
                     throw new Error(err.message || "Erro ao atualizar dados do paciente.");
                 }
             }
