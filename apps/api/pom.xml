@@ -29,6 +29,7 @@
     </scm>
     <properties>
         <java.version>21</java.version>
+        <argLine></argLine>
     </properties>
     <dependencies>
         <dependency>
@@ -91,6 +92,76 @@
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
+            </plugin>
+            <plugin>
+                <!-- JaCoCo: http://www.eclemma.org/jacoco/ -->
+                <!-- https://www.jacoco.org/jacoco/trunk/doc/maven.html -->
+                <groupId>org.jacoco</groupId>
+                <artifactId>jacoco-maven-plugin</artifactId>
+                <version>0.8.14</version>
+                <configuration>
+                    <excludes>
+                        <exclude>**/*Main.class</exclude>
+                        <exclude>**/*HelloWorldCobertura2.class</exclude>
+                    </excludes>
+                    <haltOnFailure>true</haltOnFailure>
+                    <rules>
+                        <!-- All classes must have 85% line and branch coverage. -->
+                        <rule>
+                            <element>CLASS</element>
+                            <limits>
+                                <limit>
+                                    <counter>LINE</counter>
+                                    <value>COVEREDRATIO</value>
+                                    <minimum>0.85</minimum>
+                                </limit>
+                                <limit>
+                                    <counter>BRANCH</counter>
+                                    <value>COVEREDRATIO</value>
+                                    <minimum>0.85</minimum>
+                                </limit>
+                            </limits>
+                        </rule>
+                        <rule>
+                            <element>CLASS</element>
+                            <includes>
+                                <include>br.edu.ifpb.es.daw.todo.*</include>
+                            </includes>
+                            <limits>
+                                <limit>
+                                    <counter>LINE</counter>
+                                    <value>COVEREDRATIO</value>
+                                    <minimum>0.90</minimum>
+                                </limit>
+                                <limit>
+                                    <counter>BRANCH</counter>
+                                    <value>COVEREDRATIO</value>
+                                    <minimum>1.00</minimum>
+                                </limit>
+                            </limits>
+                        </rule>
+                    </rules>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-dependency-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>properties</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <version>3.5.4</version>
+                <configuration>
+                    <argLine>@{argLine}
+                        -javaagent:${settings.localRepository}/org/mockito/mockito-core/${mockito.version}/mockito-core-${mockito.version}.jar
+                        -Xshare:off</argLine>
+                </configuration>
             </plugin>
         </plugins>
     </build>
