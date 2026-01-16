@@ -1,5 +1,3 @@
-// src/app/api/pessoas/[id]/route.ts
-
 export const dynamic = 'force-dynamic';
 
 import { createBaseApi } from "@/lib/axios";
