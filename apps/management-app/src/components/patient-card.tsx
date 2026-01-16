@@ -47,7 +47,7 @@ export function PatientCard({ patient }: PatientCardProps) {
                     <div className="flex flex-col items-center gap-2 flex-shrink-0">
                         <Avatar className="h-20 w-20 border">
                             <AvatarImage
-                                src={patient.urlFoto ?? undefined}
+                                src={patient.photoUrl ?? undefined}
                                 alt={patient.fullName ?? "Foto do paciente"}
                             />
                             <AvatarFallback>
