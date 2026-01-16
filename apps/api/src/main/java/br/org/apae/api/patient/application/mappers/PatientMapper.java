@@ -98,20 +98,20 @@ public class PatientMapper {
                 return new Patient(patient.getId(), personalInfo, birthRecord, identification, address, vaccines);
         }
 
-        public PatientSummaryResponseDTO toSummaryResponseDTO(Patient patient) {
+        public PatientSummaryResponseDTO toSummaryResponseDTO(Patient patient, String photoUrl) {
                 AddressResponseDTO addressResponseDTO = new AddressResponseDTO(patient.getAddress());
 
-                return new PatientSummaryResponseDTO(patient, addressResponseDTO);
+                return new PatientSummaryResponseDTO(patient, addressResponseDTO,  photoUrl);
         }
 
         public PatientResponseDTO toResponseDTO(Patient patient, GuardianResponseDTO guardianResponseDTO,
-                        List<ParentResponseDTO> parentResponseDTOs) {
+                        List<ParentResponseDTO> parentResponseDTOs, String photoUrl) {
                 AddressResponseDTO addressResponseDTO = new AddressResponseDTO(patient.getAddress());
                 Set<VaccineResponseDTO> vaccineResponseDTOs = patient.getVaccines().stream()
                                 .map(VaccineResponseDTO::new)
                                 .collect(Collectors.toSet());
 
                 return new PatientResponseDTO(patient, addressResponseDTO, guardianResponseDTO, parentResponseDTOs,
-                                vaccineResponseDTOs);
+                                vaccineResponseDTOs, photoUrl);
         }
 }

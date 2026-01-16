@@ -78,8 +78,9 @@ public class PatientApplicationServiceImpl implements PatientApplicationService 
         GuardianResponseDTO guardianDto = guardianService.createGuardian(createPatientDTO.guardian(), patient.getId());
         List<ParentResponseDTO> parentDtos = parentService.createParents(createPatientDTO.parents(), patient.getId());
         documentService.storePatientDocuments(patient, documents);
+        String photo = documentService.getPatientPhoto(patient.getId());
 
-        return patientMapper.toResponseDTO(patient, guardianDto, parentDtos);
+        return patientMapper.toResponseDTO(patient, guardianDto, parentDtos, photo);
     }
 
     @Override
@@ -90,14 +91,19 @@ public class PatientApplicationServiceImpl implements PatientApplicationService 
         List<ParentResponseDTO> parentDtos = parentService.findParentsByPatientId(id);
         GuardianResponseDTO guardianDto = guardianService.findGuardianByPatientId(id);
 
-        return patientMapper.toResponseDTO(patient, guardianDto, parentDtos);
+        String photo = documentService.getPatientPhoto(id);
+
+        return patientMapper.toResponseDTO(patient, guardianDto, parentDtos, photo);
     }
 
     @Override
     @Transactional(readOnly = true)
     public Page<PatientSummaryResponseDTO> findAllPatients(Pageable pageable) {
         Page<Patient> patientsPage = patientRepository.findAll(pageable);
-        return patientsPage.map(patientMapper::toSummaryResponseDTO);
+        return patientsPage.map(patient -> {
+            String photo = documentService.getPatientPhoto(patient.getId());
+            return patientMapper.toSummaryResponseDTO(patient, photo);
+        });
     }
 
     @Override
@@ -105,7 +111,10 @@ public class PatientApplicationServiceImpl implements PatientApplicationService 
     public List<PatientSummaryResponseDTO> findPatientByFilter(Map<String, String> filters) {
         Specification<Patient> spec = PatientSpecification.filterBy(filters);
         return patientRepository.findAll(spec).stream()
-                .map(patientMapper::toSummaryResponseDTO)
+                .map(patient -> {
+                    String photo = documentService.getPatientPhoto(patient.getId());
+                    return patientMapper.toSummaryResponseDTO(patient, photo);
+                })
                 .toList();
     }
 
@@ -123,7 +132,9 @@ public class PatientApplicationServiceImpl implements PatientApplicationService 
         GuardianResponseDTO guardianDto = guardianService.updateGuardian(updatePatientDTO.guardian(), id);
         List<ParentResponseDTO> parentDtos = parentService.updateParents(updatePatientDTO.parents(), id);
 
-        return patientMapper.toResponseDTO(updatedPatient, guardianDto, parentDtos);
+        String photo = documentService.getPatientPhoto(id);
+
+        return patientMapper.toResponseDTO(updatedPatient, guardianDto, parentDtos, photo);
     }
 
     @Override
