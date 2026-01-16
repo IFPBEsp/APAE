@@ -1,4 +1,3 @@
-// src/app/(protected)/pessoa/[id]/page.tsx
 "use client";
 
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
