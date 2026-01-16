@@ -12,6 +12,8 @@ import { AnnualRegistryFormSchema } from "@/schemas/anualRegistrySchema";
 import { toast } from "react-toastify"; 
 import { Loader2, Upload, FileText, ExternalLink, RefreshCw } from "lucide-react"; 
 import { DisorderMultiSelect } from "@/components/DisorderMultiSelect"; 
+import { StringMultiSelect } from "@/components/StringMultiSelect";
+import { VaccineMultiSelect } from "@/components/VaccineMultiSelect";
 
 interface DocumentDTO {
     id: string;
@@ -55,7 +57,7 @@ export default function AnnualRegistryEditModal({ isOpen, onClose, patientId, cu
             continuousMedication: "",
             disorders: [],
             allergies: "",
-            vaccines: ""
+            vaccines: [] 
         },
     });
 
@@ -70,24 +72,22 @@ export default function AnnualRegistryEditModal({ isOpen, onClose, patientId, cu
     useEffect(() => {
         if (isOpen && initialData) {
             const rawBpc = initialData.bpc;
-            const bpcValue = (rawBpc === true || String(rawBpc) === "true" || rawBpc === "Sim");
+            const bpcValue = (rawBpc === true || String(rawBpc) === "true" || rawBpc === "Sim") ? "Sim" : "Não";
 
-            let vaccineStr = "";
-            const vacData = initialData.vaccines || fullPatientData?.vaccineNames || fullPatientData?.vaccines;
-            if (Array.isArray(vacData)) {
-                vaccineStr = vacData.map((v: any) => v.name || v).join(", ");
-            } else if (vacData) {
-                vaccineStr = String(vacData);
+            let vaccineList: any[] = [];
+            const vacSource = fullPatientData?.vaccineNames || fullPatientData?.vaccines;
+            if (Array.isArray(vacSource)) {
+                vaccineList = vacSource.map((v: any) => (typeof v === 'string' ? { name: v } : v));
             }
 
             form.reset({
                 bpc: bpcValue,
                 familyIncome: initialData.familyIncome ? formatCurrencyForDisplay(initialData.familyIncome) : "",
                 diseases: initialData.diseases ?? "",
-                continuousMedication: initialData.continuousMedication || "", 
-                disorders: initialData.disorders ?? [], 
+                continuousMedication: initialData.continuousMedication ?? "",
                 allergies: fullPatientData?.allergies ?? "",
-                vaccines: vaccineStr
+                disorders: initialData.disorders ?? [], 
+                vaccines: vaccineList 
             });
         }
     }, [initialData, fullPatientData, isOpen, form]);
@@ -153,27 +153,17 @@ export default function AnnualRegistryEditModal({ isOpen, onClose, patientId, cu
         const registryId = initialData?.id; 
         
         try {
-            // PASSO 0: GARANTIR QUE OS TRANSTORNOS EXISTAM NO BANCO
             if (data.disorders && data.disorders.length > 0) {
                 await Promise.all(data.disorders.map(async (d: any) => {
-                    // Pega o nome correto independente do formato (Object do Select ou do Banco)
                     const disorderName = d.name || d.label || d.value;
                     if (!disorderName) return;
-
                     try {
-                        const res = await fetch("/api/transtornos", {
+                        await fetch("/api/transtornos", {
                             method: "POST",
                             headers: { "Content-Type": "application/json" },
                             body: JSON.stringify({ name: disorderName })
                         });
-                        
-                        // Se falhar (e não for erro de "já existe"), apenas avisamos
-                        if (!res.ok && res.status !== 409) { 
-                            console.warn(`Aviso: falha ao verificar transtorno ${disorderName}`);
-                        }
-                    } catch (e) { 
-                        console.warn(`Erro de conexão ao verificar transtorno:`, e); 
-                    }
+                    } catch (e) { console.warn(`Erro ao criar transtorno:`, e); }
                 }));
             }
 
@@ -182,7 +172,6 @@ export default function AnnualRegistryEditModal({ isOpen, onClose, patientId, cu
                 const income = parseFloat(cleanCurrency(data.familyIncome));
                 const bpcToSend = (data.bpc === "Sim" || data.bpc === "true" || data.bpc === true) ? "true" : "false";
 
-                // Formata os transtornos para o formato que o Java espera no DTO do Registro
                 const formattedDisorders = data.disorders?.map((d: any) => ({ 
                     name: d.name || d.label || d.value 
                 })) || [];
@@ -206,9 +195,7 @@ export default function AnnualRegistryEditModal({ isOpen, onClose, patientId, cu
 
             // 2. ATUALIZA DADOS DO PACIENTE
             if (fullPatientData) {
-                const vaccineList = data.vaccines 
-                    ? String(data.vaccines).split(',').map(v => v.trim()).filter(v => v !== "").map(v => ({ name: v }))
-                    : [];
+                const vaccineList = Array.isArray(data.vaccines) ? data.vaccines : [];
 
                 const baseData = cleanPatientData(fullPatientData);
                 const safeNationality = baseData.nationality || baseData.birthplace || "Brasileira";
@@ -221,13 +208,7 @@ export default function AnnualRegistryEditModal({ isOpen, onClose, patientId, cu
                     address: fullPatientData.address ? { ...fullPatientData.address } : null,
                     guardian: fullPatientData.guardian ? { ...fullPatientData.guardian } : null,
                     parents: fullPatientData.parents?.map((p: any) => ({
-                        id: p.id, 
-                        name: p.name,
-                        rg: p.rg,
-                        cpf: p.cpf,
-                        profession: p.profession,
-                        isAlive: p.isAlive,
-                        kinship: p.kinship
+                        id: p.id, name: p.name, rg: p.rg, cpf: p.cpf, profession: p.profession, isAlive: p.isAlive, kinship: p.kinship
                     })) ?? []
                 };
 
@@ -277,13 +258,17 @@ export default function AnnualRegistryEditModal({ isOpen, onClose, patientId, cu
                                     </div>
                                     <div className="space-y-3">
                                         <FormField control={form.control} name="diseases" render={({ field }) => (
-                                            <FormItem><FormLabel className="text-slate-700 font-bold text-xs">Doenças</FormLabel><FormControl><Input className="bg-slate-50 border-slate-200 h-10 text-sm" {...field} /></FormControl><FormMessage /></FormItem>)} />
+                                            <FormItem><FormLabel className="text-slate-700 font-bold text-xs">Doenças</FormLabel>
+                                            <FormControl><StringMultiSelect value={field.value} onChange={field.onChange} placeholder="Digite doenças (ex: Diabetes)..." /></FormControl><FormMessage /></FormItem>)} />
                                         <FormField control={form.control} name="allergies" render={({ field }) => (
-                                            <FormItem><FormLabel className="text-slate-700 font-bold text-xs">Alergias</FormLabel><FormControl><Input className="bg-slate-50 border-slate-200 h-10 text-sm" {...field} placeholder="Ex: Dipirona..." /></FormControl><FormMessage /></FormItem>)} />
+                                            <FormItem><FormLabel className="text-slate-700 font-bold text-xs">Alergias</FormLabel>
+                                            <FormControl><StringMultiSelect value={field.value} onChange={field.onChange} placeholder="Digite alergias (ex: Dipirona)..." /></FormControl><FormMessage /></FormItem>)} />
                                         <FormField control={form.control} name="continuousMedication" render={({ field }) => (
-                                            <FormItem><FormLabel className="text-slate-700 font-bold text-xs">Medicamentos</FormLabel><FormControl><Input className="bg-slate-50 border-slate-200 h-10 text-sm" {...field} /></FormControl><FormMessage /></FormItem>)} />
+                                            <FormItem><FormLabel className="text-slate-700 font-bold text-xs">Medicamentos</FormLabel>
+                                            <FormControl><StringMultiSelect value={field.value} onChange={field.onChange} placeholder="Digite medicamentos..." /></FormControl><FormMessage /></FormItem>)} />
                                         <FormField control={form.control} name="vaccines" render={({ field }) => (
-                                            <FormItem><FormLabel className="text-slate-700 font-bold text-xs">Vacinas</FormLabel><FormControl><Input className="bg-slate-50 border-slate-200 h-10 text-sm" {...field} value={field.value} placeholder="Ex: Sarampo, Covid..." /></FormControl><FormMessage /></FormItem>)} />
+                                            <FormItem><FormLabel className="text-slate-700 font-bold text-xs">Vacinas</FormLabel>
+                                            <FormControl><VaccineMultiSelect value={field.value} onChange={field.onChange} /></FormControl><FormMessage /></FormItem>)} />
                                     </div>
                                     <div className="pt-1">
                                         <FormField control={form.control} name="disorders" render={({ field }) => (

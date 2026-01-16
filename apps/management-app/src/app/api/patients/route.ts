@@ -18,7 +18,6 @@ export async function GET(request: NextRequest) {
       params: backendParams,
     });
 
-    // Se for paginado, pega o content. Se for lista, pega direto.
     const data = response.data.content || response.data;
 
     return NextResponse.json(data);

@@ -1,108 +1,158 @@
 "use client";
 
-import * as React from "react";
-import { Check, ChevronsUpDown, X, Plus } from "lucide-react";
-import { cn } from "@/lib/utils";
-import { Button } from "@/components/ui/button";
-import {
-  Command,
-  CommandEmpty,
-  CommandGroup,
-  CommandInput,
-  CommandItem,
-  CommandList,
-} from "@/components/ui/command";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
-import { Badge } from "@/components/ui/badge";
+import React, { useEffect, useState } from "react";
+import CreatableSelect from "react-select/creatable";
+import { MultiValue, StylesConfig } from "react-select";
 
-interface VaccineMultiSelectProps {
-  value: string[];
-  onChange: (value: string[]) => void;
-  options: string[]; // Recebe as opções carregadas pelo Hook do pai
-  isLoading?: boolean;
+interface VaccineOption {
+  label: string;
+  value: string;
+  id?: string;
 }
 
-export function VaccineMultiSelect({ value = [], onChange, options = [], isLoading = false }: VaccineMultiSelectProps) {
-  const [open, setOpen] = React.useState(false);
-  const [inputValue, setInputValue] = React.useState("");
-  
-  // Combina opções do banco com as selecionadas para garantir que apareçam
-  const allOptions = React.useMemo(() => {
-    const uniqueOptions = new Set([...options, ...value]);
-    return Array.from(uniqueOptions).sort();
-  }, [options, value]);
+interface VaccineMultiSelectProps {
+  value: any[]; 
+  onChange: (value: any[]) => void;
+}
 
-  const handleSelect = (currentValue: string) => {
-    const normalized = currentValue.toUpperCase();
-    const isSelected = value.includes(normalized);
-    if (isSelected) {
-      onChange(value.filter((item) => item !== normalized));
-    } else {
-      onChange([...value, normalized]);
-    }
+const capitalize = (s: string) => s.charAt(0).toUpperCase() + s.slice(1).toLowerCase();
+
+export const VaccineMultiSelect = ({ value, onChange }: VaccineMultiSelectProps) => {
+  const [options, setOptions] = useState<VaccineOption[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
+
+  useEffect(() => {
+    const fetchVaccines = async () => {
+      try {
+        const res = await fetch("/api/vacinas");
+        if (res.ok) {
+            const data = await res.json();
+            const safeData = Array.isArray(data) ? data : [];
+            const formatted = safeData.map((d: any) => ({ 
+                label: d.name, 
+                value: d.name, 
+                id: d.id 
+            }));
+            setOptions(formatted);
+        }
+      } catch (error) { console.error(error); }
+    };
+    fetchVaccines();
+  }, []);
+
+  const getCurrentValue = (): VaccineOption[] => {
+    if (!value || !Array.isArray(value)) return [];
+    return value.map((v) => ({ 
+        label: v.name || v, 
+        value: v.name || v,
+        id: v.id 
+    }));
   };
 
-  const handleCreate = () => {
-    if (!inputValue) return;
-    const normalized = inputValue.trim().toUpperCase();
-    if (!value.includes(normalized)) {
-      onChange([...value, normalized]);
-    }
-    setInputValue("");
+  const handleChange = (newValue: MultiValue<VaccineOption>) => {
+    const formattedForForm = newValue.map(v => ({
+        name: v.value,
+        id: v.id
+    }));
+    onChange(formattedForForm);
   };
 
-  const handleUnselect = (itemToRemove: string) => {
-    onChange(value.filter((item) => item !== itemToRemove));
+  const handleCreate = async (inputValue: string) => {
+    const normalizedName = capitalize(inputValue.trim());
+    const exists = options.some(opt => opt.label.toLowerCase() === normalizedName.toLowerCase());
+    if (exists) {
+        const existingOption = options.find(opt => opt.label.toLowerCase() === normalizedName.toLowerCase());
+        if (existingOption) {
+            handleChange([...getCurrentValue(), existingOption] as MultiValue<VaccineOption>);
+        }
+        return;
+    }
+
+    setIsLoading(true);
+    try {
+        const res = await fetch("/api/vacinas", {
+            method: "POST",
+            body: JSON.stringify({ name: normalizedName })
+        });
+    
+        let newOption = { label: normalizedName, value: normalizedName, id: undefined };
+        
+        if (res.ok || res.status === 201) {
+            const newVaccine = await res.json();
+            if (newVaccine && newVaccine.id) {
+                newOption = { label: newVaccine.name, value: newVaccine.name, id: newVaccine.id };
+            }
+        }
+
+        setOptions((prev) => [...prev, newOption]);
+        
+        const current = getCurrentValue();
+        handleChange([...current, newOption] as MultiValue<VaccineOption>);
+
+    } catch (error) { console.error(error); } 
+    finally { setIsLoading(false); }
+  };
+
+  const customStyles: StylesConfig<VaccineOption, true> = {
+    control: (base, state) => ({
+      ...base,
+      borderColor: "#e2e8f0",
+      borderRadius: "0.375rem",
+      fontSize: "0.875rem",
+      minHeight: "2.5rem",
+      boxShadow: "none",
+      backgroundColor: "white",
+      "&:hover": { borderColor: "#cbd5e1" },
+      ...(state.isFocused && {
+        borderColor: "black", 
+        borderWidth: "1px",
+        outline: "1px solid black"
+      })
+    }),
+    placeholder: (base) => ({
+        ...base,
+        color: "#64748b",
+        fontSize: "0.875rem",
+    }),
+    menu: (base) => ({
+        ...base,
+        borderRadius: "0.375rem",
+        border: "1px solid #e2e8f0",
+        boxShadow: "0 4px 6px -1px rgb(0 0 0 / 0.1)",
+        zIndex: 9999
+    }),
+    multiValue: (base) => ({
+      ...base,
+      backgroundColor: "#eff6ff",
+      borderRadius: "0.25rem",
+    }),
+    multiValueLabel: (base) => ({
+      ...base,
+      color: "#0D4F97",
+      fontWeight: 600,
+      fontSize: "0.75rem",
+    }),
+    multiValueRemove: (base) => ({
+        ...base,
+        color: "#0D4F97",
+        ":hover": { backgroundColor: "#dbeafe", color: "#1e3a8a" },
+    })
   };
 
   return (
-    <Popover open={open} onOpenChange={setOpen}>
-      <PopoverTrigger asChild>
-        <Button variant="outline" role="combobox" aria-expanded={open} disabled={isLoading} className="w-full justify-between h-auto min-h-[42px] px-3 py-2 bg-white">
-          <div className="flex flex-wrap gap-1 items-center">
-            {value.length > 0 ? (
-              value.map((item) => (
-                <Badge variant="secondary" key={item} className="mr-1 mb-1 font-normal bg-blue-50 text-blue-700 hover:bg-blue-100 border-blue-200">
-                  {item}
-                  <div className="ml-1 cursor-pointer" onMouseDown={(e) => { e.preventDefault(); e.stopPropagation(); }} onClick={() => handleUnselect(item)}>
-                    <X className="h-3 w-3 text-blue-500 hover:text-blue-700" />
-                  </div>
-                </Badge>
-              ))
-            ) : (
-              <span className="text-muted-foreground text-sm font-normal">{isLoading ? "Carregando..." : "Selecionar vacinas..."}</span>
-            )}
-          </div>
-          <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
-        </Button>
-      </PopoverTrigger>
-      <PopoverContent className="w-[400px] p-0" align="start">
-        <Command>
-          <CommandInput placeholder="Buscar vacina..." value={inputValue} onValueChange={setInputValue} />
-          <CommandList>
-            <CommandEmpty className="py-2 px-2 text-sm">
-               <p className="text-muted-foreground text-center mb-2">Não encontrada.</p>
-               {inputValue && (
-                 <Button variant="secondary" size="sm" className="w-full justify-start text-green-700 bg-green-50 hover:bg-green-100" onClick={handleCreate}>
-                    <Plus className="mr-2 h-4 w-4" /> Criar "{inputValue.toUpperCase()}"
-                 </Button>
-               )}
-            </CommandEmpty>
-            <CommandGroup heading="Sugestões" className="max-h-[200px] overflow-y-auto">
-              {allOptions.map((option) => (
-                <CommandItem key={option} value={option} onSelect={() => handleSelect(option)}>
-                  <Check className={cn("mr-2 h-4 w-4", value.includes(option) ? "opacity-100" : "opacity-0")} />
-                  {option}
-                </CommandItem>
-              ))}
-            </CommandGroup>
-          </CommandList>
-        </Command>
-      </PopoverContent>
-    </Popover>
+    <CreatableSelect
+      isMulti
+      isDisabled={isLoading}
+      isLoading={isLoading}
+      onChange={handleChange}
+      onCreateOption={handleCreate}
+      options={options}
+      value={getCurrentValue()}
+      styles={customStyles}
+      placeholder="Selecione ou crie vacinas..."
+      formatCreateLabel={(inputValue) => `Criar "${capitalize(inputValue)}"`}
+      noOptionsMessage={() => "Nenhuma vacina encontrada"}
+      createOptionPosition="first"
+    />
   );
-}
+};
