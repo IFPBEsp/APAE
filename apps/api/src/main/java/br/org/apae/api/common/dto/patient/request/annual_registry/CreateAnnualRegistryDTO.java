@@ -9,13 +9,15 @@ import jakarta.validation.constraints.Positive;
 import jakarta.validation.constraints.Size;
 
 public record CreateAnnualRegistryDTO(
-                @NotNull @Size(min = 1, max = 50) String bpc,
+        @NotNull @Size(min = 1, max = 50) String bpc,
 
-                @NotNull String diseases,
+        @NotNull String diseases,
 
-                @NotNull @Positive BigDecimal familyIncome,
+        String continuousMedication,
 
-                @NotNull Integer year,
+        @NotNull @Positive BigDecimal familyIncome,
 
-                Set<CreateDisorderDTO> disorders) {
+        @NotNull Integer year,
+
+        Set<CreateDisorderDTO> disorders) {
 }
