@@ -59,6 +59,7 @@ export default function AnnualRegistryEditModal({ isOpen, onClose, patientId, cu
         },
     });
 
+    // --- CARREGAMENTO ---
     useEffect(() => {
         if (isOpen && patientId) {
             fetchDocuments();
@@ -72,18 +73,18 @@ export default function AnnualRegistryEditModal({ isOpen, onClose, patientId, cu
             const bpcValue = (rawBpc === true || String(rawBpc) === "true" || rawBpc === "Sim");
 
             let vaccineStr = "";
-            const vacSource = fullPatientData?.vaccineNames || fullPatientData?.vaccines;
-            if (Array.isArray(vacSource)) {
-                vaccineStr = vacSource.map((v: any) => v.name || v).join(", ");
-            } else if (vacSource) {
-                vaccineStr = String(vacSource);
+            const vacData = initialData.vaccines || fullPatientData?.vaccineNames || fullPatientData?.vaccines;
+            if (Array.isArray(vacData)) {
+                vaccineStr = vacData.map((v: any) => v.name || v).join(", ");
+            } else if (vacData) {
+                vaccineStr = String(vacData);
             }
 
             form.reset({
                 bpc: bpcValue,
                 familyIncome: initialData.familyIncome ? formatCurrencyForDisplay(initialData.familyIncome) : "",
                 diseases: initialData.diseases ?? "",
-                continuousMedication: initialData.continuousMedication ?? "",
+                continuousMedication: initialData.continuousMedication || "", 
                 disorders: initialData.disorders ?? [], 
                 allergies: fullPatientData?.allergies ?? "",
                 vaccines: vaccineStr
@@ -91,6 +92,7 @@ export default function AnnualRegistryEditModal({ isOpen, onClose, patientId, cu
         }
     }, [initialData, fullPatientData, isOpen, form]);
 
+    // --- API CALLS ---
     const fetchDocuments = async () => {
         setIsLoadingDocs(true);
         try {
@@ -130,6 +132,7 @@ export default function AnnualRegistryEditModal({ isOpen, onClose, patientId, cu
         finally { setIsUploading(false); }
     };
 
+    // --- HELPERS ---
     const cleanCurrency = (value: string) => (!value ? "0.00" : value.replace(/[^\d,]/g, '').replace(',', '.'));
     const formatCurrencyForDisplay = (value: number | string) => (!value ? "" : Number(value).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }));
     
@@ -145,20 +148,51 @@ export default function AnnualRegistryEditModal({ isOpen, onClose, patientId, cu
         return rest;
     };
 
+    // --- SUBMIT ---
     const onSubmit = async (data: any) => { 
         const registryId = initialData?.id; 
         
         try {
+            // PASSO 0: GARANTIR QUE OS TRANSTORNOS EXISTAM NO BANCO
+            if (data.disorders && data.disorders.length > 0) {
+                await Promise.all(data.disorders.map(async (d: any) => {
+                    // Pega o nome correto independente do formato (Object do Select ou do Banco)
+                    const disorderName = d.name || d.label || d.value;
+                    if (!disorderName) return;
+
+                    try {
+                        const res = await fetch("/api/transtornos", {
+                            method: "POST",
+                            headers: { "Content-Type": "application/json" },
+                            body: JSON.stringify({ name: disorderName })
+                        });
+                        
+                        // Se falhar (e não for erro de "já existe"), apenas avisamos
+                        if (!res.ok && res.status !== 409) { 
+                            console.warn(`Aviso: falha ao verificar transtorno ${disorderName}`);
+                        }
+                    } catch (e) { 
+                        console.warn(`Erro de conexão ao verificar transtorno:`, e); 
+                    }
+                }));
+            }
+
+            // 1. ATUALIZA REGISTRO ANUAL
             if (registryId) {
                 const income = parseFloat(cleanCurrency(data.familyIncome));
                 const bpcToSend = (data.bpc === "Sim" || data.bpc === "true" || data.bpc === true) ? "true" : "false";
+
+                // Formata os transtornos para o formato que o Java espera no DTO do Registro
+                const formattedDisorders = data.disorders?.map((d: any) => ({ 
+                    name: d.name || d.label || d.value 
+                })) || [];
 
                 const regPayload = {
                     bpc: bpcToSend, 
                     familyIncome: income,
                     diseases: data.diseases,
                     continuousMedication: data.continuousMedication,
-                    disorders: data.disorders?.map((d: any) => ({ name: d.name })) || []
+                    disorders: formattedDisorders
                 };
 
                 const regRes = await fetch(`/api/pessoas/${patientId}/registro-anual/${registryId}`, {
@@ -170,13 +204,13 @@ export default function AnnualRegistryEditModal({ isOpen, onClose, patientId, cu
                 if (!regRes.ok) throw new Error("Erro ao atualizar registro anual.");
             }
 
+            // 2. ATUALIZA DADOS DO PACIENTE
             if (fullPatientData) {
                 const vaccineList = data.vaccines 
                     ? String(data.vaccines).split(',').map(v => v.trim()).filter(v => v !== "").map(v => ({ name: v }))
                     : [];
 
                 const baseData = cleanPatientData(fullPatientData);
-
                 const safeNationality = baseData.nationality || baseData.birthplace || "Brasileira";
 
                 const patientPayload = {
@@ -184,7 +218,6 @@ export default function AnnualRegistryEditModal({ isOpen, onClose, patientId, cu
                     nationality: safeNationality,
                     allergies: data.allergies,
                     vaccineNames: vaccineList,
-
                     address: fullPatientData.address ? { ...fullPatientData.address } : null,
                     guardian: fullPatientData.guardian ? { ...fullPatientData.guardian } : null,
                     parents: fullPatientData.parents?.map((p: any) => ({
@@ -205,7 +238,7 @@ export default function AnnualRegistryEditModal({ isOpen, onClose, patientId, cu
                 if (!patRes.ok) {
                     const txt = await patRes.text();
                     console.error("Erro Backend:", txt);
-                    throw new Error("Erro ao atualizar dados do paciente (ver console).");
+                    throw new Error("Erro ao atualizar dados do paciente.");
                 }
             }
 
