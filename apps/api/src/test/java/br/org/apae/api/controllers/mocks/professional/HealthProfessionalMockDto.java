@@ -1,4 +1,4 @@
-package br.org.apae.api.unit.mocks;
+package br.org.apae.api.controllers.mocks.professional;
 
 import java.util.List;
 import java.util.UUID;

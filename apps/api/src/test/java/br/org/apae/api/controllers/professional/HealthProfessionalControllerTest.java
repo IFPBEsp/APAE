@@ -1,4 +1,4 @@
-package br.org.apae.api.unit.professional;
+package br.org.apae.api.controllers.professional;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -28,12 +28,11 @@ import br.org.apae.api.auth.application.internal.UserService;
 import br.org.apae.api.auth.infrastructure.security.JwtProvider;
 import br.org.apae.api.auth.infrastructure.security.SecurityConfiguration;
 import br.org.apae.api.common.dto.professional.request.CreateHealthProfessionalDTO;
-import br.org.apae.api.controllers.professional.HealthProfessionalControllerImpl;
+import br.org.apae.api.controllers.mocks.professional.HealthProfessionalMockDto;
 import br.org.apae.api.helpers.AuthTestHelper;
-import br.org.apae.api.unit.mocks.HealthProfessionalMockDto;
 import br.org.apae.api.professional.application.interfaces.HealthProfessionalService;
 
-@Tag("unit")
+@Tag("controller")
 @Tag("health-professional")
 @WebMvcTest(controllers = HealthProfessionalControllerImpl.class)
 @AutoConfigureMockMvc(addFilters = true)
