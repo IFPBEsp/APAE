@@ -6,7 +6,10 @@ import br.org.apae.api.common.dto.patient.request.disorder.UpdateDisorderDTO;
 import br.org.apae.api.common.dto.patient.response.disorder.DisorderResponseDTO;
 import br.org.apae.api.controllers.disorder.DisorderControllerImpl;
 import br.org.apae.api.patient.application.interfaces.DisorderApplicationService;
+import br.org.apae.api.patient.domain.exceptions.DisorderConflictException;
+import br.org.apae.api.patient.domain.exceptions.DisorderNotFoundException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -25,10 +28,7 @@ import java.util.UUID;
 
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 import static org.springframework.data.web.config.EnableSpringDataWebSupport.PageSerializationMode.VIA_DTO;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -38,6 +38,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+@Tag("unit")
+@Tag("controller")
+@Tag("patient")
 @WebMvcTest(
         controllers = DisorderControllerImpl.class,
         excludeFilters = @ComponentScan.Filter(
@@ -121,7 +124,7 @@ class DisorderControllerImplTest {
         UpdateDisorderDTO updateDto = new UpdateDisorderDTO("Transtorno Atualizado");
         DisorderResponseDTO responseDto = new DisorderResponseDTO(id, updateDto.name());
 
-        when(disorderService.updateDisorder(eq(id), any(UpdateDisorderDTO.class))).thenReturn(responseDto);
+        when(disorderService.updateDisorder(id, updateDto)).thenReturn(responseDto);
 
         mockMvc.perform(put(BASE_URL + "/{id}", id)
                         .contentType(MediaType.APPLICATION_JSON)
@@ -140,5 +143,71 @@ class DisorderControllerImplTest {
                 .andExpect(status().isNoContent());
 
         verify(disorderService).deleteDisorder(id);
+    }
+
+    @Test
+    void shouldReturnConflictWhenCreateDisorderWithDuplicateName() throws Exception {
+        CreateDisorderDTO requestDto = new CreateDisorderDTO("Transtorno Duplicado");
+
+        when(disorderService.createDisorder(requestDto))
+                .thenThrow(new DisorderConflictException(requestDto.name()));
+
+        mockMvc.perform(post(BASE_URL)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(requestDto))
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isConflict());
+    }
+
+    @Test
+    void shouldReturnNotFoundWhenSearchDisorderByIdNonExistent() throws Exception {
+        UUID id = UUID.randomUUID();
+
+        when(disorderService.findDisorderById(id))
+                .thenThrow(new DisorderNotFoundException());
+
+        mockMvc.perform(get(BASE_URL + "/{id}", id)
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isConflict());
+    }
+
+    @Test
+    void shouldReturnNotFoundWhenUpdateDisorderNonExistent() throws Exception {
+        UUID id = UUID.randomUUID();
+        UpdateDisorderDTO updateDto = new UpdateDisorderDTO("Nome qualquer");
+
+        when(disorderService.updateDisorder(id, updateDto))
+                .thenThrow(new DisorderNotFoundException());
+
+        mockMvc.perform(put(BASE_URL + "/{id}", id)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(updateDto))
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isConflict());
+    }
+
+    @Test
+    void shouldReturnConflictWhenUpdateDisorderWithDuplicateName() throws Exception {
+        UUID id = UUID.randomUUID();
+        UpdateDisorderDTO updateDto = new UpdateDisorderDTO("Nome Já Existe");
+
+        when(disorderService.updateDisorder(id, updateDto))
+                .thenThrow(new DisorderConflictException(updateDto.name()));
+
+        mockMvc.perform(put(BASE_URL + "/{id}", id)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(updateDto))
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isConflict());
+    }
+
+    @Test
+    void shouldReturnNotFoundWhenDeleteDisorderNonExistent() throws Exception {
+        UUID id = UUID.randomUUID();
+
+        doThrow(new DisorderNotFoundException()).when(disorderService).deleteDisorder(id);
+
+        mockMvc.perform(delete(BASE_URL + "/{id}", id))
+                .andExpect(status().isConflict());
     }
 }
