@@ -1,18 +1,19 @@
-package br.org.apae.api.patient;
+package br.org.apae.api.controllers.patient;
 
 import br.org.apae.api.auth.application.internal.UserService;
 import br.org.apae.api.auth.infrastructure.security.JwtProvider;
 import br.org.apae.api.common.dto.patient.response.disorder.DisorderResponseDTO;
 import br.org.apae.api.common.dto.patient.response.patient.PatientResponseDTO;
 import br.org.apae.api.common.dto.patient.response.patient.PatientSummaryResponseDTO;
-import br.org.apae.api.controllers.patient.PatientControllerImpl;
 import br.org.apae.api.patient.application.interfaces.AnnualRegistryApplicationService;
 import br.org.apae.api.patient.application.interfaces.DisorderApplicationService;
 import br.org.apae.api.patient.application.interfaces.PatientApplicationService;
 import br.org.apae.api.patient.domain.exceptions.PatientNotFoundException;
 import br.org.apae.api.servicearea.application.interfaces.ServiceAreaApplicationService;
-import br.org.apae.api.utils.PatientCreator;
+import br.org.apae.api.controllers.patient.mocks.patient.PatientCreator;
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Tags;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
@@ -36,6 +37,10 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+@Tags({
+        @Tag("controller"),
+        @Tag("patient")
+})
 @WebMvcTest(PatientControllerImpl.class)
 public class PatientRetrievalTests {
     @Autowired
@@ -64,7 +69,7 @@ public class PatientRetrievalTests {
 
     @Test
     @DisplayName("Deve buscar um paciente pelo ID com sucesso (Retorna 200)")
-    @WithMockUser(username = "admin", roles = "admin")
+    @WithMockUser(username = "admin", roles = {"ADMIN"})
     void deveBuscarPacientePorId() throws Exception {
         UUID randomId = UUID.randomUUID();
         PatientResponseDTO patientDTO = PatientCreator.createResponse();
@@ -119,7 +124,7 @@ public class PatientRetrievalTests {
 
     @Test
     @DisplayName("Deve retornar 404 ao buscar paciente pelo ID inexistente")
-    @WithMockUser(username = "admin", roles = "admin")
+    @WithMockUser(username = "admin", roles = {"ADMIN"})
     void deveRetornarErroComIdInexistente() throws Exception {
         UUID randomId = UUID.randomUUID();
 
@@ -133,7 +138,7 @@ public class PatientRetrievalTests {
 
     @Test
     @DisplayName("Deve retornar todos os pacientes (sem filtro)")
-    @WithMockUser(username = "admin", roles = "ADMIN")
+    @WithMockUser(username = "admin", roles = {"ADMIN"})
     void deveRetornarTodosOsPacientes() throws Exception {
         List<PatientSummaryResponseDTO> list = List.of(PatientCreator.createSummaryResponse());
         when(patientService.findPatientByFilter(anyMap())).thenReturn(list);
@@ -172,7 +177,7 @@ public class PatientRetrievalTests {
 
     @Test
     @DisplayName("Deve repassar o filtro 'name' corretamente para o service")
-    @WithMockUser(username = "admin", roles = "ADMIN")
+    @WithMockUser(username = "admin", roles = {"ADMIN"})
     void deveRetornarPacientesComFiltroNome() throws Exception {
         String nomeBusca = "João";
         when(patientService.findPatientByFilter(anyMap())).thenReturn(List.of());
@@ -190,7 +195,7 @@ public class PatientRetrievalTests {
 
     @Test
     @DisplayName("Deve repassar o filtro 'city' corretamente para o service")
-    @WithMockUser(username = "admin", roles = "ADMIN")
+    @WithMockUser(username = "admin", roles = {"ADMIN"})
     void deveRetornarPacientesComFiltroCidade() throws Exception {
         String cidade = "Campina";
         when(patientService.findPatientByFilter(anyMap())).thenReturn(List.of());
@@ -206,7 +211,7 @@ public class PatientRetrievalTests {
 
     @Test
     @DisplayName("Deve repassar o filtro 'disorder' corretamente para o service")
-    @WithMockUser(username = "admin", roles = "ADMIN")
+    @WithMockUser(username = "admin", roles = {"ADMIN"})
     void deveRetornarPacientesComFiltroTranstorno() throws Exception {
         String transtorno = "Autista";
         when(patientService.findPatientByFilter(anyMap())).thenReturn(List.of());
@@ -222,7 +227,7 @@ public class PatientRetrievalTests {
 
     @Test
     @DisplayName("Deve repassar o filtro 'year' corretamente para o service")
-    @WithMockUser(username = "admin", roles = "ADMIN")
+    @WithMockUser(username = "admin", roles = {"ADMIN"})
     void deveRetornarPacientesComFiltroAno() throws Exception {
         String ano = "2024";
         when(patientService.findPatientByFilter(anyMap())).thenReturn(List.of());
@@ -238,7 +243,7 @@ public class PatientRetrievalTests {
 
     @Test
     @DisplayName("Deve repassar o filtro 'treatmentType' corretamente para o service")
-    @WithMockUser(username = "admin", roles = "ADMIN")
+    @WithMockUser(username = "admin", roles = {"ADMIN"})
     void deveRetornarPacientesComFiltroTipoAtendimento() throws Exception {
         String tipo = "Fisioterapia";
         when(patientService.findPatientByFilter(anyMap())).thenReturn(List.of());
@@ -254,7 +259,7 @@ public class PatientRetrievalTests {
 
     @Test
     @DisplayName("Deve listar nomes dos transtornos disponíveis para filtro")
-    @WithMockUser(username = "admin", roles = "ADMIN")
+    @WithMockUser(username = "admin", roles = {"ADMIN"})
     void deveListarTranstornos() throws Exception {
         DisorderResponseDTO tea = new DisorderResponseDTO(UUID.randomUUID(), "TEA");
         DisorderResponseDTO tdah = new DisorderResponseDTO(UUID.randomUUID(), "TDAH");
@@ -273,7 +278,7 @@ public class PatientRetrievalTests {
 
     @Test
     @DisplayName("Deve listar anos disponíveis para filtro")
-    @WithMockUser(username = "admin", roles = "ADMIN")
+    @WithMockUser(username = "admin", roles = {"ADMIN"})
     void deveListarAnos() throws Exception {
         List<String> mockData = List.of("2024", "2025");
         when(annualRegistryApplicationService.findAllRegistryYears()).thenReturn(mockData);
@@ -287,7 +292,7 @@ public class PatientRetrievalTests {
 
     @Test
     @DisplayName("Deve listar as cidades disponíveis para filtro")
-    @WithMockUser(username = "admin", roles = "ADMIN")
+    @WithMockUser(username = "admin", roles = {"ADMIN"})
     void deveListarCidades() throws Exception {
         List<String> mockData = List.of("Campina Grande", "Esperança");
         when(patientService.findAllPatientCities()).thenReturn(mockData);

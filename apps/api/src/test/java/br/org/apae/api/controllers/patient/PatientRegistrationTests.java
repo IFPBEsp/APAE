@@ -1,18 +1,19 @@
-package br.org.apae.api.patient;
+package br.org.apae.api.controllers.patient;
 
 import br.org.apae.api.auth.application.internal.UserService;
 import br.org.apae.api.auth.infrastructure.security.JwtProvider;
 import br.org.apae.api.common.dto.patient.request.documents.CreateDocumentsDTO;
 import br.org.apae.api.common.dto.patient.request.patient.CreatePatientDTO;
 import br.org.apae.api.common.dto.patient.response.patient.PatientResponseDTO;
-import br.org.apae.api.controllers.patient.PatientControllerImpl;
 import br.org.apae.api.patient.application.interfaces.AnnualRegistryApplicationService;
 import br.org.apae.api.patient.application.interfaces.DisorderApplicationService;
 import br.org.apae.api.patient.application.interfaces.PatientApplicationService;
 import br.org.apae.api.servicearea.application.interfaces.ServiceAreaApplicationService;
-import br.org.apae.api.utils.PatientCreator;
+import br.org.apae.api.controllers.patient.mocks.patient.PatientCreator;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Tags;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -32,6 +33,10 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+@Tags({
+        @Tag("controller"),
+        @Tag("patient")
+})
 @WebMvcTest(PatientControllerImpl.class)
 public class PatientRegistrationTests {
 
@@ -61,7 +66,7 @@ public class PatientRegistrationTests {
 
     @Test
     @DisplayName("Cria um novo paciente no sistema com todos os seus dados. (Retorna 201)")
-    @WithMockUser(username = "admin", roles = {"admin"})
+    @WithMockUser(username = "admin", roles = {"ADMIN"})
     void deveCriarUmPacienteComSucesso() throws Exception {
         CreatePatientDTO patientDTO = PatientCreator.createRequest();
         CreateDocumentsDTO docsDTO = PatientCreator.createDocuments();
@@ -134,7 +139,7 @@ public class PatientRegistrationTests {
 
     @Test
     @DisplayName("Deve retornar 400 Bad Request quando enviar dados inválidos")
-    @WithMockUser(username = "admin", roles = {"admin"})
+    @WithMockUser(username = "admin", roles = {"ADMIN"})
     void deveRetornarErroComDadosInvalidos() throws Exception {
         CreatePatientDTO invalidDTO = PatientCreator.createInvalidRequest();
         CreateDocumentsDTO docsDTO = PatientCreator.createDocuments();

@@ -1,4 +1,4 @@
-package br.org.apae.api.patient;
+package br.org.apae.api.controllers.patient;
 
 import br.org.apae.api.auth.application.internal.UserService;
 import br.org.apae.api.auth.infrastructure.security.JwtProvider;
@@ -9,6 +9,8 @@ import br.org.apae.api.patient.application.interfaces.PatientApplicationService;
 import br.org.apae.api.patient.domain.exceptions.PatientNotFoundException;
 import br.org.apae.api.servicearea.application.interfaces.ServiceAreaApplicationService;
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Tags;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -24,6 +26,10 @@ import static org.springframework.security.test.web.servlet.request.SecurityMock
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+@Tags({
+        @Tag("controller"),
+        @Tag("patient")
+})
 @WebMvcTest(PatientControllerImpl.class)
 public class PatientRemovalTests {
     @Autowired
@@ -49,7 +55,7 @@ public class PatientRemovalTests {
 
     @Test
     @DisplayName("Deve realizar exclusão lógica (desativar) com sucesso (Retorna 204)")
-    @WithMockUser(username = "admin", roles = "admin")
+    @WithMockUser(username = "admin", roles = {"ADMIN"})
     void deveDesativarPaciente() throws Exception {
         UUID id = UUID.randomUUID();
 
@@ -63,7 +69,7 @@ public class PatientRemovalTests {
 
     @Test
     @DisplayName("Deve retornar 404 Not Found se tentar desativar ID inexistente")
-    @WithMockUser(username = "admin", roles = "admin")
+    @WithMockUser(username = "admin", roles = {"ADMIN"})
     void deveRetornar404QuandoIdNaoExiste() throws Exception {
         UUID id = UUID.randomUUID();
 

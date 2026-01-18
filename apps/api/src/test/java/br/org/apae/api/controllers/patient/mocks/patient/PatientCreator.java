@@ -1,4 +1,4 @@
-package br.org.apae.api.utils;
+package br.org.apae.api.controllers.patient.mocks.patient;
 
 import br.org.apae.api.common.dto.address.AddressResponseDTO;
 import br.org.apae.api.common.dto.address.CreateAddressDTO;
