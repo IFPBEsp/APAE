@@ -75,4 +75,34 @@ public interface PatientController {
         })
         @PatchMapping("/{id}")
         ResponseEntity<Void> deletePatient(@PathVariable UUID id);
+
+// TODO: Implementar a busca por Tipos de Atendimento (que é uma tabela separada)
+//        @Operation(summary = "Lista os tipos de atendimento para o filtro")
+//        @GetMapping("/filtros/tipos-atendimento")
+//        ResponseEntity<List<String>> getTiposAtendimento();
+
+        @Operation(summary = "Lista os transtornos para o filtro",
+                description = "Retorna uma lista de nomes de transtornos cadastrados para usar no filtro de pacientes.")
+        @ApiResponses(value = {
+                @ApiResponse(responseCode = "200", description = "Lista de transtornos retornada com sucesso")
+        })
+        @GetMapping("/filtros/transtornos")
+        ResponseEntity<List<String>> getTranstornos();
+
+        @Operation(summary = "Lista os anos para o filtro",
+                description = "Retorna uma lista de anos (como strings) dos registros anuais para usar no filtro de pacientes.")
+        @ApiResponses(value = {
+                @ApiResponse(responseCode = "200", description = "Lista de anos retornada com sucesso")
+        })
+        @GetMapping("/filtros/anos")
+        ResponseEntity<List<String>> getAnos();
+
+
+        @Operation(summary = "Lista as cidades para o filtro",
+                description = "Retorna uma lista de cidades distintas dos pacientes cadastrados para usar no filtro.")
+        @ApiResponses(value = {
+                @ApiResponse(responseCode = "200", description = "Lista de cidades retornada com sucesso")
+        })
+        @GetMapping("/filtros/cidades")
+        ResponseEntity<List<String>> getCidades();
 }

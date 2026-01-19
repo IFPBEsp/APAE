@@ -89,7 +89,7 @@ public class AppointmentApplicationServiceImpl implements AppointmentApplication
 
   @Override
   public void create(CreateAppointmentDTO dto) {
-     AnnualRegistry annualRegistry = this.registryRepo.findByPatientIdAndYear(dto.patientId(), Year.now())
+     AnnualRegistry annualRegistry = this.registryRepo.findByPatientIdAndYear(dto.patientId(), Year.now().getValue())
         .orElseThrow(AnnualRegistrationNotFound::new);
 
     HealthProfessional professional = this.professionalRepo.findById(dto.professionalId())
@@ -119,7 +119,7 @@ public class AppointmentApplicationServiceImpl implements AppointmentApplication
         adto,
         new GuardianResponseDTO(guardian, adto),
         pais.stream().map(parentMapper::toResponseDTO).collect(Collectors.toList()),
-        vaccines.stream().map(vaccineMapper::toResponseDTO).collect(Collectors.toSet()));
+        vaccines.stream().map(vaccineMapper::toResponseDTO).collect(Collectors.toSet()), null);
 
       return mapper.toResponse(appointment, pdto);
     });
@@ -141,7 +141,7 @@ public class AppointmentApplicationServiceImpl implements AppointmentApplication
                   adto,
                   new GuardianResponseDTO(guardian, adto),
                   pais.stream().map(parentMapper::toResponseDTO).collect(Collectors.toList()),
-                  vaccines.stream().map(vaccineMapper::toResponseDTO).collect(Collectors.toSet())
+                  vaccines.stream().map(vaccineMapper::toResponseDTO).collect(Collectors.toSet()), null
               );
 
               return mapper.toResponse(appointment, pdto);
@@ -164,7 +164,7 @@ public class AppointmentApplicationServiceImpl implements AppointmentApplication
                   adto,
                   new GuardianResponseDTO(guardian, adto),
                   pais.stream().map(parentMapper::toResponseDTO).collect(Collectors.toList()),
-                  vaccines.stream().map(vaccineMapper::toResponseDTO).collect(Collectors.toSet())
+                  vaccines.stream().map(vaccineMapper::toResponseDTO).collect(Collectors.toSet()), null
               );
 
               return mapper.toResponse(appointment, pdto);
@@ -198,7 +198,7 @@ public class AppointmentApplicationServiceImpl implements AppointmentApplication
       adto,
       new GuardianResponseDTO(guardian, adto),
       pais.stream().map(parentMapper::toResponseDTO).collect(Collectors.toList()),
-      vaccines.stream().map(vaccineMapper::toResponseDTO).collect(Collectors.toSet()));
+      vaccines.stream().map(vaccineMapper::toResponseDTO).collect(Collectors.toSet()), null);
       
     return mapper.toResponse(appointment, pdto);
   }
@@ -275,7 +275,7 @@ public class AppointmentApplicationServiceImpl implements AppointmentApplication
         adto,
         new GuardianResponseDTO(guardian, adto),
         pais.stream().map(parentMapper::toResponseDTO).collect(Collectors.toList()),
-        vaccines.stream().map(vaccineMapper::toResponseDTO).collect(Collectors.toSet()));
+        vaccines.stream().map(vaccineMapper::toResponseDTO).collect(Collectors.toSet()), null);
 
       return mapper.toTodayResponseDTO(appointment, pdto);
     });
@@ -364,7 +364,7 @@ public class AppointmentApplicationServiceImpl implements AppointmentApplication
       adto,
       new GuardianResponseDTO(guardian, adto),
       pais.stream().map(parentMapper::toResponseDTO).collect(Collectors.toList()),
-      vaccines.stream().map(vaccineMapper::toResponseDTO).collect(Collectors.toSet()));
+      vaccines.stream().map(vaccineMapper::toResponseDTO).collect(Collectors.toSet()), null);
 
     return mapper.toResponse(newRule, pdto);
   }
