@@ -34,10 +34,11 @@ public record PatientResponseDTO(
                 AddressResponseDTO address,
                 GuardianResponseDTO guardian,
                 List<ParentResponseDTO> parents,
-                Set<VaccineResponseDTO> vaccineNames) {
+                Set<VaccineResponseDTO> vaccineNames,
+                String photoUrl) {
         public PatientResponseDTO(Patient patient, AddressResponseDTO addressResponseDTO,
                         GuardianResponseDTO guardianResponseDTO, List<ParentResponseDTO> parentResponseDTOs,
-                        Set<VaccineResponseDTO> vaccineResponseDTOs) {
+                        Set<VaccineResponseDTO> vaccineResponseDTOs, String photoUrl) {
                 this(
                                 patient.getId(),
                                 patient.getFullName(),
@@ -61,6 +62,7 @@ public record PatientResponseDTO(
                                 addressResponseDTO,
                                 guardianResponseDTO,
                                 parentResponseDTOs,
-                                vaccineResponseDTOs);
+                                vaccineResponseDTOs,
+                                photoUrl);
         }
 }

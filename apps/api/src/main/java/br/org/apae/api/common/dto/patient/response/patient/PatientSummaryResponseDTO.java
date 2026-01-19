@@ -26,8 +26,9 @@ public record PatientSummaryResponseDTO(
     String allergies,
     boolean isStudent,
     boolean isDeleted,
-    AddressResponseDTO address) {
-  public PatientSummaryResponseDTO(Patient patient, AddressResponseDTO addressResponseDTO) {
+    AddressResponseDTO address,
+    String photoUrl) {
+  public PatientSummaryResponseDTO(Patient patient, AddressResponseDTO addressResponseDTO, String photoUrl) {
     this(
         patient.getId(),
         patient.getFullName(),
@@ -48,6 +49,7 @@ public record PatientSummaryResponseDTO(
         patient.getAllergies(),
         patient.isStudent(),
         patient.isDeleted(),
-        addressResponseDTO);
+        addressResponseDTO,
+        photoUrl);
   }
 }

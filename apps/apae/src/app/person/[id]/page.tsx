@@ -69,7 +69,10 @@ export default function PersonDetailsPage() {
         if (!response.ok) throw new Error("Falha ao buscar dados do paciente.");
 
         const data = await response.json();
-        setPessoa(data);
+
+        setPessoa({
+          ...data,
+        });
       } catch (err: any) {
         console.error(err);
         toast.error(err.message);
@@ -144,7 +147,7 @@ export default function PersonDetailsPage() {
       <div className="flex flex-col items-center gap-y-4 w-full mb-6">
         <Avatar className="h-40 w-40 border">
           <AvatarImage
-            src={pessoa?.urlFoto ?? "https://via.placeholder.com/150"}
+            src={pessoa?.photoUrl}
             alt={pessoa?.fullName ?? "Foto do paciente"}
           />
           <AvatarFallback className="font-baloo font-bold text-[32px]">
