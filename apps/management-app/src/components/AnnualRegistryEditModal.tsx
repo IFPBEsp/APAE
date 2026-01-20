@@ -11,9 +11,8 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { AnnualRegistryFormSchema } from "@/schemas/anualRegistrySchema"; 
 import { toast } from "react-toastify"; 
 import { Loader2, Upload, FileText, ExternalLink, RefreshCw } from "lucide-react"; 
-import { DisorderMultiSelect } from "@/components/DisorderMultiSelect"; 
 import { StringMultiSelect } from "@/components/StringMultiSelect";
-import { VaccineMultiSelect } from "@/components/VaccineMultiSelect";
+import { GenericDatabaseSelect } from "@/components/GenericDatabaseSelect";
 
 interface DocumentDTO {
     id: string;
@@ -153,19 +152,6 @@ export default function AnnualRegistryEditModal({ isOpen, onClose, patientId, cu
         const registryId = initialData?.id; 
         
         try {
-            if (data.disorders && data.disorders.length > 0) {
-                await Promise.all(data.disorders.map(async (d: any) => {
-                    const disorderName = d.name || d.label || d.value;
-                    if (!disorderName) return;
-                    try {
-                        await fetch("/api/transtornos", {
-                            method: "POST",
-                            headers: { "Content-Type": "application/json" },
-                            body: JSON.stringify({ name: disorderName })
-                        });
-                    } catch (e) { console.warn(`Erro ao criar transtorno:`, e); }
-                }));
-            }
 
             // 1. ATUALIZA REGISTRO ANUAL
             if (registryId) {
@@ -173,14 +159,15 @@ export default function AnnualRegistryEditModal({ isOpen, onClose, patientId, cu
                 const bpcToSend = (data.bpc === "Sim" || data.bpc === "true" || data.bpc === true) ? "true" : "false";
 
                 const formattedDisorders = data.disorders?.map((d: any) => ({ 
-                    name: d.name || d.label || d.value 
+                    name: d.name || d.label || d.value,
+                    id: d.id
                 })) || [];
 
                 const regPayload = {
                     bpc: bpcToSend, 
                     familyIncome: income,
-                    diseases: data.diseases,
-                    continuousMedication: data.continuousMedication,
+                    diseases: data.diseases, 
+                    continuousMedication: data.continuousMedication, 
                     disorders: formattedDisorders
                 };
 
@@ -195,7 +182,9 @@ export default function AnnualRegistryEditModal({ isOpen, onClose, patientId, cu
 
             // 2. ATUALIZA DADOS DO PACIENTE
             if (fullPatientData) {
-                const vaccineList = Array.isArray(data.vaccines) ? data.vaccines : [];
+                const vaccineList = Array.isArray(data.vaccines) 
+                    ? data.vaccines.map((v: any) => ({ name: v.name || v.label || v.value, id: v.id }))
+                    : [];
 
                 const baseData = cleanPatientData(fullPatientData);
                 const safeNationality = baseData.nationality || baseData.birthplace || "Brasileira";
@@ -267,12 +256,37 @@ export default function AnnualRegistryEditModal({ isOpen, onClose, patientId, cu
                                             <FormItem><FormLabel className="text-slate-700 font-bold text-xs">Medicamentos</FormLabel>
                                             <FormControl><StringMultiSelect value={field.value} onChange={field.onChange} placeholder="Digite medicamentos..." /></FormControl><FormMessage /></FormItem>)} />
                                         <FormField control={form.control} name="vaccines" render={({ field }) => (
-                                            <FormItem><FormLabel className="text-slate-700 font-bold text-xs">Vacinas</FormLabel>
-                                            <FormControl><VaccineMultiSelect value={field.value} onChange={field.onChange} /></FormControl><FormMessage /></FormItem>)} />
+                                            <FormItem>
+                                                <FormLabel className="text-slate-700 font-bold text-xs">Vacinas</FormLabel>
+                                                <FormControl>
+                                                    <GenericDatabaseSelect 
+                                                        value={field.value} 
+                                                        onChange={field.onChange}
+                                                        endpoint="/api/vacinas"
+                                                        labelSingular="Vacina"
+                                                        placeholder="Selecione ou crie vacinas..."
+                                                    />
+                                                </FormControl>
+                                                <FormMessage />
+                                            </FormItem>)} 
+                                        />
                                     </div>
                                     <div className="pt-1">
                                         <FormField control={form.control} name="disorders" render={({ field }) => (
-                                            <FormItem><FormLabel className="text-slate-700 font-bold text-xs mb-1.5 block">Transtornos</FormLabel><FormControl><DisorderMultiSelect value={field.value as any[]} onChange={field.onChange} /></FormControl><FormMessage /></FormItem>)} />
+                                            <FormItem>
+                                                <FormLabel className="text-slate-700 font-bold text-xs mb-1.5 block">Transtornos</FormLabel>
+                                                <FormControl>
+                                                    <GenericDatabaseSelect 
+                                                        value={field.value as any[]} 
+                                                        onChange={field.onChange}
+                                                        endpoint="/api/transtornos"
+                                                        labelSingular="Transtorno"
+                                                        placeholder="Selecione ou crie transtornos..."
+                                                    />
+                                                </FormControl>
+                                                <FormMessage />
+                                            </FormItem>)} 
+                                        />
                                     </div>
                                 </form>
                             </Form>
