@@ -1,5 +1,6 @@
 package br.org.apae.api.patient.application.internal;
 
+import java.time.Year;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -44,7 +45,7 @@ public class AnnualRegistryApplicationServiceImpl implements AnnualRegistryAppli
         patientDomainService.getByIdOrThrow(patientId);
 
         annualRegistryRepository
-                .findByPatientIdAndYear(patientId, createAnnualRegistryDTO.year().getValue())
+                .findByPatientIdAndYear(patientId, createAnnualRegistryDTO.year())
                 .ifPresent(registry -> {
                     throw new AnnualRegistryConflictException(createAnnualRegistryDTO.year());
                 });
@@ -64,7 +65,7 @@ public class AnnualRegistryApplicationServiceImpl implements AnnualRegistryAppli
 
     @Override
     @Transactional(readOnly = true)
-    public AnnualRegistryResponseDTO findRegistryByPatientAndYear(UUID patientId, Integer year) {
+    public AnnualRegistryResponseDTO findRegistryByPatientAndYear(UUID patientId, Year year) {
         patientDomainService.getByIdOrThrow(patientId);
 
         AnnualRegistry registry = annualRegistryRepository
@@ -87,7 +88,7 @@ public class AnnualRegistryApplicationServiceImpl implements AnnualRegistryAppli
         }
 
         Optional<AnnualRegistry> conflictCheck = annualRegistryRepository
-                .findByPatientIdAndYear(patientId, updateDto.year().getValue());
+                .findByPatientIdAndYear(patientId, updateDto.year());
 
         if (conflictCheck.isPresent() && !conflictCheck.get().getId().equals(registryId)) {
             throw new AnnualRegistryConflictException(updateDto.year());

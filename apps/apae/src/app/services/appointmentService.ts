@@ -828,8 +828,8 @@ export async function getPacientes(): Promise<Patient[]> {
   try {
     const response = await fetch(`/api/pessoas?page=0&size=100`);
     const data = await response.json();
-    console.log(data)
-    return data.content || [];
+    console.log(data);
+    return data || [];
   } catch (error) {
     console.error("Error in getPacientes, falling back to mock:", error);
     return mockFetch(mockPatients);
@@ -943,7 +943,10 @@ export const isUsingMockData = (): boolean => {
 };
 
 export async function listTodayAppointment(): Promise<Page<TodayAppointment>> {
-  return fetch(`/api/appointments/today`)
+  const currentDate = new Date();
+  const date = currentDate.toISOString().split('T')[0];
+
+  return fetch(`/api/appointments?date=${date}`)
     .then(res => {
       if (!res.ok) {
         throw new Error(`Erro na requisição: ${res.status}`);
