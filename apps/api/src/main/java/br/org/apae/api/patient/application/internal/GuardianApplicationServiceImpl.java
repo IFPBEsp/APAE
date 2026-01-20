@@ -5,8 +5,6 @@ import java.util.UUID;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import br.org.apae.api.address.application.interfaces.AddressService;
-import br.org.apae.api.common.dto.address.AddressResponseDTO;
 import br.org.apae.api.common.dto.patient.request.guardian.CreateGuardianDTO;
 import br.org.apae.api.common.dto.patient.request.guardian.UpdateGuardianDTO;
 import br.org.apae.api.common.dto.patient.response.guardian.GuardianResponseDTO;
@@ -21,14 +19,12 @@ public class GuardianApplicationServiceImpl implements GuardianApplicationServic
   private final GuardianRepository guardianRepository;
   private final GuardianMapper guardianMapper;
 
-  private final AddressService addressService;
   private final PatientDomainService patientDomainService;
 
   public GuardianApplicationServiceImpl(GuardianRepository guardianRepository, GuardianMapper guardianMapper,
-      AddressService addressService, PatientDomainService patientDomainService) {
+      PatientDomainService patientDomainService) {
     this.guardianRepository = guardianRepository;
     this.guardianMapper = guardianMapper;
-    this.addressService = addressService;
     this.patientDomainService = patientDomainService;
   }
 
@@ -37,9 +33,7 @@ public class GuardianApplicationServiceImpl implements GuardianApplicationServic
   public GuardianResponseDTO createGuardian(CreateGuardianDTO createGuardianDTO, UUID patientId) {
     patientDomainService.getByIdOrThrow(patientId);
 
-    AddressResponseDTO addressDto = addressService.createAddress(createGuardianDTO.address());
-
-    Guardian guardian = guardianMapper.toEntity(createGuardianDTO, addressDto, patientId);
+    Guardian guardian = guardianMapper.toEntity(createGuardianDTO, patientId);
     Guardian guardianSaved = guardianRepository.save(guardian);
 
     return guardianMapper.toResponseDTO(guardianSaved);
@@ -58,10 +52,7 @@ public class GuardianApplicationServiceImpl implements GuardianApplicationServic
   public GuardianResponseDTO updateGuardian(UpdateGuardianDTO updateGuardianDTO, UUID patientId) {
     Guardian guardian = guardianRepository.findByPatientId(patientId).orElseThrow(GuardianNotFoundException::new);
 
-    AddressResponseDTO addressDto = addressService.updateAddress(guardian.getAddress().getId(),
-        updateGuardianDTO.address());
-
-    Guardian updatedGuardian = guardianMapper.updateEntityFromDto(guardian, updateGuardianDTO, addressDto, patientId);
+    Guardian updatedGuardian = guardianMapper.updateEntityFromDto(guardian, updateGuardianDTO, patientId);
 
     guardianRepository.save(updatedGuardian);
 

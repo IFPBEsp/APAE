@@ -327,6 +327,10 @@ export default function PersonDetailsPage() {
               <div className="mt-2 animate-in fade-in slide-in-from-bottom-2">
                 <InfoRow label="Recebe BPC?" value={registroAnual.bpc} />
                 <InfoRow label="Renda Familiar" value={registroAnual.familyIncome} />
+                <InfoRow 
+                  label="Tipo de Atendimento" 
+                  value={registroAnual.serviceAreas?.map((atendimento: any) => atendimento.area).join(", ")} 
+                />
                 <InfoRow label="Doenças" value={registroAnual.diseases} />
                 <InfoRow label="Medicamentos Contínuos" value={registroAnual.continuousMedication} />
                 <InfoRow 

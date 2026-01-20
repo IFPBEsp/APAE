@@ -31,6 +31,4 @@ public interface PatientApplicationService {
 
     List<String> findAllPatientCities();
 
-    // TODO: Implementar a busca por Tipos de Atendimento (que é uma tabela separada)
-    // List<String> findAllTiposAtendimento();
 }

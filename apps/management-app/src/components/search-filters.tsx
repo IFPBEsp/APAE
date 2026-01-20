@@ -23,10 +23,13 @@ interface SearchFiltersProps {
   readonly setAno?: (status: string) => void;
   readonly cidade?: string;
   readonly setCidade?: (status: string) => void;
+  readonly tipoAtendimento?: string;
+  readonly setTipoAtendimento?: (status: string) => void;
 
   readonly transtornoOptions?: string[];
   readonly anoOptions?: string[];
   readonly cidadeOptions?: string[];
+  readonly tipoAtendimentoOptions?: string[];
 }
 
 export function SearchFilters({
@@ -38,9 +41,12 @@ export function SearchFilters({
   setAno,
   cidade,
   setCidade,
+  tipoAtendimento,
+  setTipoAtendimento,
   transtornoOptions = [], 
   anoOptions = [],
   cidadeOptions = [],
+  tipoAtendimentoOptions = []
 }: SearchFiltersProps) {
   
   const dropdownTriggerStyle = cn(
@@ -54,6 +60,7 @@ export function SearchFilters({
   const showTranstornoFilter = setTranstorno !== undefined;
   const showAnoFilter = setAno !== undefined;
   const showCidadeFilter = setCidade !== undefined;
+  const showTipoAtendimentoFilter = setTipoAtendimento !== undefined;
 
   return (
     <div className="flex items-center gap-2">
@@ -67,8 +74,37 @@ export function SearchFilters({
         />
       </div>
 
-      {(showTranstornoFilter || showAnoFilter || showCidadeFilter) && (
+      {(showTranstornoFilter || showAnoFilter || showCidadeFilter || showTipoAtendimentoFilter) && (
         <div className="flex flex-shrink-0 items-center gap-2">
+
+          {showTipoAtendimentoFilter && (
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button
+                  className={cn(dropdownTriggerStyle, "w-[150px]")}
+                >
+                  <span className="flex-1 w-0 truncate text-left">
+                    {tipoAtendimento || "Tipo de Atendimento"}
+                  </span>
+                  <ChevronDown className="h-4 w-4" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="w-[--radix-dropdown-menu-trigger-width]">
+                <DropdownMenuItem onClick={() => setTipoAtendimento?.("")}>
+                  Qualquer
+                </DropdownMenuItem>
+                {tipoAtendimentoOptions.map((option) => (
+                  <DropdownMenuItem
+                    key={option}
+                    onClick={() => setTipoAtendimento?.(option)}
+                    className={cn({ "bg-slate-100": tipoAtendimento === option })}
+                  >
+                    {option}
+                  </DropdownMenuItem>
+                ))}
+              </DropdownMenuContent>
+            </DropdownMenu>
+          )}
           
           {showTranstornoFilter && (
             <DropdownMenu>

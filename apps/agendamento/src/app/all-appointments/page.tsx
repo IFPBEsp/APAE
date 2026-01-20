@@ -110,14 +110,25 @@ export default function AllApointments() {
   const dataPassou = (data: string, horario: string) => {
     const [ano, mes, dia] = data.split("-");
     const [hora, minuto, segundo] = horario.split(":");
-    const emDate = new Date(parseInt(ano), parseInt(mes), parseInt(dia), parseInt(hora), parseInt(minuto), parseInt(segundo));
+    const emDate = new Date(
+      parseInt(ano),
+      parseInt(mes),
+      parseInt(dia),
+      parseInt(hora),
+      parseInt(minuto),
+      parseInt(segundo)
+    );
     const agora = new Date();
 
     return agora > emDate;
-  }
+  };
 
   const semJustificativa = appointments.filter(
-    (appointment) => dataPassou(appointment.proximaConsulta, appointment.horaProximaConsulta) && !appointment.justificativa
+    (appointment) =>
+      dataPassou(
+        appointment.proximaConsulta,
+        appointment.horaProximaConsulta
+      ) && !appointment.justificativa
   );
 
   const clearFilter = () => {

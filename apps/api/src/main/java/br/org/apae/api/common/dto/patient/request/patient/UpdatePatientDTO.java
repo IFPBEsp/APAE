@@ -4,7 +4,7 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Set;
 
-import br.org.apae.api.common.dto.address.UpdateAddressDTO;
+import br.org.apae.api.common.dto.address.CreateAddressDTO;
 import br.org.apae.api.common.dto.patient.request.guardian.UpdateGuardianDTO;
 import br.org.apae.api.common.dto.patient.request.parent.UpdateParentDTO;
 import br.org.apae.api.common.dto.patient.request.vaccine.CreateVaccineDTO;
@@ -50,7 +50,7 @@ public record UpdatePatientDTO(
 
         @NotNull(message = "O campo 'é estudante' não pode ser nulo") boolean isStudent,
 
-        @NotNull(message = "Os dados de endereço são obrigatórios") @Valid UpdateAddressDTO address,
+        @NotNull(message = "Os dados de endereço são obrigatórios") @Valid CreateAddressDTO address,
 
         @NotNull(message = "Os dados do responsável são obrigatórios") @Valid UpdateGuardianDTO guardian,
 
