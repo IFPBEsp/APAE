@@ -19,6 +19,9 @@ public class AnnualRegistry {
     @Column(name = "doencas", nullable = false)
     private String diseases;
 
+    @Column(name = "medicamentos_continuos")
+    private String continuousMedication;
+
     @Column(name = "renda_familiar", nullable = false)
     private BigDecimal familyIncome;
 
@@ -39,10 +42,11 @@ public class AnnualRegistry {
     protected AnnualRegistry() {
     }
 
-    public AnnualRegistry(String bpc, String diseases, BigDecimal familyIncome, int year, UUID patientId,
+    public AnnualRegistry(String bpc, String diseases, String continuousMedication, BigDecimal familyIncome, int year, UUID patientId,
                           Set<Disorder> disorders, Set<ServiceArea> serviceAreas) {
         this.bpc = bpc;
         this.diseases = diseases;
+        this.continuousMedication = continuousMedication;
         this.familyIncome = familyIncome;
         this.year = year;
         this.patientId = patientId;
@@ -50,11 +54,12 @@ public class AnnualRegistry {
         this.serviceAreas = serviceAreas;
     }
 
-    public AnnualRegistry(UUID id, String bpc, String diseases, BigDecimal familyIncome, int year, UUID patientId,
+    public AnnualRegistry(UUID id, String bpc, String diseases, String continuousMedication, BigDecimal familyIncome, int year, UUID patientId,
                           Set<Disorder> disorders, Set<ServiceArea> serviceAreas) {
         this.id = id;
         this.bpc = bpc;
         this.diseases = diseases;
+        this.continuousMedication = continuousMedication;
         this.familyIncome = familyIncome;
         this.year = year;
         this.patientId = patientId;
@@ -62,68 +67,35 @@ public class AnnualRegistry {
         this.serviceAreas = serviceAreas;
     }
 
-    public UUID getId() {
-        return id;
-    }
-
-    public String getBpc() {
-        return bpc;
-    }
-
-    public String getDiseases() {
-        return diseases;
-    }
-
-    public BigDecimal getFamilyIncome() {
-        return familyIncome;
-    }
-
-    public Integer getYear() {
-        return year;
-    }
-
-    public UUID getPatientId() {
-        return patientId;
-    }
+    public UUID getId() { return id; }
+    public String getBpc() { return bpc; }
+    public String getDiseases() { return diseases; }
+    public String getContinuousMedication() { return continuousMedication; }
+    public BigDecimal getFamilyIncome() { return familyIncome; }
+    public Integer getYear() { return year; }
+    public UUID getPatientId() { return patientId; }
 
     public Set<ServiceArea> getServiceAreas() {
         return serviceAreas;
     }
-
-    public Set<Disorder> getDisorders() {
-        return Collections.unmodifiableSet(disorders);
-    }
+    public Set<Disorder> getDisorders() { return Collections.unmodifiableSet(disorders); }
 
     @Override
     public boolean equals(Object o) {
-        if (this == o)
-            return true;
-        if (o == null || getClass() != o.getClass())
-            return false;
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
         AnnualRegistry that = (AnnualRegistry) o;
         return Objects.equals(id, that.id);
     }
 
     @Override
-    public int hashCode() {
-        return Objects.hash(id);
-    }
-
-    public void setBpc(String bpc) {
-        this.bpc = bpc;
-    }
-    public void setDiseases(String diseases) {
-        this.diseases = diseases;
-    }
-    public void setFamilyIncome(BigDecimal familyIncome) {
-        this.familyIncome = familyIncome;
-    }
-    public void setYear(Integer year) {
-        this.year = year;
-    }
-    public void setDisorders(Set<Disorder> disorders) {
-        this.disorders = disorders;
-    }
+    public int hashCode() { return Objects.hash(id); }
+    public void setBpc(String bpc) { this.bpc = bpc; }
+    public void setDiseases(String diseases) { this.diseases = diseases; }
+    public void setContinuousMedication(String continuousMedication) { this.continuousMedication = continuousMedication; }
+    public void setFamilyIncome(BigDecimal familyIncome) { this.familyIncome = familyIncome; }
+    public void setYear(Integer year) { this.year = year; }
+    public void setDisorders(Set<Disorder> disorders) { this.disorders = disorders; }
     public void setServiceAreas(Set<ServiceArea> serviceAreas) {
         this.serviceAreas = serviceAreas;
     }

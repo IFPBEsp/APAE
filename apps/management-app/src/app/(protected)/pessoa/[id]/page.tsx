@@ -8,7 +8,9 @@ import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
-import { Loader2, ArrowLeft } from "lucide-react";
+import { Loader2, ArrowLeft, SquarePen } from "lucide-react";
+import AnnualRegistryEditModal from "@/components/AnnualRegistryEditModal";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 
 interface InfoRowProps {
   label: string;
@@ -45,6 +47,8 @@ export default function PersonDetailsPage() {
   const params = useParams();
   const router = useRouter();
   const id = params?.id as string;
+
+  const [isEditingAnnualRegistry, setIsEditingAnnualRegistry] = useState(false);
 
   const [pessoa, setPessoa] = useState<any>(null);
   const [registroAnual, setRegistroAnual] = useState<any>(null);
@@ -129,6 +133,8 @@ export default function PersonDetailsPage() {
       </div>
     );
   }
+
+  const hasRegistro = !!registroAnual;
 
   return (
     <main className="container mx-auto p-4 md:p-6">
@@ -255,6 +261,30 @@ export default function PersonDetailsPage() {
           <CardHeader className="flex flex-row items-center justify-between">
             <CardTitle className="text-[#0D4F97]">Informações de Saúde</CardTitle>
             <div className="flex items-center gap-2">
+              <TooltipProvider>
+                <Tooltip>
+                    <TooltipTrigger asChild>
+                         <span tabIndex={0}> 
+                            <Button 
+                                size="sm" 
+                                onClick={() => setIsEditingAnnualRegistry(true)} 
+                                disabled={!hasRegistro || loadingRegistro}
+                                className="gap-1 hover:!bg-gray-100 text-[#0D4F97] border-0 disabled:opacity-50 disabled:cursor-not-allowed"
+                                variant="outline"
+                            >
+                                <SquarePen className="h-4 w-4" /> 
+                                {loadingRegistro ? "..." : "Editar"}
+                            </Button>
+                        </span>
+                    </TooltipTrigger>
+                    {!hasRegistro && !loadingRegistro && (
+                        <TooltipContent>
+                            <p>Não existe registro para este ano.</p>
+                        </TooltipContent>
+                    )}
+                </Tooltip>
+              </TooltipProvider>
+
               <label htmlFor="year-select" className="text-sm font-semibold text-gray-600">
                 Ano:
               </label>
@@ -312,6 +342,15 @@ export default function PersonDetailsPage() {
             )}
           </CardContent>
         </Card>
+        
+        {/* Modal de Edição */}
+        <AnnualRegistryEditModal 
+          isOpen={isEditingAnnualRegistry} 
+          onClose={() => setIsEditingAnnualRegistry(false)} 
+          patientId={id} 
+          currentYear={selectedYear}
+          initialData={registroAnual}
+        />
       </div>
     </main>
   );
