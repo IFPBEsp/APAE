@@ -1,11 +1,14 @@
 package br.org.apae.api.appointment.interfaces.controllers.impl;
 
 import br.org.apae.api.appointment.application.interfaces.AbsenceApplicationService;
+import br.org.apae.api.auth.application.internal.UserService;
+import br.org.apae.api.auth.infrastructure.security.JwtProvider;
 import br.org.apae.api.common.dto.appointment.request.absence.CreateAbsenceDTO;
 import br.org.apae.api.common.dto.appointment.response.absence.AbsenceResponseDTO;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.data.domain.Page;
@@ -25,90 +28,93 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @WebMvcTest(controllers = AbsenceControllerImpl.class)
+@AutoConfigureMockMvc(addFilters = false)
 class AbsenceControllerImplTest {
 
-    @Autowired
-    private MockMvc mockMvc;
+        @Autowired
+        private MockMvc mockMvc;
 
-    @MockBean
-    private AbsenceApplicationService service;
+        @MockBean
+        private AbsenceApplicationService service;
 
-    @Autowired
-    private ObjectMapper objectMapper;
+        @MockBean
+        private JwtProvider jwtProvider;
 
-    // Registrar falta com sucesso
-    @Test
-    void registerAbsenceSuccessfully() throws Exception {
-        UUID id = UUID.randomUUID();
-        UUID generatedId = UUID.randomUUID();
-        UUID patientId = UUID.randomUUID();
-        UUID professionalId = UUID.randomUUID();
-        LocalDate date = LocalDate.now();
+        @MockBean
+        private UserService userService;
 
-        CreateAbsenceDTO request = new CreateAbsenceDTO(
-                generatedId,
-                date,
-                "Paciente Faltou"
-        );
+        @Autowired
+        private ObjectMapper objectMapper;
 
-        AbsenceResponseDTO response = new AbsenceResponseDTO(
-                id,
-                generatedId,
-                patientId,
-                professionalId,
-                date,
-                "Paciente Faltou",
-                false
-        );
+        // Registrar falta com sucesso
+        @Test
+        void registerAbsenceSuccessfully() throws Exception {
+                UUID id = UUID.randomUUID();
+                UUID generatedId = UUID.randomUUID();
+                UUID patientId = UUID.randomUUID();
+                UUID professionalId = UUID.randomUUID();
+                LocalDate date = LocalDate.now();
 
-        when(service.register(any(CreateAbsenceDTO.class)))
-                .thenReturn(response);
+                CreateAbsenceDTO request = new CreateAbsenceDTO(
+                                generatedId,
+                                date,
+                                "Paciente Faltou");
 
-        mockMvc.perform(post("/absences")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(request)))
-                .andExpect(status().isCreated())
-                .andExpect(header().exists("Location"))
-                .andExpect(jsonPath("$.id").value(id.toString()))
-                .andExpect(jsonPath("$.reason").value("Paciente Faltou"))
-                .andExpect(jsonPath("$.justified").value(false));
-    }
+                AbsenceResponseDTO response = new AbsenceResponseDTO(
+                                id,
+                                generatedId,
+                                patientId,
+                                professionalId,
+                                date,
+                                "Paciente Faltou",
+                                false);
 
-    // Buscar faltas com filtros e paginação
-    @Test
-    void searchForAbsencesUsingFiltersAndPagination() throws Exception {
-        UUID generatedId = UUID.randomUUID();
-        UUID patientId = UUID.randomUUID();
-        UUID professionalId = UUID.randomUUID();
-        LocalDate date = LocalDate.now();
+                when(service.register(any(CreateAbsenceDTO.class)))
+                                .thenReturn(response);
 
-        AbsenceResponseDTO response = new AbsenceResponseDTO(
-                UUID.randomUUID(),
-                generatedId,
-                patientId,
-                professionalId,
-                date,
-                "Falta justificada",
-                true
-        );
+                mockMvc.perform(post("/absences")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(objectMapper.writeValueAsString(request)))
+                                .andExpect(status().isCreated())
+                                .andExpect(header().exists("Location"))
+                                .andExpect(jsonPath("$.id").value(id.toString()))
+                                .andExpect(jsonPath("$.justification").value("Paciente Faltou"))
+                                .andExpect(jsonPath("$.notified").value(false));
+        }
 
-        Page<AbsenceResponseDTO> page = new PageImpl<>(
-                List.of(response),
-                PageRequest.of(0, 10),
-                1
-        );
+        // Buscar faltas com filtros e paginação
+        @Test
+        void searchForAbsencesUsingFiltersAndPagination() throws Exception {
+                UUID generatedId = UUID.randomUUID();
+                UUID patientId = UUID.randomUUID();
+                UUID professionalId = UUID.randomUUID();
+                LocalDate date = LocalDate.now();
 
-        when(service.findAllByFilters(any(), any(), any(), any()))
-                .thenReturn(page);
+                AbsenceResponseDTO response = new AbsenceResponseDTO(
+                                UUID.randomUUID(),
+                                generatedId,
+                                patientId,
+                                professionalId,
+                                date,
+                                "Falta justificada",
+                                true);
 
-        mockMvc.perform(get("/absences")
-                        .param("generatedId", generatedId.toString())
-                        .param("patientId", patientId.toString())
-                        .param("professionalId", professionalId.toString())
-                        .param("page", "0")
-                        .param("size", "1"))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.content[0].reason").value("Falta justificada"))
-                .andExpect(jsonPath("$.content[0].justified").value(true));
-    }
+                Page<AbsenceResponseDTO> page = new PageImpl<>(
+                                List.of(response),
+                                PageRequest.of(0, 10),
+                                1);
+
+                when(service.findAllByFilters(any(), any(), any(), any()))
+                                .thenReturn(page);
+
+                mockMvc.perform(get("/absences")
+                                .param("generatedId", generatedId.toString())
+                                .param("patientId", patientId.toString())
+                                .param("professionalId", professionalId.toString())
+                                .param("page", "0")
+                                .param("size", "1"))
+                                .andExpect(status().isOk())
+                                .andExpect(jsonPath("$.content[0].justification").value("Falta justificada"))
+                                .andExpect(jsonPath("$.content[0].notified").value(true));
+        }
 }
