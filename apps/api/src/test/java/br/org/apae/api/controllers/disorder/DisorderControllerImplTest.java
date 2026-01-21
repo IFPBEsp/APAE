@@ -1,14 +1,19 @@
-package br.org.apae.api.controller.disorder;
+package br.org.apae.api.controllers.disorder;
 
+import br.org.apae.api.auth.application.internal.UserService;
+import br.org.apae.api.auth.infrastructure.security.JwtProvider;
+import br.org.apae.api.auth.infrastructure.security.SecurityConfiguration;
 import br.org.apae.api.auth.infrastructure.security.SecurityFilter;
 import br.org.apae.api.common.dto.patient.request.disorder.CreateDisorderDTO;
 import br.org.apae.api.common.dto.patient.request.disorder.UpdateDisorderDTO;
 import br.org.apae.api.common.dto.patient.response.disorder.DisorderResponseDTO;
 import br.org.apae.api.controllers.disorder.DisorderControllerImpl;
+import br.org.apae.api.helpers.AuthTestHelper;
 import br.org.apae.api.patient.application.interfaces.DisorderApplicationService;
 import br.org.apae.api.patient.domain.exceptions.DisorderConflictException;
 import br.org.apae.api.patient.domain.exceptions.DisorderNotFoundException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,7 +22,9 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.FilterType;
+import org.springframework.context.annotation.Import;
 import org.springframework.data.web.config.EnableSpringDataWebSupport;
+import org.springframework.data.web.config.SpringDataWebConfiguration;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
@@ -38,16 +45,16 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+
+@WebMvcTest(controllers = DisorderControllerImpl.class)
+@AutoConfigureMockMvc(addFilters = true)
+@Import({
+        SpringDataWebConfiguration.class,
+        SecurityConfiguration.class
+})
+@Tag("patient")
 @Tag("unit")
 @Tag("controller")
-@Tag("patient")
-@WebMvcTest(
-        controllers = DisorderControllerImpl.class,
-        excludeFilters = @ComponentScan.Filter(
-                type = FilterType.ASSIGNABLE_TYPE,
-                classes = SecurityFilter.class
-        ))
-@AutoConfigureMockMvc(addFilters = false)
 class DisorderControllerImplTest {
 
     @TestConfiguration
@@ -65,7 +72,18 @@ class DisorderControllerImplTest {
     @MockitoBean
     private DisorderApplicationService disorderService;
 
+    @MockitoBean
+    private JwtProvider jwtProvider;
+
+    @MockitoBean
+    private UserService userService;
+
     private static final String BASE_URL = "/disorders";
+
+    @BeforeEach
+    void setupAuth() {
+        AuthTestHelper.mockAuthenticatedUser(jwtProvider, userService);
+    }
 
     @Test
     void shouldCreateDisordSucess() throws Exception {
@@ -77,6 +95,7 @@ class DisorderControllerImplTest {
         when(disorderService.createDisorder(requestDto)).thenReturn(responseDto);
 
         mockMvc.perform(post(BASE_URL)
+                        .header("Authorization", AuthTestHelper.bearerToken())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(requestDto))
                         .accept(MediaType.APPLICATION_JSON))
@@ -95,6 +114,7 @@ class DisorderControllerImplTest {
         when(disorderService.findAllDisorders()).thenReturn(lista);
 
         mockMvc.perform(get(BASE_URL)
+                        .header("Authorization", AuthTestHelper.bearerToken())
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
@@ -111,6 +131,7 @@ class DisorderControllerImplTest {
         when(disorderService.findDisorderById(id)).thenReturn(responseDto);
 
         mockMvc.perform(get(BASE_URL + "/{id}", id)
+                        .header("Authorization", AuthTestHelper.bearerToken())
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
@@ -127,6 +148,7 @@ class DisorderControllerImplTest {
         when(disorderService.updateDisorder(id, updateDto)).thenReturn(responseDto);
 
         mockMvc.perform(put(BASE_URL + "/{id}", id)
+                        .header("Authorization", AuthTestHelper.bearerToken())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(updateDto))
                         .accept(MediaType.APPLICATION_JSON))
@@ -139,7 +161,7 @@ class DisorderControllerImplTest {
     void shouldRemoveDisorderSucess() throws Exception {
         UUID id = UUID.randomUUID();
 
-        mockMvc.perform(delete(BASE_URL + "/{id}", id))
+        mockMvc.perform(delete(BASE_URL + "/{id}", id).header("Authorization", AuthTestHelper.bearerToken()))
                 .andExpect(status().isNoContent());
 
         verify(disorderService).deleteDisorder(id);
@@ -153,6 +175,7 @@ class DisorderControllerImplTest {
                 .thenThrow(new DisorderConflictException(requestDto.name()));
 
         mockMvc.perform(post(BASE_URL)
+                        .header("Authorization", AuthTestHelper.bearerToken())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(requestDto))
                         .accept(MediaType.APPLICATION_JSON))
@@ -167,6 +190,7 @@ class DisorderControllerImplTest {
                 .thenThrow(new DisorderNotFoundException());
 
         mockMvc.perform(get(BASE_URL + "/{id}", id)
+                        .header("Authorization", AuthTestHelper.bearerToken())
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isConflict());
     }
@@ -180,6 +204,7 @@ class DisorderControllerImplTest {
                 .thenThrow(new DisorderNotFoundException());
 
         mockMvc.perform(put(BASE_URL + "/{id}", id)
+                        .header("Authorization", AuthTestHelper.bearerToken())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(updateDto))
                         .accept(MediaType.APPLICATION_JSON))
@@ -195,6 +220,7 @@ class DisorderControllerImplTest {
                 .thenThrow(new DisorderConflictException(updateDto.name()));
 
         mockMvc.perform(put(BASE_URL + "/{id}", id)
+                        .header("Authorization", AuthTestHelper.bearerToken())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(updateDto))
                         .accept(MediaType.APPLICATION_JSON))
@@ -207,7 +233,7 @@ class DisorderControllerImplTest {
 
         doThrow(new DisorderNotFoundException()).when(disorderService).deleteDisorder(id);
 
-        mockMvc.perform(delete(BASE_URL + "/{id}", id))
+        mockMvc.perform(delete(BASE_URL + "/{id}", id).header("Authorization", AuthTestHelper.bearerToken()))
                 .andExpect(status().isConflict());
     }
 }

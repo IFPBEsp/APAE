@@ -32,6 +32,7 @@ public class SecurityConfiguration {
         return httpSecurity
                 .csrf(AbstractHttpConfigurer::disable)
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
+
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(authorize -> authorize
                         .requestMatchers(
@@ -45,42 +46,17 @@ public class SecurityConfiguration {
                                 "/professionals/**",
                                 "/service-areas/**",
                                 "/professionals",
-                                "/service-areas")
-                        .permitAll()
+                                "/service-areas"
+                        ).permitAll()
                         .requestMatchers(
-                                // Swagger/OpenAPI (com e sem /api)
                                 "/v3/api-docs/**",
                                 "/swagger-ui/**",
-                                "/swagger-ui.html",
-                                "/api/v3/api-docs/**",
-                                "/api/swagger-ui/**",
-                                "/api/swagger-ui.html")
-                        .permitAll()
+                                "/swagger-ui.html"
+                        ).permitAll()
                         .anyRequest().authenticated())
                 .addFilterBefore(securityFilter, UsernamePasswordAuthenticationFilter.class)
                 .build();
     }
-
-    // @Bean
-    // public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity)
-    // throws Exception {
-    // return httpSecurity
-    // .csrf(AbstractHttpConfigurer::disable)
-    // .cors(cors -> cors.configurationSource(corsConfigurationSource()))
-
-    // .sessionManagement(session ->
-    // session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-    // .authorizeHttpRequests(authorize -> authorize
-    // .requestMatchers("/auth/**").permitAll()
-    // .requestMatchers(
-    // "/v3/api-docs/**",
-    // "/swagger-ui/**",
-    // "/swagger-ui.html"
-    // ).permitAll()
-    // .anyRequest().authenticated())
-    // .addFilterBefore(securityFilter, UsernamePasswordAuthenticationFilter.class)
-    // .build();
-    // }
 
     @Bean
     public PasswordEncoder passwordEncoder() {

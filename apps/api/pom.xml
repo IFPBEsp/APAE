@@ -85,6 +85,12 @@
             <artifactId>minio</artifactId>
             <version>8.5.17</version>
         </dependency>
+        <dependency>
+            <groupId>org.junit.platform</groupId>
+            <artifactId>junit-platform-suite</artifactId>
+            <version>1.10.2</version>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
 
     <build>
@@ -94,54 +100,56 @@
                 <artifactId>spring-boot-maven-plugin</artifactId>
             </plugin>
             <plugin>
-                <!-- JaCoCo: http://www.eclemma.org/jacoco/ -->
-                <!-- https://www.jacoco.org/jacoco/trunk/doc/maven.html -->
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <version>3.5.4</version>
+                <configuration>
+                    <useModulePath>false</useModulePath>
+                    <argLine>@{argLine}
+                        -javaagent:${settings.localRepository}/org/mockito/mockito-core/${mockito.version}/mockito-core-${mockito.version}.jar
+                        -Xshare:off</argLine>
+                    <includes>
+                        <include>**/*Test.java</include>
+                        <include>**/*Suite.java</include>
+                    </includes>
+                </configuration>
+            </plugin>
+            <plugin>
                 <groupId>org.jacoco</groupId>
                 <artifactId>jacoco-maven-plugin</artifactId>
                 <version>0.8.14</version>
-                <configuration>
-                    <excludes>
-                        <exclude>**/*Main.class</exclude>
-                        <exclude>**/*HelloWorldCobertura2.class</exclude>
-                    </excludes>
-                    <haltOnFailure>true</haltOnFailure>
-                    <rules>
-                        <!-- All classes must have 85% line and branch coverage. -->
-                        <rule>
-                            <element>CLASS</element>
-                            <limits>
-                                <limit>
-                                    <counter>LINE</counter>
-                                    <value>COVEREDRATIO</value>
-                                    <minimum>0.85</minimum>
-                                </limit>
-                                <limit>
-                                    <counter>BRANCH</counter>
-                                    <value>COVEREDRATIO</value>
-                                    <minimum>0.85</minimum>
-                                </limit>
-                            </limits>
-                        </rule>
-                        <rule>
-                            <element>CLASS</element>
-                            <includes>
-                                <include>br.edu.ifpb.es.daw.todo.*</include>
-                            </includes>
-                            <limits>
-                                <limit>
-                                    <counter>LINE</counter>
-                                    <value>COVEREDRATIO</value>
-                                    <minimum>0.90</minimum>
-                                </limit>
-                                <limit>
-                                    <counter>BRANCH</counter>
-                                    <value>COVEREDRATIO</value>
-                                    <minimum>1.00</minimum>
-                                </limit>
-                            </limits>
-                        </rule>
-                    </rules>
-                </configuration>
+
+                <executions>
+                    <execution>
+                        <id>prepare-agent</id>
+                        <goals>
+                            <goal>prepare-agent</goal>
+                        </goals>
+                    </execution>
+
+                    <execution>
+                        <id>report</id>
+                        <phase>prepare-package</phase>
+                        <goals>
+                            <goal>report</goal>
+                        </goals>
+                        <!-- CONFIGURAÇÃO PARA TESTES UNITÁRIOS DE CONTROLADORES -->
+                        <configuration>
+                            <excludes>
+                                <exclude>br/org/apae/api/address/**</exclude>
+                                <exclude>br/org/apae/api/appointment/**</exclude>
+                                <exclude>br/org/apae/api/auth/**</exclude>
+                                <exclude>br/org/apae/api/common/**</exclude>
+                                <exclude>br/org/apae/api/documents/**</exclude>
+                                <exclude>br/org/apae/api/patient/**</exclude>
+                                <exclude>br/org/apae/api/professional/**</exclude>
+                                <exclude>br/org/apae/api/swagger/**</exclude>
+
+                                <exclude>br/org/apae/api/*Application.*</exclude>
+                            </excludes>
+                        </configuration>
+                    </execution>
+                </executions>
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -153,15 +161,6 @@
                         </goals>
                     </execution>
                 </executions>
-            </plugin>
-            <plugin>
-                <artifactId>maven-surefire-plugin</artifactId>
-                <version>3.5.4</version>
-                <configuration>
-                    <argLine>@{argLine}
-                        -javaagent:${settings.localRepository}/org/mockito/mockito-core/${mockito.version}/mockito-core-${mockito.version}.jar
-                        -Xshare:off</argLine>
-                </configuration>
             </plugin>
         </plugins>
     </build>
