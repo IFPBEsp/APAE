@@ -1,8 +1,7 @@
 package br.org.apae.api.controllers.professional;
 
 import static org.mockito.ArgumentMatchers.any;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -21,6 +20,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.config.SpringDataWebConfiguration;
 import org.springframework.http.MediaType;
+import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
@@ -28,9 +28,10 @@ import br.org.apae.api.auth.application.internal.UserService;
 import br.org.apae.api.auth.infrastructure.security.JwtProvider;
 import br.org.apae.api.auth.infrastructure.security.SecurityConfiguration;
 import br.org.apae.api.common.dto.professional.request.CreateHealthProfessionalDTO;
+import br.org.apae.api.common.dto.professional.request.documents.CreateProfessionalDocumentsDTO;
 import br.org.apae.api.controllers.mocks.professional.HealthProfessionalMockDto;
 import br.org.apae.api.helpers.AuthTestHelper;
-import br.org.apae.api.professional.application.interfaces.HealthProfessionalService;
+import br.org.apae.api.professional.application.interfaces.HealthProfessionalApplicationService;
 
 @Tag("controller")
 @Tag("health-professional")
@@ -49,7 +50,7 @@ class HealthProfessionalControllerTest {
     private ObjectMapper objectMapper;
 
     @MockitoBean
-    private HealthProfessionalService service;
+    private HealthProfessionalApplicationService service;
 
     @MockitoBean
     private JwtProvider jwtProvider;
@@ -70,17 +71,34 @@ class HealthProfessionalControllerTest {
         var response =
             HealthProfessionalMockDto.createProfessionalResponse1();
 
-        Mockito.when(service.create(any(CreateHealthProfessionalDTO.class)))
-            .thenReturn(response);
+        Mockito.when(
+            service.createProfessional(
+                any(CreateHealthProfessionalDTO.class),
+                any(CreateProfessionalDocumentsDTO.class)
+            )
+        ).thenReturn(response);
 
-        mockMvc.perform(post("/professionals")
-                .header("Authorization", AuthTestHelper.bearerToken())
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(request)))
+        var professionalPart =
+            new MockMultipartFile(
+                "professional",
+                "",
+                MediaType.APPLICATION_JSON_VALUE,
+                objectMapper.writeValueAsBytes(request)
+            );
+
+        mockMvc.perform(
+                multipart("/professionals")
+                    .file(professionalPart)
+                    .file(HealthProfessionalMockDto.volunteerAgreementFile())
+                    .file(HealthProfessionalMockDto.curriculumFile())
+                    .file(HealthProfessionalMockDto.attachmentAnyFile())
+                    .header("Authorization", AuthTestHelper.bearerToken())
+                    .contentType(MediaType.MULTIPART_FORM_DATA)
+            )
             .andExpect(status().isCreated());
 
         Mockito.verify(service)
-            .create(any(CreateHealthProfessionalDTO.class));
+            .createProfessional(any(), any());
     }
 
     @Test
@@ -93,7 +111,7 @@ class HealthProfessionalControllerTest {
             responses.size()
         );
 
-        Mockito.when(service.findAll(any(Pageable.class)))
+        Mockito.when(service.findAllProfessionals(any(Pageable.class)))
             .thenReturn(page);
 
         mockMvc.perform(get("/professionals")
