@@ -260,10 +260,7 @@ export default function PersonDetailsPage() {
         <Card className="w-full relative font-nunito">
           <CardHeader className="flex flex-row items-center justify-between">
             <CardTitle className="text-[#0D4F97]">Informações de Saúde</CardTitle>
-
             <div className="flex items-center gap-2">
-
-              {/* Botão com Tooltip se estiver desabilitado */}
               <TooltipProvider>
                 <Tooltip>
                     <TooltipTrigger asChild>
