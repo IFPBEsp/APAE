@@ -1,5 +1,7 @@
 package br.org.apae.api.professional.application.exceptions;
 
+import br.org.apae.api.professional.domain.exceptions.AvailabilityConflictException;
+import br.org.apae.api.professional.domain.exceptions.AvailabilityNotFoundException;
 import br.org.apae.api.professional.domain.exceptions.EmailConflictException;
 import br.org.apae.api.professional.domain.exceptions.IdentityDocumentConflictException;
 import org.springframework.core.Ordered;
@@ -53,6 +55,28 @@ public class HealthProfessionalExceptionHandler {
   @ExceptionHandler(IdentityDocumentConflictException.class)
   public ResponseEntity<ErrorResponse> handleIdentityDocumentConflictException(
       IdentityDocumentConflictException ex, HttpServletRequest request) {
+    ErrorResponse error = new ErrorResponse(
+        HttpStatus.CONFLICT.value(),
+        HttpStatus.CONFLICT.getReasonPhrase(),
+        ex.getMessage(),
+        request.getRequestURI());
+    return new ResponseEntity<>(error, HttpStatus.CONFLICT);
+  }
+
+  @ExceptionHandler(AvailabilityNotFoundException.class)
+  public ResponseEntity<ErrorResponse> handleAvailabilityNotFound(
+      AvailabilityNotFoundException ex, HttpServletRequest request) {
+    ErrorResponse error = new ErrorResponse(
+        HttpStatus.NOT_FOUND.value(),
+        HttpStatus.NOT_FOUND.getReasonPhrase(),
+        ex.getMessage(),
+        request.getRequestURI());
+    return new ResponseEntity<>(error, HttpStatus.NOT_FOUND);
+  }
+
+  @ExceptionHandler(AvailabilityConflictException.class)
+  public ResponseEntity<ErrorResponse> handleAvailabilityConflict(
+      AvailabilityConflictException ex, HttpServletRequest request) {
     ErrorResponse error = new ErrorResponse(
         HttpStatus.CONFLICT.value(),
         HttpStatus.CONFLICT.getReasonPhrase(),
