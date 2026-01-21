@@ -18,5 +18,5 @@ public interface AnnualRegistryRepository extends JpaRepository<AnnualRegistry, 
     List<AnnualRegistry> findAllByPatientId(UUID patientId);
 
     @Query("SELECT DISTINCT ar.year FROM AnnualRegistry ar WHERE ar.year IS NOT NULL ORDER BY ar.year DESC")
-    List<String> findDistinctYears();
+    List<Year> findDistinctYears();
 }

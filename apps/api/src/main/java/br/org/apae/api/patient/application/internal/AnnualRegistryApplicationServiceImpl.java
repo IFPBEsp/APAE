@@ -103,7 +103,9 @@ public class AnnualRegistryApplicationServiceImpl implements AnnualRegistryAppli
     @Override
     @Transactional(readOnly = true)
     public List<String> findAllRegistryYears() {
-        return annualRegistryRepository.findDistinctYears();
+        return annualRegistryRepository.findDistinctYears().stream()
+                .map(Year::toString)
+                .toList();
     }
 
     @Override
