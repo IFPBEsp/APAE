@@ -117,4 +117,62 @@ class AbsenceControllerImplTest {
                                 .andExpect(jsonPath("$.content[0].justification").value("Falta justificada"))
                                 .andExpect(jsonPath("$.content[0].notified").value(true));
         }
+
+        @Test
+        void shouldReturnBadRequestWhenRegisterAbsenceWithInvalidBody() throws Exception {
+                CreateAbsenceDTO invalidRequest = new CreateAbsenceDTO(
+                                null,
+                                null,
+                                "");
+
+                mockMvc.perform(post("/absences")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(objectMapper.writeValueAsString(invalidRequest)))
+                                .andExpect(status().isBadRequest());
+        }
+
+        @Test
+        void shouldReturnBadRequestWhenServiceThrowsExceptionOnRegister() throws Exception {
+                CreateAbsenceDTO request = new CreateAbsenceDTO(
+                                UUID.randomUUID(),
+                                LocalDate.now(),
+                                "Teste erro");
+
+                when(service.register(any(CreateAbsenceDTO.class)))
+                                .thenThrow(new IllegalArgumentException("Falta já registrada"));
+
+                mockMvc.perform(post("/absences")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(objectMapper.writeValueAsString(request)))
+                                .andExpect(status().isBadRequest());
+        }
+
+        @Test
+        void shouldSearchAbsencesWithoutFilters() throws Exception {
+                AbsenceResponseDTO response = new AbsenceResponseDTO(
+                                UUID.randomUUID(),
+                                UUID.randomUUID(),
+                                UUID.randomUUID(),
+                                UUID.randomUUID(),
+                                LocalDate.now(),
+                                "Paciente faltou",
+                                false);
+
+                Page<AbsenceResponseDTO> page = new PageImpl<>(List.of(response));
+
+                when(service.findAllByFilters(
+                                org.mockito.ArgumentMatchers.isNull(),
+                                org.mockito.ArgumentMatchers.isNull(),
+                                org.mockito.ArgumentMatchers.isNull(),
+                                any()))
+                                .thenReturn(page);
+
+                mockMvc.perform(get("/absences")
+                                .param("page", "0")
+                                .param("size", "10"))
+                                .andExpect(status().isOk())
+                                .andExpect(jsonPath("$.content[0].justification").value("Paciente faltou"))
+                                .andExpect(jsonPath("$.content[0].notified").value(false));
+        }
+
 }
