@@ -2,14 +2,34 @@ import { getApiBaseUrl } from "@/lib/client-service";
 
 const API_URL = getApiBaseUrl();
 
-export async function getAllProfissionais() {
-  const response = await fetch(API_URL + "/professionals", { method: "GET" });
+export async function getAllProfissionais(ativo?: boolean) {
+  const url = 
+    ativo === undefined
+      ? `${API_URL}/professionals`
+      : `${API_URL}/professionals?ativo=${ativo}`;
+
+  console.log("[getAllProfissionais] ativo:", ativo, "| url:", url);
+  //const response = await fetch(API_URL + "/professionals", { method: "GET" });
+  return fetch(url, { method: "GET" });
+}
+
+/*export async function deleteProfissional(id: string) {
+  const response = await fetch(API_URL + `/professionals/${id}`, {
+    method: "DELETE",
+  });
+  return response;
+}*/
+
+export async function inactivateProfissional(id: string) {
+  const response = await fetch(`${API_URL}/professionals/${id}/inactivate`, {
+    method: "PUT",
+  });
   return response;
 }
 
-export async function deleteProfissional(id: string) {
-  const response = await fetch(API_URL + `/professionals/${id}`, {
-    method: "DELETE",
+export async function activateProfissional(id: string) {
+  const response = await fetch(`${API_URL}/professionals/${id}/activate`, {
+    method: "PUT",
   });
   return response;
 }

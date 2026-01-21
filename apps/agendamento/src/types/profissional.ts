@@ -44,4 +44,5 @@ export interface Profissional {
   identityDocument: string;
   address: Endereco;
   availabilities: Disponibilidade[];
+  ativo: boolean;
 }
