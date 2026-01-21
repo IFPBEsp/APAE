@@ -7,20 +7,32 @@ import { MultiValue, StylesConfig } from "react-select";
 interface Option {
   label: string;
   value: string;
-  id?: string;
+  id?: string | number;
+  [key: string]: any;
 }
 
 interface GenericDatabaseSelectProps {
   value: any[]; 
   onChange: (value: any[]) => void;
-  endpoint: string; // EX: "/api/vacinas" ou "/api/transtornos"
+  endpoint: string; 
   placeholder?: string;
-  labelSingular: string; // EX: "Vacina" ou "Transtorno"
+  labelSingular: string; 
+  labelKey?: string; 
+  menuPlacement?: "auto" | "bottom" | "top";
 }
 
 const capitalize = (s: string) => s.charAt(0).toUpperCase() + s.slice(1).toLowerCase();
 
-export const GenericDatabaseSelect = ({ value, onChange, endpoint, placeholder, labelSingular }: GenericDatabaseSelectProps) => {
+export const GenericDatabaseSelect = ({ 
+    value, 
+    onChange, 
+    endpoint, 
+    placeholder, 
+    labelSingular,
+    labelKey = "name",
+    menuPlacement = "auto"
+}: GenericDatabaseSelectProps) => {
+  
   const [options, setOptions] = useState<Option[]>([]);
   const [isLoading, setIsLoading] = useState(false);
 
@@ -31,51 +43,72 @@ export const GenericDatabaseSelect = ({ value, onChange, endpoint, placeholder, 
         if (res.ok) {
             const data = await res.json();
             const safeData = Array.isArray(data) ? data : [];
-            setOptions(safeData.map((d: any) => ({ label: d.name, value: d.name, id: d.id })));
+            setOptions(safeData.map((d: any) => ({ 
+                label: d[labelKey] || d.name || "Sem nome", 
+                value: d[labelKey] || d.name || "Sem nome", 
+                id: d.id
+            })));
         }
       } catch (error) { console.error(error); }
     };
     fetchData();
-  }, [endpoint]);
+  }, [endpoint, labelKey]);
 
   const getCurrentValue = (): Option[] => {
     if (!value || !Array.isArray(value)) return [];
-    return value.map((v) => ({ 
-        label: v.name || v.label || v.value, 
-        value: v.name || v.label || v.value,
-        id: v.id 
-    }));
+    return value.map((v) => {
+        const text = v[labelKey] || v.name || v.label || v.value;
+        const existingOption = options.find(opt => opt.id === v.id);
+        if (existingOption) return existingOption;
+        return { label: text, value: text, id: v.id };
+    }).filter(v => v.label); 
   };
 
   const handleChange = (newValue: MultiValue<Option>) => {
-    onChange(newValue.map(v => ({ name: v.value, id: v.id })));
+    const formatted = newValue.map(v => ({ 
+        [labelKey]: v.value, 
+        name: v.value,       
+        id: v.id
+    }));
+    onChange(formatted);
   };
 
   const handleCreate = async (inputValue: string) => {
     const normalizedName = capitalize(inputValue.trim());
-    const exists = options.some(opt => opt.label.toLowerCase() === normalizedName.toLowerCase());
+    const existingOption = options.find(opt => opt.label.toLowerCase() === normalizedName.toLowerCase());
     
-    if (exists) {
-        const existing = options.find(opt => opt.label.toLowerCase() === normalizedName.toLowerCase());
-        if (existing) handleChange([...getCurrentValue(), existing] as MultiValue<Option>);
+    if (existingOption) {
+        const currentSelected = getCurrentValue();
+        if (!currentSelected.some(s => s.value === existingOption.value)) {
+            handleChange([...currentSelected, existingOption] as MultiValue<Option>);
+        }
         return;
     }
 
     setIsLoading(true);
     try {
-        const res = await fetch(endpoint, {
-            method: "POST",
-            body: JSON.stringify({ name: normalizedName })
-        });
+        const payload = { [labelKey]: normalizedName };
+        const res = await fetch(endpoint, { method: "POST", body: JSON.stringify(payload) });
         
-        let newOption = { label: normalizedName, value: normalizedName, id: undefined };
-        if (res.ok || res.status === 201 || res.status === 409) { // 409 aceita se ja existir
+        let newOption: Option = { label: normalizedName, value: normalizedName, id: undefined };
+        
+        if (res.ok || res.status === 201 || res.status === 409) {
             const created = await res.json().catch(() => ({}));
             if (created && created.id) newOption.id = created.id;
         }
 
         setOptions((prev) => [...prev, newOption]);
-        handleChange([...getCurrentValue(), newOption] as MultiValue<Option>);
+        const currentSelected = getCurrentValue();
+        const newSelection = [...currentSelected, newOption] as MultiValue<Option>;
+        
+        const formatted = newSelection.map(v => ({ 
+            [labelKey]: v.value, 
+            name: v.value,
+            id: v.id
+        }));
+        
+        onChange(formatted);
+
     } catch (error) { console.error(error); } 
     finally { setIsLoading(false); }
   };
@@ -94,7 +127,14 @@ export const GenericDatabaseSelect = ({ value, onChange, endpoint, placeholder, 
     }),
     multiValue: (base) => ({ ...base, backgroundColor: "#eff6ff", borderRadius: "0.25rem" }),
     multiValueLabel: (base) => ({ ...base, color: "#0D4F97", fontWeight: 600, fontSize: "0.75rem" }),
-    multiValueRemove: (base) => ({ ...base, color: "#0D4F97", ":hover": { backgroundColor: "#dbeafe", color: "#1e3a8a" } })
+    multiValueRemove: (base) => ({ ...base, color: "#0D4F97", ":hover": { backgroundColor: "#dbeafe", color: "#1e3a8a" } }),
+    menu: (base) => ({ ...base, zIndex: 50 }),
+    menuList: (base) => ({
+        ...base,
+        paddingRight: "4px",
+        "::-webkit-scrollbar": { width: "6px", height: "6px" },
+        "::-webkit-scrollbar-thumb": { background: "#cbd5e1", borderRadius: "3px" }
+    })
   };
 
   return (
@@ -112,6 +152,8 @@ export const GenericDatabaseSelect = ({ value, onChange, endpoint, placeholder, 
       noOptionsMessage={() => `Nenhum(a) ${labelSingular.toLowerCase()} encontrado(a)`}
       createOptionPosition="first"
       blurInputOnSelect={false}
+      maxMenuHeight={250}
+      menuPlacement={menuPlacement}
     />
   );
 };

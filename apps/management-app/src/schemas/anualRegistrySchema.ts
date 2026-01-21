@@ -1,20 +1,24 @@
 import { z } from "zod";
 
-export const AnnualRegistryFormSchema = z.object({
-  bpc: z.any().transform((val) => {
-    const s = String(val).toLowerCase();
-    return s === "true" || s === "sim";
-  }),
+const GenericItemSchema = z.object({
+  id: z.union([z.string(), z.number()]).optional(),
+  name: z.string().optional(),
+  area: z.string().optional(),
+});
 
-  familyIncome: z.string().default(""),
-  diseases: z.string().optional().default(""),
-  continuousMedication: z.string().optional().default(""),
-  disorders: z.array(z.object({ 
-    name: z.string(),
-    id: z.string().optional()
-  })).optional().default([]),
-  allergies: z.any().optional(),
-  vaccines: z.any().optional() 
+export const AnnualRegistryFormSchema = z.object({
+  bpc: z.preprocess((val) => {
+    if (typeof val === "string") return val === "true";
+    return val;
+  }, z.boolean()),
+  
+  familyIncome: z.string(),
+  diseases: z.string().optional(),
+  allergies: z.string().optional(),
+  continuousMedication: z.string().optional(),
+  vaccines: z.array(GenericItemSchema).optional(),
+  disorders: z.array(GenericItemSchema).optional(),
+  serviceTypes: z.array(GenericItemSchema).optional(),
 });
 
 export type AnnualRegistryFormData = z.infer<typeof AnnualRegistryFormSchema>;
