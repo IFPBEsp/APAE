@@ -142,4 +142,10 @@ public class HealthProfessionalControllerImpl implements HealthProfessionalContr
         service.updateProfessionalDocuments(id, documentsDTO);
         return ResponseEntity.noContent().build();
     }
+
+    @Override
+    public ResponseEntity<Void> removeProfessionalDocument(UUID id, UUID documentId) {
+        service.removeProfessionalDocument(id, documentId);
+        return ResponseEntity.noContent().build();
+    }
 }

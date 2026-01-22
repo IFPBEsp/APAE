@@ -89,11 +89,33 @@ export async function listProfessionalDocuments(id: string) {
   return (data ?? []) as DocumentWithUrl[];
 }
 
+
 export async function updateProfessionalDocuments(id: string, formData: FormData) {
   return fetch(`${API_URL}/professionals/${id}/documents`, {
-    method: "POST",
+    method: "PATCH",
     body: formData,
   });
 }
+
 export { DocumentWithUrl };
+
+export async function removeProfessionalDocument(
+  professionalId: string,
+  documentId: string
+) {
+  const response = await fetch(
+    `${API_URL}/professionals/${professionalId}/documents/${documentId}`,
+    { method: "DELETE" }
+  );
+
+  if (!response.ok) {
+    const contentType = response.headers.get("content-type");
+    const data = contentType?.includes("application/json")
+      ? await response.json().catch(() => ({}))
+      : {};
+    throw new Error((data as any)?.message || "Erro ao remover documento");
+  }
+
+  return true;
+}
 

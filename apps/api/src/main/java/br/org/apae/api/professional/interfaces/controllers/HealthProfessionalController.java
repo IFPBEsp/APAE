@@ -17,9 +17,10 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RequestPart;
+import org.springframework.web.bind.annotation.DeleteMapping;
+
 import org.springframework.data.domain.Sort;
 import java.util.List;
-import org.springframework.web.bind.annotation.GetMapping;
 import br.org.apae.api.common.dto.patient.response.documents.DocumentWithUrlResponseDTO;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -119,4 +120,18 @@ public interface HealthProfessionalController {
         @PathVariable UUID id,
         @ModelAttribute UpdateProfessionalDocumentsDTO documentsDTO
     );
+
+  @DeleteMapping("/{id}/documents/{documentId}")
+  @Operation(
+    summary = "Remover documento do profissional",
+    description = "Remove um documento anexado ao cadastro do profissional (ex.: ATTACHMENTANY).",
+    responses = {
+      @ApiResponse(responseCode = "204", description = "Documento removido com sucesso", content = @Content),
+      @ApiResponse(responseCode = "404", description = "Profissional ou documento não encontrado", content = @Content)
+    }
+  )
+  ResponseEntity<Void> removeProfessionalDocument(
+      @PathVariable UUID id,
+      @PathVariable UUID documentId
+  );
 }

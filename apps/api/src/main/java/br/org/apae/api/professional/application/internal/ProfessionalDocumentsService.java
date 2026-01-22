@@ -1,5 +1,7 @@
 package br.org.apae.api.professional.application.internal;
 
+import java.util.Objects;
+import java.util.UUID;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -11,7 +13,11 @@ import br.org.apae.api.common.dto.professional.request.documents.UpdateProfessio
 import br.org.apae.api.documents.application.interfaces.DocumentApplicationService;
 import br.org.apae.api.documents.domain.enums.DocumentCategory;
 import br.org.apae.api.documents.domain.enums.DocumentType;
+import br.org.apae.api.documents.interfaces.dto.DocumentDTO;
+import br.org.apae.api.documents.interfaces.dto.ListDocumentsArgsDTO;
 import br.org.apae.api.documents.interfaces.dto.PutDocumentArgsDTO;
+import br.org.apae.api.documents.interfaces.dto.RemoveDocumentArgsDTO;
+import br.org.apae.api.professional.domain.exceptions.ProfessionalDocumentNotFoundException;
 import br.org.apae.api.professional.domain.model.HealthProfessional;
 
 @Service
@@ -70,6 +76,45 @@ public class ProfessionalDocumentsService {
             for (MultipartFile file : documents.attachmentAny()) {
                 storeDocument(professional, DocumentType.ATTACHMENTANY, file);
             }
+        }
+    }
+
+    public void removeProfessionalDocument(HealthProfessional professional, UUID documentId) {
+        try {
+            Iterable<DocumentDTO> docs = this.documentService.listDocuments(
+                ListDocumentsArgsDTO.builder()
+                    .owner(professional.getId().toString())
+                    .category(DocumentCategory.PROFESSIONAL)
+                    .build()
+            );
+
+            DocumentDTO target = null;
+            for (DocumentDTO d : docs) {
+                if (d != null && Objects.equals(d.id(), documentId)) {
+                    target = d;
+                    break;
+                }
+            }
+
+            if (target == null) {
+                throw new ProfessionalDocumentNotFoundException();
+            }
+
+            this.documentService.removeDocument(
+                RemoveDocumentArgsDTO.builder()
+                    .id(target.id())
+                    .name(target.name())
+                    .owner(target.owner())
+                    .category(target.category())
+                    .type(target.type())
+                    .year(target.year())
+                    .build()
+            );
+        } catch (ProfessionalDocumentNotFoundException e) {
+            throw e;
+        } catch (Exception e) {
+            LOGGER.log(Level.SEVERE, "Erro ao remover documento do profissional: " + e.getMessage());
+            throw new RuntimeException("Erro ao remover documento do profissional.");
         }
     }
 }

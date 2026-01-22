@@ -30,4 +30,6 @@ public interface HealthProfessionalApplicationService {
 
     void updateProfessionalDocuments(UUID id, UpdateProfessionalDocumentsDTO dto);
 
+    void removeProfessionalDocument(UUID professionalId, UUID documentId);
+
 }

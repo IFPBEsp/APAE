@@ -166,4 +166,13 @@ public class HealthProfessionalApplicationServiceImpl implements HealthProfessio
         documentsService.updateProfessionalDocuments(professional, dto);
     }
 
+    @Override
+    @Transactional
+    public void removeProfessionalDocument(UUID professionalId, UUID documentId) {
+        HealthProfessional professional = repository.findById(professionalId)
+            .orElseThrow(HealthProfessionalNotFoundException::new);
+
+        documentsService.removeProfessionalDocument(professional, documentId);
+    }
+
 }
