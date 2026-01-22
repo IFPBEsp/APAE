@@ -9,24 +9,28 @@ import br.org.apae.api.common.dto.servicearea.response.ServiceAreaResponseDTO;
 import br.org.apae.api.patient.domain.model.AnnualRegistry;
 
 public record AnnualRegistryResponseDTO(
-                UUID id,
-                String bpc,
-                String diseases,
-                BigDecimal familyIncome,
-                Integer year,
-                UUID patientId,
-                Set<DisorderResponseDTO> disorders,
-                Set<ServiceAreaResponseDTO> serviceAreas) {
+        UUID id,
+        String bpc,
+        String diseases,
+        String continuousMedication,
+        BigDecimal familyIncome,
+        Integer year,
+        UUID patientId,
+        Set<DisorderResponseDTO> disorders,
+        Set<ServiceAreaResponseDTO> serviceAreas
+) {
 
         public AnnualRegistryResponseDTO(AnnualRegistry entity, Set<DisorderResponseDTO> disorderDtos, Set<ServiceAreaResponseDTO> serviceAreas) {
                 this(
-                                entity.getId(),
-                                entity.getBpc(),
-                                entity.getDiseases(),
-                                entity.getFamilyIncome(),
-                                entity.getYear(),
-                                entity.getPatientId(),
-                                disorderDtos,
-                                serviceAreas);
+                        entity.getId(),
+                        entity.getBpc(),
+                        entity.getDiseases(),
+                        entity.getContinuousMedication(),
+                        entity.getFamilyIncome(),
+                        entity.getYear(),
+                        entity.getPatientId(),
+                        disorderDtos,
+                        serviceAreas
+                );
         }
 }

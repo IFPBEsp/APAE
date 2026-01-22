@@ -6,9 +6,11 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import DocumentCategoriesCard from "@/components/DocumentCategoriesCard";
 import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { toast } from "react-toastify";
-import { Loader2, ArrowLeft } from "lucide-react";
+import { Loader2, ArrowLeft, SquarePen, Plus } from "lucide-react"; 
+import AnnualRegistryEditModal from "@/components/AnnualRegistryEditModal";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 
 interface InfoRowProps {
   label: string;
@@ -46,70 +48,110 @@ export default function PersonDetailsPage() {
   const router = useRouter();
   const id = params?.id as string;
 
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [modalMode, setModalMode] = useState<"create" | "edit">("edit");
+
   const [pessoa, setPessoa] = useState<any>(null);
   const [registroAnual, setRegistroAnual] = useState<any>(null);
   
+  const [existingYears, setExistingYears] = useState<string[]>([]);
   const [selectedYear, setSelectedYear] = useState<string>(new Date().getFullYear().toString());
   
   const [loadingPessoa, setLoadingPessoa] = useState(true);
   const [loadingRegistro, setLoadingRegistro] = useState(false);
 
-  const currentYearInt = new Date().getFullYear();
-  const years = Array.from({ length: 11 }, (_, i) => (currentYearInt - i).toString());
-
-  useEffect(() => {
-    if (!id) return;
-
-    async function fetchPessoa() {
-      try {
-        setLoadingPessoa(true);
-        const response = await fetch(`/api/pessoas/${id}`);
-        
-        if (!response.ok) throw new Error("Falha ao buscar dados do paciente.");
-
-        const data = await response.json();
-
-        setPessoa({
-          ...data,
-        });
-      } catch (err: any) {
-        console.error(err);
-        toast.error(err.message);
-        router.push("/home");
-      } finally {
-        setLoadingPessoa(false);
-      }
+  const fetchPessoa = useCallback(async () => {
+    try {
+      setLoadingPessoa(true);
+      const response = await fetch(`/api/pessoas/${id}`);
+      if (!response.ok) throw new Error("Falha ao buscar dados do paciente.");
+      const data = await response.json();
+      setPessoa(data);
+    } catch (err: any) {
+      console.error(err);
+      toast.error(err.message);
+      router.push("/home");
+    } finally {
+      setLoadingPessoa(false);
     }
-
-    fetchPessoa();
   }, [id, router]);
 
-  useEffect(() => {
-    if (!id) return;
-
-    async function fetchRegistro() {
-      try {
-        setLoadingRegistro(true);
-        setRegistroAnual(null);
-
-        const response = await fetch(`/api/pessoas/${id}/registro-anual/${selectedYear}`);
-
-        if (response.ok) {
-          const data = await response.json();
-          setRegistroAnual(data);
-        } else {
-          setRegistroAnual(null);
+  const fetchYears = useCallback(async () => {
+    try {
+        const res = await fetch(`/api/pessoas/${id}/registro-anual/years-list`);
+        let yearsData: number[] = [];
+        
+        if (res.ok) {
+            yearsData = await res.json();
         }
-      } catch (err) {
-        console.error("Erro ao buscar registro anual:", err);
-      } finally {
-        setLoadingRegistro(false);
-      }
-    }
 
-    fetchRegistro();
+        const currentYearStr = new Date().getFullYear().toString();
+
+        if (yearsData.length > 0) {
+            const sortedYears = yearsData.map(y => y.toString()).sort((a, b) => parseInt(b) - parseInt(a));
+            setExistingYears(sortedYears);
+            
+            if (!sortedYears.includes(selectedYear)) {
+                setSelectedYear(sortedYears[0]);
+            }
+        } else {
+            setExistingYears([currentYearStr]);
+            setSelectedYear(currentYearStr);
+        }
+    } catch (error) {
+        console.error("Erro ao buscar anos:", error);
+    }
   }, [id, selectedYear]);
 
+  const fetchRegistro = useCallback(async () => {
+    try {
+      setLoadingRegistro(true);
+      setRegistroAnual(null);
+      const response = await fetch(`/api/pessoas/${id}/registro-anual/${selectedYear}`);
+      if (response.ok) {
+        const data = await response.json();
+        setRegistroAnual(data);
+      }
+    } catch (err) {
+      console.error("Erro ao buscar registro anual:", err);
+    } finally {
+      setLoadingRegistro(false);
+    }
+  }, [id, selectedYear]);
+
+  useEffect(() => {
+    if (id) {
+        fetchPessoa();
+        fetchYears();
+    }
+  }, [id, fetchPessoa, fetchYears]);
+
+  useEffect(() => {
+    if (id && selectedYear) {
+        fetchRegistro();
+    }
+  }, [id, selectedYear, fetchRegistro]);
+
+  const handleEditClick = () => {
+    setModalMode("edit");
+    setIsModalOpen(true);
+  };
+
+  const handleCreateClick = () => {
+    setModalMode("create");
+    setIsModalOpen(true);
+  };
+
+  const handleModalClose = (savedYear?: string) => {
+      setIsModalOpen(false);
+      if (savedYear) {
+          fetchYears().then(() => setSelectedYear(savedYear));
+      } else {
+          fetchYears();
+          fetchRegistro();
+          fetchPessoa();
+      }
+  };
 
   if (loadingPessoa) {
     return (
@@ -121,55 +163,34 @@ export default function PersonDetailsPage() {
 
   if (!pessoa) {
     return (
-      <div className="text-center mt-10">
-        <p>Paciente não encontrado.</p>
-        <Button asChild variant="link">
-          <Link href="/home">Voltar para a lista</Link>
-        </Button>
-      </div>
+      <div className="text-center mt-10"><p>Paciente não encontrado.</p><Button asChild variant="link"><Link href="/home">Voltar</Link></Button></div>
     );
   }
+
+  const hasRegistro = !!registroAnual;
 
   return (
     <main className="container mx-auto p-4 md:p-6">
       <div className="mb-4">
-        <Button
-          variant="outline"
-          onClick={() => router.push("/home")}
-          className="gap-2"
-        >
-          <ArrowLeft className="h-4 w-4" />
-          Voltar para listagem
+        <Button variant="outline" onClick={() => router.push("/home")} className="gap-2">
+          <ArrowLeft className="h-4 w-4" /> Voltar para listagem
         </Button>
       </div>
 
       <div className="flex flex-col items-center gap-y-4 w-full mb-6">
         <Avatar className="h-40 w-40 border">
-          <AvatarImage
-            src={pessoa?.photoUrl}
-            alt={pessoa?.fullName ?? "Foto do paciente"}
-          />
-          <AvatarFallback className="font-baloo font-bold text-[32px]">
-            {pessoa?.fullName?.charAt(0) ?? "P"}
-          </AvatarFallback>
+          <AvatarImage src={pessoa?.photoUrl} alt={pessoa?.fullName ?? "Foto do paciente"} />
+          <AvatarFallback className="font-baloo font-bold text-[32px]">{pessoa?.fullName?.charAt(0) ?? "P"}</AvatarFallback>
         </Avatar>
-        <h3 className="font-baloo font-bold text-[#0D4F97] text-[24px]">
-          {pessoa?.fullName}
-        </h3>
+        <h3 className="font-baloo font-bold text-[#0D4F97] text-[24px]">{pessoa?.fullName}</h3>
       </div>
 
-      <DocumentCategoriesCard
-        onClickCategoria={(tipo: string) => {
-          router.push(`/pessoa/${id}/documentos/${tipo}`);
-        }}
-      />
+      <DocumentCategoriesCard onClickCategoria={(tipo: string) => { router.push(`/pessoa/${id}/documentos/${tipo}`); }} />
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-6">
-        {/* Card: Dados Pessoais */}
+        {/* Card Dados Pessoais */}
         <Card className="w-full relative font-nunito">
-          <CardHeader>
-            <CardTitle className="text-[#0D4F97]">Dados Pessoais</CardTitle>
-          </CardHeader>
+          <CardHeader><CardTitle className="text-[#0D4F97]">Dados Pessoais</CardTitle></CardHeader>
           <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-x-4">
             <InfoRow label="Nome Completo" value={pessoa.fullName} />
             <InfoRow label="Data de Nasc." value={pessoa.birthDate} />
@@ -181,11 +202,9 @@ export default function PersonDetailsPage() {
           </CardContent>
         </Card>
 
-        {/* Card: Documentação */}
+        {/* Card Documentação */}
         <Card className="w-full relative font-nunito">
-          <CardHeader>
-            <CardTitle className="text-[#0D4F97]">Documentação</CardTitle>
-          </CardHeader>
+          <CardHeader><CardTitle className="text-[#0D4F97]">Documentação</CardTitle></CardHeader>
           <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-x-4">
             <InfoRow label="CPF" value={pessoa.cpf} />
             <InfoRow label="RG" value={pessoa.rg} />
@@ -200,11 +219,9 @@ export default function PersonDetailsPage() {
           </CardContent>
         </Card>
 
-        {/* Card: Endereço */}
+        {/* Card Endereço */}
         <Card className="w-full relative font-nunito">
-          <CardHeader>
-            <CardTitle className="text-[#0D4F97]">Endereço Residencial</CardTitle>
-          </CardHeader>
+          <CardHeader><CardTitle className="text-[#0D4F97]">Endereço Residencial</CardTitle></CardHeader>
           <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-x-4">
             <InfoRow label="Rua" value={pessoa.address?.street} />
             <InfoRow label="Número" value={pessoa.address?.number} />
@@ -216,11 +233,9 @@ export default function PersonDetailsPage() {
           </CardContent>
         </Card>
 
-        {/* Card: Responsáveis */}
+        {/* Card Responsáveis */}
         <Card className="w-full relative font-nunito">
-          <CardHeader>
-            <CardTitle className="text-[#0D4F97]">Responsáveis</CardTitle>
-          </CardHeader>
+          <CardHeader><CardTitle className="text-[#0D4F97]">Responsáveis</CardTitle></CardHeader>
           <CardContent>
             {pessoa.guardian && (
               <div className="mb-4 p-2 border rounded-md">
@@ -228,19 +243,12 @@ export default function PersonDetailsPage() {
                 <InfoRow label="Nome" value={pessoa.guardian.name} />
                 <InfoRow label="Parentesco" value={pessoa.guardian.kinship} />
                 <InfoRow label="Contato" value={pessoa.guardian.contact} />
-                <InfoRow
-                  label="Endereço"
-                  value={`${pessoa.guardian.address?.street ?? ""}, ${
-                    pessoa.guardian.address?.number ?? ""
-                  }`}
-                />
+                <InfoRow label="Endereço" value={`${pessoa.guardian.address?.street ?? ""}, ${pessoa.guardian.address?.number ?? ""}`} />
               </div>
             )}
             {pessoa.parents?.map((parent: any) => (
               <div key={parent.id} className="mb-2 p-2 border-t border-gray-200">
-                <p className="font-bold text-base">
-                  {parent.kinship === "PAI" ? "Pai" : "Mãe"}
-                </p>
+                <p className="font-bold text-base">{parent.kinship === "PAI" ? "Pai" : "Mãe"}</p>
                 <InfoRow label="Nome" value={parent.name} />
                 <InfoRow label="CPF" value={parent.cpf} />
                 <InfoRow label="Profissão" value={parent.profession} />
@@ -250,68 +258,91 @@ export default function PersonDetailsPage() {
           </CardContent>
         </Card>
 
-        {/* --- CARD DE SAÚDE --- */}
+        {/* --- CARD DE SAÚDE DINÂMICO --- */}
         <Card className="w-full relative font-nunito">
           <CardHeader className="flex flex-row items-center justify-between">
             <CardTitle className="text-[#0D4F97]">Informações de Saúde</CardTitle>
             <div className="flex items-center gap-2">
-              <label htmlFor="year-select" className="text-sm font-semibold text-gray-600">
-                Ano:
-              </label>
-              <select
-                id="year-select"
-                value={selectedYear}
-                onChange={(e) => setSelectedYear(e.target.value)}
-                className="border border-gray-300 rounded-md px-2 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-[#0D4F97]"
-              >
-                {years.map((year) => (
-                  <option key={year} value={year}>
-                    {year}
-                  </option>
-                ))}
-              </select>
+              <TooltipProvider>
+                <Tooltip>
+                    <TooltipTrigger asChild>
+                        <Button size="sm" onClick={handleCreateClick} className="gap-1 bg-green-600 hover:bg-green-700 text-white border-0 h-8">
+                            <Plus className="h-4 w-4" /> Novo Ano
+                        </Button>
+                    </TooltipTrigger>
+                    <TooltipContent><p>Adicionar registro para um novo ano</p></TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
+              <TooltipProvider>
+                <Tooltip>
+                    <TooltipTrigger asChild>
+                         <span tabIndex={0}> 
+                            <Button 
+                                size="sm" 
+                                onClick={handleEditClick} 
+                                disabled={!hasRegistro || loadingRegistro}
+                                className="gap-1 hover:!bg-gray-100 text-[#0D4F97] border-0 disabled:opacity-50 disabled:cursor-not-allowed h-8"
+                                variant="outline"
+                            >
+                                <SquarePen className="h-4 w-4" /> {loadingRegistro ? "..." : "Editar"}
+                            </Button>
+                        </span>
+                    </TooltipTrigger>
+                    {!hasRegistro && !loadingRegistro && (<TooltipContent><p>Não existe registro para este ano.</p></TooltipContent>)}
+                </Tooltip>
+              </TooltipProvider>
+              <div className="flex items-center gap-1 border border-gray-300 rounded-md px-2 py-1 h-8">
+                 <label htmlFor="year-select" className="text-sm font-semibold text-gray-600">Ano:</label>
+                <select
+                    id="year-select"
+                    value={selectedYear}
+                    onChange={(e) => setSelectedYear(e.target.value)}
+                    className="text-sm focus:outline-none bg-transparent"
+                >
+                    {existingYears.length > 0 ? (
+                        existingYears.map((year) => <option key={year} value={year}>{year}</option>)
+                    ) : (
+                        <option value={new Date().getFullYear()}>{new Date().getFullYear()}</option>
+                    )}
+                </select>
+              </div>
             </div>
           </CardHeader>
           
           <CardContent>
             <InfoRow label="Alergias" value={pessoa.allergies} />
-            <InfoRow
-              label="Vacinas"
-              value={pessoa.vaccineNames
-                ?.map((v: any) => v.name)
-                .join(", ")}
-            />
+            <InfoRow label="Vacinas" value={pessoa.vaccineNames?.map((v: any) => v.name).join(", ")} />
             
-            <h3 className="font-bold text-base mt-4 pt-4 border-t text-[#0D4F97]">
-              Registro Anual ({selectedYear})
-            </h3>
+            <h3 className="font-bold text-base mt-4 pt-4 border-t text-[#0D4F97]">Registro Anual ({selectedYear})</h3>
 
             {loadingRegistro ? (
-              <div className="py-4 flex justify-center">
-                <Loader2 className="h-6 w-6 animate-spin text-[#0D4F97]" />
-              </div>
+              <div className="py-4 flex justify-center"><Loader2 className="h-6 w-6 animate-spin text-[#0D4F97]" /></div>
             ) : registroAnual ? (
               <div className="mt-2 animate-in fade-in slide-in-from-bottom-2">
                 <InfoRow label="Recebe BPC?" value={registroAnual.bpc} />
                 <InfoRow label="Renda Familiar" value={registroAnual.familyIncome} />
-                <InfoRow 
-                  label="Tipo de Atendimento" 
-                  value={registroAnual.serviceAreas?.map((atendimento: any) => atendimento.area).join(", ")} 
-                />
+                <InfoRow label="Tipo de Atendimento" value={registroAnual.serviceAreas?.map((atendimento: any) => atendimento.area).join(", ")} />
                 <InfoRow label="Doenças" value={registroAnual.diseases} />
                 <InfoRow label="Medicamentos Contínuos" value={registroAnual.continuousMedication} />
-                <InfoRow 
-                  label="Transtornos" 
-                  value={registroAnual.disorders?.map((d: any) => d.name).join(", ")} 
-                />
+                <InfoRow label="Transtornos" value={registroAnual.disorders?.map((d: any) => d.name).join(", ")} />
               </div>
             ) : (
-              <p className="text-sm text-gray-500 mt-2 italic">
-                Nenhum registro anual encontrado para o ano de {selectedYear}.
-              </p>
+              <div className="text-center py-6 bg-slate-50 rounded-lg mt-2 border border-dashed border-slate-200">
+                <p className="text-sm text-gray-500 mb-2">Nenhum registro encontrado para {selectedYear}.</p>
+                <Button variant="link" onClick={handleCreateClick} className="text-[#0D4F97] h-auto p-0 text-sm">Clique para criar um registro</Button>
+              </div>
             )}
           </CardContent>
         </Card>
+        
+        <AnnualRegistryEditModal 
+          isOpen={isModalOpen} 
+          onClose={() => setIsModalOpen(false)}
+          patientId={id} 
+          currentYear={selectedYear}
+          initialData={modalMode === "edit" ? registroAnual : null}
+          mode={modalMode} 
+        />
       </div>
     </main>
   );

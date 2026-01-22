@@ -1,25 +1,38 @@
 package br.org.apae.api.patient.interfaces.controllers;
 
 import br.org.apae.api.common.dto.patient.response.documents.DocumentWithUrlResponseDTO;
+import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 import java.util.UUID;
 
-
 @RequestMapping("/patients/{id}/documents")
-@Tag(name = "Patients", description = "Endpoints para gerenciamento de pacientes")
+@Tag(name = "Patient Documents", description = "Endpoints para gerenciamento de documentos do paciente")
 public interface PatientDocumentsController {
 
+    @Operation(summary = "Listar documentos médicos")
     @GetMapping("/medicals")
     ResponseEntity<List<DocumentWithUrlResponseDTO>> findMedicalDocuments(@PathVariable UUID id);
 
+    @Operation(summary = "Listar documentos pessoais")
     @GetMapping("/personals")
     ResponseEntity<List<DocumentWithUrlResponseDTO>> findPersonalDocuments(@PathVariable UUID id);
 
+    @Operation(summary = "Listar documentos escolares")
     @GetMapping("/schools")
     ResponseEntity<List<DocumentWithUrlResponseDTO>> findSchoolDocuments(@PathVariable UUID id);
 
+    @Operation(summary = "Fazer upload de um documento")
+    @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    ResponseEntity<Void> uploadDocument(
+            @PathVariable UUID id,
+            @RequestPart("file") MultipartFile file,
+            @RequestParam("category") String category,
+            @RequestParam("type") String type
+    );
 }

@@ -3,6 +3,7 @@ package br.org.apae.api.patient.domain.repository;
 import br.org.apae.api.patient.domain.model.AnnualRegistry;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -18,4 +19,7 @@ public interface AnnualRegistryRepository extends JpaRepository<AnnualRegistry, 
 
     @Query("SELECT DISTINCT ar.year FROM AnnualRegistry ar WHERE ar.year IS NOT NULL ORDER BY ar.year DESC")
     List<String> findDistinctYears();
+
+    @Query("SELECT DISTINCT ar.year FROM AnnualRegistry ar WHERE ar.patientId = :patientId ORDER BY ar.year DESC")
+    List<Integer> findYearsByPatientId(@Param("patientId") UUID patientId);
 }

@@ -87,6 +87,13 @@ public class AnnualRegistryApplicationServiceImpl implements AnnualRegistryAppli
     }
 
     @Override
+    @Transactional(readOnly = true)
+    public List<Integer> listYearsByPatient(UUID patientId) {
+        patientDomainService.getByIdOrThrow(patientId);
+        return annualRegistryRepository.findYearsByPatientId(patientId);
+    }
+
+    @Override
     @Transactional
     public AnnualRegistryResponseDTO updateRegistry(UUID patientId, UUID registryId, UpdateAnnualRegistryDTO updateDto) {
         patientDomainService.getByIdOrThrow(patientId);
