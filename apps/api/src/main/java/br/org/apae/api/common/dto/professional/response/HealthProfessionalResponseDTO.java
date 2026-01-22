@@ -1,31 +1,41 @@
 package br.org.apae.api.common.dto.professional.response;
 
 import br.org.apae.api.common.dto.address.AddressResponseDTO;
+import br.org.apae.api.common.dto.availability.response.AvailabilityResponseDTO;
+import br.org.apae.api.common.dto.servicearea.response.ServiceAreaResponseDTO;
 import br.org.apae.api.professional.domain.model.HealthProfessional;
 
+import java.util.List;
 import java.util.UUID;
 
 public record HealthProfessionalResponseDTO(
         UUID id,
-        String healthSector,
-        String phoneNumber,
-        String professionalDocument,
-        String email,
         String name,
+        String email,
+        String professionalDocument,
         String identityDocument,
-        AddressResponseDTO address) {
+        String phoneNumber,
+        String healthSector,
+        AddressResponseDTO address,
+        ServiceAreaResponseDTO serviceArea,
+        List<AvailabilityResponseDTO> availabilities
+) {
 
-    public HealthProfessionalResponseDTO(HealthProfessional entity) {
+    public HealthProfessionalResponseDTO(HealthProfessional entity,
+                                         ServiceAreaResponseDTO serviceArea,
+                                         AddressResponseDTO address,
+                                         List<AvailabilityResponseDTO> availabilities) {
         this(
                 entity.getId(),
-                entity.getHealthSector(),
-                entity.getPhoneNumber(),
-                entity.getProfessionalDocument(),
-                entity.getEmail(),
                 entity.getName(),
+                entity.getEmail(),
+                entity.getProfessionalDocument(),
                 entity.getIdentityDocument(),
-                entity.getAddress() != null
-                        ? new AddressResponseDTO(entity.getAddress())
-                        : null);
+                entity.getPhoneNumber(),
+                (entity.getServiceArea() != null) ? entity.getServiceArea().getArea() : null,
+                address,
+                serviceArea,
+                availabilities
+        );
     }
 }

@@ -3,6 +3,7 @@ package br.org.apae.api.patient.domain.repository;
 import br.org.apae.api.patient.domain.model.AnnualRegistry;
 import br.org.apae.api.patient.domain.model.Disorder;
 import br.org.apae.api.patient.domain.model.Patient;
+import br.org.apae.api.servicearea.domain.model.ServiceArea;
 import jakarta.persistence.criteria.Join;
 import jakarta.persistence.criteria.Predicate;
 import jakarta.persistence.criteria.Root;
@@ -18,8 +19,6 @@ public class PatientSpecification {
     public static Specification<Patient> filterBy(Map<String, String> filters) {
         return (root, query, criteriaBuilder) -> {
             List<Predicate> predicates = new ArrayList<>();
-            query.distinct(true);
-
             filters.forEach((key, value) -> {
                 if (value != null && !value.isBlank()) {
                     switch (key) {
@@ -53,6 +52,18 @@ public class PatientSpecification {
                                             criteriaBuilder.like(criteriaBuilder.lower(disorderJoin.get("name")), "%" + value.toLowerCase() + "%")
                                     );
                             predicates.add(root.get("id").in(transtornoSubQuery));
+                            break;
+
+                        case "treatmentType":
+                            Subquery<UUID> tipoSubQuery = query.subquery(UUID.class);
+                            Root<AnnualRegistry> tipoRoot = tipoSubQuery.from(AnnualRegistry.class);
+                            Join<AnnualRegistry, ServiceArea> serviceAreaJoin = tipoRoot.join("serviceAreas");
+                            tipoSubQuery.select(tipoRoot.get("patientId"))
+                                    .where(criteriaBuilder.like(
+                                            criteriaBuilder.lower(serviceAreaJoin.get("area")),
+                                            "%" + value.toLowerCase() + "%"));
+
+                            predicates.add(root.get("id").in(tipoSubQuery));
                             break;
                     }
                 }

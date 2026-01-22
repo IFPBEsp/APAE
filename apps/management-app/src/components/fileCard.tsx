@@ -50,8 +50,9 @@ export default function FileCard({ file }: Props) {
             <Button
               variant="secondary"
               onClick={() => window.open(file.link, file.fileName)}
+              className="cursor-pointer hover:bg-gray-300 hover:text-black transition-colors"
             >
-              Instalar o arquivo
+              Visualizar Arquivo
             </Button>
           </DialogFooter>
         </DialogContent>

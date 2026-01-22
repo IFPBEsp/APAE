@@ -1,5 +1,6 @@
 package br.org.apae.api.controllers.annual_registry;
 
+import java.util.List;
 import java.util.UUID;
 
 import org.springframework.http.HttpStatus;
@@ -76,5 +77,11 @@ public class AnnualRegistryControllerImpl implements AnnualRegistryController {
 
         annualRegistryApplicationService.deleteRegistry(patientId, registryId);
         return ResponseEntity.noContent().build();
+    }
+
+    @Override
+    public ResponseEntity<List<Integer>> getRegistryYears(@PathVariable("id") UUID patientId) {
+        List<Integer> years = annualRegistryApplicationService.listYearsByPatient(patientId);
+        return ResponseEntity.ok(years);
     }
 }

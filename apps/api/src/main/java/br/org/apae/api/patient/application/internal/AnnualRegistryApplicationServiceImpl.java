@@ -4,8 +4,12 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
+
+import br.org.apae.api.common.dto.servicearea.response.ServiceAreaResponseDTO;
 import br.org.apae.api.patient.domain.exceptions.RegistryNotFoundException;
 import br.org.apae.api.patient.domain.exceptions.RegistryOwnershipException;
+import br.org.apae.api.professional.domain.exceptions.ServiceAreaNotFoundException;
+import br.org.apae.api.servicearea.application.interfaces.ServiceAreaApplicationService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import br.org.apae.api.common.dto.patient.request.annual_registry.CreateAnnualRegistryDTO;
@@ -27,14 +31,16 @@ public class AnnualRegistryApplicationServiceImpl implements AnnualRegistryAppli
     private final AnnualRegistryMapper annualRegistryMapper;
     private final DisorderApplicationService disorderService;
     private final PatientDomainService patientDomainService;
+    private final ServiceAreaApplicationService serviceAreaService;
 
     public AnnualRegistryApplicationServiceImpl(AnnualRegistryRepository annualRegistryRepository,
                                                 AnnualRegistryMapper annualRegistryMapper, DisorderApplicationService disorderService,
-                                                PatientDomainService patientDomainService) {
+                                                PatientDomainService patientDomainService, ServiceAreaApplicationService serviceAreaService) {
         this.annualRegistryRepository = annualRegistryRepository;
         this.annualRegistryMapper = annualRegistryMapper;
         this.disorderService = disorderService;
         this.patientDomainService = patientDomainService;
+        this.serviceAreaService = serviceAreaService;
     }
 
     @Override
@@ -55,7 +61,14 @@ public class AnnualRegistryApplicationServiceImpl implements AnnualRegistryAppli
             throw new DisorderMismatchException();
         }
 
-        AnnualRegistry registry = annualRegistryMapper.toEntity(createAnnualRegistryDTO, disorderDtos, patientId);
+        Set<ServiceAreaResponseDTO> serviceAreaResponseDTOS = serviceAreaService.
+                findServiceAreas(createAnnualRegistryDTO.serviceArea());
+
+        if (createAnnualRegistryDTO.serviceArea().size() != serviceAreaResponseDTOS.size()) {
+            throw new ServiceAreaNotFoundException();
+        }
+
+        AnnualRegistry registry = annualRegistryMapper.toEntity(createAnnualRegistryDTO, disorderDtos, serviceAreaResponseDTOS, patientId);
         AnnualRegistry registrySaved = annualRegistryRepository.save(registry);
 
         return annualRegistryMapper.toResponseDTO(registrySaved);
@@ -71,6 +84,13 @@ public class AnnualRegistryApplicationServiceImpl implements AnnualRegistryAppli
                 .orElseThrow(() -> new RegistryNotFoundException(year));
 
         return annualRegistryMapper.toResponseDTO(registry);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<Integer> listYearsByPatient(UUID patientId) {
+        patientDomainService.getByIdOrThrow(patientId);
+        return annualRegistryRepository.findYearsByPatientId(patientId);
     }
 
     @Override
@@ -123,7 +143,14 @@ public class AnnualRegistryApplicationServiceImpl implements AnnualRegistryAppli
             throw new DisorderMismatchException();
         }
 
-        AnnualRegistry replacedRegistry = annualRegistryMapper.replaceEntityFromDto(registry, replaceDto, disorderDtos);
+        Set<ServiceAreaResponseDTO> serviceAreaResponseDTOS = serviceAreaService
+                .findServiceAreas(replaceDto.serviceAreas());
+
+        if (replaceDto.serviceAreas().size() != serviceAreaResponseDTOS.size()) {
+            throw new ServiceAreaNotFoundException();
+        }
+
+        AnnualRegistry replacedRegistry = annualRegistryMapper.replaceEntityFromDto(registry, replaceDto, disorderDtos, serviceAreaResponseDTOS);
 
         AnnualRegistry registrySaved = annualRegistryRepository.save(replacedRegistry);
         return annualRegistryMapper.toResponseDTO(registrySaved);

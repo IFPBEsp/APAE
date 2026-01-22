@@ -1,7 +1,5 @@
 package br.org.apae.api.patient.application.internal;
 
-import br.org.apae.api.address.application.interfaces.AddressService;
-import br.org.apae.api.common.dto.address.AddressResponseDTO;
 import br.org.apae.api.common.dto.patient.request.documents.CreateDocumentsDTO;
 import br.org.apae.api.common.dto.patient.request.patient.CreatePatientDTO;
 import br.org.apae.api.common.dto.patient.request.patient.UpdatePatientDTO;
@@ -34,12 +32,10 @@ import java.util.UUID;
 
 @Service
 public class PatientApplicationServiceImpl implements PatientApplicationService {
-
     private final PatientRepository patientRepository;
     private final PatientMapper patientMapper;
     private final PatientDomainService patientDomainService;
 
-    private final AddressService addressService;
     private final GuardianApplicationService guardianService;
     private final VaccineApplicationService vaccineService;
     private final ParentApplicationService parentService;
@@ -48,7 +44,6 @@ public class PatientApplicationServiceImpl implements PatientApplicationService 
 
     public PatientApplicationServiceImpl(PatientRepository patientRepository, PatientMapper patientMapper,
             PatientDomainService patientDomainService,
-            AddressService addressService,
             GuardianApplicationService guardianService, VaccineApplicationService vaccineService,
             ParentApplicationService parentService,
             AnnualRegistryApplicationService annualRegistryService,
@@ -56,7 +51,6 @@ public class PatientApplicationServiceImpl implements PatientApplicationService 
         this.patientRepository = patientRepository;
         this.patientMapper = patientMapper;
         this.patientDomainService = patientDomainService;
-        this.addressService = addressService;
         this.guardianService = guardianService;
         this.vaccineService = vaccineService;
         this.parentService = parentService;
@@ -73,10 +67,9 @@ public class PatientApplicationServiceImpl implements PatientApplicationService 
             throw new PatientConflictException();
         }
 
-        AddressResponseDTO addressDto = addressService.createAddress(createPatientDTO.address());
         Set<VaccineResponseDTO> vaccinesDto = vaccineService.findVaccines(createPatientDTO.vaccineNames());
 
-        Patient patient = patientMapper.toEntity(createPatientDTO, addressDto, vaccinesDto);
+        Patient patient = patientMapper.toEntity(createPatientDTO, vaccinesDto);
 
         patientRepository.save(patient);
 
@@ -84,8 +77,9 @@ public class PatientApplicationServiceImpl implements PatientApplicationService 
         GuardianResponseDTO guardianDto = guardianService.createGuardian(createPatientDTO.guardian(), patient.getId());
         List<ParentResponseDTO> parentDtos = parentService.createParents(createPatientDTO.parents(), patient.getId());
         documentService.storePatientDocuments(patient, documents);
+        String photo = documentService.getPatientPhoto(patient.getId());
 
-        return patientMapper.toResponseDTO(patient, guardianDto, parentDtos);
+        return patientMapper.toResponseDTO(patient, guardianDto, parentDtos, photo);
     }
 
     @Override
@@ -96,14 +90,19 @@ public class PatientApplicationServiceImpl implements PatientApplicationService 
         List<ParentResponseDTO> parentDtos = parentService.findParentsByPatientId(id);
         GuardianResponseDTO guardianDto = guardianService.findGuardianByPatientId(id);
 
-        return patientMapper.toResponseDTO(patient, guardianDto, parentDtos);
+        String photo = documentService.getPatientPhoto(id);
+
+        return patientMapper.toResponseDTO(patient, guardianDto, parentDtos, photo);
     }
 
     @Override
     @Transactional(readOnly = true)
     public Page<PatientSummaryResponseDTO> findAllPatients(Pageable pageable) {
         Page<Patient> patientsPage = patientRepository.findAll(pageable);
-        return patientsPage.map(patientMapper::toSummaryResponseDTO);
+        return patientsPage.map(patient -> {
+            String photo = documentService.getPatientPhoto(patient.getId());
+            return patientMapper.toSummaryResponseDTO(patient, photo);
+        });
     }
 
     @Override
@@ -111,7 +110,10 @@ public class PatientApplicationServiceImpl implements PatientApplicationService 
     public List<PatientSummaryResponseDTO> findPatientByFilter(Map<String, String> filters) {
         Specification<Patient> spec = PatientSpecification.filterBy(filters);
         return patientRepository.findAll(spec).stream()
-                .map(patientMapper::toSummaryResponseDTO)
+                .map(patient -> {
+                    String photo = documentService.getPatientPhoto(patient.getId());
+                    return patientMapper.toSummaryResponseDTO(patient, photo);
+                })
                 .toList();
     }
 
@@ -121,17 +123,17 @@ public class PatientApplicationServiceImpl implements PatientApplicationService 
         Patient patient = patientDomainService.getByIdOrThrow(id);
 
         Set<VaccineResponseDTO> vaccineDtos = vaccineService.findVaccines(updatePatientDTO.vaccineNames());
-        AddressResponseDTO addressDto = addressService.updateAddress(patient.getAddress().getId(),
-                updatePatientDTO.address());
 
-        Patient updatedPatient = patientMapper.updateEntityFromDto(patient, updatePatientDTO, addressDto, vaccineDtos);
+        Patient updatedPatient = patientMapper.updateEntityFromDto(patient, updatePatientDTO, vaccineDtos);
 
         patientRepository.save(updatedPatient);
 
         GuardianResponseDTO guardianDto = guardianService.updateGuardian(updatePatientDTO.guardian(), id);
         List<ParentResponseDTO> parentDtos = parentService.updateParents(updatePatientDTO.parents(), id);
 
-        return patientMapper.toResponseDTO(updatedPatient, guardianDto, parentDtos);
+        String photo = documentService.getPatientPhoto(id);
+
+        return patientMapper.toResponseDTO(updatedPatient, guardianDto, parentDtos, photo);
     }
 
     @Override
@@ -148,7 +150,6 @@ public class PatientApplicationServiceImpl implements PatientApplicationService 
     public void deletePatient(UUID id) {
         Patient patient = patientDomainService.getByIdOrThrow(id);
 
-        addressService.deleteAddress(patient.getAddress().getId());
         guardianService.deleteGuardian(patient.getId());
         parentService.deleteParents(patient.getId());
         annualRegistryService.deleteAllRegistriesByPatient(patient.getId());

@@ -1,6 +1,6 @@
 export interface PatientCardData {
   id: string;
-  urlFoto: string | null;
+  photoUrl: string | null;
   fullName: string | null;
   cpf: string | null;      
   contact: string | null;  
