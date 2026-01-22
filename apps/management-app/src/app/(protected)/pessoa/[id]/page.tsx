@@ -20,6 +20,7 @@ import { DialogType } from "./(dialogs)/dialog-types";
 import { EditPersonalDialog } from "./(dialogs)/edit-personal-dialog";
 import { EditDocumentationDialog } from "./(dialogs)/edit-documentation-dialog";
 import { EditAddressDialog } from "./(dialogs)/edit-address-dialog";
+import { EditGuardiansDialog } from "./(dialogs)/edit-guardians-dialog";
 
 type InfoRowProps = Readonly<{
   label: string;
@@ -85,12 +86,15 @@ function FieldsCard({ title, rows, onEdit }: FieldsCardProps) {
         </CardAction>
       </CardHeader>
       <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-x-4">
-        {rows.map((row) => (
-          <InfoRow
-            key={`${title.toLowerCase()}-${row.label.toLowerCase()}`}
-            {...row}
-          />
-        ))}
+        {rows.map(
+          (row) =>
+            row.label && (
+              <InfoRow
+                key={`${title.toLowerCase()}-${row.label.toLowerCase()}`}
+                {...row}
+              />
+            ),
+        )}
       </CardContent>
     </Card>
   );
@@ -123,12 +127,12 @@ export default function PersonDetailsPage() {
     async function fetchPessoa() {
       try {
         setLoadingPessoa(true);
-        // const response = await fetch(`/api/pessoas/${id}`);
-        //
-        // if (!response.ok) throw new Error("Falha ao buscar dados do paciente.");
-        //
-        // const data = await response.json();
-        setPessoa({});
+        const response = await fetch(`/api/pessoas/${id}`);
+
+        if (!response.ok) throw new Error("Falha ao buscar dados do paciente.");
+
+        const data = await response.json();
+        setPessoa(data);
       } catch (err: any) {
         console.error(err);
         toast.error(err.message);
@@ -139,7 +143,7 @@ export default function PersonDetailsPage() {
     }
 
     fetchPessoa();
-  }, [id, router]);
+  }, [id, router, dialog]);
 
   useEffect(() => {
     if (!id) return;
@@ -206,6 +210,11 @@ export default function PersonDetailsPage() {
         open={dialog === DialogType.ADDRESS}
         member={pessoa}
         onOpenChange={(open) => setDialog(open ? DialogType.ADDRESS : null)}
+      />
+      <EditGuardiansDialog
+        open={dialog === DialogType.GUARDIANS}
+        member={pessoa}
+        onOpenChange={(open) => setDialog(open ? DialogType.GUARDIANS : null)}
       />
 
       <div className="mb-4">
@@ -293,41 +302,54 @@ export default function PersonDetailsPage() {
         />
 
         {/* Card: Responsáveis */}
-        <Card className="w-full relative font-nunito">
-          <CardHeader>
-            <CardTitle className="text-[#0D4F97]">Responsáveis</CardTitle>
-          </CardHeader>
-          <CardContent>
-            {pessoa.guardian && (
-              <div className="mb-4 p-2 border rounded-md">
-                <p className="font-bold text-base">Guardião Principal</p>
-                <InfoRow label="Nome" value={pessoa.guardian.name} />
-                <InfoRow label="Parentesco" value={pessoa.guardian.kinship} />
-                <InfoRow label="Contato" value={pessoa.guardian.contact} />
-                <InfoRow
-                  label="Endereço"
-                  value={`${pessoa.guardian.address?.street ?? ""}, ${
-                    pessoa.guardian.address?.number ?? ""
-                  }`}
-                />
-              </div>
-            )}
-            {pessoa.parents?.map((parent: any) => (
-              <div
-                key={parent.id}
-                className="mb-2 p-2 border-t border-gray-200"
-              >
-                <p className="font-bold text-base">
-                  {parent.kinship === "PAI" ? "Pai" : "Mãe"}
-                </p>
-                <InfoRow label="Nome" value={parent.name} />
-                <InfoRow label="CPF" value={parent.cpf} />
-                <InfoRow label="Profissão" value={parent.profession} />
-                <InfoRow label="Vivo?" value={parent.isAlive} />
-              </div>
-            ))}
-          </CardContent>
-        </Card>
+        <FieldsCard
+          title="Responsáveis"
+          onEdit={() => setDialog(DialogType.GUARDIANS)}
+          rows={[
+            ...(pessoa.guardian
+              ? [
+                  {
+                    label: "Nome do Responsável",
+                    value: pessoa.guardian.name,
+                  },
+                  {
+                    label: "Parentesco do Responsável",
+                    value: pessoa.guardian.kinship,
+                  },
+                  {
+                    label: "Contato do Responsável",
+                    value: pessoa.guardian.contact,
+                  },
+                  {
+                    label: "Endereço do Responsável",
+                    value: `${pessoa.guardian.address?.street ?? ""}, ${
+                      pessoa.guardian.address?.number ?? ""
+                    }`,
+                  },
+                ]
+              : []),
+            ...pessoa.parents.flatMap((parent: any) => {
+              return [
+                {
+                  label: `Nome do parente (${parent.kinship})`,
+                  value: parent.name,
+                },
+                {
+                  label: `CPF do parente (${parent.kinship})`,
+                  value: parent.cpf,
+                },
+                {
+                  label: `Profissão do parente (${parent.kinship})`,
+                  value: parent.profession,
+                },
+                {
+                  label: `Parente vivo? (${parent.kinship})`,
+                  value: parent.isAlive,
+                },
+              ];
+            }),
+          ]}
+        />
 
         {/* --- CARD DE SAÚDE --- */}
         <Card className="w-full relative font-nunito">

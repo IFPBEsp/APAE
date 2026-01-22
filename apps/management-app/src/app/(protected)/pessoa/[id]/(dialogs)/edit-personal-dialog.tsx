@@ -45,7 +45,30 @@ export function EditPersonalDialog({
     },
   });
 
-  const onSubmit = (values: z.input<typeof EditPersonal>) => {};
+  const onSubmit = async (values: z.output<typeof EditPersonal>) => {
+    const response = await fetch(`/api/pessoas/${member.id}`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        ...member,
+        nationality: member.birthplace,
+
+        fullName: values.name,
+        birthDate: values.birth.date.toISOString().split("T")[0],
+        birthplace: values.birth.place,
+        contact: values.phone,
+        allergies: values.allergies,
+        isStudent: values.student,
+        registrationDate: values.registrationDate.toISOString().split("T")[0],
+      }),
+    });
+
+    if (!response.ok) {
+      throw new Error("Ocorreu um erro ao atualizar pessoa.");
+    }
+
+    onOpenChange(false);
+  };
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>

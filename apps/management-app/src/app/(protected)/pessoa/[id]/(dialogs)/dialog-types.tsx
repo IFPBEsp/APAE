@@ -8,4 +8,5 @@ export enum DialogType {
   ADDRESS,
   DOCUMENTATION,
   PERSONAL,
+  GUARDIANS,
 }

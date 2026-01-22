@@ -53,7 +53,64 @@ export function EditDocumentationDialog({
     },
   });
 
-  const onSubmit = () => {};
+  const onSubmit = async (values: z.input<typeof EditDocumentation>) => {
+    const parseBirthCertificate = (certificate: string) => {
+      const [
+        cartorio,
+        acervo,
+        servicoRegistroCivil,
+        ano,
+        tipo,
+        livro,
+        folha,
+        termo,
+        digitoVerificador,
+      ] = certificate.split(" ");
+
+      return {
+        cartorio,
+        acervo,
+        servicoRegistroCivil,
+        ano,
+        tipo,
+        livro,
+        folha,
+        termo,
+        digitoVerificador,
+      };
+    };
+
+    const {
+      cartorio: registryOffice,
+      livro: book,
+      folha: fls,
+    } = parseBirthCertificate(values.birthCertificate);
+    const response = await fetch(`/api/pessoas/${member.id}`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        ...member,
+        nationality: member.birthplace,
+
+        issuingAgency: values.rg.issuing.body,
+        issueDate: values.rg.issuing.date.toISOString().split("T")[0],
+        rg: values.rg.number,
+        cpf: values.cpf,
+        birthCertificateNumber: values.birthCertificate,
+        cns: values.cns,
+        nis: values.nis,
+        registryOffice,
+        book,
+        fls,
+      }),
+    });
+
+    if (!response.ok) {
+      throw new Error("Ocorreu um erro ao atualizar pessoa.");
+    }
+
+    onOpenChange(false);
+  };
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>

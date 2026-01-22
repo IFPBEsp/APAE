@@ -255,3 +255,25 @@ export const EditAddress = z.object({
   district: z.string().min(2, "Bairro inválido"),
   street: z.string().min(2, "Rua inválida"),
 });
+
+export const EditKinship = z.object({
+  rg: RG,
+  cpf: CPF,
+  alive: z.boolean(),
+  name: z.string().min(2, "Nome muito curto"),
+  occupation: z.string().min(2, "Profissão inválida"),
+  type: z.string().min(1, "Informar o parentesco é obrigatório."),
+});
+
+export const EditGuardian = z.object({
+  name: z.string().min(2, "Nome muito curto"),
+  contact: z.string().min(1, "Contato de emergência é obrigatório."),
+  kinship: z.string().min(1, "Informar o parentesco é obrigatório."),
+  address: Address,
+});
+
+
+export const EditGuardians = z.object({
+  guardian: EditGuardian,
+  kinships: z.array(EditKinship).min(1, "Cadastre pelo menos um parente."),
+});

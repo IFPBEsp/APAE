@@ -40,7 +40,31 @@ export function EditAddressDialog({
     },
   });
 
-  const onSubmit = () => {};
+  const onSubmit = async (values: z.input<typeof EditAddress>) => {
+    const response = await fetch(`/api/pessoas/${member.id}`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        ...member,
+        nationality: member.birthplace,
+
+        address: {
+          street: values.street ?? member.address.street,
+          neighborhood: values.district ?? member.address.neighborhood,
+          city: values.city ?? member.address.city,
+          state: values.state ?? member.address.state,
+          cep: values.cep ?? member.address.cep,
+          number: values.street.replaceAll(/\D/g, "") ?? member.address.number,
+        },
+      }),
+    });
+
+    if (!response.ok) {
+      throw new Error("Ocorreu um erro ao atualizar pessoa.");
+    }
+
+    onOpenChange(false);
+  };
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>

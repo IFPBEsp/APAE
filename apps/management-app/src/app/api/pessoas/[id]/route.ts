@@ -35,7 +35,7 @@ export async function PUT(
   try {
     const data = await request.json();
     const api = await createBaseApi();
-    const response = await api.post(`/patients/${id}/`, data);
+    const response = await api.put(`/patients/${id}`, data);
 
     return NextResponse.json(response.data);
   } catch (error) {
