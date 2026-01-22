@@ -13,9 +13,15 @@ public interface HealthProfessionalApplicationService {
 
     HealthProfessionalResponseDTO createProfessional(CreateHealthProfessionalDTO dto, CreateProfessionalDocumentsDTO documentsDTO);
 
-    Page<HealthProfessionalResponseDTO> findAllProfessionals(Pageable pageable);
+    Page<HealthProfessionalResponseDTO> findAllProfessionals(Boolean ativo, Pageable pageable);
 
-    void deleteProfessional(UUID id);
+    // void deleteProfessional(UUID id);
+
+    void activateProfessional(UUID id);
+
+    void inactivateProfessional(UUID id);
+    
+    void reactivateProfessional(UUID id);
 
     HealthProfessionalResponseDTO findProfessionalById(UUID id);
 

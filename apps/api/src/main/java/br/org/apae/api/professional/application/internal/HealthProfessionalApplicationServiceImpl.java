@@ -98,7 +98,7 @@ public class HealthProfessionalApplicationServiceImpl implements HealthProfessio
                 .orElseThrow(HealthProfessionalNotFoundException::new);
     }
 
-    @Override
+/*    @Override
     @Transactional
     public void deleteProfessional(UUID id) {
         if (!repository.existsById(id)) {
@@ -106,10 +106,53 @@ public class HealthProfessionalApplicationServiceImpl implements HealthProfessio
         }
         repository.deleteById(id);
     }
+*/
 
     @Override
+    @Transactional
+    public void activateProfessional(UUID id) {
+        HealthProfessional professional = repository.findById(id)
+            .orElseThrow(HealthProfessionalNotFoundException::new);
+
+        professional.setAtivo(true);
+
+    }
+
+    @Override
+    @Transactional
+    public void inactivateProfessional(UUID id) {
+        HealthProfessional professional = repository.findById(id)
+            .orElseThrow(HealthProfessionalNotFoundException::new);
+
+        professional.setAtivo(false);
+
+    }
+
+    @Override
+    @Transactional
+    public void reactivateProfessional(UUID id) {
+        HealthProfessional professional = repository.findById(id)
+            .orElseThrow(HealthProfessionalNotFoundException::new);
+
+        professional.setAtivo(true);
+    }
+
+    /*@Override
     @Transactional(readOnly = true)
     public Page<HealthProfessionalResponseDTO> findAllProfessionals(Pageable pageable) {
         return repository.findAll(pageable).map(mapper::toResponseDTO);
+    }*/
+
+    @Override
+    @Transactional(readOnly = true)
+    public Page<HealthProfessionalResponseDTO> findAllProfessionals(Boolean ativo, Pageable pageable) {
+        Page<HealthProfessional> page;
+        if (ativo == null) {
+            page = repository.findAll(pageable);
+        } else{
+            page = repository.findByAtivo(ativo, pageable);
+        }
+        return page.map(mapper::toResponseDTO);
     }
+
 }
