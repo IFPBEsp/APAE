@@ -1,5 +1,6 @@
 package br.org.apae.api.patient.interfaces.controllers;
 
+import java.util.List;
 import java.util.UUID;
 
 import org.springframework.http.ResponseEntity;
@@ -40,6 +41,11 @@ public interface AnnualRegistryController {
     ResponseEntity<AnnualRegistryResponseDTO> getRegistryByYear(
             @Parameter(description = "ID do paciente") @PathVariable("id") UUID patientId,
             @Parameter(description = "Ano do registro (ex: 2025)") @PathVariable("year") Integer year);
+
+    // --- NOVO MÉTODO PARA LISTAR ANOS ---
+    @Operation(summary = "Lista os anos que possuem registro para o paciente")
+    @GetMapping("/years")
+    ResponseEntity<List<Integer>> getRegistryYears(@PathVariable("id") UUID patientId);
 
     @Operation(summary = "Atualizar registro anual (Parcial/PATCH)", description = "Atualiza um registro anual existente pelo seu ID único. Envie apenas os campos que deseja alterar.")
     @ApiResponses(value = {
