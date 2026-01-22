@@ -84,7 +84,7 @@ public class HealthProfessionalControllerImpl implements HealthProfessionalContr
     }
 
     @Override
-    public ResponseEntity<List<DocumentWithUrlResponseDTO>> listProfessionalDocuments(UUID id) {
+    public ResponseEntity<List<DocumentWithUrlResponseDTO>> getProfessionalDocuments(UUID id) {
         try {
             Iterable<DocumentDTO> documents = this.documentService.listDocuments(
                     ListDocumentsArgsDTO.builder()

@@ -39,7 +39,7 @@ import {
 
 import { useGetByIdProfissional } from "@/hooks/profissional/use-get-by-id-profissional";
 import { useUpdateProfissional } from "@/hooks/profissional/use-update-profissional";
-import { useUpdateProfessionalDocuments } from "@/hooks/profissional/use-professional-documents";
+import { useUpdateProfessionalDocuments } from "@/hooks/profissional/use-update-professional-documents";
 
 import { updateProfessionalSchema } from "@/schemas/profissional.schema";
 import { STATES } from "@/lib/states";
@@ -49,7 +49,7 @@ import Disponibilidade from "@/components/forms/DisponibilidadeForm";
 import { gerarMatrizDisponibilidade } from "@/utils/disponibilidade.utils";
 
 import {
-  listProfessionalDocuments,
+  getProfessionalDocuments,
   removeProfessionalDocument,
   type DocumentWithUrl,
 } from "@/services/profissional-service";
@@ -142,7 +142,7 @@ export default function AtualizarProfissional(): JSX.Element {
     setDocsLoading(true);
     setDocsError(null);
     try {
-      const data = await listProfessionalDocuments(professionalId);
+      const data = await getProfessionalDocuments(professionalId);
       setDocs(data);
     } catch (e: any) {
       setDocsError(e?.message ?? "Erro ao carregar documentos");

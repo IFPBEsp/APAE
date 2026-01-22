@@ -55,7 +55,7 @@ public interface HealthProfessionalController {
         @ApiResponse(responseCode = "404", description = "Profissional não encontrado", content = @Content)
     }
     )
-  ResponseEntity<List<DocumentWithUrlResponseDTO>> listProfessionalDocuments(@PathVariable UUID id);
+  ResponseEntity<List<DocumentWithUrlResponseDTO>> getProfessionalDocuments(@PathVariable UUID id);
 
   @Operation(summary = "Listar profissionais de saúde", description = "Retorna uma lista paginada de todos os profissionais de saúde cadastrados.", responses = {
       @ApiResponse(responseCode = "200", description = "Lista obtida com sucesso", content = @Content(schema = @Schema(implementation = Page.class))),

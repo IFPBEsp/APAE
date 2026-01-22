@@ -72,12 +72,6 @@ export async function getProfissionalById(id: string) {
 }
 
 export async function getProfessionalDocuments(id: string) {
-  return fetch(`${API_URL}/professionals/${id}/documents`, {
-    method: "GET",
-  });
-}
-
-export async function listProfessionalDocuments(id: string) {
   const res = await fetch(`${API_URL}/professionals/${id}/documents`, { method: "GET" });
 
   const data = await res.json().catch(() => null);
@@ -96,8 +90,6 @@ export async function updateProfessionalDocuments(id: string, formData: FormData
     body: formData,
   });
 }
-
-export { DocumentWithUrl };
 
 export async function removeProfessionalDocument(
   professionalId: string,
