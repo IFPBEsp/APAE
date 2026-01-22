@@ -4,6 +4,7 @@ import java.util.UUID;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -16,6 +17,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RequestPart;
+import org.springframework.data.domain.Sort;
+
 
 import br.org.apae.api.common.dto.professional.request.CreateHealthProfessionalDTO;
 import br.org.apae.api.common.dto.professional.request.UpdateHealthProfessionalDTO;
@@ -42,10 +45,10 @@ public interface HealthProfessionalController {
       @ApiResponse(responseCode = "200", description = "Lista obtida com sucesso", content = @Content(schema = @Schema(implementation = Page.class))),
       @ApiResponse(responseCode = "500", description = "Erro interno no servidor", content = @Content)
   })
-  @GetMapping
+  @GetMapping  
   ResponseEntity<Page<HealthProfessionalResponseDTO>> getAllHealthProfessional(
         @RequestParam(required = false) Boolean ativo,
-        Pageable pageable
+        @PageableDefault(sort = "name", direction = Sort.Direction.ASC) Pageable pageable
     );
 
  /*  @Operation(summary = "Excluir profissional de saúde", description = "Remove um profissional de saúde pelo seu identificador (UUID).", responses = {
