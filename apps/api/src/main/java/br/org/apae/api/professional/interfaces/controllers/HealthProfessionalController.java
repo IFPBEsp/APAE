@@ -4,17 +4,21 @@ import java.util.UUID;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.MediaType;
-import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RequestPart;
+import org.springframework.data.domain.Sort;
+
 
 import br.org.apae.api.common.dto.professional.request.CreateHealthProfessionalDTO;
 import br.org.apae.api.common.dto.professional.request.UpdateHealthProfessionalDTO;
@@ -41,22 +45,38 @@ public interface HealthProfessionalController {
       @ApiResponse(responseCode = "200", description = "Lista obtida com sucesso", content = @Content(schema = @Schema(implementation = Page.class))),
       @ApiResponse(responseCode = "500", description = "Erro interno no servidor", content = @Content)
   })
-  @GetMapping
-  ResponseEntity<Page<HealthProfessionalResponseDTO>> getAllHealthProfessional(Pageable pageable);
+  @GetMapping  
+  ResponseEntity<Page<HealthProfessionalResponseDTO>> getAllHealthProfessional(
+        @RequestParam(required = false) Boolean ativo,
+        @PageableDefault(sort = "name", direction = Sort.Direction.ASC) Pageable pageable
+    );
 
-  @Operation(summary = "Excluir profissional de saúde", description = "Remove um profissional de saúde pelo seu identificador (UUID).", responses = {
+ /*  @Operation(summary = "Excluir profissional de saúde", description = "Remove um profissional de saúde pelo seu identificador (UUID).", responses = {
       @ApiResponse(responseCode = "204", description = "Profissional excluído com sucesso", content = @Content),
       @ApiResponse(responseCode = "404", description = "Profissional não encontrado", content = @Content),
       @ApiResponse(responseCode = "500", description = "Erro interno no servidor", content = @Content)
   })
+  
   @DeleteMapping("/{id}")
-  ResponseEntity<Void> deleteHealthProfessional(@PathVariable UUID id);
+  ResponseEntity<Void> deleteHealthProfessional(@PathVariable UUID id);*/
+
+  @Operation(
+    summary = "Reativar profissional de saúde",
+    description = "Reativa um profissional previamente inativado.",
+    responses = {
+        @ApiResponse(responseCode = "204", description = "Profissional reativado com sucesso"),
+        @ApiResponse(responseCode = "404", description = "Profissional não encontrado")
+    })
+
+  @PatchMapping("/{id}/reactivate")
+  ResponseEntity<Void> reactivateHealthProfessional(@PathVariable UUID id);
 
   @Operation(summary = "Buscar profissional de saúde por ID", description = "Obtém os dados de um profissional de saúde específico através do seu identificador (UUID).", responses = {
       @ApiResponse(responseCode = "200", description = "Profissional encontrado", content = @Content(schema = @Schema(implementation = HealthProfessionalResponseDTO.class))),
       @ApiResponse(responseCode = "404", description = "Profissional não encontrado", content = @Content),
       @ApiResponse(responseCode = "500", description = "Erro interno no servidor", content = @Content)
   })
+
   @GetMapping("/{id}")
   ResponseEntity<HealthProfessionalResponseDTO> findByIdHealthProfessional(@PathVariable UUID id);
 
@@ -69,4 +89,10 @@ public interface HealthProfessionalController {
   @PutMapping("/{id}")
   ResponseEntity<HealthProfessionalResponseDTO> updateHealthProfessional(@PathVariable UUID id,
       @Valid @RequestBody UpdateHealthProfessionalDTO dto);
+
+  @PutMapping("/{id}/inactivate")
+  ResponseEntity<Void> inactivateHealthProfessional(@PathVariable UUID id);
+
+  @PutMapping("/{id}/activate")
+  ResponseEntity<Void> activateHealthProfessional(@PathVariable UUID id);
 }

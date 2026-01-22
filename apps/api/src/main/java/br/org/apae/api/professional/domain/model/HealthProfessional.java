@@ -36,6 +36,9 @@ public class HealthProfessional {
     @Column(name = "rg", unique = true)
     private String identityDocument;
 
+    @Column(name = "ativo", nullable = false)
+    private Boolean ativo = true;
+
     @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinColumn(name = "endereco_id", referencedColumnName = "id")
     private Address address;
@@ -118,5 +121,13 @@ public class HealthProfessional {
     public void addAvailability(Availability availability) {
         this.availabilities.add(availability);
         availability.setProfessional(this);
+    }
+
+    public Boolean getAtivo() {
+        return ativo;
+    }
+
+    public void setAtivo(Boolean ativo) {
+        this.ativo = ativo;
     }
 }
