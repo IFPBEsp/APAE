@@ -17,7 +17,7 @@ export default function VisualizarProfissional() {
   const params = useParams<{ id: string }>();
   const id = params?.id;
 
-  const { profissional, loading, error } = useGetByIdProfissional(id);
+  const { profissional, loading, error } = useGetByIdProfissional();
 
   const disponibilidadeMatrix = useMemo(() => {
     const avs = profissional?.availabilities ?? [];
@@ -27,13 +27,15 @@ export default function VisualizarProfissional() {
         dia: a.day?.toLowerCase(),
         turno: a.shift?.toLowerCase(),
         checked: true,
-      }))
+      })),
     );
   }, [profissional?.availabilities]);
 
   if (!id) return <p className="p-6">ID inválido.</p>;
-  if (loading) return <p className="p-6">Carregando detalhes do profissional...</p>;
-  if (error) return <p className="p-6 text-red-500">Erro ao carregar os dados.</p>;
+  if (loading)
+    return <p className="p-6">Carregando detalhes do profissional...</p>;
+  if (error)
+    return <p className="p-6 text-red-500">Erro ao carregar os dados.</p>;
   if (!profissional) return <p className="p-6">Profissional não encontrado.</p>;
 
   const dados = {
@@ -172,11 +174,13 @@ export default function VisualizarProfissional() {
         </Card>
         <Card className="shadow-lg border-2 border-[#E0E7FF] text-[#0D4F97] md:col-span-2">
           <CardHeader>
-            <CardTitle className="text-lg font-semibold">Disponibilidade</CardTitle>
+            <CardTitle className="text-lg font-semibold">
+              Disponibilidade
+            </CardTitle>
           </CardHeader>
 
           <CardContent className="space-y-3">
-            {(!disponibilidadeMatrix || disponibilidadeMatrix.length === 0) ? (
+            {!disponibilidadeMatrix || disponibilidadeMatrix.length === 0 ? (
               <p className="text-gray-700">—</p>
             ) : (
               <div className="overflow-x-auto rounded-md border">
@@ -206,12 +210,18 @@ export default function VisualizarProfissional() {
 
                         {DAYS.map((day) => {
                           const cell = disponibilidadeMatrix.find(
-                            (d) => d?.dia === day && d?.turno === shift
+                            (d) => d?.dia === day && d?.turno === shift,
                           );
 
                           return (
-                            <td key={`${day}-${shift}`} className="p-3 text-center">
-                              <Checkbox checked={Boolean(cell?.checked)} disabled />
+                            <td
+                              key={`${day}-${shift}`}
+                              className="p-3 text-center"
+                            >
+                              <Checkbox
+                                checked={Boolean(cell?.checked)}
+                                disabled
+                              />
                             </td>
                           );
                         })}
