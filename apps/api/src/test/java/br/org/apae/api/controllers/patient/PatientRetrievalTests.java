@@ -5,6 +5,7 @@ import br.org.apae.api.auth.infrastructure.security.JwtProvider;
 import br.org.apae.api.common.dto.patient.response.disorder.DisorderResponseDTO;
 import br.org.apae.api.common.dto.patient.response.patient.PatientResponseDTO;
 import br.org.apae.api.common.dto.patient.response.patient.PatientSummaryResponseDTO;
+import br.org.apae.api.common.dto.servicearea.response.ServiceAreaResponseDTO;
 import br.org.apae.api.patient.application.interfaces.AnnualRegistryApplicationService;
 import br.org.apae.api.patient.application.interfaces.DisorderApplicationService;
 import br.org.apae.api.patient.application.interfaces.PatientApplicationService;
@@ -302,5 +303,39 @@ public class PatientRetrievalTests {
                 .andExpect(jsonPath("$", hasSize(2)))
                 .andExpect(jsonPath("$[0]").value("Campina Grande"))
                 .andExpect(jsonPath("$[1]").value("Esperança"));
+    }
+
+    @Test
+    @DisplayName("Should list available service areas ")
+    @WithMockUser(username = "admin", roles = {"ADMIN"})
+    void shouldListAvailableAllServiceArea() throws Exception {
+        List<ServiceAreaResponseDTO> mockData = List.of(new ServiceAreaResponseDTO(1, "Fisioterapia"), new ServiceAreaResponseDTO(2, "Nutrição"));
+        when(serviceAreaApplicationService.findAllServiceAreas()).thenReturn(mockData);
+
+        mockMvc.perform(get("/patients/filtros/tipos-atendimento"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$", hasSize(2)))
+                .andExpect(jsonPath("$[0]").value("Fisioterapia"))
+                .andExpect(jsonPath("$[1]").value("Nutrição"));
+    }
+
+    @Test
+    @DisplayName("Should remove blank filters before passing to service")
+    @WithMockUser(username = "admin", roles = {"ADMIN"})
+    void shouldRemoveBlankFilters() throws Exception {
+        when(patientService.findPatientByFilter(anyMap()))
+                .thenReturn(List.of());
+
+        mockMvc.perform(get("/patients")
+                        .param("name", "   ")
+                        .param("city", "")
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk());
+
+        verify(patientService).findPatientByFilter(filtersCaptor.capture());
+
+        Map<String, String> filtrosCapturados = filtersCaptor.getValue();
+
+        assertEquals(0, filtrosCapturados.size());
     }
 }

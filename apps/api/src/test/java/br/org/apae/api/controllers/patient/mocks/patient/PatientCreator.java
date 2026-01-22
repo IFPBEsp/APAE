@@ -79,6 +79,7 @@ public class PatientCreator {
         return new CreateAnnualRegistryDTO(
                 "123456789",
                 "Nenhuma doença pré-existente",
+                "Nenhum",
                 new BigDecimal("1412.00"),
                 2024,
                 Set.of(createDisorder()),
