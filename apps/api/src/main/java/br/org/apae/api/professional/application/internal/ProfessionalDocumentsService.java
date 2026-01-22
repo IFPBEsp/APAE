@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import br.org.apae.api.common.dto.professional.request.documents.CreateProfessionalDocumentsDTO;
+import br.org.apae.api.common.dto.professional.request.documents.UpdateProfessionalDocumentsDTO;
 import br.org.apae.api.documents.application.interfaces.DocumentApplicationService;
 import br.org.apae.api.documents.domain.enums.DocumentCategory;
 import br.org.apae.api.documents.domain.enums.DocumentType;
@@ -15,37 +16,60 @@ import br.org.apae.api.professional.domain.model.HealthProfessional;
 
 @Service
 public class ProfessionalDocumentsService {
-        private final DocumentApplicationService documentService;
 
-        public ProfessionalDocumentsService(DocumentApplicationService documentService) {
-                this.documentService = documentService;
-        }
+    private static final Logger LOGGER = Logger.getGlobal();
 
-        private void storeDocument(
-                        HealthProfessional professional,
-                        DocumentType type,
-                        MultipartFile file) {
-                try {
-                        this.documentService.putDocument(
-                                        PutDocumentArgsDTO.builder()
-                                                        .owner(professional.getId().toString())
-                                                        .category(DocumentCategory.PROFESSIONAL)
-                                                        .type(type)
-                                                        .contentType(file.getContentType())
-                                                        .stream(file.getInputStream())
-                                                        .build());
-                } catch (Exception error) {
-                        Logger.getGlobal().log(Level.SEVERE, error.toString());
-                }
-        }
+    private final DocumentApplicationService documentService;
 
-        public void storeProfessionalDocuments(
-                        HealthProfessional professional,
-                        CreateProfessionalDocumentsDTO documents) {
-                storeDocument(professional, DocumentType.VOLUNTEER_AGREEMENT,
-                                documents.volunteerAgreement());
-                storeDocument(professional, DocumentType.CURRICULUM, documents.curriculum());
-                storeDocument(professional, DocumentType.ATTACHMENTANY, documents.attachmentAny());
+    public ProfessionalDocumentsService(DocumentApplicationService documentService) {
+        this.documentService = documentService;
+    }
+
+    private void storeDocument(
+            HealthProfessional professional,
+            DocumentType type,
+            MultipartFile file) {
+
+        if (file == null || file.isEmpty()) return;
+
+        try {
+            this.documentService.putDocument(
+                    PutDocumentArgsDTO.builder()
+                            .owner(professional.getId().toString())
+                            .category(DocumentCategory.PROFESSIONAL)
+                            .type(type)
+                            .contentType(file.getContentType())
+                            .stream(file.getInputStream())
+                            .build()
+            );
+        } catch (Exception error) {
+            LOGGER.log(Level.SEVERE, "Erro ao armazenar documento (" + type + "): " + error.getMessage());
         }
+    }
+
+    public void storeProfessionalDocuments(
+            HealthProfessional professional,
+            CreateProfessionalDocumentsDTO documents) {
+
+        storeDocument(professional, DocumentType.VOLUNTEER_AGREEMENT, documents.volunteerAgreement());
+        storeDocument(professional, DocumentType.CURRICULUM, documents.curriculum());
+
+        storeDocument(professional, DocumentType.ATTACHMENTANY, documents.attachmentAny());
+    }
+
+    public void updateProfessionalDocuments(
+            HealthProfessional professional,
+            UpdateProfessionalDocumentsDTO documents) {
+
+        if (documents == null) return;
+
+        storeDocument(professional, DocumentType.CURRICULUM, documents.curriculum());
+        storeDocument(professional, DocumentType.VOLUNTEER_AGREEMENT, documents.volunteerAgreement());
+
+        if (documents.attachmentAny() != null) {
+            for (MultipartFile file : documents.attachmentAny()) {
+                storeDocument(professional, DocumentType.ATTACHMENTANY, file);
+            }
+        }
+    }
 }
- 

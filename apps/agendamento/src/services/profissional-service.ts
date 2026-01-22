@@ -1,4 +1,5 @@
 import { getApiBaseUrl } from "@/lib/client-service";
+import { DocumentWithUrl } from "@/types/document";
 
 const API_URL = getApiBaseUrl();
 
@@ -69,3 +70,30 @@ export async function getProfissionalById(id: string) {
 
   return data;
 }
+
+export async function getProfessionalDocuments(id: string) {
+  return fetch(`${API_URL}/professionals/${id}/documents`, {
+    method: "GET",
+  });
+}
+
+export async function listProfessionalDocuments(id: string) {
+  const res = await fetch(`${API_URL}/professionals/${id}/documents`, { method: "GET" });
+
+  const data = await res.json().catch(() => null);
+
+  if (!res.ok) {
+    throw new Error((data as any)?.message || "Erro ao buscar documentos");
+  }
+
+  return (data ?? []) as DocumentWithUrl[];
+}
+
+export async function updateProfessionalDocuments(id: string, formData: FormData) {
+  return fetch(`${API_URL}/professionals/${id}/documents`, {
+    method: "POST",
+    body: formData,
+  });
+}
+export { DocumentWithUrl };
+

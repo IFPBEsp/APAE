@@ -1,9 +1,11 @@
 "use client";
 
+import { JSX, useEffect, useMemo, useState } from "react";
 import { useForm, Controller, type SubmitHandler } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { InputMask } from "@react-input/mask";
+import { useRouter } from "next/navigation";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -22,28 +24,50 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import { useRouter } from "next/navigation";
 
 import { useGetByIdProfissional } from "@/hooks/profissional/use-get-by-id-profissional";
 import { useUpdateProfissional } from "@/hooks/profissional/use-update-profissional";
+import { useUpdateProfessionalDocuments } from "@/hooks/profissional/use-professional-documents";
+
 import { updateProfessionalSchema } from "@/schemas/profissional.schema";
 import { STATES } from "@/lib/states";
-import { JSX, useEffect } from "react";
+
 import HealthAreaSelect from "@/components/shared/HealthAreaSelect";
 import Disponibilidade from "@/components/forms/DisponibilidadeForm";
 import { gerarMatrizDisponibilidade } from "@/utils/disponibilidade.utils";
+
+import {
+  listProfessionalDocuments,
+  type DocumentWithUrl,
+} from "@/services/profissional-service";
 
 type UpdateFormValues = z.infer<typeof updateProfessionalSchema>;
 
 export default function AtualizarProfissional(): JSX.Element {
   const router = useRouter();
+
   const {
     profissional,
     loading: loadingProf,
     error: errorProf,
   } = useGetByIdProfissional();
-  const { updateProfissional, loading, error, success } =
-    useUpdateProfissional();
+
+  const { updateProfissional, loading, error, success } = useUpdateProfissional();
+
+  const { upload, loadingDocs, errorDocs, successDocs } =
+    useUpdateProfessionalDocuments();
+
+  const [docs, setDocs] = useState<DocumentWithUrl[]>([]);
+  const [docsLoading, setDocsLoading] = useState(false);
+  const [docsError, setDocsError] = useState<string | null>(null);
+
+  const [curriculumFile, setCurriculumFile] = useState<File | null>(null);
+  const [volunteerFile, setVolunteerFile] = useState<File | null>(null);
+  const [attachmentFiles, setAttachmentFiles] = useState<File[]>([]);
+
+  const hasAnyUpload = useMemo(() => {
+    return !!curriculumFile || !!volunteerFile || attachmentFiles.length > 0;
+  }, [curriculumFile, volunteerFile, attachmentFiles]);
 
   const defaultValues: Partial<UpdateFormValues> = {
     nomeCompleto: "",
@@ -77,7 +101,7 @@ export default function AtualizarProfissional(): JSX.Element {
         dia: a.day.toLowerCase(),
         turno: a.shift.toLowerCase(),
         checked: true,
-      }))
+      })),
     );
 
     form.reset({
@@ -94,10 +118,35 @@ export default function AtualizarProfissional(): JSX.Element {
       numero: profissional.address.number,
       complemento: profissional.address.complement,
       cep: profissional.address.cep,
-
       disponibilidade: matrizCompleta,
     });
   }, [profissional, form]);
+
+  async function refreshDocuments(professionalId: string) {
+    setDocsLoading(true);
+    setDocsError(null);
+    try {
+      const data = await listProfessionalDocuments(professionalId);
+      setDocs(data);
+    } catch (e: any) {
+      setDocsError(e?.message ?? "Erro ao carregar documentos");
+    } finally {
+      setDocsLoading(false);
+    }
+  }
+
+  useEffect(() => {
+    if (!profissional?.id) return;
+    refreshDocuments(profissional.id);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [profissional?.id]);
+
+  const groupedDocs = useMemo(() => {
+    const curriculum = docs.find((d) => d.type === "CURRICULUM");
+    const volunteer = docs.find((d) => d.type === "VOLUNTEER_AGREEMENT");
+    const attachments = docs.filter((d) => d.type === "ATTACHMENTANY");
+    return { curriculum, volunteer, attachments };
+  }, [docs]);
 
   const onSubmit: SubmitHandler<UpdateFormValues> = async (values) => {
     if (!profissional?.id) return;
@@ -129,6 +178,20 @@ export default function AtualizarProfissional(): JSX.Element {
     };
 
     await updateProfissional(profissional.id, payload);
+    if (hasAnyUpload) {
+      const fd = new FormData();
+
+      if (volunteerFile) fd.append("volunteerAgreement", volunteerFile);
+      if (curriculumFile) fd.append("curriculum", curriculumFile);
+      for (const f of attachmentFiles) fd.append("attachmentAny", f);
+
+      await upload(profissional.id, fd);
+
+      setCurriculumFile(null);
+      setVolunteerFile(null);
+      setAttachmentFiles([]);
+      await refreshDocuments(profissional.id);
+    }
   };
 
   const onCancel = () => {
@@ -139,12 +202,11 @@ export default function AtualizarProfissional(): JSX.Element {
   if (errorProf) return <p className="text-red-500">Erro: {errorProf}</p>;
 
   return (
-    <div className="p-6">
-      <h1 className="text-2xl font-bold mb-6">Atualizar Profissional</h1>
+    <div className="p-0">
       <Form {...form}>
         <form
           onSubmit={form.handleSubmit(onSubmit)}
-          className="space-y-6 max-w-2xl w-full mx-auto"
+          className="space-y-6 w-full max-w-2xl"
         >
           <FormField
             control={form.control}
@@ -153,12 +215,13 @@ export default function AtualizarProfissional(): JSX.Element {
               <FormItem>
                 <FormLabel>Nome completo</FormLabel>
                 <FormControl>
-                  <Input {...field} />
+                  <Input placeholder="Ex: Maria da Silva" {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
             )}
           />
+
           <FormField
             control={form.control}
             name="email"
@@ -166,12 +229,17 @@ export default function AtualizarProfissional(): JSX.Element {
               <FormItem>
                 <FormLabel>Email</FormLabel>
                 <FormControl>
-                  <Input type="email" {...field} />
+                  <Input
+                    type="email"
+                    placeholder="profissional@exemplo.com"
+                    {...field}
+                  />
                 </FormControl>
                 <FormMessage />
               </FormItem>
             )}
           />
+
           <div className="grid grid-cols-2 gap-4">
             <FormField
               control={form.control}
@@ -186,6 +254,7 @@ export default function AtualizarProfissional(): JSX.Element {
                 </FormItem>
               )}
             />
+
             <Controller
               control={form.control}
               name="areaAtendimento"
@@ -369,21 +438,149 @@ export default function AtualizarProfissional(): JSX.Element {
 
           <Disponibilidade control={form.control} watch={form.watch} />
 
-          {loading && <p className="text-blue-500">Salvando...</p>}
-          {error && <p className="text-red-500">{error}</p>}
-          {success && (
-            <p className="text-green-600">
-              Profissional atualizado com sucesso!
+          <div className="space-y-4">
+            <div className="rounded-md border p-4 space-y-2">
+              <p className="text-base font-semibold">Documentos já anexados</p>
+
+              {docsLoading ? (
+                <p className="text-sm text-gray-600">Carregando documentos...</p>
+              ) : docsError ? (
+                <p className="text-sm text-red-500">{docsError}</p>
+              ) : (
+                <div className="text-sm text-gray-700 space-y-1">
+                  <p>
+                    <span className="font-medium">Termo do voluntário: </span>
+                    {groupedDocs.volunteer ? (
+                      <a
+                        className="text-[#0D4F97] hover:underline"
+                        href={groupedDocs.volunteer.url}
+                        target="_blank"
+                        rel="noreferrer"
+                      >
+                        Visualizar
+                      </a>
+                    ) : (
+                      <span className="text-gray-500">não enviado</span>
+                    )}
+                  </p>
+
+                  <p>
+                    <span className="font-medium">Currículo: </span>
+                    {groupedDocs.curriculum ? (
+                      <a
+                        className="text-[#0D4F97] hover:underline"
+                        href={groupedDocs.curriculum.url}
+                        target="_blank"
+                        rel="noreferrer"
+                      >
+                        Visualizar
+                      </a>
+                    ) : (
+                      <span className="text-gray-500">não enviado</span>
+                    )}
+                  </p>
+
+                  <p>
+                    <span className="font-medium">Anexos: </span>
+                    {groupedDocs.attachments.length > 0 ? (
+                      <span>{groupedDocs.attachments.length} arquivo(s)</span>
+                    ) : (
+                      <span className="text-gray-500">nenhum</span>
+                    )}
+                  </p>
+                </div>
+              )}
+            </div>
+
+            <FormItem>
+              <FormLabel>Termo do Voluntário</FormLabel>
+              <FormControl>
+                <Input
+                  type="file"
+                  accept="application/pdf"
+                  onChange={(e) => setVolunteerFile(e.target.files?.[0] ?? null)}
+                />
+              </FormControl>
+              {volunteerFile && (
+                <p className="text-xs text-gray-600 mt-1">
+                  Selecionado: {volunteerFile.name}
+                </p>
+              )}
+            </FormItem>
+
+            <FormItem>
+              <FormLabel>Currículo</FormLabel>
+              <FormControl>
+                <Input
+                  type="file"
+                  accept="application/pdf"
+                  onChange={(e) => setCurriculumFile(e.target.files?.[0] ?? null)}
+                />
+              </FormControl>
+              {curriculumFile && (
+                <p className="text-xs text-gray-600 mt-1">
+                  Selecionado: {curriculumFile.name}
+                </p>
+              )}
+            </FormItem>
+
+            <FormItem>
+              <FormLabel>Anexo qualquer</FormLabel>
+              <FormControl>
+                <Input
+                  type="file"
+                  accept="application/pdf"
+                  multiple
+                  onChange={(e) => {
+                    const list = Array.from(e.target.files ?? []);
+                    setAttachmentFiles(list);
+                  }}
+                />
+              </FormControl>
+              {attachmentFiles.length > 0 && (
+                <p className="text-xs text-gray-600 mt-1">
+                  Selecionado(s): {attachmentFiles.length} arquivo(s)
+                </p>
+              )}
+            </FormItem>
+
+            {(errorDocs || successDocs) && (
+              <div className="text-sm">
+                {errorDocs && <p className="text-red-500">{errorDocs}</p>}
+                {successDocs && (
+                  <p className="text-green-600">
+                    Documentos enviados com sucesso!
+                  </p>
+                )}
+              </div>
+            )}
+
+            {hasAnyUpload && (
+              <p className="text-xs text-gray-600">
+                Ao salvar, também serão enviados os documentos selecionados.
+              </p>
+            )}
+          </div>
+
+          {/* status geral */}
+          {(loading || loadingDocs) && (
+            <p className="text-blue-500">
+              {loading ? "Salvando perfil..." : "Enviando documentos..."}
             </p>
           )}
+          {error && <p className="text-red-500">{error}</p>}
+          {success && (
+            <p className="text-green-600">Profissional atualizado com sucesso!</p>
+          )}
+
           <div className="flex justify-end gap-4">
             <Button type="button" variant="outline" onClick={onCancel}>
               Cancelar
             </Button>
             <Button
               type="submit"
-              className="bg-blue-800 hover:bg-blue-900"
-              disabled={form.formState.isSubmitting || loading}
+              className="bg-[#0D4F97] hover:bg-blue-900"
+              disabled={form.formState.isSubmitting || loading || loadingDocs}
             >
               Salvar
             </Button>

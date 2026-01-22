@@ -3,6 +3,7 @@ package br.org.apae.api.professional.application.interfaces;
 import br.org.apae.api.common.dto.professional.request.CreateHealthProfessionalDTO;
 import br.org.apae.api.common.dto.professional.request.UpdateHealthProfessionalDTO;
 import br.org.apae.api.common.dto.professional.request.documents.CreateProfessionalDocumentsDTO;
+import br.org.apae.api.common.dto.professional.request.documents.UpdateProfessionalDocumentsDTO;
 import br.org.apae.api.common.dto.professional.response.HealthProfessionalResponseDTO;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -26,4 +27,7 @@ public interface HealthProfessionalApplicationService {
     HealthProfessionalResponseDTO findProfessionalById(UUID id);
 
     HealthProfessionalResponseDTO updateProfessional(UUID id, UpdateHealthProfessionalDTO dto);
+
+    void updateProfessionalDocuments(UUID id, UpdateProfessionalDocumentsDTO dto);
+
 }
