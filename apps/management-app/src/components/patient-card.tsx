@@ -42,23 +42,12 @@ export function PatientCard({ patient }: PatientCardProps) {
                 statusBorderStyles[patientStatus]
             )}
         >
-            <Button
-                size="icon"
-                className="absolute top-2 right-2 h-8 w-8 z-10 !bg-transparent hover:!bg-transparent"
-                asChild
-            >
-                <Link href="/">
-                    <SquarePen className="h-5 w-5 text-[#145095]" />
-                    <span className="sr-only">Editar</span>
-                </Link>
-            </Button>
-
             <CardContent className="p-4">
                 <div className="flex items-center gap-4">
                     <div className="flex flex-col items-center gap-2 flex-shrink-0">
                         <Avatar className="h-20 w-20 border">
                             <AvatarImage
-                                src={patient.urlFoto ?? undefined}
+                                src={patient.photoUrl ?? undefined}
                                 alt={patient.fullName ?? "Foto do paciente"}
                             />
                             <AvatarFallback>

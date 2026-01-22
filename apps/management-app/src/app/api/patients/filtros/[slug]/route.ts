@@ -7,7 +7,7 @@ export async function GET(
   { params }: { params: Promise<{ slug: string }> }
 ) {
   const { slug } = await params;
-  const allowedFilters = ['transtornos', 'anos', 'cidades'];
+  const allowedFilters = ['transtornos', 'anos', 'cidades', 'tipos-atendimento'];
   
   if (!allowedFilters.includes(slug)) {
     return NextResponse.json({ message: 'Filtro inválido' }, { status: 400 });

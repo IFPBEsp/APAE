@@ -16,6 +16,14 @@ import { useEffect, useMemo, useState } from "react";
 import { toast } from "react-toastify";
 import { Loader2, ArrowLeft, SquarePen } from "lucide-react";
 
+import AnnualRegistryEditModal from "@/components/AnnualRegistryEditModal";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
+
 import { DialogType } from "./(dialogs)/dialog-types";
 import { EditPersonalDialog } from "./(dialogs)/edit-personal-dialog";
 import { EditDocumentationDialog } from "./(dialogs)/edit-documentation-dialog";
@@ -105,6 +113,8 @@ export default function PersonDetailsPage() {
   const router = useRouter();
   const id = params?.id as string;
 
+  const [isEditingAnnualRegistry, setIsEditingAnnualRegistry] = useState(false);
+
   const [pessoa, setPessoa] = useState<any>(null);
   const [registroAnual, setRegistroAnual] = useState<any>(null);
   const [dialog, setDialog] = useState<DialogType | null>(null);
@@ -132,7 +142,10 @@ export default function PersonDetailsPage() {
         if (!response.ok) throw new Error("Falha ao buscar dados do paciente.");
 
         const data = await response.json();
-        setPessoa(data);
+
+        setPessoa({
+          ...data,
+        });
       } catch (err: any) {
         console.error(err);
         toast.error(err.message);
@@ -192,6 +205,8 @@ export default function PersonDetailsPage() {
     );
   }
 
+  const hasRegistro = !!registroAnual;
+
   return (
     <main className="container mx-auto p-4 md:p-6">
       <EditPersonalDialog
@@ -231,7 +246,7 @@ export default function PersonDetailsPage() {
       <div className="flex flex-col items-center gap-y-4 w-full mb-6">
         <Avatar className="h-40 w-40 border">
           <AvatarImage
-            src={pessoa?.urlFoto ?? "https://via.placeholder.com/150"}
+            src={pessoa?.photoUrl}
             alt={pessoa?.fullName ?? "Foto do paciente"}
           />
           <AvatarFallback className="font-baloo font-bold text-[32px]">
@@ -358,6 +373,30 @@ export default function PersonDetailsPage() {
               Informações de Saúde
             </CardTitle>
             <div className="flex items-center gap-2">
+              <TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <span tabIndex={0}>
+                      <Button
+                        size="sm"
+                        onClick={() => setIsEditingAnnualRegistry(true)}
+                        disabled={!hasRegistro || loadingRegistro}
+                        className="gap-1 hover:!bg-gray-100 text-[#0D4F97] border-0 disabled:opacity-50 disabled:cursor-not-allowed"
+                        variant="outline"
+                      >
+                        <SquarePen className="h-4 w-4" />
+                        {loadingRegistro ? "..." : "Editar"}
+                      </Button>
+                    </span>
+                  </TooltipTrigger>
+                  {!hasRegistro && !loadingRegistro && (
+                    <TooltipContent>
+                      <p>Não existe registro para este ano.</p>
+                    </TooltipContent>
+                  )}
+                </Tooltip>
+              </TooltipProvider>
+
               <label
                 htmlFor="year-select"
                 className="text-sm font-semibold text-gray-600"
@@ -397,9 +436,16 @@ export default function PersonDetailsPage() {
             ) : registroAnual ? (
               <div className="mt-2 animate-in fade-in slide-in-from-bottom-2">
                 <InfoRow label="Recebe BPC?" value={registroAnual.bpc} />
+
                 <InfoRow
                   label="Renda Familiar"
                   value={registroAnual.familyIncome}
+                />
+                <InfoRow
+                  label="Tipo de Atendimento"
+                  value={registroAnual.serviceAreas
+                    ?.map((atendimento: any) => atendimento.area)
+                    .join(", ")}
                 />
                 <InfoRow label="Doenças" value={registroAnual.diseases} />
                 <InfoRow
@@ -420,6 +466,15 @@ export default function PersonDetailsPage() {
             )}
           </CardContent>
         </Card>
+
+        {/* Modal de Edição */}
+        <AnnualRegistryEditModal
+          isOpen={isEditingAnnualRegistry}
+          onClose={() => setIsEditingAnnualRegistry(false)}
+          patientId={id}
+          currentYear={selectedYear}
+          initialData={registroAnual}
+        />
       </div>
     </main>
   );

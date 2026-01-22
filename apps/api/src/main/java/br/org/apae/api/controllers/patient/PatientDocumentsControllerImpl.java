@@ -3,13 +3,18 @@ package br.org.apae.api.controllers.patient;
 import br.org.apae.api.common.dto.patient.response.documents.DocumentWithUrlResponseDTO;
 import br.org.apae.api.documents.application.interfaces.DocumentApplicationService;
 import br.org.apae.api.documents.domain.enums.DocumentCategory;
+import br.org.apae.api.documents.domain.enums.DocumentType;
 import br.org.apae.api.documents.interfaces.dto.DocumentDTO;
 import br.org.apae.api.documents.interfaces.dto.GetPresignedDocumentUrlArgsDTO;
 import br.org.apae.api.documents.interfaces.dto.ListDocumentsArgsDTO;
-import br.org.apae.api.patient.application.interfaces.PatientDocumentsApplicationService;
+import br.org.apae.api.documents.interfaces.dto.PutDocumentArgsDTO;
 import br.org.apae.api.patient.interfaces.controllers.PatientDocumentsController;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.time.Year;
 import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
@@ -17,12 +22,38 @@ import java.util.concurrent.TimeUnit;
 import java.util.stream.StreamSupport;
 
 @RestController
-public class PatientDocumentsControllerImpl implements PatientDocumentsController{
+public class PatientDocumentsControllerImpl implements PatientDocumentsController {
 
     private final DocumentApplicationService documentService;
 
-    public PatientDocumentsControllerImpl(DocumentApplicationService documentService, PatientDocumentsApplicationService patientDocumentsService) {
+    public PatientDocumentsControllerImpl(DocumentApplicationService documentService) {
         this.documentService = documentService;
+    }
+
+    @Override
+    public ResponseEntity<Void> uploadDocument(UUID id, MultipartFile file, String category, String type) {
+        try {
+            DocumentCategory docCategory = DocumentCategory.valueOf(category);
+            DocumentType docType = DocumentType.valueOf(type);
+
+            PutDocumentArgsDTO args = PutDocumentArgsDTO.builder()
+                    .owner(id.toString())
+                    .category(docCategory)
+                    .type(docType)
+                    .year(Year.now())
+                    .contentType(file.getContentType())
+                    .stream(file.getInputStream())
+                    .build();
+
+            this.documentService.putDocument(args);
+
+            return ResponseEntity.status(HttpStatus.CREATED).build();
+
+        } catch (IllegalArgumentException e) {
+            throw new RuntimeException("Categoria ou Tipo de documento inválido: " + category + " / " + type, e);
+        } catch (Exception e) {
+            throw new RuntimeException("Erro ao fazer upload do documento", e);
+        }
     }
 
     private DocumentWithUrlResponseDTO generatePresignedUrl(DocumentDTO dto) {

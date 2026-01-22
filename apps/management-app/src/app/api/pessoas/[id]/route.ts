@@ -6,7 +6,8 @@ import { NextRequest, NextResponse } from "next/server";
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }, // Await params (Next 15)
+
+  { params }: { params: Promise<{ id: string }> },
 ) {
   const { id } = await params;
 
@@ -28,22 +29,26 @@ export async function GET(
 
 export async function PUT(
   request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }, // Await params (Next 15)
+
+  { params }: { params: Promise<{ id: string }> },
 ) {
   const { id } = await params;
 
   try {
-    const data = await request.json();
+    const body = await request.json();
     const api = await createBaseApi();
-    const response = await api.put(`/patients/${id}`, data);
+    const response = await api.put(`/patients/${id}`, body);
 
     return NextResponse.json(response.data);
   } catch (error) {
     const err = error as AxiosError;
-    console.error(`[ERRO API PESSOA/${id}]:`, err.message);
+    console.error(
+      `[ERRO PUT PESSOA/${id}]:`,
+      err.response?.data || err.message,
+    );
 
     return NextResponse.json(
-      { message: err.response?.data || "Erro ao buscar paciente" },
+      { message: err.response?.data || "Erro ao atualizar paciente" },
       { status: err.response?.status || 500 },
     );
   }
