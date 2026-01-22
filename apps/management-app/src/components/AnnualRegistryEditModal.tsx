@@ -57,11 +57,9 @@ export default function AnnualRegistryEditModal({
     const fileInputRef = useRef<HTMLInputElement>(null);
 
     const currentYearInt = new Date().getFullYear();
-    
-    // --- ALTERAÇÃO 1: Aumentado para 32 (Ano atual + 1 futuro - 30 passados) ---
+
     const availableYears = Array.from({ length: 32 }, (_, i) => (currentYearInt + 1 - i).toString());
 
-    // --- USO DA INTERFACE MANUAL AQUI ---
     const form = useForm<AnnualRegistryFormValues>({
         resolver: zodResolver(AnnualRegistryFormSchema),
         defaultValues: {

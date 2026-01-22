@@ -1,7 +1,5 @@
 import { z } from "zod";
 
-// --- 1. TIPO MANUAL PARA O FORMULÁRIO (Para o TypeScript não reclamar) ---
-// Define EXATAMENTE o que os inputs esperam. Sem 'undefined', sem 'unions' complexas.
 export interface AnnualRegistryFormValues {
   year: string;
   bpc: string;
@@ -9,13 +7,11 @@ export interface AnnualRegistryFormValues {
   diseases: string;
   allergies: string;
   continuousMedication: string;
-  // Arrays de objetos simples
   vaccines: { id?: string | number; name?: string; area?: string }[];
   disorders: { id?: string | number; name?: string; area?: string }[];
   serviceTypes: { id?: string | number; name?: string; area?: string }[];
 }
 
-// --- 2. SCHEMA ZOD (Apenas para regras de validação) ---
 const GenericItemSchema = z.object({
   id: z.union([z.string(), z.number()]).optional(),
   name: z.string().optional(),
@@ -24,7 +20,7 @@ const GenericItemSchema = z.object({
 
 export const AnnualRegistryFormSchema = z.object({
   year: z.string().min(4, "Selecione um ano"),
-  bpc: z.string(), // Tratado como string no form ("true"/"false")
+  bpc: z.string(),
   familyIncome: z.string(),
   diseases: z.string(),
   allergies: z.string(),

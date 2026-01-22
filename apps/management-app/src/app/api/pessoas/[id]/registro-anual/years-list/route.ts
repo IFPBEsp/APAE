@@ -20,10 +20,8 @@ export async function GET(
         } catch(e) {}
     }
     
-    // Limpeza padrão do token
     if (token) token = token.replace(/^"|"$/g, '').replace(/^Bearer\s+/i, '').trim();
 
-    // Rota que criamos no Java
     const res = await fetch(`${API_BASE_URL}/patients/${id}/annual-registry/years`, {
       method: "GET",
       headers: {
@@ -33,7 +31,6 @@ export async function GET(
     });
 
     if (!res.ok) {
-        // Se o endpoint Java ainda não existir (404), retornamos array vazio para não quebrar o front
         if (res.status === 404) return NextResponse.json([], { status: 200 });
         return NextResponse.json([], { status: res.status });
     }

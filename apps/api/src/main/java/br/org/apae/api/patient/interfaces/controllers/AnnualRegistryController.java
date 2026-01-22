@@ -41,8 +41,7 @@ public interface AnnualRegistryController {
     ResponseEntity<AnnualRegistryResponseDTO> getRegistryByYear(
             @Parameter(description = "ID do paciente") @PathVariable("id") UUID patientId,
             @Parameter(description = "Ano do registro (ex: 2025)") @PathVariable("year") Integer year);
-
-    // --- NOVO MÉTODO PARA LISTAR ANOS ---
+    
     @Operation(summary = "Lista os anos que possuem registro para o paciente")
     @GetMapping("/years")
     ResponseEntity<List<Integer>> getRegistryYears(@PathVariable("id") UUID patientId);

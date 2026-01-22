@@ -54,14 +54,12 @@ export default function PersonDetailsPage() {
   const [pessoa, setPessoa] = useState<any>(null);
   const [registroAnual, setRegistroAnual] = useState<any>(null);
   
-  // Lista dinâmica de anos existentes no banco
   const [existingYears, setExistingYears] = useState<string[]>([]);
   const [selectedYear, setSelectedYear] = useState<string>(new Date().getFullYear().toString());
   
   const [loadingPessoa, setLoadingPessoa] = useState(true);
   const [loadingRegistro, setLoadingRegistro] = useState(false);
 
-  // --- BUSCA DADOS BÁSICOS DO PACIENTE ---
   const fetchPessoa = useCallback(async () => {
     try {
       setLoadingPessoa(true);
@@ -78,13 +76,9 @@ export default function PersonDetailsPage() {
     }
   }, [id, router]);
 
-  // --- NOVO: BUSCA OS ANOS DISPONÍVEIS NO BANCO ---
   const fetchYears = useCallback(async () => {
     try {
-        // Tenta buscar do novo endpoint. Se não existir, faz fallback para o ano atual.
         const res = await fetch(`/api/pessoas/${id}/registro-anual/years-list`);
-        
-        // Se ainda não implementou o endpoint no backend, usa array vazio para não quebrar
         let yearsData: number[] = [];
         
         if (res.ok) {
@@ -94,17 +88,13 @@ export default function PersonDetailsPage() {
         const currentYearStr = new Date().getFullYear().toString();
 
         if (yearsData.length > 0) {
-            // Converte para string e garante ordem decrescente
             const sortedYears = yearsData.map(y => y.toString()).sort((a, b) => parseInt(b) - parseInt(a));
             setExistingYears(sortedYears);
             
-            // Se o ano selecionado não está na lista (ex: acabou de entrar na tela), 
-            // seleciona o mais recente da lista
             if (!sortedYears.includes(selectedYear)) {
                 setSelectedYear(sortedYears[0]);
             }
         } else {
-            // Se não tem nenhum registro, mostra pelo menos o ano atual na lista
             setExistingYears([currentYearStr]);
             setSelectedYear(currentYearStr);
         }
@@ -113,7 +103,6 @@ export default function PersonDetailsPage() {
     }
   }, [id, selectedYear]);
 
-  // --- BUSCA O REGISTRO DO ANO SELECIONADO ---
   const fetchRegistro = useCallback(async () => {
     try {
       setLoadingRegistro(true);
@@ -130,15 +119,13 @@ export default function PersonDetailsPage() {
     }
   }, [id, selectedYear]);
 
-  // Efeitos de carga inicial
   useEffect(() => {
     if (id) {
         fetchPessoa();
-        fetchYears(); // Busca a lista dinâmica
+        fetchYears();
     }
   }, [id, fetchPessoa, fetchYears]);
 
-  // Quando mudar o ano selecionado, busca o registro
   useEffect(() => {
     if (id && selectedYear) {
         fetchRegistro();
@@ -155,17 +142,14 @@ export default function PersonDetailsPage() {
     setIsModalOpen(true);
   };
 
-  // Callback chamado quando o Modal fecha e salvou com sucesso
   const handleModalClose = (savedYear?: string) => {
       setIsModalOpen(false);
-      // Se salvou um ano novo, atualiza a lista e seleciona ele
       if (savedYear) {
           fetchYears().then(() => setSelectedYear(savedYear));
       } else {
-          // Apenas recarrega dados atuais
           fetchYears();
           fetchRegistro();
-          fetchPessoa(); // Para atualizar alergias/vacinas se mudaram
+          fetchPessoa();
       }
   };
 
@@ -279,8 +263,6 @@ export default function PersonDetailsPage() {
           <CardHeader className="flex flex-row items-center justify-between">
             <CardTitle className="text-[#0D4F97]">Informações de Saúde</CardTitle>
             <div className="flex items-center gap-2">
-                
-              {/* BOTÃO NOVO ANO */}
               <TooltipProvider>
                 <Tooltip>
                     <TooltipTrigger asChild>
@@ -291,8 +273,6 @@ export default function PersonDetailsPage() {
                     <TooltipContent><p>Adicionar registro para um novo ano</p></TooltipContent>
                 </Tooltip>
               </TooltipProvider>
-
-              {/* BOTÃO EDITAR (Só aparece se tiver registro selecionado) */}
               <TooltipProvider>
                 <Tooltip>
                     <TooltipTrigger asChild>
@@ -311,8 +291,6 @@ export default function PersonDetailsPage() {
                     {!hasRegistro && !loadingRegistro && (<TooltipContent><p>Não existe registro para este ano.</p></TooltipContent>)}
                 </Tooltip>
               </TooltipProvider>
-
-              {/* SELECT DINÂMICO DE ANOS */}
               <div className="flex items-center gap-1 border border-gray-300 rounded-md px-2 py-1 h-8">
                  <label htmlFor="year-select" className="text-sm font-semibold text-gray-600">Ano:</label>
                 <select
@@ -359,7 +337,7 @@ export default function PersonDetailsPage() {
         
         <AnnualRegistryEditModal 
           isOpen={isModalOpen} 
-          onClose={() => setIsModalOpen(false)} // Callback simples para fechar
+          onClose={() => setIsModalOpen(false)}
           patientId={id} 
           currentYear={selectedYear}
           initialData={modalMode === "edit" ? registroAnual : null}
