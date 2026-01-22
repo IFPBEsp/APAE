@@ -351,7 +351,7 @@ function MembersRegisterProvider({
         cep: address.cep,
         state: address.state,
         neighborhood: address.district,
-        street: address.street,
+        street: address.street.replaceAll(/, \d+/g, ""),
         number: address.street.replaceAll(/\D/g, ""),
         complement: "",
       },
