@@ -88,7 +88,6 @@ export default function AnnualRegistryEditModal({
     useEffect(() => {
         if (isOpen) {
             if (mode === "edit" && initialData) {
-                // --- MODO EDIÇÃO ---
                 const rawBpc = initialData.bpc;
                 const bpcString = (rawBpc === true || String(rawBpc) === "true") ? "true" : "false";
 
@@ -118,7 +117,6 @@ export default function AnnualRegistryEditModal({
                 });
 
             } else if (mode === "create") {
-                // --- MODO CRIAÇÃO ---
                 const vaccineList = Array.isArray(fullPatientData?.vaccineNames) 
                     ? fullPatientData.vaccineNames.map((v: any) => (typeof v === 'string' ? { name: v } : v)) 
                     : [];
@@ -137,8 +135,7 @@ export default function AnnualRegistryEditModal({
             }
         }
     }, [initialData, fullPatientData, isOpen, form, mode, currentYear]);
-
-    // Funções auxiliares
+    
     const fetchDocuments = async () => {
         setIsLoadingDocs(true);
         try {
@@ -273,12 +270,7 @@ export default function AnnualRegistryEditModal({
                 });
             }
 
-            // --- CALLBACK PARA O PARENT ---
-            // Passa o ano criado se for criação, para o pai atualizar o select
             const savedYear = mode === "create" ? data.year : undefined;
-            // Verifica se o onClose aceita argumento (no arquivo page.tsx aceita)
-            // Se der erro de TS aqui, é só ajustar a interface lá em cima, mas em JS runtime vai funcionar.
-            // @ts-ignore
             onClose(savedYear);
             
             toast.success(mode === "create" ? "Registro criado com sucesso!" : "Alterações salvas!");
@@ -316,8 +308,6 @@ export default function AnnualRegistryEditModal({
                                                 <FormLabel className="text-slate-700 font-bold text-xs">Ano de Referência</FormLabel>
                                                 <Select onValueChange={field.onChange} defaultValue={field.value}>
                                                     <FormControl><SelectTrigger className="bg-slate-50 border-slate-200 h-10 text-sm"><SelectValue placeholder="Selecione o ano" /></SelectTrigger></FormControl>
-                                                    
-                                                    {/* --- ALTERAÇÃO 2: Adicionado max-h-60 para scroll --- */}
                                                     <SelectContent className="max-h-60">
                                                         {availableYears.map(year => (
                                                             <SelectItem key={year} value={year}>{year}</SelectItem>
@@ -405,8 +395,6 @@ export default function AnnualRegistryEditModal({
                                 </form>
                             </Form>
                         </div>
-
-                        {/* Coluna da Direita (Uploads) */}
                         <div className="flex flex-col h-full bg-white p-5 rounded-xl shadow-sm border border-slate-200">
                              <h3 className="text-[#0D4F97] font-bold text-base mb-4 pb-2 border-b border-slate-100 flex items-center justify-between">
                                 <div className="flex items-center gap-2"><span className="bg-green-50 p-1.5 rounded-lg text-green-700"><FileText className="h-4 w-4" /></span>Documentação Digital</div>
