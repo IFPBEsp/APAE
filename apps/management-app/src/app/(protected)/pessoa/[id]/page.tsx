@@ -12,9 +12,9 @@ import {
 import DocumentCategoriesCard from "@/components/DocumentCategoriesCard";
 import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { toast } from "react-toastify";
-import { Loader2, ArrowLeft, SquarePen } from "lucide-react";
+import { Loader2, ArrowLeft, SquarePen, Plus } from "lucide-react";
 
 import AnnualRegistryEditModal from "@/components/AnnualRegistryEditModal";
 import {
@@ -113,12 +113,14 @@ export default function PersonDetailsPage() {
   const router = useRouter();
   const id = params?.id as string;
 
-  const [isEditingAnnualRegistry, setIsEditingAnnualRegistry] = useState(false);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [modalMode, setModalMode] = useState<"create" | "edit">("edit");
 
   const [pessoa, setPessoa] = useState<any>(null);
   const [registroAnual, setRegistroAnual] = useState<any>(null);
   const [dialog, setDialog] = useState<DialogType | null>(null);
 
+  const [existingYears, setExistingYears] = useState<string[]>([]);
   const [selectedYear, setSelectedYear] = useState<string>(
     new Date().getFullYear().toString(),
   );
@@ -126,65 +128,102 @@ export default function PersonDetailsPage() {
   const [loadingPessoa, setLoadingPessoa] = useState(true);
   const [loadingRegistro, setLoadingRegistro] = useState(false);
 
-  const currentYearInt = new Date().getFullYear();
-  const years = Array.from({ length: 11 }, (_, i) =>
-    (currentYearInt - i).toString(),
-  );
-
-  useEffect(() => {
-    if (!id) return;
-
-    async function fetchPessoa() {
-      try {
-        setLoadingPessoa(true);
-        const response = await fetch(`/api/pessoas/${id}`);
-
-        if (!response.ok) throw new Error("Falha ao buscar dados do paciente.");
-
-        const data = await response.json();
-
-        setPessoa({
-          ...data,
-        });
-      } catch (err: any) {
-        console.error(err);
-        toast.error(err.message);
-        router.push("/home");
-      } finally {
-        setLoadingPessoa(false);
-      }
+  const fetchPessoa = useCallback(async () => {
+    try {
+      setLoadingPessoa(true);
+      const response = await fetch(`/api/pessoas/${id}`);
+      if (!response.ok) throw new Error("Falha ao buscar dados do paciente.");
+      const data = await response.json();
+      setPessoa(data);
+    } catch (err: any) {
+      console.error(err);
+      toast.error(err.message);
+      router.push("/home");
+    } finally {
+      setLoadingPessoa(false);
     }
+  }, [id, router]);
 
-    fetchPessoa();
-  }, [id, router, dialog]);
+  const fetchYears = useCallback(async () => {
+    try {
+      const res = await fetch(`/api/pessoas/${id}/registro-anual/years-list`);
+      let yearsData: number[] = [];
 
-  useEffect(() => {
-    if (!id) return;
+      if (res.ok) {
+        yearsData = await res.json();
+      }
 
-    async function fetchRegistro() {
-      try {
-        setLoadingRegistro(true);
-        setRegistroAnual(null);
+      const currentYearStr = new Date().getFullYear().toString();
 
-        const response = await fetch(
-          `/api/pessoas/${id}/registro-anual/${selectedYear}`,
-        );
+      if (yearsData.length > 0) {
+        const sortedYears = yearsData
+          .map((y) => y.toString())
+          .sort((a, b) => parseInt(b) - parseInt(a));
+        setExistingYears(sortedYears);
 
-        if (response.ok) {
-          const data = await response.json();
-          setRegistroAnual(data);
-        } else {
-          setRegistroAnual(null);
+        if (!sortedYears.includes(selectedYear)) {
+          setSelectedYear(sortedYears[0]);
         }
-      } catch (err) {
-        console.error("Erro ao buscar registro anual:", err);
-      } finally {
-        setLoadingRegistro(false);
+      } else {
+        setExistingYears([currentYearStr]);
+        setSelectedYear(currentYearStr);
       }
+    } catch (error) {
+      console.error("Erro ao buscar anos:", error);
     }
-
-    fetchRegistro();
   }, [id, selectedYear]);
+
+  const fetchRegistro = useCallback(async () => {
+    try {
+      setLoadingRegistro(true);
+      setRegistroAnual(null);
+      const response = await fetch(
+        `/api/pessoas/${id}/registro-anual/${selectedYear}`,
+      );
+      if (response.ok) {
+        const data = await response.json();
+        setRegistroAnual(data);
+      }
+    } catch (err) {
+      console.error("Erro ao buscar registro anual:", err);
+    } finally {
+      setLoadingRegistro(false);
+    }
+  }, [id, selectedYear]);
+
+  useEffect(() => {
+    if (id) {
+      fetchPessoa();
+      fetchYears();
+    }
+  }, [id, fetchPessoa, fetchYears]);
+
+  useEffect(() => {
+    if (id && selectedYear) {
+      fetchRegistro();
+    }
+  }, [id, selectedYear, fetchRegistro]);
+
+  const handleEditClick = () => {
+    setModalMode("edit");
+    setIsModalOpen(true);
+  };
+
+  const handleCreateClick = () => {
+    setModalMode("create");
+    setIsModalOpen(true);
+  };
+
+  const handleModalClose = (savedYear?: string) => {
+    setIsModalOpen(false);
+    if (savedYear) {
+      fetchYears().then(() => setSelectedYear(savedYear));
+    } else {
+      fetchYears();
+      fetchRegistro();
+      fetchPessoa();
+    }
+  };
 
   if (loadingPessoa) {
     return (
@@ -199,7 +238,7 @@ export default function PersonDetailsPage() {
       <div className="text-center mt-10">
         <p>Paciente não encontrado.</p>
         <Button asChild variant="link">
-          <Link href="/home">Voltar para a lista</Link>
+          <Link href="/home">Voltar</Link>
         </Button>
       </div>
     );
@@ -238,8 +277,7 @@ export default function PersonDetailsPage() {
           onClick={() => router.push("/home")}
           className="gap-2"
         >
-          <ArrowLeft className="h-4 w-4" />
-          Voltar para listagem
+          <ArrowLeft className="h-4 w-4" /> Voltar para listagem
         </Button>
       </div>
 
@@ -366,7 +404,7 @@ export default function PersonDetailsPage() {
           ]}
         />
 
-        {/* --- CARD DE SAÚDE --- */}
+        {/* --- CARD DE SAÚDE DINÂMICO --- */}
         <Card className="w-full relative font-nunito">
           <CardHeader className="flex flex-row items-center justify-between">
             <CardTitle className="text-[#0D4F97]">
@@ -376,15 +414,31 @@ export default function PersonDetailsPage() {
               <TooltipProvider>
                 <Tooltip>
                   <TooltipTrigger asChild>
+                    <Button
+                      size="sm"
+                      onClick={handleCreateClick}
+                      className="gap-1 bg-green-600 hover:bg-green-700 text-white border-0 h-8"
+                    >
+                      <Plus className="h-4 w-4" /> Novo Ano
+                    </Button>
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    <p>Adicionar registro para um novo ano</p>
+                  </TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
+              <TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger asChild>
                     <span tabIndex={0}>
                       <Button
                         size="sm"
-                        onClick={() => setIsEditingAnnualRegistry(true)}
+                        onClick={handleEditClick}
                         disabled={!hasRegistro || loadingRegistro}
-                        className="gap-1 hover:!bg-gray-100 text-[#0D4F97] border-0 disabled:opacity-50 disabled:cursor-not-allowed"
+                        className="gap-1 hover:!bg-gray-100 text-[#0D4F97] border-0 disabled:opacity-50 disabled:cursor-not-allowed h-8"
                         variant="outline"
                       >
-                        <SquarePen className="h-4 w-4" />
+                        <SquarePen className="h-4 w-4" />{" "}
                         {loadingRegistro ? "..." : "Editar"}
                       </Button>
                     </span>
@@ -396,30 +450,38 @@ export default function PersonDetailsPage() {
                   )}
                 </Tooltip>
               </TooltipProvider>
-
-              <label
-                htmlFor="year-select"
-                className="text-sm font-semibold text-gray-600"
-              >
-                Ano:
-              </label>
-              <select
-                id="year-select"
-                value={selectedYear}
-                onChange={(e) => setSelectedYear(e.target.value)}
-                className="border border-gray-300 rounded-md px-2 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-[#0D4F97]"
-              >
-                {years.map((year) => (
-                  <option key={year} value={year}>
-                    {year}
-                  </option>
-                ))}
-              </select>
+              <div className="flex items-center gap-1 border border-gray-300 rounded-md px-2 py-1 h-8">
+                <label
+                  htmlFor="year-select"
+                  className="text-sm font-semibold text-gray-600"
+                >
+                  Ano:
+                </label>
+                <select
+                  id="year-select"
+                  value={selectedYear}
+                  onChange={(e) => setSelectedYear(e.target.value)}
+                  className="text-sm focus:outline-none bg-transparent"
+                >
+                  {existingYears.length > 0 ? (
+                    existingYears.map((year) => (
+                      <option key={year} value={year}>
+                        {year}
+                      </option>
+                    ))
+                  ) : (
+                    <option value={new Date().getFullYear()}>
+                      {new Date().getFullYear()}
+                    </option>
+                  )}
+                </select>
+              </div>
             </div>
           </CardHeader>
 
           <CardContent>
             <InfoRow label="Alergias" value={pessoa.allergies} />
+
             <InfoRow
               label="Vacinas"
               value={pessoa.vaccineNames?.map((v: any) => v.name).join(", ")}
@@ -460,20 +522,29 @@ export default function PersonDetailsPage() {
                 />
               </div>
             ) : (
-              <p className="text-sm text-gray-500 mt-2 italic">
-                Nenhum registro anual encontrado para o ano de {selectedYear}.
-              </p>
+              <div className="text-center py-6 bg-slate-50 rounded-lg mt-2 border border-dashed border-slate-200">
+                <p className="text-sm text-gray-500 mb-2">
+                  Nenhum registro encontrado para {selectedYear}.
+                </p>
+                <Button
+                  variant="link"
+                  onClick={handleCreateClick}
+                  className="text-[#0D4F97] h-auto p-0 text-sm"
+                >
+                  Clique para criar um registro
+                </Button>
+              </div>
             )}
           </CardContent>
         </Card>
 
-        {/* Modal de Edição */}
         <AnnualRegistryEditModal
-          isOpen={isEditingAnnualRegistry}
-          onClose={() => setIsEditingAnnualRegistry(false)}
+          isOpen={isModalOpen}
+          onClose={() => setIsModalOpen(false)}
           patientId={id}
           currentYear={selectedYear}
-          initialData={registroAnual}
+          initialData={modalMode === "edit" ? registroAnual : null}
+          mode={modalMode}
         />
       </div>
     </main>
