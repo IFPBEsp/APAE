@@ -1,5 +1,21 @@
 import { z } from "zod";
 
+// --- 1. TIPO MANUAL PARA O FORMULÁRIO (Para o TypeScript não reclamar) ---
+// Define EXATAMENTE o que os inputs esperam. Sem 'undefined', sem 'unions' complexas.
+export interface AnnualRegistryFormValues {
+  year: string;
+  bpc: string;
+  familyIncome: string;
+  diseases: string;
+  allergies: string;
+  continuousMedication: string;
+  // Arrays de objetos simples
+  vaccines: { id?: string | number; name?: string; area?: string }[];
+  disorders: { id?: string | number; name?: string; area?: string }[];
+  serviceTypes: { id?: string | number; name?: string; area?: string }[];
+}
+
+// --- 2. SCHEMA ZOD (Apenas para regras de validação) ---
 const GenericItemSchema = z.object({
   id: z.union([z.string(), z.number()]).optional(),
   name: z.string().optional(),
@@ -7,18 +23,13 @@ const GenericItemSchema = z.object({
 });
 
 export const AnnualRegistryFormSchema = z.object({
-  bpc: z.preprocess((val) => {
-    if (typeof val === "string") return val === "true";
-    return val;
-  }, z.boolean()),
-  
+  year: z.string().min(4, "Selecione um ano"),
+  bpc: z.string(), // Tratado como string no form ("true"/"false")
   familyIncome: z.string(),
-  diseases: z.string().optional(),
-  allergies: z.string().optional(),
-  continuousMedication: z.string().optional(),
-  vaccines: z.array(GenericItemSchema).optional(),
-  disorders: z.array(GenericItemSchema).optional(),
-  serviceTypes: z.array(GenericItemSchema).optional(),
+  diseases: z.string(),
+  allergies: z.string(),
+  continuousMedication: z.string(),
+  vaccines: z.array(GenericItemSchema),
+  disorders: z.array(GenericItemSchema),
+  serviceTypes: z.array(GenericItemSchema),
 });
-
-export type AnnualRegistryFormData = z.infer<typeof AnnualRegistryFormSchema>;
