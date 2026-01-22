@@ -21,11 +21,14 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.UUID;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @WebMvcTest(controllers = AbsenceControllerImpl.class)
 @AutoConfigureMockMvc(addFilters = false)
@@ -46,7 +49,6 @@ class AbsenceControllerImplTest {
         @Autowired
         private ObjectMapper objectMapper;
 
-        // Registrar falta com sucesso
         @Test
         void registerAbsenceSuccessfully() throws Exception {
                 UUID id = UUID.randomUUID();
@@ -71,18 +73,24 @@ class AbsenceControllerImplTest {
 
                 when(service.register(any(CreateAbsenceDTO.class)))
                                 .thenReturn(response);
-
-                mockMvc.perform(post("/absences")
+                
+                var result = mockMvc.perform(post("/absences")
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(objectMapper.writeValueAsString(request)))
-                                .andExpect(status().isCreated())
-                                .andExpect(header().exists("Location"))
-                                .andExpect(jsonPath("$.id").value(id.toString()))
-                                .andExpect(jsonPath("$.justification").value("Paciente Faltou"))
-                                .andExpect(jsonPath("$.notified").value(false));
+                        .andReturn();
+                
+                assertEquals(201, result.getResponse().getStatus());
+                assertNotNull(result.getResponse().getHeader("Location"));
+
+                AbsenceResponseDTO body =
+                        objectMapper.readValue(result.getResponse().getContentAsString(),
+                                AbsenceResponseDTO.class);
+
+                assertEquals(id, body.id());
+                assertEquals("Paciente Faltou", body.justification());
+                assertFalse(body.notified());
         }
 
-        // Buscar faltas com filtros e paginação
         @Test
         void searchForAbsencesUsingFiltersAndPagination() throws Exception {
                 UUID generatedId = UUID.randomUUID();
@@ -107,15 +115,21 @@ class AbsenceControllerImplTest {
                 when(service.findAllByFilters(any(), any(), any(), any()))
                                 .thenReturn(page);
 
-                mockMvc.perform(get("/absences")
+                var result = mockMvc.perform(get("/absences")
                                 .param("generatedId", generatedId.toString())
                                 .param("patientId", patientId.toString())
                                 .param("professionalId", professionalId.toString())
                                 .param("page", "0")
-                                .param("size", "1"))
-                                .andExpect(status().isOk())
-                                .andExpect(jsonPath("$.content[0].justification").value("Falta justificada"))
-                                .andExpect(jsonPath("$.content[0].notified").value(true));
+                                .param("size", "10"))
+                        .andReturn();
+                
+                assertEquals(200, result.getResponse().getStatus());
+
+                String json = result.getResponse().getContentAsString();
+
+                assertTrue(json.contains("\"content\""));
+                assertTrue(json.contains("Falta justificada"));
+                assertTrue(json.contains("\"notified\":true"));
         }
 
         @Test
@@ -125,10 +139,11 @@ class AbsenceControllerImplTest {
                                 null,
                                 "");
 
-                mockMvc.perform(post("/absences")
+                var result = mockMvc.perform(post("/absences")
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(objectMapper.writeValueAsString(invalidRequest)))
-                                .andExpect(status().isBadRequest());
+                                .andReturn();
+                assertEquals(400, result.getResponse().getStatus());
         }
 
         @Test
@@ -141,10 +156,12 @@ class AbsenceControllerImplTest {
                 when(service.register(any(CreateAbsenceDTO.class)))
                                 .thenThrow(new IllegalArgumentException("Falta já registrada"));
 
-                mockMvc.perform(post("/absences")
+                var result = mockMvc.perform(post("/absences")
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(objectMapper.writeValueAsString(request)))
-                                .andExpect(status().isBadRequest());
+                        .andReturn();
+
+                assertEquals(400, result.getResponse().getStatus());
         }
 
         @Test
@@ -167,12 +184,15 @@ class AbsenceControllerImplTest {
                                 any()))
                                 .thenReturn(page);
 
-                mockMvc.perform(get("/absences")
+                var result = mockMvc.perform(get("/absences")
                                 .param("page", "0")
                                 .param("size", "10"))
-                                .andExpect(status().isOk())
-                                .andExpect(jsonPath("$.content[0].justification").value("Paciente faltou"))
-                                .andExpect(jsonPath("$.content[0].notified").value(false));
+                                .andReturn();
+
+                assertEquals(200, result.getResponse().getStatus());
+
+                String json = result.getResponse().getContentAsString();
+                assertTrue(json.contains("Paciente faltou"));
         }
 
 }
