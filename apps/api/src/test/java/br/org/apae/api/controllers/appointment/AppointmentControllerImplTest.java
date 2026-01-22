@@ -382,4 +382,72 @@ class AppointmentControllerImplTest {
         LocalDateTime.now()
     );
   }
+
+
+  @Test
+  @WithMockUser(username = "admin", roles = {"ADMIN"})
+  void shouldReturnNotFoundWhenGetNonExistentAppointment() throws Exception {
+    UUID id = UUID.randomUUID();
+
+    when(service.findById(id)).thenThrow(new RuntimeException("Appointment not found"));
+
+    mockMvc.perform(get(URI_WITH_ID, id)
+                    .with(csrf()))
+            .andExpect(status().isNotFound());
+  }
+
+  @Test
+  @WithMockUser(username = "admin", roles = {"ADMIN"})
+  void shouldReturnNotFoundWhenReschedulingNonExistentAppointment() throws Exception {
+    UUID id = UUID.randomUUID();
+    var payload = new RescheduleGeneratedAppointmentDTO(LocalDateTime.now().plusDays(1));
+
+    when(service.reschedule(any(), any())).thenThrow(new RuntimeException("Not found"));
+
+    mockMvc.perform(patch(GENERATED_URI_WITH_ID + "/reschedule", id)
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(objectMapper.writeValueAsString(payload))
+                    .with(csrf()))
+            .andExpect(status().isNotFound());
+  }
+
+
+  @Test
+  @WithMockUser(username = "admin", roles = {"ADMIN"})
+  void shouldReturnBadRequestWhenCancellingAlreadyCancelledAppointment() throws Exception {
+    UUID id = UUID.randomUUID();
+    var payload = new CancelGeneratedAppointmentDTO("Motivo qualquer");
+
+    when(service.cancel(eq(id), anyString())).thenThrow(new IllegalArgumentException("Appointment already cancelled"));
+
+    mockMvc.perform(patch(GENERATED_URI_WITH_ID + "/cancel", id)
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(objectMapper.writeValueAsString(payload))
+                    .with(csrf()))
+            .andExpect(status().isBadRequest());
+  }
+
+  @Test
+  @WithMockUser(username = "user", roles = {"USER"})
+  void shouldReturnForbiddenWhenUserTriesToDelete() throws Exception {
+    UUID id = UUID.randomUUID();
+
+    mockMvc.perform(delete(URI_WITH_ID, id)
+                    .with(csrf()))
+            .andExpect(status().isForbidden());
+
+    verify(service, never()).delete(any());
+  }
+
+  @Test
+  @WithMockUser(username = "admin", roles = {"ADMIN"})
+  void shouldReturnBadRequestWhenCreateAppointmentWithNullFields() throws Exception {
+    var payload = new CreateAppointmentDTO(null, null, null, null, null, null);
+
+    mockMvc.perform(post(URI)
+                    .content(objectMapper.writeValueAsString(payload))
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .with(csrf()))
+            .andExpect(status().isBadRequest());
+  }
 }
