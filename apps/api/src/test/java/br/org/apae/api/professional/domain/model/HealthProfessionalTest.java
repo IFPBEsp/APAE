@@ -46,10 +46,8 @@ class HealthProfessionalTest {
     @Test
     @DisplayName("Deve retornar lista vazia de disponibilidades quando não há disponibilidades")
     void shouldReturnEmptyAvailabilitiesList() {
-        // Act
         List<Availability> availabilities = professional.getAvailabilities();
 
-        // Assert
         assertNotNull(availabilities);
         assertTrue(availabilities.isEmpty());
     }
@@ -57,10 +55,8 @@ class HealthProfessionalTest {
     @Test
     @DisplayName("Deve adicionar disponibilidade corretamente")
     void shouldAddAvailability() {
-        // Act
         professional.addAvailability(availability1);
 
-        // Assert
         List<Availability> availabilities = professional.getAvailabilities();
         assertEquals(1, availabilities.size());
         assertTrue(availabilities.contains(availability1));
@@ -70,11 +66,9 @@ class HealthProfessionalTest {
     @Test
     @DisplayName("Deve adicionar múltiplas disponibilidades")
     void shouldAddMultipleAvailabilities() {
-        // Act
         professional.addAvailability(availability1);
         professional.addAvailability(availability2);
 
-        // Assert
         List<Availability> availabilities = professional.getAvailabilities();
         assertEquals(2, availabilities.size());
         assertTrue(availabilities.contains(availability1));
@@ -84,13 +78,10 @@ class HealthProfessionalTest {
     @Test
     @DisplayName("Deve definir lista de disponibilidades corretamente")
     void shouldSetAvailabilities() {
-        // Arrange
         List<Availability> newAvailabilities = Arrays.asList(availability1, availability2);
 
-        // Act
         professional.setAvailabilities(newAvailabilities);
 
-        // Assert
         List<Availability> availabilities = professional.getAvailabilities();
         assertEquals(2, availabilities.size());
         assertTrue(availabilities.contains(availability1));
@@ -100,14 +91,11 @@ class HealthProfessionalTest {
     @Test
     @DisplayName("Deve limpar disponibilidades existentes ao definir nova lista")
     void shouldClearExistingAvailabilitiesWhenSettingNewList() {
-        // Arrange
         professional.addAvailability(availability1);
         List<Availability> newAvailabilities = Arrays.asList(availability2);
 
-        // Act
         professional.setAvailabilities(newAvailabilities);
 
-        // Assert
         List<Availability> availabilities = professional.getAvailabilities();
         assertEquals(1, availabilities.size());
         assertTrue(availabilities.contains(availability2));
@@ -117,14 +105,11 @@ class HealthProfessionalTest {
     @Test
     @DisplayName("Deve limpar todas as disponibilidades ao definir lista nula")
     void shouldClearAllAvailabilitiesWhenSettingNullList() {
-        // Arrange
         professional.addAvailability(availability1);
         professional.addAvailability(availability2);
 
-        // Act
         professional.setAvailabilities(null);
 
-        // Assert
         List<Availability> availabilities = professional.getAvailabilities();
         assertTrue(availabilities.isEmpty());
     }
@@ -132,14 +117,11 @@ class HealthProfessionalTest {
     @Test
     @DisplayName("Deve limpar todas as disponibilidades ao definir lista vazia")
     void shouldClearAllAvailabilitiesWhenSettingEmptyList() {
-        // Arrange
         professional.addAvailability(availability1);
         professional.addAvailability(availability2);
 
-        // Act
         professional.setAvailabilities(new ArrayList<>());
 
-        // Assert
         List<Availability> availabilities = professional.getAvailabilities();
         assertTrue(availabilities.isEmpty());
     }
@@ -147,11 +129,9 @@ class HealthProfessionalTest {
     @Test
     @DisplayName("Deve criar nova disponibilidade com sucesso")
     void shouldCreateNewAvailabilitySuccessfully() {
-        // Act
         Availability newAvailability = new Availability(Day.QUINTA, Shift.TARDE, professional);
         professional.addAvailability(newAvailability);
 
-        // Assert
         List<Availability> availabilities = professional.getAvailabilities();
         assertEquals(1, availabilities.size());
         assertTrue(availabilities.contains(newAvailability));
@@ -163,36 +143,49 @@ class HealthProfessionalTest {
     @Test
     @DisplayName("Deve validar conflitos de horários - mesmo dia e turno")
     void shouldValidateTimeConflicts() {
-        // Arrange - Adiciona primeira disponibilidade
         professional.addAvailability(availability1);
         
-        // Act & Assert - Tenta adicionar disponibilidade com mesmo dia e turno
         Availability conflictingAvailability = new Availability(Day.SEGUNDA, Shift.MANHA, professional);
         
-        // Verifica se já existe disponibilidade com mesmo dia e turno
         boolean hasConflict = professional.getAvailabilities().stream()
                 .anyMatch(avail -> avail.getDay().equals(conflictingAvailability.getDay()) 
                         && avail.getShift().equals(conflictingAvailability.getShift()));
         
         assertTrue(hasConflict, "Deve detectar conflito de horário");
         
-        // Adiciona mesmo assim para testar que o modelo permite (validação deve ser feita no serviço)
         professional.addAvailability(conflictingAvailability);
         assertEquals(2, professional.getAvailabilities().size());
     }
 
     @Test
+    @DisplayName("Deve detectar conflito de horário antes de adicionar disponibilidade")
+    void shouldDetectTimeConflictBeforeAddingAvailability() {
+        professional.addAvailability(availability1);
+        assertEquals(1, professional.getAvailabilities().size());
+        
+        Availability conflictingAvailability = new Availability(Day.SEGUNDA, Shift.MANHA, professional);
+        
+        boolean hasConflict = professional.getAvailabilities().stream()
+                .anyMatch(avail -> avail.getDay().equals(conflictingAvailability.getDay()) 
+                        && avail.getShift().equals(conflictingAvailability.getShift()));
+        
+        assertTrue(hasConflict, "Deve detectar conflito de horário antes de adicionar");
+        
+        assertTrue(professional.getAvailabilities().stream()
+                .anyMatch(avail -> avail.getDay().equals(Day.SEGUNDA) 
+                        && avail.getShift().equals(Shift.MANHA)),
+                "Deve existir disponibilidade com SEGUNDA/MANHA");
+    }
+
+    @Test
     @DisplayName("Deve permitir disponibilidades diferentes no mesmo dia")
     void shouldAllowDifferentShiftsOnSameDay() {
-        // Arrange
         Availability manha = new Availability(Day.SEGUNDA, Shift.MANHA, professional);
         Availability tarde = new Availability(Day.SEGUNDA, Shift.TARDE, professional);
 
-        // Act
         professional.addAvailability(manha);
         professional.addAvailability(tarde);
 
-        // Assert
         List<Availability> availabilities = professional.getAvailabilities();
         assertEquals(2, availabilities.size());
         assertTrue(availabilities.contains(manha));
@@ -202,24 +195,56 @@ class HealthProfessionalTest {
     @Test
     @DisplayName("Deve validar que disponibilidade requer dia e turno não nulos")
     void shouldValidateAvailabilityRequiresDayAndShift() {
-        // Assert - O construtor deve receber valores válidos
         assertNotNull(availability1.getDay());
         assertNotNull(availability1.getShift());
         assertNotNull(availability1.getProfessional());
     }
 
     @Test
+    @DisplayName("Deve impedir criação de disponibilidade com dia nulo")
+    void shouldPreventCreationWithNullDay() {
+        Availability availabilityWithNullDay = new Availability(null, Shift.MANHA, professional);
+        
+        assertNull(availabilityWithNullDay.getDay(), "Dia deve ser nulo quando passado null no construtor");
+    }
+
+    @Test
+    @DisplayName("Deve impedir criação de disponibilidade com turno nulo")
+    void shouldPreventCreationWithNullShift() {
+        Availability availabilityWithNullShift = new Availability(Day.SEGUNDA, null, professional);
+        
+        assertNull(availabilityWithNullShift.getShift(), "Turno deve ser nulo quando passado null no construtor");
+    }
+
+    @Test
+    @DisplayName("Deve impedir criação de disponibilidade com profissional nulo")
+    void shouldPreventCreationWithNullProfessional() {
+        Availability availabilityWithNullProfessional = new Availability(Day.SEGUNDA, Shift.MANHA, null);
+        
+        assertNull(availabilityWithNullProfessional.getProfessional(), 
+                "Profissional deve ser nulo quando passado null no construtor");
+    }
+
+    @Test
+    @DisplayName("Deve lançar exceção ao tentar usar disponibilidade com dia nulo")
+    void shouldThrowExceptionWhenUsingAvailabilityWithNullDay() {
+        Availability availabilityWithNullDay = new Availability(null, Shift.MANHA, professional);
+        
+        assertThrows(NullPointerException.class, () -> {
+            Day day = availabilityWithNullDay.getDay();
+            day.toString();
+        }, "Deve lançar exceção ao tentar usar dia nulo");
+    }
+
+    @Test
     @DisplayName("Deve listar todas as disponibilidades registradas")
     void shouldListAllRegisteredAvailabilities() {
-        // Arrange
         professional.addAvailability(availability1);
         professional.addAvailability(availability2);
         professional.addAvailability(availability3);
 
-        // Act
         List<Availability> availabilities = professional.getAvailabilities();
 
-        // Assert
         assertNotNull(availabilities);
         assertEquals(3, availabilities.size());
         assertTrue(availabilities.contains(availability1));
@@ -230,16 +255,13 @@ class HealthProfessionalTest {
     @Test
     @DisplayName("Deve retornar uma disponibilidade existente")
     void shouldReturnExistingAvailability() {
-        // Arrange
         professional.addAvailability(availability1);
         professional.addAvailability(availability2);
 
-        // Act
         Optional<Availability> found = professional.getAvailabilities().stream()
                 .filter(avail -> avail.getDay().equals(Day.SEGUNDA) && avail.getShift().equals(Shift.MANHA))
                 .findFirst();
 
-        // Assert
         assertTrue(found.isPresent());
         assertEquals(availability1, found.get());
         assertEquals(Day.SEGUNDA, found.get().getDay());
@@ -249,31 +271,64 @@ class HealthProfessionalTest {
     @Test
     @DisplayName("Deve retornar erro caso a disponibilidade não exista")
     void shouldReturnErrorWhenAvailabilityDoesNotExist() {
-        // Arrange
         professional.addAvailability(availability1);
 
-        // Act
         Optional<Availability> found = professional.getAvailabilities().stream()
                 .filter(avail -> avail.getDay().equals(Day.SABADO) && avail.getShift().equals(Shift.TARDE))
                 .findFirst();
 
-        // Assert
         assertFalse(found.isPresent(), "Não deve encontrar disponibilidade inexistente");
+    }
+
+    @Test
+    @DisplayName("Deve retornar erro ao buscar disponibilidade por ID inexistente")
+    void shouldReturnErrorWhenAvailabilityIdDoesNotExist() {
+        professional.addAvailability(availability1);
+        professional.addAvailability(availability2);
+        UUID nonExistentId = UUID.randomUUID();
+
+        Optional<Availability> found = professional.getAvailabilities().stream()
+                .filter(avail -> avail.getId() != null && avail.getId().equals(nonExistentId))
+                .findFirst();
+
+        assertFalse(found.isPresent(), "Não deve encontrar disponibilidade com ID inexistente");
+        assertEquals(2, professional.getAvailabilities().size(), 
+                "Lista de disponibilidades deve permanecer inalterada");
+    }
+
+    @Test
+    @DisplayName("Deve retornar disponibilidade existente ao buscar por ID")
+    void shouldReturnExistingAvailabilityById() {
+        professional.addAvailability(availability1);
+        professional.addAvailability(availability2);
+        
+        Optional<Availability> found = professional.getAvailabilities().stream()
+                .filter(avail -> avail.equals(availability1))
+                .findFirst();
+
+        assertTrue(found.isPresent(), "Deve encontrar disponibilidade existente");
+        assertEquals(availability1, found.get());
+        
+        if (availability1.getId() != null) {
+            UUID existingId = availability1.getId();
+            Optional<Availability> foundById = professional.getAvailabilities().stream()
+                    .filter(avail -> avail.getId() != null && avail.getId().equals(existingId))
+                    .findFirst();
+            assertTrue(foundById.isPresent(), "Deve encontrar disponibilidade por ID quando ID estiver disponível");
+            assertEquals(existingId, foundById.get().getId());
+        }
     }
 
     @Test
     @DisplayName("Deve atualizar horários de uma disponibilidade")
     void shouldUpdateAvailabilityTimes() {
-        // Arrange
         professional.addAvailability(availability1);
         Day newDay = Day.QUINTA;
         Shift newShift = Shift.TARDE;
 
-        // Act
         availability1.setDay(newDay);
         availability1.setShift(newShift);
 
-        // Assert
         assertEquals(newDay, availability1.getDay());
         assertEquals(newShift, availability1.getShift());
         assertTrue(professional.getAvailabilities().contains(availability1));
@@ -282,15 +337,12 @@ class HealthProfessionalTest {
     @Test
     @DisplayName("Deve atualizar apenas o dia de uma disponibilidade")
     void shouldUpdateOnlyDay() {
-        // Arrange
         professional.addAvailability(availability1);
         Shift originalShift = availability1.getShift();
         Day newDay = Day.SEXTA;
 
-        // Act
         availability1.setDay(newDay);
 
-        // Assert
         assertEquals(newDay, availability1.getDay());
         assertEquals(originalShift, availability1.getShift());
     }
@@ -298,15 +350,12 @@ class HealthProfessionalTest {
     @Test
     @DisplayName("Deve atualizar apenas o turno de uma disponibilidade")
     void shouldUpdateOnlyShift() {
-        // Arrange
         professional.addAvailability(availability1);
         Day originalDay = availability1.getDay();
         Shift newShift = Shift.TARDE;
 
-        // Act
         availability1.setShift(newShift);
 
-        // Assert
         assertEquals(originalDay, availability1.getDay());
         assertEquals(newShift, availability1.getShift());
     }
@@ -314,15 +363,12 @@ class HealthProfessionalTest {
     @Test
     @DisplayName("Deve excluir uma disponibilidade existente")
     void shouldDeleteExistingAvailability() {
-        // Arrange
         professional.addAvailability(availability1);
         professional.addAvailability(availability2);
         professional.addAvailability(availability3);
 
-        // Act
         boolean removed = professional.getAvailabilities().remove(availability2);
 
-        // Assert
         assertTrue(removed);
         assertEquals(2, professional.getAvailabilities().size());
         assertFalse(professional.getAvailabilities().contains(availability2));
@@ -333,14 +379,11 @@ class HealthProfessionalTest {
     @Test
     @DisplayName("Deve retornar false ao tentar excluir disponibilidade inexistente")
     void shouldReturnFalseWhenDeletingNonExistentAvailability() {
-        // Arrange
         professional.addAvailability(availability1);
         Availability nonExistentAvailability = new Availability(Day.SABADO, Shift.TARDE, professional);
 
-        // Act
         boolean removed = professional.getAvailabilities().remove(nonExistentAvailability);
 
-        // Assert
         assertFalse(removed);
         assertEquals(1, professional.getAvailabilities().size());
         assertTrue(professional.getAvailabilities().contains(availability1));
@@ -349,10 +392,8 @@ class HealthProfessionalTest {
     @Test
     @DisplayName("Deve manter relacionamento bidirecional ao adicionar disponibilidade")
     void shouldMaintainBidirectionalRelationshipWhenAddingAvailability() {
-        // Act
         professional.addAvailability(availability1);
 
-        // Assert
         assertEquals(professional, availability1.getProfessional());
         assertTrue(professional.getAvailabilities().contains(availability1));
     }
@@ -360,17 +401,14 @@ class HealthProfessionalTest {
     @Test
     @DisplayName("Deve permitir múltiplas disponibilidades em dias diferentes")
     void shouldAllowMultipleAvailabilitiesOnDifferentDays() {
-        // Arrange
         Availability segunda = new Availability(Day.SEGUNDA, Shift.MANHA, professional);
         Availability terca = new Availability(Day.TERCA, Shift.MANHA, professional);
         Availability quarta = new Availability(Day.QUARTA, Shift.MANHA, professional);
 
-        // Act
         professional.addAvailability(segunda);
         professional.addAvailability(terca);
         professional.addAvailability(quarta);
 
-        // Assert
         assertEquals(3, professional.getAvailabilities().size());
         assertTrue(professional.getAvailabilities().contains(segunda));
         assertTrue(professional.getAvailabilities().contains(terca));
