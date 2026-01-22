@@ -1,6 +1,8 @@
 package br.org.apae.api.controllers.professional;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.isNull;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -111,10 +113,11 @@ class HealthProfessionalControllerTest {
             responses.size()
         );
 
-        Mockito.when(service.findAllProfessionals(any(Pageable.class)))
+        Mockito.when(service.findAllProfessionals(isNull(), any(Pageable.class)))
             .thenReturn(page);
 
         mockMvc.perform(get("/professionals")
+                .param("Ativo", "true")
                 .header("Authorization", AuthTestHelper.bearerToken()))
             .andExpect(status().isOk())
             .andExpect(jsonPath("$.content").isArray())
