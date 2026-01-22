@@ -80,8 +80,14 @@ public class HealthProfessionalApplicationServiceImpl implements HealthProfessio
             throw new ProfessionalDocumentConflictException();
         }
 
-        ServiceAreaResponseDTO serviceAreaDto = serviceAreaApplicationService
-                .findServiceAreaByArea(entityToUpdate.getServiceArea().getArea());
+        String area =
+                (dto.serviceArea() != null
+                        && dto.serviceArea().area() != null
+                        && !dto.serviceArea().area().isBlank())
+                        ? dto.serviceArea().area()
+                        : entityToUpdate.getServiceArea().getArea();
+
+        ServiceAreaResponseDTO serviceAreaDto = serviceAreaApplicationService.findServiceAreaByArea(area);
 
         HealthProfessional updatedProfessional = mapper.updateEntityFromDto(entityToUpdate, dto, serviceAreaDto);
 
@@ -98,7 +104,7 @@ public class HealthProfessionalApplicationServiceImpl implements HealthProfessio
                 .orElseThrow(HealthProfessionalNotFoundException::new);
     }
 
-/*    @Override
+    /*    @Override
     @Transactional
     public void deleteProfessional(UUID id) {
         if (!repository.existsById(id)) {
