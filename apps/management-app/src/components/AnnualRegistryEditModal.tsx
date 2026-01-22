@@ -8,9 +8,10 @@ import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { AnnualRegistryFormSchema } from "@/schemas/anualRegistrySchema"; 
+import { AnnualRegistryFormSchema, AnnualRegistryFormValues } from "@/schemas/anualRegistrySchema"; 
 import { toast } from "react-toastify"; 
-import { Loader2, Upload, FileText, ExternalLink, RefreshCw } from "lucide-react"; 
+import { Loader2, Upload, FileText, RefreshCw, ExternalLink } from "lucide-react"; 
+
 import { StringMultiSelect } from "@/components/StringMultiSelect";
 import { GenericDatabaseSelect } from "@/components/GenericDatabaseSelect";
 
@@ -26,8 +27,9 @@ interface AnnualRegistryEditModalProps {
     isOpen: boolean;
     onClose: () => void;
     patientId: string;
-    currentYear: string;
-    initialData: any; 
+    currentYear: string; 
+    initialData: any;    
+    mode?: "create" | "edit"; 
 }
 
 const MEDICAL_DOC_TYPES = [
@@ -37,7 +39,14 @@ const MEDICAL_DOC_TYPES = [
     { value: "OTHER", label: "Outro" }
 ];
 
-export default function AnnualRegistryEditModal({ isOpen, onClose, patientId, currentYear, initialData }: AnnualRegistryEditModalProps) {
+export default function AnnualRegistryEditModal({ 
+    isOpen, 
+    onClose, 
+    patientId, 
+    currentYear, 
+    initialData,
+    mode = "edit" 
+}: AnnualRegistryEditModalProps) {
     
     const [documents, setDocuments] = useState<DocumentDTO[]>([]);
     const [isLoadingDocs, setIsLoadingDocs] = useState(false);
@@ -47,17 +56,22 @@ export default function AnnualRegistryEditModal({ isOpen, onClose, patientId, cu
     const [fullPatientData, setFullPatientData] = useState<any>(null);
     const fileInputRef = useRef<HTMLInputElement>(null);
 
-    const form = useForm({
+    const currentYearInt = new Date().getFullYear();
+
+    const availableYears = Array.from({ length: 32 }, (_, i) => (currentYearInt + 1 - i).toString());
+
+    const form = useForm<AnnualRegistryFormValues>({
         resolver: zodResolver(AnnualRegistryFormSchema),
         defaultValues: {
-            bpc: false, 
+            year: currentYear || currentYearInt.toString(),
+            bpc: "false", 
             familyIncome: "",
             diseases: "",
             continuousMedication: "",
-            disorders: [],
+            disorders: [],     
             allergies: "",
-            vaccines: [],
-            serviceTypes: [] 
+            vaccines: [],      
+            serviceTypes: []   
         },
     });
 
@@ -65,48 +79,63 @@ export default function AnnualRegistryEditModal({ isOpen, onClose, patientId, cu
 
     useEffect(() => {
         if (isOpen && patientId) {
-            fetchDocuments();
+            if (mode === "edit") fetchDocuments();
+            else setDocuments([]);
             fetchPatientData(); 
         }
-    }, [isOpen, patientId]);
+    }, [isOpen, patientId, mode]);
 
     useEffect(() => {
-        if (isOpen && initialData) {
-            const rawBpc = initialData.bpc;
-            const bpcBoolean = rawBpc === true || String(rawBpc) === "true" || String(rawBpc).toLowerCase() === "sim";
+        if (isOpen) {
+            if (mode === "edit" && initialData) {
+                const rawBpc = initialData.bpc;
+                const bpcString = (rawBpc === true || String(rawBpc) === "true") ? "true" : "false";
 
-            let vaccineList: any[] = [];
-            const vacSource = fullPatientData?.vaccineNames || fullPatientData?.vaccines;
-            if (Array.isArray(vacSource)) {
-                vaccineList = vacSource.map((v: any) => (typeof v === 'string' ? { name: v } : v));
-            }
+                const vaccineList = Array.isArray(fullPatientData?.vaccineNames) 
+                    ? fullPatientData.vaccineNames.map((v: any) => (typeof v === 'string' ? { name: v } : v)) 
+                    : [];
 
-            let serviceTypeList: any[] = [];
-            const sourceServiceAreas = initialData.serviceArea || initialData.serviceAreas || initialData.serviceTypes;
-            
-            if (Array.isArray(sourceServiceAreas)) {
-                serviceTypeList = sourceServiceAreas.map((s: any) => ({
+                const sourceServiceAreas = initialData.serviceArea || initialData.serviceAreas || initialData.serviceTypes || [];
+                const serviceTypeList = Array.isArray(sourceServiceAreas) ? sourceServiceAreas.map((s: any) => ({
                     id: s.id,
                     area: s.area || s.name, 
                     name: s.name || s.area  
-                }));
+                })) : [];
+
+                const disorderList = Array.isArray(initialData.disorders) ? initialData.disorders : [];
+
+                form.reset({
+                    year: currentYear, 
+                    bpc: bpcString,
+                    familyIncome: initialData.familyIncome ? formatCurrencyForDisplay(initialData.familyIncome) : "",
+                    diseases: initialData.diseases ?? "",
+                    continuousMedication: initialData.continuousMedication ?? "",
+                    allergies: fullPatientData?.allergies ?? "",
+                    disorders: disorderList, 
+                    vaccines: vaccineList,
+                    serviceTypes: serviceTypeList 
+                });
+
+            } else if (mode === "create") {
+                const vaccineList = Array.isArray(fullPatientData?.vaccineNames) 
+                    ? fullPatientData.vaccineNames.map((v: any) => (typeof v === 'string' ? { name: v } : v)) 
+                    : [];
+
+                form.reset({
+                    year: currentYearInt.toString(),
+                    bpc: "false",
+                    familyIncome: "",
+                    diseases: "",
+                    continuousMedication: "",
+                    allergies: fullPatientData?.allergies ?? "",
+                    disorders: [],
+                    vaccines: vaccineList,
+                    serviceTypes: []
+                });
             }
-
-            const disorderList = Array.isArray(initialData.disorders) ? initialData.disorders : [];
-
-            form.reset({
-                bpc: bpcBoolean,
-                familyIncome: initialData.familyIncome ? formatCurrencyForDisplay(initialData.familyIncome) : "",
-                diseases: initialData.diseases ?? "",
-                continuousMedication: initialData.continuousMedication ?? "",
-                allergies: fullPatientData?.allergies ?? "",
-                disorders: disorderList, 
-                vaccines: vaccineList,
-                serviceTypes: serviceTypeList 
-            });
         }
-    }, [initialData, fullPatientData, isOpen, form]);
-
+    }, [initialData, fullPatientData, isOpen, form, mode, currentYear]);
+    
     const fetchDocuments = async () => {
         setIsLoadingDocs(true);
         try {
@@ -159,65 +188,75 @@ export default function AnnualRegistryEditModal({ isOpen, onClose, patientId, cu
         return rest;
     };
 
-    const onSubmit = async (data: any) => { 
-        const registryId = initialData?.id; 
-        
+    const onSubmit = async (data: AnnualRegistryFormValues) => { 
         try {
+            const registryId = initialData?.id; 
+            
             const finalDiseases = (data.diseases && data.diseases.trim() !== "") ? data.diseases : "Nenhuma";
             const finalMedication = (data.continuousMedication && data.continuousMedication.trim() !== "") ? data.continuousMedication : "Nenhum";
             const finalAllergies = (data.allergies && data.allergies.trim() !== "") ? data.allergies : "Nenhuma";
+            
+            const income = parseFloat(cleanCurrency(data.familyIncome));
+            const bpcToSend = data.bpc === "true"; 
 
-            // 1. ATUALIZA REGISTRO ANUAL
-            if (registryId) {
-                const income = parseFloat(cleanCurrency(data.familyIncome));
-                const bpcToSend = (data.bpc === true || data.bpc === "true") ? "true" : "false";
+            const formattedDisorders = (data.disorders || []).map((d: any) => ({ 
+                name: d.name || d.label || d.value,
+                id: d.id 
+            }));
 
-                const formattedDisorders = data.disorders?.map((d: any) => ({ 
-                    name: d.name || d.label || d.value,
-                    id: d.id 
-                })) || [];
+            const formattedServiceAreas = (data.serviceTypes || []).map((s: any) => ({
+                id: s.id,
+                area: s.area || s.name || s.label || s.value 
+            }));
 
-                const formattedServiceAreas = data.serviceTypes?.map((s: any) => ({
-                    id: s.id,
-                    area: s.area || s.name || s.label || s.value 
-                })) || [];
+            const regPayload: any = {
+                bpc: bpcToSend, 
+                familyIncome: income,
+                diseases: finalDiseases, 
+                continuousMedication: finalMedication, 
+                disorders: formattedDisorders,
+                serviceArea: formattedServiceAreas,  
+                serviceAreas: formattedServiceAreas 
+            };
 
-                const regPayload = {
-                    bpc: bpcToSend, 
-                    familyIncome: income,
-                    diseases: finalDiseases, 
-                    continuousMedication: finalMedication,
-                    disorders: formattedDisorders,
-                    serviceArea: formattedServiceAreas,
-                    serviceAreas: formattedServiceAreas 
-                };
+            let regRes;
 
-                const regRes = await fetch(`/api/pessoas/${patientId}/registro-anual/${registryId}`, {
+            if (mode === "create") {
+                regPayload.year = parseInt(data.year);
+
+                regRes = await fetch(`/api/pessoas/${patientId}/registro-anual`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(regPayload),
+                });
+            } else {
+                if (!registryId) throw new Error("ID do registro não encontrado.");
+                
+                regRes = await fetch(`/api/pessoas/${patientId}/registro-anual/${registryId}`, {
                     method: 'PUT',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(regPayload),
                 });
-
-                if (!regRes.ok) {
-                     const errorText = await regRes.text();
-                     console.error("Erro Backend:", errorText);
-                     throw new Error("Erro ao salvar registro anual.");
-                }
             }
 
-            // 2. ATUALIZA DADOS DO PACIENTE
-            if (fullPatientData) {
-                const vaccineList = Array.isArray(data.vaccines) 
-                    ? data.vaccines.map((v: any) => ({ name: v.name || v.label || v.value, id: v.id }))
-                    : [];
+            if (!regRes.ok) {
+                 const errorText = await regRes.text();
+                 console.error("Erro Backend:", errorText);
+                 if (regRes.status === 409) {
+                    throw new Error(`Já existe um registro para o ano de ${data.year}.`);
+                 }
+                 throw new Error("Erro ao salvar registro anual.");
+            }
 
+            if (fullPatientData) {
+                const vaccineList = (data.vaccines || []).map((v: any) => ({ name: v.name || v.label || v.value, id: v.id }));
                 const baseData = cleanPatientData(fullPatientData);
                 const safeNationality = baseData.nationality || baseData.birthplace || "Brasileira";
 
                 const patientPayload = {
                     ...baseData,
                     nationality: safeNationality,
-                    allergies: finalAllergies,                    
+                    allergies: finalAllergies,
                     vaccineNames: vaccineList,
                     address: fullPatientData.address ? { ...fullPatientData.address } : null,
                     guardian: fullPatientData.guardian ? { ...fullPatientData.guardian } : null,
@@ -226,16 +265,15 @@ export default function AnnualRegistryEditModal({ isOpen, onClose, patientId, cu
                     })) ?? []
                 };
 
-                const patRes = await fetch(`/api/pessoas/${patientId}`, {
+                await fetch(`/api/pessoas/${patientId}`, {
                     method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(patientPayload)
                 });
-
-                if (!patRes.ok) throw new Error("Erro ao atualizar dados do paciente.");
             }
 
-            toast.success("Salvo com sucesso!");
-            onClose();
-            window.location.reload(); 
+            const savedYear = mode === "create" ? data.year : undefined;
+            onClose(savedYear);
+            
+            toast.success(mode === "create" ? "Registro criado com sucesso!" : "Alterações salvas!");
 
         } catch (error: any) {
             console.error(error);
@@ -243,10 +281,19 @@ export default function AnnualRegistryEditModal({ isOpen, onClose, patientId, cu
         }
     };
 
+    const isCreateMode = mode === "create";
+
     return (
-        <Dialog open={isOpen} onOpenChange={onClose}>
+        <Dialog open={isOpen} onOpenChange={() => onClose()}>
             <DialogContent className="!max-w-[1200px] w-[95vw] h-[85vh] flex flex-col p-0 overflow-hidden bg-slate-50 rounded-xl shadow-xl">
-                <DialogHeader className="px-6 py-4 bg-[#0D4F97] text-white shrink-0"><DialogTitle className="text-xl font-bold font-baloo">Edição de Saúde & Social</DialogTitle><p className="text-blue-200 text-xs mt-0.5 opacity-90">Referência: {currentYear}</p></DialogHeader>
+                <DialogHeader className="px-6 py-4 bg-[#0D4F97] text-white shrink-0">
+                    <DialogTitle className="text-xl font-bold font-baloo">
+                        {isCreateMode ? "Novo Registro Anual" : "Edição de Saúde & Social"}
+                    </DialogTitle>
+                    <p className="text-blue-200 text-xs mt-0.5 opacity-90">
+                        {isCreateMode ? "Preencha os dados para iniciar um novo ano." : `Referência: ${currentYear}`}
+                    </p>
+                </DialogHeader>
                 
                <div className="flex-1 overflow-y-auto p-5 pb-24">
                     <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 h-full">
@@ -254,12 +301,31 @@ export default function AnnualRegistryEditModal({ isOpen, onClose, patientId, cu
                             <h3 className="text-[#0D4F97] font-bold text-base mb-4 pb-2 border-b border-slate-100 flex items-center gap-2"><span className="bg-blue-50 p-1.5 rounded-lg text-[#0D4F97]"><FileText className="h-4 w-4" /></span>Dados Clínicos e Sociais</h3>
                             <Form {...form}>
                                 <form id="health-form" onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+                                    
+                                    {isCreateMode && (
+                                        <FormField control={form.control} name="year" render={({ field }) => (
+                                            <FormItem>
+                                                <FormLabel className="text-slate-700 font-bold text-xs">Ano de Referência</FormLabel>
+                                                <Select onValueChange={field.onChange} defaultValue={field.value}>
+                                                    <FormControl><SelectTrigger className="bg-slate-50 border-slate-200 h-10 text-sm"><SelectValue placeholder="Selecione o ano" /></SelectTrigger></FormControl>
+                                                    <SelectContent className="max-h-60">
+                                                        {availableYears.map(year => (
+                                                            <SelectItem key={year} value={year}>{year}</SelectItem>
+                                                        ))}
+                                                    </SelectContent>
+                                                </Select>
+                                                <FormMessage />
+                                            </FormItem>
+                                        )} />
+                                    )}
+
                                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                         <FormField control={form.control} name="bpc" render={({ field }) => (
                                             <FormItem><FormLabel className="text-slate-700 font-bold text-xs">Recebe BPC?</FormLabel>
                                                 <Select 
-                                                    onValueChange={(val) => field.onChange(val === 'true')} 
-                                                    value={field.value ? "true" : "false"}
+                                                    onValueChange={field.onChange} 
+                                                    value={field.value} 
+                                                    defaultValue={field.value}
                                                 >
                                                     <FormControl><SelectTrigger className="bg-slate-50 border-slate-200 h-10 text-sm"><SelectValue placeholder="Selecione" /></SelectTrigger></FormControl>
                                                     <SelectContent><SelectItem value="true">Sim</SelectItem><SelectItem value="false">Não</SelectItem></SelectContent>
@@ -271,15 +337,15 @@ export default function AnnualRegistryEditModal({ isOpen, onClose, patientId, cu
                                     <div className="space-y-3">
                                         <FormField control={form.control} name="diseases" render={({ field }) => (
                                             <FormItem><FormLabel className="text-slate-700 font-bold text-xs">Doenças</FormLabel>
-                                            <FormControl><StringMultiSelect value={field.value} onChange={field.onChange} placeholder="Digite doenças (ex: Diabetes)..." /></FormControl><FormMessage /></FormItem>)} />
+                                            <FormControl><StringMultiSelect value={field.value || ""} onChange={field.onChange} placeholder="Digite doenças (ex: Diabetes)..." /></FormControl><FormMessage /></FormItem>)} />
                                         
                                         <FormField control={form.control} name="allergies" render={({ field }) => (
                                             <FormItem><FormLabel className="text-slate-700 font-bold text-xs">Alergias</FormLabel>
-                                            <FormControl><StringMultiSelect value={field.value} onChange={field.onChange} placeholder="Digite alergias (ex: Dipirona)..." /></FormControl><FormMessage /></FormItem>)} />
+                                            <FormControl><StringMultiSelect value={field.value || ""} onChange={field.onChange} placeholder="Digite alergias (ex: Dipirona)..." /></FormControl><FormMessage /></FormItem>)} />
                                         
                                         <FormField control={form.control} name="continuousMedication" render={({ field }) => (
                                             <FormItem><FormLabel className="text-slate-700 font-bold text-xs">Medicamentos</FormLabel>
-                                            <FormControl><StringMultiSelect value={field.value} onChange={field.onChange} placeholder="Digite medicamentos..." /></FormControl><FormMessage /></FormItem>)} />
+                                            <FormControl><StringMultiSelect value={field.value || ""} onChange={field.onChange} placeholder="Digite medicamentos..." /></FormControl><FormMessage /></FormItem>)} />
                                         
                                         <FormField control={form.control} name="vaccines" render={({ field }) => (
                                             <FormItem>
@@ -329,55 +395,63 @@ export default function AnnualRegistryEditModal({ isOpen, onClose, patientId, cu
                                 </form>
                             </Form>
                         </div>
-
                         <div className="flex flex-col h-full bg-white p-5 rounded-xl shadow-sm border border-slate-200">
                              <h3 className="text-[#0D4F97] font-bold text-base mb-4 pb-2 border-b border-slate-100 flex items-center justify-between">
                                 <div className="flex items-center gap-2"><span className="bg-green-50 p-1.5 rounded-lg text-green-700"><FileText className="h-4 w-4" /></span>Documentação Digital</div>
                                 <Button variant="ghost" size="sm" className="h-8 w-8 p-0 hover:bg-slate-100 rounded-full" onClick={fetchDocuments} disabled={isLoadingDocs}><RefreshCw className={`h-4 w-4 ${isLoadingDocs ? 'animate-spin' : ''}`} /></Button>
                             </h3>
                             <div className="flex-1 flex flex-col">
-                                <div className="bg-slate-50 p-5 rounded-xl border-2 border-dashed border-slate-300 mb-6 hover:border-[#0D4F97]/40 transition-all duration-300 group">
-                                    <label className="text-xs font-bold text-slate-500 uppercase mb-3 block text-center tracking-widest group-hover:text-[#0D4F97] transition-colors">Adicionar Novo Documento</label>
-                                    <div className="flex flex-col gap-3 max-w-sm mx-auto w-full">
-                                        <Select value={docType} onValueChange={setDocType}>
-                                            <SelectTrigger className="w-full bg-white shadow-sm border-slate-200 h-10 text-sm"><SelectValue /></SelectTrigger>
-                                            <SelectContent>{MEDICAL_DOC_TYPES.map(t => <SelectItem key={t.value} value={t.value}>{t.label}</SelectItem>)}</SelectContent>
-                                        </Select>
-                                        <input type="file" ref={fileInputRef} onChange={handleFileUpload} className="hidden" accept=".pdf,.jpg,.png,.jpeg" disabled={isUploading} />
-                                        <Button variant="outline" className="w-full bg-white text-[#0D4F97] border-[#0D4F97]/20 hover:bg-[#0D4F97] hover:text-white shadow-sm h-10 transition-all text-sm" onClick={() => fileInputRef.current?.click()} disabled={isUploading}>{isUploading ? <Loader2 className="mr-2 h-4 w-4 animate-spin"/> : <Upload className="mr-2 h-4 w-4"/>} Selecionar Arquivo</Button>
+                                {isCreateMode ? (
+                                    <div className="flex flex-col items-center justify-center h-full text-center p-8 opacity-60">
+                                        <FileText className="h-12 w-12 text-slate-300 mb-3" />
+                                        <p className="text-slate-500 font-medium text-sm">Documentos poderão ser anexados após a criação do registro.</p>
                                     </div>
-                                </div>
-                                <div className="flex-1 overflow-y-auto max-h-[400px] pr-2 custom-scrollbar">
-                                    <h4 className="text-[10px] font-bold text-slate-400 uppercase mb-3 tracking-widest">Arquivos Anexados ({documents.length})</h4>
-                                    <div className="space-y-2">
-                                        {documents.length === 0 ? (
-                                            <div className="flex flex-col items-center justify-center h-32 text-slate-400 border-2 border-slate-100 rounded-xl bg-slate-50/50"><FileText className="h-8 w-8 mb-2 opacity-20" /><p className="text-xs font-medium opacity-60">Nenhum documento encontrado.</p></div>
-                                        ) : (
-                                            documents.map((doc) => (
-                                                <div key={doc.id} className="group flex items-center justify-between p-3 bg-white border border-slate-100 rounded-xl shadow-sm hover:shadow-md hover:border-[#0D4F97]/20 transition-all duration-200">
-                                                    <div className="flex items-center gap-3 overflow-hidden">
-                                                        <div className="bg-blue-50 p-2 rounded-lg group-hover:bg-[#0D4F97] group-hover:text-white transition-colors duration-300"><FileText className="h-4 w-4" /></div>
-                                                        <div className="flex flex-col min-w-0"><span className="text-sm font-semibold truncate text-slate-700 group-hover:text-[#0D4F97] transition-colors" title={doc.name}>{doc.name}</span><span className="text-[10px] text-slate-400 font-bold uppercase tracking-wide mt-0.5">{doc.type}</span></div>
-                                                    </div>
-                                                    {doc.url && (<a href={doc.url} target="_blank" rel="noreferrer" className="p-2 text-slate-400 hover:text-[#0D4F97] hover:bg-blue-50 rounded-full transition-all" title="Abrir em nova aba"><ExternalLink className="h-4 w-4" /></a>)}
-                                                </div>
-                                            ))
-                                        )}
-                                    </div>
-                                </div>
+                                ) : (
+                                    <>
+                                        <div className="bg-slate-50 p-5 rounded-xl border-2 border-dashed border-slate-300 mb-6 hover:border-[#0D4F97]/40 transition-all duration-300 group">
+                                            <label className="text-xs font-bold text-slate-500 uppercase mb-3 block text-center tracking-widest group-hover:text-[#0D4F97] transition-colors">Adicionar Novo Documento</label>
+                                            <div className="flex flex-col gap-3 max-w-sm mx-auto w-full">
+                                                <Select value={docType} onValueChange={setDocType}>
+                                                    <SelectTrigger className="w-full bg-white shadow-sm border-slate-200 h-10 text-sm"><SelectValue /></SelectTrigger>
+                                                    <SelectContent>{MEDICAL_DOC_TYPES.map(t => <SelectItem key={t.value} value={t.value}>{t.label}</SelectItem>)}</SelectContent>
+                                                </Select>
+                                                <input type="file" ref={fileInputRef} onChange={handleFileUpload} className="hidden" accept=".pdf,.jpg,.png,.jpeg" disabled={isUploading} />
+                                                <Button variant="outline" className="w-full bg-white text-[#0D4F97] border-[#0D4F97]/20 hover:bg-[#0D4F97] hover:text-white shadow-sm h-10 transition-all text-sm" onClick={() => fileInputRef.current?.click()} disabled={isUploading}>{isUploading ? <Loader2 className="mr-2 h-4 w-4 animate-spin"/> : <Upload className="mr-2 h-4 w-4"/>} Selecionar Arquivo</Button>
+                                            </div>
+                                        </div>
+                                        <div className="flex-1 overflow-y-auto max-h-[400px] pr-2 custom-scrollbar">
+                                            <h4 className="text-[10px] font-bold text-slate-400 uppercase mb-3 tracking-widest">Arquivos Anexados ({documents.length})</h4>
+                                            <div className="space-y-2">
+                                                {documents.length === 0 ? (
+                                                    <div className="flex flex-col items-center justify-center h-32 text-slate-400 border-2 border-slate-100 rounded-xl bg-slate-50/50"><FileText className="h-8 w-8 mb-2 opacity-20" /><p className="text-xs font-medium opacity-60">Nenhum documento encontrado.</p></div>
+                                                ) : (
+                                                    documents.map((doc) => (
+                                                        <div key={doc.id} className="group flex items-center justify-between p-3 bg-white border border-slate-100 rounded-xl shadow-sm hover:shadow-md hover:border-[#0D4F97]/20 transition-all duration-200">
+                                                            <div className="flex items-center gap-3 overflow-hidden">
+                                                                <div className="bg-blue-50 p-2 rounded-lg group-hover:bg-[#0D4F97] group-hover:text-white transition-colors duration-300"><FileText className="h-4 w-4" /></div>
+                                                                <div className="flex flex-col min-w-0"><span className="text-sm font-semibold truncate text-slate-700 group-hover:text-[#0D4F97] transition-colors" title={doc.name}>{doc.name}</span><span className="text-[10px] text-slate-400 font-bold uppercase tracking-wide mt-0.5">{doc.type}</span></div>
+                                                            </div>
+                                                            {doc.url && (<a href={doc.url} target="_blank" rel="noreferrer" className="p-2 text-slate-400 hover:text-[#0D4F97] hover:bg-blue-50 rounded-full transition-all" title="Abrir em nova aba"><ExternalLink className="h-4 w-4" /></a>)}
+                                                        </div>
+                                                    ))
+                                                )}
+                                            </div>
+                                        </div>
+                                    </>
+                                )}
                             </div>
                         </div>
                     </div>
                 </div>
                 <DialogFooter className="px-6 py-4 bg-white border-t border-slate-100 shrink-0 flex justify-end gap-3 shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.05)] z-10">
-                    <Button variant="ghost" onClick={onClose} type="button" className="text-slate-500 hover:text-slate-800 hover:bg-slate-100 h-10 px-5 rounded-lg font-medium transition-colors text-sm">Cancelar</Button>
+                    <Button variant="ghost" onClick={() => onClose()} type="button" className="text-slate-500 hover:text-slate-800 hover:bg-slate-100 h-10 px-5 rounded-lg font-medium transition-colors text-sm">Cancelar</Button>
                     <Button 
                         form="health-form" 
                         type="submit" 
                         disabled={isSubmitting}
                         className="text-white bg-[#0D4F97] hover:bg-[#0b427d] shadow-lg shadow-blue-900/10 h-10 px-6 rounded-lg font-bold tracking-wide transition-all transform active:scale-95 text-sm disabled:opacity-70 disabled:cursor-not-allowed"
                     >
-                        {isSubmitting ? <><Loader2 className="mr-2 h-4 w-4 animate-spin" /> Salvando...</> : "Salvar Alterações"}
+                        {isSubmitting ? <><Loader2 className="mr-2 h-4 w-4 animate-spin" /> {isCreateMode ? "Criar Registro" : "Salvar Alterações"}</> : (isCreateMode ? "Criar Registro" : "Salvar Alterações")}
                     </Button>
                 </DialogFooter>
             </DialogContent>
