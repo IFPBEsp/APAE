@@ -118,7 +118,14 @@
                 <groupId>org.jacoco</groupId>
                 <artifactId>jacoco-maven-plugin</artifactId>
                 <version>0.8.14</version>
-
+                <configuration>
+                    <includes>
+                        <include>br/org/apae/api/controllers/patient/**</include>
+                        <include>br/org/apae/api/controllers/annual_registry/**</include>
+                        <include>br/org/apae/api/controllers/vaccine/**</include>
+                        <include>br/org/apae/api/controllers/disorder/**</include>
+                    </includes>
+                </configuration>
                 <executions>
                     <execution>
                         <id>prepare-agent</id>
