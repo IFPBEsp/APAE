@@ -379,7 +379,7 @@ class AppointmentControllerImplTest {
         7,
         LocalDate.now(),
         LocalDate.of(2026, 12, 31),
-        LocalTime.now(),
+        LocalTime.now().withNano(0),
         true,
         LocalDateTime.now()
     );
