@@ -10,6 +10,7 @@ import br.org.apae.api.common.exceptions.types.ErrorResponse;
 
 @ControllerAdvice
 public class GlobalExceptionHandler {
+  
   @ExceptionHandler(Exception.class)
   public ResponseEntity<ErrorResponse> handleGenericException(Exception ex, HttpServletRequest request) {
     ErrorResponse errorResponse = new ErrorResponse(
