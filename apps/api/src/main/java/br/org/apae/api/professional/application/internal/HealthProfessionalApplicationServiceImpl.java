@@ -1,7 +1,5 @@
 package br.org.apae.api.professional.application.internal;
 
-import br.org.apae.api.address.application.interfaces.AddressService;
-import br.org.apae.api.common.dto.address.AddressResponseDTO;
 import br.org.apae.api.common.dto.professional.request.CreateHealthProfessionalDTO;
 import br.org.apae.api.common.dto.professional.request.UpdateHealthProfessionalDTO;
 import br.org.apae.api.common.dto.professional.request.documents.CreateProfessionalDocumentsDTO;
@@ -31,36 +29,35 @@ public class HealthProfessionalApplicationServiceImpl implements HealthProfessio
     private final HealthProfessionalMapper mapper;
     private final ProfessionalDocumentsService documentsService;
 
-    private final AddressService addressService;
     private final ServiceAreaApplicationService serviceAreaApplicationService;
 
     public HealthProfessionalApplicationServiceImpl(HealthProfessionalRepository repository,
-            HealthProfessionalMapper mapper, ProfessionalDocumentsService documentsService, AddressService addressService,
+            HealthProfessionalMapper mapper, ProfessionalDocumentsService documentsService,
             ServiceAreaApplicationService serviceAreaApplicationService) {
         this.repository = repository;
         this.mapper = mapper;
         this.documentsService = documentsService;
-        this.addressService = addressService;
         this.serviceAreaApplicationService = serviceAreaApplicationService;
     }
 
     @Override
     @Transactional
-    public HealthProfessionalResponseDTO createProfessional(CreateHealthProfessionalDTO dto, CreateProfessionalDocumentsDTO documentsDTO) {
+    public HealthProfessionalResponseDTO createProfessional(CreateHealthProfessionalDTO dto,
+            CreateProfessionalDocumentsDTO documentsDTO) {
         if (repository.existsByProfessionalDocument(dto.professionalDocument())) {
             throw new ProfessionalDocumentConflictException();
         }
         if (repository.existsByEmail(dto.email())) {
             throw new EmailConflictException();
         }
-        if (repository.existsByIdentityDocument(dto.identityDocument())){
+        if (repository.existsByIdentityDocument(dto.identityDocument())) {
             throw new IdentityDocumentConflictException();
         }
 
-        AddressResponseDTO addressDto = addressService.createAddress(dto.address());
-        ServiceAreaResponseDTO serviceAreaDto = serviceAreaApplicationService.findServiceAreaByArea(dto.serviceArea().area());
+        ServiceAreaResponseDTO serviceAreaDto = serviceAreaApplicationService
+                .findServiceAreaByArea(dto.serviceArea().area());
 
-        HealthProfessional professionalToSave = mapper.toEntity(dto, serviceAreaDto, addressDto);
+        HealthProfessional professionalToSave = mapper.toEntity(dto, serviceAreaDto);
 
         HealthProfessional savedProfessional = repository.save(professionalToSave);
 
@@ -83,11 +80,10 @@ public class HealthProfessionalApplicationServiceImpl implements HealthProfessio
             throw new ProfessionalDocumentConflictException();
         }
 
-        AddressResponseDTO addressDto = addressService.updateAddress(entityToUpdate.getAddress().getId(),
-                dto.address());
-        ServiceAreaResponseDTO serviceAreaDto = serviceAreaApplicationService.findServiceAreaByArea(entityToUpdate.getServiceArea().getArea());
+        ServiceAreaResponseDTO serviceAreaDto = serviceAreaApplicationService
+                .findServiceAreaByArea(entityToUpdate.getServiceArea().getArea());
 
-        HealthProfessional updatedProfessional = mapper.updateEntityFromDto(entityToUpdate, dto, serviceAreaDto, addressDto);
+        HealthProfessional updatedProfessional = mapper.updateEntityFromDto(entityToUpdate, dto, serviceAreaDto);
 
         repository.save(updatedProfessional);
 
@@ -102,7 +98,7 @@ public class HealthProfessionalApplicationServiceImpl implements HealthProfessio
                 .orElseThrow(HealthProfessionalNotFoundException::new);
     }
 
-    @Override
+/*    @Override
     @Transactional
     public void deleteProfessional(UUID id) {
         if (!repository.existsById(id)) {
@@ -110,10 +106,53 @@ public class HealthProfessionalApplicationServiceImpl implements HealthProfessio
         }
         repository.deleteById(id);
     }
+*/
 
     @Override
+    @Transactional
+    public void activateProfessional(UUID id) {
+        HealthProfessional professional = repository.findById(id)
+            .orElseThrow(HealthProfessionalNotFoundException::new);
+
+        professional.setAtivo(true);
+
+    }
+
+    @Override
+    @Transactional
+    public void inactivateProfessional(UUID id) {
+        HealthProfessional professional = repository.findById(id)
+            .orElseThrow(HealthProfessionalNotFoundException::new);
+
+        professional.setAtivo(false);
+
+    }
+
+    @Override
+    @Transactional
+    public void reactivateProfessional(UUID id) {
+        HealthProfessional professional = repository.findById(id)
+            .orElseThrow(HealthProfessionalNotFoundException::new);
+
+        professional.setAtivo(true);
+    }
+
+    /*@Override
     @Transactional(readOnly = true)
     public Page<HealthProfessionalResponseDTO> findAllProfessionals(Pageable pageable) {
         return repository.findAll(pageable).map(mapper::toResponseDTO);
+    }*/
+
+    @Override
+    @Transactional(readOnly = true)
+    public Page<HealthProfessionalResponseDTO> findAllProfessionals(Boolean ativo, Pageable pageable) {
+        Page<HealthProfessional> page;
+        if (ativo == null) {
+            page = repository.findAll(pageable);
+        } else{
+            page = repository.findByAtivo(ativo, pageable);
+        }
+        return page.map(mapper::toResponseDTO);
     }
+
 }

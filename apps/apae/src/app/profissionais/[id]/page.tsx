@@ -1,26 +1,41 @@
 "use client";
 
-import { use } from "react";
+import { useMemo } from "react";
+import { useParams, useRouter } from "next/navigation";
+
 import { useGetByIdProfissional } from "@/hooks/profissional/use-get-by-id-profissional";
+import { Checkbox } from "@/components/ui/checkbox";
+import { gerarMatrizDisponibilidade } from "@/utils/disponibilidade.utils";
+
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Pencil } from "lucide-react";
-import { useRouter } from "next/navigation";
 
-interface PageProps {
-  params: Promise<{ id: string }>;
-}
-
-export default function VisualizarProfissional({ params }: PageProps) {
+export default function VisualizarProfissional() {
   const router = useRouter();
-
-  const { id } = use(params);
+  const params = useParams<{ id: string }>();
+  const id = params?.id;
 
   const { profissional, loading, error } = useGetByIdProfissional();
 
-  if (loading) return <p className="p-6">Carregando detalhes do profissional...</p>;
-  if (error) return <p className="p-6 text-red-500">Erro ao carregar os dados.</p>;
+  const disponibilidadeMatrix = useMemo(() => {
+    const avs = profissional?.availabilities ?? [];
+
+    return gerarMatrizDisponibilidade(
+      avs.map((a) => ({
+        dia: a.day?.toLowerCase(),
+        turno: a.shift?.toLowerCase(),
+        checked: true,
+      })),
+    );
+  }, [profissional?.availabilities]);
+
+  if (!id) return <p className="p-6">ID inválido.</p>;
+  if (loading)
+    return <p className="p-6">Carregando detalhes do profissional...</p>;
+  if (error)
+    return <p className="p-6 text-red-500">Erro ao carregar os dados.</p>;
   if (!profissional) return <p className="p-6">Profissional não encontrado.</p>;
 
   const dados = {
@@ -36,14 +51,30 @@ export default function VisualizarProfissional({ params }: PageProps) {
     },
   };
 
-  const handleEdit = () => {
-    router.push(`/update-profissional/${id}`);
+  const handleEdit = () => router.push(`/update-profissional/${id}`);
+
+  const DAYS = ["segunda", "terca", "quarta", "quinta", "sexta"] as const;
+  const SHIFTS = ["manha", "tarde"] as const;
+
+  const DAY_LABEL: Record<(typeof DAYS)[number], string> = {
+    segunda: "Segunda",
+    terca: "Terça",
+    quarta: "Quarta",
+    quinta: "Quinta",
+    sexta: "Sexta",
+  };
+
+  const SHIFT_LABEL: Record<(typeof SHIFTS)[number], string> = {
+    manha: "Manhã",
+    tarde: "Tarde",
   };
 
   return (
     <div className="w-full max-w-5xl mx-auto p-4 sm:p-6 md:p-10">
       <header className="flex flex-col sm:flex-row items-center sm:justify-between mb-8 gap-4">
-        <h1 className="text-2xl font-semibold text-foreground">Detalhes do profissional</h1>
+        <h1 className="text-2xl font-semibold text-foreground">
+          Detalhes do profissional
+        </h1>
         <Button
           variant="outline"
           className="text-[#0D4F97] border-[#0D4F97] hover:bg-slate-100"
@@ -63,21 +94,24 @@ export default function VisualizarProfissional({ params }: PageProps) {
         </Avatar>
         <div className="text-center sm:text-left">
           <h2 className="text-xl font-bold text-[#0D4F97]">{dados.name}</h2>
-          <p className="text-base text-gray-600">{dados.serviceArea.area}</p>
+          <p className="text-base text-gray-600">{dados.serviceArea?.area}</p>
         </div>
       </div>
 
       <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
-
         <Card className="shadow-lg border-2 border-[#E0E7FF] text-[#0D4F97]">
           <CardHeader>
-            <CardTitle className="text-lg font-semibold">Informação de perfil</CardTitle>
+            <CardTitle className="text-lg font-semibold">
+              Informação de perfil
+            </CardTitle>
           </CardHeader>
           <CardContent className="space-y-2">
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-4">
               <div className="col-span-1 sm:col-span-2">
                 <p className="font-semibold text-sm">Documento profissional</p>
-                <p className="text-base text-gray-700">{dados.professionalDocument || "—"}</p>
+                <p className="text-base text-gray-700">
+                  {dados.professionalDocument || "—"}
+                </p>
               </div>
               <div>
                 <p className="font-semibold text-sm">Email</p>
@@ -85,11 +119,15 @@ export default function VisualizarProfissional({ params }: PageProps) {
               </div>
               <div>
                 <p className="font-semibold text-sm">Telefone</p>
-                <p className="text-base text-gray-700">{dados.phoneNumber || "—"}</p>
+                <p className="text-base text-gray-700">
+                  {dados.phoneNumber || "—"}
+                </p>
               </div>
               <div>
-                <p className="font-semibold text-sm">Identidade</p>
-                <p className="text-base text-gray-700">{dados.identityDocument || "—"}</p>
+                <p className="font-semibold text-sm">RG</p>
+                <p className="text-base text-gray-700">
+                  {dados.identityDocument || "—"}
+                </p>
               </div>
             </div>
           </CardContent>
@@ -97,7 +135,9 @@ export default function VisualizarProfissional({ params }: PageProps) {
 
         <Card className="shadow-lg border-2 border-[#E0E7FF] text-[#0D4F97]">
           <CardHeader>
-            <CardTitle className="text-lg font-semibold">Informação de endereço</CardTitle>
+            <CardTitle className="text-lg font-semibold">
+              Informação de endereço
+            </CardTitle>
           </CardHeader>
           <CardContent className="space-y-2">
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-4">
@@ -110,7 +150,9 @@ export default function VisualizarProfissional({ params }: PageProps) {
 
               <div className="col-span-1 sm:col-span-2">
                 <p className="font-semibold text-sm">Complemento</p>
-                <p className="text-base text-gray-700">{dados.address.complement || "—"}</p>
+                <p className="text-base text-gray-700">
+                  {dados.address.complement || "—"}
+                </p>
               </div>
 
               <div>
@@ -130,7 +172,67 @@ export default function VisualizarProfissional({ params }: PageProps) {
             </div>
           </CardContent>
         </Card>
+        <Card className="shadow-lg border-2 border-[#E0E7FF] text-[#0D4F97] md:col-span-2">
+          <CardHeader>
+            <CardTitle className="text-lg font-semibold">
+              Disponibilidade
+            </CardTitle>
+          </CardHeader>
 
+          <CardContent className="space-y-3">
+            {!disponibilidadeMatrix || disponibilidadeMatrix.length === 0 ? (
+              <p className="text-gray-700">—</p>
+            ) : (
+              <div className="overflow-x-auto rounded-md border">
+                <table className="w-full text-sm">
+                  <thead>
+                    <tr className="bg-slate-50">
+                      <th className="p-3 text-left font-semibold text-[#0D4F97]">
+                        Turno
+                      </th>
+                      {DAYS.map((day) => (
+                        <th
+                          key={day}
+                          className="p-3 text-center font-semibold text-[#0D4F97]"
+                        >
+                          {DAY_LABEL[day]}
+                        </th>
+                      ))}
+                    </tr>
+                  </thead>
+
+                  <tbody>
+                    {SHIFTS.map((shift) => (
+                      <tr key={shift} className="border-t">
+                        <td className="p-3 font-medium text-gray-700">
+                          {SHIFT_LABEL[shift]}
+                        </td>
+
+                        {DAYS.map((day) => {
+                          const cell = disponibilidadeMatrix.find(
+                            (d) => d?.dia === day && d?.turno === shift,
+                          );
+
+                          return (
+                            <td
+                              key={`${day}-${shift}`}
+                              className="p-3 text-center"
+                            >
+                              <Checkbox
+                                checked={Boolean(cell?.checked)}
+                                disabled
+                              />
+                            </td>
+                          );
+                        })}
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            )}
+          </CardContent>
+        </Card>
       </div>
     </div>
   );

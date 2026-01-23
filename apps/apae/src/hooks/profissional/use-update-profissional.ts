@@ -8,30 +8,29 @@ export function useUpdateProfissional() {
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
 
-  function formatErrorMessage(err: any) {
-    if (err?.details) {
-      return Object.values(err.details).join("; ");
-    }
-    return err?.message || "Erro desconhecido";
-  }
-
   async function doUpdate(id: string, data: any) {
     setLoading(true);
     setError(null);
     setSuccess(false);
 
     try {
-      await updateProfissional(id, data);
+      const response = await updateProfissional(id, data);
+
+      if (!response.ok) {
+        const updateData = await response.json();
+        const errorMessage = updateData.message;
+        throw new Error(errorMessage);
+      }
 
       setSuccess(true);
-      setLoading(false);
       router.push("/visualization-professional");
+
       return true;
     } catch (err: any) {
-      const formattedMsg = formatErrorMessage(err);
-      setError(formattedMsg);
-      setLoading(false);
+      setError(err.message || "Erro inesperado");
       return false;
+    } finally {
+      setLoading(false);
     }
   }
 

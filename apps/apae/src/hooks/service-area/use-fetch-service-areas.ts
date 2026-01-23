@@ -12,9 +12,11 @@ export function useFetchServiceAreas() {
       try {
         setLoading(true);
         const response = await getAllServiceAreas();
-
+        
         if (!response.ok) {
-          throw new Error(`Erro: ${response.status}`);
+          const errorData = await response.json();
+          const errorMessage = errorData.message;
+          throw new Error(errorMessage.message);
         }
 
         const data: ServiceArea[] = await response.json();

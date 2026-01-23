@@ -21,8 +21,8 @@ public class GuardianMapper {
         this.addressMapper = addressMapper;
     }
 
-    public Guardian toEntity(CreateGuardianDTO dto, AddressResponseDTO addressDto, UUID patientId) {
-        Address address = addressMapper.toEntityFromResponse(addressDto);
+    public Guardian toEntity(CreateGuardianDTO dto, UUID patientId) {
+        Address address = addressMapper.toEntity(dto.address());
 
         return new Guardian(
                 dto.name(),
@@ -43,9 +43,9 @@ public class GuardianMapper {
                 patientId);
     }
 
-    public Guardian updateEntityFromDto(Guardian guardian, UpdateGuardianDTO dto, AddressResponseDTO addressDto,
+    public Guardian updateEntityFromDto(Guardian guardian, UpdateGuardianDTO dto,
             UUID patientId) {
-        Address addressUpdated = addressMapper.toEntityFromResponse(addressDto);
+        Address addressUpdated = addressMapper.toEntity(dto.address());
 
         return new Guardian(
                 guardian.getId(),
