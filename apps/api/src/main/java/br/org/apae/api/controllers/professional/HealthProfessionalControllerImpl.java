@@ -29,13 +29,31 @@ public class HealthProfessionalControllerImpl implements HealthProfessionalContr
     }
 
     @Override
-    public ResponseEntity<Page<HealthProfessionalResponseDTO>> getAllHealthProfessional(Pageable pageable) {
-        return ResponseEntity.ok(this.service.findAllProfessionals(pageable));
+    public ResponseEntity<Page<HealthProfessionalResponseDTO>> getAllHealthProfessional(Boolean ativo, Pageable pageable) {
+        return ResponseEntity.ok(this.service.findAllProfessionals(ativo, pageable));
+    }
+
+    /*@Override
+    public ResponseEntity<Void> deleteHealthProfessional(UUID id) {
+        this.service.deleteProfessional(id);
+        return ResponseEntity.noContent().build();
+    }*/
+
+    @Override
+    public ResponseEntity<Void> inactivateHealthProfessional(UUID id) {
+        service.inactivateProfessional(id);
+        return ResponseEntity.noContent().build();
     }
 
     @Override
-    public ResponseEntity<Void> deleteHealthProfessional(UUID id) {
-        this.service.deleteProfessional(id);
+    public ResponseEntity<Void> activateHealthProfessional(UUID id) {
+        service.activateProfessional(id);
+        return ResponseEntity.noContent().build();
+    }
+
+    @Override
+    public ResponseEntity<Void> reactivateHealthProfessional(UUID id) {
+        service.reactivateProfessional(id);
         return ResponseEntity.noContent().build();
     }
 

@@ -8,7 +8,8 @@
     "dev:management": "./.scripts/run-app.sh both management-app",
     "docker:up": "docker compose up -d",
     "docker:down": "docker compose down",
-    "docker:drop": "docker compose down -v"
+    "docker:drop": "docker compose down -v",
+    "test:api": "cd apps/api && ./mvnw package"
   },
   "workspaces": [
     "apps/*"

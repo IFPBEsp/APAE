@@ -20,7 +20,13 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { MoreHorizontal, Edit, Trash2, Eye } from "lucide-react";
+import {
+  MoreHorizontal,
+  Edit,
+  Eye,
+  UserX,
+  UserCheck,
+} from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -42,40 +48,51 @@ import {
 } from "@/components/ui/alert-dialog";
 
 import { useFetchProfessionals } from "@/hooks/profissional/use-fetch-profissional";
-import { useRemoveProfissional } from "@/hooks/profissional/use-delete-profissional";
+import { useInactivateProfissional } from "@/hooks/profissional/use-inactivate-profissional";
+import { useActivateProfissional } from "@/hooks/profissional/use-activate-profissional";
+
+type StatusFilter = "ativo" | "inativo";
 
 export default function VisualizationProfessionalPage() {
-  const { profissionais, loading, error, setProfissionais } =
-    useFetchProfessionals();
-  const { remove } = useRemoveProfissional();
-
   const router = useRouter();
 
   const [searchTerm, setSearchTerm] = useState("");
   const [areaFilter, setAreaFilter] = useState("all");
+  const [statusFilter, setStatusFilter] = useState<StatusFilter>("ativo");
 
-  const handleAddNew = () => {
-    router.push("/register-profissional");
-  };
+  const { profissionais, loading, error, setProfissionais } =
+    useFetchProfessionals(statusFilter === "ativo");
 
-  const handleEdit = (id: string) => {
-    router.push(`/update-profissional/${id}`);
-  };
+  const { inactivate } = useInactivateProfissional();
+  const { activate } = useActivateProfissional();
 
-  const handleDeleteConfirm = async (id: string) => {
+  const handleAddNew = () => router.push("/register-profissional");
+  const handleEdit = (id: string) => router.push(`/update-profissional/${id}`);
+
+  const handleConfirm = async (id: string) => {
     try {
-      await remove(id);
+      if (statusFilter === "ativo") {
+        await inactivate(id);
+      } else {
+        await activate(id);
+      }
+
       setProfissionais((prev) => prev.filter((p) => p.id !== id));
-    } catch (error) {
-      console.error("Erro ao excluir profissional", error);
+    } catch (err) {
+      console.error(err);
     }
   };
 
   const filteredProfissionais = profissionais.filter((prof) => {
     const matchesSearch =
       prof.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      prof.professionalDocument.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesArea = areaFilter === "all" || prof.serviceArea.area === areaFilter;
+      prof.professionalDocument
+        .toLowerCase()
+        .includes(searchTerm.toLowerCase());
+
+    const matchesArea =
+      areaFilter === "all" || prof.serviceArea.area === areaFilter;
+
     return matchesSearch && matchesArea;
   });
 
@@ -84,16 +101,34 @@ export default function VisualizationProfessionalPage() {
     ...Array.from(new Set(profissionais.map((p) => p.serviceArea.area))),
   ];
 
+  const actionLabel = statusFilter === "ativo" ? "Inativar" : "Reativar";
+
+  const actionIcon =
+    statusFilter === "ativo" ? (
+      <UserX className="mr-2 h-4 w-4" />
+    ) : (
+      <UserCheck className="mr-2 h-4 w-4" />
+    );
+
+  const actionItemClass =
+    statusFilter === "ativo"
+      ? "text-destructive focus:text-destructive"
+      : "text-green-600 focus:text-green-600";
+
+  const actionButtonClass =
+    statusFilter === "ativo"
+      ? ""
+      : "bg-green-600 hover:bg-green-700 text-white";
+
   return (
     <div className="w-full bg-background p-4 md:p-6 lg:p-8">
       <div className="mx-auto w-full max-w-[1400px]">
-        <header className="mb-8 flex flex-col items-stretch gap-4 md:flex-row md:items-center md:justify-between">
-          <h1 className="text-2xl font-semibold lg:text-3xl text-[#0D4F97]"
-          >
+        <header className="mb-8 flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+          <h1 className="text-2xl font-semibold lg:text-3xl text-[#0D4F97]">
             Profissionais da Saúde
           </h1>
           <Button
-            className="md:w-auto bg-[#0D4F97] hover:bg-blue-900"
+            className="bg-[#0D4F97] hover:bg-blue-900"
             onClick={handleAddNew}
           >
             Cadastrar Profissional
@@ -102,21 +137,32 @@ export default function VisualizationProfessionalPage() {
 
         <div className="mb-6 flex flex-col gap-4 md:flex-row">
           <Input
-            type="text"
             placeholder="Buscar por nome ou documento..."
             className="flex-grow border-[#0D4F97]"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
           />
+
+          <Select
+            value={statusFilter}
+            onValueChange={(v) => setStatusFilter(v as StatusFilter)}
+          >
+            <SelectTrigger className="w-full md:w-[200px] border-[#0D4F97] text-[#0D4F97]">
+              <SelectValue placeholder="Situação" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="ativo">Ativo</SelectItem>
+              <SelectItem value="inativo">Inativo</SelectItem>
+            </SelectContent>
+          </Select>
+
           <Select value={areaFilter} onValueChange={setAreaFilter}>
-            <SelectTrigger 
-              className="w-full md:w-[200px] border-[#0D4F97] hover:bg-accent text-[#0D4F97]" 
-            >
+            <SelectTrigger className="w-full md:w-[200px] border-[#0D4F97] text-[#0D4F97]">
               <SelectValue placeholder="Filtrar por área" />
             </SelectTrigger>
             <SelectContent>
               {uniqueAreas.map((area) => (
-                <SelectItem  className="border-[#0D4F97]" key={area} value={area} >
+                <SelectItem key={area} value={area}>
                   {area === "all" ? "Todas as Áreas" : area}
                 </SelectItem>
               ))}
@@ -132,22 +178,22 @@ export default function VisualizationProfessionalPage() {
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead className="text-[#0D4F97]">Profissional</TableHead>
-                  <TableHead className="text-[#0D4F97]">Documento</TableHead>
-                  <TableHead className="text-[#0D4F97]">Área</TableHead>
-                  <TableHead className="hidden md:table-cell text-[#0D4F97]">
+                  <TableHead>Profissional</TableHead>
+                  <TableHead>Documento</TableHead>
+                  <TableHead>Área</TableHead>
+                  <TableHead className="hidden md:table-cell">
                     Telefone
                   </TableHead>
-                  <TableHead>
-                    <span className="sr-only text-[#0D4F97]">Ações</span>
-                  </TableHead>
+                  <TableHead />
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {filteredProfissionais.length > 0 ? (
                   filteredProfissionais.map((prof) => (
                     <TableRow key={prof.id}>
-                      <TableCell className="font-medium">{prof.name}</TableCell>
+                      <TableCell className="font-medium">
+                        {prof.name}
+                      </TableCell>
                       <TableCell>{prof.professionalDocument}</TableCell>
                       <TableCell>{prof.serviceArea.area}</TableCell>
                       <TableCell className="hidden md:table-cell">
@@ -158,17 +204,16 @@ export default function VisualizationProfessionalPage() {
                           <DropdownMenu>
                             <DropdownMenuTrigger asChild>
                               <Button variant="ghost" className="h-8 w-8 p-0">
-                                <span className="sr-only">Abrir menu</span>
                                 <MoreHorizontal className="h-4 w-4" />
                               </Button>
                             </DropdownMenuTrigger>
                             <DropdownMenuContent align="end">
                               <DropdownMenuLabel>Ações</DropdownMenuLabel>
-                              <Link href={`/profissionais/${prof.id}`} passHref>
-                                  <DropdownMenuItem>
-                                    <Eye className="mr-2 h-4 w-4" />
-                                    Visualizar Perfil
-                                  </DropdownMenuItem>
+                              <Link href={`/profissionais/${prof.id}`}>
+                                <DropdownMenuItem>
+                                  <Eye className="mr-2 h-4 w-4" />
+                                  Visualizar Perfil
+                                </DropdownMenuItem>
                               </Link>
 
                               <DropdownMenuItem
@@ -179,9 +224,9 @@ export default function VisualizationProfessionalPage() {
                               </DropdownMenuItem>
                               <DropdownMenuSeparator />
                               <AlertDialogTrigger asChild>
-                                <DropdownMenuItem className="text-destructive focus:text-destructive">
-                                  <Trash2 className="mr-2 h-4 w-4" />
-                                  Excluir
+                                <DropdownMenuItem className={actionItemClass}>
+                                  {actionIcon}
+                                  {actionLabel}
                                 </DropdownMenuItem>
                               </AlertDialogTrigger>
                             </DropdownMenuContent>
@@ -193,20 +238,20 @@ export default function VisualizationProfessionalPage() {
                                 Você tem certeza?
                               </AlertDialogTitle>
                               <AlertDialogDescription>
-                                Esta ação não pode ser desfeita. Isso irá
-                                excluir permanentemente o profissional{" "}
-                                <strong className="font-medium">
-                                  {prof.name}
-                                </strong>
-                                .
+                                {statusFilter === "ativo"
+                                  ? `Esta ação irá inativar o profissional ${prof.name}.`
+                                  : `Esta ação irá reativar o profissional ${prof.name}.`}
                               </AlertDialogDescription>
                             </AlertDialogHeader>
                             <AlertDialogFooter>
-                              <AlertDialogCancel>Cancelar</AlertDialogCancel>
+                              <AlertDialogCancel>
+                                Cancelar
+                              </AlertDialogCancel>
                               <AlertDialogAction
-                                onClick={() => handleDeleteConfirm(prof.id)}
+                                className={actionButtonClass}
+                                onClick={() => handleConfirm(prof.id)}
                               >
-                                Excluir
+                                {actionLabel}
                               </AlertDialogAction>
                             </AlertDialogFooter>
                           </AlertDialogContent>
