@@ -2,6 +2,7 @@ package br.org.apae.api.appointment.application.internal;
 
 import br.org.apae.api.appointment.application.interfaces.AppointmentApplicationService;
 import br.org.apae.api.appointment.domain.exceptions.AnnualRegistrationNotFound;
+import br.org.apae.api.appointment.domain.exceptions.AppointmentAlreadyCancelledException;
 import br.org.apae.api.appointment.domain.exceptions.AppointmentNotFoundException;
 import br.org.apae.api.appointment.domain.model.*;
 import br.org.apae.api.appointment.domain.repository.*;
@@ -276,6 +277,7 @@ public class AppointmentApplicationServiceImpl implements AppointmentApplication
   public GeneratedAppointmentResponseDTO cancel(UUID generatedId, String reason) {
     GeneratedAppointment appt = generatedRepo.findById(generatedId)
             .orElseThrow(() -> new IllegalArgumentException(APPOINTMENT_NOT_FOUND));
+    if (Boolean.TRUE.equals(appt.getCancelled())) throw new AppointmentAlreadyCancelledException();
     appt.setCancelled(true);
     appt.setCancellationReason(reason);
     return mapper.toGeneratedResponse(generatedRepo.save(appt));
