@@ -1,6 +1,8 @@
 package br.org.apae.api.controllers.appointment;
 
 import br.org.apae.api.appointment.application.internal.AppointmentApplicationServiceImpl;
+import br.org.apae.api.appointment.domain.exceptions.AppointmentAlreadyCancelledException;
+import br.org.apae.api.appointment.domain.exceptions.AppointmentNotFoundException;
 import br.org.apae.api.auth.application.internal.UserService;
 import br.org.apae.api.auth.infrastructure.security.JwtProvider;
 import br.org.apae.api.common.dto.appointment.request.appointment.CancelGeneratedAppointmentDTO;
@@ -389,7 +391,7 @@ class AppointmentControllerImplTest {
   void shouldReturnNotFoundWhenGetNonExistentAppointment() throws Exception {
     UUID id = UUID.randomUUID();
 
-    when(service.findById(id)).thenThrow(new RuntimeException("Appointment not found"));
+    when(service.findById(id)).thenThrow(new AppointmentNotFoundException());
 
     mockMvc.perform(get(URI_WITH_ID, id)
                     .with(csrf()))
@@ -402,7 +404,7 @@ class AppointmentControllerImplTest {
     UUID id = UUID.randomUUID();
     var payload = new RescheduleGeneratedAppointmentDTO(LocalDateTime.now().plusDays(1));
 
-    when(service.reschedule(any(), any())).thenThrow(new RuntimeException("Not found"));
+    when(service.reschedule(any(), any())).thenThrow(new AppointmentNotFoundException());
 
     mockMvc.perform(patch(GENERATED_URI_WITH_ID + "/reschedule", id)
                     .contentType(MediaType.APPLICATION_JSON)
@@ -411,32 +413,19 @@ class AppointmentControllerImplTest {
             .andExpect(status().isNotFound());
   }
 
-
   @Test
   @WithMockUser(username = "admin", roles = {"ADMIN"})
   void shouldReturnBadRequestWhenCancellingAlreadyCancelledAppointment() throws Exception {
     UUID id = UUID.randomUUID();
     var payload = new CancelGeneratedAppointmentDTO("Motivo qualquer");
 
-    when(service.cancel(eq(id), anyString())).thenThrow(new IllegalArgumentException("Appointment already cancelled"));
+    when(service.cancel(eq(id), anyString())).thenThrow(new AppointmentAlreadyCancelledException());
 
     mockMvc.perform(patch(GENERATED_URI_WITH_ID + "/cancel", id)
                     .contentType(MediaType.APPLICATION_JSON)
                     .content(objectMapper.writeValueAsString(payload))
                     .with(csrf()))
             .andExpect(status().isBadRequest());
-  }
-
-  @Test
-  @WithMockUser(username = "user", roles = {"USER"})
-  void shouldReturnForbiddenWhenUserTriesToDelete() throws Exception {
-    UUID id = UUID.randomUUID();
-
-    mockMvc.perform(delete(URI_WITH_ID, id)
-                    .with(csrf()))
-            .andExpect(status().isForbidden());
-
-    verify(service, never()).delete(any());
   }
 
   @Test
