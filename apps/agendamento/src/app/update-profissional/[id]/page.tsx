@@ -99,7 +99,7 @@ export default function AtualizarProfissional(): JSX.Element {
     numero: "",
     complemento: "",
     cep: "",
-    disponibilidade: [],
+    disponibilidade: gerarMatrizDisponibilidade([]),
   };
 
   const form = useForm<UpdateFormValues>({
@@ -132,7 +132,7 @@ export default function AtualizarProfissional(): JSX.Element {
       bairro: profissional.address.neighborhood,
       rua: profissional.address.street,
       numero: profissional.address.number,
-      complemento: profissional.address.complement,
+      complemento: profissional.address.complement ?? "",
       cep: profissional.address.cep,
       disponibilidade: matrizCompleta,
     });
@@ -296,7 +296,7 @@ export default function AtualizarProfissional(): JSX.Element {
             name="nomeCompleto"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Nome completo</FormLabel>
+                <FormLabel>Nome completo *</FormLabel>
                 <FormControl>
                   <Input placeholder="Ex: Maria da Silva" {...field} />
                 </FormControl>
@@ -310,7 +310,7 @@ export default function AtualizarProfissional(): JSX.Element {
             name="email"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Email</FormLabel>
+                <FormLabel>Email *</FormLabel>
                 <FormControl>
                   <Input
                     type="email"
@@ -329,7 +329,7 @@ export default function AtualizarProfissional(): JSX.Element {
               name="documentoProfissional"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Documento profissional</FormLabel>
+                  <FormLabel>Documento profissional *</FormLabel>
                   <FormControl>
                     <Input placeholder="Ex: CRM/SP 123456" {...field} />
                   </FormControl>
@@ -345,10 +345,7 @@ export default function AtualizarProfissional(): JSX.Element {
                 <FormItem>
                   <FormLabel>Área de atendimento *</FormLabel>
                   <FormControl>
-                    <HealthAreaSelect
-                      value={field.value}
-                      onChange={field.onChange}
-                    />
+                    <HealthAreaSelect value={field.value} onChange={field.onChange} />
                   </FormControl>
                   <FormMessage>{fieldState.error?.message}</FormMessage>
                 </FormItem>
@@ -362,7 +359,7 @@ export default function AtualizarProfissional(): JSX.Element {
               name="rg"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>RG</FormLabel>
+                  <FormLabel>RG *</FormLabel>
                   <FormControl>
                     <Input placeholder="Ex: 1234567" {...field} />
                   </FormControl>
@@ -370,12 +367,13 @@ export default function AtualizarProfissional(): JSX.Element {
                 </FormItem>
               )}
             />
+
             <Controller
               control={form.control}
               name="telefone"
               render={({ field, fieldState }) => (
                 <FormItem>
-                  <FormLabel>Telefone</FormLabel>
+                  <FormLabel>Telefone *</FormLabel>
                   <FormControl>
                     <InputMask
                       mask="(__) _____-____"
@@ -399,14 +397,12 @@ export default function AtualizarProfissional(): JSX.Element {
               name="estado"
               render={({ field, fieldState }) => (
                 <FormItem>
-                  <FormLabel>Estado</FormLabel>
+                  <FormLabel>Estado *</FormLabel>
                   <FormControl>
                     <Select onValueChange={field.onChange} value={field.value}>
                       <SelectTrigger
                         className={`w-full ${
-                          fieldState.invalid
-                            ? "border-red-500"
-                            : "border-gray-300"
+                          fieldState.invalid ? "border-red-500" : "border-gray-300"
                         }`}
                       >
                         <SelectValue placeholder="Selecione um estado" />
@@ -424,12 +420,13 @@ export default function AtualizarProfissional(): JSX.Element {
                 </FormItem>
               )}
             />
+
             <FormField
               control={form.control}
               name="cidade"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Cidade</FormLabel>
+                  <FormLabel>Cidade *</FormLabel>
                   <FormControl>
                     <Input placeholder="Ex: João Pessoa" {...field} />
                   </FormControl>
@@ -444,7 +441,7 @@ export default function AtualizarProfissional(): JSX.Element {
             name="rua"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Endereço</FormLabel>
+                <FormLabel>Endereço *</FormLabel>
                 <FormControl>
                   <Input placeholder="Ex: Rua das Flores" {...field} />
                 </FormControl>
@@ -459,7 +456,7 @@ export default function AtualizarProfissional(): JSX.Element {
               name="bairro"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Bairro</FormLabel>
+                  <FormLabel>Bairro *</FormLabel>
                   <FormControl>
                     <Input placeholder="Ex: Centro" {...field} />
                   </FormControl>
@@ -467,12 +464,13 @@ export default function AtualizarProfissional(): JSX.Element {
                 </FormItem>
               )}
             />
+
             <Controller
               control={form.control}
               name="cep"
               render={({ field, fieldState }) => (
                 <FormItem>
-                  <FormLabel>CEP</FormLabel>
+                  <FormLabel>CEP *</FormLabel>
                   <FormControl>
                     <InputMask
                       mask="_____-___"
@@ -496,7 +494,7 @@ export default function AtualizarProfissional(): JSX.Element {
               name="numero"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Número</FormLabel>
+                  <FormLabel>Número *</FormLabel>
                   <FormControl>
                     <Input placeholder="Ex: 123" {...field} />
                   </FormControl>
@@ -504,6 +502,7 @@ export default function AtualizarProfissional(): JSX.Element {
                 </FormItem>
               )}
             />
+
             <FormField
               control={form.control}
               name="complemento"
@@ -705,6 +704,7 @@ export default function AtualizarProfissional(): JSX.Element {
             <Button type="button" variant="outline" onClick={onCancel}>
               Cancelar
             </Button>
+
             <Button
               type="submit"
               className="bg-[#0D4F97] hover:bg-blue-900"

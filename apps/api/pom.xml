@@ -132,18 +132,9 @@
                         </goals>
                         <!-- CONFIGURAÇÃO PARA TESTES UNITÁRIOS DE CONTROLADORES -->
                         <configuration>
-                            <excludes>
-                                <exclude>br/org/apae/api/address/**</exclude>
-                                <exclude>br/org/apae/api/appointment/**</exclude>
-                                <exclude>br/org/apae/api/auth/**</exclude>
-                                <exclude>br/org/apae/api/common/**</exclude>
-                                <exclude>br/org/apae/api/documents/**</exclude>
-                                <exclude>br/org/apae/api/patient/**</exclude>
-                                <exclude>br/org/apae/api/professional/**</exclude>
-                                <exclude>br/org/apae/api/swagger/**</exclude>
-
-                                <exclude>br/org/apae/api/*Application.*</exclude>
-                            </excludes>
+                            <includes>
+                                <include>br/org/apae/api/controllers/**</include>
+                            </includes>
                         </configuration>
                     </execution>
                 </executions>
