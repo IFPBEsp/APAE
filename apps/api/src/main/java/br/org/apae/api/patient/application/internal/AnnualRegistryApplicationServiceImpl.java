@@ -1,5 +1,6 @@
 package br.org.apae.api.patient.application.internal;
 
+import java.time.Year;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -20,6 +21,7 @@ import br.org.apae.api.patient.domain.exceptions.AnnualRegistryConflictException
 import br.org.apae.api.patient.domain.exceptions.DisorderMismatchException;
 import br.org.apae.api.patient.domain.model.AnnualRegistry;
 import br.org.apae.api.patient.domain.repository.AnnualRegistryRepository;
+
 @Service
 public class AnnualRegistryApplicationServiceImpl implements AnnualRegistryApplicationService {
 
@@ -63,7 +65,7 @@ public class AnnualRegistryApplicationServiceImpl implements AnnualRegistryAppli
 
     @Override
     @Transactional(readOnly = true)
-    public AnnualRegistryResponseDTO findRegistryByPatientAndYear(UUID patientId, Integer year) {
+    public AnnualRegistryResponseDTO findRegistryByPatientAndYear(UUID patientId, Year year) {
         patientDomainService.getByIdOrThrow(patientId);
 
         AnnualRegistry registry = annualRegistryRepository
@@ -101,7 +103,9 @@ public class AnnualRegistryApplicationServiceImpl implements AnnualRegistryAppli
     @Override
     @Transactional(readOnly = true)
     public List<String> findAllRegistryYears() {
-        return annualRegistryRepository.findDistinctYears();
+        return annualRegistryRepository.findDistinctYears().stream()
+                .map(Year::toString)
+                .toList();
     }
 
     @Override
