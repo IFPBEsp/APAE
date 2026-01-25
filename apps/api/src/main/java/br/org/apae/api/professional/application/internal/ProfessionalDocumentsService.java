@@ -31,51 +31,73 @@ public class ProfessionalDocumentsService {
         this.documentService = documentService;
     }
 
-    private void storeDocument(
-            HealthProfessional professional,
-            DocumentType type,
-            MultipartFile file) {
-
+    private void storeDocument(HealthProfessional professional, DocumentType type, MultipartFile file) {
         if (file == null || file.isEmpty()) return;
 
         try {
             this.documentService.putDocument(
-                    PutDocumentArgsDTO.builder()
-                            .owner(professional.getId().toString())
-                            .category(DocumentCategory.PROFESSIONAL)
-                            .type(type)
-                            .contentType(file.getContentType())
-                            .stream(file.getInputStream())
-                            .build()
+                PutDocumentArgsDTO.builder()
+                    .owner(professional.getId().toString())
+                    .category(DocumentCategory.PROFESSIONAL)
+                    .type(type)
+                    .contentType(file.getContentType())
+                    .stream(file.getInputStream())
+                    .build()
             );
         } catch (Exception error) {
             LOGGER.log(Level.SEVERE, "Erro ao armazenar documento (" + type + "): " + error.getMessage());
+            throw new RuntimeException("Erro ao armazenar documento (" + type + ").");
         }
     }
 
-    public void storeProfessionalDocuments(
-            HealthProfessional professional,
-            CreateProfessionalDocumentsDTO documents) {
-
+    public void storeProfessionalDocuments(HealthProfessional professional, CreateProfessionalDocumentsDTO documents) {
         storeDocument(professional, DocumentType.VOLUNTEER_AGREEMENT, documents.volunteerAgreement());
         storeDocument(professional, DocumentType.CURRICULUM, documents.curriculum());
-
         storeDocument(professional, DocumentType.ATTACHMENTANY, documents.attachmentAny());
     }
 
-    public void updateProfessionalDocuments(
-            HealthProfessional professional,
-            UpdateProfessionalDocumentsDTO documents) {
-
+    public void updateProfessionalDocuments(HealthProfessional professional, UpdateProfessionalDocumentsDTO documents) {
         if (documents == null) return;
-
-        storeDocument(professional, DocumentType.CURRICULUM, documents.curriculum());
-        storeDocument(professional, DocumentType.VOLUNTEER_AGREEMENT, documents.volunteerAgreement());
-
+        if (documents.curriculum() != null && !documents.curriculum().isEmpty()) {
+            removeAllByType(professional, DocumentType.CURRICULUM);
+            storeDocument(professional, DocumentType.CURRICULUM, documents.curriculum());
+        }
+        if (documents.volunteerAgreement() != null && !documents.volunteerAgreement().isEmpty()) {
+            removeAllByType(professional, DocumentType.VOLUNTEER_AGREEMENT);
+            storeDocument(professional, DocumentType.VOLUNTEER_AGREEMENT, documents.volunteerAgreement());
+        }
         if (documents.attachmentAny() != null) {
             for (MultipartFile file : documents.attachmentAny()) {
                 storeDocument(professional, DocumentType.ATTACHMENTANY, file);
             }
+        }
+    }
+    private void removeAllByType(HealthProfessional professional, DocumentType type) {
+        try {
+            Iterable<DocumentDTO> docs = this.documentService.listDocuments(
+                ListDocumentsArgsDTO.builder()
+                    .owner(professional.getId().toString())
+                    .category(DocumentCategory.PROFESSIONAL)
+                    .build()
+            );
+
+            for (DocumentDTO d : docs) {
+                if (d != null && d.type() == type) {
+                    this.documentService.removeDocument(
+                        RemoveDocumentArgsDTO.builder()
+                            .id(d.id())
+                            .name(d.name())
+                            .owner(d.owner())
+                            .category(d.category())
+                            .type(d.type())
+                            .year(d.year())
+                            .build()
+                    );
+                }
+            }
+        } catch (Exception e) {
+            LOGGER.log(Level.SEVERE, "Erro ao remover documentos antigos do tipo " + type + ": " + e.getMessage());
+            throw new RuntimeException("Erro ao remover documentos antigos do tipo " + type + ".");
         }
     }
 
