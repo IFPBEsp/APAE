@@ -1,3 +1,4 @@
+import { getAllProfissionais } from "@/services/profissional-service";
 import { Profissional } from "@/types/profissional";
 import { useEffect, useState } from "react";
 
@@ -7,7 +8,7 @@ interface PaginatedResponse<T> {
   totalElements: number;
 }
 
-export function useFetchProfessionals() {
+export function useFetchProfessionals(ativo: boolean) {
   const [profissionais, setProfissionais] = useState<Profissional[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -16,10 +17,15 @@ export function useFetchProfessionals() {
     async function fetchProfessionals() {
       try {
         setLoading(true);
-        const response = await fetch("/api/professionals", { method: "GET" });
+        setError(null);
+
+        console.log("[useFetchProfessionals] disparou fetch com ativo =", ativo);
+        
+        const response = await getAllProfissionais(ativo);
 
         if (!response.ok) {
-          throw new Error(`Erro: ${response.status}`);
+          const errorData = await response.json().catch(() => ({}));
+          throw new Error(errorData.message || "Erro ao buscar profissionais");
         }
 
         const data: PaginatedResponse<Profissional> = await response.json();
@@ -32,7 +38,7 @@ export function useFetchProfessionals() {
     }
 
     fetchProfessionals();
-  }, []);
+  }, [ativo]);
 
   return { profissionais, loading, error, setProfissionais };
 }

@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { useParams } from "next/navigation";
 import { getProfissionalById } from "@/services/profissional-service";
 import { Profissional } from "@/types/profissional";
+
 export function useGetByIdProfissional() {
   const params = useParams();
   let id = params?.id;

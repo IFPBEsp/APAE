@@ -161,6 +161,7 @@ public static HealthProfessionalResponseDTO createProfessionalResponse1() {
         "123456789",
         "11999999999",
         "Fisioterapia",
+        true,
         createAddressResponse1(),
         createServiceAreaResponsePhysiotherapy(),
         List.of(
@@ -179,6 +180,7 @@ public static HealthProfessionalResponseDTO createProfessionalResponse1() {
             "987654321",
             "11888888888",
             "Psicologia",
+            true,
             createAddressResponse2(),
             createServiceAreaResponsePsychology(),
             List.of()

@@ -33,8 +33,8 @@ public class HealthProfessionalMapper {
         this.availabilityMapper = availabilityMapper;
     }
 
-    public HealthProfessional toEntity(CreateHealthProfessionalDTO dto, ServiceAreaResponseDTO serviceAreaDto, AddressResponseDTO addressDto) {
-        Address address = addressMapper.toEntityFromResponse(addressDto);
+    public HealthProfessional toEntity(CreateHealthProfessionalDTO dto, ServiceAreaResponseDTO serviceAreaDto) {
+        Address address = addressMapper.toEntity(dto.address());
         ServiceArea serviceArea = serviceAreaMapper.toEntityFromResponse(serviceAreaDto);
 
         HealthProfessional entity = new HealthProfessional(
@@ -56,8 +56,8 @@ public class HealthProfessionalMapper {
     }
 
     public HealthProfessional updateEntityFromDto(HealthProfessional professional, UpdateHealthProfessionalDTO dto,
-                                                  ServiceAreaResponseDTO serviceAreaDto, AddressResponseDTO addressDto) {
-        Address address = addressMapper.toEntityFromResponse(addressDto);
+                                                  ServiceAreaResponseDTO serviceAreaDto) {
+        Address address = addressMapper.toEntity(dto.address());
         ServiceArea serviceArea = serviceAreaMapper.toEntityFromResponse(serviceAreaDto);
 
         HealthProfessional updatedEntity = new HealthProfessional(
