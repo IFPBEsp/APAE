@@ -27,7 +27,6 @@ import java.util.concurrent.TimeUnit;
 import java.util.stream.StreamSupport;
 
 @RestController
-@CrossOrigin(origins = "http://localhost:3000")
 public class HealthProfessionalControllerImpl implements HealthProfessionalController {
 
     private final HealthProfessionalApplicationService service;
