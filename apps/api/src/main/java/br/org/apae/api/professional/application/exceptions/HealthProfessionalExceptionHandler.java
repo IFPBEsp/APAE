@@ -12,6 +12,8 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import br.org.apae.api.common.exceptions.types.ErrorResponse;
 import br.org.apae.api.professional.domain.exceptions.HealthProfessionalNotFoundException;
 import br.org.apae.api.professional.domain.exceptions.ProfessionalDocumentConflictException;
+import br.org.apae.api.professional.domain.exceptions.ProfessionalDocumentNotFoundException;
+
 import jakarta.servlet.http.HttpServletRequest;
 
 @ControllerAdvice
@@ -59,5 +61,16 @@ public class HealthProfessionalExceptionHandler {
         ex.getMessage(),
         request.getRequestURI());
     return new ResponseEntity<>(error, HttpStatus.CONFLICT);
+  }
+
+  @ExceptionHandler(ProfessionalDocumentNotFoundException.class)
+  public ResponseEntity<ErrorResponse> handleProfessionalDocumentNotFound(
+      ProfessionalDocumentNotFoundException ex, HttpServletRequest request) {
+    ErrorResponse error = new ErrorResponse(
+        HttpStatus.NOT_FOUND.value(),
+        HttpStatus.NOT_FOUND.getReasonPhrase(),
+        ex.getMessage(),
+        request.getRequestURI());
+    return new ResponseEntity<>(error, HttpStatus.NOT_FOUND);
   }
 }

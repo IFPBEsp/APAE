@@ -16,6 +16,7 @@ import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Import;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
@@ -34,6 +35,8 @@ import br.org.apae.api.common.dto.professional.request.documents.CreateProfessio
 import br.org.apae.api.controllers.mocks.professional.HealthProfessionalMockDto;
 import br.org.apae.api.helpers.AuthTestHelper;
 import br.org.apae.api.professional.application.interfaces.HealthProfessionalApplicationService;
+import br.org.apae.api.documents.application.interfaces.DocumentApplicationService;
+
 
 @Tag("controller")
 @Tag("health-professional")
@@ -59,6 +62,9 @@ class HealthProfessionalControllerTest {
 
     @MockitoBean
     private UserService userService;
+
+    @MockitoBean
+    private DocumentApplicationService documentApplicationService;
 
     @BeforeEach
     void setupAuth() {
