@@ -51,8 +51,8 @@ import { gerarMatrizDisponibilidade } from "@/utils/disponibilidade.utils";
 import {
   getProfessionalDocuments,
   removeProfessionalDocument,
-  type DocumentWithUrl,
 } from "@/services/profissional-service";
+import { DocumentWithUrl } from "@/types/document";
 
 type UpdateFormValues = z.infer<typeof updateProfessionalSchema>;
 
@@ -65,7 +65,8 @@ export default function AtualizarProfissional(): JSX.Element {
     error: errorProf,
   } = useGetByIdProfissional();
 
-  const { updateProfissional, loading, error, success } = useUpdateProfissional();
+  const { updateProfissional, loading, error, success } =
+    useUpdateProfissional();
 
   const { upload, loadingDocs, errorDocs, successDocs } =
     useUpdateProfessionalDocuments();
@@ -268,7 +269,6 @@ export default function AtualizarProfissional(): JSX.Element {
               <span className="font-medium">
                 {docToRemove?.name ?? "selecionado"}
               </span>
-              .
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
@@ -345,7 +345,10 @@ export default function AtualizarProfissional(): JSX.Element {
                 <FormItem>
                   <FormLabel>Área de atendimento *</FormLabel>
                   <FormControl>
-                    <HealthAreaSelect value={field.value} onChange={field.onChange} />
+                    <HealthAreaSelect
+                      value={field.value}
+                      onChange={field.onChange}
+                    />
                   </FormControl>
                   <FormMessage>{fieldState.error?.message}</FormMessage>
                 </FormItem>
@@ -402,7 +405,9 @@ export default function AtualizarProfissional(): JSX.Element {
                     <Select onValueChange={field.onChange} value={field.value}>
                       <SelectTrigger
                         className={`w-full ${
-                          fieldState.invalid ? "border-red-500" : "border-gray-300"
+                          fieldState.invalid
+                            ? "border-red-500"
+                            : "border-gray-300"
                         }`}
                       >
                         <SelectValue placeholder="Selecione um estado" />
@@ -525,7 +530,9 @@ export default function AtualizarProfissional(): JSX.Element {
               <p className="text-base font-semibold">Documentos já anexados</p>
 
               {docsLoading ? (
-                <p className="text-sm text-gray-600">Carregando documentos...</p>
+                <p className="text-sm text-gray-600">
+                  Carregando documentos...
+                </p>
               ) : docsError ? (
                 <p className="text-sm text-red-500">{docsError}</p>
               ) : (
@@ -626,7 +633,9 @@ export default function AtualizarProfissional(): JSX.Element {
                 <Input
                   type="file"
                   accept="application/pdf"
-                  onChange={(e) => setVolunteerFile(e.target.files?.[0] ?? null)}
+                  onChange={(e) =>
+                    setVolunteerFile(e.target.files?.[0] ?? null)
+                  }
                 />
               </FormControl>
               {volunteerFile && (
@@ -642,7 +651,9 @@ export default function AtualizarProfissional(): JSX.Element {
                 <Input
                   type="file"
                   accept="application/pdf"
-                  onChange={(e) => setCurriculumFile(e.target.files?.[0] ?? null)}
+                  onChange={(e) =>
+                    setCurriculumFile(e.target.files?.[0] ?? null)
+                  }
                 />
               </FormControl>
               {curriculumFile && (
@@ -697,7 +708,9 @@ export default function AtualizarProfissional(): JSX.Element {
           )}
           {error && <p className="text-red-500">{error}</p>}
           {success && (
-            <p className="text-green-600">Profissional atualizado com sucesso!</p>
+            <p className="text-green-600">
+              Profissional atualizado com sucesso!
+            </p>
           )}
 
           <div className="flex justify-end gap-4">
