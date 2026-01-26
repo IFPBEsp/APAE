@@ -4,19 +4,19 @@ const CPF = z
   .string()
   .min(1, "CPF é obrigatório")
   .min(14, "CPF deve ter pelo menos 11 dígitos")
-  .regex(/^\d{3}\.\d{3}\.\d{3}\-\d{2}$/, "Formato de CPF inválido");
+  .regex(/^\d{3}\.\d{3}\.\d{3}-\d{2}$/, "Formato de CPF inválido");
 
 const RG = z
   .string()
   .min(1, "RG é obrigatório")
   .min(9, "RG deve ter pelo menos 7 dígitos")
-  .regex(/^\d{1}\.\d{3}\.\d{3}$/, "Formato de RG inválido");
+  .regex(/^\d\.\d{3}\.\d{3}$/, "Formato de RG inválido");
 
 const CNS = z
   .string()
   .min(1, "CNS é obrigatório")
   .min(18, "CNS deve ter pelo menos 18 dígitos")
-  .regex(/^\d{3}\ \d{4}\ \d{4}\ \d{4}$/, "Formato de CNS inválido");
+  .regex(/^\d{3} \d{4} \d{4} \d{4}$/, "Formato de CNS inválido");
 
 const NIS = z.string().min(1, "NIS é obrigatório");
 
@@ -114,33 +114,23 @@ export const Address = z.object({
 export const Additionals = z.object({
   diseases: z.string().min(1, "O campo de doenças é obrigatório."),
   medications: z.string().min(1, "O campo de medicações é obrigatório."),
-  vaccines: z.string().min(1, "O campo de vacinas é obrigatório."),
+  vaccines: z
+    .array(z.string().min(1))
+    .min(1, "O campo de vacinas é obrigatório."),
   allergies: z.string().min(1, "O campo de alergias é obrigatório."),
   disability: z.object({
-    type: z.string().min(1, "Tipo de eficiência é obrigatório."),
+    types: z
+      .array(z.string().min(1))
+      .min(1, "O tipo de atendimento é obrigatório."),
     report: z.instanceof(File, { error: "O laudo é obrigatório." }),
   }),
   care: z.object({
-    type: z.string().min(1, "Tipo de atendimento é obrigatório."),
+    types: z
+      .array(z.string().min(1))
+      .min(1, "O tipo de atendimento é obrigatório."),
     referral: z.instanceof(File, { error: "O encaminhamento é obrigatório." }),
   }),
   bpc: z.boolean(),
-});
-
-const Guardian = z.object({
-  rg: RG,
-  cpf: CPF,
-  alive: z.boolean(),
-  name: z.string().min(2, "Nome muito curto"),
-  occupation: z.string().min(2, "Profissão inválida"),
-  emergencyContact: z.string().min(1, "Contato de emergência é obrigatório."),
-  whereToFind: z.string().min(1, "Onde procurar é obrigatório."),
-});
-
-export const Guardians = z.object({
-  father: Guardian,
-  mother: Guardian,
-  others: z.string().optional(),
   householdIncome: z
     .string()
     .min(1, "A renda familiar é obrigatória.")
@@ -148,6 +138,26 @@ export const Guardians = z.object({
       (value) => Number(value.replace(/\D/g, "")) >= 20000,
       "A renda familiar deve ser pelo menos R$ 200,00.",
     ),
+});
+
+export const Kinship = z.object({
+  rg: RG,
+  cpf: CPF,
+  alive: z.boolean(),
+  name: z.string().min(2, "Nome muito curto"),
+  occupation: z.string().min(2, "Profissão inválida"),
+  type: z.string().min(1, "Informar o parentesco é obrigatório."),
+});
+
+export const Kinships = z.object({
+  kinships: z.array(Kinship).min(1, "Cadastre pelo menos um parente."),
+});
+
+export const Guardian = z.object({
+  name: z.string().min(2, "Nome muito curto"),
+  contact: z.string().min(1, "Contato de emergência é obrigatório."),
+  kinship: z.string().min(1, "Informar o parentesco é obrigatório."),
+  address: Address,
 });
 
 export const Profile = z.object({
