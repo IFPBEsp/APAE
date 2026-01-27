@@ -44,7 +44,7 @@ export default function EditVaccinePage() {
             name: data.name,
         });
 
-        router.push("/vaccines");
+        router.push("/vacinas");
     };
 
     if (!id) {
@@ -68,7 +68,7 @@ export default function EditVaccinePage() {
 
                 setVaccine(loaded);
             } catch (error) {
-                router.push("/vaccines");
+                router.push("/vacinas");
 
                 throw error;
             }

@@ -9,7 +9,7 @@ import { Plus } from "lucide-react";
 import { TranstornoListItem } from "./TranstornosListItem";
 import { Transtorno } from "@/schemas/transtornosSchema";
 import { Loader2 } from "lucide-react";
-import { SearchFilters } from "@/components/shared/filters/search-filters";
+import { SearchFilters } from "@/components/search-filters";
 
 export default function TranstornosPage() {
   const router = useRouter();
@@ -81,7 +81,7 @@ export default function TranstornosPage() {
           <TranstornoListItem
             key={transtorno.id}
             transtorno={transtorno}
-            onEdit={() => router.push(`/disorders/${transtorno.id}/edit`)}
+            onEdit={() => router.push(`/transtornos/${transtorno.id}/edit`)}
             onDelete={() => handleDelete(transtorno.id)}
           />
         ))}
@@ -90,7 +90,7 @@ export default function TranstornosPage() {
   };
 
   return (
-    <div className="flex-1 bg-background min-h-screen">
+    <div className="!bg-slate-100 min-h-screen">
       <main className="container mx-auto p-4 md:p-6">
         <div className="bg-white rounded-xl shadow-md border-2 p-6 mb-4">
           <SearchFilters
@@ -108,7 +108,7 @@ export default function TranstornosPage() {
               asChild
               className="!bg-[#0D4F97] !hover:bg-[#0b427d] text-white"
             >
-              <Link href="/disorders/new">Adicionar</Link>
+              <Link href="/transtornos/new">Adicionar</Link>
             </Button>
           </div>
 
@@ -131,7 +131,7 @@ export default function TranstornosPage() {
         asChild
         className="fixed bottom-6 right-6 h-[53px] w-[53px] rounded-full shadow-lg md:hidden bg-[#0D4F97] hover:bg-[#0b427d]"
       >
-        <Link href="/disorders/new">
+        <Link href="/transtornos/new">
           <Plus className="h-7 w-7" />
           <span className="sr-only">Adicionar Transtorno</span>
         </Link>
