@@ -54,9 +54,9 @@ public class PatientRemovalTests {
     private UserService userService;
 
     @Test
-    @DisplayName("Deve realizar exclusão lógica (desativar) com sucesso (Retorna 204)")
+    @DisplayName("Should perform logical deletion (deactivate) successfully (Returns 204)")
     @WithMockUser(username = "admin", roles = {"ADMIN"})
-    void deveDesativarPaciente() throws Exception {
+    void shouldPerformLogicalDeletionSuccessfully() throws Exception {
         UUID id = UUID.randomUUID();
 
         doNothing().when(patientService).deletePatient(id);
@@ -68,9 +68,9 @@ public class PatientRemovalTests {
     }
 
     @Test
-    @DisplayName("Deve retornar 404 Not Found se tentar desativar ID inexistente")
+    @DisplayName("Should return 404 Not Found when trying to deactivate non-existent ID")
     @WithMockUser(username = "admin", roles = {"ADMIN"})
-    void deveRetornar404QuandoIdNaoExiste() throws Exception {
+    void shouldReturnNotFoundWhenIdDoesNotExist() throws Exception {
         UUID id = UUID.randomUUID();
 
         doThrow(new PatientNotFoundException()).when(patientService).deletePatient(id);

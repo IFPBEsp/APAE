@@ -14,40 +14,41 @@ import {
   useMembersRegisterContext,
 } from "@/hooks/use-members-register-context";
 import { formatCEP } from "@/lib/formats";
-import { Address } from "@/schemas/member-schemas";
+import { Guardian } from "@/schemas/member-schemas";
 import { zodResolver } from "@hookform/resolvers/zod";
+import React from "react";
 import { useForm } from "react-hook-form";
-import z from "zod";
 
+import z from "zod";
 import { DoubleColumn, FormButton, MembersRegisterForm } from "../form";
 
-export default function MembersRegisterAddressPage() {
+export default function MembersRegisterGuardianPage() {
   const {
-    state: { address },
-    setters: { setAddressData, setStep },
+    state: { guardian },
+    setters: { setGuardianData, setStep },
   } = useMembersRegisterContext();
 
-  const form = useForm<z.infer<typeof Address>>({
+  const form = useForm<z.infer<typeof Guardian>>({
     mode: "onBlur",
-    resolver: zodResolver(Address),
-    defaultValues: address,
+    resolver: zodResolver(Guardian),
+    defaultValues: guardian,
   });
 
-  const onSubmit = (values: z.infer<typeof Address>) => {
-    setAddressData(values);
-    setStep(MembersRegisterStep.ADDITIONALS);
+  const onSubmit = (values: z.infer<typeof Guardian>) => {
+    setGuardianData(values);
+    setStep(MembersRegisterStep.PROFILE);
   };
 
   return (
     <Form {...form}>
       <MembersRegisterForm
-        title="Endereço"
+        title="Dados do Responsável"
         onSubmit={form.handleSubmit(onSubmit)}
         buttons={
           <>
             <FormButton
               type="button"
-              onClick={() => setStep(MembersRegisterStep.KINSHIPS)}
+              onClick={() => setStep(MembersRegisterStep.ADDITIONALS)}
             >
               Voltar
             </FormButton>
@@ -59,9 +60,43 @@ export default function MembersRegisterAddressPage() {
         <DoubleColumn>
           <FormField
             control={form.control}
-            name="street"
+            name="name"
             render={({ field }) => (
-              <FormItem className="md:col-span-2">
+              <FormItem>
+                <FormLabel>Nome Completo *</FormLabel>
+                <FormControl>
+                  <Input
+                    placeholder="Digite o nome completo do responsável"
+                    {...field}
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          <FormField
+            control={form.control}
+            name="contact"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Contato de Emergência *</FormLabel>
+                <FormControl>
+                  <Input
+                    placeholder="Número de telefone, email e etc."
+                    {...field}
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          <FormField
+            control={form.control}
+            name="address.street"
+            render={({ field }) => (
+              <FormItem>
                 <FormLabel>Rua *</FormLabel>
                 <FormControl>
                   <Input placeholder="Adielson Assis Alves, 49" {...field} />
@@ -73,7 +108,7 @@ export default function MembersRegisterAddressPage() {
 
           <FormField
             control={form.control}
-            name="cep"
+            name="address.cep"
             render={({ field }) => (
               <FormItem>
                 <FormLabel>CEP *</FormLabel>
@@ -95,7 +130,7 @@ export default function MembersRegisterAddressPage() {
 
           <FormField
             control={form.control}
-            name="state"
+            name="address.state"
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Estado *</FormLabel>
@@ -109,7 +144,7 @@ export default function MembersRegisterAddressPage() {
 
           <FormField
             control={form.control}
-            name="city"
+            name="address.city"
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Cidade *</FormLabel>
@@ -123,12 +158,26 @@ export default function MembersRegisterAddressPage() {
 
           <FormField
             control={form.control}
-            name="district"
+            name="address.district"
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Bairro *</FormLabel>
                 <FormControl>
                   <Input placeholder="Centro" {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          <FormField
+            control={form.control}
+            name="kinship"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Parentesco *</FormLabel>
+                <FormControl>
+                  <Input placeholder="Irmã" {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>

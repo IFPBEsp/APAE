@@ -10,8 +10,6 @@ import { cn } from "@/lib/utils";
 import React from "react";
 import { ControllerProps, FieldPath, FieldValues } from "react-hook-form";
 
-import * as CheckboxPrimitive from "@radix-ui/react-checkbox";
-
 function MembersRegisterForm({
   title,
   buttons,
@@ -54,7 +52,7 @@ function FileInputButton({
   ...props
 }: Readonly<
   Required<Pick<React.ComponentProps<"input">, "onChange" | "id">> &
-    Omit<React.ComponentProps<"button">, "onChange" | "onClick">
+  Omit<React.ComponentProps<"button">, "onChange" | "onClick">
 >) {
   return (
     <div className="w-full overflow-hidden">

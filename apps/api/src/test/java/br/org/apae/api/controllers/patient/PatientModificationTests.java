@@ -7,6 +7,7 @@ import br.org.apae.api.common.dto.patient.response.patient.PatientResponseDTO;
 import br.org.apae.api.patient.application.interfaces.AnnualRegistryApplicationService;
 import br.org.apae.api.patient.application.interfaces.DisorderApplicationService;
 import br.org.apae.api.patient.application.interfaces.PatientApplicationService;
+import br.org.apae.api.patient.domain.exceptions.PatientNotFoundException;
 import br.org.apae.api.servicearea.application.interfaces.ServiceAreaApplicationService;
 import br.org.apae.api.controllers.patient.mocks.patient.PatientCreator;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -24,8 +25,6 @@ import org.springframework.test.web.servlet.MockMvc;
 import java.util.UUID;
 
 import static org.hamcrest.Matchers.hasSize;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
@@ -63,14 +62,14 @@ public class PatientModificationTests {
     private UserService userService;
 
     @Test
-    @DisplayName("Deve atualizar um paciente com sucesso (Retorna 200)")
+    @DisplayName("Should update a patient successfully (Returns 200)")
     @WithMockUser(username = "admin", roles = {"ADMIN"})
-    void deveAtualizarPacienteComSucesso() throws Exception {
+    void shouldUpdatePatientSuccessfully() throws Exception {
         UUID patientId = UUID.randomUUID();
         UpdatePatientDTO updateDTO = PatientCreator.createUpdatePayload();
         PatientResponseDTO responseDTO = PatientCreator.createResponse();
 
-        when(patientService.updatePatient(eq(patientId), any(UpdatePatientDTO.class)))
+        when(patientService.updatePatient(patientId, updateDTO))
                 .thenReturn(responseDTO);
 
         mockMvc.perform(put("/patients/{id}", patientId)
@@ -121,10 +120,27 @@ public class PatientModificationTests {
     }
 
     @Test
-    @DisplayName("Deve retornar 400 Bad Request ao enviar dados inválidos no Update")
+    @DisplayName("Should return 400 Bad Request when providing invalid data for update")
     @WithMockUser(username = "admin", roles = {"ADMIN"})
-    void deveFalharValidacaoUpdate() throws Exception {
+    void shouldReturnBadRequestWhenDataIsInvalid() throws Exception {
         UpdatePatientDTO invalidDTO = PatientCreator.createInvalidUpdateRequest();
+
+        mockMvc.perform(put("/patients/{id}", UUID.randomUUID())
+                        .content(objectMapper.writeValueAsString(invalidDTO))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .with(csrf()))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    @DisplayName("Should throw PatientNotFoundException when trying to update a non-existent patient")
+    @WithMockUser(username = "admin", roles = {"ADMIN"})
+    void shouldThrowNotFoundWhenUpdatingNonExistentPatient() throws Exception {
+        UUID randomId = UUID.randomUUID();
+        UpdatePatientDTO invalidDTO = PatientCreator.createInvalidUpdateRequest();
+
+        when(patientService.updatePatient(randomId, invalidDTO))
+                .thenThrow(new PatientNotFoundException());
 
         mockMvc.perform(put("/patients/{id}", UUID.randomUUID())
                         .content(objectMapper.writeValueAsString(invalidDTO))

@@ -22,14 +22,17 @@ export function PageOrchestrator({
       case MembersRegisterStep.PERSONAL:
         router.push("/pessoa/cadastro/pessoal");
         break;
+      case MembersRegisterStep.KINSHIPS:
+        router.push("/pessoa/cadastro/parentes");
+        break;
       case MembersRegisterStep.ADDRESS:
         router.push("/pessoa/cadastro/endereco");
         break;
       case MembersRegisterStep.ADDITIONALS:
         router.push("/pessoa/cadastro/adicional");
         break;
-      case MembersRegisterStep.GUARDIANS:
-        router.push("/pessoa/cadastro/responsaveis");
+      case MembersRegisterStep.GUARDIAN:
+        router.push("/pessoa/cadastro/responsavel");
         break;
       case MembersRegisterStep.PROFILE:
         router.push("/pessoa/cadastro/perfil");

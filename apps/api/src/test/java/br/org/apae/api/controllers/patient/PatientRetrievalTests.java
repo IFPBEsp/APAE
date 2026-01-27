@@ -5,6 +5,7 @@ import br.org.apae.api.auth.infrastructure.security.JwtProvider;
 import br.org.apae.api.common.dto.patient.response.disorder.DisorderResponseDTO;
 import br.org.apae.api.common.dto.patient.response.patient.PatientResponseDTO;
 import br.org.apae.api.common.dto.patient.response.patient.PatientSummaryResponseDTO;
+import br.org.apae.api.common.dto.servicearea.response.ServiceAreaResponseDTO;
 import br.org.apae.api.patient.application.interfaces.AnnualRegistryApplicationService;
 import br.org.apae.api.patient.application.interfaces.DisorderApplicationService;
 import br.org.apae.api.patient.application.interfaces.PatientApplicationService;
@@ -68,9 +69,9 @@ public class PatientRetrievalTests {
     private ArgumentCaptor<Map<String, String>> filtersCaptor;
 
     @Test
-    @DisplayName("Deve buscar um paciente pelo ID com sucesso (Retorna 200)")
+    @DisplayName("Should retrieve patient by ID successfully (Returns 200)")
     @WithMockUser(username = "admin", roles = {"ADMIN"})
-    void deveBuscarPacientePorId() throws Exception {
+    void shouldRetrievePatientById() throws Exception {
         UUID randomId = UUID.randomUUID();
         PatientResponseDTO patientDTO = PatientCreator.createResponse();
 
@@ -123,9 +124,9 @@ public class PatientRetrievalTests {
     }
 
     @Test
-    @DisplayName("Deve retornar 404 ao buscar paciente pelo ID inexistente")
+    @DisplayName("Should return 404 Not Found when patient ID does not exist")
     @WithMockUser(username = "admin", roles = {"ADMIN"})
-    void deveRetornarErroComIdInexistente() throws Exception {
+    void shouldReturnNotFoundWhenPatientIdDoesNotExist() throws Exception {
         UUID randomId = UUID.randomUUID();
 
         when(patientService.findPatientById(randomId))
@@ -137,9 +138,9 @@ public class PatientRetrievalTests {
     }
 
     @Test
-    @DisplayName("Deve retornar todos os pacientes (sem filtro)")
+    @DisplayName("Should return all patients (no filters provided)")
     @WithMockUser(username = "admin", roles = {"ADMIN"})
-    void deveRetornarTodosOsPacientes() throws Exception {
+    void shouldReturnAllPatientsWhenNoFilterProvided() throws Exception {
         List<PatientSummaryResponseDTO> list = List.of(PatientCreator.createSummaryResponse());
         when(patientService.findPatientByFilter(anyMap())).thenReturn(list);
 
@@ -176,9 +177,9 @@ public class PatientRetrievalTests {
     }
 
     @Test
-    @DisplayName("Deve repassar o filtro 'name' corretamente para o service")
+    @DisplayName("Should correctly pass 'name' filter to service")
     @WithMockUser(username = "admin", roles = {"ADMIN"})
-    void deveRetornarPacientesComFiltroNome() throws Exception {
+    void shouldPassNameFilterToService() throws Exception {
         String nomeBusca = "João";
         when(patientService.findPatientByFilter(anyMap())).thenReturn(List.of());
 
@@ -194,9 +195,9 @@ public class PatientRetrievalTests {
     }
 
     @Test
-    @DisplayName("Deve repassar o filtro 'city' corretamente para o service")
+    @DisplayName("Should correctly pass 'city' filter to service")
     @WithMockUser(username = "admin", roles = {"ADMIN"})
-    void deveRetornarPacientesComFiltroCidade() throws Exception {
+    void shouldPassCityFilterToService() throws Exception {
         String cidade = "Campina";
         when(patientService.findPatientByFilter(anyMap())).thenReturn(List.of());
 
@@ -210,9 +211,9 @@ public class PatientRetrievalTests {
     }
 
     @Test
-    @DisplayName("Deve repassar o filtro 'disorder' corretamente para o service")
+    @DisplayName("Should correctly pass 'disorder' filter to service")
     @WithMockUser(username = "admin", roles = {"ADMIN"})
-    void deveRetornarPacientesComFiltroTranstorno() throws Exception {
+    void shouldPassDisorderFilterToService() throws Exception {
         String transtorno = "Autista";
         when(patientService.findPatientByFilter(anyMap())).thenReturn(List.of());
 
@@ -226,9 +227,9 @@ public class PatientRetrievalTests {
     }
 
     @Test
-    @DisplayName("Deve repassar o filtro 'year' corretamente para o service")
+    @DisplayName("Should correctly pass 'year' filter to service")
     @WithMockUser(username = "admin", roles = {"ADMIN"})
-    void deveRetornarPacientesComFiltroAno() throws Exception {
+    void shouldPassYearFilterToService() throws Exception {
         String ano = "2024";
         when(patientService.findPatientByFilter(anyMap())).thenReturn(List.of());
 
@@ -242,9 +243,9 @@ public class PatientRetrievalTests {
     }
 
     @Test
-    @DisplayName("Deve repassar o filtro 'treatmentType' corretamente para o service")
+    @DisplayName("Should correctly pass 'treatmentType' filter to service")
     @WithMockUser(username = "admin", roles = {"ADMIN"})
-    void deveRetornarPacientesComFiltroTipoAtendimento() throws Exception {
+    void shouldPassTreatmentTypeFilterToService() throws Exception {
         String tipo = "Fisioterapia";
         when(patientService.findPatientByFilter(anyMap())).thenReturn(List.of());
 
@@ -258,9 +259,9 @@ public class PatientRetrievalTests {
     }
 
     @Test
-    @DisplayName("Deve listar nomes dos transtornos disponíveis para filtro")
+    @DisplayName("Should list available disorder names for filtering")
     @WithMockUser(username = "admin", roles = {"ADMIN"})
-    void deveListarTranstornos() throws Exception {
+    void shouldListAvailableDisordersForFilter() throws Exception {
         DisorderResponseDTO tea = new DisorderResponseDTO(UUID.randomUUID(), "TEA");
         DisorderResponseDTO tdah = new DisorderResponseDTO(UUID.randomUUID(), "TDAH");
 
@@ -277,9 +278,9 @@ public class PatientRetrievalTests {
     }
 
     @Test
-    @DisplayName("Deve listar anos disponíveis para filtro")
+    @DisplayName("Should list available years for filtering")
     @WithMockUser(username = "admin", roles = {"ADMIN"})
-    void deveListarAnos() throws Exception {
+    void shouldListAvailableYearsForFilter() throws Exception {
         List<String> mockData = List.of("2024", "2025");
         when(annualRegistryApplicationService.findAllRegistryYears()).thenReturn(mockData);
 
@@ -291,9 +292,9 @@ public class PatientRetrievalTests {
     }
 
     @Test
-    @DisplayName("Deve listar as cidades disponíveis para filtro")
+    @DisplayName("Should list available cities for filtering")
     @WithMockUser(username = "admin", roles = {"ADMIN"})
-    void deveListarCidades() throws Exception {
+    void shouldListAvailableCitiesForFilter() throws Exception {
         List<String> mockData = List.of("Campina Grande", "Esperança");
         when(patientService.findAllPatientCities()).thenReturn(mockData);
 
@@ -302,5 +303,39 @@ public class PatientRetrievalTests {
                 .andExpect(jsonPath("$", hasSize(2)))
                 .andExpect(jsonPath("$[0]").value("Campina Grande"))
                 .andExpect(jsonPath("$[1]").value("Esperança"));
+    }
+
+    @Test
+    @DisplayName("Should list available service areas ")
+    @WithMockUser(username = "admin", roles = {"ADMIN"})
+    void shouldListAvailableAllServiceArea() throws Exception {
+        List<ServiceAreaResponseDTO> mockData = List.of(new ServiceAreaResponseDTO(1, "Fisioterapia"), new ServiceAreaResponseDTO(2, "Nutrição"));
+        when(serviceAreaApplicationService.findAllServiceAreas()).thenReturn(mockData);
+
+        mockMvc.perform(get("/patients/filtros/tipos-atendimento"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$", hasSize(2)))
+                .andExpect(jsonPath("$[0]").value("Fisioterapia"))
+                .andExpect(jsonPath("$[1]").value("Nutrição"));
+    }
+
+    @Test
+    @DisplayName("Should remove blank filters before passing to service")
+    @WithMockUser(username = "admin", roles = {"ADMIN"})
+    void shouldRemoveBlankFilters() throws Exception {
+        when(patientService.findPatientByFilter(anyMap()))
+                .thenReturn(List.of());
+
+        mockMvc.perform(get("/patients")
+                        .param("name", "   ")
+                        .param("city", "")
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk());
+
+        verify(patientService).findPatientByFilter(filtersCaptor.capture());
+
+        Map<String, String> filtrosCapturados = filtersCaptor.getValue();
+
+        assertEquals(0, filtrosCapturados.size());
     }
 }

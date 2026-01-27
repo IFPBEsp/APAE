@@ -62,7 +62,7 @@ export default function MembersRegisterProfilePage() {
           <>
             <FormButton
               type="button"
-              onClick={() => setStep(MembersRegisterStep.GUARDIANS)}
+              onClick={() => setStep(MembersRegisterStep.GUARDIAN)}
             >
               Voltar
             </FormButton>

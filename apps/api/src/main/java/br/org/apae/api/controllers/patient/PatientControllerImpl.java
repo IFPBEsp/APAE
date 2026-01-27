@@ -60,7 +60,7 @@ public class PatientControllerImpl implements PatientController {
 
     @Override
     public ResponseEntity<List<PatientSummaryResponseDTO>> findWithFilters(@RequestParam Map<String, String> filters) {
-        filters.values().removeIf(value -> value == null || value.isBlank());
+        filters.values().removeIf(String::isBlank);
 
         List<PatientSummaryResponseDTO> patients = patientService.findPatientByFilter(filters);
         return ResponseEntity.ok(patients);
