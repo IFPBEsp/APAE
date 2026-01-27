@@ -1,31 +1,31 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0"
-    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
         <version>3.5.6</version>
-        <relativePath />
+        <relativePath/>
     </parent>
     <groupId>br.org.apae</groupId>
     <artifactId>api</artifactId>
     <version>0.0.1-SNAPSHOT</version>
     <name>api</name>
     <description>API project for APAE</description>
-    <url />
+    <url/>
     <licenses>
-        <license />
+        <license/>
     </licenses>
     <developers>
-        <developer />
+        <developer/>
     </developers>
     <scm>
-        <connection />
-        <developerConnection />
-        <tag />
-        <url />
+        <connection/>
+        <developerConnection/>
+        <tag/>
+        <url/>
     </scm>
     <properties>
         <java.version>21</java.version>
@@ -107,7 +107,8 @@
                     <useModulePath>false</useModulePath>
                     <argLine>@{argLine}
                         -javaagent:${settings.localRepository}/org/mockito/mockito-core/${mockito.version}/mockito-core-${mockito.version}.jar
-                        -Xshare:off</argLine>
+                        -Xshare:off
+                    </argLine>
                     <includes>
                         <include>**/*Test.java</include>
                         <include>**/*Suite.java</include>
@@ -118,14 +119,6 @@
                 <groupId>org.jacoco</groupId>
                 <artifactId>jacoco-maven-plugin</artifactId>
                 <version>0.8.14</version>
-                <configuration>
-                    <includes>
-                        <include>br/org/apae/api/controllers/patient/**</include>
-                        <include>br/org/apae/api/controllers/annual_registry/**</include>
-                        <include>br/org/apae/api/controllers/vaccine/**</include>
-                        <include>br/org/apae/api/controllers/disorder/**</include>
-                    </includes>
-                </configuration>
                 <executions>
                     <execution>
                         <id>prepare-agent</id>
@@ -140,20 +133,47 @@
                         <goals>
                             <goal>report</goal>
                         </goals>
-                        <!-- CONFIGURAÇÃO PARA TESTES UNITÁRIOS DE CONTROLADORES -->
                         <configuration>
-                            <excludes>
-                                <exclude>br/org/apae/api/address/**</exclude>
-                                <exclude>br/org/apae/api/appointment/**</exclude>
-                                <exclude>br/org/apae/api/auth/**</exclude>
-                                <exclude>br/org/apae/api/common/**</exclude>
-                                <exclude>br/org/apae/api/documents/**</exclude>
-                                <exclude>br/org/apae/api/patient/**</exclude>
-                                <exclude>br/org/apae/api/professional/**</exclude>
-                                <exclude>br/org/apae/api/swagger/**</exclude>
+                            <includes>
+                                <include>br/org/apae/api/controllers/patient/**</include>
+                                <include>br/org/apae/api/controllers/annual_registry/**</include>
+                                <include>br/org/apae/api/controllers/vaccine/**</include>
+                                <include>br/org/apae/api/controllers/disorder/**</include>
+                            </includes>
+                        </configuration>
+                    </execution>
 
-                                <exclude>br/org/apae/api/*Application.*</exclude>
-                            </excludes>
+                    <execution>
+                        <id>check</id>
+                        <phase>verify</phase>
+                        <goals>
+                            <goal>check</goal>
+                        </goals>
+                        <configuration>
+                            <haltOnFailure>true</haltOnFailure>
+                            <rules>
+                                <rule>
+                                    <element>CLASS</element>
+                                    <includes>
+                                        <include>br/org/apae/api/controllers/patient/**</include>
+                                        <include>br/org/apae/api/controllers/annual_registry/**</include>
+                                        <include>br/org/apae/api/controllers/vaccine/**</include>
+                                        <include>br/org/apae/api/controllers/disorder/**</include>
+                                    </includes>
+                                    <limits>
+                                        <limit>
+                                            <counter>LINE</counter>
+                                            <value>COVEREDRATIO</value>
+                                            <minimum>0.90</minimum>
+                                        </limit>
+                                        <limit>
+                                            <counter>BRANCH</counter>
+                                            <value>COVEREDRATIO</value>
+                                            <minimum>0.90</minimum>
+                                        </limit>
+                                    </limits>
+                                </rule>
+                            </rules>
                         </configuration>
                     </execution>
                 </executions>
