@@ -35,6 +35,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import java.math.BigDecimal;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.List;
 import java.util.UUID;
 
 import static org.mockito.ArgumentMatchers.any;
@@ -331,6 +332,25 @@ public class AnnualRegistryControllerTest {
         mockMvc.perform(delete(BASE_URL + "/{registryId}", patientId, registryId)
                         .header("Authorization", AuthTestHelper.bearerToken()))
                 .andExpect(status().isInternalServerError());
+    }
+
+    @Test
+    @DisplayName("Deve listar os anos de registro de um paciente com sucesso")
+    void shouldGetRegistryYearsSuccess() throws Exception {
+        UUID patientId = UUID.randomUUID();
+        List<Integer> expectedYears = List.of(2022, 2023, 2024);
+        when(annualRegistryService.listYearsByPatient(patientId))
+                .thenReturn(expectedYears);
+        mockMvc.perform(get(BASE_URL + "/years", patientId)
+                        .header("Authorization", AuthTestHelper.bearerToken())
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$").isArray())
+                .andExpect(jsonPath("$.length()").value(3))
+                .andExpect(jsonPath("$[0]").value(2022))
+                .andExpect(jsonPath("$[1]").value(2023))
+                .andExpect(jsonPath("$[2]").value(2024));
+        verify(annualRegistryService).listYearsByPatient(patientId);
     }
 
     private CreateAnnualRegistryDTO createValidCreateDTO() {
