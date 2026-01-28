@@ -16,6 +16,7 @@ public record HealthProfessionalResponseDTO(
         String identityDocument,
         String phoneNumber,
         String healthSector,
+        Boolean ativo,
         AddressResponseDTO address,
         ServiceAreaResponseDTO serviceArea,
         List<AvailabilityResponseDTO> availabilities
@@ -33,6 +34,7 @@ public record HealthProfessionalResponseDTO(
                 entity.getIdentityDocument(),
                 entity.getPhoneNumber(),
                 (entity.getServiceArea() != null) ? entity.getServiceArea().getArea() : null,
+                entity.getAtivo(),
                 address,
                 serviceArea,
                 availabilities

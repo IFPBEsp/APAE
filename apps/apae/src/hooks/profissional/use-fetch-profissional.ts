@@ -1,0 +1,44 @@
+import { getAllProfissionais } from "@/services/profissional-service";
+import { Profissional } from "@/types/profissional";
+import { useEffect, useState } from "react";
+
+interface PaginatedResponse<T> {
+  content: T[];
+  totalPages: number;
+  totalElements: number;
+}
+
+export function useFetchProfessionals(ativo: boolean) {
+  const [profissionais, setProfissionais] = useState<Profissional[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    async function fetchProfessionals() {
+      try {
+        setLoading(true);
+        setError(null);
+
+        console.log("[useFetchProfessionals] disparou fetch com ativo =", ativo);
+        
+        const response = await getAllProfissionais(ativo);
+
+        if (!response.ok) {
+          const errorData = await response.json().catch(() => ({}));
+          throw new Error(errorData.message || "Erro ao buscar profissionais");
+        }
+
+        const data: PaginatedResponse<Profissional> = await response.json();
+        setProfissionais(data.content);
+      } catch (err) {
+        setError(err instanceof Error ? err.message : "Erro desconhecido");
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    fetchProfessionals();
+  }, [ativo]);
+
+  return { profissionais, loading, error, setProfissionais };
+}

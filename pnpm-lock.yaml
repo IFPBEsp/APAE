@@ -12,7 +12,7 @@ importers:
         specifier: ^9.2.1
         version: 9.2.1
 
-  apps/agendamento:
+  apps/apae:
     dependencies:
       '@hookform/resolvers':
         specifier: ^5.2.1

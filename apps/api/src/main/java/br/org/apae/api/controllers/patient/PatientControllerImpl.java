@@ -3,18 +3,19 @@ package br.org.apae.api.controllers.patient;
 import br.org.apae.api.common.dto.patient.request.documents.CreateDocumentsDTO;
 import br.org.apae.api.common.dto.patient.request.patient.CreatePatientDTO;
 import br.org.apae.api.common.dto.patient.request.patient.UpdatePatientDTO;
+import br.org.apae.api.common.dto.patient.response.disorder.DisorderResponseDTO;
 import br.org.apae.api.common.dto.patient.response.patient.PatientResponseDTO;
 import br.org.apae.api.common.dto.patient.response.patient.PatientSummaryResponseDTO;
+import br.org.apae.api.patient.application.interfaces.AnnualRegistryApplicationService;
+import br.org.apae.api.patient.application.interfaces.DisorderApplicationService;
 import br.org.apae.api.patient.application.interfaces.PatientApplicationService;
 import br.org.apae.api.patient.interfaces.controllers.PatientController;
 
-import br.org.apae.api.common.dto.patient.response.disorder.DisorderResponseDTO;
-import br.org.apae.api.patient.application.interfaces.AnnualRegistryApplicationService;
-import br.org.apae.api.patient.application.interfaces.DisorderApplicationService;
-
-
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.HashMap;
@@ -23,10 +24,11 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+@CrossOrigin(origins = "http://localhost:3000")
 @RestController
 public class PatientControllerImpl implements PatientController {
 
-    private final PatientApplicationService patientService;
+     private final PatientApplicationService patientService;
     private final DisorderApplicationService disorderService;
     private final AnnualRegistryApplicationService annualRegistryService;
 
@@ -53,17 +55,13 @@ public class PatientControllerImpl implements PatientController {
     }
 
     @Override
-    public ResponseEntity<List<PatientSummaryResponseDTO>> findWithFilters(
-            String name, String disorder, String year, String city) {
+    public ResponseEntity<Page<PatientSummaryResponseDTO>> findAll(Pageable pageable) {
+        Page<PatientSummaryResponseDTO> patientsPage = patientService.findAllPatients(pageable);
+        return ResponseEntity.ok(patientsPage);
+    }
 
-        Map<String, String> filters = new HashMap<>();
-        if (name != null) filters.put("name", name);
-        if (disorder != null) filters.put("disorder", disorder);
-        if (year != null) filters.put("year", year);
-        if (city != null) filters.put("city", city);
-        // TODO: Implementar a busca por Tipos de Atendimento (que é uma tabela separada)
-//        if (tipoAtendimento != null) filters.put("tipo_atendimento", tipoAtendimento);
-
+    @Override
+    public ResponseEntity<List<PatientSummaryResponseDTO>> findByFilter(Map<String, String> filters) {
         List<PatientSummaryResponseDTO> patients = patientService.findPatientByFilter(filters);
         return ResponseEntity.ok(patients);
     }

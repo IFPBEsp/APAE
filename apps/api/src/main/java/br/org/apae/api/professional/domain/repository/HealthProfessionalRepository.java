@@ -9,7 +9,9 @@ import java.util.UUID;
 
 public interface HealthProfessionalRepository extends JpaRepository<HealthProfessional, UUID> {
 
-    Page<HealthProfessional> findAll(Pageable pageable);
+   // Page<HealthProfessional> findAll(Pageable pageable);
+
+    Page<HealthProfessional> findByAtivo(Boolean ativo, Pageable pageable);
 
     boolean existsByProfessionalDocument(String professionalDocument);
 

@@ -4,28 +4,26 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.UUID;
 
+import br.org.apae.api.patient.domain.model.AnnualRegistry;
 import com.fasterxml.jackson.annotation.JsonFormat;
-
 import jakarta.validation.constraints.FutureOrPresent;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 
 public record UpdateAppointmentDTO(
 
-        @NotNull(message = "O ID do paciente é obrigatório") UUID patientId,
+    UUID professionalId,
+    UUID annualRegistrationId,
+    UUID serviceId,
 
-        @NotNull(message = "O ID do profissional é obrigatório") UUID professionalId,
+    @Positive(message = "A frequência de dias deve ser maior que 0")
+    Integer frequencyDays,
 
-        @NotNull(message = "A frequência em dias é obrigatória") @Positive(message = "A frequência em dias deve ser maior que zero") Integer frequencyDays,
+    @FutureOrPresent(message = "A data inicial não pode ser no passado")
+    LocalDate initialDate,
 
-        @NotNull(message = "A data da próxima consulta é obrigatória") @FutureOrPresent(message = "A data da próxima consulta não pode estar no passado") LocalDate nextAppointmentDate,
+    @JsonFormat(pattern = "HH:mm:ss")
+    LocalTime hour,
 
-        @NotNull(message = "O horário da próxima consulta é obrigatório") @JsonFormat(pattern = "HH:mm:ss") LocalTime nextAppointmentTime,
-
-        @NotNull(message = "O indicador de confirmação é obrigatório") Boolean confirmed,
-
-        @NotBlank(message = "A descrição não pode estar em branco") String description,
-
-        String justification) {
-}
+    @FutureOrPresent(message = "A data final não pode ser no passado")
+    LocalDate endDate
+) {}

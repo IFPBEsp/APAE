@@ -14,6 +14,8 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import br.org.apae.api.common.exceptions.types.ErrorResponse;
 import br.org.apae.api.professional.domain.exceptions.HealthProfessionalNotFoundException;
 import br.org.apae.api.professional.domain.exceptions.ProfessionalDocumentConflictException;
+import br.org.apae.api.professional.domain.exceptions.ProfessionalDocumentNotFoundException;
+
 import jakarta.servlet.http.HttpServletRequest;
 
 @ControllerAdvice
