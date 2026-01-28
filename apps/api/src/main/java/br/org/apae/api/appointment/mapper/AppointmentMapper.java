@@ -1,5 +1,6 @@
 package br.org.apae.api.appointment.mapper;
 
+import java.time.Year;
 import java.util.List;
 
 import org.springframework.stereotype.Component;
@@ -115,7 +116,7 @@ public class AppointmentMapper {
         annualRegistry.getBpc(),
         annualRegistry.getDiseases(),
         annualRegistry.getFamilyIncome(),
-        annualRegistry.getYear(),
+            Year.of(annualRegistry.getYear()),
         patient,
         disorderResponseDTOS
     );

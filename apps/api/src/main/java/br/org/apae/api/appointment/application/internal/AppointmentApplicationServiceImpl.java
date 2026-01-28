@@ -90,7 +90,7 @@ public class AppointmentApplicationServiceImpl implements AppointmentApplication
 
   @Override
   public void create(CreateAppointmentDTO dto) {
-     AnnualRegistry annualRegistry = this.registryRepo.findByPatientIdAndYear(dto.patientId(), Year.now())
+     AnnualRegistry annualRegistry = this.registryRepo.findByPatientIdAndYear(dto.patientId(), Year.now().getValue())
         .orElseThrow(AnnualRegistrationNotFound::new);
 
     HealthProfessional professional = this.professionalRepo.findById(dto.professionalId())
@@ -100,8 +100,8 @@ public class AppointmentApplicationServiceImpl implements AppointmentApplication
 
     appointmentRepo.save(appointment);
 
-    Year year = annualRegistry.getYear();
-    LocalDate end = LocalDate.of(year.getValue(), 12, 31);
+    Integer year = annualRegistry.getYear();
+    LocalDate end = LocalDate.of(year, 12, 31);
     generateAppointments(annualRegistry.getId(), appointment.getInitialDate(), end);
   }
 
@@ -382,7 +382,7 @@ public class AppointmentApplicationServiceImpl implements AppointmentApplication
     );
     newRule = appointmentRepo.save(newRule);
 
-    int year = current.getAnnualRegistration().getYear().getValue();
+    int year = current.getAnnualRegistration().getYear();
     LocalDate end = LocalDate.of(year, 12, 31);
 
     // Regenerate future appointments and clean up old ones

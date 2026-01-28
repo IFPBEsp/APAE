@@ -1,5 +1,6 @@
 package br.org.apae.api.controllers.annual_registry;
 
+import java.time.Year;
 import java.util.List;
 import java.util.UUID;
 
@@ -44,7 +45,7 @@ public class AnnualRegistryControllerImpl implements AnnualRegistryController {
             @PathVariable("year") Integer year) {
 
         AnnualRegistryResponseDTO registryDto = annualRegistryApplicationService
-                .findRegistryByPatientAndYear(patientId, year);
+                .findRegistryByPatientAndYear(patientId, Year.of(year));
         return ResponseEntity.ok(registryDto);
     }
 

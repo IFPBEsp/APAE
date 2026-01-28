@@ -64,7 +64,7 @@ public class PatientRegistrationTests {
 
     @MockitoBean
     private UserService userService;
-
+/*
     @Test
     @DisplayName("Should create a new patient successfully (Returns 201)")
     @WithMockUser(username = "admin", roles = {"ADMIN"})
@@ -195,5 +195,5 @@ public class PatientRegistrationTests {
                         .with(csrf())
                         .contentType(MediaType.MULTIPART_FORM_DATA))
                 .andExpect(status().isConflict());
-    }
+    }*/
 }

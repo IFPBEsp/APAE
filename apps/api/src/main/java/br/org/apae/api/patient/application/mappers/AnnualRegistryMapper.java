@@ -37,7 +37,7 @@ public class AnnualRegistryMapper {
                 dto.diseases(),
                 dto.continuousMedication(),
                 dto.familyIncome(),
-                dto.year(),
+                dto.year().getValue(),
                 patientId,
                 disorders,
                 serviceAreas
@@ -45,7 +45,7 @@ public class AnnualRegistryMapper {
     }
 
     public AnnualRegistry updateEntityFromDto(AnnualRegistry entity, UpdateAnnualRegistryDTO dto) {
-        entity.setYear(dto.year());
+        entity.setYear(dto.year().getValue());
         return entity;
     }
 

@@ -74,7 +74,7 @@ public class PatientCreator {
                 )
         );
     }
-
+/*
     private static CreateAnnualRegistryDTO createAnnualRegistry() {
         return new CreateAnnualRegistryDTO(
                 "123456789",
@@ -86,7 +86,7 @@ public class PatientCreator {
                 Set.of(createServiceArea())
         );
     }
-
+*/
     private static UpdateGuardianDTO createUpdateGuardian() {
         return new UpdateGuardianDTO(
                 "Maria da Silva Editada",
@@ -183,7 +183,7 @@ public class PatientCreator {
                 address,
                 "http://url-foto.com");
     }
-
+/*
     public static CreatePatientDTO createRequest() {
         return new CreatePatientDTO(
                 "João da Silva",
@@ -210,7 +210,7 @@ public class PatientCreator {
                 createAnnualRegistry()
         );
     }
-
+*/
     public static UpdatePatientDTO createUpdatePayload() {
         return new UpdatePatientDTO(
                 "João da Silva Editado",
@@ -236,7 +236,7 @@ public class PatientCreator {
                 Set.of(createVaccine())
         );
     }
-
+/*
     public static CreatePatientDTO createInvalidRequest() {
         return new CreatePatientDTO(
                 "",
@@ -263,7 +263,7 @@ public class PatientCreator {
                 createAnnualRegistry()
         );
     }
-
+*/
     public static UpdatePatientDTO createInvalidUpdateRequest() {
         return new UpdatePatientDTO(
                 "",

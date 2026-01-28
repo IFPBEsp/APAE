@@ -51,7 +51,7 @@ public class AnnualRegistryApplicationServiceImpl implements AnnualRegistryAppli
         patientDomainService.getByIdOrThrow(patientId);
 
         annualRegistryRepository
-                .findByPatientIdAndYear(patientId, createAnnualRegistryDTO.year())
+                .findByPatientIdAndYear(patientId, createAnnualRegistryDTO.year().getValue())
                 .ifPresent(registry -> {
                     throw new AnnualRegistryConflictException(createAnnualRegistryDTO.year());
                 });
@@ -82,7 +82,7 @@ public class AnnualRegistryApplicationServiceImpl implements AnnualRegistryAppli
         patientDomainService.getByIdOrThrow(patientId);
 
         AnnualRegistry registry = annualRegistryRepository
-                .findByPatientIdAndYear(patientId, year)
+                .findByPatientIdAndYear(patientId, year.getValue())
                 .orElseThrow(() -> new RegistryNotFoundException(year));
 
         return annualRegistryMapper.toResponseDTO(registry);
@@ -108,7 +108,7 @@ public class AnnualRegistryApplicationServiceImpl implements AnnualRegistryAppli
         }
 
         Optional<AnnualRegistry> conflictCheck = annualRegistryRepository
-                .findByPatientIdAndYear(patientId, updateDto.year());
+                .findByPatientIdAndYear(patientId, updateDto.year().getValue());
 
         if (conflictCheck.isPresent() && !conflictCheck.get().getId().equals(registryId)) {
             throw new AnnualRegistryConflictException(updateDto.year());
@@ -123,9 +123,7 @@ public class AnnualRegistryApplicationServiceImpl implements AnnualRegistryAppli
     @Override
     @Transactional(readOnly = true)
     public List<String> findAllRegistryYears() {
-        return annualRegistryRepository.findDistinctYears().stream()
-                .map(Year::toString)
-                .toList();
+        return annualRegistryRepository.findDistinctYears();
     }
 
     @Override
