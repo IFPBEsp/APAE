@@ -22,6 +22,15 @@ interface PersonalData {
   };
 }
 
+interface KinshipData {
+  type: string;
+  rg: string;
+  cpf: string;
+  alive: boolean;
+  name: string;
+  occupation: string;
+}
+
 interface AddressData {
   cep: string;
   state: string;
@@ -33,34 +42,25 @@ interface AddressData {
 interface AdditionalsData {
   diseases: string;
   medications: string;
-  vaccines: string;
+  vaccines: string[];
   allergies: string;
   disability: {
-    type: string;
+    types: string[];
     report: File | undefined;
   };
   care: {
-    type: string;
+    types: string[];
     referral: File | undefined;
   };
   bpc: boolean;
+  householdIncome: string;
 }
 
 interface GuardianData {
-  rg: string;
-  cpf: string;
-  alive: boolean;
+  address: AddressData;
   name: string;
-  occupation: string;
-  emergencyContact: string;
-  whereToFind: string;
-}
-
-interface GuardiansData {
-  father: GuardianData;
-  mother: GuardianData;
-  others?: string;
-  householdIncome: string;
+  kinship: string;
+  contact: string;
 }
 
 interface ProfileData {
@@ -70,17 +70,19 @@ interface ProfileData {
 
 enum MembersRegisterStep {
   PERSONAL = "personal",
+  KINSHIPS = "kinships",
   ADDRESS = "address",
   ADDITIONALS = "additionals",
-  GUARDIANS = "guardians",
+  GUARDIAN = "guardian",
   PROFILE = "profile",
 }
 
 interface MembersRegisterState {
   personal: PersonalData;
+  kinships: KinshipData[];
   address: AddressData;
   additionals: AdditionalsData;
-  guardians: GuardiansData;
+  guardian: GuardianData;
   profile: ProfileData;
 
   step: MembersRegisterStep;
@@ -90,9 +92,10 @@ interface MembersRegisterContextData {
   state: MembersRegisterState;
   setters: {
     setPersonalData: (data: Partial<PersonalData>) => void;
+    setKinshipsData: (data: KinshipData[]) => void;
     setAddressData: (data: Partial<AddressData>) => void;
     setAdditionalsData: (data: Partial<AdditionalsData>) => void;
-    setGuardiansData: (data: Partial<GuardiansData>) => void;
+    setGuardianData: (data: Partial<GuardianData>) => void;
     setProfileData: (data: Partial<ProfileData>) => void;
     setStep: (step: MembersRegisterStep) => void;
   };
@@ -101,9 +104,10 @@ interface MembersRegisterContextData {
 
 type MembersRegisterAction =
   | { type: "SET_PERSONAL_DATA"; payload: Partial<PersonalData> }
+  | { type: "SET_KINSHIPS_DATA"; payload: KinshipData[] }
   | { type: "SET_ADDRESS_DATA"; payload: Partial<AddressData> }
   | { type: "SET_ADDITIONALS_DATA"; payload: Partial<AdditionalsData> }
-  | { type: "SET_GUARDIANS_DATA"; payload: Partial<GuardiansData> }
+  | { type: "SET_GUARDIAN_DATA"; payload: Partial<GuardianData> }
   | { type: "SET_PROFILE_DATA"; payload: Partial<ProfileData> }
   | { type: "SET_STEP"; payload: MembersRegisterStep };
 
@@ -133,6 +137,12 @@ function membersRegisterReducer(
         },
       };
 
+    case "SET_KINSHIPS_DATA":
+      return {
+        ...state,
+        kinships: action.payload,
+      };
+
     case "SET_ADDRESS_DATA":
       return {
         ...state,
@@ -156,10 +166,17 @@ function membersRegisterReducer(
         },
       };
 
-    case "SET_GUARDIANS_DATA":
+    case "SET_GUARDIAN_DATA":
       return {
         ...state,
-        guardians: { ...state.guardians, ...action.payload },
+        guardian: {
+          ...state.guardian,
+          ...action.payload,
+          address: {
+            ...state.guardian.address,
+            ...action.payload.address,
+          },
+        },
       };
 
     case "SET_PROFILE_DATA":
@@ -209,40 +226,32 @@ const initialState: MembersRegisterState = {
   additionals: {
     diseases: "",
     medications: "",
-    vaccines: "",
+    vaccines: [],
     allergies: "",
     disability: {
-      type: "",
+      types: [],
       report: undefined,
     },
     care: {
-      type: "",
+      types: [],
       referral: undefined,
     },
     bpc: false,
-  },
-  guardians: {
-    father: {
-      rg: "",
-      cpf: "",
-      alive: false,
-      name: "",
-      occupation: "",
-      emergencyContact: "",
-      whereToFind: "",
-    },
-    mother: {
-      rg: "",
-      cpf: "",
-      alive: false,
-      name: "",
-      occupation: "",
-      emergencyContact: "",
-      whereToFind: "",
-    },
-    others: "",
     householdIncome: "",
   },
+  guardian: {
+    address: {
+      cep: "",
+      state: "",
+      city: "",
+      district: "",
+      street: "",
+    },
+    contact: "",
+    kinship: "",
+    name: "",
+  },
+  kinships: [],
   step: MembersRegisterStep.PERSONAL,
   profile: {
     role: "patient",
@@ -265,14 +274,17 @@ function MembersRegisterProvider({
     setPersonalData: useCallback((data: Partial<PersonalData>) => {
       dispatch({ type: "SET_PERSONAL_DATA", payload: data });
     }, []),
+    setKinshipsData: useCallback((data: KinshipData[]) => {
+      dispatch({ type: "SET_KINSHIPS_DATA", payload: data });
+    }, []),
     setAddressData: useCallback((data: Partial<AddressData>) => {
       dispatch({ type: "SET_ADDRESS_DATA", payload: data });
     }, []),
     setAdditionalsData: useCallback((data: Partial<AdditionalsData>) => {
       dispatch({ type: "SET_ADDITIONALS_DATA", payload: data });
     }, []),
-    setGuardiansData: useCallback((data: Partial<GuardiansData>) => {
-      dispatch({ type: "SET_GUARDIANS_DATA", payload: data });
+    setGuardianData: useCallback((data: Partial<GuardianData>) => {
+      dispatch({ type: "SET_GUARDIAN_DATA", payload: data });
     }, []),
     setProfileData: useCallback((data: Partial<ProfileData>) => {
       dispatch({ type: "SET_PROFILE_DATA", payload: data });
@@ -283,7 +295,8 @@ function MembersRegisterProvider({
   };
 
   const register = useCallback(async () => {
-    const { personal, address, additionals, guardians } = state;
+    const { personal, address, additionals, guardian, kinships, profile } =
+      state;
 
     const parseBirthCertificate = (certificate: string) => {
       const [
@@ -311,113 +324,84 @@ function MembersRegisterProvider({
       };
     };
 
-    const {
-      cartorio,
-      livro,
-      folha: fls,
-    } = parseBirthCertificate(personal.birth.certificate);
+    const { cartorio, livro, folha } = parseBirthCertificate(
+      personal.birth.certificate,
+    );
 
-    const pessoa = {
-      nomeCompleto: personal.name,
-      dataNascimento: personal.birth.date.toISOString().split("T")[0],
-      numRegistroNasc: personal.birth.certificate,
-      fls,
-      livro,
-      cartorio,
-      cpf: personal.cpf,
+    const patient = {
+      fullName: personal.name,
+      nationality: personal.birth.place,
+      birthDate: personal.birth.date.toISOString().split("T")[0],
+      contact: personal.phone,
+      birthCertificateNumber: personal.birth.certificate,
+      registryOffice: cartorio,
+      fls: folha,
+      book: livro,
       rg: personal.rg.number,
-      dataEmissaoRg: personal.rg.issuing.date.toISOString().split("T")[0],
-      orgaoEmissorRg: personal.rg.issuing.body,
+      issueDate: personal.rg.issuing.date.toISOString().split("T")[0],
+      issuingAgency: personal.rg.issuing.body,
+      cpf: personal.cpf,
       cns: personal.cns,
       nis: personal.nis,
-      dataCadastramento: new Date().toISOString().split("T")[0],
-      contatoRequest: [
-        {
-          enderecoAtivo: "S",
-          comprovanteResidencia: undefined,
-          endereco: address.street,
-          bairro: address.district,
-          cidade: address.city,
-          estado: address.state,
-          cep: address.cep,
-          naturalidade: personal.birth.place,
-          telefone: personal.phone,
+      registrationDate: new Date().toISOString().split("T")[0],
+      allergies: additionals.allergies,
+      isStudent: profile.role === "student",
+      address: {
+        city: address.city,
+        cep: address.cep,
+        state: address.state,
+        neighborhood: address.district,
+        street: address.street.replaceAll(/, \d+/g, ""),
+        number: address.street.replaceAll(/\D/g, ""),
+        complement: "",
+      },
+      guardian: {
+        name: guardian.name,
+        contact: guardian.contact,
+        kinship: guardian.kinship,
+        address: {
+          city: guardian.address.city,
+          cep: guardian.address.cep,
+          state: guardian.address.state,
+          neighborhood: guardian.address.district,
+          street: guardian.address.street,
+          number: guardian.address.street.replaceAll(/\D/g, ""),
+          complement: "",
         },
-      ],
-      vacinacoesRequests: additionals.vaccines.split(",").map((vaccine) => ({
-        nome: vaccine,
-        dataAplicacao: new Date().toISOString().split("T")[0],
+      },
+      parents: kinships.map((kinship) => ({
+        name: kinship.name,
+        rg: kinship.rg,
+        cpf: kinship.cpf,
+        profession: kinship.occupation,
+        isAlive: kinship.alive,
+        kinship: kinship.type,
       })),
-
-      deficienciasRequests: [
-        {
-          descricao: additionals.disability.type,
-        },
-      ],
-      atendimentosRequests: [
-        {
-          descricao: additionals.care.type,
-        },
-      ],
-      cadastrosAnuaisRequests: [
-        {
-          beneficioDePrestacaoContinuada: additionals.bpc,
-          historicosAlergias: additionals.allergies,
-          medicacoesContinuas: additionals.medications,
-          historicoDoencas: additionals.diseases,
-          rendaFamiliar:
-            Number(guardians.householdIncome.replace(/\D/g, "")) * 0.01,
-        },
-      ],
-      responsaveisRequests: [
-        {
-          nome: guardians.mother.name,
-          ondeProcurar: guardians.mother.whereToFind,
-          vivo: guardians.mother.alive,
-          profissao: guardians.mother.occupation,
-          rg: guardians.mother.rg,
-          cpf: guardians.mother.cpf,
-          emergencia: guardians.mother.emergencyContact,
-          tipoResponsavel: "MAE",
-        },
-        {
-          nome: guardians.father.name,
-          ondeProcurar: guardians.father.whereToFind,
-          vivo: guardians.father.alive,
-          profissao: guardians.father.occupation,
-          rg: guardians.father.rg,
-          cpf: guardians.father.cpf,
-          emergencia: guardians.father.emergencyContact,
-          tipoResponsavel: "PAI",
-        },
-      ],
+      vaccineNames: additionals.vaccines.map((vac) => ({ name: vac })),
+      annualRegistry: {
+        bpc: additionals.bpc,
+        diseases: additionals.diseases,
+        familyIncome:
+          Number(additionals.householdIncome.replaceAll(/\D/g, "")) * 0.01,
+        year: new Date().getFullYear(),
+        disorders: additionals.disability.types.map((dis) => ({ name: dis })),
+      },
     };
 
-    const documento = {
-      year: new Date().getFullYear(),
-      documentCategory: "MEDICO",
-      documentType: "LAUDO",
-    };
-
-    const file = additionals.disability.report!;
-    console.log(guardians.householdIncome);
+    console.log(additionals.vaccines);
 
     const formData = new FormData();
     formData.append(
-      "pessoa",
-      new Blob([JSON.stringify(pessoa)], {
+      "patient",
+      new Blob([JSON.stringify(patient)], {
         type: "application/json",
       }),
     );
-    formData.append(
-      "document",
-      new Blob([JSON.stringify(documento)], {
-        type: "application/json",
-      }),
-    );
-    formData.append("file", file);
 
-    return fetch("/api/patients", {
+    formData.append("reports", additionals.disability.report!);
+    formData.append("referrals", additionals.care.referral!);
+
+    return fetch("/api/pessoas", {
       method: "POST",
       body: formData,
     });

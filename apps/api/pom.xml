@@ -29,6 +29,7 @@
     </scm>
     <properties>
         <java.version>21</java.version>
+        <argLine></argLine>
     </properties>
     <dependencies>
         <dependency>
@@ -101,10 +102,12 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
-                <version>3.2.5</version>
+                <version>3.5.4</version>
                 <configuration>
                     <useModulePath>false</useModulePath>
-
+                    <argLine>@{argLine}
+                        -javaagent:${settings.localRepository}/org/mockito/mockito-core/${mockito.version}/mockito-core-${mockito.version}.jar
+                        -Xshare:off</argLine>
                     <includes>
                         <include>**/*Test.java</include>
                         <include>**/*Suite.java</include>
@@ -114,8 +117,15 @@
             <plugin>
                 <groupId>org.jacoco</groupId>
                 <artifactId>jacoco-maven-plugin</artifactId>
-                <version>0.8.11</version>
-
+                <version>0.8.14</version>
+                <configuration>
+                    <includes>
+                        <include>br/org/apae/api/controllers/patient/**</include>
+                        <include>br/org/apae/api/controllers/annual_registry/**</include>
+                        <include>br/org/apae/api/controllers/vaccine/**</include>
+                        <include>br/org/apae/api/controllers/disorder/**</include>
+                    </includes>
+                </configuration>
                 <executions>
                     <execution>
                         <id>prepare-agent</id>
@@ -145,6 +155,17 @@
                                 <exclude>br/org/apae/api/*Application.*</exclude>
                             </excludes>
                         </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-dependency-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>properties</goal>
+                        </goals>
                     </execution>
                 </executions>
             </plugin>
