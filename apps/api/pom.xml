@@ -104,6 +104,7 @@
                 <version>3.2.5</version>
                 <configuration>
                     <useModulePath>false</useModulePath>
+                    <argLine>${jacoco.agent.argLine}</argLine>
 
                     <includes>
                         <include>**/*Test.java</include>
@@ -114,7 +115,7 @@
             <plugin>
                 <groupId>org.jacoco</groupId>
                 <artifactId>jacoco-maven-plugin</artifactId>
-                <version>0.8.11</version>
+                <version>0.8.12</version>
 
                 <executions>
                     <execution>
@@ -122,6 +123,13 @@
                         <goals>
                             <goal>prepare-agent</goal>
                         </goals>
+                        <configuration>
+                            <excludes>
+                                <exclude>**/*$MockitoMock*</exclude>
+                                <exclude>**/*$MockitoMock$*</exclude>
+                                <exclude>**/*$ByteBuddy*</exclude>
+                            </excludes>
+                        </configuration>
                     </execution>
 
                     <execution>
