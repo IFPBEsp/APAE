@@ -2,15 +2,7 @@ import { Patient, Professional, UUID } from "@/app/services/appointmentService";
 
 export interface TodayAppointment {
 	id: UUID;
-	annualRegistration: {
-		bpc: string;
-		diseases: string;
-		disorders: Array<string>;
-		familyIncome: number;
-		id: UUID;
-		patient: Patient;
-		year: string;
-	},
+	patient: Patient
 	professional: Professional;
 	scheduledDateTime: Date;
 	overriddenDateTime: Date,
