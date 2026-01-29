@@ -13,7 +13,8 @@ import br.org.apae.api.common.dto.appointment.response.appointment.AnnualRegistr
 import br.org.apae.api.common.dto.appointment.response.appointment.AppointmentResponseDTO;
 import br.org.apae.api.common.dto.appointment.response.appointment.GeneratedAppointmentResponseDTO;
 import br.org.apae.api.common.dto.appointment.response.appointment.TodayAppointmentsResponseDTO;
-import br.org.apae.api.common.dto.patient.response.PatientResponseDTO;
+
+import br.org.apae.api.common.dto.patient.response.patient.PatientResponseDTO;
 import br.org.apae.api.common.dto.professional.response.HealthProfessionalResponseDTO;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
