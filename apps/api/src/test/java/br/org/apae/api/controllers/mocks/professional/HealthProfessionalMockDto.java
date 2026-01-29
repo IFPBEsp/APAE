@@ -9,9 +9,11 @@ import org.springframework.mock.web.MockMultipartFile;
 import br.org.apae.api.common.dto.address.AddressResponseDTO;
 import br.org.apae.api.common.dto.address.CreateAddressDTO;
 import br.org.apae.api.common.dto.professional.request.CreateHealthProfessionalDTO;
+import br.org.apae.api.common.dto.professional.request.UpdateHealthProfessionalDTO;
 import br.org.apae.api.common.dto.professional.request.documents.CreateProfessionalDocumentsDTO;
 import br.org.apae.api.common.dto.professional.response.HealthProfessionalResponseDTO;
 import br.org.apae.api.common.dto.servicearea.request.CreateServiceAreaDTO;
+import br.org.apae.api.common.dto.servicearea.request.UpdateServiceAreaDTO;
 import br.org.apae.api.common.dto.availability.request.CreateAvailabilityDTO;
 import br.org.apae.api.common.dto.servicearea.response.ServiceAreaResponseDTO;
 import br.org.apae.api.common.dto.availability.response.AvailabilityResponseDTO;
@@ -123,6 +125,22 @@ public final class HealthProfessionalMockDto {
                 new CreateAvailabilityDTO("SEGUNDA", "MANHA"),
                 new CreateAvailabilityDTO("TERCA", "TARDE")
             )
+        );
+    }
+
+    public static UpdateHealthProfessionalDTO updateHealthProfessionalRequest() {
+        CreateHealthProfessionalDTO create = createHealthProfessionalRequest();
+        UpdateServiceAreaDTO serviceAreaDto = new UpdateServiceAreaDTO(create.serviceArea().area());
+
+        return new UpdateHealthProfessionalDTO(
+            serviceAreaDto,
+            create.phoneNumber(),
+            create.identityDocument(),
+            create.email(),
+            create.name(),
+            create.professionalDocument(),
+            create.address(),
+            create.availabilities()
         );
     }
 
