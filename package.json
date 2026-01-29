@@ -8,7 +8,8 @@
     "docker:up": "docker compose up -d",
     "docker:down": "docker compose down",
     "docker:drop": "docker compose down -v",
-    "test:api": "cd apps/api && ./mvnw package"
+    "test:api": "cd apps/api && ./mvnw clean package",
+    "test:api:check": "cd apps/api && ./mvnw clean verify"
   },
   "workspaces": [
     "apps/*"
