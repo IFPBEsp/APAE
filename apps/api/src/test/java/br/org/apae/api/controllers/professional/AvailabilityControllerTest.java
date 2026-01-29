@@ -33,9 +33,11 @@ import br.org.apae.api.professional.application.interfaces.AvailabilityApplicati
 import br.org.apae.api.controllers.mocks.professional.AvailabilityMockDto;
 import br.org.apae.api.professional.domain.exceptions.AvailabilityConflictException;
 import br.org.apae.api.professional.domain.exceptions.AvailabilityNotFoundException;
-import br.org.apae.api.professional.domain.exceptions.HealthProfessionalNotFoundException;
+
+import br.org.apae.api.common.dto.availability.request.CreateAvailabilityDTO;
 
 @Tag("controller")
+@Tag("health-professional")
 @Tag("availability")
 @WebMvcTest(controllers = AvailabilityControllerImpl.class)
 @AutoConfigureMockMvc(addFilters = true)
@@ -79,7 +81,7 @@ class AvailabilityControllerTest {
     }
 
     @Test
-    @DisplayName("Criar uma nova disponibilidade para o profissional com sucesso")
+    @DisplayName("Cria com sucesso uma nova disponibilidade para um profissional")
     void shouldCreateAvailabilitySuccessfully() throws Exception {
         var request = AvailabilityMockDto.createAvailabilityRequestMorning();
         var response = AvailabilityMockDto.availabilityResponseMorning();
@@ -103,9 +105,9 @@ class AvailabilityControllerTest {
     }
 
     @Test
-    @DisplayName("Retornar 400 quando day/shift vierem vazios")
+    @DisplayName("Retorna BadRequestException ao tentar criar uma disponibilidade inválida")
     void shouldReturnBadRequestWhenCreateInvalidBody() throws Exception {
-        var invalid = new br.org.apae.api.common.dto.availability.request.CreateAvailabilityDTO("", "");
+        var invalid = new CreateAvailabilityDTO("", "");
 
         mockMvc.perform(post(URI, PROFESSIONAL_ID)
                         .header("Authorization", bearer())
@@ -114,6 +116,21 @@ class AvailabilityControllerTest {
                 .andExpect(status().isBadRequest());
 
         Mockito.verify(service, Mockito.never()).createAvailability(any(), any());
+    }
+
+    @Test
+    @DisplayName("Retorna ConflictException ao tentar criar disponibilidade com dia/turno já cadastrados para o mesmo profissional")
+    void shouldReturnConflictWhenAvailabilityAlreadyExistsOnCreate() throws Exception {
+        var request = AvailabilityMockDto.createAvailabilityRequestMorning();
+
+        Mockito.when(service.createAvailability(Mockito.eq(PROFESSIONAL_ID), any()))
+                .thenThrow(new AvailabilityConflictException());
+
+        mockMvc.perform(post(URI, PROFESSIONAL_ID)
+                        .header("Authorization", bearer())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(request)))
+                .andExpect(status().isConflict());
     }
 
     @Test
@@ -153,7 +170,7 @@ class AvailabilityControllerTest {
     }
 
     @Test
-    @DisplayName("Atualiza os dados de uma disponibilidade existente com sucesso")
+    @DisplayName("Atualiza com sucesso os dados de uma disponibilidade")
     void shouldUpdateAvailabilitySuccessfully() throws Exception {
         var request = AvailabilityMockDto.updateAvailabilityRequest();
         var updatedResponse = AvailabilityMockDto.availabilityResponseUpdated();
@@ -178,21 +195,7 @@ class AvailabilityControllerTest {
     }
 
     @Test
-    @DisplayName("Remove uma disponibilidade do profissional com sucesso")
-    void shouldDeleteAvailabilitySuccessfully() throws Exception {
-        Mockito.doNothing()
-                .when(service)
-                .deleteAvailability(PROFESSIONAL_ID, AVAILABILITY_ID);
-
-        mockMvc.perform(delete(URI_WITH_ID, PROFESSIONAL_ID, AVAILABILITY_ID)
-                        .header("Authorization", bearer()))
-                .andExpect(status().isNoContent());
-
-        Mockito.verify(service).deleteAvailability(PROFESSIONAL_ID, AVAILABILITY_ID);
-    }
-
-    @Test
-    @DisplayName("Retorna erro quando tentar atualizar uma disponibilidade inexistente")
+    @DisplayName("Retorna NotFoundException ao tentar atualizar uma disponibilidade inexistente")
     void shouldReturnNotFoundWhenUpdateNonExistingAvailability() throws Exception {
         var request = AvailabilityMockDto.updateAvailabilityRequest();
 
@@ -210,28 +213,65 @@ class AvailabilityControllerTest {
     }
 
     @Test
-    @DisplayName("Retorna erro quando o profissional informado não existir")
-    void shouldReturnNotFoundWhenProfessionalDoesNotExist() throws Exception {
-        Mockito.when(service.findAllByProfessional(PROFESSIONAL_ID))
-                .thenThrow(new HealthProfessionalNotFoundException());
+    @DisplayName("Remove uma disponibilidade do profissional com sucesso")
+    void shouldDeleteAvailabilitySuccessfully() throws Exception {
+        Mockito.doNothing()
+                .when(service)
+                .deleteAvailability(PROFESSIONAL_ID, AVAILABILITY_ID);
 
-        mockMvc.perform(get(URI, PROFESSIONAL_ID)
+        mockMvc.perform(delete(URI_WITH_ID, PROFESSIONAL_ID, AVAILABILITY_ID)
+                        .header("Authorization", bearer()))
+                .andExpect(status().isNoContent());
+
+        Mockito.verify(service).deleteAvailability(PROFESSIONAL_ID, AVAILABILITY_ID);
+    }
+
+    @Test
+    @DisplayName("Retorna NotFoundException ao tentar remover uma disponibilidade inexistente")
+    void shouldThrowNotFoundExceptionWhenDeleteNonExistingAvailability() throws Exception {
+        Mockito.doThrow(new AvailabilityNotFoundException())
+                .when(service)
+                .deleteAvailability(
+                        PROFESSIONAL_ID,
+                        AVAILABILITY_ID
+                );
+        mockMvc.perform(delete(URI_WITH_ID, PROFESSIONAL_ID, AVAILABILITY_ID)
                         .header("Authorization", bearer()))
                 .andExpect(status().isNotFound());
     }
 
     @Test
-    @DisplayName("Retorna conflito quando já existir disponibilidade para o dia/turno")
-    void shouldReturnConflictWhenAvailabilityAlreadyExists() throws Exception {
+    @DisplayName("Retorna ForbiddenException ao tentar cadastrar disponibilidade sem Token")
+    void shouldThrowUnauthorizedWhenCreateWithoutToken() throws Exception {
         var request = AvailabilityMockDto.createAvailabilityRequestMorning();
 
-        Mockito.when(service.createAvailability(Mockito.eq(PROFESSIONAL_ID), any()))
-                .thenThrow(new AvailabilityConflictException());
-
         mockMvc.perform(post(URI, PROFESSIONAL_ID)
-                        .header("Authorization", bearer())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request)))
-                .andExpect(status().isConflict());
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
+    @DisplayName("Retorna ForbiddenException ao tentar atualizar disponibilidade sem Token")
+    void shouldThrowUnauthorizedWhenUpdateWithoutToken() throws Exception {
+        var request = AvailabilityMockDto.updateAvailabilityRequest();
+        mockMvc.perform(put(URI_WITH_ID, PROFESSIONAL_ID, AVAILABILITY_ID)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(request)))
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
+    @DisplayName("Retorna ForbiddenException ao tentar listar disponibilidades sem Token")
+    void shouldThrowUnauthorizedWhenListWithoutToken() throws Exception {
+        mockMvc.perform(get(URI, PROFESSIONAL_ID))
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
+    @DisplayName("Retorna ForbiddenException ao tentar remover disponibilidade sem Token")
+    void shouldThrowUnauthorizedWhenDeleteWithoutToken() throws Exception {
+        mockMvc.perform(delete(URI_WITH_ID, PROFESSIONAL_ID, AVAILABILITY_ID))
+                .andExpect(status().isForbidden());
     }
 }
