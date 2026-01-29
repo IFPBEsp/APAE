@@ -1,12 +1,12 @@
 package br.org.apae.api.common.dto.appointment.response.appointment;
 
-import br.org.apae.api.common.dto.disorder.response.DisorderResponseDTO;
-import br.org.apae.api.common.dto.patient.response.PatientResponseDTO;
-
 import java.math.BigDecimal;
 import java.time.Year;
 import java.util.List;
 import java.util.UUID;
+
+import br.org.apae.api.common.dto.patient.response.disorder.DisorderResponseDTO;
+import br.org.apae.api.common.dto.patient.response.patient.PatientResponseDTO;
 
 public record AnnualRegistryResponseDTO(
     UUID id,

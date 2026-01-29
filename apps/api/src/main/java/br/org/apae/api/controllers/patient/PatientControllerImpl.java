@@ -1,53 +1,68 @@
 package br.org.apae.api.controllers.patient;
 
-import br.org.apae.api.common.dto.patient.create.CreateDocumentsDTO;
-import br.org.apae.api.common.dto.patient.create.CreatePatientDTO;
-import br.org.apae.api.common.dto.patient.response.PatientResponseDTO;
-import br.org.apae.api.common.dto.patient.update.UpdatePatientDTO;
+import br.org.apae.api.common.dto.patient.request.documents.CreateDocumentsDTO;
+import br.org.apae.api.common.dto.patient.request.patient.CreatePatientDTO;
+import br.org.apae.api.common.dto.patient.request.patient.UpdatePatientDTO;
+import br.org.apae.api.common.dto.patient.response.disorder.DisorderResponseDTO;
+import br.org.apae.api.common.dto.patient.response.patient.PatientResponseDTO;
+import br.org.apae.api.common.dto.patient.response.patient.PatientSummaryResponseDTO;
+import br.org.apae.api.patient.application.interfaces.AnnualRegistryApplicationService;
+import br.org.apae.api.patient.application.interfaces.DisorderApplicationService;
 import br.org.apae.api.patient.application.interfaces.PatientApplicationService;
 import br.org.apae.api.patient.interfaces.controllers.PatientController;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @CrossOrigin(origins = "http://localhost:3000")
 @RestController
 public class PatientControllerImpl implements PatientController {
 
-    private final PatientApplicationService patientService;
+     private final PatientApplicationService patientService;
+    private final DisorderApplicationService disorderService;
+    private final AnnualRegistryApplicationService annualRegistryService;
 
-    public PatientControllerImpl(PatientApplicationService patientService) {
+    public PatientControllerImpl(
+            PatientApplicationService patientService,
+            DisorderApplicationService disorderService,
+            AnnualRegistryApplicationService annualRegistryService
+    ) {
         this.patientService = patientService;
+        this.disorderService = disorderService;
+        this.annualRegistryService = annualRegistryService;
     }
 
     @Override
-    public ResponseEntity<Void> createPatient(CreatePatientDTO patient, CreateDocumentsDTO documents) {
-        patientService.createPatient(patient, documents);
-        return ResponseEntity.status(201).build();
+    public ResponseEntity<PatientResponseDTO> createPatient(CreatePatientDTO patient, CreateDocumentsDTO documents) {
+        PatientResponseDTO patientCreated = patientService.createPatient(patient, documents);
+        return ResponseEntity.status(HttpStatus.CREATED).body(patientCreated);
     }
 
     @Override
     public ResponseEntity<PatientResponseDTO> findById(UUID id) {
-        PatientResponseDTO patient = patientService.findById(id);
+        PatientResponseDTO patient = patientService.findPatientById(id);
         return ResponseEntity.ok(patient);
     }
 
     @Override
-    public ResponseEntity<Page<PatientResponseDTO>> findAll(Pageable pageable) {
-        Page<PatientResponseDTO> patientsPage = patientService.findAll(pageable);
+    public ResponseEntity<Page<PatientSummaryResponseDTO>> findAll(Pageable pageable) {
+        Page<PatientSummaryResponseDTO> patientsPage = patientService.findAllPatients(pageable);
         return ResponseEntity.ok(patientsPage);
     }
 
     @Override
-    public ResponseEntity<List<PatientResponseDTO>> findByFilter(Map<String, String> filters) {
-        List<PatientResponseDTO> patients = patientService.findByFilter(filters);
+    public ResponseEntity<List<PatientSummaryResponseDTO>> findByFilter(Map<String, String> filters) {
+        List<PatientSummaryResponseDTO> patients = patientService.findPatientByFilter(filters);
         return ResponseEntity.ok(patients);
     }
 
@@ -61,5 +76,27 @@ public class PatientControllerImpl implements PatientController {
     public ResponseEntity<Void> deletePatient(UUID id) {
         patientService.deletePatient(id);
         return ResponseEntity.noContent().build();
+    }
+
+    @Override
+    public ResponseEntity<List<String>> getTranstornos() {
+        List<DisorderResponseDTO> disorderDtos = disorderService.findAllDisorders();
+        List<String> disorderNames = disorderDtos.stream()
+                .map(DisorderResponseDTO::name)
+                .distinct()
+                .collect(Collectors.toList());
+        return ResponseEntity.ok(disorderNames);
+    }
+
+    @Override
+    public ResponseEntity<List<String>> getAnos() {
+        List<String> anos = annualRegistryService.findAllRegistryYears();
+        return ResponseEntity.ok(anos);
+    }
+
+    @Override
+    public ResponseEntity<List<String>> getCidades() {
+        List<String> cidades = patientService.findAllPatientCities();
+        return ResponseEntity.ok(cidades);
     }
 }

@@ -1,9 +1,13 @@
 package br.org.apae.api.professional.domain.model;
 
-import br.org.apae.api.common.model.Address;
 import jakarta.persistence.*;
-import java.util.Objects;
+
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
+
+import br.org.apae.api.address.domain.model.Address;
+import br.org.apae.api.servicearea.domain.model.ServiceArea;
 
 @Entity
 @Table(name = "profissionais_da_saude")
@@ -19,8 +23,9 @@ public class HealthProfessional {
     @Column(name = "email", nullable = false, unique = true)
     private String email;
 
-    @Column(name = "area_da_saude", nullable = false)
-    private String healthSector;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "area_de_atendimento", referencedColumnName = "area")
+    private ServiceArea serviceArea;
 
     @Column(name = "contato", nullable = false)
     private String phoneNumber;
@@ -31,42 +36,98 @@ public class HealthProfessional {
     @Column(name = "rg", unique = true)
     private String identityDocument;
 
-    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @Column(name = "ativo", nullable = false)
+    private Boolean ativo = true;
+
+    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinColumn(name = "endereco_id", referencedColumnName = "id")
     private Address address;
 
-    @Deprecated
+    @OneToMany(mappedBy = "professional", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Availability> availabilities = new ArrayList<>();
+
     protected HealthProfessional() {
     }
 
-    public HealthProfessional(String name, String email, String healthSector, String phoneNumber, String professionalDocument) {
-        Objects.requireNonNull(name, "O nome não pode ser nulo.");
-        Objects.requireNonNull(email, "O e-mail não pode ser nulo.");
-        Objects.requireNonNull(healthSector, "A área da saúde não pode ser nula.");
-        Objects.requireNonNull(phoneNumber, "O contato não pode ser nulo.");
-        Objects.requireNonNull(professionalDocument, "O documento profissional não pode ser nulo.");
-
+    public HealthProfessional(String name, String email, ServiceArea serviceArea, String phoneNumber,
+            String identityDocument,
+            String professionalDocument, Address address) {
         this.name = name;
         this.email = email;
-        this.healthSector = healthSector;
+        this.serviceArea = serviceArea;
         this.phoneNumber = phoneNumber;
+        this.identityDocument = identityDocument;
         this.professionalDocument = professionalDocument;
+        this.address = address;
     }
 
-    public UUID getId() { return id; }
-    public String getName() { return name; }
-    public String getEmail() { return email; }
-    public String getHealthSector() { return healthSector; }
-    public String getPhoneNumber() { return phoneNumber; }
-    public String getProfessionalDocument() { return professionalDocument; }
-    public String getIdentityDocument() { return identityDocument; }
-    public Address getAddress() { return address; }
+    public HealthProfessional(UUID id, String name, String email, ServiceArea serviceArea, String phoneNumber,
+            String identityDocument, String professionalDocument, Address address) {
+        this.id = id;
+        this.name = name;
+        this.email = email;
+        this.serviceArea = serviceArea;
+        this.phoneNumber = phoneNumber;
+        this.identityDocument = identityDocument;
+        this.professionalDocument = professionalDocument;
+        this.address = address;
+    }
 
-    public void setName(String name) { this.name = name; }
-    public void setEmail(String email) { this.email = email; }
-    public void setHealthSector(String healthSector) { this.healthSector = healthSector; }
-    public void setPhoneNumber(String phoneNumber) { this.phoneNumber = phoneNumber; }
-    public void setProfessionalDocument(String professionalDocument) { this.professionalDocument = professionalDocument; }
-    public void setIdentityDocument(String identityDocument) { this.identityDocument = identityDocument; }
-    public void setAddress(Address address) { this.address = address; }
+    public UUID getId() {
+        return id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public ServiceArea getServiceArea() {
+        return serviceArea;
+    }
+
+    public String getPhoneNumber() {
+        return phoneNumber;
+    }
+
+    public String getProfessionalDocument() {
+        return professionalDocument;
+    }
+
+    public String getIdentityDocument() {
+        return identityDocument;
+    }
+
+    public Address getAddress() {
+        return address;
+    }
+
+    public List<Availability> getAvailabilities() { return availabilities; }
+
+    public void setAddress(Address address) {
+        this.address = address;
+    }
+
+    public void setAvailabilities(List<Availability> newAvailabilities) {
+        this.availabilities.clear();
+        if (newAvailabilities != null) {
+            this.availabilities.addAll(newAvailabilities);
+        }
+    }
+
+    public void addAvailability(Availability availability) {
+        this.availabilities.add(availability);
+        availability.setProfessional(this);
+    }
+
+    public Boolean getAtivo() {
+        return ativo;
+    }
+
+    public void setAtivo(Boolean ativo) {
+        this.ativo = ativo;
+    }
 }

@@ -1,10 +1,15 @@
 package br.org.apae.api.patient.application.mappers;
 
-import br.org.apae.api.common.mappers.AddressMapper;
-import br.org.apae.api.common.dto.patient.create.CreateGuardianDTO;
-import br.org.apae.api.common.dto.patient.update.UpdateGuardianDTO;
-import br.org.apae.api.common.model.Address;
+import br.org.apae.api.address.application.mapper.AddressMapper;
+import br.org.apae.api.address.domain.model.Address;
+import br.org.apae.api.common.dto.address.AddressResponseDTO;
+import br.org.apae.api.common.dto.patient.request.guardian.CreateGuardianDTO;
+import br.org.apae.api.common.dto.patient.request.guardian.UpdateGuardianDTO;
+import br.org.apae.api.common.dto.patient.response.guardian.GuardianResponseDTO;
 import br.org.apae.api.patient.domain.model.Guardian;
+
+import java.util.UUID;
+
 import org.springframework.stereotype.Component;
 
 @Component
@@ -16,19 +21,44 @@ public class GuardianMapper {
         this.addressMapper = addressMapper;
     }
 
-    public Guardian toEntity(CreateGuardianDTO dto) {
-        if (dto == null) return null;
+    public Guardian toEntity(CreateGuardianDTO dto, UUID patientId) {
         Address address = addressMapper.toEntity(dto.address());
-        return new Guardian(dto.name(), dto.contact(), dto.kinship(), address);
+
+        return new Guardian(
+                dto.name(),
+                dto.contact(),
+                dto.kinship(),
+                address,
+                patientId);
     }
 
-    public void updateEntityFromDto(Guardian guardian, UpdateGuardianDTO dto) {
-        if (dto == null || guardian == null) return;
-        guardian.setName(dto.name());
-        guardian.setContact(dto.contact());
-        guardian.setKinship(dto.kinship());
-        if (guardian.getAddress() != null && dto.address() != null) {
-            addressMapper.updateEntityFromDto(guardian.getAddress(), dto.address());
-        }
+    public Guardian toEntityFromResponse(GuardianResponseDTO dto, UUID patientId) {
+        Address address = addressMapper.toEntityFromResponse(dto.address());
+
+        return new Guardian(
+                dto.name(),
+                dto.contact(),
+                dto.kinship(),
+                address,
+                patientId);
+    }
+
+    public Guardian updateEntityFromDto(Guardian guardian, UpdateGuardianDTO dto,
+            UUID patientId) {
+        Address addressUpdated = addressMapper.toEntity(dto.address());
+
+        return new Guardian(
+                guardian.getId(),
+                dto.name(),
+                dto.contact(),
+                dto.kinship(),
+                addressUpdated,
+                patientId);
+    }
+
+    public GuardianResponseDTO toResponseDTO(Guardian guardian) {
+        AddressResponseDTO addressResponseDTO = new AddressResponseDTO(guardian.getAddress());
+
+        return new GuardianResponseDTO(guardian, addressResponseDTO);
     }
 }
