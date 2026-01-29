@@ -130,11 +130,44 @@
                         <goals>
                             <goal>report</goal>
                         </goals>
-                        <!-- CONFIGURAÇÃO PARA TESTES UNITÁRIOS DE CONTROLADORES -->
                         <configuration>
                             <includes>
-                                <include>br/org/apae/api/controllers/**</include>
+                                <include>br/org/apae/api/controllers/professional/**</include>
                             </includes>
+                        </configuration>
+                    </execution>
+
+                    <execution>
+                        <id>check</id>
+                        <phase>verify</phase>
+                        <goals>
+                            <goal>check</goal>
+                        </goals>
+
+                        <configuration>
+                            <haltOnFailure>true</haltOnFailure>
+                            <rules>
+                                <rule>
+                                    <includes>
+                                        <include>br.org.apae.api.controllers.professional.AvailabilityControllerImpl</include>
+                                        <include>br.org.apae.api.controllers.professional.HealthProfessionalControllerImpl</include>
+                                    </includes>
+                                    <element>CLASS</element>
+                                    <limits>
+                                        <limit>
+                                            <counter>LINE</counter>
+                                            <value>COVEREDRATIO</value>
+                                            <minimum>0.90</minimum>
+                                        </limit>
+
+                                        <limit>
+                                            <counter>BRANCH</counter>
+                                            <value>COVEREDRATIO</value>
+                                            <minimum>0.80</minimum>
+                                        </limit>
+                                    </limits>
+                                </rule>
+                            </rules>
                         </configuration>
                     </execution>
                 </executions>
