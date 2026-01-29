@@ -15,9 +15,15 @@ public class Disorder {
     @Column(name = "nome", nullable = false, unique = true, length = 150)
     private String name;
 
-    protected Disorder() {}
+    protected Disorder() {
+    }
 
     public Disorder(String name) {
+        this.name = name;
+    }
+
+    public Disorder(UUID id, String name) {
+        this.id = id;
         this.name = name;
     }
 
@@ -28,6 +34,7 @@ public class Disorder {
     public UUID getId() {
         return id;
     }
+
     public String getName() {
         return name;
     }

@@ -12,10 +12,11 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import br.org.apae.api.common.dto.patient.create.CreateDocumentsDTO;
-import br.org.apae.api.common.dto.patient.create.CreatePatientDTO;
-import br.org.apae.api.common.dto.patient.response.PatientResponseDTO;
-import br.org.apae.api.common.dto.patient.update.UpdatePatientDTO;
+import br.org.apae.api.common.dto.patient.request.documents.CreateDocumentsDTO;
+import br.org.apae.api.common.dto.patient.request.patient.CreatePatientDTO;
+import br.org.apae.api.common.dto.patient.request.patient.UpdatePatientDTO;
+import br.org.apae.api.common.dto.patient.response.patient.PatientResponseDTO;
+import br.org.apae.api.common.dto.patient.response.patient.PatientSummaryResponseDTO;
 
 import java.util.List;
 import java.util.Map;
@@ -25,53 +26,83 @@ import java.util.UUID;
 @Tag(name = "Patients", description = "Endpoints para gerenciamento de pacientes")
 public interface PatientController {
 
-    @Operation(summary = "Cadastrar um novo paciente", description = "Cria um novo paciente no sistema com todos os seus dados.")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "201", description = "Paciente cadastrado com sucesso"),
-            @ApiResponse(responseCode = "400", description = "Dados inválidos fornecidos")
-    })
-    @PostMapping(consumes = { MediaType.MULTIPART_FORM_DATA_VALUE })
-    ResponseEntity<Void> createPatient(@RequestPart("patient") @Valid CreatePatientDTO patient,
-            @ModelAttribute @Valid CreateDocumentsDTO documents);
+        @Operation(summary = "Cadastrar um novo paciente", description = "Cria um novo paciente no sistema com todos os seus dados.")
+        @ApiResponses(value = {
+                        @ApiResponse(responseCode = "201", description = "Paciente cadastrado com sucesso"),
+                        @ApiResponse(responseCode = "400", description = "Dados inválidos fornecidos")
+        })
+        @PostMapping(consumes = { MediaType.MULTIPART_FORM_DATA_VALUE })
+        ResponseEntity<PatientResponseDTO> createPatient(@RequestPart("patient") @Valid CreatePatientDTO patient,
+                        @ModelAttribute @Valid CreateDocumentsDTO documents);
 
-    @Operation(summary = "Buscar paciente por ID", description = "Retorna os dados completos de um paciente específico pelo seu ID.")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Paciente encontrado com sucesso"),
-            @ApiResponse(responseCode = "404", description = "Paciente não encontrado")
-    })
-    @GetMapping("/{id}")
-    ResponseEntity<PatientResponseDTO> findById(@PathVariable UUID id);
+        @Operation(summary = "Buscar paciente por ID", description = "Retorna os dados completos de um paciente específico pelo seu ID.")
+        @ApiResponses(value = {
+                        @ApiResponse(responseCode = "200", description = "Paciente encontrado com sucesso"),
+                        @ApiResponse(responseCode = "404", description = "Paciente não encontrado")
+        })
+        @GetMapping("/{id}")
+        ResponseEntity<PatientResponseDTO> findById(@PathVariable UUID id);
 
-    @Operation(summary = "Listar todos os pacientes", description = "Retorna uma página de pacientes. Suporta paginação e ordenação via parâmetros de URL (ex: ?page=0&size=10&sort=fullName,asc).")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Página de pacientes retornada com sucesso")
-    })
-    @GetMapping
-    ResponseEntity<Page<PatientResponseDTO>> findAll(Pageable pageable);
+        @Operation(summary = "Listar todos os pacientes", description = "Retorna uma página de pacientes. Suporta paginação e ordenação via parâmetros de URL (ex: ?page=0&size=10&sort=fullName,asc).")
+        @ApiResponses(value = {
+                        @ApiResponse(responseCode = "200", description = "Página de pacientes retornada com sucesso")
+        })
+        @GetMapping
+        ResponseEntity<Page<PatientSummaryResponseDTO>> findAll(Pageable pageable);
 
-    @Operation(summary = "Filtrar pacientes", description = "Retorna uma lista de pacientes com base em critérios de filtro dinâmicos. Os filtros suportados são: fullName, cpf, city.")
-    @Parameter(name = "filters", description = "Exemplo de uso: /filter?fullName=João&cpf=123.456.789-00")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Lista de pacientes filtrada retornada com sucesso")
-    })
-    @GetMapping("/filter")
-    ResponseEntity<List<PatientResponseDTO>> findByFilter(@RequestParam Map<String, String> filters);
+        @Operation(summary = "Filtrar pacientes", description = "Retorna uma lista de pacientes com base em critérios de filtro dinâmicos. Os filtros suportados são: fullName, cpf, city.")
+        @Parameter(name = "filters", description = "Exemplo de uso: /filter?fullName=João&cpf=123.456.789-00")
+        @ApiResponses(value = {
+                        @ApiResponse(responseCode = "200", description = "Lista de pacientes filtrada retornada com sucesso")
+        })
+        @GetMapping("/filter")
+        ResponseEntity<List<PatientSummaryResponseDTO>> findByFilter(@RequestParam Map<String, String> filters);
 
-    @Operation(summary = "Atualizar um paciente", description = "Atualiza os dados de um paciente existente a partir do seu ID.")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Paciente atualizado com sucesso"),
-            @ApiResponse(responseCode = "400", description = "Dados inválidos fornecidos"),
-            @ApiResponse(responseCode = "404", description = "Paciente não encontrado")
-    })
-    @PutMapping("/{id}")
-    ResponseEntity<PatientResponseDTO> updatePatient(@PathVariable UUID id,
-            @RequestBody @Valid UpdatePatientDTO updatePatientDTO);
+        @Operation(summary = "Atualizar um paciente", description = "Atualiza os dados de um paciente existente a partir do seu ID.")
+        @ApiResponses(value = {
+                        @ApiResponse(responseCode = "200", description = "Paciente atualizado com sucesso"),
+                        @ApiResponse(responseCode = "400", description = "Dados inválidos fornecidos"),
+                        @ApiResponse(responseCode = "404", description = "Paciente não encontrado")
+        })
+        @PutMapping("/{id}")
+        ResponseEntity<PatientResponseDTO> updatePatient(@PathVariable UUID id,
+                        @RequestBody @Valid UpdatePatientDTO updatePatientDTO);
 
-    @Operation(summary = "Excluir um paciente", description = "Remove um paciente do sistema a partir do seu ID.")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "204", description = "Paciente excluído com sucesso"),
-            @ApiResponse(responseCode = "404", description = "Paciente não encontrado")
-    })
-    @DeleteMapping("/{id}")
-    ResponseEntity<Void> deletePatient(@PathVariable UUID id);
+        @Operation(summary = "Excluir um paciente", description = "Remove um paciente do sistema a partir do seu ID.")
+        @ApiResponses(value = {
+                        @ApiResponse(responseCode = "204", description = "Paciente excluído com sucesso"),
+                        @ApiResponse(responseCode = "404", description = "Paciente não encontrado")
+        })
+        @PatchMapping("/{id}")
+        ResponseEntity<Void> deletePatient(@PathVariable UUID id);
+
+// TODO: Implementar a busca por Tipos de Atendimento (que é uma tabela separada)
+//        @Operation(summary = "Lista os tipos de atendimento para o filtro")
+//        @GetMapping("/filtros/tipos-atendimento")
+//        ResponseEntity<List<String>> getTiposAtendimento();
+
+        @Operation(summary = "Lista os transtornos para o filtro",
+                description = "Retorna uma lista de nomes de transtornos cadastrados para usar no filtro de pacientes.")
+        @ApiResponses(value = {
+                @ApiResponse(responseCode = "200", description = "Lista de transtornos retornada com sucesso")
+        })
+        @GetMapping("/filtros/transtornos")
+        ResponseEntity<List<String>> getTranstornos();
+
+        @Operation(summary = "Lista os anos para o filtro",
+                description = "Retorna uma lista de anos (como strings) dos registros anuais para usar no filtro de pacientes.")
+        @ApiResponses(value = {
+                @ApiResponse(responseCode = "200", description = "Lista de anos retornada com sucesso")
+        })
+        @GetMapping("/filtros/anos")
+        ResponseEntity<List<String>> getAnos();
+
+
+        @Operation(summary = "Lista as cidades para o filtro",
+                description = "Retorna uma lista de cidades distintas dos pacientes cadastrados para usar no filtro.")
+        @ApiResponses(value = {
+                @ApiResponse(responseCode = "200", description = "Lista de cidades retornada com sucesso")
+        })
+        @GetMapping("/filtros/cidades")
+        ResponseEntity<List<String>> getCidades();
 }

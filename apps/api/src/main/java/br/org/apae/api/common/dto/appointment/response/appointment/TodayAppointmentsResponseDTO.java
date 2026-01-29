@@ -1,10 +1,10 @@
 package br.org.apae.api.common.dto.appointment.response.appointment;
 
-import br.org.apae.api.common.dto.patient.response.PatientResponseDTO;
-import br.org.apae.api.common.dto.professional.response.HealthProfessionalResponseDTO;
-
 import java.time.LocalDateTime;
 import java.util.UUID;
+
+import br.org.apae.api.common.dto.patient.response.patient.PatientResponseDTO;
+import br.org.apae.api.common.dto.professional.response.HealthProfessionalResponseDTO;
 
 public record TodayAppointmentsResponseDTO(
   UUID id,

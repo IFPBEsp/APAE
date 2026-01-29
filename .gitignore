@@ -2,3 +2,12 @@ node_modules
 .vscode
 .idea
 docker/db_data
+
+.env
+
+# Arquivos de build e cache do Gradle/Java
+**/build/
+**/.gradle/
+
+# Arquivos de build e cache do Next.js
+**/.next/

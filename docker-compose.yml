@@ -27,7 +27,7 @@ services:
       - MINIO_ROOT_PASSWORD=CHANGEME123
     volumes:
       - ${HOME}/minio/data:/data
-    user: "${UID}:${GID}"
+    user: root
     command: server /data --console-address ":9001"
 
 volumes:

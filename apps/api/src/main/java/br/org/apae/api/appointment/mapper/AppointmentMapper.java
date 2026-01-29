@@ -1,24 +1,26 @@
 package br.org.apae.api.appointment.mapper;
 
+import java.util.List;
+
+import org.springframework.stereotype.Component;
+
+import br.org.apae.api.address.domain.model.Address;
 import br.org.apae.api.appointment.domain.model.Appointment;
 import br.org.apae.api.appointment.domain.model.GeneratedAppointment;
+import br.org.apae.api.common.dto.address.AddressResponseDTO;
 import br.org.apae.api.common.dto.appointment.request.appointment.CreateAppointmentDTO;
 import br.org.apae.api.common.dto.appointment.request.appointment.UpdateAppointmentDTO;
 import br.org.apae.api.common.dto.appointment.response.appointment.AnnualRegistryResponseDTO;
 import br.org.apae.api.common.dto.appointment.response.appointment.AppointmentResponseDTO;
-
-
+import br.org.apae.api.common.dto.availability.response.AvailabilityResponseDTO;
 import br.org.apae.api.common.dto.appointment.response.appointment.GeneratedAppointmentResponseDTO;
 import br.org.apae.api.common.dto.appointment.response.appointment.TodayAppointmentsResponseDTO;
-import br.org.apae.api.common.dto.disorder.response.DisorderResponseDTO;
-import br.org.apae.api.common.dto.patient.response.PatientResponseDTO;
+import br.org.apae.api.common.dto.patient.response.disorder.DisorderResponseDTO;
+import br.org.apae.api.common.dto.patient.response.patient.PatientResponseDTO;
 import br.org.apae.api.common.dto.professional.response.HealthProfessionalResponseDTO;
+import br.org.apae.api.common.dto.servicearea.response.ServiceAreaResponseDTO;
 import br.org.apae.api.patient.domain.model.AnnualRegistry;
-import br.org.apae.api.patient.domain.model.Patient;
 import br.org.apae.api.professional.domain.model.HealthProfessional;
-import org.springframework.stereotype.Component;
-
-import java.util.List;
 
 @Component
 public class AppointmentMapper {
@@ -76,12 +78,24 @@ public class AppointmentMapper {
     );
   }
 
-  public AppointmentResponseDTO toResponse(Appointment appointment) {
+  public AppointmentResponseDTO toResponse(Appointment appointment, PatientResponseDTO patient) {
+    HealthProfessional professional = appointment.getProfessional();
+    ServiceAreaResponseDTO serviceArea = new ServiceAreaResponseDTO(professional.getServiceArea());
+    AddressResponseDTO address = new AddressResponseDTO(professional.getAddress());
+    List<AvailabilityResponseDTO> availabilities = professional.getAvailabilities()
+        .stream()
+        .map(availability -> new AvailabilityResponseDTO(
+            availability)).toList();
+
     return new AppointmentResponseDTO(
         appointment.getId(),
-        new HealthProfessionalResponseDTO(appointment.getProfessional()),
+        new HealthProfessionalResponseDTO(
+          professional, 
+          serviceArea,
+          address, 
+          availabilities),
         appointment.getServiceId(),
-        toResponse(appointment.getAnnualRegistration()),
+        toResponse(appointment.getAnnualRegistration(), patient),
         appointment.getFrequencyDays(),
         appointment.getInitialDate(),
         appointment.getEndDate(),
@@ -91,7 +105,7 @@ public class AppointmentMapper {
     );
   }
 
-  public AnnualRegistryResponseDTO toResponse(AnnualRegistry annualRegistry) {
+  public AnnualRegistryResponseDTO toResponse(AnnualRegistry annualRegistry, PatientResponseDTO patient) {
     List<DisorderResponseDTO> disorderResponseDTOS = annualRegistry.getDisorders()
         .stream()
         .map(disorder -> new DisorderResponseDTO(disorder.getId(), disorder.getName())).toList();
@@ -102,19 +116,30 @@ public class AppointmentMapper {
         annualRegistry.getDiseases(),
         annualRegistry.getFamilyIncome(),
         annualRegistry.getYear(),
-        new PatientResponseDTO(annualRegistry.getPatient()),
+        patient,
         disorderResponseDTOS
     );
   }
 
-  public TodayAppointmentsResponseDTO toTodayResponseDTO(GeneratedAppointment generatedAppointment) {
+  public TodayAppointmentsResponseDTO toTodayResponseDTO(GeneratedAppointment generatedAppointment, PatientResponseDTO patient) {
     Appointment appointment = generatedAppointment.getAppointment();
-    Patient patient = appointment.getAnnualRegistration().getPatient();
+    // Patient patient = appointment.getAnnualRegistration().getPatient();
     HealthProfessional professional = appointment.getProfessional();
+    ServiceAreaResponseDTO serviceArea = new ServiceAreaResponseDTO(professional.getServiceArea());
+    AddressResponseDTO address = new AddressResponseDTO(professional.getAddress());
+    List<AvailabilityResponseDTO> availabilities = professional.getAvailabilities()
+        .stream()
+        .map(availability -> new AvailabilityResponseDTO(
+            availability)).toList();
+
     return new TodayAppointmentsResponseDTO(
         generatedAppointment.getId(),
-        new PatientResponseDTO(patient),
-        new HealthProfessionalResponseDTO(professional),
+        patient,
+        new HealthProfessionalResponseDTO(
+          professional, 
+          serviceArea,
+          address, 
+          availabilities),
         generatedAppointment.getScheduledDateTime(),
         generatedAppointment.getOverriddenDateTime(),
         generatedAppointment.getPerformed(),

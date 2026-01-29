@@ -1,8 +1,8 @@
 package br.org.apae.api.patient.interfaces.controllers;
 
-import br.org.apae.api.common.dto.disorder.request.CreateDisorderDTO;
-import br.org.apae.api.common.dto.disorder.request.UpdateDisorderDTO;
-import br.org.apae.api.common.dto.disorder.response.DisorderResponseDTO;
+import br.org.apae.api.common.dto.patient.request.disorder.CreateDisorderDTO;
+import br.org.apae.api.common.dto.patient.request.disorder.UpdateDisorderDTO;
+import br.org.apae.api.common.dto.patient.response.disorder.DisorderResponseDTO;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.UUID;
 
-@RequestMapping("/transtornos")
+@RequestMapping("/disorders")
 public interface DisorderController {
 
     @Operation(summary = "Cadastrar Transtorno", description = "Cria um novo registro de transtorno no sistema. Falha se o nome já existir.", responses = {
