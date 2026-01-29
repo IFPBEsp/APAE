@@ -1,5 +1,5 @@
-import { MembersRegisterProvider } from "@/hooks/use-members-register-context";
 import Image from "@/assets/background_image.jpg";
+import { MembersRegisterProvider } from "@/hooks/use-members-register-context";
 import { PageOrchestrator } from "./orchestrator";
 import { Nunito } from "next/font/google";
 import { VaccinesProvider } from "@/hooks/use-vaccines";

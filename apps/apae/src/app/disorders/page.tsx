@@ -81,7 +81,7 @@ export default function TranstornosPage() {
           <TranstornoListItem
             key={transtorno.id}
             transtorno={transtorno}
-            onEdit={() => router.push(`/transtornos/${transtorno.id}/edit`)}
+            onEdit={() => router.push(`/disorders/${transtorno.id}/edit`)}
             onDelete={() => handleDelete(transtorno.id)}
           />
         ))}
@@ -108,7 +108,7 @@ export default function TranstornosPage() {
               asChild
               className="!bg-[#0D4F97] !hover:bg-[#0b427d] text-white"
             >
-              <Link href="/transtornos/new">Adicionar</Link>
+              <Link href="/disorders/new">Adicionar</Link>
             </Button>
           </div>
 
@@ -131,7 +131,7 @@ export default function TranstornosPage() {
         asChild
         className="fixed bottom-6 right-6 h-[53px] w-[53px] rounded-full shadow-lg md:hidden bg-[#0D4F97] hover:bg-[#0b427d]"
       >
-        <Link href="/transtornos/new">
+        <Link href="/disorders/new">
           <Plus className="h-7 w-7" />
           <span className="sr-only">Adicionar Transtorno</span>
         </Link>

@@ -31,7 +31,7 @@ export default function NewVaccinePage() {
 
     const onSubmit = async (data: z.infer<typeof CreateVaccine>) => {
         await createVaccine(data);
-        router.push("/vacinas");
+        router.push("/vaccines");
     };
 
     return (

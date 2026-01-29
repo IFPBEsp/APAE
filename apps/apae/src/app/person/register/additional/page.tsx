@@ -304,6 +304,16 @@ export default function MembersRegisterAdditionalsPage() {
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Laudo da Deficiência *</FormLabel>
+                  {/* [Caso o seletor de arquivos esteja com problemas]
+                  
+                  <Input
+                    id={field.name}
+                    type="file"
+                    accept="application/pdf"
+                    onChange={(e) =>
+                      field.onChange(e.target.files?.[0] ?? null)
+                    }
+                  /> */}
                   <FormControl>
                     <FileInputButton
                       id={field.name}
@@ -360,6 +370,16 @@ export default function MembersRegisterAdditionalsPage() {
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Encaminhamento *</FormLabel>
+                  {/* [Caso o seletor de arquivos esteja com problemas]
+                  
+                  <Input
+                    id={field.name}
+                    type="file"
+                    accept="application/pdf"
+                    onChange={(e) =>
+                      field.onChange(e.target.files?.[0] ?? null)
+                    }
+                  /> */}
                   <FormControl>
                     <FileInputButton
                       id={field.name}

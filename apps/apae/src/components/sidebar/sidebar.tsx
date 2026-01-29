@@ -33,7 +33,7 @@ import { useSidebar } from "@/components/ui/sidebar";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
 import logo from "../../assets/logo.png";
-import { SquareActivity, BriefcaseMedical } from "lucide-react"
+import { SquareActivity, BriefcaseMedical, Syringe } from "lucide-react"
 
 export function AppSidebar() {
   const { open, setOpen, isMobile, setOpenMobile } = useSidebar();
@@ -203,8 +203,23 @@ export function AppSidebar() {
                         : "text-[#0D4F97] hover:bg-[#0D4F97] hover:!text-white"
                     )}`}
                   >
-                    <BriefcaseMedical size={16} />
+                    <Syringe size={16} />
                     <span className="text-base">Vacinas</span>
+                  </SidebarMenuButton>
+                </Link>
+              </SidebarMenuItem>
+              <SidebarMenuItem>
+                <Link href="/tipo-atendimento" passHref>
+                  <SidebarMenuButton
+                    className={`${styles.menuButton} font-base gap-2 ${cn(
+                      "h-10 transition-colors",
+                      pathname == "/tipo-atendimento"
+                        ? "bg-[#FFFFFF] !text-[#000000]"
+                        : "text-[#0D4F97] hover:bg-[#0D4F97] hover:!text-white"
+                    )}`}
+                  >
+                    <BriefcaseMedical size={16} />
+                    <span className="text-base">Tipos de Atendimento</span>
                   </SidebarMenuButton>
                 </Link>
               </SidebarMenuItem>

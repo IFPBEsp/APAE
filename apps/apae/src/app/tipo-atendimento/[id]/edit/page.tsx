@@ -3,7 +3,7 @@
 import { useRouter, useParams } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { updateTranstornoSchema, UpdateTranstornoDTO } from "@/schemas/transtornosSchema";
+import { updateserviceTypeSchema, UpdateserviceTypeDTO } from "@/schemas/service-type-schemas";
 import { toast } from "react-toastify";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -11,7 +11,7 @@ import { Label } from "@/components/ui/label";
 import { useEffect } from "react";
 import { Loader2, ArrowLeft } from "lucide-react";
 
-export default function EditTranstornoPage() {
+export default function EditServiceTypePage() {
   const router = useRouter();
   const params = useParams();
   const { id } = params;
@@ -21,39 +21,39 @@ export default function EditTranstornoPage() {
     handleSubmit,
     setValue,
     formState: { errors, isSubmitting },
-  } = useForm<UpdateTranstornoDTO>({
-    resolver: zodResolver(updateTranstornoSchema),
+  } = useForm<UpdateserviceTypeDTO>({
+    resolver: zodResolver(updateserviceTypeSchema),
   });
 
   useEffect(() => {
     if (id) {
-      const fetchTranstorno = async () => {
+      const fetchserviceType = async () => {
         try {
-          const response = await fetch(`/api/transtornos/${id}`);
-          if (!response.ok) throw new Error("Transtorno não encontrado.");
+          const response = await fetch(`/api/tipo-atendimento/${id}`);
+          if (!response.ok) throw new Error("Tipo de atendimento não encontrado.");
           const data = await response.json();
-          setValue("name", data.name);
+          setValue("area", data.area);
         } catch (error: any) {
           toast.error(error.message);
-          router.push("/disorders");
+          router.push("/tipo-atendimento");
         }
       };
-      fetchTranstorno();
+      fetchserviceType();
     }
   }, [id, setValue, router]);
 
-  const onSubmit = async (data: UpdateTranstornoDTO) => {
+  const onSubmit = async (data: UpdateserviceTypeDTO) => {
     try {
-      const response = await fetch(`/api/transtornos/${id}`, {
+      const response = await fetch(`/api/tipo-atendimento/${id}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(data),
       });
       if (!response.ok) {
-        throw new Error("Falha ao atualizar transtorno.");
+        throw new Error("Falha ao atualizar o tipo de atendimento.");
       }
-      toast.success("Transtorno atualizado com sucesso!");
-      router.push("/disorders");
+      toast.success("Tipo de atendimento atualizado com sucesso!");
+      router.push("/tipo-atendimento");
       router.refresh();
     } catch (error: any) {
       toast.error(error.message);
@@ -82,20 +82,20 @@ export default function EditTranstornoPage() {
             Voltar
           </Button>
           
-          <h1 className="text-2xl font-bold mb-6 text-[#003B93]">Editar Transtorno</h1>
+          <h1 className="text-2xl font-bold mb-6 text-[#003B93]">Editar tipo de atendimento</h1>
           
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
             <div>
-              <Label htmlFor="name" className="font-semibold text-[#003B93]">
-                Nome do Transtorno
+              <Label htmlFor="area" className="font-semibold text-[#003B93]">
+                Nome do tipo de atendimento
               </Label>
               <Input
-                id="name"
-                {...register("name")}
+                id="area"
+                {...register("area")}
                 className="mt-1 block w-full"
               />
-              {errors.name && (
-                <p className="mt-1 text-sm text-red-600">{errors.name.message}</p>
+              {errors.area && (
+                <p className="mt-1 text-sm text-red-600">{errors.area.message}</p>
               )}
             </div>
 

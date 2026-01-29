@@ -33,7 +33,7 @@ export default function NewTranstornoPage() {
       }
 
       toast.success("Transtorno criado com sucesso!");
-      router.push("/transtornos");
+      router.push("/disorders");
       router.refresh();
     } catch (error: any) {
       toast.error(error.message);

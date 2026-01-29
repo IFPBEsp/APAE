@@ -25,7 +25,7 @@ interface DocumentDTO {
 
 interface AnnualRegistryEditModalProps {
     isOpen: boolean;
-    onClose: () => void;
+    onClose: (str?: string) => void;
     patientId: string;
     currentYear: string; 
     initialData: any;    
