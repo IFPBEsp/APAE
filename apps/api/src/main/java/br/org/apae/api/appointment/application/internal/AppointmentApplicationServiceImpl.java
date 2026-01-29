@@ -1,4 +1,19 @@
 package br.org.apae.api.appointment.application.internal;
+import br.org.apae.api.appointment.application.interfaces.AppointmentApplicationService;
+import br.org.apae.api.appointment.domain.exceptions.AnnualRegistrationNotFound;
+import br.org.apae.api.appointment.domain.exceptions.AppointmentAlreadyCancelledException;
+import br.org.apae.api.appointment.domain.exceptions.AppointmentNotFoundException;
+import br.org.apae.api.appointment.domain.model.*;
+import br.org.apae.api.appointment.domain.repository.*;
+import br.org.apae.api.appointment.mapper.AppointmentMapper;
+import br.org.apae.api.common.dto.appointment.request.appointment.*;
+import br.org.apae.api.common.dto.appointment.response.appointment.*;
+import br.org.apae.api.patient.domain.model.AnnualRegistry;
+import br.org.apae.api.patient.domain.repository.AnnualRegistryRepository;
+import br.org.apae.api.professional.domain.exceptions.HealthProfessionalNotFoundException;
+import br.org.apae.api.professional.domain.model.HealthProfessional;
+import br.org.apae.api.professional.domain.repository.HealthProfessionalRepository;
+import jakarta.transaction.Transactional;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -446,6 +461,7 @@ public class AppointmentApplicationServiceImpl implements AppointmentApplication
   public GeneratedAppointmentResponseDTO cancel(UUID generatedId, String reason) {
     GeneratedAppointment appt = generatedRepo.findById(generatedId)
             .orElseThrow(() -> new IllegalArgumentException(APPOINTMENT_NOT_FOUND));
+    if (Boolean.TRUE.equals(appt.getCancelled())) throw new AppointmentAlreadyCancelledException();
     appt.setCancelled(true);
     appt.setCancellationReason(reason);
     return mapper.toGeneratedResponse(generatedRepo.save(appt));
