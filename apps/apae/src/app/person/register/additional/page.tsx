@@ -422,8 +422,8 @@ export default function MembersRegisterAdditionalsPage() {
                   <FormControl>
                     <CreatableMultiSelect
                       options={cares.map((care: any) => ({
-                        label: care.name, // care.value,
-                        value: care.id,
+                        label: care.area,
+                        value: care.area,
                       }))}
                       onValueChange={(r) => {
                         field.onChange(r);
