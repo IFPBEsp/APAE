@@ -38,9 +38,11 @@ import {
 import { CreateVaccine } from "@/schemas/vaccine-schemas";
 import { Button } from "@/components/ui/button";
 import { useDisordersContext } from "@/hooks/use-disorders";
-import fetchCares from "@/hooks/use-cares";
 import { CreateDisorder } from "@/schemas/disorder-schemas";
 import { formatCurrency } from "@/lib/formats";
+import { useCreateServiceArea } from "@/hooks/service-area/use-create-service-area";
+import { useFetchServiceAreas } from "@/hooks/service-area/use-fetch-service-areas";
+import { CreateCare } from "@/schemas/care-schemas";
 
 type DialogProps = Readonly<{
   open: boolean;
@@ -78,6 +80,67 @@ function CreateVaccineDialog({ open, onOpenChange }: DialogProps) {
                   <FormLabel>Nome da Vacina</FormLabel>
                   <FormControl>
                     <Input placeholder="Ex: Hepatite B" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <DialogFooter>
+              <Button
+                variant="outline"
+                type="button"
+                onClick={() => onOpenChange(false)}
+              >
+                Cancelar
+              </Button>
+              <Button type="submit" disabled={form.formState.isSubmitting}>
+                {form.formState.isSubmitting ? "Salvando..." : "Salvar"}
+              </Button>
+            </DialogFooter>
+          </form>
+        </Form>
+      </DialogContent>
+    </Dialog>
+  );
+}
+
+function CreateCareDialog({
+  open,
+  onConfirm,
+  onOpenChange,
+}: DialogProps & { onConfirm?: () => Promise<void> }) {
+  const { create } = useCreateServiceArea();
+
+  const form = useForm<z.infer<typeof CreateCare>>({
+    resolver: zodResolver(CreateCare),
+    defaultValues: { name: "" },
+  });
+
+  const onSubmit = async (data: z.infer<typeof CreateCare>) => {
+    await create(data.name);
+    onOpenChange(false);
+    await onConfirm?.();
+    form.reset();
+  };
+
+  return (
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent>
+        <DialogHeader>
+          <DialogTitle>Novo Atendimento</DialogTitle>
+        </DialogHeader>
+
+        <Form {...form}>
+          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+            <FormField
+              control={form.control}
+              name="name"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Nome do Atendimento</FormLabel>
+                  <FormControl>
+                    <Input placeholder="Ex: Oftamologista" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -160,10 +223,11 @@ function CreateDisorderDialog({ open, onOpenChange }: DialogProps) {
 }
 
 export default function MembersRegisterAdditionalsPage() {
-  const [modal, setModal] = useState<"disorder" | "vaccine" | null>(null);
+  const [modal, setModal] = useState<"disorder" | "vaccine" | "care" | null>(
+    null,
+  );
 
-  const cares = fetchCares();
-
+  const { areas: cares, fetchCares } = useFetchServiceAreas();
   const { vaccines } = useVaccinesContext();
   const { disorders } = useDisordersContext();
   const {
@@ -184,6 +248,11 @@ export default function MembersRegisterAdditionalsPage() {
 
   return (
     <>
+      <CreateCareDialog
+        open={modal === "care"}
+        onConfirm={fetchCares}
+        onOpenChange={(value) => setModal(value ? "care" : null)}
+      />
       <CreateDisorderDialog
         open={modal === "disorder"}
         onOpenChange={(value) => setModal(value ? "disorder" : null)}
@@ -353,14 +422,14 @@ export default function MembersRegisterAdditionalsPage() {
                   <FormControl>
                     <CreatableMultiSelect
                       options={cares.map((care: any) => ({
-                        label: care.value,
+                        label: care.name, // care.value,
                         value: care.id,
                       }))}
-                      onValueChange={r => {
-                        field.onChange(r)
+                      onValueChange={(r) => {
+                        field.onChange(r);
                         console.log("R:", r);
                       }}
-                      onCreate={async () => alert("TESTE")}
+                      onCreate={() => setModal("care")}
                       placeholder="Selecione os atendimentos necessários"
                       hideSelectAll={true}
                     />
