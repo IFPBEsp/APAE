@@ -1,17 +1,17 @@
-"use client";
+'use client';
 
-import { useEffect, useState } from "react";
-import { useParams } from "next/navigation";
+import { useEffect, useState } from 'react';
+import { useParams } from 'next/navigation';
 
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Badge } from "@/components/ui/badge";
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Badge } from '@/components/ui/badge';
 import {
   Card,
   CardAction,
   CardContent,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card";
+} from '@/components/ui/card';
 import {
   Dialog,
   DialogContent,
@@ -19,18 +19,18 @@ import {
   DialogTitle,
   DialogTrigger,
   DialogDescription,
-} from "@/components/ui/dialog";
-import { Pencil } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { format } from "date-fns";
-import { RegistrarFaltaButton } from "@/components/buttons/RegistrarFaltaButton";
+} from '@/components/ui/dialog';
+import { Pencil } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { format } from 'date-fns';
+import { RegistrarFaltaButton } from '@/components/buttons/RegistrarFaltaButton';
 import {
   getAppointmentById,
   Appointment,
-} from "@/app/services/appointmentService";
-import { AppointmentForm } from "@/components/forms/AppointmentForm";
-import TrashButton from "@/components/buttons/trashButton";
-import { formatDatePTBR, separaETransformaEmNumero } from "@/lib/utils";
+} from '@/app/services/appointmentService';
+import { AppointmentForm } from '@/components/forms/AppointmentForm';
+import TrashButton from '@/components/buttons/trashButton';
+import { formatDatePTBR, separaETransformaEmNumero } from '@/lib/utils';
 
 export default function ViewAppointment() {
   const { id } = useParams<{ id: string }>();
@@ -64,12 +64,12 @@ export default function ViewAppointment() {
 
   const [year, month, day] = separaETransformaEmNumero(
     appointment.initialDate,
-    "-"
+    '-'
   );
 
   const [hour, minute, second] = separaETransformaEmNumero(
     appointment.hour,
-    ":"
+    ':'
   );
 
   const dataHoraDate =
@@ -94,7 +94,7 @@ export default function ViewAppointment() {
               />
               <AvatarFallback>
                 {appointment.annualRegistration.patient.fullName.charAt(0) ||
-                  "?"}
+                  '?'}
               </AvatarFallback>
             </Avatar>
           </div>
@@ -107,15 +107,15 @@ export default function ViewAppointment() {
         <Badge
           className={`${
             appointment.isActive
-              ? "bg-[#E6F6EC] border-l-4 border-[#16A34A] text-[#166534]"
-              : "bg-[#FEEAEA] border-l-4 border-[#DC2626] text-[#7F1D1D]"
+              ? 'bg-[#E6F6EC] border-l-4 border-[#16A34A] text-[#166534]'
+              : 'bg-[#FEEAEA] border-l-4 border-[#DC2626] text-[#7F1D1D]'
           }
                 px-4 py-2 w-32 flex flex-col items-center justify-center
                 rounded-l-md shadow-sm font-bold text-sm text-center
               `}
         >
           <p className="text-sm font-bold">
-            {appointment.isActive ? "Ativa" : "Não ativa"}
+            {appointment.isActive ? 'Ativa' : 'Não ativa'}
           </p>
         </Badge>
       </header>
@@ -159,8 +159,8 @@ export default function ViewAppointment() {
                   <p className="font-medium mr-2">Data:</p>
                   <p>
                     {dataHoraDate
-                      ? new Intl.DateTimeFormat("pt-BR").format(dataHoraDate)
-                      : "—"}
+                      ? new Intl.DateTimeFormat('pt-BR').format(dataHoraDate)
+                      : '—'}
                   </p>
                 </div>
 
@@ -168,27 +168,27 @@ export default function ViewAppointment() {
                   <p className="font-medium mr-2">Horário:</p>
                   <p>
                     {dataHoraDate
-                      ? dataHoraDate.toLocaleTimeString("pt-BR", {
-                          hour: "2-digit",
-                          minute: "2-digit",
+                      ? dataHoraDate.toLocaleTimeString('pt-BR', {
+                          hour: '2-digit',
+                          minute: '2-digit',
                         })
-                      : "—"}
+                      : '—'}
                   </p>
                 </div>
 
-                  <div className="flex">
-                    <p className="font-medium mr-2">Área de atendimento:</p>
-                    <p>{appointment.professional.healthSector || "—"}</p>
-                  </div>
+                <div className="flex">
+                  <p className="font-medium mr-2">Área de atendimento:</p>
+                  <p>{appointment.professional.healthSector || '—'}</p>
+                </div>
 
                 <div className="flex">
                   <p className="font-medium mr-2">Status:</p>
                   <p
                     className={`font-bold ${
-                      appointment.isActive ? "text-green-700" : "text-red-700"
+                      appointment.isActive ? 'text-green-700' : 'text-red-700'
                     }`}
                   >
-                    {appointment.isActive ? "Ativo" : "Não ativo"}
+                    {appointment.isActive ? 'Ativo' : 'Não ativo'}
                   </p>
                 </div>
               </div>
@@ -200,14 +200,14 @@ export default function ViewAppointment() {
                   <p>
                     {appointment.frequencyDays !== undefined
                       ? `${appointment.frequencyDays} dias`
-                      : "—"}
+                      : '—'}
                   </p>
                 </div>
 
                 {/* Botão logo abaixo do período */}
-                <div className="mt-2">
+                {/* <div className="mt-2">
                   <RegistrarFaltaButton generatedAppointmentId={id} absenceDate={format(new Date(), "yyyy-MM-dd")}/>
-                </div>
+                </div> */}
               </div>
             </div>
           </CardContent>
@@ -226,15 +226,15 @@ export default function ViewAppointment() {
               <div className="flex flex-col gap-2">
                 <div className="flex">
                   <p className="font-medium mr-2">Nome: </p>
-                  <p>{appointment.professional.name || "—"}</p>
+                  <p>{appointment.professional.name || '—'}</p>
                 </div>
                 <div className="flex">
                   <p className="font-medium mr-2">Email: </p>
-                  <p>{appointment.professional.email || "—"}</p>
+                  <p>{appointment.professional.email || '—'}</p>
                 </div>
                 <div className="flex">
                   <p className="font-medium mr-2">Telefone: </p>
-                  <p>{appointment.professional.phoneNumber || "—"}</p>
+                  <p>{appointment.professional.phoneNumber || '—'}</p>
                 </div>
               </div>
 
@@ -242,15 +242,15 @@ export default function ViewAppointment() {
               <div className="flex flex-col gap-2 w-1/3">
                 <div className="flex">
                   <p className="font-medium mr-2">Documento médico: </p>
-                  <p>{appointment.professional.professionalDocument || "—"}</p>
+                  <p>{appointment.professional.professionalDocument || '—'}</p>
                 </div>
                 <div className="flex">
                   <p className="font-medium mr-2">RG: </p>
-                  <p>{appointment.professional.identityDocument || "—"}</p>
+                  <p>{appointment.professional.identityDocument || '—'}</p>
                 </div>
                 <div className="flex">
                   <p className="font-medium mr-2">Cidade: </p>
-                  <p>{appointment.professional.address.city || "—"}</p>
+                  <p>{appointment.professional.address.city || '—'}</p>
                 </div>
               </div>
             </div>
@@ -270,20 +270,20 @@ export default function ViewAppointment() {
               <div className="flex flex-col gap-2">
                 <div className="flex">
                   <p className="font-medium mr-2">Data de Nascimento: </p>
-                  <p> { formatDatePTBR(patient.birthDate) } </p>
+                  <p> {formatDatePTBR(patient.birthDate)} </p>
                 </div>
                 <div className="flex">
                   <p className="font-medium mr-2">CPF: </p>
-                  <p>{appointment.annualRegistration.patient.cpf || "—"}</p>
+                  <p>{appointment.annualRegistration.patient.cpf || '—'}</p>
                 </div>
                 <div className="flex">
                   <p className="font-medium mr-2">RG: </p>
-                  <p>{appointment.annualRegistration.patient.rg || "—"}</p>
+                  <p>{appointment.annualRegistration.patient.rg || '—'}</p>
                 </div>
 
                 <div className="flex">
                   <p className="font-medium mr-2">Contato: </p>
-                  <p>{appointment.annualRegistration.patient.contact || "—"}</p>
+                  <p>{appointment.annualRegistration.patient.contact || '—'}</p>
                 </div>
               </div>
 
@@ -291,27 +291,27 @@ export default function ViewAppointment() {
               <div className="flex flex-col gap-2 w-1/3">
                 <div className="flex">
                   <p className="font-medium mr-2">NIS: </p>
-                  <p>{appointment.annualRegistration.patient.nis || "—"}</p>
+                  <p>{appointment.annualRegistration.patient.nis || '—'}</p>
                 </div>
                 <div className="flex">
                   <p className="font-medium mr-2">Alergias: </p>
                   <p>
-                    {appointment.annualRegistration.patient.allergies || "—"}
+                    {appointment.annualRegistration.patient.allergies || '—'}
                   </p>
                 </div>
                 <div className="flex">
                   <p className="font-medium mr-2">Estudante: </p>
                   <p>
                     {appointment.annualRegistration.patient.isStudent
-                      ? "Sim"
-                      : "Não"}
+                      ? 'Sim'
+                      : 'Não'}
                   </p>
                 </div>
                 <div className="flex">
                   <p className="font-medium mr-2">Guardião: </p>
                   <p>
                     {appointment.annualRegistration.patient.guardian?.name ||
-                      "Não possui"}
+                      'Não possui'}
                   </p>
                 </div>
               </div>
@@ -334,28 +334,28 @@ export default function ViewAppointment() {
                   <p className="font-medium mr-2">Endereço: </p>
                   <p>
                     {appointment.annualRegistration.patient.address?.street ||
-                      "—"}
+                      '—'}
                   </p>
                 </div>
                 <div className="flex">
                   <p className="font-medium mr-2">Número da residência: </p>
                   <p>
                     {appointment.annualRegistration.patient.address?.number ||
-                      "—"}
+                      '—'}
                   </p>
                 </div>
                 <div className="flex">
                   <p className="font-medium mr-2">Bairro: </p>
                   <p>
                     {appointment.annualRegistration.patient.address
-                      ?.neighborhood || "—"}
+                      ?.neighborhood || '—'}
                   </p>
                 </div>
                 <div className="flex">
                   <p className="font-medium mr-2">Cidade: </p>
                   <p>
                     {appointment.annualRegistration.patient.address?.city ||
-                      "—"}
+                      '—'}
                   </p>
                 </div>
               </div>
@@ -365,14 +365,14 @@ export default function ViewAppointment() {
                   <p className="font-medium mr-2">Complemento: </p>
                   <p>
                     {appointment.annualRegistration.patient.address
-                      ?.complement || "—"}
+                      ?.complement || '—'}
                   </p>
                 </div>
 
                 <div className="flex">
                   <p className="font-medium mr-2">CEP: </p>
                   <p>
-                    {appointment.annualRegistration.patient.address?.cep || "—"}
+                    {appointment.annualRegistration.patient.address?.cep || '—'}
                   </p>
                 </div>
 
@@ -380,7 +380,7 @@ export default function ViewAppointment() {
                   <p className="font-medium mr-2">Estado: </p>
                   <p>
                     {appointment.annualRegistration.patient.address?.state ||
-                      "—"}
+                      '—'}
                   </p>
                 </div>
               </div>
