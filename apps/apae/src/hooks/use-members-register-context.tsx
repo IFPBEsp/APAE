@@ -381,6 +381,7 @@ function MembersRegisterProvider({
       annualRegistry: {
         bpc: additionals.bpc,
         diseases: additionals.diseases,
+        serviceArea: additionals.care.types.map((types) => ({ name: types})),
         familyIncome:
           Number(additionals.householdIncome.replaceAll(/\D/g, "")) * 0.01,
         year: new Date().getFullYear(),

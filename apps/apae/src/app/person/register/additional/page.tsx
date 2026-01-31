@@ -38,6 +38,7 @@ import {
 import { CreateVaccine } from "@/schemas/vaccine-schemas";
 import { Button } from "@/components/ui/button";
 import { useDisordersContext } from "@/hooks/use-disorders";
+import fetchCares from "@/hooks/use-cares";
 import { CreateDisorder } from "@/schemas/disorder-schemas";
 import { formatCurrency } from "@/lib/formats";
 
@@ -160,7 +161,9 @@ function CreateDisorderDialog({ open, onOpenChange }: DialogProps) {
 
 export default function MembersRegisterAdditionalsPage() {
   const [modal, setModal] = useState<"disorder" | "vaccine" | null>(null);
-  const [cares, setCares] = useState<string[]>(["Oftamologista"]);
+
+  const cares = fetchCares();
+
   const { vaccines } = useVaccinesContext();
   const { disorders } = useDisordersContext();
   const {
@@ -349,11 +352,14 @@ export default function MembersRegisterAdditionalsPage() {
                   <FormLabel>Tipos de Atendimentos *</FormLabel>
                   <FormControl>
                     <CreatableMultiSelect
-                      options={cares.map((care) => ({
-                        label: care,
-                        value: care,
+                      options={cares.map((care: any) => ({
+                        label: care.value,
+                        value: care.id,
                       }))}
-                      onValueChange={field.onChange}
+                      onValueChange={r => {
+                        field.onChange(r)
+                        console.log("R:", r);
+                      }}
                       onCreate={async () => alert("TESTE")}
                       placeholder="Selecione os atendimentos necessários"
                       hideSelectAll={true}
