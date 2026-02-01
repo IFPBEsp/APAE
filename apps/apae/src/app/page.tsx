@@ -1,17 +1,17 @@
 'use client';
 
-import { useEffect, useState } from "react";
-import { format } from "date-fns";
-import { ptBR } from "date-fns/locale";
+import { useEffect, useState } from 'react';
+import { format } from 'date-fns';
+import { ptBR } from 'date-fns/locale';
 import {
   CalendarDays,
   Users,
   MessageCircleWarning,
   CalendarX,
-} from "lucide-react";
+} from 'lucide-react';
 import { Page } from '@/types/pagination';
-import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
+import { Button } from '@/components/ui/button';
+import { Card, CardContent } from '@/components/ui/card';
 import {
   Table,
   TableBody,
@@ -19,14 +19,14 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/components/ui/table";
-import { Calendar } from "@/components/ui/calendar";
+} from '@/components/ui/table';
+import { Calendar } from '@/components/ui/calendar';
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
-} from "@/components/ui/popover";
-import { Badge } from "@/components/ui/badge";
+} from '@/components/ui/popover';
+import { Badge } from '@/components/ui/badge';
 
 import {
   Dialog,
@@ -35,29 +35,42 @@ import {
   DialogTitle,
   DialogTrigger,
   DialogDescription,
-} from "@/components/ui/dialog";
+} from '@/components/ui/dialog';
 import { TodayAppointment } from '@/types/appointment';
-import { getAppointments, listTodayAppointment, markAsPerformed, UUID, type AppointmentResponseDTO } from "./services/appointmentService";
+import {
+  getAppointments,
+  listTodayAppointment,
+  markAsPerformed,
+  UUID,
+  type AppointmentResponseDTO,
+} from './services/appointmentService';
 
-import { AppointmentForm } from "@/components/forms/AppointmentForm";
-import { InfoCard } from "@/components/shared/InfoCard";
-import Link from "next/link";
+import { AppointmentForm } from '@/components/forms/AppointmentForm';
+import { InfoCard } from '@/components/shared/InfoCard';
+import Link from 'next/link';
 
-import { Checkbox } from "@/components/ui/checkbox";
+import { Checkbox } from '@/components/ui/checkbox';
+import { RegistrarFaltaButton } from '@/components/buttons/RegistrarFaltaButton';
 
 export default function DashboardPage() {
   const [selectedDate, setSelectedDate] = useState<Date>(new Date());
-  const [todayAppointments, setTodayAppointments] = useState<TodayAppointment[]>([]);
+  const [todayAppointments, setTodayAppointments] = useState<
+    TodayAppointment[]
+  >([]);
 
-  const [allAppointments, setAllAppointments] = useState<AppointmentResponseDTO[]>([]);
+  const [allAppointments, setAllAppointments] = useState<
+    AppointmentResponseDTO[]
+  >([]);
 
   const fetchTodayAppointments = async () => {
-    const todayAppointmentsPage: Page<TodayAppointment> = await listTodayAppointment();
+    const todayAppointmentsPage: Page<TodayAppointment> =
+      await listTodayAppointment();
     setTodayAppointments(todayAppointmentsPage.content);
   };
 
   const fetchAllAppointments = async () => {
-    const allAppointmentsPage: Page<AppointmentResponseDTO> = await getAppointments();
+    const allAppointmentsPage: Page<AppointmentResponseDTO> =
+      await getAppointments();
     setAllAppointments(allAppointmentsPage.content);
   };
 
@@ -69,7 +82,7 @@ export default function DashboardPage() {
   const markAsPerformedHandle = async (id: UUID) => {
     await markAsPerformed(id);
     window.location.reload();
-  }
+  };
 
   return (
     <div className="min-h-screen w-full text-sm overflow-x-hidden">
@@ -133,11 +146,7 @@ export default function DashboardPage() {
             title="Agendados pra hoje"
             icon={Users}
             value={todayAppointments.length}
-            subtitle={`${
-              todayAppointments.length
-            } confirmados, ${
-              todayAppointments.length
-            } pendentes`}
+            subtitle={`${todayAppointments.length} confirmados, ${todayAppointments.length} pendentes`}
             titleClassName="text-[#0D4F97]"
             valueClassName="text-[#0D4F97]"
           />
@@ -176,16 +185,16 @@ export default function DashboardPage() {
                 {todayAppointments.map((item, index) => (
                   <TableRow key={index}>
                     <TableCell className="px-3 py-2 text-xs sm:px-4 sm:py-3 sm:text-sm">
-                      { item.patient.fullName }
+                      {item.patient.fullName}
                     </TableCell>
                     <TableCell className="px-3 py-2">
                       <Badge
                         variant="outline"
                         className={`text-xs ${
-                          true ? "text-green-400" : "text-red-400"
+                          true ? 'text-green-400' : 'text-red-400'
                         } sm:text-sm`}
                       >
-                        {true ? "Sim" : "Não"}
+                        {true ? 'Sim' : 'Não'}
                       </Badge>
                     </TableCell>
                     <TableCell className="px-3 py-2 text-xs sm:px-4 sm:py-3 sm:text-sm">
@@ -200,9 +209,9 @@ export default function DashboardPage() {
                       </Link>
                     </TableCell>
                     <TableCell className="px-3 py-2 text-xs sm:px-4 sm:py-3 sm:text-sm">
-                      <Checkbox
-                          checked={item.performed}
-                          onCheckedChange={() => markAsPerformedHandle(item.id)}
+                      <RegistrarFaltaButton
+                        generatedAppointmentId={item.id}
+                        absenceDate={format(selectedDate, 'yyyy-MM-dd')}
                       />
                     </TableCell>
                   </TableRow>
