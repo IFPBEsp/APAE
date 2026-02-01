@@ -71,7 +71,7 @@ export default function PersonDetailsPage() {
     } catch (err: any) {
       console.error(err);
       toast.error(err.message);
-      router.push("/home");
+      router.push("/visualization-patients");
     } finally {
       setLoadingPessoa(false);
     }
@@ -164,7 +164,7 @@ export default function PersonDetailsPage() {
 
   if (!pessoa) {
     return (
-      <div className="text-center mt-10"><p>Paciente não encontrado.</p><Button asChild variant="link"><Link href="/home">Voltar</Link></Button></div>
+      <div className="text-center mt-10"><p>Paciente não encontrado.</p><Button asChild variant="link"><Link href="/visualization-patients">Voltar</Link></Button></div>
     );
   }
 
@@ -173,7 +173,7 @@ export default function PersonDetailsPage() {
   return (
     <main className="container mx-auto p-4 md:p-6">
       <div className="mb-4">
-        <Button variant="outline" onClick={() => router.push("/home")} className="gap-2">
+        <Button variant="outline" onClick={() => router.push("/visualization-patients")} className="gap-2">
           <ArrowLeft className="h-4 w-4" /> Voltar para listagem
         </Button>
       </div>

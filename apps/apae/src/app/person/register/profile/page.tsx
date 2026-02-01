@@ -43,7 +43,7 @@ export default function MembersRegisterProfilePage() {
       (async () => {
         const res = await register();
         if (res.status === 201) {
-          router.push("/home");
+          router.push("/visualization-patients");
         }
       })();
     }
