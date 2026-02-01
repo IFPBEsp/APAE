@@ -220,7 +220,7 @@ export default function AllApointments() {
                       </TableCell>
                       <TableCell className="px-3 py-2">
                         <Link
-                          href={`/appointments/${item.id}`}
+                          href={`/appointments/today${item.id}`}
                           className="cursor-pointer text-xs text-blue-800 underline hover:underline sm:text-sm"
                         >
                           Detalhes

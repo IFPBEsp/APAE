@@ -168,7 +168,7 @@ export default function DashboardPage() {
                     Ações
                   </TableHead>
                   <TableHead className="px-3 py-2 text-xs text-[#0D4F97] sm:px-4 sm:py-3 sm:text-sm">
-                    Realizada
+                    Registrar Falta
                   </TableHead>
                 </TableRow>
               </TableHeader>
@@ -193,7 +193,7 @@ export default function DashboardPage() {
                     </TableCell>
                     <TableCell className="px-3 py-2">
                       <Link
-                        href={`/appointments/${item.ruleId}`}
+                        href={`/appointments/today/${item.id}`}
                         className="cursor-pointer text-xs text-blue-800 underline hover:underline sm:text-sm"
                       >
                         Detalhes

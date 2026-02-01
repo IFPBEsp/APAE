@@ -6,7 +6,7 @@ import { Page } from '@/types/pagination';
 export type UUID = string;
 
 const API_BASE_URL = process.env.API_BASE_URL || 'http://localhost:8090';
-const USE_MOCK_DATA = process.env.NEXT_PUBLIC_USE_MOCK_DATA === 'false' || false; // Forçar true para desenvolvimento
+const USE_MOCK_DATA = process.env.NEXT_PUBLIC_USE_MOCK_DATA === 'true' || true; // Forçar true para desenvolvimento
 const MOCK_DELAY = 500; // delay simulado em ms
 
 // ========== DADOS MOCKADOS ==========
@@ -179,7 +179,7 @@ const mockAppointments: AppointmentResponseDTO[] = [
     annualRegistration: mockAnnualRegistries[1],
     frequencyDays: 30,
     hour: "09:00:00",
-    initialDate: "2024-01-20",
+    initialDate: "2026-01-31",
     endDate: "2024-12-31",
     isActive: false,
     creationDate: "2024-01-02T14:30:00",
@@ -205,7 +205,7 @@ const mockGeneratedAppointments: GeneratedAppointmentResponseDTO[] = [
     scheduledDateTime: "2024-01-15T14:30:00",
     overriddenDateTime: "2024-01-15T15:00:00",
     performed: true,
-    cancelled: false,
+    cancelled: true,
     cancellationReason: "",
     patientId: "patient-1",
     effectiveDateTime: "2024-01-15T15:00:00",
@@ -220,6 +220,109 @@ const mockGeneratedAppointments: GeneratedAppointmentResponseDTO[] = [
     cancellationReason: "",
     patientId: "patient-2",
     effectiveDateTime: "2024-01-20T09:00:00",
+  },
+];
+
+export const MOCK_TODAY_APPOINTMENTS: TodayAppointment[] = [
+  {
+    id: 'a1f5b3e2-1111-4aaa-9bbb-000000000001',
+    performed: false,
+    effectiveDateTime: new Date(),
+    patient: {
+      id: 'p1',
+      fullName: 'Maria Silva',
+      name: '',
+      birthplace: '',
+      birthDate: '',
+      contact: '',
+      birthCertificateNumber: '',
+      registryOffice: '',
+      fls: '',
+      book: '',
+      rg: '',
+      issueDate: '',
+      issuingAgency: '',
+      cpf: '',
+      cns: '',
+      nis: '',
+      registrationDate: '',
+      allergies: '',
+      isStudent: false
+    },
+    professional: {
+      id: 'prof1',
+      name: 'Dr. João Pereira',
+      healthSector: 'Psicologia',
+      phoneNumber: '89 9999-9999',
+      professionalDocument: 'CRM 1235-SP',
+      email: 'joao@gmail',
+      identityDocument: '123456',
+      address: {
+        id: "address-prof-1",
+        city: "São Paulo",
+        cep: "01234-000",
+        state: "SP",
+        neighborhood: "Centro",
+        street: "Rua Augusta",
+        number: "789",
+        complement: "Sala 501",
+      }
+    },
+    scheduledDateTime: new Date(),
+    overriddenDateTime: new Date(),
+    cancelled: false,
+    cancellationReason: '',
+    ruleId: ''
+  },
+  {
+    id: 'a1f5b3e2-2222-4aaa-9bbb-000000000002',
+    performed: true,
+    effectiveDateTime: new Date(),
+    patient: {
+      id: 'p2',
+      fullName: 'Carlos Oliveira',
+      name: '',
+      birthplace: '',
+      birthDate: '',
+      contact: '',
+      birthCertificateNumber: '',
+      registryOffice: '',
+      fls: '',
+      book: '',
+      rg: '',
+      issueDate: '',
+      issuingAgency: '',
+      cpf: '',
+      cns: '',
+      nis: '',
+      registrationDate: '',
+      allergies: '',
+      isStudent: false
+    },
+    professional: {
+      id: 'prof2',
+      name: 'Dra. Ana Souza',
+      healthSector: 'Fisioterapia',
+      phoneNumber: '',
+      professionalDocument: '',
+      email: '',
+      identityDocument: '',
+      address: {
+        id: "address-prof-1",
+        city: "São Paulo",
+        cep: "01234-000",
+        state: "SP",
+        neighborhood: "Centro",
+        street: "Rua Augusta",
+        number: "789",
+        complement: "Sala 501",
+      },
+    },
+    scheduledDateTime: new Date(),
+    overriddenDateTime: new Date(),
+    cancelled: false,
+    cancellationReason: '',
+    ruleId: ''
   },
 ];
 
@@ -944,16 +1047,65 @@ export const isUsingMockData = (): boolean => {
   return USE_MOCK_DATA;
 };
 
-export async function listTodayAppointment(): Promise<Page<TodayAppointment>> {
-  return fetch("/api/appointments/today")
-    .then(res => {
-      if (!res.ok) {
-        throw new Error(`Erro na requisição: ${res.status}`);
-      }
-      return res.json();
-    })
-    .then((data: Page<TodayAppointment>) => data)
-    .catch(error => {
-      throw error;
-    });
+export async function getTodayAppointmentById(id: string) {
+  try {
+    const res = await fetch(`/api/appointments/today/${id}`);
+
+    if (!res.ok) {
+      throw new Error(`Erro ${res.status}`);
+    }
+
+    return await res.json();
+  } catch (error) {
+    console.error(
+      '[getTodayAppointmentById] fallback mock',
+      error
+    );
+
+    return MOCK_TODAY_APPOINTMENTS.find(
+      appointment => appointment.id === id
+    ) || null;
+  }
 }
+
+
+export async function listTodayAppointment() {
+  try {
+    const res = await fetch('/api/appointments/today');
+
+    if (!res.ok) {
+      throw new Error(`Erro na requisição: ${res.status}`);
+    }
+
+    return await res.json();
+  } catch (error) {
+    console.error(
+      'Error in listTodayAppointment, falling back to mock:',
+      error
+    );
+
+    return {
+      content: MOCK_TODAY_APPOINTMENTS, // ⚠️ SEMPRE content
+      totalElements: MOCK_TODAY_APPOINTMENTS.length
+    };
+  }
+}
+
+
+
+
+// export async function listTodayAppointment(): Promise<Page<TodayAppointment>> {
+//   return fetch("/api/appointments/today")
+//     .then(res => {
+//       if (!res.ok) {
+//         throw new Error(`Erro na requisição: ${res.status}`);
+//       }
+//       return res.json();
+//     })
+//     .then((data: Page<TodayAppointment>) => data)
+//     .catch(error => {
+//       throw error;
+//     });
+// }
+
+
