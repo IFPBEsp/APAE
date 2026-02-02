@@ -85,8 +85,7 @@ public class AppointmentMapper {
     AddressResponseDTO address = new AddressResponseDTO(professional.getAddress());
     List<AvailabilityResponseDTO> availabilities = professional.getAvailabilities()
         .stream()
-        .map(availability -> new AvailabilityResponseDTO(
-            availability)).toList();
+        .map(AvailabilityResponseDTO::new).toList();
 
     return new AppointmentResponseDTO(
         appointment.getId(),
@@ -130,8 +129,7 @@ public class AppointmentMapper {
     AddressResponseDTO address = new AddressResponseDTO(professional.getAddress());
     List<AvailabilityResponseDTO> availabilities = professional.getAvailabilities()
         .stream()
-        .map(availability -> new AvailabilityResponseDTO(
-            availability)).toList();
+        .map(AvailabilityResponseDTO::new).toList();
 
     return new TodayAppointmentsResponseDTO(
         generatedAppointment.getId(),

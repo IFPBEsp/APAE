@@ -1,3 +1,5 @@
+import { createBaseApi } from '@/lib/axios';
+import { getApiBaseUrl } from '@/lib/client-service';
 import { TodayAppointment } from '@/types/appointment';
 import { Page } from '@/types/pagination';
 
@@ -515,7 +517,7 @@ export async function getAppointmentById(
   try {
     const response = await fetch(`/api/appointments/${id}`);
     if (!response.ok) {
-      throw new Error("Error fetching appointment");
+      throw new Error("Error to find appointment")
     }
     return await response.json();
   } catch (error) {
@@ -943,10 +945,7 @@ export const isUsingMockData = (): boolean => {
 };
 
 export async function listTodayAppointment(): Promise<Page<TodayAppointment>> {
-  const currentDate = new Date();
-  const date = currentDate.toISOString().split('T')[0];
-
-  return fetch(`/api/appointments?date=${date}`)
+  return fetch("/api/appointments/today")
     .then(res => {
       if (!res.ok) {
         throw new Error(`Erro na requisição: ${res.status}`);

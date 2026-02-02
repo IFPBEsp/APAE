@@ -13,7 +13,6 @@ import jakarta.servlet.http.HttpServletRequest;
 @ControllerAdvice
 @Order(Ordered.LOWEST_PRECEDENCE)
 public class GlobalExceptionHandler {
-
   @ExceptionHandler(Exception.class)
   public ResponseEntity<ErrorResponse> handleGenericException(Exception ex, HttpServletRequest request) {
     ErrorResponse errorResponse = new ErrorResponse(

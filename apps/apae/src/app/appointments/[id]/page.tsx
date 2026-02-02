@@ -1,3 +1,8 @@
+"use client";
+
+import { useEffect, useState } from "react";
+import { useParams } from "next/navigation";
+
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import {
@@ -25,30 +30,48 @@ import {
 } from "@/app/services/appointmentService";
 import { AppointmentForm } from "@/components/forms/AppointmentForm";
 import TrashButton from "@/components/buttons/trashButton";
-import ConfirmaRealizacaoButton from "@/components/buttons/ConfirmaRealizacaoButton";
 import { formatDatePTBR, separaETransformaEmNumero } from "@/lib/utils";
 
-interface PageProps {
-  params: {
-    id: string;
-  };
-}
+export default function ViewAppointment() {
+  const { id } = useParams<{ id: string }>();
+  const [appointment, setAppointment] = useState<Appointment | null>(null);
+  const [loading, setLoading] = useState(true);
 
-export default async function viewAppointment({ params }: PageProps) {
-  const { id } = params;
-  const appointment: Appointment = await getAppointmentById(id);
+  useEffect(() => {
+    if (!id) return;
+
+    async function loadAppointment() {
+      try {
+        const data = await getAppointmentById(id);
+        setAppointment(data);
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    loadAppointment();
+  }, [id]);
+
+  if (loading) {
+    return <p className="mt-20 ml-10">Carregando...</p>;
+  }
+
+  if (!appointment) {
+    return <p className="mt-20 ml-10">Agendamento não encontrado</p>;
+  }
+
   const patient = appointment.annualRegistration.patient;
 
-  // prox consulta -> data inicial
   const [year, month, day] = separaETransformaEmNumero(
     appointment.initialDate,
     "-"
   );
-  // hora da prox consulta -> hora do agendamento
+
   const [hour, minute, second] = separaETransformaEmNumero(
     appointment.hour,
     ":"
   );
+
   const dataHoraDate =
     !isNaN(year) &&
     !isNaN(month) &&
@@ -58,22 +81,6 @@ export default async function viewAppointment({ params }: PageProps) {
     !isNaN(second)
       ? new Date(year, month - 1, day, hour, minute, second)
       : null;
-
-
-  const getStatusStyle = (status: boolean | undefined, data: Date | null) => {
-    if (!data) {
-      return { class: "bg-gray-400", text: "Invalid date" };
-    }
-
-  const dataCurrent = new Date();
-    if (status) {
-      return { class: "bg-[#0D4F97]", text: "Confirmed Consultation" };
-    } else if (data > dataCurrent) {
-      return { class: "bg-[#f0bc1f]", text: "Pending Consultation" };
-    } else {
-      return { class: "bg-[#970D0D]", text: "Consultation Not Performed" };
-    }
-  };
 
   return (
     <div className="mt-20 w-full mr-17 ml-10">
