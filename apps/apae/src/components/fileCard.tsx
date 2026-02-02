@@ -23,7 +23,7 @@ export default function FileCard({ file }: Props) {
   return (
     <>
       <div
-        className="cursor-pointer p-3 border rounded hover:bg-gray-100"
+        className="cursor-pointer p-3 border rounded hover:bg-gray-100 overflow-hidden"
         onClick={() => setOpen(true)}
       >
         <p className="truncate">{file.fileName}</p>

@@ -33,7 +33,7 @@ import { useSidebar } from "@/components/ui/sidebar";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
 import logo from "../../assets/logo.png";
-import { SquareActivity, BriefcaseMedical, Syringe } from "lucide-react"
+import { SquareActivity, BriefcaseMedical, Syringe, Stethoscope } from "lucide-react"
 
 export function AppSidebar() {
   const { open, setOpen, isMobile, setOpenMobile } = useSidebar();
@@ -131,21 +131,57 @@ export function AppSidebar() {
             </CollapsibleContent>
           </SidebarGroup>
         </Collapsible>
-        <SidebarGroup className="m-0 pt-0">
-          <Link href="/visualization-professional" passHref>
-            <SidebarMenuButton
-              className={`${styles.menuButton} font-base gap-2 ${cn(
-                "h-10 transition-colors",
-                pathname == "/visualization-professional"
-                  ? "bg-[#FFFFFF] !text-[#000000]"
-                  : "text-[#0D4F97] hover:bg-[#0D4F97] hover:!text-white"
-              )}`}
-            >
-              <IdBadgeIcon size={20} />
-              <span className="text-base">Profissionais da Saúde</span>
-            </SidebarMenuButton>
-          </Link>
-        </SidebarGroup>
+
+        <Collapsible defaultOpen={false} className="group/collapsible">
+          <SidebarGroup>
+            <SidebarGroupLabel asChild>
+              <CollapsibleTrigger
+                className={`${styles.menuButton} font-base gap-2`}
+              >
+                <IdBadgeIcon size={20} />
+                <span className="text-base">Profissionais da Saúde</span>
+                <ChevronDownIcon
+                  size={16}
+                  className="ml-auto transition-transform group-data-[state=open]/collapsible:rotate-180"
+                />
+              </CollapsibleTrigger>
+            </SidebarGroupLabel>
+            <CollapsibleContent>
+              <SidebarMenu>
+                <SidebarMenuItem>
+                  <Link href="/visualization-professional" passHref>
+                    <SidebarMenuButton
+                      className={`${styles.menuButton} font-base gap-2 ${cn(
+                        "h-10 transition-colors",
+                        pathname == "/visualization-professional"
+                          ? "bg-[#FFFFFF] !text-[#000000]"
+                          : "text-[#0D4F97] hover:bg-[#0D4F97] hover:!text-white"
+                      )}`}
+                    >
+                      <Stethoscope size={20} />
+                      <span className="text-base">Profissionais</span>
+                    </SidebarMenuButton>
+                  </Link>
+                </SidebarMenuItem>
+              <SidebarMenuItem>
+                <Link href="/tipo-atendimento" passHref>
+                  <SidebarMenuButton
+                    className={`${styles.menuButton} font-base gap-2 ${cn(
+                      "h-10 transition-colors",
+                      pathname == "/tipo-atendimento"
+                        ? "bg-[#FFFFFF] !text-[#000000]"
+                        : "text-[#0D4F97] hover:bg-[#0D4F97] hover:!text-white"
+                    )}`}
+                  >
+                    <BriefcaseMedical size={16} />
+                    <span className="text-base">Tipos de Atendimento</span>
+                  </SidebarMenuButton>
+                </Link>
+              </SidebarMenuItem>
+              </SidebarMenu>
+            </CollapsibleContent>
+          </SidebarGroup>
+        </Collapsible>
 
         <Collapsible defaultOpen={false} className="group/collapsible">
           <SidebarGroup>
@@ -205,21 +241,6 @@ export function AppSidebar() {
                   >
                     <Syringe size={16} />
                     <span className="text-base">Vacinas</span>
-                  </SidebarMenuButton>
-                </Link>
-              </SidebarMenuItem>
-              <SidebarMenuItem>
-                <Link href="/tipo-atendimento" passHref>
-                  <SidebarMenuButton
-                    className={`${styles.menuButton} font-base gap-2 ${cn(
-                      "h-10 transition-colors",
-                      pathname == "/tipo-atendimento"
-                        ? "bg-[#FFFFFF] !text-[#000000]"
-                        : "text-[#0D4F97] hover:bg-[#0D4F97] hover:!text-white"
-                    )}`}
-                  >
-                    <BriefcaseMedical size={16} />
-                    <span className="text-base">Tipos de Atendimento</span>
                   </SidebarMenuButton>
                 </Link>
               </SidebarMenuItem>

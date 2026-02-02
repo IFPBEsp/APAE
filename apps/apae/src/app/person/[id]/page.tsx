@@ -186,7 +186,7 @@ export default function PersonDetailsPage() {
         <h3 className="font-baloo font-bold text-[#0D4F97] text-[24px]">{pessoa?.fullName}</h3>
       </div>
 
-      <DocumentCategoriesCard onClickCategoria={(tipo: string) => { router.push(`/pessoa/${id}/documentos/${tipo}`); }} />
+      <DocumentCategoriesCard onClickCategoria={(tipo: string) => { router.push(`/person/${id}/documents/${tipo}`); }} />
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-6">
         {/* Card Dados Pessoais */}

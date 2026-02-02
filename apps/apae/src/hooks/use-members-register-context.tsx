@@ -399,6 +399,7 @@ function MembersRegisterProvider({
       }),
     );
 
+    formData.append("photo", profile.photo!);
     formData.append("reports", additionals.disability.report!);
     formData.append("referrals", additionals.care.referral!);
 
