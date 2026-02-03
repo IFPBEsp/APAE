@@ -3,6 +3,7 @@ import br.org.apae.api.appointment.application.interfaces.AppointmentApplication
 import br.org.apae.api.appointment.domain.exceptions.AnnualRegistrationNotFound;
 import br.org.apae.api.appointment.domain.exceptions.AppointmentAlreadyCancelledException;
 import br.org.apae.api.appointment.domain.exceptions.AppointmentNotFoundException;
+import br.org.apae.api.appointment.domain.model.Absence;
 import br.org.apae.api.appointment.mapper.AppointmentMapper;
 import br.org.apae.api.patient.domain.model.AnnualRegistry;
 import br.org.apae.api.patient.domain.repository.AnnualRegistryRepository;
@@ -15,10 +16,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.Year;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import org.springframework.data.domain.Page;
@@ -301,21 +299,29 @@ public class AppointmentApplicationServiceImpl implements AppointmentApplication
   @Override
   public Page<TodayAppointmentsResponseDTO> listAppointmentForToday(Pageable pageable) {
     return this.generatedRepo.listAppointmentsForToday(pageable).map(appointment -> {
-      Patient patient = patientRepo.findById(appointment.getPatientId()).get();
-      Guardian guardian = guardianRepo.findByPatientId(patient.getId()).get();
-      List<Parent> pais = parentRepo.findAllByPatientId(patient.getId());
+      try {
+        Patient patient = patientRepo.findById(appointment.getPatientId()).get();
+        Guardian guardian = guardianRepo.findByPatientId(patient.getId()).get();
+        List<Parent> pais = parentRepo.findAllByPatientId(patient.getId());
 
-      AddressResponseDTO adto = new AddressResponseDTO(patient.getAddress());
-      Set<Vaccine> vaccines = patient.getVaccines();
+        AddressResponseDTO adto = new AddressResponseDTO(patient.getAddress());
+        Set<Vaccine> vaccines = patient.getVaccines();
 
-      PatientResponseDTO pdto = new PatientResponseDTO(
-        patient,
-        adto,
-        new GuardianResponseDTO(guardian, adto),
-        pais.stream().map(parentMapper::toResponseDTO).toList(),
-        vaccines.stream().map(vaccineMapper::toResponseDTO).collect(Collectors.toSet()), null);
+        Optional<Absence> absence = this.absenceRepo.findByGeneratedAppointmentId(appointment.getId());
+        Boolean hasAbsence = absence.isPresent();
 
-      return mapper.toTodayResponseDTO(appointment, pdto);
+        PatientResponseDTO pdto = new PatientResponseDTO(
+                patient,
+                adto,
+                new GuardianResponseDTO(guardian, adto),
+                pais.stream().map(parentMapper::toResponseDTO).toList(),
+                vaccines.stream().map(vaccineMapper::toResponseDTO).collect(Collectors.toSet()), null);
+
+        return mapper.toTodayResponseDTO(appointment, pdto, hasAbsence);
+      } catch (Exception e) {
+        throw new RuntimeException(e);
+      }
+
     });
   }
 
@@ -470,5 +476,40 @@ public class AppointmentApplicationServiceImpl implements AppointmentApplication
 
     return generatedRepo.findByPatientIdAndScheduledDateTimeBetween(patientId, s, e, pageable)
             .map(mapper::toGeneratedResponse);
+  }
+
+  @Override
+  public TodayAppointmentsResponseDTO findGeneratedAppointmentById(UUID id) {
+    GeneratedAppointment appointment = generatedRepo.findById(id)
+            .orElseThrow(() -> new IllegalArgumentException("Generated appointment not found with id: " + id));
+
+    Patient patient = patientRepo.findById(appointment.getPatientId())
+            .orElseThrow(() -> new EntityNotFoundException(
+                    "Paciente não encontrado para o agendamento " + appointment.getId()
+            ));
+
+    Guardian guardian = guardianRepo.findByPatientId(patient.getId())
+            .orElseThrow(() -> new EntityNotFoundException(
+                    "Responsável não encontrado para o paciente " + patient.getId()
+            ));
+
+    List<Parent> pais = parentRepo.findAllByPatientId(patient.getId());
+
+    AddressResponseDTO adto = new AddressResponseDTO(patient.getAddress());
+    Set<Vaccine> vaccines = patient.getVaccines();
+
+    Optional<Absence> absence = this.absenceRepo.findByGeneratedAppointmentId(id);
+    Boolean hasAbsence = absence.isPresent();
+
+    PatientResponseDTO pdto = new PatientResponseDTO(
+            patient,
+            adto,
+            new GuardianResponseDTO(guardian, adto),
+            pais.stream().map(parentMapper::toResponseDTO).toList(),
+            vaccines.stream().map(vaccineMapper::toResponseDTO).collect(Collectors.toSet()),
+            null
+    );
+
+    return mapper.toTodayResponseDTO(appointment, pdto, hasAbsence);
   }
 }

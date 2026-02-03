@@ -1,9 +1,9 @@
-import { NextResponse } from 'next/server';
 import { createBaseApi } from '@/lib/axios';
-import { AxiosError } from 'axios';
 import { setSessionCookie } from '@/lib/cookies';
+import { AxiosError } from 'axios';
+import { NextResponse } from 'next/server';
 
-const DISABLE_AUTH = true;
+const DISABLE_AUTH = false;
 export async function POST(req: Request) {
   if (DISABLE_AUTH) {
     const payload = {

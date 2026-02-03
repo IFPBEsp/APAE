@@ -65,7 +65,10 @@ export default function AllApointments() {
   useEffect(() =>{
     const fetchAppointments = async () => {
       const response = await getAppointments();
-      setAppointments(response.content as Appointment[]);
+      const activeAppointments = (response.content as Appointment[]).filter(
+        appointment => appointment.isActive
+      );
+      setAppointments(activeAppointments);
 
       const areasExistentes: Area[] = (await getAreasDaSaude()).map(
         (area, index) => ({ id: index, name: area })
@@ -220,7 +223,7 @@ export default function AllApointments() {
                       </TableCell>
                       <TableCell className="px-3 py-2">
                         <Link
-                          href={`/appointments/today${item.id}`}
+                          href={`/appointments/${item.id}`}
                           className="cursor-pointer text-xs text-blue-800 underline hover:underline sm:text-sm"
                         >
                           Detalhes

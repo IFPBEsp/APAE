@@ -19,11 +19,13 @@ import { useState } from "react";
 interface RegistrarFaltaButtonProps {
   generatedAppointmentId: string;
   absenceDate: string;
+  disabled?: boolean;
 }
 
 export function RegistrarFaltaButton({
   generatedAppointmentId,
   absenceDate,
+  disabled,
 }: RegistrarFaltaButtonProps) {
   const [motivo, setMotivo] = useState("");
   const [isLoading, setIsLoading] = useState(false);
@@ -64,6 +66,7 @@ export function RegistrarFaltaButton({
         <Button
           className="bg-[#0D4F97] hover:bg-[#0b417f] text-white font-semibold px-4 py-2 rounded-md text-sm"
           size="sm"
+          disabled={disabled}
         >
           Registrar falta
         </Button>

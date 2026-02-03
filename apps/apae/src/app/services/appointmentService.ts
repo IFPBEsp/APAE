@@ -1,12 +1,10 @@
-import { createBaseApi } from '@/lib/axios';
-import { getApiBaseUrl } from '@/lib/client-service';
 import { TodayAppointment } from '@/types/appointment';
 import { Page } from '@/types/pagination';
 
 export type UUID = string;
 
 const API_BASE_URL = process.env.API_BASE_URL || 'http://localhost:8090';
-const USE_MOCK_DATA = process.env.NEXT_PUBLIC_USE_MOCK_DATA === 'true' || true; // Forçar true para desenvolvimento
+const USE_MOCK_DATA = process.env.NEXT_PUBLIC_USE_MOCK_DATA === 'false' || false; // Forçar true para desenvolvimento
 const MOCK_DELAY = 500; // delay simulado em ms
 
 // ========== DADOS MOCKADOS ==========
@@ -272,7 +270,8 @@ export const MOCK_TODAY_APPOINTMENTS: TodayAppointment[] = [
     overriddenDateTime: new Date(),
     cancelled: false,
     cancellationReason: '',
-    ruleId: ''
+    ruleId: '',
+    hasAbsence: false
   },
   {
     id: 'a1f5b3e2-2222-4aaa-9bbb-000000000002',
@@ -322,7 +321,8 @@ export const MOCK_TODAY_APPOINTMENTS: TodayAppointment[] = [
     overriddenDateTime: new Date(),
     cancelled: false,
     cancellationReason: '',
-    ruleId: ''
+    ruleId: '',
+    hasAbsence: false
   },
 ];
 
@@ -636,26 +636,14 @@ export async function updateAppointmentRule(
   id: UUID,
   dto: UpdateAppointmentRuleDTO
 ): Promise<AppointmentResponseDTO> {
-  if (USE_MOCK_DATA) {
-    console.log("📦 [MOCK] Atualizando regra do agendamento:", id, dto);
-    const appointment =
-      mockAppointments.find((a) => a.id === id) || mockAppointments[0];
-    const updatedAppointment = {
-      ...appointment,
-      frequencyDays: dto.newFrequency,
-      hour: `${dto.newTime}:00`,
-    };
-    return mockFetch(updatedAppointment);
-  }
-
   try {
     const backendDto = {
       newFrequency: dto.newFrequency,
-      newTime: `${dto.newTime}:00`,
+      newTime: `${dto.newTime}`,
     };
 
     console.log(backendDto)
-    const response = await fetch(`/api/appointments/${id}/rule`, {
+    const response = await fetch(`http://localhost:8090/api/appointments/${id}/rule`, {
       method: "PATCH",
       headers: {
         "Content-Type": "application/json",
@@ -1049,6 +1037,8 @@ export const isUsingMockData = (): boolean => {
 
 export async function getTodayAppointmentById(id: string) {
   try {
+        console.log("\n\n\n\n\n\n")
+    console.log(`/api/appointments/today/${id}`)
     const res = await fetch(`/api/appointments/today/${id}`);
 
     if (!res.ok) {

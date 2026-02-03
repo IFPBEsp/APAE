@@ -1,17 +1,13 @@
 'use client';
 
-import { useEffect, useState } from 'react';
-import { format } from 'date-fns';
-import { ptBR } from 'date-fns/locale';
-import {
-  CalendarDays,
-  Users,
-  MessageCircleWarning,
-  CalendarX,
-} from 'lucide-react';
-import { Page } from '@/types/pagination';
 import { Button } from '@/components/ui/button';
+import { Calendar } from '@/components/ui/calendar';
 import { Card, CardContent } from '@/components/ui/card';
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from '@/components/ui/popover';
 import {
   Table,
   TableBody,
@@ -20,21 +16,22 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
-import { Calendar } from '@/components/ui/calendar';
+import { Page } from '@/types/pagination';
+import { format } from 'date-fns';
+import { ptBR } from 'date-fns/locale';
 import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from '@/components/ui/popover';
-import { Badge } from '@/components/ui/badge';
+  CalendarDays,
+  Users
+} from 'lucide-react';
+import { useEffect, useState } from 'react';
 
 import {
   Dialog,
   DialogContent,
+  DialogDescription,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-  DialogDescription,
 } from '@/components/ui/dialog';
 import { TodayAppointment } from '@/types/appointment';
 import {
@@ -49,7 +46,6 @@ import { AppointmentForm } from '@/components/forms/AppointmentForm';
 import { InfoCard } from '@/components/shared/InfoCard';
 import Link from 'next/link';
 
-import { Checkbox } from '@/components/ui/checkbox';
 import { RegistrarFaltaButton } from '@/components/buttons/RegistrarFaltaButton';
 
 export default function DashboardPage() {
@@ -168,13 +164,13 @@ export default function DashboardPage() {
                     Paciente
                   </TableHead>
                   <TableHead className="px-3 py-2 text-xs text-[#0D4F97] sm:px-4 sm:py-3 sm:text-sm">
-                    Confirmou Presença
-                  </TableHead>
-                  <TableHead className="px-3 py-2 text-xs text-[#0D4F97] sm:px-4 sm:py-3 sm:text-sm">
                     Profissional
                   </TableHead>
                   <TableHead className="px-3 py-2 text-xs text-[#0D4F97] sm:px-4 sm:py-3 sm:text-sm">
                     Ações
+                  </TableHead>
+                  <TableHead className="px-3 py-2 text-xs text-[#0D4F97] sm:px-4 sm:py-3 sm:text-sm">
+                    Faltou
                   </TableHead>
                   <TableHead className="px-3 py-2 text-xs text-[#0D4F97] sm:px-4 sm:py-3 sm:text-sm">
                     Registrar Falta
@@ -187,16 +183,6 @@ export default function DashboardPage() {
                     <TableCell className="px-3 py-2 text-xs sm:px-4 sm:py-3 sm:text-sm">
                       {item.patient.fullName}
                     </TableCell>
-                    <TableCell className="px-3 py-2">
-                      <Badge
-                        variant="outline"
-                        className={`text-xs ${
-                          true ? 'text-green-400' : 'text-red-400'
-                        } sm:text-sm`}
-                      >
-                        {true ? 'Sim' : 'Não'}
-                      </Badge>
-                    </TableCell>
                     <TableCell className="px-3 py-2 text-xs sm:px-4 sm:py-3 sm:text-sm">
                       {item.professional.name}
                     </TableCell>
@@ -208,10 +194,14 @@ export default function DashboardPage() {
                         Detalhes
                       </Link>
                     </TableCell>
+                    <TableCell className="px-3 py-2">
+                      {item.hasAbsence ? 'Sim' : 'Não'}
+                    </TableCell>
                     <TableCell className="px-3 py-2 text-xs sm:px-4 sm:py-3 sm:text-sm">
                       <RegistrarFaltaButton
                         generatedAppointmentId={item.id}
                         absenceDate={format(selectedDate, 'yyyy-MM-dd')}
+                        disabled={item.hasAbsence}
                       />
                     </TableCell>
                   </TableRow>

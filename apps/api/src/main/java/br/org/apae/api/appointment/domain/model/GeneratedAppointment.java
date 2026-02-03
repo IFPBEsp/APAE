@@ -1,19 +1,11 @@
 package br.org.apae.api.appointment.domain.model;
 
 import java.time.LocalDateTime;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.UUID;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.Id;
-import jakarta.persistence.Index;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.PrePersist;
-import jakarta.persistence.PreUpdate;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 
 @Entity
 @Table(name = "agendamento_gerado",
@@ -49,6 +41,14 @@ public class GeneratedAppointment {
 
     @Column(name = "paciente_id", nullable = false, updatable = false)
     private UUID patientId;
+
+    @OneToMany(
+            mappedBy = "generatedAppointment",
+            cascade = CascadeType.ALL,
+            orphanRemoval = true
+    )
+    private Set<Absence> absences = new HashSet<>();
+
 
     @PrePersist
     @PreUpdate
