@@ -37,8 +37,9 @@
     "react-day-picker": "^9.8.1",
     "react-dom": "19.1.0",
     "react-hook-form": "^7.62.0",
-    "tailwind-merge": "^3.3.1",
+    "react-select": "^5.10.2",
     "react-toastify": "^11.0.5",
+    "tailwind-merge": "^3.3.1",
     "use-mask-input": "^3.5.1",
     "zod": "^4.0.17"
   },

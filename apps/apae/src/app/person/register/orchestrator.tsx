@@ -22,13 +22,16 @@ export function PageOrchestrator({
       case MembersRegisterStep.PERSONAL:
         router.push("/person/register/personal");
         break;
+      case MembersRegisterStep.KINSHIPS:
+        router.push("/person/register/kinships");
+        break;
       case MembersRegisterStep.ADDRESS:
         router.push("/person/register/address");
         break;
       case MembersRegisterStep.ADDITIONALS:
         router.push("/person/register/additional");
         break;
-      case MembersRegisterStep.GUARDIANS:
+      case MembersRegisterStep.GUARDIAN:
         router.push("/person/register/responsible");
         break;
       case MembersRegisterStep.PROFILE:

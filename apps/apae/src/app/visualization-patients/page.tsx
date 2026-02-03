@@ -5,12 +5,11 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Plus } from "lucide-react";
 import { PatientCard } from "@/components/shared/patient-card";
-import { Patient } from "@/schemas/authSchema";
-import { SearchFilters } from "@/components/shared/filters/search-filters";
+import { PatientCardData } from "@/schemas/patientSchema";
+import { SearchFilters } from "@/components/search-filters";
 import { toast } from "react-toastify";
 import { useDebounce } from "@/hooks/use-debounce";
 import { usePatientFilters } from "@/hooks/use-patients-filters";
-import { PatientCardData } from "@/schemas/patientSchema";
 
 
 export default function PatientsAndStudentsScreen() {
@@ -21,11 +20,13 @@ export default function PatientsAndStudentsScreen() {
   const [transtorno, setTranstorno] = useState<string>("");
   const [ano, setAno] = useState<string>("");
   const [cidade, setCidade] = useState<string>("");
+  const [tipoAtendimento, setTipoAtendimento] = useState<string>("");
   const debouncedSearchName = useDebounce(searchName, 500);
   const {
     transtornoOptions,
     anoOptions,
-    cidadeOptions
+    cidadeOptions,
+    tipoAtendimentoOptions
   } = usePatientFilters();
 
   useEffect(() => {
@@ -37,12 +38,14 @@ export default function PatientsAndStudentsScreen() {
         if (transtorno) params.append("disorder", transtorno);
         if (ano) params.append("year", ano);
         if (cidade) params.append("city", cidade);
+        if (tipoAtendimento) params.append("treatmentType", tipoAtendimento);
 
         const queryString = params.toString();
         const response = await fetch(`/api/patients?${queryString}`);
 
         if (!response.ok) {
            const errorData = await response.json();
+           console.error('[ERRO API PATIENTS]:', errorData.response?.data || errorData.message);
            throw new Error(errorData.message || "Erro ao buscar dados");
         }
 
@@ -61,7 +64,7 @@ export default function PatientsAndStudentsScreen() {
     };
 
     loadData();
-  }, [debouncedSearchName, transtorno, ano, cidade]);
+  }, [debouncedSearchName, transtorno, ano, cidade, tipoAtendimento]);
 
   const renderContent = () => {
     if (isLoading) {
@@ -88,7 +91,7 @@ export default function PatientsAndStudentsScreen() {
   };
 
   return (
-    <div className="flex-1 bg-background min-h-screen">
+    <div className="!bg-slate-100 min-h-screen">
       <main className="container mx-auto p-4 md:p-6">
         <div className="bg-white rounded-xl shadow-md border-2 p-6 mb-4">
           <SearchFilters
@@ -100,12 +103,14 @@ export default function PatientsAndStudentsScreen() {
             setAno={setAno}
             cidade={cidade}
             setCidade={setCidade}
+            tipoAtendimento={tipoAtendimento}
+            setTipoAtendimento={setTipoAtendimento}
             transtornoOptions={transtornoOptions}
             anoOptions={anoOptions}
             cidadeOptions={cidadeOptions}
+            tipoAtendimentoOptions={tipoAtendimentoOptions}
           />
         </div>
-
         <section className="relative md:bg-white md:rounded-xl md:shadow-md md:border-2 md:p-6">
           <div className="hidden md:flex justify-between items-center mb-4">
             <h2 className="text-xl font-bold text-[#003B93]">

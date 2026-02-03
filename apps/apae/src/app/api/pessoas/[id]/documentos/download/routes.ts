@@ -15,6 +15,7 @@ export async function GET(
 
   try {
     const api = await createBaseApi();
+    
     const response = await api.get(
       `/patients/${patientId}/documents/download`,
       {
@@ -22,7 +23,7 @@ export async function GET(
         responseType: "stream", 
       }
     );
-
+    
     const contentDisposition = response.headers["content-disposition"];
     let filename = "download.bin";
     if (contentDisposition) {
@@ -31,15 +32,16 @@ export async function GET(
     }
 
     const headers = new Headers();
-    headers.set("Content-Type", "application/octet-stream");
+    headers.set("Content-Type", response.headers["content-type"] || "application/octet-stream");
     headers.set("Content-Disposition", `attachment; filename="${filename}"`);
 
     return new NextResponse(response.data, { headers });
 
   } catch (error) {
     const err = error as AxiosError;
+    console.error("Erro download:", err);
     return NextResponse.json(
-      { message: err.response?.data || "Erro ao baixar documento" },
+      { message: "Erro ao baixar documento" },
       { status: err.response?.status || 500 }
     );
   }

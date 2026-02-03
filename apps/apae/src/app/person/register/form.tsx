@@ -52,7 +52,7 @@ function FileInputButton({
   ...props
 }: Readonly<
   Required<Pick<React.ComponentProps<"input">, "onChange" | "id">> &
-    Omit<React.ComponentProps<"button">, "onChange" | "onClick">
+  Omit<React.ComponentProps<"button">, "onChange" | "onClick">
 >) {
   return (
     <div className="w-full overflow-hidden">

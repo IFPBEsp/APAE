@@ -1,6 +1,8 @@
 package br.org.apae.api.servicearea.application.internal;
 
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -69,6 +71,20 @@ public class ServiceAreaApplicationServiceImpl implements ServiceAreaApplication
         return repository.findByArea(area)
                 .map(mapper::toResponseDTO)
                 .orElseThrow(ServiceAreaNotFoundException::new);
+    }
+
+    @Transactional(readOnly = true)
+    @Override
+    public Set<ServiceAreaResponseDTO> findServiceAreas(Set<CreateServiceAreaDTO> servicesNames) {
+        Set<String> areas = servicesNames.stream()
+                .map(CreateServiceAreaDTO::area)
+                .collect(Collectors.toSet());
+
+        Set<ServiceArea> serviceAreas = repository.findByAreaIn(areas);
+
+        return serviceAreas.stream()
+                .map(mapper::toResponseDTO)
+                .collect(Collectors.toSet());
     }
 
     @Override

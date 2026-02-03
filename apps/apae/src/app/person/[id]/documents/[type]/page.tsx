@@ -3,9 +3,8 @@
 import * as React from "react";
 import { useRouter, useParams } from "next/navigation";
 import { ArrowLeft } from "lucide-react";
-
-import FileCard from "@/components/shared/fileCard";
-import FileFilter from "@/components/shared/filters/fileFilter";
+import { Button } from "@/components/ui/button";
+import FileCard from "@/components/fileCard";
 import { toast } from "react-toastify";
 
 export interface FileItem {
@@ -22,7 +21,7 @@ const documentCategory = {
   medico: "Documentos médicos",
   medicos: "Documentos médicos",
   escolar: "Documentos escolares",
-  escolares: "Documentos escolares",
+  escolares: "Documentos escolares", 
 };
 
 export default function DocumentTypePage() {

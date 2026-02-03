@@ -9,7 +9,7 @@ import { Plus } from "lucide-react";
 import { TranstornoListItem } from "./TranstornosListItem";
 import { Transtorno } from "@/schemas/transtornosSchema";
 import { Loader2 } from "lucide-react";
-import { SearchFilters } from "@/components/shared/filters/search-filters";
+import { SearchFilters } from "@/components/search-filters";
 
 export default function TranstornosPage() {
   const router = useRouter();
@@ -90,7 +90,7 @@ export default function TranstornosPage() {
   };
 
   return (
-    <div className="flex-1 bg-background min-h-screen">
+    <div className="!bg-slate-100 min-h-screen">
       <main className="container mx-auto p-4 md:p-6">
         <div className="bg-white rounded-xl shadow-md border-2 p-6 mb-4">
           <SearchFilters

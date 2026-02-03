@@ -23,4 +23,6 @@ public interface AnnualRegistryApplicationService {
     List<String> findAllRegistryYears();
 
     void deleteAllRegistriesByPatient(UUID patientId);
+
+    List<Integer> listYearsByPatient(UUID patientId);
 }

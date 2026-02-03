@@ -7,29 +7,29 @@ export function useFetchServiceAreas() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
-    async function fetchData() {
-      try {
-        setLoading(true);
-        const response = await getAllServiceAreas();
-        
-        if (!response.ok) {
-          const errorData = await response.json();
-          const errorMessage = errorData.message;
-          throw new Error(errorMessage.message);
-        }
+  async function fetchData() {
+    try {
+      setLoading(true);
+      const response = await getAllServiceAreas();
 
-        const data: ServiceArea[] = await response.json();
-        setAreas(data);
-      } catch (err) {
-        setError(err instanceof Error ? err.message : "Erro desconhecido");
-      } finally {
-        setLoading(false);
+      if (!response.ok) {
+        const errorData = await response.json();
+        const errorMessage = errorData.message;
+        throw new Error(errorMessage.message);
       }
-    }
 
+      const data: ServiceArea[] = await response.json();
+      setAreas(data);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Erro desconhecido");
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  useEffect(() => {
     fetchData();
   }, []);
 
-  return { areas, loading, error };
+  return { areas, loading, error, fetchCares: fetchData };
 }
