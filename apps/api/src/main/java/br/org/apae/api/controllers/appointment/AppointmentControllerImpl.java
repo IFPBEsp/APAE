@@ -86,4 +86,9 @@ public class AppointmentControllerImpl implements AppointmentController {
   public ResponseEntity<Page<TodayAppointmentsResponseDTO>> listTodayAppointment(Pageable pageable) {
     return ResponseEntity.ok(this.service.listAppointmentForToday(pageable));
   }
+
+  @Override
+  public ResponseEntity<TodayAppointmentsResponseDTO> getTodayAppointmentById(UUID id) {
+    return ResponseEntity.ok(service.findGeneratedAppointmentById(id));
+  }
 }

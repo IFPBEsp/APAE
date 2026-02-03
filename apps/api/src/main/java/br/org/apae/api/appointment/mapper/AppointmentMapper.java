@@ -121,7 +121,7 @@ public class AppointmentMapper {
     );
   }
 
-  public TodayAppointmentsResponseDTO toTodayResponseDTO(GeneratedAppointment generatedAppointment, PatientResponseDTO patient) {
+  public TodayAppointmentsResponseDTO toTodayResponseDTO(GeneratedAppointment generatedAppointment, PatientResponseDTO patient, Boolean hasAbsence) {
     Appointment appointment = generatedAppointment.getAppointment();
     // Patient patient = appointment.getAnnualRegistration().getPatient();
     HealthProfessional professional = appointment.getProfessional();
@@ -145,7 +145,7 @@ public class AppointmentMapper {
         generatedAppointment.getCancelled(),
         generatedAppointment.getCancellationReason(),
         generatedAppointment.getEffectiveDateTime(),
-        appointment.getId()
+        appointment.getId(), hasAbsence
     );
   }
 }

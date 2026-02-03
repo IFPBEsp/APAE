@@ -11,4 +11,5 @@ export interface TodayAppointment {
 	cancellationReason: string;
 	effectiveDateTime: Date;
 	ruleId: UUID,
+	hasAbsence: boolean;
 }

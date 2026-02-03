@@ -1,6 +1,6 @@
-import { NextResponse } from "next/server";
 import { createBaseApi } from "@/lib/axios";
 import { AxiosError } from "axios";
+import { NextResponse } from "next/server";
 
 export async function GET(req: Request) {
   try {

@@ -16,5 +16,6 @@ public record TodayAppointmentsResponseDTO(
   Boolean cancelled,
   String cancellationReason,
   LocalDateTime effectiveDateTime,
-  UUID ruleId
+  UUID ruleId,
+  Boolean hasAbsence
 ) {}

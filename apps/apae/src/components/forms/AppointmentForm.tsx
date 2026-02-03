@@ -1,22 +1,22 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
-import { Card, CardContent } from "@/components/ui/card";
-import { Label } from "@/components/ui/label";
-import { Button } from "@/components/ui/button";
-import { DateTimePicker } from "@/components/ui/date-time-picker";
-import { Combobox } from "@/components/ui/combobox";
-import { cn, separaETransformaEmNumero } from '@/lib/utils';
-import { format } from "date-fns";
-import { Input } from '../ui/input';
 import {
   Appointment,
   getPacientes,
   getProfissionaisDaSaude,
   Patient,
   Professional,
-  saveAppointment,
+  updateAppointmentRule
 } from "@/app/services/appointmentService";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
+import { Combobox } from "@/components/ui/combobox";
+import { DateTimePicker } from "@/components/ui/date-time-picker";
+import { Label } from "@/components/ui/label";
+import { cn, separaETransformaEmNumero } from '@/lib/utils';
+import { format } from "date-fns";
+import React, { useEffect, useState } from "react";
+import { Input } from '../ui/input';
 
 
 type selectItem = {
@@ -126,19 +126,18 @@ export function AppointmentForm({ editAppointment }: PageProps) {
       return;
     }
 
-
     if (patient && professional && dateHour && frequencyDays > 0) {
       const initialDate = format(dateHour, "yyyy-MM-dd");   
       const hour = format(dateHour, "HH:mm:ss");  
-      await saveAppointment({
-        patientId: patient.value,
-        serviceId: "c2a2c8d1-0fa5-4a76-b1ad-097069b9f779",
-        professionalId: professional.value,
-        frequencyDays,
-        initialDate,
-        hour,
+      if(!editAppointment?.id) {
+        throw new Error("ID do agendamento não encontrado");
+      }
+      
+      await updateAppointmentRule(editAppointment?.id, {
+        newFrequency: frequencyDays,
+        newTime: hour,
       });
-      window.location.reload();
+
     }
   };
 

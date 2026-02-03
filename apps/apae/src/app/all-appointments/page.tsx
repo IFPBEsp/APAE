@@ -65,7 +65,10 @@ export default function AllApointments() {
   useEffect(() =>{
     const fetchAppointments = async () => {
       const response = await getAppointments();
-      setAppointments(response.content as Appointment[]);
+      const activeAppointments = (response.content as Appointment[]).filter(
+        appointment => appointment.isActive
+      );
+      setAppointments(activeAppointments);
 
       const areasExistentes: Area[] = (await getAreasDaSaude()).map(
         (area, index) => ({ id: index, name: area })
