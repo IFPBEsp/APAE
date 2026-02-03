@@ -21,6 +21,7 @@ import z from "zod";
 import { FileInputButton, FormButton, MembersRegisterForm } from "../form";
 import { Checkbox } from "@/components/ui/checkbox";
 import { useRouter } from "next/navigation";
+import { Input } from "@/components/ui/input";
 
 export default function MembersRegisterProfilePage() {
   const {
@@ -42,7 +43,7 @@ export default function MembersRegisterProfilePage() {
       (async () => {
         const res = await register();
         if (res.status === 201) {
-          router.push("/home");
+          router.push("/visualization-patients");
         }
       })();
     }
@@ -62,7 +63,7 @@ export default function MembersRegisterProfilePage() {
           <>
             <FormButton
               type="button"
-              onClick={() => setStep(MembersRegisterStep.GUARDIANS)}
+              onClick={() => setStep(MembersRegisterStep.GUARDIAN)}
             >
               Voltar
             </FormButton>
@@ -78,6 +79,16 @@ export default function MembersRegisterProfilePage() {
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Adicione uma foto *</FormLabel>
+                  {/* [Caso o seletor de arquivos esteja com problemas]
+                  
+                  <Input
+                    id={field.name}
+                    type="file"
+                    accept="application/pdf"
+                    onChange={(e) =>
+                      field.onChange(e.target.files?.[0] ?? null)
+                    }
+                  /> */}
                 <FormControl>
                   <FileInputButton
                     id={field.name}

@@ -47,7 +47,7 @@ export default function MembersRegisterAddressPage() {
           <>
             <FormButton
               type="button"
-              onClick={() => setStep(MembersRegisterStep.PERSONAL)}
+              onClick={() => setStep(MembersRegisterStep.KINSHIPS)}
             >
               Voltar
             </FormButton>

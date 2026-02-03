@@ -42,7 +42,7 @@ export default function MembersRegisterPersonalPage() {
 
   const onSubmit = (values: z.infer<typeof Personal>) => {
     setPersonalData(values);
-    setStep(MembersRegisterStep.ADDRESS);
+    setStep(MembersRegisterStep.KINSHIPS);
   };
 
   return (
@@ -181,7 +181,7 @@ export default function MembersRegisterPersonalPage() {
                     {...field}
                     value={
                       field.value instanceof Date &&
-                      !isNaN(field.value.getTime())
+                        !Number.isNaN(field.value.getTime())
                         ? field.value.toISOString().split("T")[0]
                         : ""
                     }
@@ -226,7 +226,7 @@ export default function MembersRegisterPersonalPage() {
                     {...field}
                     value={
                       field.value instanceof Date &&
-                      !isNaN(field.value.getTime())
+                        !isNaN(field.value.getTime())
                         ? field.value.toISOString().split("T")[0]
                         : ""
                     }

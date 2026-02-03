@@ -3,19 +3,21 @@ package br.org.apae.api.controllers.patient;
 import br.org.apae.api.common.dto.patient.request.documents.CreateDocumentsDTO;
 import br.org.apae.api.common.dto.patient.request.patient.CreatePatientDTO;
 import br.org.apae.api.common.dto.patient.request.patient.UpdatePatientDTO;
-import br.org.apae.api.common.dto.patient.response.disorder.DisorderResponseDTO;
 import br.org.apae.api.common.dto.patient.response.patient.PatientResponseDTO;
 import br.org.apae.api.common.dto.patient.response.patient.PatientSummaryResponseDTO;
-import br.org.apae.api.patient.application.interfaces.AnnualRegistryApplicationService;
-import br.org.apae.api.patient.application.interfaces.DisorderApplicationService;
+import br.org.apae.api.common.dto.servicearea.response.ServiceAreaResponseDTO;
 import br.org.apae.api.patient.application.interfaces.PatientApplicationService;
 import br.org.apae.api.patient.interfaces.controllers.PatientController;
 
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
+import br.org.apae.api.common.dto.patient.response.disorder.DisorderResponseDTO;
+import br.org.apae.api.patient.application.interfaces.AnnualRegistryApplicationService;
+import br.org.apae.api.patient.application.interfaces.DisorderApplicationService;
+
+
+import br.org.apae.api.servicearea.application.interfaces.ServiceAreaApplicationService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.HashMap;
@@ -24,22 +26,24 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
-@CrossOrigin(origins = "http://localhost:3000")
 @RestController
 public class PatientControllerImpl implements PatientController {
 
-     private final PatientApplicationService patientService;
+    private final PatientApplicationService patientService;
     private final DisorderApplicationService disorderService;
     private final AnnualRegistryApplicationService annualRegistryService;
+    private final ServiceAreaApplicationService serviceAreaService;
 
     public PatientControllerImpl(
             PatientApplicationService patientService,
             DisorderApplicationService disorderService,
-            AnnualRegistryApplicationService annualRegistryService
+            AnnualRegistryApplicationService annualRegistryService,
+            ServiceAreaApplicationService serviceAreaService
     ) {
         this.patientService = patientService;
         this.disorderService = disorderService;
         this.annualRegistryService = annualRegistryService;
+        this.serviceAreaService = serviceAreaService;
     }
 
     @Override
@@ -55,13 +59,9 @@ public class PatientControllerImpl implements PatientController {
     }
 
     @Override
-    public ResponseEntity<Page<PatientSummaryResponseDTO>> findAll(Pageable pageable) {
-        Page<PatientSummaryResponseDTO> patientsPage = patientService.findAllPatients(pageable);
-        return ResponseEntity.ok(patientsPage);
-    }
+    public ResponseEntity<List<PatientSummaryResponseDTO>> findWithFilters(@RequestParam Map<String, String> filters) {
+        filters.values().removeIf(String::isBlank);
 
-    @Override
-    public ResponseEntity<List<PatientSummaryResponseDTO>> findByFilter(Map<String, String> filters) {
         List<PatientSummaryResponseDTO> patients = patientService.findPatientByFilter(filters);
         return ResponseEntity.ok(patients);
     }
@@ -98,5 +98,15 @@ public class PatientControllerImpl implements PatientController {
     public ResponseEntity<List<String>> getCidades() {
         List<String> cidades = patientService.findAllPatientCities();
         return ResponseEntity.ok(cidades);
+    }
+
+    @Override
+    public ResponseEntity<List<String>> getTiposAtendimento() {
+        List<ServiceAreaResponseDTO> serviceAreaResponseDTOS = serviceAreaService.findAllServiceAreas();
+        List<String> serviceAreaNames = serviceAreaResponseDTOS.stream()
+                .map(ServiceAreaResponseDTO::area)
+                .distinct()
+                .toList();
+        return ResponseEntity.ok(serviceAreaNames);
     }
 }

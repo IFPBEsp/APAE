@@ -32,7 +32,6 @@ import java.util.UUID;
 
 @Service
 public class PatientApplicationServiceImpl implements PatientApplicationService {
-
     private final PatientRepository patientRepository;
     private final PatientMapper patientMapper;
     private final PatientDomainService patientDomainService;
