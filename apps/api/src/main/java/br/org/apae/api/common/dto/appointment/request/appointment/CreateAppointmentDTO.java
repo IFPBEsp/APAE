@@ -13,9 +13,6 @@ public record CreateAppointmentDTO(
     @NotNull(message = "O ID do profissional é obrigatório")
     UUID professionalId,
 
-    @NotNull(message = "O ID do atendimento é obrigatório")
-    UUID serviceId,
-
     @NotNull(message = "O ID do paciente é obrigatório")
     UUID patientId,
 

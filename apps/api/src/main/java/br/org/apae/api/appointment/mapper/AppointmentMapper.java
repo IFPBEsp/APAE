@@ -29,7 +29,6 @@ public class AppointmentMapper {
   public Appointment toEntity(CreateAppointmentDTO dto, HealthProfessional professional, AnnualRegistry annualRegistry) {
     return new Appointment(
         professional,
-        dto.serviceId(),
         annualRegistry,
         dto.frequencyDays(),
         dto.hour(),
@@ -41,9 +40,6 @@ public class AppointmentMapper {
   public Appointment updateEntity(Appointment appointment, UpdateAppointmentDTO dto, HealthProfessional professional, AnnualRegistry annualRegistry) {
     appointment.setProfessional(
         dto.professionalId() != null ? professional : appointment.getProfessional()
-    );
-    appointment.setServiceId(
-        dto.serviceId() != null ? dto.serviceId() : appointment.getServiceId()
     );
 
     appointment.setAnnualRegistration(
@@ -94,7 +90,6 @@ public class AppointmentMapper {
           serviceArea,
           address, 
           availabilities),
-        appointment.getServiceId(),
         toResponse(appointment.getAnnualRegistration(), patient),
         appointment.getFrequencyDays(),
         appointment.getInitialDate(),

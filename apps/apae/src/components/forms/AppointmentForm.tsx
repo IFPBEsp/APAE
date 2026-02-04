@@ -6,6 +6,7 @@ import {
   getProfissionaisDaSaude,
   Patient,
   Professional,
+  saveAppointment,
   updateAppointmentRule
 } from "@/app/services/appointmentService";
 import { Button } from "@/components/ui/button";
@@ -112,8 +113,8 @@ export function AppointmentForm({ editAppointment }: PageProps) {
 
     const errors = {
       dateHour: !dateHour,
-      patient: !patient,
-      professional: !professional,
+      patient: !patient.value,
+      professional: !professional.value,
       frequencyDays:
         !frequencyDays ||
         isNaN(frequencyDays) ||
@@ -126,19 +127,27 @@ export function AppointmentForm({ editAppointment }: PageProps) {
       return;
     }
 
-    if (patient && professional && dateHour && frequencyDays > 0) {
+    if (patient.value && professional.value && dateHour && frequencyDays > 0) {
       const initialDate = format(dateHour, "yyyy-MM-dd");   
       const hour = format(dateHour, "HH:mm:ss");  
-      if(!editAppointment?.id) {
-        throw new Error("ID do agendamento não encontrado");
-      }
       
-      await updateAppointmentRule(editAppointment?.id, {
-        newFrequency: frequencyDays,
-        newTime: hour,
-      });
-
+      if (editAppointment?.id) {
+        await updateAppointmentRule(editAppointment.id, {
+          newFrequency: frequencyDays,
+          newTime: hour,
+        });
+      } else {
+        await saveAppointment({
+          patientId: patient.value,
+          professionalId: professional.value,
+          serviceId: "ea4c3a4d-c3f4-4a83-ab29-ff24c50e844c",
+          initialDate,
+          hour,
+          frequencyDays,
+        });
+      }
     }
+    window.location.reload();
   };
 
   return (
