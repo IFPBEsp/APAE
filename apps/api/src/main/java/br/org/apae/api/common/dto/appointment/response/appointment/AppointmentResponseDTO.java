@@ -10,7 +10,6 @@ import java.util.UUID;
 public record AppointmentResponseDTO(
   UUID id,
   HealthProfessionalResponseDTO professional,
-  UUID serviceId,
   AnnualRegistryResponseDTO annualRegistration,
   Integer frequencyDays,
   LocalDate initialDate,

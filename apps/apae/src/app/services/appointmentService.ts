@@ -1037,8 +1037,6 @@ export const isUsingMockData = (): boolean => {
 
 export async function getTodayAppointmentById(id: string) {
   try {
-        console.log("\n\n\n\n\n\n")
-    console.log(`/api/appointments/today/${id}`)
     const res = await fetch(`/api/appointments/today/${id}`);
 
     if (!res.ok) {

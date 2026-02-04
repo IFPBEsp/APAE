@@ -23,9 +23,6 @@ public class Appointment {
   @JoinColumn(name = "profissional_id", nullable = false)
   private HealthProfessional professional;
 
-  @Column(name = "atendimento_id", nullable = false)
-  private UUID serviceId;
-
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "cadastro_anual_id", nullable = false)
   private AnnualRegistry annualRegistration;
@@ -59,9 +56,8 @@ public class Appointment {
   public Appointment() {
   }
 
-  public Appointment(HealthProfessional professional, UUID serviceId, AnnualRegistry annualRegistration, Integer frequencyDays, LocalTime hour, LocalDate initialDate, LocalDate endDate) {
+  public Appointment(HealthProfessional professional, AnnualRegistry annualRegistration, Integer frequencyDays, LocalTime hour, LocalDate initialDate, LocalDate endDate) {
     this.professional = professional;
-    this.serviceId = serviceId;
     this.annualRegistration = annualRegistration;
     this.frequencyDays = frequencyDays;
     this.hour = hour;
@@ -88,14 +84,6 @@ public class Appointment {
 
   public void setProfessional(HealthProfessional professional) {
     this.professional = professional;
-  }
-
-  public UUID getServiceId() {
-    return serviceId;
-  }
-
-  public void setServiceId(UUID serviceId) {
-    this.serviceId = serviceId;
   }
 
   public AnnualRegistry getAnnualRegistration() {

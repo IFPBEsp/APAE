@@ -380,7 +380,6 @@ public class AppointmentApplicationServiceImpl implements AppointmentApplication
     // Create new rule
     Appointment newRule = new Appointment(
             current.getProfessional(),
-            current.getServiceId(),
             current.getAnnualRegistration(),
             newFrequency != null ? newFrequency : current.getFrequencyDays(),
             newTime != null ? newTime : current.getHour(),
