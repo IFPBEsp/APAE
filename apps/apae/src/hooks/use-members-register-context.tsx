@@ -328,6 +328,14 @@ function MembersRegisterProvider({
       personal.birth.certificate,
     );
 
+    const data = new Date();
+
+    const ano = data.getFullYear();
+    const mes = String(data.getMonth() + 1).padStart(2, '0');
+    const dia = String(data.getDate()).padStart(2, '0');
+
+    const hoje = `${ano}-${mes}-${dia}`;
+
     const patient = {
       fullName: personal.name,
       nationality: personal.birth.place,
@@ -343,7 +351,7 @@ function MembersRegisterProvider({
       cpf: personal.cpf,
       cns: personal.cns,
       nis: personal.nis,
-      registrationDate: new Date().toISOString().split("T")[0],
+      registrationDate: hoje,
       allergies: additionals.allergies,
       isStudent: profile.role === "student",
       address: {

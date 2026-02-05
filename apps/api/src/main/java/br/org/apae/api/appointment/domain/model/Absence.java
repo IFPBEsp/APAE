@@ -1,6 +1,7 @@
 package br.org.apae.api.appointment.domain.model;
 
 import jakarta.persistence.*;
+import jakarta.persistence.ForeignKey;
 import jakarta.persistence.Index;
 import jakarta.persistence.Table;
 import org.hibernate.annotations.*;
@@ -17,7 +18,13 @@ public class Absence {
     private UUID id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "agendamento_gerado_id", nullable = false)
+    @JoinColumn(
+        name = "agendamento_gerado_id", 
+        nullable = false,
+        foreignKey = @ForeignKey(
+            name = "FK_ABSENCE_APPOINTMENT",
+            foreignKeyDefinition = "FOREIGN KEY (agendamento_gerado_id) REFERENCES agendamento_gerado(id) ON UPDATE CASCADE"
+    ))
     private GeneratedAppointment generatedAppointment;
 
     @Column(name = "data_falta", nullable = false)

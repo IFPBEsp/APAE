@@ -642,12 +642,8 @@ export async function updateAppointmentRule(
       newTime: `${dto.newTime}`,
     };
 
-    console.log(backendDto)
-    const response = await fetch(`http://localhost:8090/api/appointments/${id}/rule`, {
+    const response = await fetch(`/api/appointments/${id}/rule`, {
       method: "PATCH",
-      headers: {
-        "Content-Type": "application/json",
-      },
       body: JSON.stringify(backendDto),
     });
 

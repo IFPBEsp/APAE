@@ -24,7 +24,13 @@ public class HealthProfessional {
     private String email;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "area_de_atendimento", referencedColumnName = "area")
+    @JoinColumn(
+        name = "area_de_atendimento", 
+        referencedColumnName = "area",
+        foreignKey = @ForeignKey(
+            name = "FK_HEALTH_PROFESSIONAL_SERVICE_AREA",
+            foreignKeyDefinition = "FOREIGN KEY (area_de_atendimento) REFERENCES areas_de_atendimento(area) ON UPDATE CASCADE"
+    ))
     private ServiceArea serviceArea;
 
     @Column(name = "contato", nullable = false)

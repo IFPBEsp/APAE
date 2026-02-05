@@ -1,30 +1,17 @@
+import { createBaseApi } from '@/lib/axios';
 import { NextRequest, NextResponse } from 'next/server';
 
 export async function GET(
   request: NextRequest,
   { params }: { params: { id: string } }
 ) {
-  const { id } = params;
+  const { id } = await params;
 
   try {
-    const backendUrl = `http://localhost:8090/api/appointments/today/${id}`;
+    const api = await createBaseApi();
     
-    const response = await fetch(backendUrl, {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    });
-
-    if (!response.ok) {
-      return NextResponse.json(
-        { error: 'Failed to fetch appointment' },
-        { status: response.status }
-      );
-    }
-
-    const data = await response.json();
-    return NextResponse.json(data);
+    const response = await api.get(`/appointments/today/${id}`);
+    return NextResponse.json(response.data, { status: 200 });
   } catch (error) {
     console.error('Error proxying to backend:', error);
     return NextResponse.json(

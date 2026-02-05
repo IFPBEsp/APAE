@@ -83,7 +83,7 @@ export default function ViewAppointment() {
       : null;
 
   return (
-    <div className="mt-20 w-full mr-17 ml-10">
+    <div className="mt-20 flex-1 mr-17 ml-10">
       <header className="flex flex-row items-center justify-between">
         <div className="flex items-center">
           <div className="bg-gray-200 rounded-full w-17 h-17 md:w-23 md:h-23">

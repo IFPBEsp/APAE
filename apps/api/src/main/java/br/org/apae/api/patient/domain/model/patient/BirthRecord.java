@@ -1,6 +1,8 @@
 package br.org.apae.api.patient.domain.model.patient;
 
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+
 import static br.org.apae.api.patient.domain.validation.ValidationUtils.*;
 
 public class BirthRecord {
@@ -20,7 +22,7 @@ public class BirthRecord {
     requireNonNull(registrationDate, "Data de registro");
 
     if (registrationDate.isAfter(LocalDate.now())) {
-      throw new IllegalArgumentException("Data de registro não pode ser no futuro");
+      throw new IllegalArgumentException("Data de registro não pode ser no futuro: " + registrationDate.format(DateTimeFormatter.ISO_DATE));
     }
 
     this.birthCertificateNumber = birthCertificateNumber;
