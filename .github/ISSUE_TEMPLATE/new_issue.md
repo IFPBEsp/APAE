@@ -1,7 +1,8 @@
 ---
+---
 name: "Nova Issue"
 about: "Use este template para criar uma nova issue"
-title: "[Feature] "
+title: ""
 labels: []
 assignees: []
 ---
