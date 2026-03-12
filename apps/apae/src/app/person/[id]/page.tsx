@@ -61,9 +61,9 @@ export default function PersonDetailsPage() {
   const [loadingPessoa, setLoadingPessoa] = useState(true);
   const [loadingRegistro, setLoadingRegistro] = useState(false);
 
-  const fetchPessoa = useCallback(async () => {
+  const fetchPessoa = useCallback(async (silent = false) => {
     try {
-      setLoadingPessoa(true);
+      if (!silent) setLoadingPessoa(true); 
       const response = await fetch(`/api/pessoas/${id}`);
       if (!response.ok) throw new Error("Falha ao buscar dados do paciente.");
       const data = await response.json();
@@ -73,7 +73,7 @@ export default function PersonDetailsPage() {
       toast.error(err.message);
       router.push("/visualization-patients");
     } finally {
-      setLoadingPessoa(false);
+      if (!silent) setLoadingPessoa(false); 
     }
   }, [id, router]);
 
@@ -146,11 +146,14 @@ export default function PersonDetailsPage() {
   const handleModalClose = (savedYear?: string) => {
       setIsModalOpen(false);
       if (savedYear) {
-          fetchYears().then(() => setSelectedYear(savedYear));
+          fetchYears().then(() => {
+              setSelectedYear(savedYear);
+              fetchPessoa(true); 
+          });
       } else {
           fetchYears();
           fetchRegistro();
-          fetchPessoa();
+          fetchPessoa(true);
       }
   };
 
@@ -338,7 +341,7 @@ export default function PersonDetailsPage() {
         
         <AnnualRegistryEditModal 
           isOpen={isModalOpen} 
-          onClose={() => setIsModalOpen(false)}
+          onClose={handleModalClose}
           patientId={id} 
           currentYear={selectedYear}
           initialData={modalMode === "edit" ? registroAnual : null}
