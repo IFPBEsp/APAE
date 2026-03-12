@@ -6,6 +6,9 @@ import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
+import org.springframework.http.ResponseEntity.BodyBuilder;
+import org.springframework.http.ResponseEntity.HeadersBuilder;
+
 import br.org.apae.api.documents.domain.builders.DocumentReferenceBuilder;
 import br.org.apae.api.documents.domain.enums.DocumentCategory;
 import br.org.apae.api.documents.domain.enums.DocumentType;
@@ -83,6 +86,10 @@ public record GetPresignedDocumentUrlArgsDTO(UUID id,
           id, presentName, category,
           type, presentOwner, year,
           presentExpiry);
+    }
+
+    public HeadersBuilder<BodyBuilder> documentName(Object name2) {
+      throw new UnsupportedOperationException("Unimplemented method 'documentName'");
     }
   }
 }
