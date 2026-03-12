@@ -61,9 +61,10 @@ export default function PersonDetailsPage() {
   const [loadingPessoa, setLoadingPessoa] = useState(true);
   const [loadingRegistro, setLoadingRegistro] = useState(false);
 
-  const fetchPessoa = useCallback(async () => {
+  // Adicione esse "silent = false" aqui
+  const fetchPessoa = useCallback(async (silent = false) => {
     try {
-      setLoadingPessoa(true);
+      if (!silent) setLoadingPessoa(true); // Só mostra o loading gigante se não for silencioso
       const response = await fetch(`/api/pessoas/${id}`);
       if (!response.ok) throw new Error("Falha ao buscar dados do paciente.");
       const data = await response.json();
@@ -73,7 +74,7 @@ export default function PersonDetailsPage() {
       toast.error(err.message);
       router.push("/visualization-patients");
     } finally {
-      setLoadingPessoa(false);
+      if (!silent) setLoadingPessoa(false); // Só tira o loading se ele foi ativado
     }
   }, [id, router]);
 
@@ -150,7 +151,7 @@ export default function PersonDetailsPage() {
       } else {
           fetchYears();
           fetchRegistro();
-          fetchPessoa();
+          fetchPessoa(true);
       }
   };
 
@@ -338,7 +339,7 @@ export default function PersonDetailsPage() {
         
         <AnnualRegistryEditModal 
           isOpen={isModalOpen} 
-          onClose={() => setIsModalOpen(false)}
+          onClose={handleModalClose}
           patientId={id} 
           currentYear={selectedYear}
           initialData={modalMode === "edit" ? registroAnual : null}
