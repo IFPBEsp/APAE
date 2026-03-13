@@ -1,4 +1,5 @@
 import { getApiBaseUrl } from "@/lib/client-service";
+import { DocumentWithUrl } from "@/types/document";
 
 const API_URL = getApiBaseUrl();
 
@@ -69,3 +70,44 @@ export async function getProfissionalById(id: string) {
 
   return data;
 }
+
+export async function getProfessionalDocuments(id: string) {
+  const res = await fetch(`${API_URL}/professionals/${id}/documents`, { method: "GET" });
+
+  const data = await res.json().catch(() => null);
+
+  if (!res.ok) {
+    throw new Error((data as any)?.message || "Erro ao buscar documentos");
+  }
+
+  return (data ?? []) as DocumentWithUrl[];
+}
+
+
+export async function updateProfessionalDocuments(id: string, formData: FormData) {
+  return fetch(`${API_URL}/professionals/${id}/documents`, {
+    method: "PATCH",
+    body: formData,
+  });
+}
+
+export async function removeProfessionalDocument(
+  professionalId: string,
+  documentId: string
+) {
+  const response = await fetch(
+    `${API_URL}/professionals/${professionalId}/documents/${documentId}`,
+    { method: "DELETE" }
+  );
+
+  if (!response.ok) {
+    const contentType = response.headers.get("content-type");
+    const data = contentType?.includes("application/json")
+      ? await response.json().catch(() => ({}))
+      : {};
+    throw new Error((data as any)?.message || "Erro ao remover documento");
+  }
+
+  return true;
+}
+
