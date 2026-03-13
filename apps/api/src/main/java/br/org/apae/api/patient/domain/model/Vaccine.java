@@ -20,12 +20,18 @@ public class Vaccine {
     @Column(name = "nome", nullable = false, unique = true)
     private String name;
 
-    protected Vaccine() {}
+    protected Vaccine() {
+    }
 
     public Vaccine(String name) {
         if (name == null || name.trim().isEmpty()) {
             throw new IllegalArgumentException("O nome da vacina não pode ser nulo ou vazio.");
         }
+        this.name = name;
+    }
+
+    public Vaccine(UUID id, String name) {
+        this.id = id;
         this.name = name;
     }
 
@@ -45,8 +51,10 @@ public class Vaccine {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o)
+            return true;
+        if (o == null || getClass() != o.getClass())
+            return false;
         Vaccine vaccine = (Vaccine) o;
         return Objects.equals(id, vaccine.id);
     }

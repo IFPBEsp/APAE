@@ -3,25 +3,32 @@ package br.org.apae.api.patient.application.interfaces;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
-import br.org.apae.api.common.dto.patient.create.CreateDocumentsDTO;
-import br.org.apae.api.common.dto.patient.create.CreatePatientDTO;
-import br.org.apae.api.common.dto.patient.response.PatientResponseDTO;
-import br.org.apae.api.common.dto.patient.update.UpdatePatientDTO;
+import br.org.apae.api.common.dto.patient.request.documents.CreateDocumentsDTO;
+import br.org.apae.api.common.dto.patient.request.patient.CreatePatientDTO;
+import br.org.apae.api.common.dto.patient.request.patient.UpdatePatientDTO;
+import br.org.apae.api.common.dto.patient.response.patient.PatientResponseDTO;
+import br.org.apae.api.common.dto.patient.response.patient.PatientSummaryResponseDTO;
 
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
 public interface PatientApplicationService {
-    void createPatient(CreatePatientDTO createPatientDTO, CreateDocumentsDTO documents);
 
-    PatientResponseDTO findById(UUID id);
+    PatientResponseDTO createPatient(CreatePatientDTO createPatientDTO, CreateDocumentsDTO documents);
 
-    Page<PatientResponseDTO> findAll(Pageable pageable);
+    PatientResponseDTO findPatientById(UUID id);
 
-    List<PatientResponseDTO> findByFilter(Map<String, String> filters);
+    Page<PatientSummaryResponseDTO> findAllPatients(Pageable pageable);
+
+    List<PatientSummaryResponseDTO> findPatientByFilter(Map<String, String> filters);
 
     PatientResponseDTO updatePatient(UUID id, UpdatePatientDTO updatePatientDTO);
 
+    void disablePatient(UUID id);
+
     void deletePatient(UUID id);
+
+    List<String> findAllPatientCities();
+
 }

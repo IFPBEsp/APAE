@@ -17,6 +17,16 @@ spring:
         globally_quoted_identifiers: true
         format_sql: true
 
+  mvc:
+    servlet:
+      path: /api
+
+  servlet:
+    multipart:
+      enabled: true
+      max-file-size: 10MB
+      max-request-size: 50MB
+
 logging:
   level:
     org:

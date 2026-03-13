@@ -5,24 +5,19 @@ import java.io.InputStream;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
-import java.util.Spliterator;
-import java.util.Spliterators;
 import java.util.UUID;
-import java.util.function.Function;
-import java.util.logging.Logger;
-import java.util.stream.Stream;
-import java.util.stream.StreamSupport;
 
 import org.springframework.stereotype.Service;
 
 import br.org.apae.api.documents.application.interfaces.DocumentApplicationService;
 import br.org.apae.api.documents.domain.builders.DocumentReferenceBuilder;
+import br.org.apae.api.documents.domain.mappers.DocumentMetadataMapper;
 import br.org.apae.api.documents.interfaces.dto.DocumentDTO;
-import br.org.apae.api.documents.interfaces.dto.DocumentWriteResponseDTO;
 import br.org.apae.api.documents.interfaces.dto.GetDocumentArgsDTO;
+import br.org.apae.api.documents.interfaces.dto.GetPresignedDocumentUrlArgsDTO;
 import br.org.apae.api.documents.interfaces.dto.ListDocumentsArgsDTO;
 import br.org.apae.api.documents.interfaces.dto.PutDocumentArgsDTO;
 import br.org.apae.api.documents.interfaces.dto.RemoveDocumentArgsDTO;
@@ -34,6 +29,7 @@ import br.org.apae.api.documents.interfaces.exceptions.ServerException;
 import br.org.apae.api.documents.interfaces.exceptions.XmlParserException;
 import io.minio.BucketExistsArgs;
 import io.minio.GetObjectArgs;
+import io.minio.GetPresignedObjectUrlArgs;
 import io.minio.ListObjectsArgs;
 import io.minio.MakeBucketArgs;
 import io.minio.MinioClient;
@@ -41,6 +37,7 @@ import io.minio.PutObjectArgs;
 import io.minio.RemoveObjectArgs;
 import io.minio.Result;
 import io.minio.errors.MinioException;
+import io.minio.http.Method;
 import io.minio.messages.Item;
 
 @Service
@@ -79,7 +76,7 @@ public class MinioDocumentApplicationService implements DocumentApplicationServi
     }
 
     @Override
-    public DocumentWriteResponseDTO putDocument(PutDocumentArgsDTO dto)
+    public DocumentDTO putDocument(PutDocumentArgsDTO dto)
             throws InsufficientDataException, IOException, InvalidKeyException, InvalidResponseException,
             NoSuchAlgorithmException {
         UUID id = UUID.randomUUID();
@@ -88,6 +85,12 @@ public class MinioDocumentApplicationService implements DocumentApplicationServi
                 dto.type(),
                 dto.year(),
                 id);
+        Map<String, String> metadata = DocumentMetadataMapper.from(
+                id,
+                dto.category(),
+                dto.type(),
+                dto.owner(),
+                dto.year());
 
         try {
             makeBucketIfNotExists(dto.owner());
@@ -97,10 +100,11 @@ public class MinioDocumentApplicationService implements DocumentApplicationServi
                             .bucket(dto.owner())
                             .stream(dto.stream(), dto.stream().available(), -1)
                             .contentType(dto.contentType())
+                            .userMetadata(metadata)
                             .object(name)
                             .build());
 
-            return new DocumentWriteResponseDTO(
+            return new DocumentDTO(
                     id, name,
                     dto.category(),
                     dto.type(),
@@ -141,21 +145,17 @@ public class MinioDocumentApplicationService implements DocumentApplicationServi
         }
     }
 
-    private static Iterable<DocumentDTO> mapDocuments(Iterable<Result<Item>> results, ListDocumentsArgsDTO dto)
+    private static Iterable<DocumentDTO> mapDocuments(Iterable<Result<Item>> results)
             throws InsufficientDataException, IOException,
             InvalidKeyException, InvalidResponseException, NoSuchAlgorithmException {
         List<DocumentDTO> documents = new ArrayList<>();
 
         try {
             for (Result<Item> result : results) {
-                String name = result.get()
-                        .objectName();
+                Item item = result.get();
                 documents.add(
-                        new DocumentDTO(name,
-                                dto.category(),
-                                dto.type(),
-                                dto.owner(),
-                                dto.year()));
+                        DocumentMetadataMapper.from(
+                                item.userMetadata()));
             }
         } catch (MinioException e) {
             throw translateMinioException(e);
@@ -171,10 +171,11 @@ public class MinioDocumentApplicationService implements DocumentApplicationServi
             InvalidKeyException, InvalidResponseException, NoSuchAlgorithmException {
         ListObjectsArgs.Builder builder = ListObjectsArgs.builder()
                 .bucket(dto.owner())
+                .includeUserMetadata(true)
                 .recursive(true);
 
         Optional.ofNullable(dto.category())
-                .ifPresent((category) -> builder.prefix(
+                .ifPresent(category -> builder.prefix(
                         DocumentReferenceBuilder.buildDocumentPrefix(
                                 dto.category(),
                                 dto.year(),
@@ -182,7 +183,24 @@ public class MinioDocumentApplicationService implements DocumentApplicationServi
 
         return mapDocuments(
                 client.listObjects(
-                        builder.build()),
-                dto);
+                        builder.build()));
+    }
+
+    @Override
+    public String getPresignedDocumentUrl(GetPresignedDocumentUrlArgsDTO dto)
+            throws InsufficientDataException, IOException,
+            InvalidKeyException, InvalidResponseException, NoSuchAlgorithmException {
+
+        try {
+            return client.getPresignedObjectUrl(GetPresignedObjectUrlArgs.builder()
+                    .method(Method.GET)
+                    .bucket(dto.owner())
+                    .object(dto.name())
+                    .expiry(dto.expiry())
+                    .build());
+        } catch (MinioException e) {
+            throw translateMinioException(e);
+
+        }
     }
 }

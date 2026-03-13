@@ -3,9 +3,12 @@ package br.org.apae.api.appointment.domain.model;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.UUID;
 
 import br.org.apae.api.patient.domain.model.AnnualRegistry;
+import br.org.apae.api.professional.domain.model.HealthProfessional;
 import jakarta.persistence.*;
 import org.hibernate.annotations.CreationTimestamp;
 
@@ -15,11 +18,10 @@ public class Appointment {
   @Id
   @GeneratedValue(strategy = GenerationType.UUID)
   private UUID id;
-  @Column(name = "profissional_id", nullable = false)
-  private UUID professionalId;
 
-  @Column(name = "atendimento_id", nullable = false)
-  private UUID serviceId;
+  @ManyToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "profissional_id", nullable = false)
+  private HealthProfessional professional;
 
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "cadastro_anual_id", nullable = false)
@@ -34,11 +36,18 @@ public class Appointment {
   @Column(name = "data_inicial", nullable = false)
   private LocalDate initialDate;
 
-  @Column(name = "data_final", nullable = true)
+  @Column(name = "data_final")
   private LocalDate endDate;
 
   @Column(name = "ativo")
   private boolean isActive;
+
+  @OneToMany(
+      mappedBy = "appointment",
+      cascade = CascadeType.ALL,
+      orphanRemoval = true
+  )
+  private Set<GeneratedAppointment>  generatedAppointments = new HashSet<>();
 
   @CreationTimestamp
   @Column(name = "data_criacao")
@@ -47,9 +56,8 @@ public class Appointment {
   public Appointment() {
   }
 
-  public Appointment(UUID professionalId, UUID serviceId, AnnualRegistry annualRegistration, Integer frequencyDays, LocalTime hour, LocalDate initialDate, LocalDate endDate) {
-    this.professionalId = professionalId;
-    this.serviceId = serviceId;
+  public Appointment(HealthProfessional professional, AnnualRegistry annualRegistration, Integer frequencyDays, LocalTime hour, LocalDate initialDate, LocalDate endDate) {
+    this.professional = professional;
     this.annualRegistration = annualRegistration;
     this.frequencyDays = frequencyDays;
     this.hour = hour;
@@ -70,20 +78,12 @@ public class Appointment {
     return id;
   }
 
-  public UUID getProfessionalId() {
-    return professionalId;
+  public HealthProfessional getProfessional() {
+    return professional;
   }
 
-  public void setProfessionalId(UUID professionalId) {
-    this.professionalId = professionalId;
-  }
-
-  public UUID getServiceId() {
-    return serviceId;
-  }
-
-  public void setServiceId(UUID serviceId) {
-    this.serviceId = serviceId;
+  public void setProfessional(HealthProfessional professional) {
+    this.professional = professional;
   }
 
   public AnnualRegistry getAnnualRegistration() {
@@ -128,5 +128,13 @@ public class Appointment {
 
   public LocalDateTime getCreationDate() {
     return creationDate;
+  }
+
+  public Set<GeneratedAppointment> getGeneratedAppointments() {
+    return generatedAppointments;
+  }
+
+  public void setGeneratedAppointments(Set<GeneratedAppointment> generatedAppointments) {
+    this.generatedAppointments = generatedAppointments;
   }
 }

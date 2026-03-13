@@ -1,12 +1,11 @@
 package br.org.apae.api.appointment.domain.model;
 
-import jakarta.persistence.*;
-import jakarta.persistence.Index;
-import jakarta.persistence.Table;
-import org.hibernate.annotations.*;
-
 import java.time.LocalDateTime;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.UUID;
+
+import jakarta.persistence.*;
 
 @Entity
 @Table(name = "agendamento_gerado",
@@ -43,13 +42,21 @@ public class GeneratedAppointment {
     @Column(name = "paciente_id", nullable = false, updatable = false)
     private UUID patientId;
 
+    @OneToMany(
+            mappedBy = "generatedAppointment",
+            cascade = CascadeType.ALL,
+            orphanRemoval = true
+    )
+    private Set<Absence> absences = new HashSet<>();
+
+
     @PrePersist
     @PreUpdate
     private void syncPatientId() {
         if (appointment != null
                 && appointment.getAnnualRegistration() != null
-                && appointment.getAnnualRegistration().getPatient() != null) {
-            this.patientId = appointment.getAnnualRegistration().getPatient().getId();
+                && appointment.getAnnualRegistration().getPatientId() != null) {
+            this.patientId = appointment.getAnnualRegistration().getPatientId();
         }
     }
 

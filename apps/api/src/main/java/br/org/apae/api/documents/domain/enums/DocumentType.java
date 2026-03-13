@@ -10,12 +10,25 @@ public enum DocumentType {
     PROOF_OF_ADDRESS("COMPROVANTE_DE_RESIDENCIA"),
     PROGRESS_REPORT("RELATORIO"),
     REFERRAL("ENCAMINHAMENTO"),
-    RG("RG");
+    RG("RG"),
+    VOLUNTEER_AGREEMENT("TERMO_DE_VOLUNTARIADO"),
+    CURRICULUM("CURRICULO"),
+    ATTACHMENTANY("ANEXO_QUALQUER");
+
 
     private String value;
 
     private DocumentType(String value) {
         this.value = value;
+    }
+
+    public static DocumentType fromValue(String value) {
+        for (DocumentType c : values()) {
+            if (c.value.equals(value)) {
+                return c;
+            }
+        }
+        throw new IllegalArgumentException("Invalid value: " + value);
     }
 
     @Override

@@ -13,11 +13,8 @@ public record CreateAppointmentDTO(
     @NotNull(message = "O ID do profissional é obrigatório")
     UUID professionalId,
 
-    @NotNull(message = "O ID do atendimento é obrigatório")
-    UUID serviceId,
-
-    @NotNull(message = "O ID do cadastro anual é obrigatório")
-    UUID annualRegistration,
+    @NotNull(message = "O ID do paciente é obrigatório")
+    UUID patientId,
 
     @NotNull(message = "A frequência em dias é obrigatória")
     @Positive(message = "A frequência de dias deve ser maior que 0")

@@ -1,13 +1,10 @@
 package br.org.apae.api.patient.domain.model;
 
 import jakarta.persistence.*;
-import java.util.Objects;
 import java.util.UUID;
 
-import br.org.apae.api.common.dto.patient.create.CreateParentDTO;
-
 @Entity
-@Table(name = "pais")
+@Table(name = "parentes")
 public class Parent {
 
     @Id
@@ -17,92 +14,79 @@ public class Parent {
     @Column(name = "nome", nullable = false)
     private String name;
 
-    @Column
+    @Column(name = "rg", nullable = false)
     private String rg;
 
-    @Column
+    @Column(name = "cpf", nullable = false)
     private String cpf;
 
     @Column(name = "vivo", nullable = false)
     private boolean isAlive;
 
-    @Column(name = "profissao")
+    @Column(name = "profissao", nullable = false)
     private String profession;
 
     @Column(name = "parentesco", nullable = false)
     private String kinship;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "paciente_id", nullable = false)
-    private Patient patient;
+    @Column(name = "paciente_id", nullable = false)
+    private UUID patientId;
 
     protected Parent() {
     }
 
-    private Parent(Builder builder) {
-        this.name = builder.name;
-        this.rg = builder.rg;
-        this.cpf = builder.cpf;
-        this.isAlive = builder.isAlive;
-        this.profession = builder.profession;
-        this.kinship = builder.kinship;
-        this.patient = builder.patient;
+    public Parent(String name, String rg, String cpf, boolean isAlive, String profession, String kinship,
+            UUID patientId) {
+        this.name = name;
+        this.rg = rg;
+        this.cpf = cpf;
+        this.isAlive = isAlive;
+        this.profession = profession;
+        this.kinship = kinship;
+        this.patientId = patientId;
     }
 
-    public UUID getId() { return id; }
-    public String getName() { return name; }
-    public String getRg() { return rg; }
-    public String getCpf() { return cpf; }
-    public boolean isAlive() { return isAlive; }
-    public String getProfession() { return profession; }
-    public String getKinship() { return kinship; }
-    public Patient getPatient() { return patient; }
-
-    void setPatient(Patient patient) {
-        this.patient = patient;
+    public Parent(UUID id, String name, String rg, String cpf, boolean isAlive, String profession, String kinship,
+            UUID patientId) {
+        this.id = id;
+        this.name = name;
+        this.rg = rg;
+        this.cpf = cpf;
+        this.isAlive = isAlive;
+        this.profession = profession;
+        this.kinship = kinship;
+        this.patientId = patientId;
     }
 
-    public static Parent from(CreateParentDTO dto, Patient patient) {
-        if (dto == null) return null;
-        return Parent.builder()
-                .name(dto.name())
-                .rg(dto.rg())
-                .cpf(dto.cpf())
-                .isAlive(dto.isAlive())
-                .profession(dto.profession())
-                .kinship(dto.kinship())
-                .patient(patient)
-                .build();
+    public UUID getId() {
+        return id;
     }
 
-
-    public static Builder builder() {
-        return new Builder();
+    public String getName() {
+        return name;
     }
 
-    public static class Builder {
-        private String name;
-        private String rg;
-        private String cpf;
-        private boolean isAlive;
-        private String profession;
-        private String kinship;
-        private Patient patient;
+    public String getRg() {
+        return rg;
+    }
 
-        public Builder name(String name) { this.name = name; return this; }
-        public Builder rg(String rg) { this.rg = rg; return this; }
-        public Builder cpf(String cpf) { this.cpf = cpf; return this; }
-        public Builder isAlive(boolean isAlive) { this.isAlive = isAlive; return this; }
-        public Builder profession(String profession) { this.profession = profession; return this; }
-        public Builder kinship(String kinship) { this.kinship = kinship; return this; }
-        public Builder patient(Patient patient) { this.patient = patient; return this; }
+    public String getCpf() {
+        return cpf;
+    }
 
-        public Parent build() {
-            Objects.requireNonNull(name, "O nome do pai/responsável não pode ser nulo.");
-            Objects.requireNonNull(kinship, "O parentesco não pode ser nulo.");
-            Objects.requireNonNull(patient, "O paciente associado não pode ser nulo.");
+    public boolean isAlive() {
+        return isAlive;
+    }
 
-            return new Parent(this);
-        }
+    public String getProfession() {
+        return profession;
+    }
+
+    public String getKinship() {
+        return kinship;
+    }
+
+    public UUID getPatientId() {
+        return patientId;
     }
 }

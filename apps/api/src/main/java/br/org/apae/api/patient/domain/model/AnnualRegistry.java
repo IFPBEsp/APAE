@@ -1,8 +1,8 @@
 package br.org.apae.api.patient.domain.model;
 
+import br.org.apae.api.servicearea.domain.model.ServiceArea;
 import jakarta.persistence.*;
 import java.math.BigDecimal;
-import java.time.Year;
 import java.util.*;
 
 @Entity
@@ -13,96 +13,72 @@ public class AnnualRegistry {
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
-    @Column(name = "bpc")
-    private String bpc; // Benefício de Prestação Continuada
+    @Column(name = "bpc", nullable = false)
+    private String bpc;
 
-    @Column(name = "doencas")
+    @Column(name = "doencas", nullable = false)
     private String diseases;
 
-    @Column(name = "renda_familiar")
+    @Column(name = "medicamentos_continuos")
+    private String continuousMedication;
+
+    @Column(name = "renda_familiar", nullable = false)
     private BigDecimal familyIncome;
 
     @Column(name = "ano", nullable = false)
-    private Year year;
+    private Integer year;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "paciente_id", nullable = false)
-    private Patient patient;
+    @Column(name = "paciente_id", nullable = false)
+    private UUID patientId;
 
     @ManyToMany(fetch = FetchType.LAZY)
-    @JoinTable(
-            name = "cadastro_anual_transtorno",
-            joinColumns = @JoinColumn(name = "cadastro_anual_id"),
-            inverseJoinColumns = @JoinColumn(name = "transtorno_id")
-    )
+    @JoinTable(name = "cadastro_anual_transtorno", joinColumns = @JoinColumn(name = "cadastro_anual_id"), inverseJoinColumns = @JoinColumn(name = "transtorno_id"))
     private Set<Disorder> disorders = new HashSet<>();
 
-    @Deprecated
-    protected AnnualRegistry() {}
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(name = "cadastro_anual_areas_de_atendimento", joinColumns = @JoinColumn(name = "cadastro_anual_id"), inverseJoinColumns = @JoinColumn(name = "areas_de_atendimento_id"))
+    private Set<ServiceArea> serviceAreas = new HashSet<>();
 
-    public AnnualRegistry(String bpc, String diseases, BigDecimal familyIncome, Year year, Patient patient) {
-        if (year == null) {
-            throw new IllegalArgumentException("O ano do cadastro não pode ser nulo.");
-        }
-        if (patient == null) {
-            throw new IllegalArgumentException("O paciente associado ao cadastro não pode ser nulo.");
-        }
+    protected AnnualRegistry() {
+    }
+
+    public AnnualRegistry(String bpc, String diseases, String continuousMedication, BigDecimal familyIncome, int year, UUID patientId,
+                          Set<Disorder> disorders, Set<ServiceArea> serviceAreas) {
         this.bpc = bpc;
         this.diseases = diseases;
+        this.continuousMedication = continuousMedication;
         this.familyIncome = familyIncome;
         this.year = year;
-        this.patient = patient;
+        this.patientId = patientId;
+        this.disorders = disorders;
+        this.serviceAreas = serviceAreas;
     }
 
-    public UUID getId() {
-        return id;
-    }
-
-    public String getBpc() {
-        return bpc;
-    }
-
-    public String getDiseases() {
-        return diseases;
-    }
-
-    public BigDecimal getFamilyIncome() {
-        return familyIncome;
-    }
-
-    public Year getYear() {
-        return year;
-    }
-
-    public Patient getPatient() {
-        return patient;
-    }
-
-    public Set<Disorder> getDisorders() {
-        return Collections.unmodifiableSet(disorders);
-    }
-
-    public void updateDetails(String bpc, String diseases, BigDecimal familyIncome, Year year) {
+    public AnnualRegistry(UUID id, String bpc, String diseases, String continuousMedication, BigDecimal familyIncome, int year, UUID patientId,
+                          Set<Disorder> disorders, Set<ServiceArea> serviceAreas) {
+        this.id = id;
         this.bpc = bpc;
         this.diseases = diseases;
+        this.continuousMedication = continuousMedication;
         this.familyIncome = familyIncome;
-        if (year != null) {
-            this.year = year;
-        }
+        this.year = year;
+        this.patientId = patientId;
+        this.disorders = disorders;
+        this.serviceAreas = serviceAreas;
     }
 
-    public void addDisorder(Disorder disorder) {
-        this.disorders.add(disorder);
-    }
+    public UUID getId() { return id; }
+    public String getBpc() { return bpc; }
+    public String getDiseases() { return diseases; }
+    public String getContinuousMedication() { return continuousMedication; }
+    public BigDecimal getFamilyIncome() { return familyIncome; }
+    public Integer getYear() { return year; }
+    public UUID getPatientId() { return patientId; }
 
-    public void removeDisorder(Disorder disorder) {
-        this.disorders.remove(disorder);
+    public Set<ServiceArea> getServiceAreas() {
+        return serviceAreas;
     }
-
-    public void clearDisorders() {
-        this.disorders.clear();
-    }
-
+    public Set<Disorder> getDisorders() { return Collections.unmodifiableSet(disorders); }
 
     @Override
     public boolean equals(Object o) {
@@ -113,7 +89,14 @@ public class AnnualRegistry {
     }
 
     @Override
-    public int hashCode() {
-        return Objects.hash(id);
+    public int hashCode() { return Objects.hash(id); }
+    public void setBpc(String bpc) { this.bpc = bpc; }
+    public void setDiseases(String diseases) { this.diseases = diseases; }
+    public void setContinuousMedication(String continuousMedication) { this.continuousMedication = continuousMedication; }
+    public void setFamilyIncome(BigDecimal familyIncome) { this.familyIncome = familyIncome; }
+    public void setYear(Integer year) { this.year = year; }
+    public void setDisorders(Set<Disorder> disorders) { this.disorders = disorders; }
+    public void setServiceAreas(Set<ServiceArea> serviceAreas) {
+        this.serviceAreas = serviceAreas;
     }
 }
