@@ -1,7 +1,6 @@
 package br.org.apae.api.controllers.professional;
 
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.ArgumentMatchers.isNull;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -34,6 +33,8 @@ import br.org.apae.api.common.dto.professional.request.documents.CreateProfessio
 import br.org.apae.api.controllers.mocks.professional.HealthProfessionalMockDto;
 import br.org.apae.api.helpers.AuthTestHelper;
 import br.org.apae.api.professional.application.interfaces.HealthProfessionalApplicationService;
+import br.org.apae.api.documents.application.interfaces.DocumentApplicationService;
+
 
 @Tag("controller")
 @Tag("health-professional")
@@ -59,6 +60,9 @@ class HealthProfessionalControllerTest {
 
     @MockitoBean
     private UserService userService;
+
+    @MockitoBean
+    private DocumentApplicationService documentApplicationService;
 
     @BeforeEach
     void setupAuth() {
