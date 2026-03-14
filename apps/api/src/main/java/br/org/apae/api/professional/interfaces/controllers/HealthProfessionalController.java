@@ -17,18 +17,23 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RequestPart;
-import org.springframework.data.domain.Sort;
+import org.springframework.web.bind.annotation.DeleteMapping;
 
+import org.springframework.data.domain.Sort;
+import java.util.List;
+import br.org.apae.api.common.dto.patient.response.documents.DocumentWithUrlResponseDTO;
+
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.media.Content;
 
 import br.org.apae.api.common.dto.professional.request.CreateHealthProfessionalDTO;
 import br.org.apae.api.common.dto.professional.request.UpdateHealthProfessionalDTO;
 import br.org.apae.api.common.dto.professional.request.documents.CreateProfessionalDocumentsDTO;
+import br.org.apae.api.common.dto.professional.request.documents.UpdateProfessionalDocumentsDTO;
 import br.org.apae.api.common.dto.professional.response.HealthProfessionalResponseDTO;
 import jakarta.validation.Valid;
-import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
-import io.swagger.v3.oas.annotations.responses.ApiResponse;
 
 @RequestMapping("/professionals")
 public interface HealthProfessionalController {
@@ -40,6 +45,17 @@ public interface HealthProfessionalController {
   @PostMapping(consumes = { MediaType.MULTIPART_FORM_DATA_VALUE })
   ResponseEntity<HealthProfessionalResponseDTO> createHealthProfessional(@RequestPart("professional") CreateHealthProfessionalDTO dto,
     @ModelAttribute @Valid CreateProfessionalDocumentsDTO documentsDTO);
+
+  @GetMapping("/{id}/documents")
+  @Operation(
+    summary = "Listar documentos do profissional",
+    description = "Lista documentos anexados ao cadastro do profissional",
+    responses = {
+        @ApiResponse(responseCode = "200", description = "Lista de documentos"),
+        @ApiResponse(responseCode = "404", description = "Profissional não encontrado", content = @Content)
+    }
+    )
+  ResponseEntity<List<DocumentWithUrlResponseDTO>> getProfessionalDocuments(@PathVariable UUID id);
 
   @Operation(summary = "Listar profissionais de saúde", description = "Retorna uma lista paginada de todos os profissionais de saúde cadastrados.", responses = {
       @ApiResponse(responseCode = "200", description = "Lista obtida com sucesso", content = @Content(schema = @Schema(implementation = Page.class))),
@@ -95,4 +111,27 @@ public interface HealthProfessionalController {
 
   @PutMapping("/{id}/activate")
   ResponseEntity<Void> activateHealthProfessional(@PathVariable UUID id);
+
+  @PatchMapping(
+    value = "/{id}/documents",
+    consumes = MediaType.MULTIPART_FORM_DATA_VALUE
+    )
+    ResponseEntity<Void> updateProfessionalDocuments(
+        @PathVariable UUID id,
+        @ModelAttribute UpdateProfessionalDocumentsDTO documentsDTO
+    );
+
+  @DeleteMapping("/{id}/documents/{documentId}")
+  @Operation(
+    summary = "Remover documento do profissional",
+    description = "Remove um documento anexado ao cadastro do profissional (ex.: ATTACHMENTANY).",
+    responses = {
+      @ApiResponse(responseCode = "204", description = "Documento removido com sucesso", content = @Content),
+      @ApiResponse(responseCode = "404", description = "Profissional ou documento não encontrado", content = @Content)
+    }
+  )
+  ResponseEntity<Void> removeProfessionalDocument(
+      @PathVariable UUID id,
+      @PathVariable UUID documentId
+  );
 }
