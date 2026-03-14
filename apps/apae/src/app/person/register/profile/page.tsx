@@ -50,12 +50,42 @@ export default function MembersRegisterProfilePage() {
           if (res.status === 201 || res.status === 200) {
             toast.success("Membro cadastrado com sucesso!");
             router.push("/visualization-patients");
-          } else if (res.status === 400) {
+          }
+
+          else if (res.status === 409) {
+            const msg = res.data?.message || "";
+            const msgLower = msg.toLowerCase();
+
+            let targetField = "cpf";
+            let displayMsg = "CPF ou documento já cadastrado no sistema.";
+
+            if (msgLower.includes("rg") || msgLower.includes("identidade")) {
+              targetField = "rg.number";
+              displayMsg = "Este RG já está cadastrado no sistema.";
+            } else if (msgLower.includes("cns")) {
+              targetField = "cns";
+              displayMsg = "Este CNS já está cadastrado no sistema.";
+            } else if (msgLower.includes("cpf")) {
+              targetField = "cpf";
+              displayMsg = "Este CPF já está cadastrado no sistema.";
+            }
+
+            toast.error(displayMsg);
+            setStep(MembersRegisterStep.PERSONAL);
+
+            form.setError(targetField as any, {
+              type: "manual",
+              message: displayMsg,
+            });
+
+            setSubmitted(false);
+          }
+
+          else if (res.status === 400) {
             const firstError = res.data?.fields?.[0];
             const backendField = firstError?.field || "";
+            const fieldLower = backendField.toLowerCase();
             const errorMessage = firstError?.message || "Erro de validação";
-
-            toast.error(`Erro no campo [${backendField}]: ${errorMessage}`);
 
             if (backendField) {
               if (
@@ -68,17 +98,19 @@ export default function MembersRegisterProfilePage() {
                   "nationality",
                   "cns",
                   "nis",
-                ].some((f) => backendField.includes(f))
+                  "phone",
+                  "name",
+                ].some((f) => fieldLower.includes(f.toLowerCase()))
               ) {
                 setStep(MembersRegisterStep.PERSONAL);
               } else if (
-                backendField.includes("parents") ||
-                backendField.includes("kinships")
+                fieldLower.includes("parents") ||
+                fieldLower.includes("kinships")
               ) {
                 setStep(MembersRegisterStep.KINSHIPS);
               } else if (
-                backendField.includes("address") &&
-                !backendField.includes("guardian")
+                fieldLower.includes("address") &&
+                !fieldLower.includes("guardian")
               ) {
                 setStep(MembersRegisterStep.ADDRESS);
               } else if (
@@ -88,14 +120,16 @@ export default function MembersRegisterProfilePage() {
                   "allergies",
                   "diseases",
                   "familyIncome",
-                ].some((f) => backendField.includes(f))
+                  "householdIncome",
+                ].some((f) => fieldLower.includes(f.toLowerCase()))
               ) {
                 setStep(MembersRegisterStep.ADDITIONALS);
-              } else if (backendField.includes("guardian")) {
+              } else if (fieldLower.includes("guardian")) {
                 setStep(MembersRegisterStep.GUARDIAN);
               }
             }
 
+            toast.error(errorMessage);
             handleBackendValidationErrors(res.data, form.setError);
             setSubmitted(false);
           } else {
