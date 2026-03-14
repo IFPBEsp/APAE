@@ -3,24 +3,25 @@ import br.org.apae.api.appointment.application.interfaces.AppointmentApplication
 import br.org.apae.api.appointment.domain.exceptions.AnnualRegistrationNotFound;
 import br.org.apae.api.appointment.domain.exceptions.AppointmentAlreadyCancelledException;
 import br.org.apae.api.appointment.domain.exceptions.AppointmentNotFoundException;
+import br.org.apae.api.appointment.domain.exceptions.ProfessionalUnavailableException;
 import br.org.apae.api.appointment.domain.model.Absence;
 import br.org.apae.api.appointment.mapper.AppointmentMapper;
 import br.org.apae.api.patient.domain.model.AnnualRegistry;
 import br.org.apae.api.patient.domain.repository.AnnualRegistryRepository;
 import br.org.apae.api.professional.domain.exceptions.HealthProfessionalNotFoundException;
 import br.org.apae.api.professional.domain.model.HealthProfessional;
+import br.org.apae.api.professional.domain.model.enums.Day;
+import br.org.apae.api.professional.domain.model.enums.Shift;
 import br.org.apae.api.professional.domain.repository.HealthProfessionalRepository;
 import jakarta.transaction.Transactional;
 
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.LocalTime;
-import java.time.Year;
+import java.time.*;
 import java.util.*;
 import java.util.stream.Collectors;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import br.org.apae.api.appointment.domain.model.Appointment;
@@ -45,6 +46,7 @@ import br.org.apae.api.patient.domain.repository.GuardianRepository;
 import br.org.apae.api.patient.domain.repository.ParentRepository;
 import br.org.apae.api.patient.domain.repository.PatientRepository;
 import jakarta.persistence.EntityNotFoundException;
+import org.springframework.web.server.ResponseStatusException;
 
 @Service
 @Transactional
@@ -65,15 +67,15 @@ public class AppointmentApplicationServiceImpl implements AppointmentApplication
 
 
   public AppointmentApplicationServiceImpl(
-      AppointmentRepository appointmentRepo,
-      GeneratedAppointmentRepository generatedRepo,
-      AnnualRegistryRepository registryRepo,
-      HealthProfessionalRepository professionalRepo,
-      AbsenceRepository absenceRepo,
-      PatientRepository patientRepo,
-      GuardianRepository guardianRepo,
-      ParentRepository parentRepo,
-      AppointmentMapper mapper) {
+          AppointmentRepository appointmentRepo,
+          GeneratedAppointmentRepository generatedRepo,
+          AnnualRegistryRepository registryRepo,
+          HealthProfessionalRepository professionalRepo,
+          AbsenceRepository absenceRepo,
+          PatientRepository patientRepo,
+          GuardianRepository guardianRepo,
+          ParentRepository parentRepo,
+          AppointmentMapper mapper) {
     this.appointmentRepo = appointmentRepo;
     this.generatedRepo = generatedRepo;
     this.registryRepo = registryRepo;
@@ -89,18 +91,22 @@ public class AppointmentApplicationServiceImpl implements AppointmentApplication
 
   @Override
   public void create(CreateAppointmentDTO dto) {
-     AnnualRegistry annualRegistry = this.registryRepo.findByPatientIdAndYear(dto.patientId(), Year.now().getValue())
-        .orElseThrow(AnnualRegistrationNotFound::new);
+    AnnualRegistry annualRegistry = this.registryRepo
+            .findByPatientIdAndYear(dto.patientId(), Year.now().getValue())
+            .orElseThrow(AnnualRegistrationNotFound::new);
 
-    HealthProfessional professional = this.professionalRepo.findById(dto.professionalId())
-        .orElseThrow(HealthProfessionalNotFoundException::new);
+    HealthProfessional professional = this.professionalRepo
+            .findById(dto.professionalId())
+            .orElseThrow(HealthProfessionalNotFoundException::new);
+
+    validateProfessionalAvailability(professional, dto.initialDate(), dto.hour());
 
     Appointment appointment = mapper.toEntity(dto, professional, annualRegistry);
-
     appointmentRepo.save(appointment);
 
     Integer year = annualRegistry.getYear();
     LocalDate end = LocalDate.of(year, 12, 31);
+
     generateAppointments(annualRegistry.getId(), appointment.getInitialDate(), end);
   }
 
@@ -108,15 +114,15 @@ public class AppointmentApplicationServiceImpl implements AppointmentApplication
   public Page<AppointmentResponseDTO> findAll(Pageable pageable) {
     return this.appointmentRepo.findAll(pageable).map(appointment -> {
       Patient patient = patientRepo
-                .findById(appointment.getAnnualRegistration().getPatientId())
-                .orElseThrow(() -> new EntityNotFoundException(
-                    "Paciente não encontrado para o agendamento " + appointment.getId()
+              .findById(appointment.getAnnualRegistration().getPatientId())
+              .orElseThrow(() -> new EntityNotFoundException(
+                      "Paciente não encontrado para o agendamento " + appointment.getId()
               ));
 
-              Guardian guardian = guardianRepo
-                  .findByPatientId(patient.getId())
-                  .orElseThrow(() -> new EntityNotFoundException(
-                    "Responsável não encontrado para o paciente " + patient.getId() + ", no agendamento " + appointment.getId()
+      Guardian guardian = guardianRepo
+              .findByPatientId(patient.getId())
+              .orElseThrow(() -> new EntityNotFoundException(
+                      "Responsável não encontrado para o paciente " + patient.getId() + ", no agendamento " + appointment.getId()
               ));
       List<Parent> pais = parentRepo.findAllByPatientId(patient.getId());
 
@@ -124,11 +130,11 @@ public class AppointmentApplicationServiceImpl implements AppointmentApplication
       Set<Vaccine> vaccines = patient.getVaccines();
 
       PatientResponseDTO pdto = new PatientResponseDTO(
-        patient,
-        adto,
-        new GuardianResponseDTO(guardian, adto),
-        pais.stream().map(parentMapper::toResponseDTO).toList(),
-        vaccines.stream().map(vaccineMapper::toResponseDTO).collect(Collectors.toSet()), null);
+              patient,
+              adto,
+              new GuardianResponseDTO(guardian, adto),
+              pais.stream().map(parentMapper::toResponseDTO).toList(),
+              vaccines.stream().map(vaccineMapper::toResponseDTO).collect(Collectors.toSet()), null);
 
       return mapper.toResponse(appointment, pdto);
     });
@@ -136,66 +142,66 @@ public class AppointmentApplicationServiceImpl implements AppointmentApplication
 
   @Override
   public Page<AppointmentResponseDTO> findAllByDate(LocalDate date, Pageable pageable) {
-      return this.appointmentRepo.findAllByInitialDate(date, pageable)
-          .map(appointment -> {
+    return this.appointmentRepo.findAllByInitialDate(date, pageable)
+            .map(appointment -> {
               Patient patient = patientRepo
-                .findById(appointment.getAnnualRegistration().getPatientId())
-                .orElseThrow(() -> new EntityNotFoundException(
-                    "Paciente não encontrado para o agendamento " + appointment.getId()
-              ));
+                      .findById(appointment.getAnnualRegistration().getPatientId())
+                      .orElseThrow(() -> new EntityNotFoundException(
+                              "Paciente não encontrado para o agendamento " + appointment.getId()
+                      ));
 
               Guardian guardian = guardianRepo
-                  .findByPatientId(patient.getId())
-                  .orElseThrow(() -> new EntityNotFoundException(
-                    "Responsável não encontrado para o paciente " + patient.getId() + ", no agendamento " + appointment.getId()
-              ));
+                      .findByPatientId(patient.getId())
+                      .orElseThrow(() -> new EntityNotFoundException(
+                              "Responsável não encontrado para o paciente " + patient.getId() + ", no agendamento " + appointment.getId()
+                      ));
               List<Parent> pais = parentRepo.findAllByPatientId(patient.getId());
 
               AddressResponseDTO adto = new AddressResponseDTO(patient.getAddress());
               Set<Vaccine> vaccines = patient.getVaccines();
 
               PatientResponseDTO pdto = new PatientResponseDTO(
-                  patient,
-                  adto,
-                  new GuardianResponseDTO(guardian, adto),
-                  pais.stream().map(parentMapper::toResponseDTO).collect(Collectors.toList()),
-                  vaccines.stream().map(vaccineMapper::toResponseDTO).collect(Collectors.toSet()), null
+                      patient,
+                      adto,
+                      new GuardianResponseDTO(guardian, adto),
+                      pais.stream().map(parentMapper::toResponseDTO).collect(Collectors.toList()),
+                      vaccines.stream().map(vaccineMapper::toResponseDTO).collect(Collectors.toSet()), null
               );
 
               return mapper.toResponse(appointment, pdto);
-          });
+            });
   }
 
   @Override
   public Page<AppointmentResponseDTO> findAllByDateAndTime(LocalDate date, LocalTime time, Pageable pageable) {
-      return this.appointmentRepo.findAllByInitialDateAndHour(date, time, pageable)
-          .map(appointment -> {
+    return this.appointmentRepo.findAllByInitialDateAndHour(date, time, pageable)
+            .map(appointment -> {
               Patient patient = patientRepo
-                .findById(appointment.getAnnualRegistration().getPatientId())
-                .orElseThrow(() -> new EntityNotFoundException(
-                    "Paciente não encontrado para o agendamento " + appointment.getId()
-              ));
+                      .findById(appointment.getAnnualRegistration().getPatientId())
+                      .orElseThrow(() -> new EntityNotFoundException(
+                              "Paciente não encontrado para o agendamento " + appointment.getId()
+                      ));
 
               Guardian guardian = guardianRepo
-                  .findByPatientId(patient.getId())
-                  .orElseThrow(() -> new EntityNotFoundException(
-                    "Responsável não encontrado para o paciente " + patient.getId() + ", no agendamento " + appointment.getId()
-              ));
+                      .findByPatientId(patient.getId())
+                      .orElseThrow(() -> new EntityNotFoundException(
+                              "Responsável não encontrado para o paciente " + patient.getId() + ", no agendamento " + appointment.getId()
+                      ));
               List<Parent> pais = parentRepo.findAllByPatientId(patient.getId());
 
               AddressResponseDTO adto = new AddressResponseDTO(patient.getAddress());
               Set<Vaccine> vaccines = patient.getVaccines();
 
               PatientResponseDTO pdto = new PatientResponseDTO(
-                  patient,
-                  adto,
-                  new GuardianResponseDTO(guardian, adto),
-                  pais.stream().map(parentMapper::toResponseDTO).collect(Collectors.toList()),
-                  vaccines.stream().map(vaccineMapper::toResponseDTO).collect(Collectors.toSet()), null
+                      patient,
+                      adto,
+                      new GuardianResponseDTO(guardian, adto),
+                      pais.stream().map(parentMapper::toResponseDTO).collect(Collectors.toList()),
+                      vaccines.stream().map(vaccineMapper::toResponseDTO).collect(Collectors.toSet()), null
               );
 
               return mapper.toResponse(appointment, pdto);
-          });
+            });
   }
 
   @Override
@@ -214,28 +220,28 @@ public class AppointmentApplicationServiceImpl implements AppointmentApplication
             .orElseThrow(AppointmentNotFoundException::new);
 
     Patient patient = patientRepo
-      .findById(appointment.getAnnualRegistration().getPatientId())
-      .orElseThrow(() -> new EntityNotFoundException(
-          "Paciente não encontrado para o agendamento " + appointment.getId()
-    ));
+            .findById(appointment.getAnnualRegistration().getPatientId())
+            .orElseThrow(() -> new EntityNotFoundException(
+                    "Paciente não encontrado para o agendamento " + appointment.getId()
+            ));
 
     Guardian guardian = guardianRepo
-        .findByPatientId(patient.getId())
-        .orElseThrow(() -> new EntityNotFoundException(
-          "Responsável não encontrado para o paciente " + patient.getId() + ", no agendamento " + appointment.getId()
-    ));
+            .findByPatientId(patient.getId())
+            .orElseThrow(() -> new EntityNotFoundException(
+                    "Responsável não encontrado para o paciente " + patient.getId() + ", no agendamento " + appointment.getId()
+            ));
     List<Parent> pais = parentRepo.findAllByPatientId(patient.getId());
 
     AddressResponseDTO adto = new AddressResponseDTO(patient.getAddress());
     Set<Vaccine> vaccines = patient.getVaccines();
 
     PatientResponseDTO pdto = new PatientResponseDTO(
-      patient,
-      adto,
-      new GuardianResponseDTO(guardian, adto),
-      pais.stream().map(parentMapper::toResponseDTO).collect(Collectors.toList()),
-      vaccines.stream().map(vaccineMapper::toResponseDTO).collect(Collectors.toSet()), null);
-      
+            patient,
+            adto,
+            new GuardianResponseDTO(guardian, adto),
+            pais.stream().map(parentMapper::toResponseDTO).collect(Collectors.toList()),
+            vaccines.stream().map(vaccineMapper::toResponseDTO).collect(Collectors.toSet()), null);
+
     return mapper.toResponse(appointment, pdto);
   }
 
@@ -362,7 +368,7 @@ public class AppointmentApplicationServiceImpl implements AppointmentApplication
    * @throws IllegalArgumentException if the rule is not found
    * @throws IllegalStateException if the rule is not active
    */
-    public AppointmentResponseDTO updateAppointment(UUID appointmentId, Integer newFrequency, LocalTime newTime) {
+  public AppointmentResponseDTO updateAppointment(UUID appointmentId, Integer newFrequency, LocalTime newTime) {
     Appointment current = appointmentRepo.findById(appointmentId)
             .orElseThrow(() -> new IllegalArgumentException("Rule not found"));
 
@@ -370,28 +376,28 @@ public class AppointmentApplicationServiceImpl implements AppointmentApplication
       throw new IllegalStateException("Only active rules can be edited");
     }
 
-    LocalDate editDate = LocalDate.now();
+    LocalDate editDate = current.getInitialDate();
+    LocalTime timeToCheck = newTime != null ? newTime : current.getHour();
 
-    // Deactivate old rule
+    validateProfessionalAvailability(current.getProfessional(), editDate, timeToCheck);
+
     current.setActive(false);
     current.setEndDate(editDate.minusDays(1));
     appointmentRepo.save(current);
 
-    // Create new rule
     Appointment newRule = new Appointment(
             current.getProfessional(),
             current.getAnnualRegistration(),
             newFrequency != null ? newFrequency : current.getFrequencyDays(),
-            newTime != null ? newTime : current.getHour(),
-            editDate,
-            null // end date will be set on next edit
+            timeToCheck,
+            current.getInitialDate(),
+            null
     );
     newRule = appointmentRepo.save(newRule);
 
     int year = current.getAnnualRegistration().getYear();
     LocalDate end = LocalDate.of(year, 12, 31);
 
-    // Regenerate future appointments and clean up old ones
     generateAppointments(current.getAnnualRegistration().getId(), editDate, end);
     generatedRepo.deleteFutureByAppointmentId(current.getId(), editDate.atStartOfDay());
 
@@ -403,11 +409,11 @@ public class AppointmentApplicationServiceImpl implements AppointmentApplication
     Set<Vaccine> vaccines = patient.getVaccines();
 
     PatientResponseDTO pdto = new PatientResponseDTO(
-      patient,
-      adto,
-      new GuardianResponseDTO(guardian, adto),
-      pais.stream().map(parentMapper::toResponseDTO).collect(Collectors.toList()),
-      vaccines.stream().map(vaccineMapper::toResponseDTO).collect(Collectors.toSet()), null);
+            patient,
+            adto,
+            new GuardianResponseDTO(guardian, adto),
+            pais.stream().map(parentMapper::toResponseDTO).collect(Collectors.toList()),
+            vaccines.stream().map(vaccineMapper::toResponseDTO).collect(Collectors.toSet()), null);
 
     return mapper.toResponse(newRule, pdto);
   }
@@ -510,5 +516,34 @@ public class AppointmentApplicationServiceImpl implements AppointmentApplication
     );
 
     return mapper.toTodayResponseDTO(appointment, pdto, hasAbsence);
+  }
+
+  private void validateProfessionalAvailability(HealthProfessional professional, LocalDate date, LocalTime time) {
+    DayOfWeek dayOfWeek = date.getDayOfWeek();
+
+    if (dayOfWeek == DayOfWeek.SATURDAY || dayOfWeek == DayOfWeek.SUNDAY) {
+      throw new ProfessionalUnavailableException();
+    }
+
+    Day requestedDay = switch (dayOfWeek) {
+      case MONDAY -> Day.SEGUNDA;
+      case TUESDAY -> Day.TERCA;
+      case WEDNESDAY -> Day.QUARTA;
+      case THURSDAY -> Day.QUINTA;
+      case FRIDAY -> Day.SEXTA;
+      default -> throw new ProfessionalUnavailableException();
+    };
+
+    Shift requestedShift = time.getHour() < 12 ? Shift.MANHA : Shift.TARDE;
+
+    boolean isAvailable = professional.getAvailabilities().stream()
+            .anyMatch(availability ->
+                    availability.getDay().equals(requestedDay) &&
+                            availability.getShift().equals(requestedShift)
+            );
+
+    if (!isAvailable) {
+      throw new ProfessionalUnavailableException();
+    }
   }
 }
