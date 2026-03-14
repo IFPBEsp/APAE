@@ -32,9 +32,11 @@ export function handleBackendValidationErrors(
         fieldName = parts[parts.length - 1];
       }
 
-      if (fieldName === "number") {
-        fieldName = "street";
-      }
+      if (fieldName === "number") fieldName = "street"; 
+      if (fieldName === "neighborhood") fieldName = "district"; 
+      if (fieldName === "fullName") fieldName = "name";
+      if (fieldName === "contact") fieldName = "phone"; 
+      if (fieldName === "familyIncome") fieldName = "householdIncome"; 
 
       setError(fieldName as any, {
         type: "server",

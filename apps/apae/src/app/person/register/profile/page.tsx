@@ -22,7 +22,7 @@ import z from "zod";
 import { FileInputButton, FormButton, MembersRegisterForm } from "../form";
 import { Checkbox } from "@/components/ui/checkbox";
 import { useRouter } from "next/navigation";
-import { Input } from "@/components/ui/input";
+import { toast } from "react-toastify";
 
 export default function MembersRegisterProfilePage() {
   const {
@@ -45,24 +45,72 @@ export default function MembersRegisterProfilePage() {
       (async () => {
         setIsLoading(true);
         try {
-          const res = (await register()) as any;
+          const res = await register();
 
           if (res.status === 201 || res.status === 200) {
+            toast.success("Membro cadastrado com sucesso!");
             router.push("/visualization-patients");
-          } else if (res.status === 400 && res.data?.fields) {
+          } else if (res.status === 400) {
+            const firstError = res.data?.fields?.[0];
+            const backendField = firstError?.field || "";
+            const errorMessage = firstError?.message || "Erro de validação";
+
+            toast.error(`Erro no campo [${backendField}]: ${errorMessage}`);
+
+            if (backendField) {
+              if (
+                [
+                  "fullName",
+                  "cpf",
+                  "rg",
+                  "contact",
+                  "birth",
+                  "nationality",
+                  "cns",
+                  "nis",
+                ].some((f) => backendField.includes(f))
+              ) {
+                setStep(MembersRegisterStep.PERSONAL);
+              } else if (
+                backendField.includes("parents") ||
+                backendField.includes("kinships")
+              ) {
+                setStep(MembersRegisterStep.KINSHIPS);
+              } else if (
+                backendField.includes("address") &&
+                !backendField.includes("guardian")
+              ) {
+                setStep(MembersRegisterStep.ADDRESS);
+              } else if (
+                [
+                  "annualRegistry",
+                  "vaccine",
+                  "allergies",
+                  "diseases",
+                  "familyIncome",
+                ].some((f) => backendField.includes(f))
+              ) {
+                setStep(MembersRegisterStep.ADDITIONALS);
+              } else if (backendField.includes("guardian")) {
+                setStep(MembersRegisterStep.GUARDIAN);
+              }
+            }
+
             handleBackendValidationErrors(res.data, form.setError);
             setSubmitted(false);
           } else {
+            toast.error(res.data?.message || "Erro inesperado no servidor.");
             setSubmitted(false);
           }
         } catch (error) {
+          toast.error("Falha na conexão com o servidor.");
           setSubmitted(false);
         } finally {
           setIsLoading(false);
         }
       })();
     }
-  }, [submitted, profile, register, router, form.setError]);
+  }, [submitted, profile, register, router, form.setError, setStep]);
 
   const onSubmit = async (values: z.infer<typeof Profile>) => {
     setProfileData(values);

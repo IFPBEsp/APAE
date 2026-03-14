@@ -68,7 +68,7 @@ interface ProfileData {
   role: "student" | "patient";
 }
 
-enum MembersRegisterStep {
+export enum MembersRegisterStep {
   PERSONAL = "personal",
   KINSHIPS = "kinships",
   ADDRESS = "address",
@@ -84,7 +84,6 @@ interface MembersRegisterState {
   additionals: AdditionalsData;
   guardian: GuardianData;
   profile: ProfileData;
-
   step: MembersRegisterStep;
 }
 
@@ -99,7 +98,7 @@ interface MembersRegisterContextData {
     setProfileData: (data: Partial<ProfileData>) => void;
     setStep: (step: MembersRegisterStep) => void;
   };
-  register: () => Promise<Response>;
+  register: () => Promise<{ status: number; data: any }>;
 }
 
 type MembersRegisterAction =
@@ -136,19 +135,10 @@ function membersRegisterReducer(
           },
         },
       };
-
     case "SET_KINSHIPS_DATA":
-      return {
-        ...state,
-        kinships: action.payload,
-      };
-
+      return { ...state, kinships: action.payload };
     case "SET_ADDRESS_DATA":
-      return {
-        ...state,
-        address: { ...state.address, ...action.payload },
-      };
-
+      return { ...state, address: { ...state.address, ...action.payload } };
     case "SET_ADDITIONALS_DATA":
       return {
         ...state,
@@ -165,7 +155,6 @@ function membersRegisterReducer(
           },
         },
       };
-
     case "SET_GUARDIAN_DATA":
       return {
         ...state,
@@ -178,19 +167,10 @@ function membersRegisterReducer(
           },
         },
       };
-
     case "SET_PROFILE_DATA":
-      return {
-        ...state,
-        profile: { ...state.profile, ...action.payload },
-      };
-
+      return { ...state, profile: { ...state.profile, ...action.payload } };
     case "SET_STEP":
-      return {
-        ...state,
-        step: action.payload,
-      };
-
+      return { ...state, step: action.payload };
     default:
       return state;
   }
@@ -201,97 +181,80 @@ const initialState: MembersRegisterState = {
     name: "",
     cpf: "",
     phone: "",
-    rg: {
-      number: "",
-      issuing: {
-        body: "",
-        date: new Date(),
-      },
-    },
+    rg: { number: "", issuing: { body: "", date: new Date() } },
     cns: "",
     nis: "",
-    birth: {
-      certificate: "",
-      date: new Date(),
-      place: "",
-    },
+    birth: { certificate: "", date: new Date(), place: "" },
   },
-  address: {
-    cep: "",
-    state: "",
-    city: "",
-    district: "",
-    street: "",
-  },
+  address: { cep: "", state: "", city: "", district: "", street: "" },
   additionals: {
     diseases: "",
     medications: "",
     vaccines: [],
     allergies: "",
-    disability: {
-      types: [],
-      report: undefined,
-    },
-    care: {
-      types: [],
-      referral: undefined,
-    },
+    disability: { types: [], report: undefined },
+    care: { types: [], referral: undefined },
     bpc: false,
     householdIncome: "",
   },
   guardian: {
-    address: {
-      cep: "",
-      state: "",
-      city: "",
-      district: "",
-      street: "",
-    },
+    address: { cep: "", state: "", city: "", district: "", street: "" },
     contact: "",
     kinship: "",
     name: "",
   },
   kinships: [],
   step: MembersRegisterStep.PERSONAL,
-  profile: {
-    role: "patient",
-    photo: undefined,
-  },
+  profile: { role: "patient", photo: undefined },
 };
 
 const MembersRegisterContext = createContext<
   MembersRegisterContextData | undefined
 >(undefined);
 
-function MembersRegisterProvider({
+export function MembersRegisterProvider({
   children,
-}: Readonly<{
+}: {
   children: React.ReactNode;
-}>) {
+}) {
   const [state, dispatch] = useReducer(membersRegisterReducer, initialState);
 
   const setters = {
-    setPersonalData: useCallback((data: Partial<PersonalData>) => {
-      dispatch({ type: "SET_PERSONAL_DATA", payload: data });
-    }, []),
-    setKinshipsData: useCallback((data: KinshipData[]) => {
-      dispatch({ type: "SET_KINSHIPS_DATA", payload: data });
-    }, []),
-    setAddressData: useCallback((data: Partial<AddressData>) => {
-      dispatch({ type: "SET_ADDRESS_DATA", payload: data });
-    }, []),
-    setAdditionalsData: useCallback((data: Partial<AdditionalsData>) => {
-      dispatch({ type: "SET_ADDITIONALS_DATA", payload: data });
-    }, []),
-    setGuardianData: useCallback((data: Partial<GuardianData>) => {
-      dispatch({ type: "SET_GUARDIAN_DATA", payload: data });
-    }, []),
-    setProfileData: useCallback((data: Partial<ProfileData>) => {
-      dispatch({ type: "SET_PROFILE_DATA", payload: data });
-    }, []),
-    setStep: useCallback((step: MembersRegisterStep) => {
-      dispatch({ type: "SET_STEP", payload: step });
-    }, []),
+    setPersonalData: useCallback(
+      (data: Partial<PersonalData>) =>
+        dispatch({ type: "SET_PERSONAL_DATA", payload: data }),
+      [],
+    ),
+    setKinshipsData: useCallback(
+      (data: KinshipData[]) =>
+        dispatch({ type: "SET_KINSHIPS_DATA", payload: data }),
+      [],
+    ),
+    setAddressData: useCallback(
+      (data: Partial<AddressData>) =>
+        dispatch({ type: "SET_ADDRESS_DATA", payload: data }),
+      [],
+    ),
+    setAdditionalsData: useCallback(
+      (data: Partial<AdditionalsData>) =>
+        dispatch({ type: "SET_ADDITIONALS_DATA", payload: data }),
+      [],
+    ),
+    setGuardianData: useCallback(
+      (data: Partial<GuardianData>) =>
+        dispatch({ type: "SET_GUARDIAN_DATA", payload: data }),
+      [],
+    ),
+    setProfileData: useCallback(
+      (data: Partial<ProfileData>) =>
+        dispatch({ type: "SET_PROFILE_DATA", payload: data }),
+      [],
+    ),
+    setStep: useCallback(
+      (step: MembersRegisterStep) =>
+        dispatch({ type: "SET_STEP", payload: step }),
+      [],
+    ),
   };
 
   const register = useCallback(async () => {
@@ -299,42 +262,24 @@ function MembersRegisterProvider({
       state;
 
     const parseBirthCertificate = (certificate: string) => {
-      const [
-        cartorio,
-        acervo,
-        servicoRegistroCivil,
-        ano,
-        tipo,
-        livro,
-        folha,
-        termo,
-        digitoVerificador,
-      ] = certificate.split(" ");
-
+      const p = certificate.trim().split(/\s+/);
       return {
-        cartorio,
-        acervo,
-        servicoRegistroCivil,
-        ano,
-        tipo,
-        livro,
-        folha,
-        termo,
-        digitoVerificador,
+        cartorio: p[0] || "",
+        acervo: p[1] || "",
+        servicoRegistroCivil: p[2] || "",
+        ano: p[3] || "",
+        tipo: p[4] || "",
+        livro: p[5] || "",
+        folha: p[6] || "",
+        termo: p[7] || "",
+        digitoVerificador: p[8] || "",
       };
     };
 
     const { cartorio, livro, folha } = parseBirthCertificate(
       personal.birth.certificate,
     );
-
-    const data = new Date();
-
-    const ano = data.getFullYear();
-    const mes = String(data.getMonth() + 1).padStart(2, "0");
-    const dia = String(data.getDate()).padStart(2, "0");
-
-    const hoje = `${ano}-${mes}-${dia}`;
+    const hoje = new Date().toISOString().split("T")[0];
 
     const patient = {
       fullName: personal.name,
@@ -359,8 +304,9 @@ function MembersRegisterProvider({
         cep: address.cep,
         state: address.state,
         neighborhood: address.district,
-        street: address.street.replaceAll(/, \d+/g, ""),
-        number: address.street.replaceAll(/\D/g, ""),
+        street: address.street.replace(/, *\d+$/, "").trim(),
+        number:
+          address.street.split(",").pop()?.trim().replace(/\D/g, "") || "",
         complement: "",
       },
       guardian: {
@@ -372,76 +318,70 @@ function MembersRegisterProvider({
           cep: guardian.address.cep,
           state: guardian.address.state,
           neighborhood: guardian.address.district,
-          street: guardian.address.street,
-          number: guardian.address.street.replaceAll(/\D/g, ""),
+          street: guardian.address.street.replace(/, *\d+$/, "").trim(),
+          number:
+            guardian.address.street
+              .split(",")
+              .pop()
+              ?.trim()
+              .replace(/\D/g, "") || "",
           complement: "",
         },
       },
-      parents: kinships.map((kinship) => ({
-        name: kinship.name,
-        rg: kinship.rg,
-        cpf: kinship.cpf,
-        profession: kinship.occupation,
-        isAlive: kinship.alive,
-        kinship: kinship.type,
+      parents: kinships.map((k) => ({
+        name: k.name,
+        rg: k.rg,
+        cpf: k.cpf,
+        profession: k.occupation,
+        isAlive: k.alive,
+        kinship: k.type,
       })),
-      vaccineNames: additionals.vaccines.map((vac) => ({ name: vac })),
+      vaccineNames: additionals.vaccines.map((v) => ({ name: v })),
       annualRegistry: {
         bpc: additionals.bpc,
         diseases: additionals.diseases,
-        serviceArea: additionals.care.types.map((types) => ({ area: types })),
+        serviceArea: additionals.care.types.map((area) => ({ area })),
         familyIncome:
-          Number(additionals.householdIncome.replaceAll(/\D/g, "")) * 0.01,
+          Number(additionals.householdIncome.replace(/\D/g, "")) * 0.01,
         year: new Date().getFullYear(),
-        disorders: additionals.disability.types.map((dis) => ({ name: dis })),
+        disorders: additionals.disability.types.map((name) => ({ name })),
       },
     };
-
-    console.log(additionals.vaccines);
 
     const formData = new FormData();
     formData.append(
       "patient",
-      new Blob([JSON.stringify(patient)], {
-        type: "application/json",
-      }),
+      new Blob([JSON.stringify(patient)], { type: "application/json" }),
     );
-
     formData.append("photo", profile.photo!);
     formData.append("reports", additionals.disability.report!);
     formData.append("referrals", additionals.care.referral!);
 
-    return fetch("/api/pessoas", {
+    const response = await fetch("/api/pessoas", {
       method: "POST",
       body: formData,
     });
+
+    const responseData = await response.json().catch(() => ({}));
+
+    return {
+      status: response.status,
+      data: responseData,
+    };
   }, [state]);
 
   return (
-    <MembersRegisterContext.Provider
-      value={{
-        state,
-        setters,
-        register,
-      }}
-    >
+    <MembersRegisterContext.Provider value={{ state, setters, register }}>
       {children}
     </MembersRegisterContext.Provider>
   );
 }
 
-function useMembersRegisterContext() {
+export function useMembersRegisterContext() {
   const context = useContext(MembersRegisterContext);
-  if (!context) {
+  if (!context)
     throw new Error(
       "useMembersRegisterContext must be used within a MembersRegisterProvider",
     );
-  }
   return context;
 }
-
-export {
-  MembersRegisterStep,
-  MembersRegisterProvider,
-  useMembersRegisterContext,
-};
