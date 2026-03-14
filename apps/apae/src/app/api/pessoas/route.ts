@@ -28,7 +28,7 @@ export async function GET(request: NextRequest) {
     console.error(`[API Route Error] /api/pessoas:`, err.message);
 
     return NextResponse.json(
-      { message: err.response?.data || "Erro no servidor ao listar pacientes" },
+      err.response?.data || { message: "Erro no servidor ao listar pacientes" },
       { status: err.response?.status || 500 },
     );
   }
@@ -41,11 +41,8 @@ export async function POST(req: Request) {
 
     const response = await api.postForm("/patients", data);
 
-    if (response.status !== 201) {
-      return NextResponse.json(
-        { message: response.data?.message || "Erro ao cadastrar pessoa" },
-        { status: response.status },
-      );
+    if (response.status !== 201 && response.status !== 200) {
+      return NextResponse.json(response.data, { status: response.status });
     }
 
     return NextResponse.json(
@@ -53,29 +50,17 @@ export async function POST(req: Request) {
       { status: 201 },
     );
   } catch (error) {
-    console.error(error);
-
-    console.log(error.response);
+    console.error("[API Route POST Error]:", error);
 
     if (error instanceof AxiosError && error.response) {
-      return NextResponse.json(
-        { message: error.response.data?.message || "Erro ao cadastrar" },
-        { status: error.response.status },
-      );
+      return NextResponse.json(error.response.data, {
+        status: error.response.status,
+      });
     }
 
     return NextResponse.json(
-      {
-        message: `Erro: ${
-          error && (error as AxiosError).response?.data
-            ? ((error as AxiosError).response?.data as { message?: string })
-                .message
-            : "Erro ao cadastrar pessoa"
-        }`,
-      },
-      {
-        status: (error as AxiosError).response?.status,
-      },
+      { message: "Erro inesperado ao cadastrar pessoa" },
+      { status: 500 },
     );
   }
 }

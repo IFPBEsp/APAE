@@ -17,6 +17,7 @@ import { Additionals } from "@/schemas/member-schemas";
 import { zodResolver } from "@hookform/resolvers/zod";
 import React, { useState } from "react";
 import { useForm } from "react-hook-form";
+import { handleBackendValidationErrors } from "@/utils/form-errors";
 
 import z from "zod";
 import {
@@ -230,7 +231,6 @@ function CreateDisorderDialog({ open, onOpenChange, onSuccess }: DialogProps) {
 export default function MembersRegisterAdditionalsPage() {
   const [modal, setModal] = useState<"disorder" | "vaccine" | "care" | null>(null);
   
-  // O SEGREDO 1: Essa chave força os selects a recarregarem visualmente
   const [refreshKey, setRefreshKey] = useState(0); 
 
   const { areas: cares, fetchCares } = useFetchServiceAreas();
@@ -241,15 +241,26 @@ export default function MembersRegisterAdditionalsPage() {
     setters: { setAdditionalsData, setStep },
   } = useMembersRegisterContext();
 
+  const [isLoading, setIsLoading] = useState(false);
+
   const form = useForm<z.infer<typeof Additionals>>({
     mode: "onBlur",
     resolver: zodResolver(Additionals),
     defaultValues: additionals,
   });
 
-  const onSubmit = (values: z.infer<typeof Additionals>) => {
-    setAdditionalsData(values);
-    setStep(MembersRegisterStep.GUARDIAN);
+  const onSubmit = async (values: z.infer<typeof Additionals>) => {
+    setIsLoading(true);
+    try {
+      setAdditionalsData(values);
+      setStep(MembersRegisterStep.GUARDIAN);
+    } catch (error: any) {
+      if (error.response?.data) {
+        handleBackendValidationErrors(error.response.data, form.setError);
+      }
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -262,7 +273,7 @@ export default function MembersRegisterAdditionalsPage() {
           const currentValues = form.getValues("care.types") ||[];
           if (!currentValues.includes(newName)) {
             form.setValue("care.types",[...currentValues, newName], { shouldDirty: true, shouldValidate: true });
-            setRefreshKey(k => k + 1); // Força visual a atualizar
+            setRefreshKey(k => k + 1); 
           }
         }}
       />
@@ -273,7 +284,7 @@ export default function MembersRegisterAdditionalsPage() {
           const currentValues = form.getValues("disability.types") ||[];
           if (!currentValues.includes(newName)) {
             form.setValue("disability.types", [...currentValues, newName], { shouldDirty: true, shouldValidate: true });
-            setRefreshKey(k => k + 1); // Força visual a atualizar
+            setRefreshKey(k => k + 1); 
           }
         }}
       />
@@ -284,7 +295,7 @@ export default function MembersRegisterAdditionalsPage() {
           const currentValues = form.getValues("vaccines") ||[];
           if (!currentValues.includes(newName)) {
              form.setValue("vaccines",[...currentValues, newName], { shouldDirty: true, shouldValidate: true });
-             setRefreshKey(k => k + 1); // Força visual a atualizar
+             setRefreshKey(k => k + 1); 
           }
         }}
       />
@@ -295,10 +306,17 @@ export default function MembersRegisterAdditionalsPage() {
           onSubmit={form.handleSubmit(onSubmit)}
           buttons={
             <>
-              <FormButton type="button" onClick={() => setStep(MembersRegisterStep.ADDRESS)}>
+              <FormButton
+                type="button"
+                onClick={() => setStep(MembersRegisterStep.ADDRESS)}
+                disabled={isLoading}
+              >
                 Voltar
               </FormButton>
-              <FormButton type="submit">Próximo</FormButton>
+
+              <FormButton type="submit" disabled={isLoading}>
+                {isLoading ? "Validando..." : "Próximo"}
+              </FormButton>
             </>
           }
         >
@@ -325,12 +343,11 @@ export default function MembersRegisterAdditionalsPage() {
                   <FormLabel>Vacinas Tomadas *</FormLabel>
                   <FormControl>
                     <CreatableMultiSelect
-                      key={`vaccines-select-${refreshKey}`} // CHAVE DE REFRESH APLICADA AQUI
+                      key={`vaccines-select-${refreshKey}`} 
                       defaultValue={field.value || []}
                       value={field.value || []}
                       options={[
                         ...vaccines.map((vac) => ({ label: vac.name, value: vac.name })),
-                        // O SEGREDO 2: Opção Otimista (impede que o select descarte o valor antes da API recarregar a lista)
                         ...(field.value || []).filter((val: string) => !vaccines.some((v) => v.name === val))
                           .map((val: string) => ({ label: val, value: val }))
                       ]}
@@ -381,12 +398,11 @@ export default function MembersRegisterAdditionalsPage() {
                   <FormLabel>Tipos de Deficiências *</FormLabel>
                   <FormControl>
                     <CreatableMultiSelect
-                      key={`disorders-select-${refreshKey}`} // CHAVE DE REFRESH APLICADA AQUI
+                      key={`disorders-select-${refreshKey}`} 
                       defaultValue={field.value || []}
                       value={field.value || []}
                       options={[
                         ...disorders.map((dis) => ({ label: dis.name, value: dis.name })),
-                        // Opção otimista
                         ...(field.value || []).filter((val: string) => !disorders.some((d) => d.name === val))
                           .map((val: string) => ({ label: val, value: val }))
                       ]}
@@ -439,17 +455,15 @@ export default function MembersRegisterAdditionalsPage() {
                   <FormLabel>Tipos de Atendimentos *</FormLabel>
                   <FormControl>
                     <CreatableMultiSelect
-                      key={`cares-select-${refreshKey}`} // CHAVE DE REFRESH APLICADA AQUI
+                      key={`cares-select-${refreshKey}`} 
                       defaultValue={field.value || []}
                       value={field.value || []}
                       options={[
                         ...cares.map((care: any) => ({ label: care.area, value: care.area })),
-                        // Opção Otimista
                         ...(field.value || []).filter((val: string) => !cares.some((c: any) => c.area === val))
                           .map((val: string) => ({ label: val, value: val }))
                       ]}
                       onValueChange={field.onChange}
-                      onCreate={() => setModal("care")}
                       placeholder="Selecione os atendimentos necessários"
                       hideSelectAll={true}
                     />
