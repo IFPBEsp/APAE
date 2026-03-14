@@ -64,8 +64,6 @@ export default function MembersRegisterPersonalPage() {
     <Form {...form}>
       <MembersRegisterForm
         title="Dados Pessoais"
-        // O form.handleSubmit já é a primeira trava (Zod).
-        // Se o Nome estiver vazio, ele nem chama o 'onSubmit' acima.
         onSubmit={form.handleSubmit(onSubmit)}
         buttons={
           <FormButton type="submit" disabled={isLoading}>
