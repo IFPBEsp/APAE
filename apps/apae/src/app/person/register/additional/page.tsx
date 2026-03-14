@@ -47,9 +47,10 @@ import { CreateCare } from "@/schemas/care-schemas";
 type DialogProps = Readonly<{
   open: boolean;
   onOpenChange: (value: boolean) => void;
+  onSuccess?: (name: string) => void; 
 }>;
 
-function CreateVaccineDialog({ open, onOpenChange }: DialogProps) {
+function CreateVaccineDialog({ open, onOpenChange, onSuccess }: DialogProps) {
   const { createVaccine } = useVaccinesContext();
 
   const form = useForm<z.infer<typeof CreateVaccine>>({
@@ -60,6 +61,7 @@ function CreateVaccineDialog({ open, onOpenChange }: DialogProps) {
   const onSubmit = async (data: z.infer<typeof CreateVaccine>) => {
     await createVaccine(data);
     onOpenChange(false);
+    onSuccess?.(data.name); 
     form.reset();
   };
 
@@ -109,6 +111,7 @@ function CreateCareDialog({
   open,
   onConfirm,
   onOpenChange,
+  onSuccess
 }: DialogProps & { onConfirm?: () => Promise<void> }) {
   const { create } = useCreateServiceArea();
 
@@ -121,6 +124,7 @@ function CreateCareDialog({
     await create(data.name);
     onOpenChange(false);
     await onConfirm?.();
+    onSuccess?.(data.name); 
     form.reset();
   };
 
@@ -166,7 +170,7 @@ function CreateCareDialog({
   );
 }
 
-function CreateDisorderDialog({ open, onOpenChange }: DialogProps) {
+function CreateDisorderDialog({ open, onOpenChange, onSuccess }: DialogProps) {
   const { createDisorder } = useDisordersContext();
 
   const form = useForm<z.infer<typeof CreateDisorder>>({
@@ -177,6 +181,7 @@ function CreateDisorderDialog({ open, onOpenChange }: DialogProps) {
   const onSubmit = async (data: z.infer<typeof CreateDisorder>) => {
     await createDisorder(data);
     onOpenChange(false);
+    onSuccess?.(data.name); 
     form.reset();
   };
 
@@ -223,9 +228,10 @@ function CreateDisorderDialog({ open, onOpenChange }: DialogProps) {
 }
 
 export default function MembersRegisterAdditionalsPage() {
-  const [modal, setModal] = useState<"disorder" | "vaccine" | "care" | null>(
-    null,
-  );
+  const [modal, setModal] = useState<"disorder" | "vaccine" | "care" | null>(null);
+  
+  // O SEGREDO 1: Essa chave força os selects a recarregarem visualmente
+  const [refreshKey, setRefreshKey] = useState(0); 
 
   const { areas: cares, fetchCares } = useFetchServiceAreas();
   const { vaccines } = useVaccinesContext();
@@ -252,28 +258,46 @@ export default function MembersRegisterAdditionalsPage() {
         open={modal === "care"}
         onConfirm={fetchCares}
         onOpenChange={(value) => setModal(value ? "care" : null)}
+        onSuccess={(newName) => {
+          const currentValues = form.getValues("care.types") ||[];
+          if (!currentValues.includes(newName)) {
+            form.setValue("care.types",[...currentValues, newName], { shouldDirty: true, shouldValidate: true });
+            setRefreshKey(k => k + 1); // Força visual a atualizar
+          }
+        }}
       />
       <CreateDisorderDialog
         open={modal === "disorder"}
         onOpenChange={(value) => setModal(value ? "disorder" : null)}
+        onSuccess={(newName) => {
+          const currentValues = form.getValues("disability.types") ||[];
+          if (!currentValues.includes(newName)) {
+            form.setValue("disability.types", [...currentValues, newName], { shouldDirty: true, shouldValidate: true });
+            setRefreshKey(k => k + 1); // Força visual a atualizar
+          }
+        }}
       />
       <CreateVaccineDialog
         open={modal === "vaccine"}
         onOpenChange={(value) => setModal(value ? "vaccine" : null)}
+        onSuccess={(newName) => {
+          const currentValues = form.getValues("vaccines") ||[];
+          if (!currentValues.includes(newName)) {
+             form.setValue("vaccines",[...currentValues, newName], { shouldDirty: true, shouldValidate: true });
+             setRefreshKey(k => k + 1); // Força visual a atualizar
+          }
+        }}
       />
+      
       <Form {...form}>
         <MembersRegisterForm
           title="Informações Adicionais"
           onSubmit={form.handleSubmit(onSubmit)}
           buttons={
             <>
-              <FormButton
-                type="button"
-                onClick={() => setStep(MembersRegisterStep.ADDRESS)}
-              >
+              <FormButton type="button" onClick={() => setStep(MembersRegisterStep.ADDRESS)}>
                 Voltar
               </FormButton>
-
               <FormButton type="submit">Próximo</FormButton>
             </>
           }
@@ -286,10 +310,7 @@ export default function MembersRegisterAdditionalsPage() {
                 <FormItem>
                   <FormLabel>Doenças que já teve *</FormLabel>
                   <FormControl>
-                    <Input
-                      placeholder="Catapora, Gripe H1N1, Pneumonia"
-                      {...field}
-                    />
+                    <Input placeholder="Catapora, Gripe H1N1, Pneumonia" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -304,10 +325,15 @@ export default function MembersRegisterAdditionalsPage() {
                   <FormLabel>Vacinas Tomadas *</FormLabel>
                   <FormControl>
                     <CreatableMultiSelect
-                      options={vaccines.map((vac) => ({
-                        label: vac.name,
-                        value: vac.name,
-                      }))}
+                      key={`vaccines-select-${refreshKey}`} // CHAVE DE REFRESH APLICADA AQUI
+                      defaultValue={field.value || []}
+                      value={field.value || []}
+                      options={[
+                        ...vaccines.map((vac) => ({ label: vac.name, value: vac.name })),
+                        // O SEGREDO 2: Opção Otimista (impede que o select descarte o valor antes da API recarregar a lista)
+                        ...(field.value || []).filter((val: string) => !vaccines.some((v) => v.name === val))
+                          .map((val: string) => ({ label: val, value: val }))
+                      ]}
                       onValueChange={field.onChange}
                       placeholder="Selecione as vacinas"
                       hideSelectAll={true}
@@ -355,10 +381,15 @@ export default function MembersRegisterAdditionalsPage() {
                   <FormLabel>Tipos de Deficiências *</FormLabel>
                   <FormControl>
                     <CreatableMultiSelect
-                      options={disorders.map((dis) => ({
-                        label: dis.name,
-                        value: dis.name,
-                      }))}
+                      key={`disorders-select-${refreshKey}`} // CHAVE DE REFRESH APLICADA AQUI
+                      defaultValue={field.value || []}
+                      value={field.value || []}
+                      options={[
+                        ...disorders.map((dis) => ({ label: dis.name, value: dis.name })),
+                        // Opção otimista
+                        ...(field.value || []).filter((val: string) => !disorders.some((d) => d.name === val))
+                          .map((val: string) => ({ label: val, value: val }))
+                      ]}
                       onValueChange={field.onChange}
                       onCreate={() => setModal("disorder")}
                       placeholder="Selecione as deficiências"
@@ -376,16 +407,6 @@ export default function MembersRegisterAdditionalsPage() {
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Laudo da Deficiência *</FormLabel>
-                  {/* [Caso o seletor de arquivos esteja com problemas]
-                  
-                  <Input
-                    id={field.name}
-                    type="file"
-                    accept="application/pdf"
-                    onChange={(e) =>
-                      field.onChange(e.target.files?.[0] ?? null)
-                    }
-                  /> */}
                   <FormControl>
                     <FileInputButton
                       id={field.name}
@@ -397,10 +418,7 @@ export default function MembersRegisterAdditionalsPage() {
                       }}
                     >
                       {field.value ? (
-                        <span
-                          className="truncate text-left"
-                          title={field.value.name}
-                        >
+                        <span className="truncate text-left" title={field.value.name}>
                           Arquivo selecionado: {field.value.name}
                         </span>
                       ) : (
@@ -421,14 +439,16 @@ export default function MembersRegisterAdditionalsPage() {
                   <FormLabel>Tipos de Atendimentos *</FormLabel>
                   <FormControl>
                     <CreatableMultiSelect
-                      options={cares.map((care: any) => ({
-                        label: care.area,
-                        value: care.area,
-                      }))}
-                      onValueChange={(r) => {
-                        field.onChange(r);
-                        console.log("R:", r);
-                      }}
+                      key={`cares-select-${refreshKey}`} // CHAVE DE REFRESH APLICADA AQUI
+                      defaultValue={field.value || []}
+                      value={field.value || []}
+                      options={[
+                        ...cares.map((care: any) => ({ label: care.area, value: care.area })),
+                        // Opção Otimista
+                        ...(field.value || []).filter((val: string) => !cares.some((c: any) => c.area === val))
+                          .map((val: string) => ({ label: val, value: val }))
+                      ]}
+                      onValueChange={field.onChange}
                       onCreate={() => setModal("care")}
                       placeholder="Selecione os atendimentos necessários"
                       hideSelectAll={true}
@@ -445,16 +465,6 @@ export default function MembersRegisterAdditionalsPage() {
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Encaminhamento *</FormLabel>
-                  {/* [Caso o seletor de arquivos esteja com problemas]
-                  
-                  <Input
-                    id={field.name}
-                    type="file"
-                    accept="application/pdf"
-                    onChange={(e) =>
-                      field.onChange(e.target.files?.[0] ?? null)
-                    }
-                  /> */}
                   <FormControl>
                     <FileInputButton
                       id={field.name}
@@ -466,10 +476,7 @@ export default function MembersRegisterAdditionalsPage() {
                       }}
                     >
                       {field.value ? (
-                        <span
-                          className="truncate text-left"
-                          title={field.value.name}
-                        >
+                        <span className="truncate text-left" title={field.value.name}>
                           Arquivo selecionado: {field.value.name}
                         </span>
                       ) : (
@@ -493,9 +500,7 @@ export default function MembersRegisterAdditionalsPage() {
                       placeholder="R$ 2.100,00"
                       maxLength={15}
                       value={field.value}
-                      onChange={(e) =>
-                        field.onChange(formatCurrency(e.target.value))
-                      }
+                      onChange={(e) => field.onChange(formatCurrency(e.target.value))}
                     />
                   </FormControl>
                   <FormMessage />

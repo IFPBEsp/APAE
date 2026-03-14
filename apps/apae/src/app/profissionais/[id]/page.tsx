@@ -4,6 +4,8 @@ import { useMemo } from "react";
 import { useParams, useRouter } from "next/navigation";
 
 import { useGetByIdProfissional } from "@/hooks/profissional/use-get-by-id-profissional";
+import { useProfessionalDocuments } from "@/hooks/profissional/use-professional-documents";
+
 import { Checkbox } from "@/components/ui/checkbox";
 import { gerarMatrizDisponibilidade } from "@/utils/disponibilidade.utils";
 
@@ -18,6 +20,9 @@ export default function VisualizarProfissional() {
   const id = params?.id;
 
   const { profissional, loading, error } = useGetByIdProfissional();
+
+  const { documents, loading: loadingDocs, error: errorDocs } =
+    useProfessionalDocuments(id);
 
   const disponibilidadeMatrix = useMemo(() => {
     const avs = profissional?.availabilities ?? [];
@@ -172,6 +177,7 @@ export default function VisualizarProfissional() {
             </div>
           </CardContent>
         </Card>
+
         <Card className="shadow-lg border-2 border-[#E0E7FF] text-[#0D4F97] md:col-span-2">
           <CardHeader>
             <CardTitle className="text-lg font-semibold">
@@ -218,10 +224,7 @@ export default function VisualizarProfissional() {
                               key={`${day}-${shift}`}
                               className="p-3 text-center"
                             >
-                              <Checkbox
-                                checked={Boolean(cell?.checked)}
-                                disabled
-                              />
+                              <Checkbox checked={Boolean(cell?.checked)} disabled />
                             </td>
                           );
                         })}
@@ -230,6 +233,48 @@ export default function VisualizarProfissional() {
                   </tbody>
                 </table>
               </div>
+            )}
+          </CardContent>
+        </Card>
+        <Card className="shadow-lg border-2 border-[#E0E7FF] text-[#0D4F97] md:col-span-2">
+          <CardHeader>
+            <CardTitle className="text-lg font-semibold">
+              Documentos anexados
+            </CardTitle>
+          </CardHeader>
+
+          <CardContent className="space-y-3">
+            {loadingDocs ? (
+              <p className="text-gray-700">Carregando documentos...</p>
+            ) : errorDocs ? (
+              <p className="text-red-500">{errorDocs}</p>
+            ) : !documents || documents.length === 0 ? (
+              <p className="text-gray-700">Nenhum documento anexado.</p>
+            ) : (
+              <ul className="space-y-2">
+                {documents.map((doc) => (
+                  <li
+                    key={doc.id}
+                    className="flex items-center justify-between rounded-md border p-3"
+                  >
+                    <div>
+                      <p className="font-medium text-sm">{doc.name}</p>
+                      <p className="text-xs text-gray-500">
+                        {doc.type} • {doc.year}
+                      </p>
+                    </div>
+
+                    <a
+                      href={doc.url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-sm font-medium text-[#0D4F97] hover:underline"
+                    >
+                      Visualizar
+                    </a>
+                  </li>
+                ))}
+              </ul>
             )}
           </CardContent>
         </Card>

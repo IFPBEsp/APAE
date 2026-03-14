@@ -9,6 +9,7 @@ import jakarta.validation.constraints.*;
 import java.util.List;
 
 public record CreateHealthProfessionalDTO(
+
         @NotNull(message = "Área de atendimento é obrigatório.") @Valid CreateServiceAreaDTO serviceArea,
 
         @NotBlank(message = "O número de telefone é obrigatório.") String phoneNumber,
