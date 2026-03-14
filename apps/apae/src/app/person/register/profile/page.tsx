@@ -16,6 +16,7 @@ import { Profile } from "@/schemas/member-schemas";
 import { zodResolver } from "@hookform/resolvers/zod";
 import React, { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
+import { handleBackendValidationErrors } from "@/utils/form-errors";
 
 import z from "zod";
 import { FileInputButton, FormButton, MembersRegisterForm } from "../form";
@@ -30,6 +31,7 @@ export default function MembersRegisterProfilePage() {
     register,
   } = useMembersRegisterContext();
   const [submitted, setSubmitted] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
 
   const form = useForm<z.infer<typeof Profile>>({
@@ -41,13 +43,26 @@ export default function MembersRegisterProfilePage() {
   useEffect(() => {
     if (submitted && profile) {
       (async () => {
-        const res = await register();
-        if (res.status === 201) {
-          router.push("/visualization-patients");
+        setIsLoading(true);
+        try {
+          const res = (await register()) as any;
+
+          if (res.status === 201 || res.status === 200) {
+            router.push("/visualization-patients");
+          } else if (res.status === 400 && res.data?.fields) {
+            handleBackendValidationErrors(res.data, form.setError);
+            setSubmitted(false);
+          } else {
+            setSubmitted(false);
+          }
+        } catch (error) {
+          setSubmitted(false);
+        } finally {
+          setIsLoading(false);
         }
       })();
     }
-  }, [submitted, profile]);
+  }, [submitted, profile, register, router, form.setError]);
 
   const onSubmit = async (values: z.infer<typeof Profile>) => {
     setProfileData(values);
@@ -64,11 +79,14 @@ export default function MembersRegisterProfilePage() {
             <FormButton
               type="button"
               onClick={() => setStep(MembersRegisterStep.GUARDIAN)}
+              disabled={isLoading}
             >
               Voltar
             </FormButton>
 
-            <FormButton type="submit">Salvar</FormButton>
+            <FormButton type="submit" disabled={isLoading}>
+              {isLoading ? "Salvando..." : "Salvar"}
+            </FormButton>
           </>
         }
       >
@@ -79,7 +97,7 @@ export default function MembersRegisterProfilePage() {
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Adicione uma foto *</FormLabel>
-                  {/* [Caso o seletor de arquivos esteja com problemas]
+                {/* [Caso o seletor de arquivos esteja com problemas]
                   
                   <Input
                     id={field.name}
@@ -93,6 +111,7 @@ export default function MembersRegisterProfilePage() {
                   <FileInputButton
                     id={field.name}
                     className="min-w-3xs"
+                    disabled={isLoading}
                     onChange={(e) => {
                       if (e.target.files && e.target.files[0]) {
                         field.onChange(e.target.files[0]);
@@ -130,7 +149,7 @@ export default function MembersRegisterProfilePage() {
                       checked={
                         field.value === "patient" || field.value === "student"
                       }
-                      disabled={field.value === "student"}
+                      disabled={field.value === "student" || isLoading}
                       onCheckedChange={() => field.onChange("patient")}
                     />
                   </FormControl>
@@ -140,6 +159,7 @@ export default function MembersRegisterProfilePage() {
                   <FormControl>
                     <Checkbox
                       checked={field.value === "student"}
+                      disabled={isLoading}
                       onCheckedChange={(checked) =>
                         field.onChange(checked ? "student" : "patient")
                       }

@@ -20,88 +20,94 @@ const CNS = z
 
 const NIS = z.string().min(1, "NIS é obrigatório");
 
-export const Personal = z.object({
-  name: z
-    .string()
-    .min(2, "Nome muito curto")
-    .max(100, "Nome muito longo")
-    .regex(/^[a-zA-ZÀ-ÿ\s]+$/, "Nome deve conter apenas letras e espaços")
-    .refine((val) => val.trim().split(/\s+/).length >= 2, {
-      message: "Digite o nome completo (nome e sobrenome)", // Corrigido de 'error' para 'message'
+export const Personal = z
+  .object({
+    name: z
+      .string()
+      .transform((v) => v.trim())
+      .pipe(
+        z
+          .string()
+          .min(2, "Nome muito curto")
+          .max(100, "Nome muito longo")
+          .regex(/^[a-zA-ZÀ-ÿ\s]+$/, "Nome deve conter apenas letras e espaços")
+          .refine((val) => val.split(/\s+/).length >= 2, {
+            message: "Digite o nome completo (nome e sobrenome)",
+          }),
+      ),
+    cpf: CPF,
+    phone: z
+      .string()
+      .min(1, "Telefone é obrigatório")
+      .min(14, "Telefone deve ter pelo menos 10 dígitos"),
+    rg: z.object({
+      number: RG,
+      issuing: z.object({
+        body: z
+          .string()
+          .min(1, "Órgão emissor é obrigatório")
+          .min(2, "Órgão emissor inválido")
+          .max(10, "Órgão emissor muito longo")
+          .regex(
+            /^[A-Z]{2,4}\/[A-Z]{2}$/,
+            "Formato inválido. Use SSP/UF, PC/UF, etc.",
+          ),
+        date: z.coerce
+          .date({ error: "Data de emissão inválida" })
+          .refine((date) => date <= new Date(), {
+            message: "Data de emissão não pode ser futura",
+          })
+          .refine(
+            (date) => {
+              const minDate = new Date();
+              minDate.setFullYear(minDate.getFullYear() - 50);
+              return date >= minDate;
+            },
+            {
+              message: "Data de emissão muito antiga",
+            },
+          ) as ZodCoercedDate<Date>,
+      }),
     }),
-  cpf: CPF,
-  phone: z
-    .string()
-    .min(1, "Telefone é obrigatório")
-    .min(14, "Telefone deve ter pelo menos 10 dígitos"),
-  rg: z.object({
-    number: RG,
-    issuing: z.object({
-      body: z
+    cns: CNS,
+    nis: NIS,
+    birth: z.object({
+      certificate: z
         .string()
-        .min(1, "Órgão emissor é obrigatório")
-        .min(2, "Órgão emissor inválido")
-        .max(10, "Órgão emissor muito longo")
-        .regex(
-          /^[A-Z]{2,4}\/[A-Z]{2}$/,
-          "Formato inválido. Use SSP/UF, PC/UF, etc.",
-        ),
+        .min(1, "Certidão de nascimento é obrigatória")
+        .min(40, "Número da certidão deve ter pelo menos 32 dígitos"),
       date: z.coerce
-        .date({
-          error: "Data de emissão inválida",
-        })
+        .date({ error: "Data de nascimento inválida" })
         .refine((date) => date <= new Date(), {
-          message: "Data de emissão não pode ser futura",
+          message: "Data de nascimento não pode ser futura",
         })
         .refine(
           (date) => {
             const minDate = new Date();
-            minDate.setFullYear(minDate.getFullYear() - 50);
+            minDate.setFullYear(minDate.getFullYear() - 150);
             return date >= minDate;
           },
           {
-            message: "Data de emissão muito antiga",
+            message: "Data de nascimento inválida",
+          },
+        )
+        .refine(
+          (date) => {
+            const today = new Date();
+            const age = today.getFullYear() - date.getFullYear();
+            return age >= 0;
+          },
+          {
+            message: "Idade deve ser positiva",
           },
         ) as ZodCoercedDate<Date>,
+      place: z.string().min(1, "Naturalidade é obrigatória."),
     }),
-  }),
-  cns: CNS,
-  nis: NIS,
-  birth: z.object({
-    certificate: z
-      .string()
-      .min(1, "Certidão de nascimento é obrigatória")
-      .min(40, "Número da certidão deve ter pelo menos 32 dígitos"),
-    date: z.coerce
-      .date({
-        error: "Data de nascimento inválida",
-      })
-      .refine((date) => date <= new Date(), {
-        message: "Data de nascimento não pode ser futura",
-      })
-      .refine(
-        (date) => {
-          const minDate = new Date();
-          minDate.setFullYear(minDate.getFullYear() - 150);
-          return date >= minDate;
-        },
-        {
-          message: "Data de nascimento inválida",
-        },
-      )
-      .refine(
-        (date) => {
-          const today = new Date();
-          const age = today.getFullYear() - date.getFullYear();
-          return age >= 0;
-        },
-        {
-          message: "Idade deve ser positiva",
-        },
-      ) as ZodCoercedDate<Date>,
-    place: z.string().min(1, "Naturalidade é obrigatória."),
-  }),
-});
+  })
+  .refine((data) => data.rg.issuing.date > data.birth.date, {
+    message: "A data de emissão do RG não pode ser anterior ao nascimento",
+    path: ["rg", "issuing", "date"],
+  });
 
 export const Address = z.object({
   cep: z.string().min(1, "CEP é obrigatório.").min(9, "CEP deve ter 8 dígitos"),
@@ -157,10 +163,15 @@ export const Kinship = z.object({
   alive: z.boolean(),
   name: z
     .string()
-    .min(2, "Nome muito curto")
-    .refine((val) => val.trim().split(/\s+/).length >= 2, {
-      message: "Digite o nome completo do parente",
-    }),
+    .transform((v) => v.trim())
+    .pipe(
+      z
+        .string()
+        .min(2, "Nome muito curto")
+        .refine((val) => val.split(/\s+/).length >= 2, {
+          message: "Digite o nome completo do parente",
+        }),
+    ),
   occupation: z.string().min(2, "Profissão inválida"),
   type: z.string().min(1, "Informar o parentesco é obrigatório."),
 });
@@ -172,12 +183,17 @@ export const Kinships = z.object({
 export const Guardian = z.object({
   name: z
     .string()
-    .min(2, "Nome muito curto")
-    .max(100, "Nome muito longo")
-    .regex(/^[a-zA-ZÀ-ÿ\s]+$/, "Nome deve conter apenas letras e espaços")
-    .refine((val) => val.trim().split(/\s+/).length >= 2, {
-      message: "Digite o nome completo do responsável (nome e sobrenome)",
-    }),
+    .transform((v) => v.trim())
+    .pipe(
+      z
+        .string()
+        .min(2, "Nome muito curto")
+        .max(100, "Nome muito longo")
+        .regex(/^[a-zA-ZÀ-ÿ\s]+$/, "Nome deve conter apenas letras e espaços")
+        .refine((val) => val.split(/\s+/).length >= 2, {
+          message: "Digite o nome completo do responsável (nome e sobrenome)",
+        }),
+    ),
   contact: z.string().min(1, "Contato de emergência é obrigatório."),
   kinship: z.string().min(1, "Informar o parentesco é obrigatório."),
   address: Address,

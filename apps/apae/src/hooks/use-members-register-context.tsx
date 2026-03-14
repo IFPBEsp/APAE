@@ -331,8 +331,8 @@ function MembersRegisterProvider({
     const data = new Date();
 
     const ano = data.getFullYear();
-    const mes = String(data.getMonth() + 1).padStart(2, '0');
-    const dia = String(data.getDate()).padStart(2, '0');
+    const mes = String(data.getMonth() + 1).padStart(2, "0");
+    const dia = String(data.getDate()).padStart(2, "0");
 
     const hoje = `${ano}-${mes}-${dia}`;
 
@@ -389,7 +389,7 @@ function MembersRegisterProvider({
       annualRegistry: {
         bpc: additionals.bpc,
         diseases: additionals.diseases,
-        serviceArea: additionals.care.types.map((types) => ({ area: types})),
+        serviceArea: additionals.care.types.map((types) => ({ area: types })),
         familyIncome:
           Number(additionals.householdIncome.replaceAll(/\D/g, "")) * 0.01,
         year: new Date().getFullYear(),

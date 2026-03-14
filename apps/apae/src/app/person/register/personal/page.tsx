@@ -25,6 +25,8 @@ import { Personal } from "@/schemas/member-schemas";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import z from "zod";
+import { useState } from "react";
+import { handleBackendValidationErrors } from "@/utils/form-errors";
 
 import { DoubleColumn, FormButton, MembersRegisterForm } from "../form";
 
@@ -34,23 +36,42 @@ export default function MembersRegisterPersonalPage() {
     setters: { setPersonalData, setStep },
   } = useMembersRegisterContext();
 
+  const [isLoading, setIsLoading] = useState(false);
+
   const form = useForm<z.infer<typeof Personal>>({
     mode: "onBlur",
     resolver: zodResolver(Personal),
     defaultValues: personal,
   });
 
-  const onSubmit = (values: z.infer<typeof Personal>) => {
-    setPersonalData(values);
-    setStep(MembersRegisterStep.KINSHIPS);
+  const onSubmit = async (values: z.infer<typeof Personal>) => {
+    setIsLoading(true);
+
+    try {
+      setPersonalData(values);
+
+      setStep(MembersRegisterStep.KINSHIPS);
+    } catch (error: any) {
+      if (error.response?.data) {
+        handleBackendValidationErrors(error.response.data, form.setError);
+      }
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
     <Form {...form}>
       <MembersRegisterForm
         title="Dados Pessoais"
-        buttons={<FormButton type="submit">Próximo</FormButton>}
+        // O form.handleSubmit já é a primeira trava (Zod).
+        // Se o Nome estiver vazio, ele nem chama o 'onSubmit' acima.
         onSubmit={form.handleSubmit(onSubmit)}
+        buttons={
+          <FormButton type="submit" disabled={isLoading}>
+            {isLoading ? "Validando..." : "Próximo"}
+          </FormButton>
+        }
       >
         <DoubleColumn>
           <FormField
@@ -181,7 +202,7 @@ export default function MembersRegisterPersonalPage() {
                     {...field}
                     value={
                       field.value instanceof Date &&
-                        !Number.isNaN(field.value.getTime())
+                      !Number.isNaN(field.value.getTime())
                         ? field.value.toISOString().split("T")[0]
                         : ""
                     }
@@ -226,7 +247,7 @@ export default function MembersRegisterPersonalPage() {
                     {...field}
                     value={
                       field.value instanceof Date &&
-                        !isNaN(field.value.getTime())
+                      !isNaN(field.value.getTime())
                         ? field.value.toISOString().split("T")[0]
                         : ""
                     }

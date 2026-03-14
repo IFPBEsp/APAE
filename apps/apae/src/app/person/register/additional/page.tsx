@@ -17,6 +17,7 @@ import { Additionals } from "@/schemas/member-schemas";
 import { zodResolver } from "@hookform/resolvers/zod";
 import React, { useState } from "react";
 import { useForm } from "react-hook-form";
+import { handleBackendValidationErrors } from "@/utils/form-errors";
 
 import z from "zod";
 import {
@@ -235,15 +236,26 @@ export default function MembersRegisterAdditionalsPage() {
     setters: { setAdditionalsData, setStep },
   } = useMembersRegisterContext();
 
+  const [isLoading, setIsLoading] = useState(false);
+
   const form = useForm<z.infer<typeof Additionals>>({
     mode: "onBlur",
     resolver: zodResolver(Additionals),
     defaultValues: additionals,
   });
 
-  const onSubmit = (values: z.infer<typeof Additionals>) => {
-    setAdditionalsData(values);
-    setStep(MembersRegisterStep.GUARDIAN);
+  const onSubmit = async (values: z.infer<typeof Additionals>) => {
+    setIsLoading(true);
+    try {
+      setAdditionalsData(values);
+      setStep(MembersRegisterStep.GUARDIAN);
+    } catch (error: any) {
+      if (error.response?.data) {
+        handleBackendValidationErrors(error.response.data, form.setError);
+      }
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -270,11 +282,14 @@ export default function MembersRegisterAdditionalsPage() {
               <FormButton
                 type="button"
                 onClick={() => setStep(MembersRegisterStep.ADDRESS)}
+                disabled={isLoading}
               >
                 Voltar
               </FormButton>
 
-              <FormButton type="submit">Próximo</FormButton>
+              <FormButton type="submit" disabled={isLoading}>
+                {isLoading ? "Validando..." : "Próximo"}
+              </FormButton>
             </>
           }
         >

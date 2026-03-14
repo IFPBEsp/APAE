@@ -18,6 +18,8 @@ import { Address } from "@/schemas/member-schemas";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import z from "zod";
+import { useState } from "react";
+import { handleBackendValidationErrors } from "@/utils/form-errors";
 
 import { DoubleColumn, FormButton, MembersRegisterForm } from "../form";
 
@@ -27,15 +29,26 @@ export default function MembersRegisterAddressPage() {
     setters: { setAddressData, setStep },
   } = useMembersRegisterContext();
 
+  const [isLoading, setIsLoading] = useState(false);
+
   const form = useForm<z.infer<typeof Address>>({
     mode: "onBlur",
     resolver: zodResolver(Address),
     defaultValues: address,
   });
 
-  const onSubmit = (values: z.infer<typeof Address>) => {
-    setAddressData(values);
-    setStep(MembersRegisterStep.ADDITIONALS);
+  const onSubmit = async (values: z.infer<typeof Address>) => {
+    setIsLoading(true);
+    try {
+      setAddressData(values);
+      setStep(MembersRegisterStep.ADDITIONALS);
+    } catch (error: any) {
+      if (error.response?.data) {
+        handleBackendValidationErrors(error.response.data, form.setError);
+      }
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -48,11 +61,14 @@ export default function MembersRegisterAddressPage() {
             <FormButton
               type="button"
               onClick={() => setStep(MembersRegisterStep.KINSHIPS)}
+              disabled={isLoading}
             >
               Voltar
             </FormButton>
 
-            <FormButton type="submit">Próximo</FormButton>
+            <FormButton type="submit" disabled={isLoading}>
+              {isLoading ? "Validando..." : "Próximo"}
+            </FormButton>
           </>
         }
       >
