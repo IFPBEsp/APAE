@@ -16,8 +16,9 @@ import {
 import { formatCEP } from "@/lib/formats";
 import { Guardian } from "@/schemas/member-schemas";
 import { zodResolver } from "@hookform/resolvers/zod";
-import React from "react";
+import React, { useState } from "react";
 import { useForm } from "react-hook-form";
+import { handleBackendValidationErrors } from "@/utils/form-errors";
 
 import z from "zod";
 import { DoubleColumn, FormButton, MembersRegisterForm } from "../form";
@@ -28,15 +29,26 @@ export default function MembersRegisterGuardianPage() {
     setters: { setGuardianData, setStep },
   } = useMembersRegisterContext();
 
+  const [isLoading, setIsLoading] = useState(false);
+
   const form = useForm<z.infer<typeof Guardian>>({
     mode: "onBlur",
     resolver: zodResolver(Guardian),
     defaultValues: guardian,
   });
 
-  const onSubmit = (values: z.infer<typeof Guardian>) => {
-    setGuardianData(values);
-    setStep(MembersRegisterStep.PROFILE);
+  const onSubmit = async (values: z.infer<typeof Guardian>) => {
+    setIsLoading(true);
+    try {
+      setGuardianData(values);
+      setStep(MembersRegisterStep.PROFILE);
+    } catch (error: any) {
+      if (error.response?.data) {
+        handleBackendValidationErrors(error.response.data, form.setError);
+      }
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -49,11 +61,14 @@ export default function MembersRegisterGuardianPage() {
             <FormButton
               type="button"
               onClick={() => setStep(MembersRegisterStep.ADDITIONALS)}
+              disabled={isLoading}
             >
               Voltar
             </FormButton>
 
-            <FormButton type="submit">Próximo</FormButton>
+            <FormButton type="submit" disabled={isLoading}>
+              {isLoading ? "Validando..." : "Próximo"}
+            </FormButton>
           </>
         }
       >
