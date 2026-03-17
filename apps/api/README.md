@@ -45,6 +45,9 @@ O arquivo `docker-compose.yml` é a receita que diz ao Docker como criar esse ba
 # Este comando vai baixar a imagem do banco (ex: Postgres/MySQL)
 # e o iniciará em segundo plano (-d = "detached").
 docker compose up -d
+
+#Ou
+pnpm docker:up
 ```
 
 **Para verificar se funcionou:**
@@ -72,6 +75,9 @@ Nós usamos o "Maven Wrapper" (`mvnw`), que é um script que garante que todos o
 
 # Este comando compila o projeto, baixa as dependências e inicia o servidor
 ./mvnw spring-boot:run
+
+#Pode-se rodar apenas o backend usando este comando tanto no terminal da pasta raiz como na pasta /APAE/api:
+pnpm dev:backend
 ```
 
 O terminal mostrará um log grande. Se tudo der certo, a última linha será algo como:

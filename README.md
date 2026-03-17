@@ -11,7 +11,9 @@ Projeto em desenvolvimento, fruto de uma parceria entre o IFPB (Campus Esperanç
 ## Índice
 
 1. [Introdução](#introdução)
-2. [Fluxo de Trabalho](#fluxo-de-trabalho)
+2. [Apresentação do Projeto](#apresentação-do-projeto)
+    - [Como Executar](#como-executar)
+3. [Fluxo de Trabalho](#fluxo-de-trabalho)
    - [Convenção de Commits](#convenção-de-commits)
    - [Criação de Branches](#criação-de-branches)
    - [Labels](#labels)
@@ -23,6 +25,25 @@ Projeto em desenvolvimento, fruto de uma parceria entre o IFPB (Campus Esperanç
 ## Introdução
 
 Este projeto tem como objetivo o desenvolvimento de dois sistemas para a APAE, o primeiro focado no gerenciamento de pacientes e o outros na exibição de informações. O projeto está sendo desenvolvido em colaboração com o IFPB (Campus Esperança).
+
+---
+
+## Apresentação do Projeto
+
+### Como Executar
+
+O projeto foi automatizado para rodar com o mínimo de comandos utilizando **pnpm Workspaces**:
+
+1. **Terminal na pasta raiz:** `cd APAE`
+2. **Setup Inicial**: `pnpm install`
+3. **Rodar Tudo (Docker + Back + Front)**: `pnpm dev`
+
+#### Outros Comandos:
+- `pnpm dev:backend`: Executa apenas o backend (api).
+- `pnpm dev:apae`: Executa apenas o frontend (apae).
+- `pnpm docker:up`: Sobe apenas o banco de dados e MinIO.
+- `pnpm docker:down`: Para os containers e os remove da memória.
+- `pnpm docker:drop`: Para os containers, os remove e apaga os volumes associados.
 
 ---
 
