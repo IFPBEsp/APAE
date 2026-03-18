@@ -2,10 +2,14 @@ import { NextResponse } from "next/server";
 import { createBaseApi } from "@/lib/axios";
 import { AxiosError } from "axios";
 
-export async function GET() {
+export async function GET(req: Request) {
   try {
+    const { searchParams } = new URL(req.url);
+    const ativo = searchParams.get("ativo");
+    const query = ativo !== null ? `?ativo=${ativo}` : "";
+
     const api = await createBaseApi();
-    const response = await api.get("/professionals");
+    const response = await api.get(`/professionals${query}`);
 
     return NextResponse.json(response.data, { status: 200 });
   } catch (error) {
