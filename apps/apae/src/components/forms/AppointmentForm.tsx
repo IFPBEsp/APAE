@@ -1,69 +1,114 @@
 "use client";
 
+import { format, getDay, isBefore, startOfDay, isValid } from "date-fns";
+import { ptBR } from "date-fns/locale";
+import { CalendarIcon } from "lucide-react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
+
 import {
   Appointment,
   getPacientes,
   getProfissionaisDaSaude,
-  Patient,
-  Professional,
   saveAppointment,
-  updateAppointmentRule
+  updateAppointmentRule,
 } from "@/app/services/appointmentService";
 import { Button } from "@/components/ui/button";
+import { Calendar } from "@/components/ui/calendar";
 import { Card, CardContent } from "@/components/ui/card";
 import { Combobox } from "@/components/ui/combobox";
-import { DateTimePicker } from "@/components/ui/date-time-picker";
+import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { cn, separaETransformaEmNumero } from '@/lib/utils';
-import { format } from "date-fns";
-import React, { useEffect, useState } from "react";
-import { Input } from '../ui/input';
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { cn } from "@/lib/utils";
 
-
-type selectItem = {
+interface Option {
   value: string;
   label: string;
-};
+}
 
-interface PageProps {
+interface AppointmentFormProps {
   editAppointment?: Appointment;
 }
 
-export function AppointmentForm({ editAppointment }: PageProps) {
-  const [year, month, day] = separaETransformaEmNumero(
-    editAppointment?.initialDate,
-    '-'
-  );
-  const [hour, minute] = separaETransformaEmNumero(
-    editAppointment?.hour,
-    ':'
-  );
-  const existingAppointmentDate =
-    !isNaN(year) &&
-    !isNaN(month) &&
-    !isNaN(day) &&
-    !isNaN(hour) &&
-    !isNaN(minute)
-      ? new Date(year, month, day, hour, minute)
-      : undefined;
+const mapDayOfWeek: Record<number, string> = {
+  1: "SEGUNDA",
+  2: "TERCA",
+  3: "QUARTA",
+  4: "QUINTA",
+  5: "SEXTA",
+};
 
-  const [dateHour, setDateHour] = useState<Date | undefined>(existingAppointmentDate);
+const morningSlots = [
+  "08:00",
+  "08:30",
+  "09:00",
+  "09:30",
+  "10:00",
+  "10:30",
+  "11:00",
+  "11:30",
+];
+const afternoonSlots = [
+  "13:00",
+  "13:30",
+  "14:00",
+  "14:30",
+  "15:00",
+  "15:30",
+  "16:00",
+  "16:30",
+  "17:00",
+];
 
-  const [patient, setPatient] = useState<selectItem>(() => {
-      const patient = editAppointment?.annualRegistration.patient;
-      return patient ? { value: patient.id,  label: patient.fullName } : { value: "", label: "" }
+export function AppointmentForm({ editAppointment }: AppointmentFormProps) {
+  const isInitialMount = useRef(true);
+  const prevProfessionalId = useRef(editAppointment?.professional?.id || "");
+
+  const [date, setDate] = useState<Date | undefined>(() => {
+    if (editAppointment?.initialDate) {
+      const parts = editAppointment.initialDate.split("-").map(Number);
+      const d = new Date(parts[0], parts[1] - 1, parts[2]);
+
+      return isValid(d) ? d : undefined;
     }
-  );
 
-  const [professional, setProfessional] = useState<selectItem>(() => {
-      const professional = editAppointment?.professional;
-      return professional ? {value: professional.id, label: professional.name } : { value: "", label: "" }
+    return undefined;
+  });
+
+  const [selectedTime, setSelectedTime] = useState<string>(() => {
+    if (editAppointment?.hour) {
+      return editAppointment.hour.slice(0, 5);
     }
-  );
 
-  const [listPatients, setListPatients] = useState<selectItem[]>([]);
-  const [listaProfessional, setListaProfessionals] = useState<selectItem[]>([]);
+    return "";
+  });
 
+  const [isCalendarOpen, setIsCalendarOpen] = useState(false);
+  const [patient, setPatient] = useState<Option>(() => {
+    const p = editAppointment?.annualRegistration.patient;
+    return p ? { value: p.id, label: p.fullName } : { value: "", label: "" };
+  });
+  const [professional, setProfessional] = useState<Option>(() => {
+    const prof = editAppointment?.professional;
+
+    return prof
+      ? { value: prof.id, label: prof.name }
+      : { value: "", label: "" };
+  });
+
+  const [listPatients, setListPatients] = useState<Option[]>([]);
+  const [listaProfessional, setListaProfessionals] = useState<Option[]>([]);
   const [frequencyDays, setFrequencyDays] = useState<number>(
     editAppointment?.frequencyDays || 0
   );
@@ -147,22 +192,13 @@ export function AppointmentForm({ editAppointment }: PageProps) {
         });
       }
     }
-    // window.location.reload();
+    window.location.reload();
   };
 
   return (
     <Card className="w-full mx-auto border-none shadow-none">
       <form onSubmit={handleSubmit}>
         <CardContent className="space-y-6">
-          <div className="space-y-2">
-            <Label htmlFor="data-hora">
-              Data de Início e Horário <span className="text-red-500">*</span> { /* TODO: indício de problemas ao registrar um novo agendamento */ }
-            </Label>
-            <DateTimePicker value={dateHour} onChange={setDateHour} />
-            {validationErrors.dateHour && (
-              <p className="text-sm text-red-500">Este campo é obrigatório.</p>
-            )}
-          </div>
           {!editAppointment && (
             <div className="space-y-2">
               <Label htmlFor="paciente">

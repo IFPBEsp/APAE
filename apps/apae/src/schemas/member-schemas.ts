@@ -20,95 +20,110 @@ const CNS = z
 
 const NIS = z.string().min(1, "NIS é obrigatório");
 
-export const Personal = z.object({
-  name: z
-    .string()
-    .min(2, "Nome muito curto")
-    .max(100, "Nome muito longo")
-    .regex(/^[a-zA-ZÀ-ÿ\s]+$/, "Nome deve conter apenas letras e espaços")
-    .refine((val) => val.trim().split(/\s+/).length >= 2, {
-      error: "Digite o nome completo (nome e sobrenome)",
+export const Personal = z
+  .object({
+    name: z
+      .string()
+      .transform((v) => v.trim())
+      .pipe(
+        z
+          .string()
+          .min(2, "Nome muito curto")
+          .max(100, "Nome muito longo")
+          .regex(/^[a-zA-ZÀ-ÿ\s]+$/, "Nome deve conter apenas letras e espaços")
+          .refine((val) => val.split(/\s+/).length >= 2, {
+            message: "Digite o nome completo (nome e sobrenome)",
+          }),
+      ),
+    cpf: CPF,
+    phone: z
+      .string()
+      .min(1, "Telefone é obrigatório")
+      .min(14, "Telefone deve ter pelo menos 10 dígitos"),
+    rg: z.object({
+      number: RG,
+      issuing: z.object({
+        body: z
+          .string()
+          .min(1, "Órgão emissor é obrigatório")
+          .min(2, "Órgão emissor inválido")
+          .max(10, "Órgão emissor muito longo")
+          .regex(
+            /^[A-Z]{2,4}\/[A-Z]{2}$/,
+            "Formato inválido. Use SSP/UF, PC/UF, etc.",
+          ),
+        date: z.coerce
+          .date({ error: "Data de emissão inválida" })
+          .refine((date) => date <= new Date(), {
+            message: "Data de emissão não pode ser futura",
+          })
+          .refine(
+            (date) => {
+              const minDate = new Date();
+              minDate.setFullYear(minDate.getFullYear() - 50);
+              return date >= minDate;
+            },
+            {
+              message: "Data de emissão muito antiga",
+            },
+          ) as ZodCoercedDate<Date>,
+      }),
     }),
-  cpf: CPF,
-  phone: z
-    .string()
-    .min(1, "Telefone é obrigatório")
-    .min(14, "Telefone deve ter pelo menos 10 dígitos"),
-  rg: z.object({
-    number: RG,
-    issuing: z.object({
-      body: z
+    cns: CNS,
+    nis: NIS,
+    birth: z.object({
+      certificate: z
         .string()
-        .min(1, "Órgão emissor é obrigatório")
-        .min(2, "Órgão emissor inválido")
-        .max(10, "Órgão emissor muito longo")
-        .regex(
-          /^[A-Z]{2,4}\/[A-Z]{2}$/,
-          "Formato inválido. Use SSP/UF, PC/UF, etc.",
-        ),
+        .min(1, "Certidão de nascimento é obrigatória")
+        .min(40, "Número da certidão deve ter pelo menos 32 dígitos"),
       date: z.coerce
-        .date({
-          error: "Data de emissão inválida",
-        })
+        .date({ error: "Data de nascimento inválida" })
         .refine((date) => date <= new Date(), {
-          error: "Data de emissão não pode ser futura",
+          message: "Data de nascimento não pode ser futura",
         })
         .refine(
           (date) => {
             const minDate = new Date();
-            minDate.setFullYear(minDate.getFullYear() - 50);
+            minDate.setFullYear(minDate.getFullYear() - 150);
             return date >= minDate;
           },
           {
-            error: "Data de emissão muito antiga",
+            message: "Data de nascimento inválida",
+          },
+        )
+        .refine(
+          (date) => {
+            const today = new Date();
+            const age = today.getFullYear() - date.getFullYear();
+            return age >= 0;
+          },
+          {
+            message: "Idade deve ser positiva",
           },
         ) as ZodCoercedDate<Date>,
+      place: z.string().min(1, "Naturalidade é obrigatória."),
     }),
-  }),
-  cns: CNS,
-  nis: NIS,
-  birth: z.object({
-    certificate: z
-      .string()
-      .min(1, "Certidão de nascimento é obrigatória")
-      .min(40, "Número da certidão deve ter pelo menos 32 dígitos"),
-    date: z.coerce
-      .date({
-        error: "Data de nascimento inválida",
-      })
-      .refine((date) => date <= new Date(), {
-        error: "Data de nascimento não pode ser futura",
-      })
-      .refine(
-        (date) => {
-          const minDate = new Date();
-          minDate.setFullYear(minDate.getFullYear() - 150);
-          return date >= minDate;
-        },
-        {
-          error: "Data de nascimento inválida",
-        },
-      )
-      .refine(
-        (date) => {
-          const today = new Date();
-          const age = today.getFullYear() - date.getFullYear();
-          return age >= 0;
-        },
-        {
-          error: "Idade deve ser positiva",
-        },
-      ) as ZodCoercedDate<Date>,
-    place: z.string().min(1, "Naturalidade é obrigatória."),
-  }),
-});
+  })
+  .refine((data) => data.rg.issuing.date > data.birth.date, {
+    message: "A data de emissão do RG não pode ser anterior ao nascimento",
+    path: ["rg", "issuing", "date"],
+  });
 
 export const Address = z.object({
   cep: z.string().min(1, "CEP é obrigatório.").min(9, "CEP deve ter 8 dígitos"),
-  state: z.string().min(3, "Estado deve ter pelo menos 3 letras (ex: Paraíba)"),
+  state: z
+    .string()
+    .min(3, "Estado deve ser o nome completo (ex: Paraíba)")
+    .regex(/^[a-zA-ZÀ-ÿ\s]+$/, "O estado deve conter apenas letras"),
   city: z.string().min(2, "Cidade inválida"),
   district: z.string().min(2, "Bairro inválido"),
-  street: z.string().min(2, "Rua inválida"),
+  street: z
+    .string()
+    .min(2, "Rua inválida")
+    .regex(
+      /, *\d+$/,
+      "Informe a rua seguida de vírgula e número (ex: Rua tal, 123)",
+    ),
 });
 
 export const Additionals = z.object({
@@ -122,13 +137,15 @@ export const Additionals = z.object({
     types: z
       .array(z.string().min(1))
       .min(1, "O tipo de atendimento é obrigatório."),
-    report: z.instanceof(File, { error: "O laudo é obrigatório." }),
+    report: z.instanceof(File, { message: "O laudo é obrigatório." }),
   }),
   care: z.object({
     types: z
       .array(z.string().min(1))
       .min(1, "O tipo de atendimento é obrigatório."),
-    referral: z.instanceof(File, { error: "O encaminhamento é obrigatório." }),
+    referral: z.instanceof(File, {
+      message: "O encaminhamento é obrigatório.",
+    }),
   }),
   bpc: z.boolean(),
   householdIncome: z
@@ -144,7 +161,17 @@ export const Kinship = z.object({
   rg: RG,
   cpf: CPF,
   alive: z.boolean(),
-  name: z.string().min(2, "Nome muito curto"),
+  name: z
+    .string()
+    .transform((v) => v.trim())
+    .pipe(
+      z
+        .string()
+        .min(2, "Nome muito curto")
+        .refine((val) => val.split(/\s+/).length >= 2, {
+          message: "Digite o nome completo do parente",
+        }),
+    ),
   occupation: z.string().min(2, "Profissão inválida"),
   type: z.string().min(1, "Informar o parentesco é obrigatório."),
 });
@@ -154,7 +181,19 @@ export const Kinships = z.object({
 });
 
 export const Guardian = z.object({
-  name: z.string().min(2, "Nome muito curto"),
+  name: z
+    .string()
+    .transform((v) => v.trim())
+    .pipe(
+      z
+        .string()
+        .min(2, "Nome muito curto")
+        .max(100, "Nome muito longo")
+        .regex(/^[a-zA-ZÀ-ÿ\s]+$/, "Nome deve conter apenas letras e espaços")
+        .refine((val) => val.split(/\s+/).length >= 2, {
+          message: "Digite o nome completo do responsável (nome e sobrenome)",
+        }),
+    ),
   contact: z.string().min(1, "Contato de emergência é obrigatório."),
   kinship: z.string().min(1, "Informar o parentesco é obrigatório."),
   address: Address,
@@ -162,7 +201,7 @@ export const Guardian = z.object({
 
 export const Profile = z.object({
   role: z.enum(["student", "patient"], {
-    error: "Tipo de eficiência é obrigatório.",
+    message: "Tipo de eficiência é obrigatório.",
   }),
-  photo: z.instanceof(File, { error: "A foto é obrigatória." }),
+  photo: z.instanceof(File, { message: "A foto é obrigatória." }),
 });

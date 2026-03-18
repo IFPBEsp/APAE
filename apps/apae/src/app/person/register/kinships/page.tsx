@@ -16,8 +16,9 @@ import {
 import { formatCPF, formatRG } from "@/lib/formats";
 import { Kinships } from "@/schemas/member-schemas";
 import { zodResolver } from "@hookform/resolvers/zod";
-import React from "react";
+import React, { useState } from "react";
 import { useFieldArray, useForm } from "react-hook-form";
+import { handleBackendValidationErrors } from "@/utils/form-errors";
 
 import z from "zod";
 import {
@@ -34,6 +35,8 @@ export default function MembersRegisterKinshipsPage() {
     setters: { setKinshipsData, setStep },
   } = useMembersRegisterContext();
 
+  const [isLoading, setIsLoading] = useState(false);
+
   const form = useForm<z.infer<typeof Kinships>>({
     mode: "onBlur",
     resolver: zodResolver(Kinships),
@@ -47,9 +50,18 @@ export default function MembersRegisterKinshipsPage() {
     name: "kinships",
   });
 
-  const onSubmit = (values: z.infer<typeof Kinships>) => {
-    setKinshipsData(values.kinships);
-    setStep(MembersRegisterStep.ADDRESS);
+  const onSubmit = async (values: z.infer<typeof Kinships>) => {
+    setIsLoading(true);
+    try {
+      setKinshipsData(values.kinships);
+      setStep(MembersRegisterStep.ADDRESS);
+    } catch (error: any) {
+      if (error.response?.data) {
+        handleBackendValidationErrors(error.response.data, form.setError);
+      }
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -62,11 +74,14 @@ export default function MembersRegisterKinshipsPage() {
             <FormButton
               type="button"
               onClick={() => setStep(MembersRegisterStep.PERSONAL)}
+              disabled={isLoading}
             >
               Voltar
             </FormButton>
 
-            <FormButton type="submit">Próximo</FormButton>
+            <FormButton type="submit" disabled={isLoading}>
+              {isLoading ? "Validando..." : "Próximo"}
+            </FormButton>
           </>
         }
       >
@@ -164,6 +179,7 @@ export default function MembersRegisterKinshipsPage() {
                   onClick={() => remove(index)}
                   type="button"
                   variant="outline"
+                  disabled={isLoading}
                 >
                   Remover parente
                 </Button>
@@ -197,7 +213,8 @@ export default function MembersRegisterKinshipsPage() {
               type: "",
             })
           }
-          className="rounded px-3 py-2 border"
+          disabled={isLoading}
+          className="rounded px-3 py-2 border disabled:opacity-50"
         >
           Adicionar Parente
         </button>
