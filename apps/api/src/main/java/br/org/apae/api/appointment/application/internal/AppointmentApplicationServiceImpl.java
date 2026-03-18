@@ -2,6 +2,7 @@ package br.org.apae.api.appointment.application.internal;
 import br.org.apae.api.appointment.application.interfaces.AppointmentApplicationService;
 import br.org.apae.api.appointment.domain.exceptions.AnnualRegistrationNotFound;
 import br.org.apae.api.appointment.domain.exceptions.AppointmentAlreadyCancelledException;
+import br.org.apae.api.appointment.domain.exceptions.AppointmentConflictException;
 import br.org.apae.api.appointment.domain.exceptions.AppointmentNotFoundException;
 import br.org.apae.api.appointment.domain.model.Absence;
 import br.org.apae.api.appointment.mapper.AppointmentMapper;
@@ -16,6 +17,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.Year;
+import java.time.temporal.ChronoUnit;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -94,6 +96,30 @@ public class AppointmentApplicationServiceImpl implements AppointmentApplication
 
     HealthProfessional professional = this.professionalRepo.findById(dto.professionalId())
         .orElseThrow(HealthProfessionalNotFoundException::new);
+
+    LocalTime exactTime = dto.hour().truncatedTo(ChronoUnit.MINUTES);
+
+    //TODO: add validação de data e hora aqui
+    boolean isTimeSlotTaken = appointmentRepo.existsConflict(
+            professional.getId(),
+            dto.initialDate(),
+            exactTime
+    );
+
+    System.out.println("isTimeSlotTaken");
+    System.out.println(isTimeSlotTaken);
+
+    System.out.println("professional.getId()");
+    System.out.println(professional.getId());
+    System.out.println("dto.initialDate()");
+    System.out.println(dto.initialDate());
+    System.out.println("dto.hour()");
+    System.out.println(exactTime);
+
+
+    if (isTimeSlotTaken) {
+      throw new AppointmentConflictException();
+    }
 
     Appointment appointment = mapper.toEntity(dto, professional, annualRegistry);
 
