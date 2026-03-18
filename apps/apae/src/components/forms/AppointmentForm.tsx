@@ -147,7 +147,7 @@ export function AppointmentForm({ editAppointment }: PageProps) {
         });
       }
     }
-    window.location.reload();
+    // window.location.reload();
   };
 
   return (
@@ -156,7 +156,7 @@ export function AppointmentForm({ editAppointment }: PageProps) {
         <CardContent className="space-y-6">
           <div className="space-y-2">
             <Label htmlFor="data-hora">
-              Data de Início e Horário <span className="text-red-500">*</span>
+              Data de Início e Horário <span className="text-red-500">*</span> { /* TODO: indício de problemas ao registrar um novo agendamento */ }
             </Label>
             <DateTimePicker value={dateHour} onChange={setDateHour} />
             {validationErrors.dateHour && (
