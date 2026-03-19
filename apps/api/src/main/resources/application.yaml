@@ -40,12 +40,16 @@ logging:
 app:
   token:
     secret: "U29tZVNlY3JldEF0TGVhc3QtMjU2Qml0cw=="
+    expiration-hours: ${JWT_EXPIRATION_HOURS:24}
 
 minio:
   access:
-    key: "ROOTUSER"
-    secret: "CHANGEME123"
-  url: "http://127.0.0.1:9000"
+    key: ${MINIO_ACCESS_KEY}
+    secret: ${MINIO_SECRET_KEY}
+  url: ${MINIO_URL}
+
+cors:
+  allowed-origins: ${CORS_ALLOWED_ORIGINS:http://localhost:3000}
 
 server:
-  port: 8090
+  port: ${PORT:8090}
