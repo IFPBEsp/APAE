@@ -2,14 +2,11 @@ This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-
 
 ## Navegando até a pasta
 
-O repositório `APAE` contém vários projetos (é um "monorepo"). O frontend Next.js está na pasta `apps/api`.
+O repositório `APAE` contém vários projetos (é um "monorepo"). O frontend Next.js está na pasta `apps/apae`.
 
 ```bash
 # Pelo terminal: entre na pasta que você acabou de clonar
 cd APAE
-
-##OBS: Através desse comando é possível rodar o frontend pelo terminal da pasta raiz /APAE :
-pnpm dev:apae
 
 # Agora, entre na pasta do Front
 cd apps/apae
@@ -27,9 +24,9 @@ yarn dev
 pnpm dev
 # ou
 bun dev
+##OBS: Através desse comando é possível rodar o frontend pelo terminal da pasta raiz /APAE :
+pnpm dev:apae
 ```
-
-Abra [http://localhost:3000](http://localhost:3000) no seu navegador para ver o resultado.
 
 Você pode começar a editar a página modificando o arquivo `app/page.tsx`. A página é atualizada automaticamente conforme você edita o arquivo.
 

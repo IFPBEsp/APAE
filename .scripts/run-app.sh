@@ -1,7 +1,7 @@
 #!/bin/bash
 
 MODE=${1:-both}
-FRONTEND_TARGET=${2:-web}
+FRONTEND_TARGET=${2:-apae}
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 ROOT_DIR="$(cd "$SCRIPT_DIR/.." && pwd)"
@@ -15,22 +15,38 @@ DB_WAIT_SECONDS=2
 check_db_up() {
   local attempt=1
   echo "Verificando banco de dados em $DB_HOST:$DB_PORT..."
-  while ! nc -z "$DB_HOST" "$DB_PORT" >/dev/null 2>&1; do
-    if [ "$attempt" -ge "$DB_MAX_RETRIES" ]; then
-      echo "Banco de dados não respondeu."
-      return 1
+  while [ "$attempt" -le "$DB_MAX_RETRIES" ]; do
+    if command -v nc >/dev/null 2>&1; then
+    #nc - Netcat : verificação do linux
+      if nc -z "$DB_HOST" "$DB_PORT" >/dev/null 2>&1; then
+        echo "Banco de dados online (nc)"
+        return 0
+      fi
+      #Verificação para o Windows (PowerShell)
+    elif command -v powershell.exe >/dev/null 2>&1; then
+      if powershell.exe -Command "Test-NetConnection -ComputerName $DB_HOST -Port $DB_PORT -InformationLevel Quiet" | grep -q "True"; then
+        echo "Banco de dados online (ps)"
+        return 0
+      fi
+    else
+      echo "Nenhuma ferramenta de verificação (nc/powershell) encontrada."
+      return 0
     fi
+
+    echo "Aguardando banco... ($attempt/$DB_MAX_RETRIES)"
     attempt=$((attempt + 1))
     sleep "$DB_WAIT_SECONDS"
   done
-  return 0
+
+  echo "Banco de dados não respondeu na porta $DB_PORT."
+  return 1
 }
 
 run_backend() {
   check_db_up || exit 1
   echo "Iniciando backend..."
   cd "$ROOT_DIR/apps/api" || exit 1
-  $MAVEN_CMD spring-boot:run
+  ./mvnw spring-boot:run
 }
 
 run_frontend() {
@@ -45,10 +61,7 @@ run_frontend() {
 run_both() {
   check_db_up || exit 1
   echo "Rodando backend e frontend..."
-  BACKEND_CMD="cd $ROOT_DIR/apps/api && $MAVEN_CMD spring-boot:run"
-  FRONTEND_CMD="cd $ROOT_DIR/apps/$FRONTEND_TARGET && pnpm dev"
-
-  npx concurrently -k -n backend,frontend -c red,blue "$BACKEND_CMD" "$FRONTEND_CMD"
+  npx concurrently -k -n backend,frontend -c red,blue "bash ./.scripts/run-app.sh backend" "bash ./.scripts/run-app.sh frontend $FRONTEND_TARGET"
 }
 
 case "$MODE" in

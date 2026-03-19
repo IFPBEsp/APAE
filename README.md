@@ -35,6 +35,8 @@ Este projeto tem como objetivo o desenvolvimento de dois sistemas para a APAE, o
 O projeto foi automatizado para rodar com o mínimo de comandos utilizando **pnpm Workspaces**:
 
 1. **Terminal na pasta raiz:** `cd APAE`
+
+    1.1. Caso esteja no Windows, acessar terminal via **GitBash**
 2. **Setup Inicial**: `pnpm install`
 3. **Rodar Tudo (Docker + Back + Front)**: `pnpm dev`
 

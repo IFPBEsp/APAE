@@ -8,9 +8,9 @@
     "docker:up": "docker compose up -d",
     "docker:down": "docker compose down",
     "docker:drop": "docker compose down -v",
-    "dev:backend": "cd apps/api && mvnw spring-boot:run",
-    "dev:apae": "pnpm --filter agendamento dev",
-    "dev": "pnpm docker:up && concurrently -k -p \"[{name}]\" -n \"BACK,FRONT\" -c \"green,magenta\" \"pnpm dev:backend\" \"pnpm dev:apae\"",
+    "dev:backend": "bash ./.scripts/run-app.sh backend",
+    "dev:apae": "bash ./.scripts/run-app.sh frontend apae",
+    "dev": "pnpm docker:up && bash ./.scripts/run-app.sh both apae",
     "test:api": "cd apps/api && ./mvnw package"
   },
   "workspaces": [
