@@ -46,7 +46,7 @@ run_backend() {
   check_db_up || exit 1
   echo "Iniciando backend..."
   cd "$ROOT_DIR/apps/api" || exit 1
-  ./mvnw spring-boot:run
+  $MAVEN_CMD spring-boot:run -DskipTests=true
 }
 
 run_frontend() {
