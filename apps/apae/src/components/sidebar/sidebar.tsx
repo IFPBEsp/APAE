@@ -30,14 +30,21 @@ import {
 } from "../ui/collapsible";
 import styles from "./sidebar.module.css";
 import { useSidebar } from "@/components/ui/sidebar";
-import { usePathname } from "next/navigation";
+import { redirect, usePathname, useRouter } from "next/navigation";
 import { cn } from "@/lib/utils";
 import logo from "../../assets/logo.png";
-import { SquareActivity, BriefcaseMedical, Syringe, Stethoscope } from "lucide-react"
+import { SquareActivity, BriefcaseMedical, Syringe, Stethoscope, LogOut } from "lucide-react"
+import { removeSessionCookie } from "@/lib/cookies";
 
 export function AppSidebar() {
   const { open, setOpen, isMobile, setOpenMobile } = useSidebar();
   const pathname = usePathname();
+  const router = useRouter();
+
+  const handleLogout = () => {
+    removeSessionCookie();
+    redirect("/");
+  };
 
   return (
     <Sidebar className={styles.sidebar}>
@@ -249,7 +256,18 @@ export function AppSidebar() {
           </SidebarGroup>
         </Collapsible>
       </SidebarContent>
-      <SidebarFooter />
+
+      <SidebarFooter>
+        <button
+            onClick={handleLogout}
+            className={`
+          flex w-full items-center rounded-3xl bg-transparent text-[#0D4F97] transition-all hover:bg-white/40 justify-center gap-3 px-4 py-3 cursor-pointer`}
+            title="Sair"
+                >
+                    <LogOut className="h-5 w-5 flex-shrink-0" strokeWidth={1.75} />
+                    {<span className="font-medium">Sair</span>}
+                </button>
+      </SidebarFooter>
     </Sidebar>
   );
 }

@@ -466,6 +466,7 @@ export default function MembersRegisterAdditionalsPage() {
                       onValueChange={field.onChange}
                       placeholder="Selecione os atendimentos necessários"
                       hideSelectAll={true}
+                      onCreate={() => setModal("care")} 
                     />
                   </FormControl>
                   <FormMessage />
