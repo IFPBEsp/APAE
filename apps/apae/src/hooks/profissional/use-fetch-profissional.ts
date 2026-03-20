@@ -26,7 +26,7 @@ export function useFetchProfessionals(ativo: boolean) {
 
         const data: PaginatedResponse<Profissional> = response.data;
         setProfissionais(data.content);
-      } catch (err: any) {
+      } catch (err) {
         if (axios.isAxiosError(err)) {
           setError(err.response?.data?.message || err.message);
         } else {

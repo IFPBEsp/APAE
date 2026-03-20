@@ -60,7 +60,7 @@ export async function getProfissionalById(id: string) {
   try {
     const response = await axios.get(`/api/professionals/${id}`);
     return response.data;
-  } catch (error: any) {
+  } catch (error) {
     if (axios.isAxiosError(error)) {
       throw new Error(error.response?.data?.message || error.message);
     }
@@ -72,7 +72,7 @@ export async function getProfessionalDocuments(id: string) {
   try {
     const response = await axios.get(`${API_URL}/professionals/${id}/documents`);
     return response.data || [];
-  } catch (error: any) {
+  } catch (error) {
     if (axios.isAxiosError(error)) {
       throw new Error(error.response?.data?.message || "Erro ao buscar documentos");
     }
