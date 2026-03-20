@@ -17,6 +17,7 @@ import br.org.apae.api.professional.domain.repository.HealthProfessionalReposito
 import jakarta.transaction.Transactional;
 
 import java.time.*;
+import java.time.temporal.ChronoUnit;
 import java.util.*;
 import java.util.stream.Collectors;
 
