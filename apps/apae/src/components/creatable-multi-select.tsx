@@ -1037,7 +1037,7 @@ export const CreatableMultiSelect = React.forwardRef<
             <Command>
               {searchable && (
                 <CommandInput
-                  placeholder="Search options..."
+                  placeholder="Buscar opções..."
                   onKeyDown={handleInputKeyDown}
                   value={searchValue}
                   onValueChange={setSearchValue}
@@ -1058,7 +1058,7 @@ export const CreatableMultiSelect = React.forwardRef<
                 )}
               >
                 <CommandEmpty>
-                  {emptyIndicator || "No results found."}
+                  {emptyIndicator || "nenhuma opção encontrada"}
                 </CommandEmpty>{" "}
                 {!hideSelectAll && !searchValue && (
                   <CommandGroup>
@@ -1089,9 +1089,9 @@ export const CreatableMultiSelect = React.forwardRef<
                         <CheckIcon className="h-4 w-4" />
                       </div>
                       <span>
-                        (Select All
+                       (Selecionar Todos
                         {getAllOptions().length > 20
-                          ? ` - ${getAllOptions().length} options`
+                          ? ` - ${getAllOptions().length} opções`
                           : ""}
                         )
                       </span>
@@ -1197,7 +1197,7 @@ export const CreatableMultiSelect = React.forwardRef<
                           onSelect={handleClear}
                           className="flex-1 justify-center cursor-pointer"
                         >
-                          Clear
+                          Limpar
                         </CommandItem>
                         <Separator
                           orientation="vertical"
@@ -1209,7 +1209,7 @@ export const CreatableMultiSelect = React.forwardRef<
                       onSelect={() => onCreate?.()}
                       className="flex-1 justify-center cursor-pointer max-w-full"
                     >
-                      Create
+                      Criar
                     </CommandItem>
                     <Separator
                       orientation="vertical"
@@ -1220,7 +1220,7 @@ export const CreatableMultiSelect = React.forwardRef<
                       onSelect={() => setIsPopoverOpen(false)}
                       className="flex-1 justify-center cursor-pointer max-w-full"
                     >
-                      Close
+                      Fechar
                     </CommandItem>
                   </div>
                 </CommandGroup>
