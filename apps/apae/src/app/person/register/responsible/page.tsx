@@ -15,10 +15,12 @@ import {
 } from "@/hooks/use-members-register-context";
 import { formatCEP } from "@/lib/formats";
 import { Guardian } from "@/schemas/member-schemas";
+import { EditAddress } from "@/schemas/edit-member-schemas";
 import { zodResolver } from "@hookform/resolvers/zod";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react"; 
 import { useForm } from "react-hook-form";
 import { handleBackendValidationErrors } from "@/utils/form-errors";
+import { usePathname } from "next/navigation"; 
 
 import z from "zod";
 import { DoubleColumn, FormButton, MembersRegisterForm } from "../form";
@@ -31,13 +33,25 @@ export default function MembersRegisterGuardianPage() {
 
   const [isLoading, setIsLoading] = useState(false);
 
-  const form = useForm<z.infer<typeof Guardian>>({
+  const pathname = usePathname();
+  const isEditing = pathname.includes("/edit");
+
+  const form = useForm<any>({ 
     mode: "onBlur",
     resolver: zodResolver(Guardian),
     defaultValues: guardian,
   });
 
-  const onSubmit = async (values: z.infer<typeof Guardian>) => {
+  const [isInitialized, setIsInitialized] = useState(false);
+
+  useEffect(() => {
+    if (isEditing && guardian.name && !isInitialized) {
+      form.reset(guardian);
+      setIsInitialized(true);
+    }
+  }, [isEditing, guardian, form, isInitialized]);
+
+  const onSubmit = async (values: any) => {
     setIsLoading(true);
     try {
       setGuardianData(values);
@@ -54,7 +68,7 @@ export default function MembersRegisterGuardianPage() {
   return (
     <Form {...form}>
       <MembersRegisterForm
-        title="Dados do Responsável"
+        title={isEditing ? "Editar Dados do Responsável" : "Dados do Responsável"}
         onSubmit={form.handleSubmit(onSubmit)}
         buttons={
           <>
@@ -114,7 +128,7 @@ export default function MembersRegisterGuardianPage() {
               <FormItem>
                 <FormLabel>Rua *</FormLabel>
                 <FormControl>
-                  <Input placeholder="Adielson Assis Alves, 49" {...field} />
+                  <Input placeholder="Rua exemplo, 123" {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -150,7 +164,7 @@ export default function MembersRegisterGuardianPage() {
               <FormItem>
                 <FormLabel>Estado *</FormLabel>
                 <FormControl>
-                  <Input placeholder="Paraiba" {...field} />
+                  <Input placeholder="Paraíba" {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>

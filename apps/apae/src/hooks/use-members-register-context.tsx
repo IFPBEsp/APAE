@@ -97,8 +97,9 @@ interface MembersRegisterContextData {
     setGuardianData: (data: Partial<GuardianData>) => void;
     setProfileData: (data: Partial<ProfileData>) => void;
     setStep: (step: MembersRegisterStep) => void;
+    loadAllData: (data: MembersRegisterState) => void;
   };
-  register: () => Promise<{ status: number; data: any }>;
+  register: (id?: string) => Promise<{ status: number; data: any }>;
 }
 
 type MembersRegisterAction =
@@ -108,7 +109,8 @@ type MembersRegisterAction =
   | { type: "SET_ADDITIONALS_DATA"; payload: Partial<AdditionalsData> }
   | { type: "SET_GUARDIAN_DATA"; payload: Partial<GuardianData> }
   | { type: "SET_PROFILE_DATA"; payload: Partial<ProfileData> }
-  | { type: "SET_STEP"; payload: MembersRegisterStep };
+  | { type: "SET_STEP"; payload: MembersRegisterStep }
+  | { type: "LOAD_ALL_DATA"; payload: MembersRegisterState };
 
 function membersRegisterReducer(
   state: MembersRegisterState,
@@ -171,6 +173,8 @@ function membersRegisterReducer(
       return { ...state, profile: { ...state.profile, ...action.payload } };
     case "SET_STEP":
       return { ...state, step: action.payload };
+    case "LOAD_ALL_DATA":
+      return { ...action.payload };
     default:
       return state;
   }
@@ -255,120 +259,147 @@ export function MembersRegisterProvider({
         dispatch({ type: "SET_STEP", payload: step }),
       [],
     ),
+    loadAllData: useCallback(
+      (data: MembersRegisterState) =>
+        dispatch({ type: "LOAD_ALL_DATA", payload: data }),
+      [],
+    ),
   };
 
-  const register = useCallback(async () => {
-    const { personal, address, additionals, guardian, kinships, profile } =
-      state;
+  const register = useCallback(
+    async (id?: string) => {
+      const { personal, address, additionals, guardian, kinships, profile } =
+        state;
 
-    const parseBirthCertificate = (certificate: string) => {
-      const p = certificate.trim().split(/\s+/);
-      return {
-        cartorio: p[0] || "",
-        acervo: p[1] || "",
-        servicoRegistroCivil: p[2] || "",
-        ano: p[3] || "",
-        tipo: p[4] || "",
-        livro: p[5] || "",
-        folha: p[6] || "",
-        termo: p[7] || "",
-        digitoVerificador: p[8] || "",
+      const formatDate = (date: any) => {
+        if (!date) return null;
+        const d = new Date(date);
+        return isNaN(d.getTime()) ? null : d.toISOString().split("T")[0];
       };
-    };
 
-    const { cartorio, livro, folha } = parseBirthCertificate(
-      personal.birth.certificate,
-    );
-    const hoje = new Date().toISOString().split("T")[0];
-
-    const patient = {
-      fullName: personal.name,
-      nationality: personal.birth.place,
-      birthDate: personal.birth.date.toISOString().split("T")[0],
-      contact: personal.phone,
-      birthCertificateNumber: personal.birth.certificate,
-      registryOffice: cartorio,
-      fls: folha,
-      book: livro,
-      rg: personal.rg.number,
-      issueDate: personal.rg.issuing.date.toISOString().split("T")[0],
-      issuingAgency: personal.rg.issuing.body,
-      cpf: personal.cpf,
-      cns: personal.cns,
-      nis: personal.nis,
-      registrationDate: hoje,
-      allergies: additionals.allergies,
-      isStudent: profile.role === "student",
-      address: {
-        city: address.city,
-        cep: address.cep,
-        state: address.state,
-        neighborhood: address.district,
-        street: address.street.replace(/, *\d+$/, "").trim(),
-        number:
-          address.street.split(",").pop()?.trim().replace(/\D/g, "") || "",
-        complement: "",
-      },
-      guardian: {
-        name: guardian.name,
-        contact: guardian.contact,
-        kinship: guardian.kinship,
+      const patientPayload: any = {
+        fullName: personal.name,
+        nationality: personal.birth.place,
+        birthDate: formatDate(personal.birth.date),
+        contact: personal.phone,
+        birthCertificateNumber: personal.birth.certificate,
+        registryOffice: personal.birth.certificate.split(" ")[0] || "Certidão",
+        fls: "0",
+        book: "0",
+        rg: personal.rg.number,
+        issueDate: formatDate(personal.rg.issuing.date),
+        issuingAgency: personal.rg.issuing.body,
+        cpf: personal.cpf,
+        cns: personal.cns,
+        nis: personal.nis,
+        registrationDate: formatDate(new Date()),
+        allergies: additionals.allergies || "Nenhuma",
+        isStudent: profile.role === "student",
         address: {
-          city: guardian.address.city,
-          cep: guardian.address.cep,
-          state: guardian.address.state,
-          neighborhood: guardian.address.district,
-          street: guardian.address.street.replace(/, *\d+$/, "").trim(),
-          number:
-            guardian.address.street
-              .split(",")
-              .pop()
-              ?.trim()
-              .replace(/\D/g, "") || "",
+          city: address.city,
+          cep: address.cep,
+          state: address.state,
+          neighborhood: address.district,
+          street: address.street.split(",")[0].trim(),
+          number: address.street.split(",")[1]?.trim() || "S/N",
           complement: "",
         },
-      },
-      parents: kinships.map((k) => ({
-        name: k.name,
-        rg: k.rg,
-        cpf: k.cpf,
-        profession: k.occupation,
-        isAlive: k.alive,
-        kinship: k.type,
-      })),
-      vaccineNames: additionals.vaccines.map((v) => ({ name: v })),
-      annualRegistry: {
-        bpc: additionals.bpc,
-        diseases: additionals.diseases,
-        serviceArea: additionals.care.types.map((area) => ({ area })),
-        familyIncome:
-          Number(additionals.householdIncome.replace(/\D/g, "")) * 0.01,
-        year: new Date().getFullYear(),
-        disorders: additionals.disability.types.map((name) => ({ name })),
-      },
-    };
+        guardian: {
+          name: guardian.name,
+          contact: guardian.contact,
+          kinship: guardian.kinship,
+          address: {
+            city: guardian.address.city,
+            cep: guardian.address.cep,
+            state: guardian.address.state,
+            neighborhood: guardian.address.district,
+            street: guardian.address.street.split(",")[0].trim(),
+            number: guardian.address.street.split(",")[1]?.trim() || "S/N",
+            complement: "",
+          },
+        },
+        parents: kinships.map((k) => ({
+          name: k.name,
+          rg: k.rg,
+          cpf: k.cpf,
+          profession: k.occupation,
+          isAlive: k.alive,
+          kinship: k.type,
+        })),
+        vaccineNames:
+          additionals.vaccines.length > 0
+            ? additionals.vaccines.map((v) => ({ name: v }))
+            : [{ name: "Nenhuma" }],
+      };
 
-    const formData = new FormData();
-    formData.append(
-      "patient",
-      new Blob([JSON.stringify(patient)], { type: "application/json" }),
-    );
-    formData.append("photo", profile.photo!);
-    formData.append("reports", additionals.disability.report!);
-    formData.append("referrals", additionals.care.referral!);
+      if (id) {
+        const responsePessoa = await fetch(`/api/pessoas/${id}`, {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(patientPayload),
+        });
 
-    const response = await fetch("/api/pessoas", {
-      method: "POST",
-      body: formData,
-    });
+        try {
+          const currentYear = 2026; 
+          const rawIncome = additionals.householdIncome.replace(/\D/g, "");
+          const formattedIncome = rawIncome ? Number(rawIncome) * 0.01 : 0.0;
 
-    const responseData = await response.json().catch(() => ({}));
+          const annualRegistryPayload = {
+            bpc: additionals.bpc,
+            diseases: additionals.diseases || "Nenhuma",
+            continuousMedication: additionals.medications || "Nenhum",
+            serviceArea: additionals.care.types.map((area: string) => ({ area })),
+            disorders: additionals.disability.types.map((name: string) => ({ name })),
+            familyIncome: formattedIncome,
+            year: currentYear,
+          };
 
-    return {
-      status: response.status,
-      data: responseData,
-    };
-  }, [state]);
+          await fetch(`/api/pessoas/${id}/registro-anual/${currentYear}`, {
+            method: "PUT",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(annualRegistryPayload),
+          });
+        } catch (e) {
+          console.error("Erro no Registro Anual:", e);
+        }
+
+        let responseData = {};
+        const text = await responsePessoa.text();
+        if (text) {
+          try { responseData = JSON.parse(text); } catch (e) {}
+        }
+
+        return { status: responsePessoa.status, data: responseData };
+      } else {
+        patientPayload.annualRegistry = {
+          bpc: additionals.bpc,
+          diseases: additionals.diseases,
+          serviceArea: additionals.care.types.map((area: string) => ({ area })),
+          familyIncome:
+            Number(additionals.householdIncome.replace(/\D/g, "")) * 0.01,
+          year: new Date().getFullYear(),
+          disorders: additionals.disability.types.map((name: string) => ({
+            name,
+          })),
+        };
+
+        const formData = new FormData();
+        formData.append(
+          "patient",
+          new Blob([JSON.stringify(patientPayload)], { type: "application/json" }),
+        );
+
+        if (profile.photo instanceof File) formData.append("photo", profile.photo);
+        if (additionals.disability.report instanceof File) formData.append("reports", additionals.disability.report);
+        if (additionals.care.referral instanceof File) formData.append("referrals", additionals.care.referral);
+
+        const response = await fetch("/api/pessoas", { method: "POST", body: formData });
+        const data = await response.json().catch(() => ({}));
+        return { status: response.status, data };
+      }
+    },
+    [state],
+  );
 
   return (
     <MembersRegisterContext.Provider value={{ state, setters, register }}>
@@ -379,9 +410,6 @@ export function MembersRegisterProvider({
 
 export function useMembersRegisterContext() {
   const context = useContext(MembersRegisterContext);
-  if (!context)
-    throw new Error(
-      "useMembersRegisterContext must be used within a MembersRegisterProvider",
-    );
+  if (!context) throw new Error("Context error");
   return context;
 }

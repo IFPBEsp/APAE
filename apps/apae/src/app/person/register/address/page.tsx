@@ -15,10 +15,11 @@ import {
 } from "@/hooks/use-members-register-context";
 import { formatCEP } from "@/lib/formats";
 import { Address } from "@/schemas/member-schemas";
+import { EditAddress } from "@/schemas/edit-member-schemas"; // Importando schema de edição
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
-import z from "zod";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { usePathname } from "next/navigation"; // Para detectar edição
 import { handleBackendValidationErrors } from "@/utils/form-errors";
 
 import { DoubleColumn, FormButton, MembersRegisterForm } from "../form";
@@ -31,13 +32,29 @@ export default function MembersRegisterAddressPage() {
 
   const [isLoading, setIsLoading] = useState(false);
 
-  const form = useForm<z.infer<typeof Address>>({
+  // --- LÓGICA DE DETECÇÃO DE EDIÇÃO ---
+  const pathname = usePathname();
+  const isEditing = pathname.includes("/edit");
+  const currentSchema = isEditing ? EditAddress : Address;
+
+  const form = useForm<any>({
     mode: "onBlur",
-    resolver: zodResolver(Address),
+    resolver: zodResolver(currentSchema),
     defaultValues: address,
   });
 
-  const onSubmit = async (values: z.infer<typeof Address>) => {
+  // --- TRAVA DE INICIALIZAÇÃO ---
+  const [isInitialized, setIsInitialized] = useState(false);
+
+  useEffect(() => {
+    // Se estivermos editando e o endereço chegar no contexto, reseta o formulário uma única vez
+    if (isEditing && address.cep && !isInitialized) {
+      form.reset(address);
+      setIsInitialized(true);
+    }
+  }, [address, form, isEditing, isInitialized]);
+
+  const onSubmit = async (values: any) => {
     setIsLoading(true);
     try {
       setAddressData(values);
@@ -54,7 +71,7 @@ export default function MembersRegisterAddressPage() {
   return (
     <Form {...form}>
       <MembersRegisterForm
-        title="Endereço"
+        title={isEditing ? "Editar Endereço" : "Endereço"}
         onSubmit={form.handleSubmit(onSubmit)}
         buttons={
           <>
