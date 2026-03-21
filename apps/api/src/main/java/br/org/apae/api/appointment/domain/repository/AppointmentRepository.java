@@ -26,11 +26,9 @@ public interface AppointmentRepository extends JpaRepository<Appointment, UUID> 
   List<Appointment> findByAnnualRegistrationIdAndIsActiveTrue(UUID registrationId);
   Optional<Appointment> findByAnnualRegistrationIdAndIsActiveTrueOrderByInitialDateDesc(UUID registrationId);
 
-  // TODO: Criar query para validar se horário definido já está utilizado
-  @Query("SELECT COUNT(a) > 0 FROM Appointment a WHERE a.professional.id = :professionalId AND a.initialDate = :initialDate AND a.hour = :hour AND a.isActive = true")
-  boolean existsConflict(
-          @Param("professionalId") UUID professionalId,
-          @Param("initialDate") LocalDate initialDate,
-          @Param("hour") LocalTime hour
+  boolean existsByProfessionalIdAndInitialDateAndHourAndIsActiveTrue(
+          UUID professionalId,
+          LocalDate initialDate,
+          LocalTime hour
   );
 }
