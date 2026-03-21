@@ -105,23 +105,11 @@ public class AppointmentApplicationServiceImpl implements AppointmentApplication
 
     LocalTime exactTime = dto.hour().truncatedTo(ChronoUnit.MINUTES);
 
-    //TODO: add validação de data e hora aqui
     boolean isTimeSlotTaken = appointmentRepo.existsConflict(
             professional.getId(),
             dto.initialDate(),
             exactTime
     );
-
-    System.out.println("isTimeSlotTaken");
-    System.out.println(isTimeSlotTaken);
-
-    System.out.println("professional.getId()");
-    System.out.println(professional.getId());
-    System.out.println("dto.initialDate()");
-    System.out.println(dto.initialDate());
-    System.out.println("dto.hour()");
-    System.out.println(exactTime);
-
 
     if (isTimeSlotTaken) {
       throw new AppointmentConflictException();
