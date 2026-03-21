@@ -13,7 +13,6 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 
 import br.org.apae.api.common.exceptions.types.ErrorResponse;
 import br.org.apae.api.common.exceptions.types.ValidationErrorResponse;
-import br.org.apae.api.appointment.domain.exceptions.AppointmentConflictException;
 import jakarta.servlet.http.HttpServletRequest;
 
 @ControllerAdvice
@@ -38,21 +37,6 @@ public class GlobalExceptionHandler {
             "Erro de validação",
             request.getRequestURI(),
             fieldErrors
-    );
-
-    return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
-  }
-
-  @ExceptionHandler(AppointmentConflictException.class)
-  public ResponseEntity<ErrorResponse> handleBusinessException(
-          AppointmentConflictException ex,
-          HttpServletRequest request) {
-
-    ErrorResponse errorResponse = new ErrorResponse(
-            HttpStatus.BAD_REQUEST.value(),
-            HttpStatus.BAD_REQUEST.getReasonPhrase(),
-            ex.getMessage(),
-            request.getRequestURI()
     );
 
     return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
