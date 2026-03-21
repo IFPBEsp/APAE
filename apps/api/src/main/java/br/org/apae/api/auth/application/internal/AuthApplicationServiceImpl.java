@@ -4,9 +4,11 @@ import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.time.LocalDateTime;
 import java.util.HexFormat;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
@@ -14,8 +16,6 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import br.org.apae.api.auth.application.interfaces.AuthApplicationService;
 import br.org.apae.api.auth.domain.exceptions.AuthenticationException;
@@ -30,10 +30,11 @@ import br.org.apae.api.common.dto.auth.request.PasswordResetDTO;
 import br.org.apae.api.common.dto.auth.request.SignInDTO;
 import br.org.apae.api.common.dto.auth.request.SignUpDTO;
 import br.org.apae.api.common.dto.auth.response.TokenResponseDTO;
+import br.org.apae.api.notification.domain.interfaces.EmailSender;
+import br.org.apae.api.notification.domain.model.EmailMessage;
 
 @Service
 public class AuthApplicationServiceImpl implements AuthApplicationService {
-  private static final Logger logger = LoggerFactory.getLogger(AuthApplicationServiceImpl.class);
   private static final int PASSWORD_RECOVERY_EXPIRATION_MINUTES = 30;
 
   private final UserService userService;
@@ -41,18 +42,24 @@ public class AuthApplicationServiceImpl implements AuthApplicationService {
   private final TokenProvider tokenProvider;
   private final AuthenticationConfiguration authenticationConfiguration;
   private final PasswordRecoveryTokenRepository passwordRecoveryTokenRepository;
+  private final EmailSender emailSender;
+
+  @Value("${app.frontend.reset-password-url}")
+  private String resetPasswordUrl;
 
   public AuthApplicationServiceImpl(
       UserService userService,
       PasswordEncoder passwordEncoder,
       AuthenticationConfiguration authenticationConfiguration,
       TokenProvider tokenProvider,
-      PasswordRecoveryTokenRepository passwordRecoveryTokenRepository) {
+      PasswordRecoveryTokenRepository passwordRecoveryTokenRepository,
+      EmailSender emailSender) {
     this.userService = userService;
     this.passwordEncoder = passwordEncoder;
     this.authenticationConfiguration = authenticationConfiguration;
     this.tokenProvider = tokenProvider;
     this.passwordRecoveryTokenRepository = passwordRecoveryTokenRepository;
+    this.emailSender = emailSender;
   }
 
   @Override
@@ -100,17 +107,28 @@ public class AuthApplicationServiceImpl implements AuthApplicationService {
     String rawToken = UUID.randomUUID().toString() + UUID.randomUUID();
     String tokenHash = hashToken(rawToken);
 
-    logger.warn("PASSWORD RECOVERY TOKEN (DEV) - email: {}, token: {}", dto.email(), rawToken);
-
     PasswordRecoveryToken passwordRecoveryToken = new PasswordRecoveryToken(
         tokenHash,
         user,
         LocalDateTime.now().plusMinutes(PASSWORD_RECOVERY_EXPIRATION_MINUTES));
 
     passwordRecoveryTokenRepository.save(passwordRecoveryToken);
+
+    String recoveryLink = resetPasswordUrl + "?token=" + rawToken;
+
+    EmailMessage emailMessage = new EmailMessage(
+        List.of(dto.email()),
+        "Recuperação de senha",
+        "Olá,\n\n" +
+            "Recebemos uma solicitação para redefinição da sua senha.\n" +
+            "Clique no link abaixo para continuar:\n\n" +
+            recoveryLink +
+            "\n\nSe você não solicitou esta alteração, ignore este e-mail.");
+
+    emailSender.send(emailMessage);
   }
 
- @Override
+  @Override
   @Transactional
   public void resetPassword(PasswordResetDTO dto) {
     if (!dto.newPassword().equals(dto.confirmPassword())) {
