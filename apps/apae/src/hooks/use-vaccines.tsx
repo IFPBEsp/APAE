@@ -65,7 +65,6 @@ function withFeedback<TArgs extends readonly unknown[], TReturn>(
         try {
             const result = await fn(...args);
             
-            // 2. A MÁGICA: Só dispara o feedback se a mensagem foi enviada!
             if (messages?.success) {
                 setFeedback({
                     message: messages.success,
