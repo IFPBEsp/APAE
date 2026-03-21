@@ -7,7 +7,8 @@ import {
   useMembersRegisterContext, 
   MembersRegisterStep 
 } from "@/hooks/use-members-register-context";
-import { Loader2 } from "lucide-react";
+import { Loader2, ArrowRight } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
 import PersonalForm from "../../register/personal/page";
 import KinshipsForm from "../../register/kinships/page";
@@ -64,17 +65,14 @@ function EditPatientContainer({ id }: { id: string }) {
             medications: data.annualRegistry?.continuousMedication || "", 
             vaccines: data.vaccineNames?.map((v: any) => v.name) || [], 
             allergies: data.allergies || "",
-            
             disability: { 
               types: data.annualRegistry?.disorders?.map((d: any) => d.name) || [], 
               report: undefined 
             },
-            
             care: { 
               types: data.annualRegistry?.serviceAreas?.map((s: any) => s.area) || [], 
               referral: undefined 
             },
-            
             bpc: data.annualRegistry?.bpc ?? false,
             householdIncome: data.annualRegistry?.familyIncome 
               ? (data.annualRegistry.familyIncome * 100).toString() 
@@ -130,14 +128,35 @@ function EditPatientContainer({ id }: { id: string }) {
     <div className="container mx-auto py-6">
       <div className="mb-6 px-4 text-center md:text-left">
         <h1 className="text-3xl font-bold text-[#0D4F97]">Editar Paciente</h1>
-        <p className="text-gray-500 mt-2">Atualize as informações nas etapas abaixo e salve ao final.</p>
+        <p className="text-gray-500 mt-2">Atualize as informações cadastrais abaixo.</p>
       </div>
 
       <div className="bg-white rounded-xl shadow-sm border p-4 md:p-8 min-h-[400px]">
         {step === MembersRegisterStep.PERSONAL && <PersonalForm />}
         {step === MembersRegisterStep.KINSHIPS && <KinshipsForm />}
         {step === MembersRegisterStep.ADDRESS && <AddressForm />}
-        {step === MembersRegisterStep.ADDITIONALS && <AdditionalsForm />}
+        
+        
+        {step === MembersRegisterStep.ADDITIONALS && (
+          <div className="flex flex-col items-center justify-center py-12 text-center space-y-6">
+            <div className="bg-blue-50 p-6 rounded-full">
+              <Loader2 className="h-12 w-12 text-[#0D4F97] animate-pulse" />
+            </div>
+            <div className="max-w-md">
+              <h2 className="text-xl font-bold text-gray-800">Informações de Saúde</h2>
+              <p className="text-gray-500 mt-2 leading-relaxed">
+                Os dados de saúde e registros anuais devem ser editados diretamente na seção de <strong>"Informações de Saúde"</strong> do paciente.
+              </p>
+            </div>
+            <Button 
+              onClick={() => setters.setStep(MembersRegisterStep.GUARDIAN)}
+              className="bg-[#0D4F97] hover:bg-[#0a3d75] gap-2 px-8 h-12"
+            >
+              Continuar para Responsável <ArrowRight size={18} />
+            </Button>
+          </div>
+        )}
+
         {step === MembersRegisterStep.GUARDIAN && <ResponsibleForm />}
         {step === MembersRegisterStep.PROFILE && <ProfileForm />}
       </div>

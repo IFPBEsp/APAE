@@ -271,6 +271,19 @@ export function MembersRegisterProvider({
       const { personal, address, additionals, guardian, kinships, profile } =
         state;
 
+      const parseBirthCertificate = (certificate: string) => {
+        const p = certificate.trim().split(/\s+/);
+        return {
+          cartorio: p[0] || "",
+          livro: p[5] || "",
+          folha: p[6] || "",
+        };
+      };
+
+      const { cartorio, livro, folha } = parseBirthCertificate(
+        personal.birth.certificate,
+      );
+
       const formatDate = (date: any) => {
         if (!date) return null;
         const d = new Date(date);
@@ -283,9 +296,9 @@ export function MembersRegisterProvider({
         birthDate: formatDate(personal.birth.date),
         contact: personal.phone,
         birthCertificateNumber: personal.birth.certificate,
-        registryOffice: personal.birth.certificate.split(" ")[0] || "Certidão",
-        fls: "0",
-        book: "0",
+        registryOffice: cartorio || "Não informado",
+        fls: folha || "0",
+        book: livro || "0",
         rg: personal.rg.number,
         issueDate: formatDate(personal.rg.issuing.date),
         issuingAgency: personal.rg.issuing.body,
@@ -333,43 +346,23 @@ export function MembersRegisterProvider({
       };
 
       if (id) {
-        const responsePessoa = await fetch(`/api/pessoas/${id}`, {
+        const response = await fetch(`/api/pessoas/${id}`, {
           method: "PUT",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(patientPayload),
         });
 
-        try {
-          const currentYear = 2026; 
-          const rawIncome = additionals.householdIncome.replace(/\D/g, "");
-          const formattedIncome = rawIncome ? Number(rawIncome) * 0.01 : 0.0;
-
-          const annualRegistryPayload = {
-            bpc: additionals.bpc,
-            diseases: additionals.diseases || "Nenhuma",
-            continuousMedication: additionals.medications || "Nenhum",
-            serviceArea: additionals.care.types.map((area: string) => ({ area })),
-            disorders: additionals.disability.types.map((name: string) => ({ name })),
-            familyIncome: formattedIncome,
-            year: currentYear,
-          };
-
-          await fetch(`/api/pessoas/${id}/registro-anual/${currentYear}`, {
-            method: "PUT",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(annualRegistryPayload),
-          });
-        } catch (e) {
-          console.error("Erro no Registro Anual:", e);
-        }
-
         let responseData = {};
-        const text = await responsePessoa.text();
+        const text = await response.text();
         if (text) {
-          try { responseData = JSON.parse(text); } catch (e) {}
+          try {
+            responseData = JSON.parse(text);
+          } catch (e) {
+            responseData = { message: text };
+          }
         }
 
-        return { status: responsePessoa.status, data: responseData };
+        return { status: response.status, data: responseData };
       } else {
         patientPayload.annualRegistry = {
           bpc: additionals.bpc,
@@ -386,14 +379,20 @@ export function MembersRegisterProvider({
         const formData = new FormData();
         formData.append(
           "patient",
-          new Blob([JSON.stringify(patientPayload)], { type: "application/json" }),
+          new Blob([JSON.stringify(patientPayload)], {
+            type: "application/json",
+          }),
         );
 
         if (profile.photo instanceof File) formData.append("photo", profile.photo);
         if (additionals.disability.report instanceof File) formData.append("reports", additionals.disability.report);
         if (additionals.care.referral instanceof File) formData.append("referrals", additionals.care.referral);
 
-        const response = await fetch("/api/pessoas", { method: "POST", body: formData });
+        const response = await fetch("/api/pessoas", {
+          method: "POST",
+          body: formData,
+        });
+
         const data = await response.json().catch(() => ({}));
         return { status: response.status, data };
       }
