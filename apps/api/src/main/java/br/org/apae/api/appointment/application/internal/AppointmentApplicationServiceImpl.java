@@ -21,6 +21,7 @@ import java.time.temporal.ChronoUnit;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
@@ -105,20 +106,21 @@ public class AppointmentApplicationServiceImpl implements AppointmentApplication
 
     LocalTime exactTime = dto.hour().truncatedTo(ChronoUnit.MINUTES);
 
+
     boolean isTimeSlotTaken = appointmentRepo.existsByProfessionalIdAndInitialDateAndHourAndIsActiveTrue(
             professional.getId(),
             dto.initialDate(),
             exactTime
     );
-
     if (isTimeSlotTaken) {
-      throw new AppointmentConflictException();
+        throw new AppointmentConflictException();
     }
-
     Appointment appointment = mapper.toEntity(dto, professional, annualRegistry);
-    appointmentRepo.save(appointment);
-        Appointment appointment = mapper.toEntity(dto, professional, annualRegistry);
+    try {
         appointmentRepo.save(appointment);
+    } catch (DataIntegrityViolationException ex) {
+        throw new AppointmentConflictException();
+    }
 
     Integer year = annualRegistry.getYear();
     LocalDate end = LocalDate.of(year, 12, 31);
