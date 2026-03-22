@@ -54,54 +54,54 @@ import org.springframework.web.server.ResponseStatusException;
 @Transactional
 public class AppointmentApplicationServiceImpl implements AppointmentApplicationService {
 
-  public static final String APPOINTMENT_NOT_FOUND = "Appointment not found";
-  private final AppointmentRepository appointmentRepo;
-  private final GeneratedAppointmentRepository generatedRepo;
-  private final AnnualRegistryRepository registryRepo;
-  private final HealthProfessionalRepository professionalRepo;
-  private final AbsenceRepository absenceRepo;
-  private final PatientRepository patientRepo;
-  private final GuardianRepository guardianRepo;
-  private final ParentRepository parentRepo;
-  private final AppointmentMapper mapper;
-  private final VaccineMapper vaccineMapper;
-  private final ParentMapper parentMapper;
+    public static final String APPOINTMENT_NOT_FOUND = "Appointment not found";
+    private final AppointmentRepository appointmentRepo;
+    private final GeneratedAppointmentRepository generatedRepo;
+    private final AnnualRegistryRepository registryRepo;
+    private final HealthProfessionalRepository professionalRepo;
+    private final AbsenceRepository absenceRepo;
+    private final PatientRepository patientRepo;
+    private final GuardianRepository guardianRepo;
+    private final ParentRepository parentRepo;
+    private final AppointmentMapper mapper;
+    private final VaccineMapper vaccineMapper;
+    private final ParentMapper parentMapper;
 
 
-  public AppointmentApplicationServiceImpl(
-          AppointmentRepository appointmentRepo,
-          GeneratedAppointmentRepository generatedRepo,
-          AnnualRegistryRepository registryRepo,
-          HealthProfessionalRepository professionalRepo,
-          AbsenceRepository absenceRepo,
-          PatientRepository patientRepo,
-          GuardianRepository guardianRepo,
-          ParentRepository parentRepo,
-          AppointmentMapper mapper) {
-    this.appointmentRepo = appointmentRepo;
-    this.generatedRepo = generatedRepo;
-    this.registryRepo = registryRepo;
-    this.professionalRepo = professionalRepo;
-    this.absenceRepo = absenceRepo;
-    this.patientRepo = patientRepo;
-    this.guardianRepo = guardianRepo;
-    this.parentRepo = parentRepo;
-    this.mapper = mapper;
-    this.vaccineMapper = new VaccineMapper();
-    this.parentMapper = new ParentMapper();
-  }
+    public AppointmentApplicationServiceImpl(
+            AppointmentRepository appointmentRepo,
+            GeneratedAppointmentRepository generatedRepo,
+            AnnualRegistryRepository registryRepo,
+            HealthProfessionalRepository professionalRepo,
+            AbsenceRepository absenceRepo,
+            PatientRepository patientRepo,
+            GuardianRepository guardianRepo,
+            ParentRepository parentRepo,
+            AppointmentMapper mapper) {
+        this.appointmentRepo = appointmentRepo;
+        this.generatedRepo = generatedRepo;
+        this.registryRepo = registryRepo;
+        this.professionalRepo = professionalRepo;
+        this.absenceRepo = absenceRepo;
+        this.patientRepo = patientRepo;
+        this.guardianRepo = guardianRepo;
+        this.parentRepo = parentRepo;
+        this.mapper = mapper;
+        this.vaccineMapper = new VaccineMapper();
+        this.parentMapper = new ParentMapper();
+    }
 
-  @Override
-  public void create(CreateAppointmentDTO dto) {
-    AnnualRegistry annualRegistry = this.registryRepo
-            .findByPatientIdAndYear(dto.patientId(), Year.now().getValue())
-            .orElseThrow(AnnualRegistrationNotFound::new);
+    @Override
+    public void create(CreateAppointmentDTO dto) {
+        AnnualRegistry annualRegistry = this.registryRepo
+                .findByPatientIdAndYear(dto.patientId(), Year.now().getValue())
+                .orElseThrow(AnnualRegistrationNotFound::new);
 
-    HealthProfessional professional = this.professionalRepo
-            .findById(dto.professionalId())
-            .orElseThrow(HealthProfessionalNotFoundException::new);
+        HealthProfessional professional = this.professionalRepo
+                .findById(dto.professionalId())
+                .orElseThrow(HealthProfessionalNotFoundException::new);
 
-    validateProfessionalAvailability(professional, dto.initialDate(), dto.hour());
+        validateProfessionalAvailability(professional, dto.initialDate(), dto.hour());
 
     LocalTime exactTime = dto.hour().truncatedTo(ChronoUnit.MINUTES);
 
@@ -117,6 +117,8 @@ public class AppointmentApplicationServiceImpl implements AppointmentApplication
 
     Appointment appointment = mapper.toEntity(dto, professional, annualRegistry);
     appointmentRepo.save(appointment);
+        Appointment appointment = mapper.toEntity(dto, professional, annualRegistry);
+        appointmentRepo.save(appointment);
 
     Integer year = annualRegistry.getYear();
     LocalDate end = LocalDate.of(year, 12, 31);
