@@ -15,11 +15,11 @@ import {
 } from "@/hooks/use-members-register-context";
 import { formatCEP } from "@/lib/formats";
 import { Address } from "@/schemas/member-schemas";
-import { EditAddress } from "@/schemas/edit-member-schemas"; // Importando schema de edição
+import { EditAddress } from "@/schemas/edit-member-schemas";  
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { useState, useEffect } from "react";
-import { usePathname } from "next/navigation"; // Para detectar edição
+import { usePathname } from "next/navigation"; 
 import { handleBackendValidationErrors } from "@/utils/form-errors";
 
 import { DoubleColumn, FormButton, MembersRegisterForm } from "../form";
@@ -32,7 +32,7 @@ export default function MembersRegisterAddressPage() {
 
   const [isLoading, setIsLoading] = useState(false);
 
-  // --- LÓGICA DE DETECÇÃO DE EDIÇÃO ---
+
   const pathname = usePathname();
   const isEditing = pathname.includes("/edit");
   const currentSchema = isEditing ? EditAddress : Address;
@@ -43,11 +43,10 @@ export default function MembersRegisterAddressPage() {
     defaultValues: address,
   });
 
-  // --- TRAVA DE INICIALIZAÇÃO ---
+  
   const [isInitialized, setIsInitialized] = useState(false);
 
   useEffect(() => {
-    // Se estivermos editando e o endereço chegar no contexto, reseta o formulário uma única vez
     if (isEditing && address.cep && !isInitialized) {
       form.reset(address);
       setIsInitialized(true);

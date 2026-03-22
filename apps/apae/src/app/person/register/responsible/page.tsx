@@ -15,7 +15,7 @@ import {
 } from "@/hooks/use-members-register-context";
 import { formatCEP } from "@/lib/formats";
 import { Guardian } from "@/schemas/member-schemas";
-import { EditAddress } from "@/schemas/edit-member-schemas";
+import { EditGuardian } from "@/schemas/edit-member-schemas";
 import { zodResolver } from "@hookform/resolvers/zod";
 import React, { useState, useEffect } from "react"; 
 import { useForm } from "react-hook-form";
@@ -35,10 +35,11 @@ export default function MembersRegisterGuardianPage() {
 
   const pathname = usePathname();
   const isEditing = pathname.includes("/edit");
+  const currentSchema = isEditing ? EditGuardian : Guardian; 
 
   const form = useForm<any>({ 
     mode: "onBlur",
-    resolver: zodResolver(Guardian),
+    resolver: zodResolver(currentSchema), 
     defaultValues: guardian,
   });
 

@@ -33,6 +33,16 @@ function EditPatientContainer({ id }: { id: string }) {
         if (!res.ok) throw new Error("Erro ao buscar dados");
         const data = await res.json();
 
+        const formatStreet = (addr: any) => {
+          if (!addr?.street) return "";
+          const street = addr.street.trim();
+          const number = addr.number ? addr.number.trim() : "";
+          
+          if (street.includes(",")) return street;
+          
+          return number ? `${street}, ${number}` : street;
+        };
+
         const mappedData: any = {
           personal: {
             name: data.fullName || "",
@@ -58,7 +68,7 @@ function EditPatientContainer({ id }: { id: string }) {
             state: data.address?.state || "",
             city: data.address?.city || "",
             district: data.address?.neighborhood || "",
-            street: data.address?.street ? `${data.address.street}, ${data.address.number || ""}` : ""
+            street: formatStreet(data.address) 
           },
           additionals: {
             diseases: data.annualRegistry?.diseases || "",
@@ -87,7 +97,7 @@ function EditPatientContainer({ id }: { id: string }) {
                state: data.guardian?.address?.state || "",
                city: data.guardian?.address?.city || "",
                district: data.guardian?.address?.neighborhood || "",
-               street: data.guardian?.address?.street || ""
+               street: formatStreet(data.guardian?.address) 
             }
           },
           kinships: data.parents?.map((p: any) => ({
@@ -135,7 +145,6 @@ function EditPatientContainer({ id }: { id: string }) {
         {step === MembersRegisterStep.PERSONAL && <PersonalForm />}
         {step === MembersRegisterStep.KINSHIPS && <KinshipsForm />}
         {step === MembersRegisterStep.ADDRESS && <AddressForm />}
-        
         
         {step === MembersRegisterStep.ADDITIONALS && (
           <div className="flex flex-col items-center justify-center py-12 text-center space-y-6">

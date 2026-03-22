@@ -40,6 +40,7 @@ interface AddressData {
 }
 
 interface AdditionalsData {
+  id?: string;
   diseases: string;
   medications: string;
   vaccines: string[];
@@ -192,6 +193,7 @@ const initialState: MembersRegisterState = {
   },
   address: { cep: "", state: "", city: "", district: "", street: "" },
   additionals: {
+    id: undefined,
     diseases: "",
     medications: "",
     vaccines: [],
@@ -271,128 +273,101 @@ export function MembersRegisterProvider({
       const { personal, address, additionals, guardian, kinships, profile } =
         state;
 
-      const parseBirthCertificate = (certificate: string) => {
-        const p = certificate.trim().split(/\s+/);
-        return {
-          cartorio: p[0] || "",
-          livro: p[5] || "",
-          folha: p[6] || "",
-        };
-      };
-
-      const { cartorio, livro, folha } = parseBirthCertificate(
-        personal.birth.certificate,
-      );
-
       const formatDate = (date: any) => {
         if (!date) return null;
         const d = new Date(date);
         return isNaN(d.getTime()) ? null : d.toISOString().split("T")[0];
       };
 
-      const patientPayload: any = {
-        fullName: personal.name,
-        nationality: personal.birth.place,
+      const parseIncome = (val: string) => {
+        const clean = String(val).replace(/[^\d]/g, ""); 
+        const num = parseFloat(clean) * 0.01; 
+        return isNaN(num) ? 0.0 : num;
+      };
+
+      const patient: any = {
+        fullName: personal.name || "Não informado",
+        nationality: personal.birth.place || "Brasileiro",
         birthDate: formatDate(personal.birth.date),
-        contact: personal.phone,
-        birthCertificateNumber: personal.birth.certificate,
-        registryOffice: cartorio || "Não informado",
-        fls: folha || "0",
-        book: livro || "0",
-        rg: personal.rg.number,
+        contact: personal.phone || "Não informado",
+        birthCertificateNumber: personal.birth.certificate || "0",
+        registryOffice: "Cartorio",
+        fls: "0",
+        book: "0",
+        rg: personal.rg.number || "0",
         issueDate: formatDate(personal.rg.issuing.date),
-        issuingAgency: personal.rg.issuing.body,
+        issuingAgency: personal.rg.issuing.body || "SSP/SP",
         cpf: personal.cpf,
-        cns: personal.cns,
-        nis: personal.nis,
+        cns: personal.cns || "000 0000 0000 0000",
+        nis: personal.nis || "0",
         registrationDate: formatDate(new Date()),
         allergies: additionals.allergies || "Nenhuma",
         isStudent: profile.role === "student",
         address: {
-          city: address.city,
-          cep: address.cep,
-          state: address.state,
-          neighborhood: address.district,
-          street: address.street.split(",")[0].trim(),
+          city: address.city || "Não informado",
+          cep: address.cep || "00000-000",
+          state: address.state || "Não informado",
+          neighborhood: address.district || "Não informado",
+          street: address.street.split(",")[0].trim() || "Não informado",
           number: address.street.split(",")[1]?.trim() || "S/N",
           complement: "",
         },
         guardian: {
-          name: guardian.name,
-          contact: guardian.contact,
-          kinship: guardian.kinship,
+          name: guardian.name || "Não informado",
+          contact: guardian.contact || "Não informado",
+          kinship: guardian.kinship || "Não informado",
           address: {
-            city: guardian.address.city,
-            cep: guardian.address.cep,
-            state: guardian.address.state,
-            neighborhood: guardian.address.district,
-            street: guardian.address.street.split(",")[0].trim(),
+            city: guardian.address.city || "Não informado",
+            cep: guardian.address.cep || "00000-000",
+            state: guardian.address.state || "Não informado",
+            neighborhood: guardian.address.district || "Não informado",
+            street: guardian.address.street.split(",")[0].trim() || "Não informado",
             number: guardian.address.street.split(",")[1]?.trim() || "S/N",
             complement: "",
           },
         },
         parents: kinships.map((k) => ({
-          name: k.name,
-          rg: k.rg,
-          cpf: k.cpf,
-          profession: k.occupation,
+          name: k.name || "Não informado",
+          rg: k.rg || "0",
+          cpf: k.cpf || "000.000.000-00",
+          profession: k.occupation || "Não informado",
           isAlive: k.alive,
-          kinship: k.type,
+          kinship: k.type || "Pai/Mãe",
         })),
-        vaccineNames:
-          additionals.vaccines.length > 0
-            ? additionals.vaccines.map((v) => ({ name: v }))
-            : [{ name: "Nenhuma" }],
+        vaccineNames: additionals.vaccines.map((v) => ({ name: v })),
       };
 
       if (id) {
-        const response = await fetch(`/api/pessoas/${id}`, {
+        const responsePessoa = await fetch(`/api/pessoas/${id}`, {
           method: "PUT",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(patientPayload),
+          body: JSON.stringify(patient),
         });
 
-        let responseData = {};
-        const text = await response.text();
+        let resData = {};
+        const text = await responsePessoa.text();
         if (text) {
-          try {
-            responseData = JSON.parse(text);
-          } catch (e) {
-            responseData = { message: text };
-          }
+          try { resData = JSON.parse(text); } catch(e) {}
         }
+        return { status: responsePessoa.status, data: resData };
 
-        return { status: response.status, data: responseData };
       } else {
-        patientPayload.annualRegistry = {
+        patient.annualRegistry = {
           bpc: additionals.bpc,
           diseases: additionals.diseases,
           serviceArea: additionals.care.types.map((area: string) => ({ area })),
-          familyIncome:
-            Number(additionals.householdIncome.replace(/\D/g, "")) * 0.01,
+          familyIncome: parseIncome(additionals.householdIncome),
           year: new Date().getFullYear(),
-          disorders: additionals.disability.types.map((name: string) => ({
-            name,
-          })),
+          disorders: additionals.disability.types.map((name: string) => ({ name })),
         };
 
         const formData = new FormData();
-        formData.append(
-          "patient",
-          new Blob([JSON.stringify(patientPayload)], {
-            type: "application/json",
-          }),
-        );
-
+        formData.append("patient", new Blob([JSON.stringify(patient)], { type: "application/json" }));
         if (profile.photo instanceof File) formData.append("photo", profile.photo);
         if (additionals.disability.report instanceof File) formData.append("reports", additionals.disability.report);
         if (additionals.care.referral instanceof File) formData.append("referrals", additionals.care.referral);
 
-        const response = await fetch("/api/pessoas", {
-          method: "POST",
-          body: formData,
-        });
-
+        const response = await fetch("/api/pessoas", { method: "POST", body: formData });
         const data = await response.json().catch(() => ({}));
         return { status: response.status, data };
       }
@@ -409,6 +384,6 @@ export function MembersRegisterProvider({
 
 export function useMembersRegisterContext() {
   const context = useContext(MembersRegisterContext);
-  if (!context) throw new Error("Context error");
+  if (!context) throw new Error("useMembersRegisterContext must be used within a MembersRegisterProvider");
   return context;
 }
