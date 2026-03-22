@@ -49,28 +49,6 @@ const mapDayOfWeek: Record<number, string> = {
   5: "SEXTA",
 };
 
-const morningSlots = [
-  "08:00",
-  "08:30",
-  "09:00",
-  "09:30",
-  "10:00",
-  "10:30",
-  "11:00",
-  "11:30",
-];
-const afternoonSlots = [
-  "13:00",
-  "13:30",
-  "14:00",
-  "14:30",
-  "15:00",
-  "15:30",
-  "16:00",
-  "16:30",
-  "17:00",
-];
-
 export function AppointmentForm({ editAppointment }: AppointmentFormProps) {
   const isInitialMount = useRef(true);
   const prevProfessionalId = useRef(editAppointment?.professional?.id || "");
@@ -169,23 +147,29 @@ export function AppointmentForm({ editAppointment }: AppointmentFormProps) {
     isInitialMount.current = false;
   }, [professional.value]);
 
-  const availableTimeSlots = useMemo(() => {
-    if (!date || !isValid(date)) return [];
+  const [availableTimeSlots, setAvailableTimeSlots] = useState<string[]>([]);
 
-    const dayOfWeek = getDay(date);
-    const dayName = mapDayOfWeek[dayOfWeek];
-    if (!dayName) return [];
+  useEffect(() => {
+  const fetchAvailableTimes = async () => {
+    if (!date || !professional.value) return;
 
-    const activeShifts = availabilities
-      .filter((a) => a.day === dayName)
-      .map((a) => a.shift);
+    try {
+      const formattedDate = format(date, "yyyy-MM-dd");
 
-    let slots: string[] = [];
-    if (activeShifts.includes("MANHA")) slots = [...slots, ...morningSlots];
-    if (activeShifts.includes("TARDE")) slots = [...slots, ...afternoonSlots];
+      const res = await fetch(
+        `/api/professionals/${professional.value}/available-times?date=${formattedDate}`
+      );
 
-    return Array.from(new Set(slots)).sort();
-  }, [date, availabilities]);
+      const data = await res.json();
+
+      setAvailableTimeSlots(data || []);
+    } catch (err) {
+      setAvailableTimeSlots([]);
+    }
+  };
+
+  fetchAvailableTimes();
+}, [date, professional.value]);
 
   const isDayDisabled = (day: Date) => {
     const today = startOfDay(new Date());
@@ -371,14 +355,20 @@ export function AppointmentForm({ editAppointment }: AppointmentFormProps) {
                             : "Selecione a data primeiro"
                         }
                       />
-                    </SelectTrigger>
+                      </SelectTrigger>
 
-                    <SelectContent>
-                      {availableTimeSlots.map((slot) => (
-                        <SelectItem key={slot} value={slot}>
-                          {slot}
-                        </SelectItem>
-                      ))}
+                      <SelectContent>
+                      {availableTimeSlots.length === 0 ? (
+                        <div className="p-2 text-sm text-muted-foreground text-red-500">
+                          Nenhum horário disponível
+                        </div>
+                      ) : (
+                        availableTimeSlots.map((slot) => (
+                          <SelectItem key={slot} value={slot}>
+                            {slot}
+                          </SelectItem>
+                        ))
+                      )}
                     </SelectContent>
                   </Select>
                 </div>
