@@ -74,10 +74,7 @@ export async function POST(
 
   try {
     const incomingFormData = await request.formData();
-   
-    // 1. Criamos a API usando a função que já funciona no GET.
-    // Ela vai extrair o Token do cookie 'session' automaticamente.
-    const api = await createBaseApi();
+       const api = await createBaseApi();
 
 
     const file = incomingFormData.get("file");
@@ -88,15 +85,8 @@ export async function POST(
     if (!file || !category || !type) {
         return NextResponse.json({ message: "Dados incompletos" }, { status: 400 });
     }
-
-
-    // 2. Preparamos o FormData para o Backend Java
     const backendFormData = new FormData();
     backendFormData.append("file", file);
-
-
-    // 3. Fazemos o POST usando o Axios (api).
-    // O Axios lida com FormData e o Token de forma muito mais estável que o fetch manual.
     const response = await api.post(
         `/patients/${patientId}/documents`,
         backendFormData,
@@ -110,9 +100,6 @@ export async function POST(
             }
         }
     );
-
-
-    // Retornamos o sucesso
     return NextResponse.json(response.data, { status: 201 });
 
 
@@ -121,8 +108,6 @@ export async function POST(
     const status = err.response?.status || 500;
     const errorMsg = err.response?.data ? JSON.stringify(err.response.data) : err.message;
 
-
-    // Se o Java der erro, agora o console vai mostrar o motivo real (ex: erro de validação do token)
     console.error("[API POST] Erro Java:", errorMsg);
 
 
