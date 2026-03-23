@@ -4,6 +4,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import br.org.apae.api.notification.domain.exceptions.EmailSendingException;
 
 import br.org.apae.api.auth.domain.exceptions.AuthenticationException;
 import br.org.apae.api.auth.domain.exceptions.InvalidPasswordException;
@@ -75,5 +76,15 @@ public class AuthExceptionHandler {
         ex.getMessage(),
         request.getRequestURI());
     return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
+  }
+
+  @ExceptionHandler(EmailSendingException.class)
+  public ResponseEntity<ErrorResponse> handleEmailSending(EmailSendingException ex, HttpServletRequest request) {
+    ErrorResponse error = new ErrorResponse(
+        HttpStatus.INTERNAL_SERVER_ERROR.value(),
+        HttpStatus.INTERNAL_SERVER_ERROR.getReasonPhrase(),
+        ex.getMessage(),
+        request.getRequestURI());
+    return new ResponseEntity<>(error, HttpStatus.INTERNAL_SERVER_ERROR);
   }
 }

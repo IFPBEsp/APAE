@@ -27,6 +27,18 @@ spring:
       max-file-size: 10MB
       max-request-size: 50MB
 
+  mail:
+    host: ${MAIL_HOST:}
+    port: ${MAIL_PORT:0}
+    username: ${MAIL_USERNAME:}
+    password: ${MAIL_PASSWORD:}
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+
 logging:
   level:
     org:
@@ -40,6 +52,8 @@ logging:
 app:
   token:
     secret: "U29tZVNlY3JldEF0TGVhc3QtMjU2Qml0cw=="
+  frontend:
+    reset-password-url: ${APP_FRONTEND_RESET_PASSWORD_URL:http://localhost:3000/reset-password}
 
 minio:
   access:

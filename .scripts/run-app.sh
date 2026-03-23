@@ -6,6 +6,18 @@ FRONTEND_TARGET=${2:-apae}
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 ROOT_DIR="$(cd "$SCRIPT_DIR/.." && pwd)"
 MAVEN_CMD="$ROOT_DIR/apps/api/mvnw"
+ENV_FILE="$ROOT_DIR/.env"
+
+load_env() {
+  if [ -f "$ENV_FILE" ]; then
+    echo "Carregando variáveis de ambiente de $ENV_FILE..."
+    set -a
+    . "$ENV_FILE"
+    set +a
+  else
+    echo "Arquivo .env não encontrado em $ENV_FILE. Seguindo sem variáveis locais."
+  fi
+}
 
 DB_HOST="localhost"
 DB_PORT=5200
@@ -43,6 +55,7 @@ check_db_up() {
 }
 
 run_backend() {
+  load_env
   check_db_up || exit 1
   echo "Iniciando backend..."
   cd "$ROOT_DIR/apps/api" || exit 1
@@ -59,6 +72,7 @@ run_frontend() {
 }
 
 run_both() {
+  load_env
   check_db_up || exit 1
   echo "Rodando backend e frontend..."
   npx concurrently -k -n backend,frontend -c red,blue "bash ./.scripts/run-app.sh backend" "bash ./.scripts/run-app.sh frontend $FRONTEND_TARGET"

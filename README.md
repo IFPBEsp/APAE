@@ -18,7 +18,7 @@ Projeto em desenvolvimento, fruto de uma parceria entre o IFPB (Campus Esperanç
    - [Criação de Branches](#criação-de-branches)
    - [Labels](#labels)
    - [Raia do Kanban](#raia-do-kanban)
-3. [Configuração do Projeto](#configuração-do-projeto)
+4. [Configuração do Projeto](#configuração-do-projeto)
 
 ---
 
@@ -39,6 +39,8 @@ O projeto foi automatizado para rodar com o mínimo de comandos utilizando **pnp
     1.1. Caso esteja no Windows, acessar terminal via **GitBash**
 2. **Setup Inicial**: `pnpm install`
 3. **Rodar Tudo (Docker + Back + Front)**: `pnpm dev`
+
+> ℹ️ Algumas funcionalidades, como envio de e-mails, utilizam configuração opcional de variáveis de ambiente. Veja a seção **Configuração do Projeto**.
 
 #### Outros Comandos:
 - `pnpm dev:backend`: Executa apenas o backend (api).
@@ -182,6 +184,60 @@ O Kanban é usado para organizar as **issues** no processo de desenvolvimento. A
 ---
 
 ## Configuração do Projeto
+
+### Variáveis de Ambiente (Opcional)
+
+O projeto utiliza variáveis de ambiente para configurar serviços externos, como envio de e-mails (SMTP), banco de dados e integrações.
+
+ **Importante:** A configuração dessas variáveis é opcional durante o desenvolvimento.  
+O sistema funciona normalmente sem elas, porém funcionalidades como envio de e-mails não serão executadas.
+
+---
+
+### Como configurar
+
+1. Copie o arquivo de exemplo:
+
+```bash
+cp .env.example .env
+```
+
+2. Preencha:
+
+```env
+MAIL_HOST=smtp.gmail.com
+MAIL_PORT=587
+MAIL_USERNAME=seu-email@gmail.com
+MAIL_PASSWORD=sua_senha_de_app
+APP_FRONTEND_RESET_PASSWORD_URL=http://localhost:3000/reset-password
+```
+
+3. Agora pode seguir com a execução normal do projeto, indo para seção **Como Executar**
+
+---
+
+### Envio de e-mails
+
+- Sem configuração: sistema funciona normalmente, mas não envia e-mails  
+- Com configuração: envio de e-mails ativo
+
+---
+
+### Segurança
+
+Adicionar no `.gitignore`:
+
+```gitignore
+.env
+```
+
+---
+
+### Observações
+
+- Cada dev pode ter seu próprio `.env`
+- SMTP é opcional
+- Apenas necessário para testar envio de e-mails
 
 Obs. Ainda em desenvolvimento...
 (Incluir as instruções de como configurar o ambiente de desenvolvimento, instalar dependências, rodar o projeto, etc.)

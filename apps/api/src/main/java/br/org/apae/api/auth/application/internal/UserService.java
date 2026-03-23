@@ -1,5 +1,6 @@
 package br.org.apae.api.auth.application.internal;
 
+import java.util.Optional;
 import java.util.regex.Pattern;
 
 import org.springframework.stereotype.Service;
@@ -44,5 +45,13 @@ public class UserService {
     }
 
     throw new UserNotFoundException();
+  }
+
+  public Optional<User> findUserByEmail(String email) {
+    return userRepository.findByEmail(email);
+  }
+
+  public User save(User user) {
+    return userRepository.save(user);
   }
 }
