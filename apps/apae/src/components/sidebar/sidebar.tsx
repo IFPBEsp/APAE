@@ -83,7 +83,7 @@ export function AppSidebar() {
             <CollapsibleContent>
               <SidebarMenu>
                 <SidebarMenuItem>
-                  <Link href="/" passHref>
+                  <Link href="/" prefetch={false} passHref>
                     <SidebarMenuButton
                       className={`${styles.menuButton} font-base gap-2 ${cn(
                         "h-10 transition-colors",
@@ -98,7 +98,7 @@ export function AppSidebar() {
                   </Link>
                 </SidebarMenuItem>
                 <SidebarMenuItem>
-                  <Link href="/all-appointments" passHref>
+                  <Link href="/all-appointments" prefetch={false} passHref>
                     <SidebarMenuButton
                       className={`${styles.menuButton} font-base gap-2 ${cn(
                         "h-10 transition-colors",

@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { PatientWithAbsences } from "@/types/absence";
 import { Calendar, SearchIcon, Users } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useEffect, useRef,useState } from "react";
 
 interface PaginationInfo {
   currentPage: number;
@@ -37,9 +37,17 @@ export default function AbsenceDetails() {
     patientsWithMinAbsences: 0,
   });
 
+  const initialized = useRef(false);
+
   useEffect(() => {
+
+    if (initialized.current) return;
+
     const fetchData = async () => {
       try {
+
+        initialized.current = true;
+
         setLoading(true);
 
         const [absencesData, statsData] = await Promise.all([
