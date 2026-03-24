@@ -149,17 +149,6 @@ function LoginPage() {
             >
               Entrar
             </PrimaryButton>
-            <div className="mt-2 font-baloo2 font-medium text-xs sm:text-sm leading-[150%] text-[#222222] text-center px-4">
-              {" "}
-              Não possui uma conta ainda?{" "}
-              <Link
-                href="/auth/register"
-                className="!text-[#F28C38] hover:!text-[#F28C38]/80 underline hover:no-underline font-medium transition-colors duration-200 focus:outline-none focus:ring-2 focus:!ring-[#F28C38]/50 focus:ring-offset-1 rounded-sm px-1 [&]:!text-[#F28C38] [&:hover]:!text-[#F28C38]/80"
-                style={{ color: "#F28C38 !important" }}
-              >
-                Criar uma conta
-              </Link>
-            </div>
           </CardFooter>
         </Card>
       </form>

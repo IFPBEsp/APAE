@@ -255,6 +255,42 @@ export function AppSidebar() {
             </CollapsibleContent>
           </SidebarGroup>
         </Collapsible>
+        
+        <Collapsible defaultOpen={false} className="group/collapsible">
+          <SidebarGroup>
+            <SidebarGroupLabel asChild>
+              <CollapsibleTrigger
+                className={`${styles.menuButton} font-base gap-2`}
+              >
+                <PersonIcon size={20} />
+                <span className="text-base">Área do Administrador</span>
+                <ChevronDownIcon
+                  size={16}
+                  className="ml-auto transition-transform group-data-[state=open]/collapsible:rotate-180"
+                />
+              </CollapsibleTrigger>
+            </SidebarGroupLabel>
+            <CollapsibleContent>
+              <SidebarMenu>
+                <SidebarMenuItem>
+                  <Link href="/register">
+                    <SidebarMenuButton
+                      className={`${styles.menuButton} font-base gap-2 ${cn(
+                        "h-10 transition-colors",
+                        pathname == ""
+                          ? "bg-[#FFFFFF] !text-[#000000]"
+                          : "text-[#0D4F97] hover:bg-[#0D4F97] hover:!text-white"
+                      )}`}
+                    >
+                      <PeopleIcon size={16} />
+                      <span className="text-base">Cadastrar Usuário</span>
+                    </SidebarMenuButton>
+                  </Link>
+                </SidebarMenuItem>
+              </SidebarMenu>
+            </CollapsibleContent>
+          </SidebarGroup>
+        </Collapsible>
       </SidebarContent>
 
       <SidebarFooter>
