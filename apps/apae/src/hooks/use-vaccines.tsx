@@ -78,7 +78,7 @@ function withFeedback<TArgs extends readonly unknown[], TReturn>(
                 success: false,
                 error: true,
             });
-            throw error;
+
         } finally {
             setLoading(false);
         }
@@ -194,7 +194,8 @@ function VaccinesProvider({
                 });
 
                 if (!response.ok) {
-                    throw new Error("Ocorreu um erro ao excluir vacina.");
+                    const errorData = await response.json().catch(() => null);
+                    throw new Error(errorData?.message || "Ocorreu um erro ao excluir a vacina.");
                 }
 
                 fetchVaccines();

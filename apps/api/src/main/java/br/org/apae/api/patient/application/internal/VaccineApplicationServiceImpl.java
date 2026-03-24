@@ -1,12 +1,16 @@
 package br.org.apae.api.patient.application.internal;
 
 import br.org.apae.api.patient.domain.exceptions.VaccineConflictException;
+import br.org.apae.api.patient.domain.exceptions.VaccineInUseException;
 import br.org.apae.api.patient.domain.exceptions.VaccineMismatchException;
 import br.org.apae.api.patient.domain.exceptions.VaccineNotFoundException;
 import br.org.apae.api.patient.domain.model.Vaccine;
 import br.org.apae.api.patient.domain.repository.VaccineRepository;
 import br.org.apae.api.common.dto.patient.request.vaccine.CreateVaccineDTO;
 import br.org.apae.api.common.dto.patient.response.vaccine.VaccineResponseDTO;
+import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.web.server.ResponseStatusException;
+import org.springframework.http.HttpStatus;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -135,6 +139,15 @@ public class VaccineApplicationServiceImpl implements VaccineApplicationService 
         if (!vaccineRepository.existsById(id)) {
             throw new VaccineNotFoundException();
         }
-        vaccineRepository.deleteById(id);
+
+        try {
+            vaccineRepository.deleteById(id);
+            // Oculto, mas poderoso: o flush() obriga o Spring a testar a deleção no banco AGORA,
+            // permitindo que o catch capture o erro de integridade se o banco recusar!
+            vaccineRepository.flush();
+        } catch (DataIntegrityViolationException e) {
+            // Adeus, gambiarra! Olá, código limpo e com semântica.
+            throw new VaccineInUseException();
+        }
     }
 }
