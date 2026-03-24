@@ -74,7 +74,7 @@ export default function ViewTodayAppointment() {
         </Badge>
       </header>
 
-      {/* AGENDAMENTO */}
+      {/* AGENDAMENTO GERADO */}
       <Card className="border border-blue-100">
         <CardHeader>
           <CardTitle className="text-center text-[#0D4F97]">
@@ -102,75 +102,6 @@ export default function ViewTodayAppointment() {
           <div className="space-y-2">
             <p><strong>Data:</strong> {format(new Date(appointment.effectiveDateTime), 'dd/MM/yyyy')}</p>
             <p><strong>Horário:</strong> {format(new Date(appointment.effectiveDateTime), 'HH:mm')}</p>
-          </div>
-        </CardContent>
-      </Card>
-
-      {/* PROFISSIONAL */}
-      <Card className="border border-blue-100">
-        <CardHeader>
-          <CardTitle className="text-center text-[#0D4F97]">
-            Profissional da Saúde
-          </CardTitle>
-        </CardHeader>
-
-        <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-6 text-sm text-[#0D4F97]">
-          <div className="space-y-2">
-            <p><strong>Nome:</strong> {appointment.professional.name}</p>
-            <p><strong>Email:</strong> {appointment.professional.email || '—'}</p>
-            <p><strong>Telefone:</strong> {appointment.professional.phoneNumber || '—'}</p>
-          </div>
-
-          <div className="space-y-2">
-            <p><strong>Documento médico:</strong> {appointment.professional.professionalDocument || '—'}</p>
-            <p><strong>RG:</strong> {appointment.professional.identityDocument || '—'}</p>
-            <p><strong>Cidade:</strong> {appointment.professional.address?.city || '—'}</p>
-          </div>
-        </CardContent>
-      </Card>
-
-      {/* PACIENTE */}
-      <Card className="border border-blue-100">
-        <CardHeader>
-          <CardTitle className="text-center text-[#0D4F97]">
-            Dados do Paciente
-          </CardTitle>
-        </CardHeader>
-
-        <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-6 text-sm text-[#0D4F97]">
-          <div className="space-y-2">
-            <p><strong>CPF:</strong> {appointment.patient.cpf || '—'}</p>
-            <p><strong>RG:</strong> {appointment.patient.rg || '—'}</p>
-            <p><strong>Contato:</strong> {appointment.patient.contact || '—'}</p>
-          </div>
-
-          <div className="space-y-2">
-            <p><strong>NIS:</strong> {appointment.patient.birthDate || '—'}</p>
-            <p><strong>Alergias:</strong> {appointment.patient.allergies || '—'}</p>
-            <p><strong>Estudante:</strong> {appointment.patient.isStudent ? 'Sim' : 'Não'}</p>
-          </div>
-        </CardContent>
-      </Card>
-
-      {/* ENDEREÇO */}
-      <Card className="border border-blue-100">
-        <CardHeader>
-          <CardTitle className="text-center text-[#0D4F97]">
-            Dados Residenciais
-          </CardTitle>
-        </CardHeader>
-
-        <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-6 text-sm text-[#0D4F97]">
-          <div className="space-y-2">
-            <p><strong>Rua:</strong> {appointment.patient.address?.street || '—'}</p>
-            <p><strong>Número:</strong> {appointment.patient.address?.number || '—'}</p>
-            <p><strong>Bairro:</strong> {appointment.patient.address?.neighborhood || '—'}</p>
-          </div>
-
-          <div className="space-y-2">
-            <p><strong>Cidade:</strong> {appointment.patient.address?.city || '—'}</p>
-            <p><strong>Estado:</strong> {appointment.patient.address?.state || '—'}</p>
-            <p><strong>CEP:</strong> {appointment.patient.address?.cep || '—'}</p>
           </div>
         </CardContent>
       </Card>
