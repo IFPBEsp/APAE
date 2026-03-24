@@ -388,19 +388,30 @@ export function AppointmentForm({ editAppointment }: AppointmentFormProps) {
 
           <div className="space-y-2">
             <Label>
-              Frequência (dias) <span className="text-red-500">*</span>
+              Frequência <span className="text-red-500">*</span>
             </Label>
 
-            <Input
-              type="number"
-              min="1"
-              value={frequencyDays < 1 ? "" : frequencyDays}
-              onChange={(e) => setFrequencyDays(Number(e.target.value))}
-              placeholder="Ex: 7"
-              className="w-full"
-            />
+            <Select
+              onValueChange={(value) => setFrequencyDays(Number(value))}
+              value={frequencyDays > 0 ? String(frequencyDays) : undefined}
+              >
+               <SelectTrigger
+                  className={cn(
+                    "w-full",
+                   validationErrors.frequencyDays && "border-red-500"
+                  )}
+               >
+                  <SelectValue placeholder="Selecione a frequência" />
+               </SelectTrigger>
+               <SelectContent>
+                 <SelectItem value="7">Semanal (a cada 7 dias)</SelectItem>
+                 <SelectItem value="14">Quinzenal (a cada 14 dias)</SelectItem>
+                 <SelectItem value="30">Mensal (a cada mês)</SelectItem>
+               </SelectContent>
+            </Select>
+
             {validationErrors.frequencyDays && (
-              <p className="text-sm text-red-500">Maior que 0.</p>
+                <p className="text-sm text-red-500">Selecione uma frequência válida.</p>
             )}
           </div>
 
