@@ -1,3 +1,4 @@
+import axios from "axios";
 import { getApiBaseUrl } from "@/lib/client-service";
 import { DocumentWithUrl } from "@/types/document";
 
@@ -6,12 +7,11 @@ const API_URL = getApiBaseUrl();
 export async function getAllProfissionais(ativo?: boolean) {
   const url = 
     ativo === undefined
-      ? `${API_URL}/professionals`
-      : `${API_URL}/professionals?ativo=${ativo}`;
+      ? `/api/professionals`
+      : `/api/professionals?ativo=${ativo}`;
 
   console.log("[getAllProfissionais] ativo:", ativo, "| url:", url);
-  //const response = await fetch(API_URL + "/professionals", { method: "GET" });
-  return fetch(url, { method: "GET" });
+  return axios.get(url);
 }
 
 /*export async function deleteProfissional(id: string) {
@@ -57,30 +57,27 @@ export async function updateProfissional(id: string, data: any) {
 }
 
 export async function getProfissionalById(id: string) {
-  const response = await fetch(`/api/professionals/${id}`, {
-    method: "GET",
-  });
-
-  const data = await response.json();
-
-  if (!response.ok) {
-    const responseMessage = data.message;
-    throw new Error(responseMessage);
+  try {
+    const response = await axios.get(`/api/professionals/${id}`);
+    return response.data;
+  } catch (error) {
+    if (axios.isAxiosError(error)) {
+      throw new Error(error.response?.data?.message || error.message);
+    }
+    throw error;
   }
-
-  return data;
 }
 
 export async function getProfessionalDocuments(id: string) {
-  const res = await fetch(`${API_URL}/professionals/${id}/documents`, { method: "GET" });
-
-  const data = await res.json().catch(() => null);
-
-  if (!res.ok) {
-    throw new Error((data as any)?.message || "Erro ao buscar documentos");
+  try {
+    const response = await axios.get(`${API_URL}/professionals/${id}/documents`);
+    return response.data || [];
+  } catch (error) {
+    if (axios.isAxiosError(error)) {
+      throw new Error(error.response?.data?.message || "Erro ao buscar documentos");
+    }
+    throw error;
   }
-
-  return (data ?? []) as DocumentWithUrl[];
 }
 
 

@@ -252,9 +252,10 @@ export default function PersonDetailsPage() {
             )}
             {pessoa.parents?.map((parent: any) => (
               <div key={parent.id} className="mb-2 p-2 border-t border-gray-200">
-                <p className="font-bold text-base">{parent.kinship === "PAI" ? "Pai" : "Mãe"}</p>
+                <p className="font-bold text-base">Parentes</p>
                 <InfoRow label="Nome" value={parent.name} />
                 <InfoRow label="CPF" value={parent.cpf} />
+                <InfoRow label="Parentesco" value={parent.kinship}/>
                 <InfoRow label="Profissão" value={parent.profession} />
                 <InfoRow label="Vivo?" value={parent.isAlive} />
               </div>

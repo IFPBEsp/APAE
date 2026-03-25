@@ -2,6 +2,7 @@ package br.org.apae.api.appointment.application.internal;
 import br.org.apae.api.appointment.application.interfaces.AppointmentApplicationService;
 import br.org.apae.api.appointment.domain.exceptions.AnnualRegistrationNotFound;
 import br.org.apae.api.appointment.domain.exceptions.AppointmentAlreadyCancelledException;
+import br.org.apae.api.appointment.domain.exceptions.AppointmentConflictException;
 import br.org.apae.api.appointment.domain.exceptions.AppointmentNotFoundException;
 import br.org.apae.api.appointment.domain.exceptions.ProfessionalUnavailableException;
 import br.org.apae.api.appointment.domain.model.Absence;
@@ -16,9 +17,11 @@ import br.org.apae.api.professional.domain.repository.HealthProfessionalReposito
 import jakarta.transaction.Transactional;
 
 import java.time.*;
+import java.time.temporal.ChronoUnit;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
@@ -52,57 +55,72 @@ import org.springframework.web.server.ResponseStatusException;
 @Transactional
 public class AppointmentApplicationServiceImpl implements AppointmentApplicationService {
 
-  public static final String APPOINTMENT_NOT_FOUND = "Appointment not found";
-  private final AppointmentRepository appointmentRepo;
-  private final GeneratedAppointmentRepository generatedRepo;
-  private final AnnualRegistryRepository registryRepo;
-  private final HealthProfessionalRepository professionalRepo;
-  private final AbsenceRepository absenceRepo;
-  private final PatientRepository patientRepo;
-  private final GuardianRepository guardianRepo;
-  private final ParentRepository parentRepo;
-  private final AppointmentMapper mapper;
-  private final VaccineMapper vaccineMapper;
-  private final ParentMapper parentMapper;
+    public static final String APPOINTMENT_NOT_FOUND = "Appointment not found";
+    private final AppointmentRepository appointmentRepo;
+    private final GeneratedAppointmentRepository generatedRepo;
+    private final AnnualRegistryRepository registryRepo;
+    private final HealthProfessionalRepository professionalRepo;
+    private final AbsenceRepository absenceRepo;
+    private final PatientRepository patientRepo;
+    private final GuardianRepository guardianRepo;
+    private final ParentRepository parentRepo;
+    private final AppointmentMapper mapper;
+    private final VaccineMapper vaccineMapper;
+    private final ParentMapper parentMapper;
 
 
-  public AppointmentApplicationServiceImpl(
-          AppointmentRepository appointmentRepo,
-          GeneratedAppointmentRepository generatedRepo,
-          AnnualRegistryRepository registryRepo,
-          HealthProfessionalRepository professionalRepo,
-          AbsenceRepository absenceRepo,
-          PatientRepository patientRepo,
-          GuardianRepository guardianRepo,
-          ParentRepository parentRepo,
-          AppointmentMapper mapper) {
-    this.appointmentRepo = appointmentRepo;
-    this.generatedRepo = generatedRepo;
-    this.registryRepo = registryRepo;
-    this.professionalRepo = professionalRepo;
-    this.absenceRepo = absenceRepo;
-    this.patientRepo = patientRepo;
-    this.guardianRepo = guardianRepo;
-    this.parentRepo = parentRepo;
-    this.mapper = mapper;
-    this.vaccineMapper = new VaccineMapper();
-    this.parentMapper = new ParentMapper();
-  }
+    public AppointmentApplicationServiceImpl(
+            AppointmentRepository appointmentRepo,
+            GeneratedAppointmentRepository generatedRepo,
+            AnnualRegistryRepository registryRepo,
+            HealthProfessionalRepository professionalRepo,
+            AbsenceRepository absenceRepo,
+            PatientRepository patientRepo,
+            GuardianRepository guardianRepo,
+            ParentRepository parentRepo,
+            AppointmentMapper mapper) {
+        this.appointmentRepo = appointmentRepo;
+        this.generatedRepo = generatedRepo;
+        this.registryRepo = registryRepo;
+        this.professionalRepo = professionalRepo;
+        this.absenceRepo = absenceRepo;
+        this.patientRepo = patientRepo;
+        this.guardianRepo = guardianRepo;
+        this.parentRepo = parentRepo;
+        this.mapper = mapper;
+        this.vaccineMapper = new VaccineMapper();
+        this.parentMapper = new ParentMapper();
+    }
 
-  @Override
-  public void create(CreateAppointmentDTO dto) {
-    AnnualRegistry annualRegistry = this.registryRepo
-            .findByPatientIdAndYear(dto.patientId(), Year.now().getValue())
-            .orElseThrow(AnnualRegistrationNotFound::new);
+    @Override
+    public void create(CreateAppointmentDTO dto) {
+        AnnualRegistry annualRegistry = this.registryRepo
+                .findByPatientIdAndYear(dto.patientId(), Year.now().getValue())
+                .orElseThrow(AnnualRegistrationNotFound::new);
 
-    HealthProfessional professional = this.professionalRepo
-            .findById(dto.professionalId())
-            .orElseThrow(HealthProfessionalNotFoundException::new);
+        HealthProfessional professional = this.professionalRepo
+                .findById(dto.professionalId())
+                .orElseThrow(HealthProfessionalNotFoundException::new);
 
-    validateProfessionalAvailability(professional, dto.initialDate(), dto.hour());
+        validateProfessionalAvailability(professional, dto.initialDate(), dto.hour());
 
+    LocalTime exactTime = dto.hour().truncatedTo(ChronoUnit.MINUTES);
+
+
+    boolean isTimeSlotTaken = appointmentRepo.existsByProfessionalIdAndInitialDateAndHourAndIsActiveTrue(
+            professional.getId(),
+            dto.initialDate(),
+            exactTime
+    );
+    if (isTimeSlotTaken) {
+        throw new AppointmentConflictException();
+    }
     Appointment appointment = mapper.toEntity(dto, professional, annualRegistry);
-    appointmentRepo.save(appointment);
+    try {
+        appointmentRepo.save(appointment);
+    } catch (DataIntegrityViolationException ex) {
+        throw new AppointmentConflictException();
+    }
 
     Integer year = annualRegistry.getYear();
     LocalDate end = LocalDate.of(year, 12, 31);

@@ -36,17 +36,7 @@ public class SecurityConfiguration {
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(authorize -> authorize
                         .requestMatchers(
-                                // Permite sem autenticação as rotas (com e sem prefixo de servlet /api)
-                                "/api/auth/**",
-                                "/api/professionals/**",
-                                "/api/service-areas/**",
-                                "/api/professionals",
-                                "/api/service-areas",
-                                "/auth/**",
-                                "/professionals/**",
-                                "/service-areas/**",
-                                "/professionals",
-                                "/service-areas"
+                                "/auth/**"
                         ).permitAll()
                         .requestMatchers(
                                 "/v3/api-docs/**",

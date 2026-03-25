@@ -58,7 +58,7 @@ Você deve ver alguns contêineres com os seguintes nomes: `minio_docs_apae`, `a
 
 -----
 
-## ▶️ Executando a Aplicação
+## ▶️ Sobre a Execução da Aplicação
 
 Com o banco rodando e tudo configurado, você está pronto para iniciar a API.
 
@@ -69,9 +69,6 @@ Nós usamos o "Maven Wrapper" (`mvnw`), que é um script que garante que todos o
 ```bash
 # Se você estiver no Linux ou macOS, pode ser necessário dar permissão de execução:
 # chmod +x mvnw
-
-# Este comando compila o projeto, baixa as dependências e inicia o servidor
-./mvnw spring-boot:run
 ```
 
 O terminal mostrará um log grande. Se tudo der certo, a última linha será algo como:

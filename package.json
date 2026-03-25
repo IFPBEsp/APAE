@@ -2,19 +2,20 @@
   "name": "@apae/source",
   "version": "1.0.0",
   "description": "apae pnpm workspace monorepo",
+  "license": "ISC",
+  "packageManager": "pnpm@10.10.0",
   "scripts": {
-    "dev:backend": "./.scripts/run-app.sh backend",
-    "dev:apae": "./.scripts/run-app.sh both apae",
     "docker:up": "docker compose up -d",
     "docker:down": "docker compose down",
     "docker:drop": "docker compose down -v",
+    "dev:backend": "bash ./.scripts/run-app.sh backend",
+    "dev:apae": "bash ./.scripts/run-app.sh frontend apae",
+    "dev": "pnpm docker:up && bash ./.scripts/run-app.sh both apae",
     "test:api": "cd apps/api && ./mvnw package"
   },
   "workspaces": [
     "apps/*"
   ],
-  "license": "ISC",
-  "packageManager": "pnpm@10.10.0",
   "devDependencies": {
     "@types/node": "^25.5.0",
     "concurrently": "^9.2.1"
