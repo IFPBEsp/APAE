@@ -1,6 +1,7 @@
 import { getAllProfissionais } from "@/services/profissional-service";
 import { Profissional } from "@/types/profissional";
 import { useEffect, useState } from "react";
+import axios from "axios";
 
 interface PaginatedResponse<T> {
   content: T[];
@@ -23,15 +24,14 @@ export function useFetchProfessionals(ativo: boolean) {
         
         const response = await getAllProfissionais(ativo);
 
-        if (!response.ok) {
-          const errorData = await response.json().catch(() => ({}));
-          throw new Error(errorData.message || "Erro ao buscar profissionais");
-        }
-
-        const data: PaginatedResponse<Profissional> = await response.json();
+        const data: PaginatedResponse<Profissional> = response.data;
         setProfissionais(data.content);
       } catch (err) {
-        setError(err instanceof Error ? err.message : "Erro desconhecido");
+        if (axios.isAxiosError(err)) {
+          setError(err.response?.data?.message || err.message);
+        } else {
+          setError(err instanceof Error ? err.message : "Erro desconhecido");
+        }
       } finally {
         setLoading(false);
       }

@@ -26,6 +26,7 @@ Descreva o que se espera como solução ou melhoria.
 * [ ] {critério_2}
 * [ ] {critério_3}
 
+
 ## Artefatos
 
 Inclua imagens, vídeos ou logs que ajudem a entender o problema ou a validar a solução.

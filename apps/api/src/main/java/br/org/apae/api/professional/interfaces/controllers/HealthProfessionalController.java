@@ -134,4 +134,10 @@ public interface HealthProfessionalController {
       @PathVariable UUID id,
       @PathVariable UUID documentId
   );
+
+  @GetMapping("/{id}/available-times")
+  ResponseEntity<List<String>> getAvailableTimes(
+          @PathVariable UUID id,
+          @RequestParam String date
+  );
 }
