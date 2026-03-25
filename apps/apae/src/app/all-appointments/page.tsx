@@ -49,7 +49,6 @@ import {
   getAppointments,
   getAreasDaSaude,
 } from "../services/appointmentService";
-import { accessSync } from 'fs';
 
 type Area = {
   id: number;
