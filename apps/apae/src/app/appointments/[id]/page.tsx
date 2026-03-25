@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { useParams } from 'next/navigation';
 
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
@@ -36,15 +36,23 @@ export default function ViewAppointment() {
   const { id } = useParams<{ id: string }>();
   const [appointment, setAppointment] = useState<Appointment | null>(null);
   const [loading, setLoading] = useState(true);
+  const initialized = useRef(false);
+  const [isEditOpen, setIsEditOpen] = useState(false);
 
   useEffect(() => {
     if (!id) return;
 
+    if (initialized.current) return;
+
     async function loadAppointment() {
       try {
+        initialized.current = true;
         const data = await getAppointmentById(id);
         setAppointment(data);
-      } finally {
+      }catch (error){
+        console.error(error);
+        initialized.current = false;
+      }finally {
         setLoading(false);
       }
     }
@@ -128,7 +136,7 @@ export default function ViewAppointment() {
               Agendamento
             </CardTitle>
             <CardAction className="flex gap-1">
-              <Dialog>
+              <Dialog open={isEditOpen} onOpenChange={setIsEditOpen}>
                 <DialogTrigger asChild>
                   <Button className="bg-transparent cursor-pointer border-1 border-[#0D4F97] text-[#0D4F97] hover:text-[#0d4f55] active:text-[#0d4ffe] hover:bg-[rgba(0,0,0,0.1)] transition-colors rounded-full overflow-hidden">
                     <Pencil />
@@ -141,7 +149,7 @@ export default function ViewAppointment() {
                       Edite os detalhes abaixo para agendar uma consulta.
                     </DialogDescription>
                   </DialogHeader>
-                  <AppointmentForm editAppointment={appointment} />
+                      {isEditOpen && <AppointmentForm editAppointment={appointment}/>}
                 </DialogContent>
               </Dialog>
               <div className="rounded-full  overflow-hidden border-1 border-[#0D4F97]">

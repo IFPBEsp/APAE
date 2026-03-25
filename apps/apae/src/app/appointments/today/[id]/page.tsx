@@ -2,7 +2,7 @@
 
 import { format } from 'date-fns';
 import { useParams } from 'next/navigation';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
@@ -20,13 +20,19 @@ export default function ViewTodayAppointment() {
   const { id } = useParams<{ id: string }>();
   const [appointment, setAppointment] = useState<TodayAppointment | null>(null);
   const [loading, setLoading] = useState(true);
+  const initialized = useRef(false);
 
   useEffect(() => {
     if (!id) return;
 
+    if (initialized.current) return;
+
     async function loadTodayAppointment() {
       try {
-        const data = await getTodayAppointmentById(id);
+        initialized.current = true;
+        setLoading(true);
+        
+        const data = await getTodayAppointmentById(id as string);
         setAppointment(data);
       } catch (error) {
         console.error('[ViewTodayAppointment]', error);

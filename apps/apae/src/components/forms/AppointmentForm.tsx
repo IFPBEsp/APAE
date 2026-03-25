@@ -52,6 +52,9 @@ const mapDayOfWeek: Record<number, string> = {
 export function AppointmentForm({ editAppointment }: AppointmentFormProps) {
   const isInitialMount = useRef(true);
   const prevProfessionalId = useRef(editAppointment?.professional?.id || "");
+  const dataFetched = useRef(false);
+
+
 
   const [date, setDate] = useState<Date | undefined>(() => {
     if (editAppointment?.initialDate) {
@@ -103,19 +106,27 @@ export function AppointmentForm({ editAppointment }: AppointmentFormProps) {
   });
 
   useEffect(() => {
+    if (dataFetched.current) return;
+
     const fetchData = async () => {
-      const [patients, professionals] = await Promise.all([
-        getPacientes(),
-        getProfissionaisDaSaude(),
-      ]);
+      try {
+        dataFetched.current = true;
+        const [patients, professionals] = await Promise.all([
+          getPacientes(),
+          getProfissionaisDaSaude(),
+        ]);
 
-      setListPatients(
-        patients.map((p) => ({ value: p.id, label: p.fullName })),
-      );
+        setListPatients(
+          patients.map((p) => ({ value: p.id, label: p.fullName })),
+        );
 
-      setListaProfessionals(
-        professionals.map((p) => ({ value: p.id, label: p.name })),
-      );
+        setListaProfessionals(
+          professionals.map((p) => ({ value: p.id, label: p.name })),
+        );
+      } catch (error) {
+        console.error("Erro ao carregar dados do formulário:", error);
+        dataFetched.current = false;
+      }
     };
     fetchData();
   }, []);
