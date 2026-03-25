@@ -6,7 +6,9 @@ import br.org.apae.api.common.dto.patient.response.disorder.DisorderResponseDTO;
 import br.org.apae.api.patient.application.interfaces.DisorderApplicationService;
 import br.org.apae.api.patient.application.mappers.DisorderMapper;
 import br.org.apae.api.patient.domain.exceptions.DisorderConflictException;
+import br.org.apae.api.patient.domain.exceptions.DisorderInUseException;
 import br.org.apae.api.patient.domain.exceptions.DisorderNotFoundException;
+import org.springframework.dao.DataIntegrityViolationException;
 import br.org.apae.api.patient.domain.model.Disorder;
 import br.org.apae.api.patient.domain.repository.DisorderRepository;
 import org.springframework.stereotype.Service;
@@ -97,8 +99,16 @@ public class DisorderApplicationServiceImpl implements DisorderApplicationServic
     @Override
     @Transactional
     public void deleteDisorder(UUID id) {
-        Disorder disorder = findDisorderOrThrow(id);
-        repository.delete(disorder);
+        if (!repository.existsById(id)) {
+            throw new DisorderNotFoundException();
+        }
+
+        try {
+            repository.deleteById(id);
+            repository.flush();
+        } catch (DataIntegrityViolationException e) {
+            throw new DisorderInUseException();
+        }
     }
 
     private Disorder findDisorderOrThrow(UUID id) {
