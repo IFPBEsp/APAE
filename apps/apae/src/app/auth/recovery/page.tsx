@@ -2,6 +2,7 @@
 
 import { Send } from "lucide-react";
 import React, { useState } from "react";
+import { useRouter } from "next/navigation";
 
 type RecoverPasswordModalProps = {
   isOpen: boolean;
@@ -16,24 +17,17 @@ const RecoverPasswordModal: React.FC<RecoverPasswordModalProps> = ({
   const [code, setCode] = useState("");
 
   const onSubmit = () => {
-    // Lógica para enviar o código de recuperação e validar o código inserido
-    // Você pode adicionar chamadas à API aqui para lidar com a recuperação de senha
-    alert(`Email: ${email}\nCódigo: ${code}`);
+    // Lógica para enviar o código de recuperação e validar o código
+    // Deve adicionar chamadas à API aqui para lidar com a recuperação de senha
   }
 
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 flex items-center justify-center bg-black/40 z-50">
-      <div className="w-full max-w-md bg-white rounded-2xl shadow-lg p-6 relative">
+    <div className="flex items-center justify-center">
+      <div className="w-full max-w-md bg-white rounded-2xl shadow-lg p-6 pt-25 relative">
         
         <div className="flex flex-col items-center mb-4">
-          <img
-            src="apps/apae/src/assets/APAE-logo.svg"
-            alt="APAE"
-            className="w-16 h-16 mb-2"
-          />
-          <h1 className="text-xl font-bold text-gray-800">APAE</h1>
           <h2 className="text-lg font-semibold text-blue-700 mt-1">
             Recuperar Senha
           </h2>
@@ -79,7 +73,7 @@ const RecoverPasswordModal: React.FC<RecoverPasswordModalProps> = ({
 
         <button 
           className="w-full bg-blue-700 text-white py-2 rounded-md hover:bg-blue-800 transition cursor-pointer"
-          onClick={() => {onSubmit}}>
+          onClick={onSubmit}>
           
           Enviar
         </button>
@@ -98,10 +92,12 @@ const RecoverPasswordModal: React.FC<RecoverPasswordModalProps> = ({
 };
 
 export default function RecoveryPage() {
+  const router = useRouter();
+
   return (
     <RecoverPasswordModal
       isOpen={true}
-      onClose={() => (window.location.href = "/auth/login")}
+      onClose={() => (router.push("/auth/login"))}
     />
   );
 }
