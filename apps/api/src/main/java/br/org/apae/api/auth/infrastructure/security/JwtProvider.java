@@ -21,6 +21,8 @@ import br.org.apae.api.auth.domain.model.User;
 public class JwtProvider implements TokenProvider {
   @Value("${app.token.secret}")
   private String secret;
+
+  @Value("app.token,issuer")
   private static final String ISSUER = "apae-user";
 
   private Instant genExpirationDate() {
