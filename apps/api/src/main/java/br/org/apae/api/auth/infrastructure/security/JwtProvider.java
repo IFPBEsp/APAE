@@ -22,8 +22,8 @@ public class JwtProvider implements TokenProvider {
   @Value("${app.token.secret}")
   private String secret;
 
-  @Value("app.token,issuer")
-  private static final String ISSUER = "apae-user";
+  @Value("app.token.issuer")
+  private static String ISSUER;
 
   private Instant genExpirationDate() {
     return LocalDateTime.now().plusHours(24).toInstant(ZoneOffset.of("-03:00"));

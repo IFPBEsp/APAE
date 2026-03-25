@@ -43,9 +43,9 @@ app:
 
 minio:
   access:
-    key: "ROOTUSER"
-    secret: "CHANGEME123"
-  url: "http://127.0.0.1:9000"
+    key: ${MINIO_ACCESS_KEY}
+    secret: ${MINIO_SECRET_KEY}
+  url: ${MINIO_URL}
 
 cors:
   allowed-origins: ${CORS_ALLOWED_ORIGINS:http://localhost:3000}
