@@ -23,7 +23,7 @@ import {
   CalendarDays,
   Users
 } from 'lucide-react';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 
 import {
   Dialog,
@@ -50,27 +50,30 @@ import { RegistrarFaltaButton } from '@/components/buttons/RegistrarFaltaButton'
 
 export default function DashboardPage() {
   const [selectedDate, setSelectedDate] = useState<Date>(new Date());
-  const [todayAppointments, setTodayAppointments] = useState<
-    TodayAppointment[]
-  >([]);
+  const [todayAppointments, setTodayAppointments] = useState<TodayAppointment[]>([]);
+  const [allAppointments, setAllAppointments] = useState<AppointmentResponseDTO[]>([]);
+  const [isCreateOpen, setIsCreateOpen] = useState(false);
+  const lastFetchedDate = useRef<string | null>(null);
 
-  const [allAppointments, setAllAppointments] = useState<
-    AppointmentResponseDTO[]
-  >([]);
 
   const fetchTodayAppointments = async () => {
-    const todayAppointmentsPage: Page<TodayAppointment> =
-      await listTodayAppointment();
+    const todayAppointmentsPage = await listTodayAppointment();
     setTodayAppointments(todayAppointmentsPage.content);
   };
 
   const fetchAllAppointments = async () => {
-    const allAppointmentsPage: Page<AppointmentResponseDTO> =
-      await getAppointments();
+    const allAppointmentsPage = await getAppointments();
     setAllAppointments(allAppointmentsPage.content);
   };
 
   useEffect(() => {
+
+    const dateKey = format(selectedDate, 'yyyy-MM-dd');
+
+    if (lastFetchedDate.current === dateKey) return;
+
+    lastFetchedDate.current = dateKey;
+
     fetchTodayAppointments();
     fetchAllAppointments();
   }, [selectedDate]);
@@ -116,7 +119,7 @@ export default function DashboardPage() {
               </PopoverContent>
             </Popover>
 
-            <Dialog>
+            <Dialog open={isCreateOpen} onOpenChange = {setIsCreateOpen}>
               <DialogTrigger asChild>
                 <Button className="w-full bg-[#0D4F97] text-white hover:bg-blue-900 text-xs sm:w-auto sm:text-sm">
                   Novo agendamento
@@ -131,7 +134,7 @@ export default function DashboardPage() {
                     Preencha os detalhes abaixo para agendar uma consulta.
                   </DialogDescription>
                 </DialogHeader>
-                <AppointmentForm />
+                {isCreateOpen && <AppointmentForm />}
               </DialogContent>
             </Dialog>
           </div>

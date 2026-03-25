@@ -5,7 +5,7 @@ import {
   SearchIcon,
   Users
 } from 'lucide-react';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 
 import { Button } from '@/components/ui/button';
 import { Calendar } from '@/components/ui/calendar';
@@ -61,22 +61,38 @@ export default function AllApointments() {
   const [searchName, setSearchName] = useState('');
   const [areas, setAreas] = useState<Area[]>([]);
   const [appointments, setAppointments] = useState<Appointment[]>([]);
+  const initialized = useRef(false);
+  const [isCreateOpen, setIsCreateOpen] = useState(false);
 
-  useEffect(() =>{
-    const fetchAppointments = async () => {
+useEffect(() => {
+  if (appointments.length > 0) return;
+  
+  const fetchAppointments = async () => {
+
+    if (initialized.current) return;
+    try {
+      initialized.current = true;
+
       const response = await getAppointments();
+      
       const activeAppointments = (response.content as Appointment[]).filter(
         appointment => appointment.isActive
       );
       setAppointments(activeAppointments);
 
-      const areasExistentes: Area[] = (await getAreasDaSaude()).map(
+      const areasData = await getAreasDaSaude();
+      const areasExistentes: Area[] = areasData.map(
         (area, index) => ({ id: index, name: area })
       );
       setAreas(areasExistentes);
-    };
-    fetchAppointments();
-  }, []);
+    } catch (error) {
+      console.error(error);
+      initialized.current = false;
+    }
+  };
+  
+  fetchAppointments();
+}, [appointments]);
 
   const filteredAppointments = appointments.filter((appointment) => {
     const matchesProfessionalId = appointment.professional.id;
@@ -121,7 +137,7 @@ export default function AllApointments() {
                 />
               </PopoverContent>
             </Popover>
-            <Dialog>
+            <Dialog open={isCreateOpen} onOpenChange={setIsCreateOpen}>
               <DialogTrigger asChild>
                 <Button className="w-full bg-[#0D4F97] text-white hover:bg-blue-900 text-xs sm:w-auto sm:text-sm">
                   Novo agendamento
@@ -136,7 +152,7 @@ export default function AllApointments() {
                     Preencha os detalhes abaixo para agendar uma consulta.
                   </DialogDescription>
                 </DialogHeader>
-                <AppointmentForm />
+                {isCreateOpen && <AppointmentForm />}
               </DialogContent>
             </Dialog>
           </div>

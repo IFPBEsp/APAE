@@ -20,6 +20,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
@@ -147,5 +149,18 @@ public class HealthProfessionalControllerImpl implements HealthProfessionalContr
     public ResponseEntity<Void> removeProfessionalDocument(UUID id, UUID documentId) {
         service.removeProfessionalDocument(id, documentId);
         return ResponseEntity.noContent().build();
+    }
+
+    @Override
+    public ResponseEntity<List<String>> getAvailableTimes(UUID id, String date) {
+        LocalDate parsedDate = LocalDate.parse(date);
+
+        List<LocalTime> times = service.getAvailableTimes(id, parsedDate);
+
+        List<String> response = times.stream()
+                .map(t -> t.toString().substring(0, 5))
+                .toList();
+
+        return ResponseEntity.ok(response);
     }
 }
