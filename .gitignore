@@ -4,6 +4,8 @@ node_modules
 docker/db_data
 
 .env
+.env.*
+!.env.example
 
 # Arquivos de build e cache do Gradle/Java
 **/build/

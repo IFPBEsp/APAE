@@ -94,6 +94,12 @@ public class AppointmentApplicationServiceImpl implements AppointmentApplication
 
     @Override
     public void create(CreateAppointmentDTO dto) {
+        List<Integer> validFrequencies = List.of(7, 14, 30);
+        if (!validFrequencies.contains(dto.frequencyDays())) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
+                    "A frequência deve ser 7 (semanal), 14 (quinzenal) ou 30 (mensal).");
+        }
+        
         AnnualRegistry annualRegistry = this.registryRepo
                 .findByPatientIdAndYear(dto.patientId(), Year.now().getValue())
                 .orElseThrow(AnnualRegistrationNotFound::new);
@@ -122,11 +128,14 @@ public class AppointmentApplicationServiceImpl implements AppointmentApplication
         throw new AppointmentConflictException();
     }
 
-    Integer year = annualRegistry.getYear();
-    LocalDate end = LocalDate.of(year, 12, 31);
+        Appointment appointment = mapper.toEntity(dto, professional, annualRegistry);
+        appointmentRepo.save(appointment);
 
-    generateAppointments(annualRegistry.getId(), appointment.getInitialDate(), end);
-  }
+        LocalDate start = appointment.getInitialDate();
+        LocalDate end = start.plusYears(1);
+
+        generateAppointments(annualRegistry.getId(), start, end);
+    }
 
   @Override
   public Page<AppointmentResponseDTO> findAll(Pageable pageable) {
@@ -363,14 +372,19 @@ public class AppointmentApplicationServiceImpl implements AppointmentApplication
           LocalDate ruleStart, int frequencyDays, LocalTime time,
           LocalDate queryStart, LocalDate queryEnd) {
 
-    List<LocalDateTime> result = new ArrayList<>();
-    LocalDate date = ruleStart.isBefore(queryStart) ? queryStart : ruleStart;
+      List<LocalDateTime> result = new ArrayList<>();
+      LocalDate date = ruleStart.isBefore(queryStart) ? queryStart : ruleStart;
 
-    while (!date.isAfter(queryEnd)) {
-      result.add(date.atTime(time));
-      date = date.plusDays(frequencyDays);
-    }
-    return result;
+      while (!date.isAfter(queryEnd)) {
+          result.add(date.atTime(time));
+
+          if (frequencyDays == 30) {
+              date = date.plusMonths(1);
+          } else {
+              date = date.plusDays(frequencyDays);
+          }
+      }
+      return result;
   }
 
   /**
@@ -387,53 +401,60 @@ public class AppointmentApplicationServiceImpl implements AppointmentApplication
    * @throws IllegalStateException if the rule is not active
    */
   public AppointmentResponseDTO updateAppointment(UUID appointmentId, Integer newFrequency, LocalTime newTime) {
-    Appointment current = appointmentRepo.findById(appointmentId)
-            .orElseThrow(() -> new IllegalArgumentException("Rule not found"));
+      if (newFrequency != null) {
+          List<Integer> validFrequencies = List.of(7, 14, 30);
+          if (!validFrequencies.contains(newFrequency)) {
+              throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
+                      "A nova frequência deve ser 7 (semanal), 14 (quinzenal) ou 30 (mensal).");
+          }
+      }
 
-    if (!current.isActive()) {
-      throw new IllegalStateException("Only active rules can be edited");
-    }
+      Appointment current = appointmentRepo.findById(appointmentId)
+              .orElseThrow(() -> new IllegalArgumentException("Rule not found"));
 
-    LocalDate editDate = current.getInitialDate();
-    LocalTime timeToCheck = newTime != null ? newTime : current.getHour();
+      if (!current.isActive()) {
+          throw new IllegalStateException("Only active rules can be edited");
+      }
 
-    validateProfessionalAvailability(current.getProfessional(), editDate, timeToCheck);
+      LocalDate editDate = current.getInitialDate();
+      LocalTime timeToCheck = newTime != null ? newTime : current.getHour();
 
-    current.setActive(false);
-    current.setEndDate(editDate.minusDays(1));
-    appointmentRepo.save(current);
+      validateProfessionalAvailability(current.getProfessional(), editDate, timeToCheck);
 
-    Appointment newRule = new Appointment(
-            current.getProfessional(),
-            current.getAnnualRegistration(),
-            newFrequency != null ? newFrequency : current.getFrequencyDays(),
-            timeToCheck,
-            current.getInitialDate(),
-            null
-    );
-    newRule = appointmentRepo.save(newRule);
+      current.setActive(false);
+      current.setEndDate(editDate.minusDays(1));
+      appointmentRepo.save(current);
 
-    int year = current.getAnnualRegistration().getYear();
-    LocalDate end = LocalDate.of(year, 12, 31);
+      Appointment newRule = new Appointment(
+              current.getProfessional(),
+              current.getAnnualRegistration(),
+              newFrequency != null ? newFrequency : current.getFrequencyDays(),
+              timeToCheck,
+              current.getInitialDate(),
+              null
+      );
+      newRule = appointmentRepo.save(newRule);
 
-    generateAppointments(current.getAnnualRegistration().getId(), editDate, end);
-    generatedRepo.deleteFutureByAppointmentId(current.getId(), editDate.atStartOfDay());
+      LocalDate end = editDate.plusYears(1);
 
-    Patient patient = patientRepo.findById(newRule.getAnnualRegistration().getPatientId()).get();
-    Guardian guardian = guardianRepo.findByPatientId(patient.getId()).get();
-    List<Parent> pais = parentRepo.findAllByPatientId(patient.getId());
+      generateAppointments(current.getAnnualRegistration().getId(), editDate, end);
+      generatedRepo.deleteFutureByAppointmentId(current.getId(), editDate.atStartOfDay());
 
-    AddressResponseDTO adto = new AddressResponseDTO(patient.getAddress());
-    Set<Vaccine> vaccines = patient.getVaccines();
+      Patient patient = patientRepo.findById(newRule.getAnnualRegistration().getPatientId()).get();
+      Guardian guardian = guardianRepo.findByPatientId(patient.getId()).get();
+      List<Parent> pais = parentRepo.findAllByPatientId(patient.getId());
 
-    PatientResponseDTO pdto = new PatientResponseDTO(
-            patient,
-            adto,
-            new GuardianResponseDTO(guardian, adto),
-            pais.stream().map(parentMapper::toResponseDTO).collect(Collectors.toList()),
-            vaccines.stream().map(vaccineMapper::toResponseDTO).collect(Collectors.toSet()), null);
+      AddressResponseDTO adto = new AddressResponseDTO(patient.getAddress());
+      Set<Vaccine> vaccines = patient.getVaccines();
 
-    return mapper.toResponse(newRule, pdto);
+      PatientResponseDTO pdto = new PatientResponseDTO(
+              patient,
+              adto,
+              new GuardianResponseDTO(guardian, adto),
+              pais.stream().map(parentMapper::toResponseDTO).collect(Collectors.toList()),
+              vaccines.stream().map(vaccineMapper::toResponseDTO).collect(Collectors.toSet()), null);
+
+      return mapper.toResponse(newRule, pdto);
   }
 
   /**

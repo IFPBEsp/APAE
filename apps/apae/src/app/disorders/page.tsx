@@ -48,13 +48,17 @@ export default function TranstornosPage() {
       const response = await fetch(`/api/transtornos/${id}`, {
         method: "DELETE",
       });
+      
       if (!response.ok) {
-        throw new Error("Falha ao excluir o transtorno.");
+        const errorData = await response.json().catch(() => null);
+        
+        throw new Error(errorData?.message || "Falha ao excluir o transtorno.");
       }
+      
       setTranstornos((current) => current.filter((d) => d.id !== id));
       toast.success("Transtorno excluído com sucesso!");
     } catch (err: any) {
-      toast.error(err.message);
+      toast.error(err.message); 
     }
   };
   const filteredTranstornos = transtornos.filter((transtorno) =>

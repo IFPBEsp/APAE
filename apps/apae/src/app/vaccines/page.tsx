@@ -68,9 +68,6 @@ function VaccinesList() {
         );
     }
 
-    if (feedback.error) {
-        return <p className="text-center text-red-500">{feedback.message}</p>;
-    }
 
     if (vaccines.length === 0) {
         return (
