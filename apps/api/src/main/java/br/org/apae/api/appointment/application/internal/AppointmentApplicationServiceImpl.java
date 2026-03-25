@@ -1,24 +1,15 @@
 package br.org.apae.api.appointment.application.internal;
-import br.org.apae.api.appointment.application.interfaces.AppointmentApplicationService;
-import br.org.apae.api.appointment.domain.exceptions.AnnualRegistrationNotFound;
-import br.org.apae.api.appointment.domain.exceptions.AppointmentAlreadyCancelledException;
-import br.org.apae.api.appointment.domain.exceptions.AppointmentConflictException;
-import br.org.apae.api.appointment.domain.exceptions.AppointmentNotFoundException;
-import br.org.apae.api.appointment.domain.exceptions.ProfessionalUnavailableException;
-import br.org.apae.api.appointment.domain.model.Absence;
-import br.org.apae.api.appointment.mapper.AppointmentMapper;
-import br.org.apae.api.patient.domain.model.AnnualRegistry;
-import br.org.apae.api.patient.domain.repository.AnnualRegistryRepository;
-import br.org.apae.api.professional.domain.exceptions.HealthProfessionalNotFoundException;
-import br.org.apae.api.professional.domain.model.HealthProfessional;
-import br.org.apae.api.professional.domain.model.enums.Day;
-import br.org.apae.api.professional.domain.model.enums.Shift;
-import br.org.apae.api.professional.domain.repository.HealthProfessionalRepository;
-import jakarta.transaction.Transactional;
-
-import java.time.*;
+import java.time.DayOfWeek;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.Year;
 import java.time.temporal.ChronoUnit;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 import org.springframework.dao.DataIntegrityViolationException;
@@ -26,12 +17,21 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
+import br.org.apae.api.appointment.application.interfaces.AppointmentApplicationService;
+import br.org.apae.api.appointment.domain.exceptions.AnnualRegistrationNotFound;
+import br.org.apae.api.appointment.domain.exceptions.AppointmentAlreadyCancelledException;
+import br.org.apae.api.appointment.domain.exceptions.AppointmentConflictException;
+import br.org.apae.api.appointment.domain.exceptions.AppointmentNotFoundException;
+import br.org.apae.api.appointment.domain.exceptions.ProfessionalUnavailableException;
+import br.org.apae.api.appointment.domain.model.Absence;
 import br.org.apae.api.appointment.domain.model.Appointment;
 import br.org.apae.api.appointment.domain.model.GeneratedAppointment;
 import br.org.apae.api.appointment.domain.repository.AbsenceRepository;
 import br.org.apae.api.appointment.domain.repository.AppointmentRepository;
 import br.org.apae.api.appointment.domain.repository.GeneratedAppointmentRepository;
+import br.org.apae.api.appointment.mapper.AppointmentMapper;
 import br.org.apae.api.common.dto.address.AddressResponseDTO;
 import br.org.apae.api.common.dto.appointment.request.appointment.CreateAppointmentDTO;
 import br.org.apae.api.common.dto.appointment.response.appointment.AppointmentResponseDTO;
@@ -41,15 +41,22 @@ import br.org.apae.api.common.dto.patient.response.guardian.GuardianResponseDTO;
 import br.org.apae.api.common.dto.patient.response.patient.PatientResponseDTO;
 import br.org.apae.api.patient.application.mappers.ParentMapper;
 import br.org.apae.api.patient.application.mappers.VaccineMapper;
+import br.org.apae.api.patient.domain.model.AnnualRegistry;
 import br.org.apae.api.patient.domain.model.Guardian;
 import br.org.apae.api.patient.domain.model.Parent;
 import br.org.apae.api.patient.domain.model.Patient;
 import br.org.apae.api.patient.domain.model.Vaccine;
+import br.org.apae.api.patient.domain.repository.AnnualRegistryRepository;
 import br.org.apae.api.patient.domain.repository.GuardianRepository;
 import br.org.apae.api.patient.domain.repository.ParentRepository;
 import br.org.apae.api.patient.domain.repository.PatientRepository;
+import br.org.apae.api.professional.domain.exceptions.HealthProfessionalNotFoundException;
+import br.org.apae.api.professional.domain.model.HealthProfessional;
+import br.org.apae.api.professional.domain.model.enums.Day;
+import br.org.apae.api.professional.domain.model.enums.Shift;
+import br.org.apae.api.professional.domain.repository.HealthProfessionalRepository;
 import jakarta.persistence.EntityNotFoundException;
-import org.springframework.web.server.ResponseStatusException;
+import jakarta.transaction.Transactional;
 
 @Service
 @Transactional
@@ -127,8 +134,7 @@ public class AppointmentApplicationServiceImpl implements AppointmentApplication
     } catch (DataIntegrityViolationException ex) {
         throw new AppointmentConflictException();
     }
-
-        Appointment appointment = mapper.toEntity(dto, professional, annualRegistry);
+        appointment = mapper.toEntity(dto, professional, annualRegistry);
         appointmentRepo.save(appointment);
 
         LocalDate start = appointment.getInitialDate();
@@ -293,6 +299,7 @@ public class AppointmentApplicationServiceImpl implements AppointmentApplication
    * @throws IllegalArgumentException if the annual registration is not found
    * @throws IllegalStateException if no active rule exists for the registration
    */
+
   public List<GeneratedAppointmentResponseDTO> generateAppointments(
           UUID annualRegistrationId, LocalDate start, LocalDate end) {
 
