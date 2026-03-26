@@ -7,6 +7,23 @@ import { Button } from "@/components/ui/button";
 import FileCard from "@/components/fileCard";
 import { toast } from "react-toastify";
 
+const documentTypeTranslations: Record<string, string> = {
+  MEDICAL_REPORT: "Laudo Médico",
+  REFERRAL: "Encaminhamento",
+  PRESCRIPTION: "Receita Médica",
+  EXAM: "Exame",
+  VACCINE_CARD: "Cartão de Vacina",
+  PERSONAL_DOCUMENT: "Documento Pessoal",
+  SCHOOL_DOCUMENT: "Documento Escolar",
+  PHOTO: "Foto",
+};
+
+const translateDocumentType = (typeOrName: string) => {
+  if (!typeOrName) return "Documento";
+  const cleanType = typeOrName.split(".")[0];
+  return documentTypeTranslations[cleanType] || cleanType;
+};
+
 export interface FileItem {
   id: string;
   name: string;
@@ -99,16 +116,18 @@ export default function DocumentTypePage() {
         <h1 className="text-xl font-bold whitespace-nowrap">{pageTitle}</h1>
       </div>
 
-      {/* --- Lista de Arquivos --- */}
+     {/* --- Lista de Arquivos --- */}
       <div className="grid grid-cols-2 lg:grid-cols-6 gap-4 mt-4">
         {files.length === 0 ? (
-          <p>Nenhum arquivo encontrado.</p>
+          <p className="col-span-full text-center text-gray-500">
+            Nenhum arquivo encontrado.
+          </p>
         ) : (
           files.map((file: FileItem) => (
             <FileCard
               key={file.id}
               file={{
-                fileName: file.name,
+                fileName: translateDocumentType(file.type || file.name),
                 link: file.url,
               }}
             />
