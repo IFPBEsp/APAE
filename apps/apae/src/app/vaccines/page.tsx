@@ -86,7 +86,7 @@ function VaccinesList({ searchName }: { searchName: string }) {
                 {filteredVaccines.length} vacinas encontradas
             </p>
             <div className="space-y-2">
-                {/* 4. IMPORTANTE: Trocamos 'vaccines.map' por 'filteredVaccines.map' */}
+                {/* IMPORTANTE: Foi trocado 'vaccines.map' por 'filteredVaccines.map' */}
                 {filteredVaccines.map((vaccine) => (
                     <VaccinesListItem key={vaccine.id} vaccine={vaccine} />
                 ))}
