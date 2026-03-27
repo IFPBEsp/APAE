@@ -44,6 +44,13 @@ const MEDICAL_DOC_TYPES = [
     { value: "OTHER", label: "Outro" }
 ];
 
+const docTypeTranslations: Record<string, string> = {
+    MEDICAL_REPORT: "Laudo Médico",
+    EXAMINATION: "Exame",
+    REFERRAL: "Encaminhamento",
+    OTHER: "Outro",
+    VACCINE_CARD: "Cartão de Vacina"
+};
 
 export default function AnnualRegistryEditModal({
                                                     isOpen,
@@ -471,7 +478,10 @@ export default function AnnualRegistryEditModal({
                                                         <div key={doc.id} className="group flex items-center justify-between p-3 bg-white border border-slate-100 rounded-xl shadow-sm hover:shadow-md hover:border-[#0D4F97]/20 transition-all duration-200">
                                                             <div className="flex items-center gap-3 overflow-hidden">
                                                                 <div className="bg-blue-50 p-2 rounded-lg group-hover:bg-[#0D4F97] group-hover:text-white transition-colors duration-300"><FileText className="h-4 w-4" /></div>
-                                                                <div className="flex flex-col min-w-0"><span className="text-sm font-semibold truncate text-slate-700 group-hover:text-[#0D4F97] transition-colors" title={doc.name}>{doc.name}</span><span className="text-[10px] text-slate-400 font-bold uppercase tracking-wide mt-0.5">{doc.type}</span></div>
+                                                                <div className="flex flex-col min-w-0">
+                                                                <span className="text-sm font-semibold truncate text-slate-700 group-hover:text-[#0D4F97] transition-colors" 
+                                                                title={doc.name}>{doc.name}</span>
+                                                                <span className="text-[10px] text-slate-400 font-bold uppercase tracking-wide mt-0.5">{docTypeTranslations[doc.type] || doc.type}</span></div>
                                                             </div>
                                                             {doc.url && (<a href={doc.url} target="_blank" rel="noreferrer" className="p-2 text-slate-400 hover:text-[#0D4F97] hover:bg-blue-50 rounded-full transition-all" title="Abrir em nova aba"><ExternalLink className="h-4 w-4" /></a>)}
                                                         </div>
