@@ -30,7 +30,7 @@ import {
 } from "../ui/collapsible";
 import styles from "./sidebar.module.css";
 import { useSidebar } from "@/components/ui/sidebar";
-import { redirect, usePathname, useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { cn } from "@/lib/utils";
 import logo from "../../assets/logo.png";
 import {
@@ -39,6 +39,8 @@ import {
   Syringe,
   Stethoscope,
   LogOut,
+  ShieldUser,
+  UserRoundPlus,
 } from "lucide-react";
 import { removeSessionCookie } from "@/lib/cookies";
 
@@ -268,7 +270,7 @@ export function AppSidebar() {
               <CollapsibleTrigger
                 className={`${styles.menuButton} font-base gap-2`}
               >
-                <PersonIcon size={20} />
+                <ShieldUser size={20} />
                 <span className="text-base">Área do Administrador</span>
                 <ChevronDownIcon
                   size={16}
@@ -288,7 +290,7 @@ export function AppSidebar() {
                           : "text-[#0D4F97] hover:bg-[#0D4F97] hover:!text-white"
                       )}`}
                     >
-                      <PeopleIcon size={16} />
+                      <UserRoundPlus size={16} />
                       <span className="text-base">Cadastrar Usuário</span>
                     </SidebarMenuButton>
                   </Link>

@@ -179,19 +179,18 @@ function Page() {
                 </div>
               </div>
 
-              {/* Botões alinhados à direita como o botão "Adicionar" da imagem */}
               <div className="flex justify-end gap-4 pt-8">
                 <Button
                   type="button"
                   variant="ghost"
                   onClick={() => router.back()}
-                  className="text-gray-500 hover:text-gray-700"
+                  className="w-32 h-11 text-gray-500 hover:text-gray-700"
                 >
                   Cancelar
                 </Button>
                 <Button
                   type="submit"
-                  className="bg-[#0D4F97] hover:bg-[#0D4F97]/90 px-10 h-11 rounded-lg"
+                  className="w-32 h-11 bg-[#0D4F97] hover:bg-[#0D4F97]/90 rounded-lg"
                   disabled={form.formState.isSubmitting}
                 >
                   {form.formState.isSubmitting ? "Gravando..." : "Cadastrar"}
