@@ -83,6 +83,10 @@ public class User implements UserDetails {
     return fullName;
   }
 
+  public void updatePassword(String password) {
+    this.password = password;
+  }
+
   @Override
   public Collection<? extends GrantedAuthority> getAuthorities() {
     return role == UserRole.ADMIN

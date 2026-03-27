@@ -49,31 +49,12 @@ const mapDayOfWeek: Record<number, string> = {
   5: "SEXTA",
 };
 
-const morningSlots = [
-  "08:00",
-  "08:30",
-  "09:00",
-  "09:30",
-  "10:00",
-  "10:30",
-  "11:00",
-  "11:30",
-];
-const afternoonSlots = [
-  "13:00",
-  "13:30",
-  "14:00",
-  "14:30",
-  "15:00",
-  "15:30",
-  "16:00",
-  "16:30",
-  "17:00",
-];
-
 export function AppointmentForm({ editAppointment }: AppointmentFormProps) {
   const isInitialMount = useRef(true);
   const prevProfessionalId = useRef(editAppointment?.professional?.id || "");
+  const dataFetched = useRef(false);
+
+
 
   const [date, setDate] = useState<Date | undefined>(() => {
     if (editAppointment?.initialDate) {
@@ -125,19 +106,27 @@ export function AppointmentForm({ editAppointment }: AppointmentFormProps) {
   });
 
   useEffect(() => {
+    if (dataFetched.current) return;
+
     const fetchData = async () => {
-      const [patients, professionals] = await Promise.all([
-        getPacientes(),
-        getProfissionaisDaSaude(),
-      ]);
+      try {
+        dataFetched.current = true;
+        const [patients, professionals] = await Promise.all([
+          getPacientes(),
+          getProfissionaisDaSaude(),
+        ]);
 
-      setListPatients(
-        patients.map((p) => ({ value: p.id, label: p.fullName })),
-      );
+        setListPatients(
+          patients.map((p) => ({ value: p.id, label: p.fullName })),
+        );
 
-      setListaProfessionals(
-        professionals.map((p) => ({ value: p.id, label: p.name })),
-      );
+        setListaProfessionals(
+          professionals.map((p) => ({ value: p.id, label: p.name })),
+        );
+      } catch (error) {
+        console.error("Erro ao carregar dados do formulário:", error);
+        dataFetched.current = false;
+      }
     };
     fetchData();
   }, []);
@@ -169,23 +158,29 @@ export function AppointmentForm({ editAppointment }: AppointmentFormProps) {
     isInitialMount.current = false;
   }, [professional.value]);
 
-  const availableTimeSlots = useMemo(() => {
-    if (!date || !isValid(date)) return [];
+  const [availableTimeSlots, setAvailableTimeSlots] = useState<string[]>([]);
 
-    const dayOfWeek = getDay(date);
-    const dayName = mapDayOfWeek[dayOfWeek];
-    if (!dayName) return [];
+  useEffect(() => {
+  const fetchAvailableTimes = async () => {
+    if (!date || !professional.value) return;
 
-    const activeShifts = availabilities
-      .filter((a) => a.day === dayName)
-      .map((a) => a.shift);
+    try {
+      const formattedDate = format(date, "yyyy-MM-dd");
 
-    let slots: string[] = [];
-    if (activeShifts.includes("MANHA")) slots = [...slots, ...morningSlots];
-    if (activeShifts.includes("TARDE")) slots = [...slots, ...afternoonSlots];
+      const res = await fetch(
+        `/api/professionals/${professional.value}/available-times?date=${formattedDate}`
+      );
 
-    return Array.from(new Set(slots)).sort();
-  }, [date, availabilities]);
+      const data = await res.json();
+
+      setAvailableTimeSlots(data || []);
+    } catch (err) {
+      setAvailableTimeSlots([]);
+    }
+  };
+
+  fetchAvailableTimes();
+}, [date, professional.value]);
 
   const isDayDisabled = (day: Date) => {
     const today = startOfDay(new Date());
@@ -371,14 +366,20 @@ export function AppointmentForm({ editAppointment }: AppointmentFormProps) {
                             : "Selecione a data primeiro"
                         }
                       />
-                    </SelectTrigger>
+                      </SelectTrigger>
 
-                    <SelectContent>
-                      {availableTimeSlots.map((slot) => (
-                        <SelectItem key={slot} value={slot}>
-                          {slot}
-                        </SelectItem>
-                      ))}
+                      <SelectContent>
+                      {availableTimeSlots.length === 0 ? (
+                        <div className="p-2 text-sm text-muted-foreground text-red-500">
+                          Nenhum horário disponível
+                        </div>
+                      ) : (
+                        availableTimeSlots.map((slot) => (
+                          <SelectItem key={slot} value={slot}>
+                            {slot}
+                          </SelectItem>
+                        ))
+                      )}
                     </SelectContent>
                   </Select>
                 </div>
@@ -388,19 +389,30 @@ export function AppointmentForm({ editAppointment }: AppointmentFormProps) {
 
           <div className="space-y-2">
             <Label>
-              Frequência (dias) <span className="text-red-500">*</span>
+              Frequência <span className="text-red-500">*</span>
             </Label>
 
-            <Input
-              type="number"
-              min="1"
-              value={frequencyDays < 1 ? "" : frequencyDays}
-              onChange={(e) => setFrequencyDays(Number(e.target.value))}
-              placeholder="Ex: 7"
-              className="w-full"
-            />
+            <Select
+              onValueChange={(value) => setFrequencyDays(Number(value))}
+              value={frequencyDays > 0 ? String(frequencyDays) : undefined}
+              >
+               <SelectTrigger
+                  className={cn(
+                    "w-full",
+                   validationErrors.frequencyDays && "border-red-500"
+                  )}
+               >
+                  <SelectValue placeholder="Selecione a frequência" />
+               </SelectTrigger>
+               <SelectContent>
+                 <SelectItem value="7">Semanal (a cada 7 dias)</SelectItem>
+                 <SelectItem value="14">Quinzenal (a cada 14 dias)</SelectItem>
+                 <SelectItem value="30">Mensal (a cada mês)</SelectItem>
+               </SelectContent>
+            </Select>
+
             {validationErrors.frequencyDays && (
-              <p className="text-sm text-red-500">Maior que 0.</p>
+                <p className="text-sm text-red-500">Selecione uma frequência válida.</p>
             )}
           </div>
 

@@ -10,15 +10,29 @@ Projeto em desenvolvimento, fruto de uma parceria entre o IFPB (Campus Esperanç
 
 ## Índice
 
-1. [Introdução](#introdução)
-2. [Apresentação do Projeto](#apresentação-do-projeto)
+- [APAE](#apae)
+  - [Índice](#índice)
+  - [Introdução](#introdução)
+  - [Apresentação do Projeto](#apresentação-do-projeto)
     - [Como Executar](#como-executar)
-3. [Fluxo de Trabalho](#fluxo-de-trabalho)
-   - [Convenção de Commits](#convenção-de-commits)
-   - [Criação de Branches](#criação-de-branches)
-   - [Labels](#labels)
-   - [Raia do Kanban](#raia-do-kanban)
-3. [Configuração do Projeto](#configuração-do-projeto)
+      - [Outros Comandos:](#outros-comandos)
+  - [Fluxo de Trabalho](#fluxo-de-trabalho)
+    - [Convenção de Commits](#convenção-de-commits)
+      - [Dicionário de Tipos](#dicionário-de-tipos)
+      - [Dicionário de Escopo](#dicionário-de-escopo)
+    - [Criação de Branches](#criação-de-branches)
+    - [Labels](#labels)
+      - [Tipos de Projeto](#tipos-de-projeto)
+      - [Equipes](#equipes)
+      - [GitFlow](#gitflow)
+      - [Outras Labels Úteis](#outras-labels-úteis)
+    - [Raia do Kanban](#raia-do-kanban)
+  - [Configuração do Projeto](#configuração-do-projeto)
+    - [Variáveis de Ambiente (Opcional)](#variáveis-de-ambiente-opcional)
+    - [Como configurar](#como-configurar)
+    - [Envio de e-mails](#envio-de-e-mails)
+    - [Segurança](#segurança)
+    - [Observações](#observações)
 
 ---
 
@@ -40,12 +54,15 @@ O projeto foi automatizado para rodar com o mínimo de comandos utilizando **pnp
 2. **Setup Inicial**: `pnpm install`
 3. **Rodar Tudo (Docker + Back + Front)**: `pnpm dev`
 
+> ℹ️ Algumas funcionalidades, como envio de e-mails, utilizam configuração opcional de variáveis de ambiente. Veja a seção **Configuração do Projeto**.
+
 #### Outros Comandos:
 - `pnpm dev:backend`: Executa apenas o backend (api).
 - `pnpm dev:apae`: Executa apenas o frontend (apae).
 - `pnpm docker:up`: Sobe apenas o banco de dados e MinIO.
 - `pnpm docker:down`: Para os containers e os remove da memória.
 - `pnpm docker:drop`: Para os containers, os remove e apaga os volumes associados.
+- `pnpm db:seed`: Cria um usuário admin no banco de dados para fins de testes.
 
 ---
 
@@ -182,6 +199,60 @@ O Kanban é usado para organizar as **issues** no processo de desenvolvimento. A
 ---
 
 ## Configuração do Projeto
+
+### Variáveis de Ambiente (Opcional)
+
+O projeto utiliza variáveis de ambiente para configurar serviços externos, como envio de e-mails (SMTP), banco de dados e integrações.
+
+ **Importante:** A configuração dessas variáveis é opcional durante o desenvolvimento.  
+O sistema funciona normalmente sem elas, porém funcionalidades como envio de e-mails não serão executadas.
+
+---
+
+### Como configurar
+
+1. Copie o arquivo de exemplo:
+
+```bash
+cp .env.example .env
+```
+
+2. Preencha:
+
+```env
+MAIL_HOST=smtp.gmail.com
+MAIL_PORT=587
+MAIL_USERNAME=seu-email@gmail.com
+MAIL_PASSWORD=sua_senha_de_app
+APP_FRONTEND_RESET_PASSWORD_URL=http://localhost:3000/reset-password
+```
+
+3. Agora pode seguir com a execução normal do projeto, indo para seção **Como Executar**
+
+---
+
+### Envio de e-mails
+
+- Sem configuração: sistema funciona normalmente, mas não envia e-mails  
+- Com configuração: envio de e-mails ativo
+
+---
+
+### Segurança
+
+Adicionar no `.gitignore`:
+
+```gitignore
+.env
+```
+
+---
+
+### Observações
+
+- Cada dev pode ter seu próprio `.env`
+- SMTP é opcional
+- Apenas necessário para testar envio de e-mails
 
 Obs. Ainda em desenvolvimento...
 (Incluir as instruções de como configurar o ambiente de desenvolvimento, instalar dependências, rodar o projeto, etc.)

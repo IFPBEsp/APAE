@@ -50,16 +50,18 @@ export const loginSchema = z.object({
     .trim()
     .refine(
       (value) => {
-        const isEmail = z.email().safeParse(value).success;
-        return isEmail;
+        const isEmail = z.string().email().safeParse(value).success;
+        const isCpf = cpfSchema.safeParse(value).success;
+
+        return isEmail || isCpf;
       },
       {
-        message: "Digite um email válido",
+        message: "Digite um email ou CPF válido.",
       }
     ),
   password: z
     .string()
-    .min(6, { message: "Senha deve ter pelo menos 6 caracteres" }),
+    .min(6, { message: "Senha deve ter pelo menos 6 caracteres." }),
 });
 
 export type FormLogin = z.infer<typeof loginSchema>;

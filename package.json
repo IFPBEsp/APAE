@@ -11,12 +11,14 @@
     "dev:backend": "bash ./.scripts/run-app.sh backend",
     "dev:apae": "bash ./.scripts/run-app.sh frontend apae",
     "dev": "pnpm docker:up && bash ./.scripts/run-app.sh both apae",
-    "test:api": "cd apps/api && ./mvnw package"
+    "test:api": "cd apps/api && ./mvnw package",
+    "db:seed": "bash ./.scripts/setup.sh"
   },
   "workspaces": [
     "apps/*"
   ],
   "devDependencies": {
+    "@types/node": "^25.5.0",
     "concurrently": "^9.2.1"
   }
 }

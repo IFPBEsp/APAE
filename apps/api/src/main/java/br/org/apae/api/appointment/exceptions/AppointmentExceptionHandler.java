@@ -1,6 +1,7 @@
 package br.org.apae.api.appointment.exceptions;
 
 import br.org.apae.api.appointment.domain.exceptions.AppointmentAlreadyCancelledException;
+import br.org.apae.api.appointment.domain.exceptions.AppointmentConflictException;
 import br.org.apae.api.appointment.domain.exceptions.AppointmentNotFoundException;
 import br.org.apae.api.appointment.domain.exceptions.ProfessionalUnavailableException;
 import br.org.apae.api.common.exceptions.types.ErrorResponse;
@@ -91,5 +92,20 @@ public class AppointmentExceptionHandler {
             request.getRequestURI());
 
     return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
+  }
+
+  @ExceptionHandler(AppointmentConflictException.class)
+  public ResponseEntity<ErrorResponse> handleAppointmentConflictException(
+          AppointmentConflictException ex,
+          HttpServletRequest request) {
+
+    ErrorResponse errorResponse = new ErrorResponse(
+            HttpStatus.BAD_REQUEST.value(),
+            HttpStatus.BAD_REQUEST.getReasonPhrase(),
+            ex.getMessage(),
+            request.getRequestURI()
+    );
+
+    return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
   }
 }

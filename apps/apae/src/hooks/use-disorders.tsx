@@ -193,7 +193,8 @@ function DisordersProvider({
         });
 
         if (!response.ok) {
-          throw new Error("Ocorreu um erro ao excluir transtorno.");
+          const errorData = await response.json().catch(() => null);
+          throw new Error(errorData?.message || "Ocorreu um erro ao excluir transtorno.");
         }
 
         fetchDisorders();

@@ -51,24 +51,30 @@ const VaccinesContext = createContext<VaccinesContextData | undefined>(
 );
 
 type WithFeedbackMessages = {
-    success: string;
+    success?: string;
 };
 
 function withFeedback<TArgs extends readonly unknown[], TReturn>(
     fn: (...args: TArgs) => Promise<TReturn>,
     setLoading: (loading: boolean) => void,
     setFeedback: (feedback: Feedback) => void,
-    messages: WithFeedbackMessages,
+    messages?: WithFeedbackMessages,
 ) {
     return async (...args: TArgs): Promise<TReturn | void> => {
         setLoading(true);
         try {
             const result = await fn(...args);
-            setFeedback({
-                message: messages.success,
-                success: true,
-                error: false,
-            });
+            
+            if (messages?.success) {
+                setFeedback({
+                    message: messages.success,
+                    success: true,
+                    error: false,
+                });
+            } else {
+                setFeedback({ message: "", success: false, error: false });
+            }
+            
             return result;
         } catch (error) {
             const message =
@@ -78,7 +84,7 @@ function withFeedback<TArgs extends readonly unknown[], TReturn>(
                 success: false,
                 error: true,
             });
-            throw error;
+
         } finally {
             setLoading(false);
         }
@@ -111,10 +117,7 @@ function VaccinesProvider({
                 setVaccines(data);
             },
             setLoading,
-            setFeedback,
-            {
-                success: "Vacinas carregadas com sucesso.",
-            },
+            setFeedback
         ),
         [],
     );
@@ -124,7 +127,6 @@ function VaccinesProvider({
             async (params: FetchVaccineParams) => {
                 const response = await fetch(`/api/vacinas/${params.id}`);
 
-                console.log("TESTE");
                 if (!response.ok) {
                     throw Error("Ocorreu um erro ao carregar vacina.");
                 }
@@ -132,10 +134,7 @@ function VaccinesProvider({
                 return response.json();
             },
             setLoading,
-            setFeedback,
-            {
-                success: "Vacina carregada com sucesso.",
-            },
+            setFeedback
         ),
         [],
     );
@@ -157,7 +156,7 @@ function VaccinesProvider({
             },
             setLoading,
             setFeedback,
-            { success: "Vacina criada com sucesso." },
+            { success: "Vacina criada com sucesso." }, 
         ),
         [],
     );
@@ -194,7 +193,8 @@ function VaccinesProvider({
                 });
 
                 if (!response.ok) {
-                    throw new Error("Ocorreu um erro ao excluir vacina.");
+                    const errorData = await response.json().catch(() => null);
+                    throw new Error(errorData?.message || "Ocorreu um erro ao excluir a vacina.");
                 }
 
                 fetchVaccines();
@@ -202,7 +202,7 @@ function VaccinesProvider({
             setLoading,
             setFeedback,
             {
-                success: "Vacina excluída com sucesso.",
+                success: "Vacina excluída com sucesso.", 
             },
         ),
         [],

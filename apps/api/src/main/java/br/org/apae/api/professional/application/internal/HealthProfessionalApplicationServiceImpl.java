@@ -20,8 +20,11 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.multipart.MultipartFile;
 
+import java.time.LocalDate;
+import java.time.LocalTime;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -181,4 +184,28 @@ public class HealthProfessionalApplicationServiceImpl implements HealthProfessio
         documentsService.removeProfessionalDocument(professional, documentId);
     }
 
+    private List<LocalTime> generateSlots(LocalTime start, LocalTime end) {
+        List<LocalTime> slots = new ArrayList<>();
+        LocalTime current = start;
+
+        while (current.isBefore(end)) {
+            slots.add(current);
+            current = current.plusMinutes(30);
+        }
+
+        return slots;
+    }
+
+    public List<LocalTime> getAvailableTimes(UUID professionalId, LocalDate date) {
+        List<LocalTime> occupied = repository.findOccupiedHours(professionalId, date);
+
+        List<LocalTime> allSlots = generateSlots(
+                LocalTime.of(8, 0),
+                LocalTime.of(12, 0)
+        );
+
+        return allSlots.stream()
+                .filter(slot -> !occupied.contains(slot))
+                .toList();
+    }
 }
