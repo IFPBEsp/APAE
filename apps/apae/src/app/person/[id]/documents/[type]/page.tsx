@@ -16,6 +16,8 @@ const documentTypeTranslations: Record<string, string> = {
   PERSONAL_DOCUMENT: "Documento Pessoal",
   SCHOOL_DOCUMENT: "Documento Escolar",
   PHOTO: "Foto",
+  EXAMINATION: "Exame", 
+  OTHER: "Outro",
 };
 
 const translateDocumentType = (typeOrName: string) => {
