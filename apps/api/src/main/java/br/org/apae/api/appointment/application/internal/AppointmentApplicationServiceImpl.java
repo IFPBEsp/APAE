@@ -134,8 +134,6 @@ public class AppointmentApplicationServiceImpl implements AppointmentApplication
     } catch (DataIntegrityViolationException ex) {
         throw new AppointmentConflictException();
     }
-        appointment = mapper.toEntity(dto, professional, annualRegistry);
-        appointmentRepo.save(appointment);
 
         LocalDate start = appointment.getInitialDate();
         LocalDate end = start.plusYears(1);
