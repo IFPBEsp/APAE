@@ -21,7 +21,7 @@ public interface PatientApplicationService {
 
     Page<PatientSummaryResponseDTO> findAllPatients(Pageable pageable);
 
-    List<PatientSummaryResponseDTO> findPatientByFilter(Map<String, String> filters);
+    Page<PatientSummaryResponseDTO> findPatientByFilter(Map<String, String> filters, Pageable pageable);
 
     PatientResponseDTO updatePatient(UUID id, UpdatePatientDTO updatePatientDTO);
 

@@ -10,7 +10,7 @@ import { SearchFilters } from "@/components/search-filters";
 import { toast } from "react-toastify";
 import { useDebounce } from "@/hooks/use-debounce";
 import { usePatientFilters } from "@/hooks/use-patients-filters";
-
+import type { Page } from "@/types/pagination";
 
 export default function PatientsAndStudentsScreen() {
   const [patients, setPatients] = useState<PatientCardData[]>([]);
@@ -22,12 +22,21 @@ export default function PatientsAndStudentsScreen() {
   const [cidade, setCidade] = useState<string>("");
   const [tipoAtendimento, setTipoAtendimento] = useState<string>("");
   const debouncedSearchName = useDebounce(searchName, 500);
+  const [page, setPage] = useState(0);
+  const [size] = useState(10);
+  const [totalPages, setTotalPages] = useState(0);
+  const [totalElements, setTotalElements] = useState(0);
+
   const {
     transtornoOptions,
     anoOptions,
     cidadeOptions,
-    tipoAtendimentoOptions
+    tipoAtendimentoOptions,
   } = usePatientFilters();
+
+  useEffect(() => {
+    setPage(0);
+  }, [debouncedSearchName, transtorno, ano, cidade, tipoAtendimento]);
 
   useEffect(() => {
     const loadData = async () => {
@@ -40,22 +49,33 @@ export default function PatientsAndStudentsScreen() {
         if (cidade) params.append("city", cidade);
         if (tipoAtendimento) params.append("treatmentType", tipoAtendimento);
 
+        params.append("page", String(page));
+        params.append("size", String(size));
+
         const queryString = params.toString();
         const response = await fetch(`/api/patients?${queryString}`);
 
         if (!response.ok) {
-           const errorData = await response.json();
-           console.error('[ERRO API PATIENTS]:', errorData.response?.data || errorData.message);
-           throw new Error(errorData.message || "Erro ao buscar dados");
+          const errorData = await response.json();
+          console.error(
+            "[ERRO API PATIENTS]:",
+            errorData.response?.data || errorData.message,
+          );
+          throw new Error(errorData.message || "Erro ao buscar dados");
         }
 
-        const data: PatientCardData[] = await response.json();
+        const data: Page<PatientCardData> = await response.json();
 
-        setPatients(data);
+        setPatients(data.content);
+        setTotalPages(data.totalPages);
+        setTotalElements(data.totalElements);
         setError(null);
       } catch (err) {
         console.error("Erro ao buscar dados (pacientes):", err);
-        const errorMsg = (err instanceof Error) ? err.message : "Não foi possível carregar os dados.";
+        const errorMsg =
+          err instanceof Error
+            ? err.message
+            : "Não foi possível carregar os dados.";
         setError(errorMsg);
         toast.error(errorMsg);
       } finally {
@@ -64,7 +84,15 @@ export default function PatientsAndStudentsScreen() {
     };
 
     loadData();
-  }, [debouncedSearchName, transtorno, ano, cidade, tipoAtendimento]);
+  }, [
+    debouncedSearchName,
+    transtorno,
+    ano,
+    cidade,
+    tipoAtendimento,
+    page,
+    size,
+  ]);
 
   const renderContent = () => {
     if (isLoading) {

@@ -105,16 +105,16 @@ public class PatientApplicationServiceImpl implements PatientApplicationService 
         });
     }
 
-    @Override
+   @Override
     @Transactional(readOnly = true)
-    public List<PatientSummaryResponseDTO> findPatientByFilter(Map<String, String> filters) {
+    public Page<PatientSummaryResponseDTO> findPatientByFilter(Map<String, String> filters, Pageable pageable) {
         Specification<Patient> spec = PatientSpecification.filterBy(filters);
-        return patientRepository.findAll(spec).stream()
+
+        return patientRepository.findAll(spec, pageable)
                 .map(patient -> {
                     String photo = documentService.getPatientPhoto(patient.getId());
                     return patientMapper.toSummaryResponseDTO(patient, photo);
-                })
-                .toList();
+                });
     }
 
     @Override
