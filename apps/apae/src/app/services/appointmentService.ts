@@ -471,27 +471,21 @@ export async function getTodayAppointmentById(id: string): Promise<TodayAppointm
 }
 
 export async function listTodayAppointment(date?: string): Promise<Page<TodayAppointment>> {
-  // Montamos a URL base
-  let url = '/api/appointments/today';
   
-  // Se a data foi passada, adicionamos ela na query string
-  if (date) {
-    url += `?date=${date}`;
-  }
+  const url = date 
+    ? `/api/appointments/today?date=${date}` 
+    : `/api/appointments/today`;
 
-  // Adicionamos um cabeçalho para evitar que o Next.js faça cache agressivo (Fantasmas 👻)
   const res = await fetch(url, {
+    method: "GET",
     headers: {
-      'Cache-Control': 'no-cache, no-store, must-revalidate',
-      Pragma: 'no-cache',
-      Expires: '0',
+      "Content-Type": "application/json",
     },
   });
 
   if (!res.ok) {
-    throw new Error(`Erro ao buscar agendamentos do dia: ${res.status}`);
+    throw new Error("Erro ao buscar agendamentos");
   }
 
-  const data = await res.json();
-  return ensurePageFormat<TodayAppointment>(data);
+  return res.json();
 }

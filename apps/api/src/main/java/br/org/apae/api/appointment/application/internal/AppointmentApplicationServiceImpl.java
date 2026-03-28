@@ -337,33 +337,36 @@ public class AppointmentApplicationServiceImpl implements AppointmentApplication
   }
 
   @Override
-  public Page<TodayAppointmentsResponseDTO> listAppointmentForToday(Pageable pageable) {
-    return this.generatedRepo.listAppointmentsForToday(pageable).map(appointment -> {
-      try {
-        Patient patient = patientRepo.findById(appointment.getPatientId()).get();
-        Guardian guardian = guardianRepo.findByPatientId(patient.getId()).get();
-        List<Parent> pais = parentRepo.findAllByPatientId(patient.getId());
+  public Page<TodayAppointmentsResponseDTO> listAppointmentForToday(LocalDate date, Pageable pageable) {
+    return this.generatedRepo.listAppointmentsForToday(date, pageable).map(appointment -> {
+        try {
+        Patient patient = patientRepo.findById(appointment.getPatientId())
+                .orElseThrow(() -> new RuntimeException("Paciente não encontrado"));
+            
+        Guardian guardian = guardianRepo.findByPatientId(patient.getId())
+                .orElseThrow(() -> new RuntimeException("Responsável não encontrado"));
+                
+            List<Parent> pais = parentRepo.findAllByPatientId(patient.getId());
 
-        AddressResponseDTO adto = new AddressResponseDTO(patient.getAddress());
-        Set<Vaccine> vaccines = patient.getVaccines();
+            AddressResponseDTO adto = new AddressResponseDTO(patient.getAddress());
+            Set<Vaccine> vaccines = patient.getVaccines();
 
-        Optional<Absence> absence = this.absenceRepo.findByGeneratedAppointmentId(appointment.getId());
-        Boolean hasAbsence = absence.isPresent();
+            boolean hasAbsence = this.absenceRepo.findByGeneratedAppointmentId(appointment.getId()).isPresent();
 
-        PatientResponseDTO pdto = new PatientResponseDTO(
-                patient,
-                adto,
-                new GuardianResponseDTO(guardian, adto),
-                pais.stream().map(parentMapper::toResponseDTO).toList(),
+            PatientResponseDTO pdto = new PatientResponseDTO(
+                    patient,
+                    adto,
+                    new GuardianResponseDTO(guardian, adto),
+                    pais.stream().map(parentMapper::toResponseDTO).toList(),
                 vaccines.stream().map(vaccineMapper::toResponseDTO).collect(Collectors.toSet()), null);
 
-        return mapper.toTodayResponseDTO(appointment, pdto, hasAbsence);
-      } catch (Exception e) {
-        throw new RuntimeException(e);
-      }
+            return mapper.toTodayResponseDTO(appointment, pdto, hasAbsence);
+        } catch (Exception e) {
+        throw new RuntimeException("Erro ao processar mapeamento de agendamento: " + e.getMessage(), e);
+        }
 
     });
-  }
+}
 
   /**
    * Calculates recurring appointment dates based on a rule's start date, frequency, and time.
