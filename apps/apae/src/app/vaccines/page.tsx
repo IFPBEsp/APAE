@@ -7,17 +7,8 @@ import { Plus, Loader2, Edit, Trash2 } from "lucide-react";
 import { SearchFilters } from "@/components/search-filters";
 import { useVaccinesContext, Vaccine } from "@/hooks/use-vaccines";
 import { useRouter } from "next/navigation";
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-  AlertDialogTrigger,
-} from "@/components/ui/alert-dialog";
+import { ConfirmModal } from "@/components/ui/confirm-modal";
+
 type VaccinesListItemProps = Readonly<{
     vaccine: Vaccine;
 }>;
@@ -31,7 +22,7 @@ function VaccinesListItem({ vaccine }: VaccinesListItemProps) {
     };
 
     const onDelete = () => {
-            deleteVaccine(vaccine);
+        deleteVaccine(vaccine);
     };
 
     return (
@@ -51,34 +42,22 @@ function VaccinesListItem({ vaccine }: VaccinesListItemProps) {
                 >
                     <Edit className="h-4 w-4" />
                 </Button>
-               <AlertDialog>
-                <AlertDialogTrigger asChild>
-                    <Button
-                    variant="outline"
-                    size="icon"
-                    className="h-8 w-8 hover:bg-red-50 hover:border-red-500"
-                    aria-label="Excluir"
-                    >
-                    <Trash2 className="h-4 w-4 text-red-500" />
-                    </Button>
-                </AlertDialogTrigger>
 
-                <AlertDialogContent>
-                    <AlertDialogHeader>
-                    <AlertDialogTitle>Tem certeza?</AlertDialogTitle>
-                    <AlertDialogDescription className="text-black">
-                        Essa ação não pode ser desfeita. Isso irá excluir permanentemente este item.
-                    </AlertDialogDescription>
-                    </AlertDialogHeader>
-
-                    <AlertDialogFooter>
-                    <AlertDialogCancel>Cancelar</AlertDialogCancel>
-                    <AlertDialogAction className="bg-blue-600 hover:bg-blue-700" onClick={onDelete}>
-                        Excluir
-                    </AlertDialogAction>
-                    </AlertDialogFooter>
-                </AlertDialogContent>
-                </AlertDialog>
+                <ConfirmModal
+                    title="Tem certeza?"
+                    description={`Essa ação não pode ser desfeita. Isso irá excluir permanentemente a vacina ${vaccine.name}.`}
+                    onConfirm={onDelete}
+                    trigger={
+                        <Button
+                            variant="outline"
+                            size="icon"
+                            className="h-8 w-8 hover:bg-red-50 hover:border-red-500"
+                            aria-label="Excluir"
+                        >
+                            <Trash2 className="h-4 w-4 text-red-500" />
+                        </Button>
+                    }
+                />
             </div>
         </div>
     );
@@ -94,7 +73,6 @@ function VaccinesList() {
             </div>
         );
     }
-
 
     if (vaccines.length === 0) {
         return (
