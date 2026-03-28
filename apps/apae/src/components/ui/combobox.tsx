@@ -61,8 +61,8 @@ export function Combobox({ options, value, onChange, placeholder, className }: C
             {options.map((option) => (
               <CommandItem
                 key={option.value}
-                value={option.value}
-                onSelect={handleSelect}
+                value={option.label}
+                onSelect={() => handleSelect(option.value)}
               >
                 <Check
                   className={cn(
