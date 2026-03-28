@@ -37,14 +37,14 @@ public interface AppointmentController {
   @GetMapping("/{id}")
   ResponseEntity<AppointmentResponseDTO> get(@PathVariable UUID id);
 
-  // REMOVIDO: update antigo
-
-  @Operation(summary = "Atualizar regra de agendamento (nova versão com histórico)",
-          description = "Desativa a regra atual e cria uma nova com nova frequência/horário. Gera novos agendamentos futuros.")
-  @PatchMapping("/{id}/rule")
-  ResponseEntity<AppointmentResponseDTO> updateRule(
+  @Operation(
+          summary = "Atualizar agendamento com versionamento",
+          description = "Desativa a regra atual preservando o histórico, cria uma nova versão com os dados atualizados e regenera apenas os agendamentos futuros."
+  )
+  @PatchMapping("/{id}")
+  ResponseEntity<AppointmentResponseDTO> update(
           @PathVariable UUID id,
-          @RequestBody @Valid UpdateAppointmentRuleDTO dto);
+          @RequestBody @Valid UpdateAppointmentDTO dto);
 
   @Operation(summary = "Excluir regra de agendamento")
   @DeleteMapping("/{id}")

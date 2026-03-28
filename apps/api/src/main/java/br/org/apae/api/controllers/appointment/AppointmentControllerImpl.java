@@ -44,12 +44,9 @@ public class AppointmentControllerImpl implements AppointmentController {
   }
 
   @Override
-  public ResponseEntity<AppointmentResponseDTO> updateRule(UUID id, @Valid UpdateAppointmentRuleDTO dto) {
-    AppointmentResponseDTO updated = service.updateAppointment(
-            id,
-            dto.newFrequency(),
-            dto.newTime()
-    );
+  public ResponseEntity<AppointmentResponseDTO> update(UUID id, @Valid UpdateAppointmentDTO dto) {
+    AppointmentResponseDTO updated = service.update(id, dto);
+
     return ResponseEntity.ok(updated);
   }
 
