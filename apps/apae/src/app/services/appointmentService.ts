@@ -3,7 +3,6 @@ import { Page } from '@/types/pagination';
 
 export type UUID = string;
 
-const API_BASE_URL = process.env.API_BASE_URL || 'http://localhost:8090';
 const USE_MOCK_DATA = process.env.NEXT_PUBLIC_USE_MOCK_DATA === 'false' || false; // Forçar true para desenvolvimento
 const MOCK_DELAY = 500; // delay simulado em ms
 
@@ -466,9 +465,14 @@ export interface Vaccine {
   name: string;
 }
 
-export interface UpdateAppointmentRuleDTO {
-  newFrequency: number;
-  newTime: string;
+export interface UpdateAppointmentDTO {
+  professionalId?: string;
+  annualRegistrationId?: string;
+  serviceId?: string;
+  frequencyDays?: number;
+  initialDate?: string;
+  hour?: string;
+  endDate?: string;
 }
 
 export interface RescheduleGeneratedAppointmentDTO {
@@ -632,19 +636,14 @@ export async function getAppointmentById(
 }
 
 // Atualizar regra do agendamento
-export async function updateAppointmentRule(
+export async function updateAppointment(
   id: UUID,
-  dto: UpdateAppointmentRuleDTO
+  dto: UpdateAppointmentDTO
 ): Promise<AppointmentResponseDTO> {
   try {
-    const backendDto = {
-      newFrequency: dto.newFrequency,
-      newTime: `${dto.newTime}`,
-    };
-
-    const response = await fetch(`/api/appointments/${id}/rule`, {
+    const response = await fetch(`/api/appointments/${id}`, {
       method: "PATCH",
-      body: JSON.stringify(backendDto),
+      body: JSON.stringify(dto),
     });
 
     if (!response.ok) {
@@ -657,7 +656,7 @@ export async function updateAppointmentRule(
     return await response.json();
   } catch (error) {
     console.error(
-      "Error in updateAppointmentRule, falling back to mock:",
+      "Error in updateAppointment, falling back to mock:",
       error
     );
     const appointment =
