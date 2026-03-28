@@ -95,13 +95,22 @@ useEffect(() => {
 }, [appointments]);
 
   const filteredAppointments = appointments.filter((appointment) => {
-    const matchesProfessionalId = appointment.professional.id;
-    const matchesFrequencyDays = appointment.frequencyDays;
-    const matchesDate = selectedDate ? formatDatePTBR(appointment.initialDate) === formatDatePTBR(selectedDate.toString()) : true;
-    return (
-      matchesProfessionalId &&
-      (matchesFrequencyDays) &&
-      matchesDate);
+    const matchesDate = selectedDate
+      ? formatDatePTBR(appointment.initialDate) ===
+        formatDatePTBR(selectedDate.toString())
+      : true;
+
+    const search = searchName.toLowerCase();
+
+    const matchesSearch =
+      appointment.annualRegistration.patient.fullName
+        .toLowerCase()
+        .includes(search) ||
+      appointment.professional.name
+        .toLowerCase()
+        .includes(search);
+
+    return matchesDate && matchesSearch;
   });
 
   const clearFilter = () => {
@@ -175,7 +184,9 @@ useEffect(() => {
               placeholder="Buscar paciente ou profissional..."
               className="pl-10 pr-3 border-[#0D4F97]"
               value={searchName}
-              onChange={e => setSearchName(e.target.value)}
+              onChange={e => {
+                setSearchName(e.target.value)
+              }}
             />
           </div>
 
@@ -256,3 +267,4 @@ useEffect(() => {
     </div>
   );
 }
+//////
