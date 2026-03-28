@@ -11,9 +11,9 @@ else
   echo "Arquivo .env não encontrado, usando defaults..."
 fi
 
-DB_CONTAINER=${DB_CONTAINER:-apae-postgres}
-DB_NAME=${DB_NAME:-apae}
-DB_USERNAME=${DB_USERNAME:-user}
+DB_CONTAINER=${POSTGRES_CONTAINER:-apae-postgres}
+DB_NAME=${POSTGRES_NAME:-apae}
+DB_USERNAME=${POSTGRES_USERNAME:-user}
 
 echo "Verificando se o container está rodando..."
 
@@ -34,8 +34,8 @@ INSERT INTO usuarios (id, email, cpf, senha, nome_completo, cargo)
 VALUES (
   '11111111-1111-4111-8111-111111111111',
   'admin@teste.com',
-  '12345678900',
-  '$2a$10$a7iR65cTGffpfuaBAImdHegVl99oyUHk.w6ldu9YmpBGs7dhIpLtK',
+  '123.456.789-00',
+  '\$2a\$10\$a7iR65cTGffpfuaBAImdHegVl99oyUHk.w6ldu9YmpBGs7dhIpLtK',
   'Administrador do Sistema',
   'ADMIN'
 )

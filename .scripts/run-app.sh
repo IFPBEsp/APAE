@@ -19,24 +19,22 @@ load_env() {
   fi
 }
 
-DB_HOST="localhost"
-DB_PORT=5200
 DB_MAX_RETRIES=5
 DB_WAIT_SECONDS=2
 
 check_db_up() {
   local attempt=1
-  echo "Verificando banco de dados em $DB_HOST:$DB_PORT..."
+  echo "Verificando banco de dados em $POSTGRES_HOST:$POSTGRES_PORT..."
   while [ "$attempt" -le "$DB_MAX_RETRIES" ]; do
     if command -v nc >/dev/null 2>&1; then
     #nc - Netcat : verificação do linux
-      if nc -z "$DB_HOST" "$DB_PORT" >/dev/null 2>&1; then
+      if nc -z "$POSTGRES_HOST" "$POSTGRES_PORT" >/dev/null 2>&1; then
         echo "Banco de dados online (nc)"
         return 0
       fi
       #Verificação para o Windows (PowerShell)
     elif command -v powershell.exe >/dev/null 2>&1; then
-      if powershell.exe -Command "Test-NetConnection -ComputerName $DB_HOST -Port $DB_PORT -InformationLevel Quiet" | grep -q "True"; then
+      if powershell.exe -Command "Test-NetConnection -ComputerName $POSTGRES_HOST -Port $POSTGRES_PORT -InformationLevel Quiet" | grep -q "True"; then
         echo "Banco de dados online (ps)"
         return 0
       fi
