@@ -45,7 +45,7 @@ function VaccinesListItem({ vaccine }: VaccinesListItemProps) {
 
                 <ConfirmModal
                     title="Tem certeza?"
-                    description={`Essa ação não pode ser desfeita. Isso irá excluir permanentemente a vacina ${vaccine.name}.`}
+                    description={<>Essa ação não pode ser desfeita. Isso irá excluir permanentemente a vacina <strong>{vaccine.name}</strong>.</>}
                     onConfirm={onDelete}
                     trigger={
                         <Button
@@ -63,8 +63,12 @@ function VaccinesListItem({ vaccine }: VaccinesListItemProps) {
     );
 }
 
-function VaccinesList() {
-    const { vaccines, loading, feedback } = useVaccinesContext();
+function VaccinesList({ searchName }: { searchName: string }) {
+    const { vaccines, loading } = useVaccinesContext();
+
+    const filteredVaccines = vaccines.filter((vaccine) =>
+        vaccine.name.toLowerCase().includes(searchName.toLowerCase())
+    );
 
     if (loading) {
         return (
@@ -74,10 +78,10 @@ function VaccinesList() {
         );
     }
 
-    if (vaccines.length === 0) {
+    if (filteredVaccines.length === 0) {
         return (
-            <p className="text-center text-gray-500">
-                Nenhuma vacina encontrada.
+            <p className="text-center text-gray-500 p-10">
+                Nenhuma vacina encontrada para "{searchName}".
             </p>
         );
     }
@@ -85,10 +89,10 @@ function VaccinesList() {
     return (
         <>
             <p className="text-sm text-gray-500 mb-4">
-                {vaccines.length} vacinas encontradas
+                {filteredVaccines.length} vacinas encontradas
             </p>
             <div className="space-y-2">
-                {vaccines.map((vaccine) => (
+                {filteredVaccines.map((vaccine) => (
                     <VaccinesListItem key={vaccine.id} vaccine={vaccine} />
                 ))}
             </div>
@@ -129,7 +133,7 @@ export default function VaccinesPage() {
                         </h2>
                     </div>
 
-                    <VaccinesList />
+                    <VaccinesList searchName={searchName} />
                 </section>
             </main>
 

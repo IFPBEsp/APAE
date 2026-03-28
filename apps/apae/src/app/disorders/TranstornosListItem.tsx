@@ -33,20 +33,21 @@ export function TranstornoListItem({
           <Edit className="h-4 w-4" />
         </Button>
         
-        <ConfirmModal 
-
+        <ConfirmModal
           title="Tem certeza?"
-          description={`Essa ação não pode ser desfeita. Isso irá excluir permanentemente o transtorno ${transtorno.name}`}
+          description={<>Essa ação não pode ser desfeita. Isso irá excluir permanentemente o transtorno <strong>{transtorno.name}</strong>.</>}
           onConfirm={onDelete}
-          trigger={<Button
-                            variant="outline"
-                            size="icon"
-                            className="h-8 w-8 hover:bg-red-50 hover:border-red-500"
-                            aria-label="Excluir"
-                        >
-                            <Trash2 className="h-4 w-4 text-red-500" />
-                        </Button>}
-        />
+          trigger={
+              <Button
+                  variant="outline"
+                  size="icon"
+                  className="h-8 w-8 hover:bg-red-50 hover:border-red-500"
+                  aria-label="Excluir"
+              >
+                  <Trash2 className="h-4 w-4 text-red-500" />
+              </Button>
+          }
+          />
 
       </div>
     </div>

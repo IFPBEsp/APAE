@@ -12,7 +12,7 @@ import {
 
 interface ConfirmModalProps {
   title?: string;
-  description?: string;
+  description?: React.ReactNode;
   onConfirm: () => void;
   trigger: React.ReactNode;
 }
