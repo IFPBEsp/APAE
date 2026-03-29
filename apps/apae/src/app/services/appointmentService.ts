@@ -276,14 +276,11 @@ export async function updateAppointmentRule(
   id: UUID,
   dto: UpdateAppointmentRuleDTO
 ): Promise<AppointmentResponseDTO> {
-  const backendDto = {
-    newFrequency: dto.newFrequency,
-    newTime: `${dto.newTime}`,
-  };
-
-  const response = await fetch(`/api/appointments/${id}/rule`, {
+  
+  const response = await fetch(`/api/appointments/${id}/rule`, { 
     method: "PATCH",
-    body: JSON.stringify(backendDto),
+    headers: { "Content-Type": "application/json" }, 
+    body: JSON.stringify(dto), 
   });
 
   if (!response.ok) {
@@ -308,12 +305,23 @@ export async function rescheduleGeneratedAppointment(
   id: UUID,
   dto: RescheduleGeneratedAppointmentDTO
 ): Promise<GeneratedAppointmentResponseDTO> {
+  const dateObj = new Date(dto.newDateTime);
+
+  const year = dateObj.getFullYear();
+  const month = String(dateObj.getMonth() + 1).padStart(2, '0');
+  const day = String(dateObj.getDate()).padStart(2, '0');
+  const hours = String(dateObj.getHours()).padStart(2, '0');
+  const minutes = String(dateObj.getMinutes()).padStart(2, '0');
+  const seconds = String(dateObj.getSeconds()).padStart(2, '0');
+
+  const localDateTimeString = `${year}-${month}-${day}T${hours}:${minutes}:${seconds}`;
+
   const backendDto = {
-    newDateTime: new Date(dto.newDateTime).toISOString(),
+    newDateTime: localDateTimeString, 
   };
 
-  const response = await fetch(`/api/generated/${id}/reschedule`, {
-    method: "PUT",
+  const response = await fetch(`/api/appointments/generated/${id}/reschedule`, {
+    method: "PATCH", 
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(backendDto),
   });
@@ -341,8 +349,8 @@ export async function cancelGeneratedAppointment(
   id: UUID,
   dto: CancelGeneratedAppointmentDTO
 ): Promise<GeneratedAppointmentResponseDTO> {
-  const response = await fetch(`/api/generated/${id}/cancel`, {
-    method: "PUT",
+  const response = await fetch(`/api/appointments/generated/${id}/cancel`, { 
+    method: "PATCH", 
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(dto),
   });
@@ -383,21 +391,27 @@ export async function registerAbsence(
   generatedAppointmentId: UUID,
   justification: string
 ): Promise<Absence> {
+  const dateObj = new Date();
+  const year = dateObj.getFullYear();
+  const month = String(dateObj.getMonth() + 1).padStart(2, '0');
+  const day = String(dateObj.getDate()).padStart(2, '0');
+  const localDateString = `${year}-${month}-${day}`; 
+
   const body = {
     generatedAppointmentId,
     justification,
-    date: new Date().toISOString(),
+    date: localDateString, 
     notified: false,
   };
 
-  const res = await fetch(`/api/absences`, {
+  const res = await fetch(`/api/absences`, { 
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(body),
   });
 
   if (!res.ok) {
-    throw new Error(`Erro ao registrar ausência`);
+    throw new Error(`Erro ao registrar ausÃªncia`);
   }
   
   return await res.json();
@@ -429,7 +443,7 @@ export async function getProfissionalDaSaude(id: string): Promise<Professional> 
   const response = await fetch(`/api/professionals/${id}`);
   
   if (!response.ok) {
-    throw new Error(`Profissional não encontrado (ID: ${id})`);
+    throw new Error(`Profissional nÃ£o encontrado (ID: ${id})`);
   }
   
   return await response.json();
@@ -445,7 +459,7 @@ export const toggleConfirmacao = async (id: UUID): Promise<void> => {
   const appointment = await getAppointmentById(id);
 
   if (!appointment.professional || !appointment.annualRegistration?.id) {
-    throw new Error('Dados do agendamento incompletos para confirmação');
+    throw new Error('Dados do agendamento incompletos para confirmaÃ§Ã£o');
   }
 
   const dto: CreateAppointmentDTO = {
