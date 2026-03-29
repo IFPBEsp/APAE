@@ -87,7 +87,7 @@ function VaccinesList({ searchName }: { searchName: string }) {
     }
 
     return (
-        <>
+         <>
             <p className="text-sm text-gray-500 mb-4">
                 {filteredVaccines.length} vacinas encontradas
             </p>
