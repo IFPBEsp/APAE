@@ -25,6 +25,8 @@ public interface PatientApplicationService {
 
     PatientResponseDTO updatePatient(UUID id, UpdatePatientDTO updatePatientDTO);
 
+    PatientResponseDTO updatePatientPhoto(UUID id, org.springframework.web.multipart.MultipartFile photo);
+
     void disablePatient(UUID id);
 
     void deletePatient(UUID id);

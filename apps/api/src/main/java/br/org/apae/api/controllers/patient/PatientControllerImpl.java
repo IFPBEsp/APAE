@@ -73,6 +73,12 @@ public class PatientControllerImpl implements PatientController {
     }
 
     @Override
+    public ResponseEntity<PatientResponseDTO> updatePatientPhoto(UUID id, org.springframework.web.multipart.MultipartFile photo) {
+        PatientResponseDTO updatedPatient = patientService.updatePatientPhoto(id, photo);
+        return ResponseEntity.ok(updatedPatient);
+    }
+
+    @Override
     public ResponseEntity<Void> deletePatient(UUID id) {
         patientService.deletePatient(id);
         return ResponseEntity.noContent().build();

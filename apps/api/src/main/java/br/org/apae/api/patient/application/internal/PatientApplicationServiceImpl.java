@@ -138,6 +138,19 @@ public class PatientApplicationServiceImpl implements PatientApplicationService 
 
     @Override
     @Transactional
+    public PatientResponseDTO updatePatientPhoto(UUID id, org.springframework.web.multipart.MultipartFile photo) {
+        Patient patient = patientDomainService.getByIdOrThrow(id);
+        documentService.storePatientPhoto(patient, photo);
+
+        GuardianResponseDTO guardianDto = guardianService.findGuardianByPatientId(id);
+        List<ParentResponseDTO> parentDtos = parentService.findParentsByPatientId(id);
+        String photoUrl = documentService.getPatientPhoto(id);
+
+        return patientMapper.toResponseDTO(patient, guardianDto, parentDtos, photoUrl);
+    }
+
+    @Override
+    @Transactional
     public void disablePatient(UUID id) {
         Patient patient = patientDomainService.getByIdOrThrow(id);
         patient.setDeleted(true);

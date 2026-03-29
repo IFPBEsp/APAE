@@ -108,9 +108,9 @@ function EditPatientContainer({ id }: { id: string }) {
             alive: p.isAlive ?? true, 
             type: p.kinship || ""
           })) || [],
-          profile: { 
-            role: data.isStudent ? "student" : "patient", 
-            photo: null 
+          profile: {
+            role: data.isStudent ? "student" : "patient",
+            photo: data.photoUrl || undefined
           },
           step: MembersRegisterStep.PERSONAL
         };

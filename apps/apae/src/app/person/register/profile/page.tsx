@@ -200,7 +200,7 @@ export default function MembersRegisterProfilePage() {
                 <FormControl>
                   <FileInputButton
                     id={field.name}
-                    className="min-w-3xs"
+                    className="min-w-3xs !cursor-pointer bg-gradient-to-b hover:bg-zinc-300/55"  
                     disabled={isLoading}
                     onChange={(e) => {
                       if (e.target.files && e.target.files[0]) {
@@ -214,6 +214,10 @@ export default function MembersRegisterProfilePage() {
                         title={field.value.name}
                       >
                         Arquivo selecionado: {field.value.name}
+                      </span>
+                    ) : typeof field.value === "string" && field.value ? (
+                      <span className="truncate text-left" title="Foto atual">
+                        Clique para alterar
                       </span>
                     ) : (
                       "Selecionar Foto"

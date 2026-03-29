@@ -65,7 +65,7 @@ interface GuardianData {
 }
 
 interface ProfileData {
-  photo: File | undefined;
+  photo: File | string | undefined;
   role: "student" | "patient";
 }
 
@@ -343,6 +343,15 @@ export function MembersRegisterProvider({
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(patient),
         });
+
+        if (profile.photo instanceof File && responsePessoa.ok) {
+          const photoFormData = new FormData();
+          photoFormData.append("photo", profile.photo);
+          await fetch(`/api/pessoas/${id}/photo`, {
+            method: "PUT",
+            body: photoFormData,
+          });
+        }
 
         let resData = {};
         const text = await responsePessoa.text();
