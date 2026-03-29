@@ -19,7 +19,6 @@ check_env_file() {
     else
       echo "[.env] Erro ao criar o .env, arquivo .env.example não encontrado"
     fi
-  echo "[.env] Arquivo .env funcionando"
   fi
 }
 
