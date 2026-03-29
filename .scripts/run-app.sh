@@ -7,8 +7,24 @@ SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 ROOT_DIR="$(cd "$SCRIPT_DIR/.." && pwd)"
 MAVEN_CMD="$ROOT_DIR/apps/api/mvnw"
 ENV_FILE="$ROOT_DIR/.env"
+ENV_EXAMPLE="$ROOT_DIR/.env.example"
+
+check_env_file() {
+  if [ ! -f "$ENV_FILE" ]; then
+    echo "[.env] Arquivo .env não encontrado"
+    if [ -f "$ENV_EXAMPLE" ]; then
+      echo "[.env] Criando .env a partir do .env.example"
+      cp "$ENV_EXAMPLE" "$ENV_FILE"
+      echo "[.env] Arquivo .env criado"
+    else
+      echo "[.env] Erro ao criar o .env, arquivo .env.example não encontrado"
+    fi
+  echo "[.env] Arquivo .env funcionando"
+  fi
+}
 
 load_env() {
+  check_env_file
   if [ -f "$ENV_FILE" ]; then
     echo "Carregando variáveis de ambiente de $ENV_FILE..."
     set -a

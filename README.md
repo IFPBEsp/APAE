@@ -200,6 +200,15 @@ O Kanban é usado para organizar as **issues** no processo de desenvolvimento. A
 
 ## Configuração do Projeto
 
+### Configuração de Ambiente
+
+Este projeto automatiza a configuração inicial das variáveis de ambiente. 
+Ao rodar `pnpm dev`, o script verifica a existência do arquivo `.env`. 
+Caso ele não exista, uma cópia será criada automaticamente a partir do `.env.example`.
+
+**Nota:** O script nunca sobrescreverá um arquivo `.env` já existente. 
+Caso precise resetar as configurações, delete o `.env` manualmente, faça as modificações necessárias no .env.example e execute o comando novamente.
+
 ### Variáveis de Ambiente (Opcional)
 
 O projeto utiliza variáveis de ambiente para configurar serviços externos, como envio de e-mails (SMTP), banco de dados e integrações.
