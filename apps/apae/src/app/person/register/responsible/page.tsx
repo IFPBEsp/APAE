@@ -71,21 +71,32 @@ export default function MembersRegisterGuardianPage() {
       <MembersRegisterForm
         title={isEditing ? "Editar Dados do Responsável" : "Dados do Responsável"}
         onSubmit={form.handleSubmit(onSubmit)}
-        buttons={
-          <>
+
+
+       buttons={
+          <div className="flex justify-end gap-3 w-full">
+            {/* Botão Voltar*/}
             <FormButton
               type="button"
-              onClick={() => setStep(MembersRegisterStep.ADDITIONALS)}
+              onClick={() => {
+                const destino = isEditing 
+                  ? MembersRegisterStep.ADDRESS 
+                  : MembersRegisterStep.ADDITIONALS;
+                setStep(destino);
+              }}
               disabled={isLoading}
-            >
-              Voltar
+ 
+              className="bg-[#FCD511] text-[#0D4F97] hover:bg-[#0D4F97] hover:text-white font-baloo font-medium h-10 px-8 border-none shadow-sm transition-colors">              Voltar
             </FormButton>
 
-            <FormButton type="submit" disabled={isLoading}>
-              {isLoading ? "Validando..." : "Próximo"}
+            {/* Botão Próximo */}
+              <FormButton 
+                type="submit" 
+                disabled={isLoading}
+                className="bg-[#FCD511] text-[#0D4F97] hover:bg-[#0D4F97] hover:text-white font-baloo font-medium h-10 px-8 border-none shadow-sm transition-colors">              {isLoading ? "Validando..." : "Próximo"}
             </FormButton>
-          </>
-        }
+          </div>
+        }    
       >
         <DoubleColumn>
           <FormField
