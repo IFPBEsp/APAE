@@ -40,6 +40,7 @@ interface AddressData {
 }
 
 interface AdditionalsData {
+  id?: string;
   diseases: string;
   medications: string;
   vaccines: string[];
@@ -64,7 +65,7 @@ interface GuardianData {
 }
 
 interface ProfileData {
-  photo: File | undefined;
+  photo: File | string | undefined;
   role: "student" | "patient";
 }
 
@@ -97,8 +98,9 @@ interface MembersRegisterContextData {
     setGuardianData: (data: Partial<GuardianData>) => void;
     setProfileData: (data: Partial<ProfileData>) => void;
     setStep: (step: MembersRegisterStep) => void;
+    loadAllData: (data: MembersRegisterState) => void;
   };
-  register: () => Promise<{ status: number; data: any }>;
+  register: (id?: string) => Promise<{ status: number; data: any }>;
 }
 
 type MembersRegisterAction =
@@ -108,7 +110,8 @@ type MembersRegisterAction =
   | { type: "SET_ADDITIONALS_DATA"; payload: Partial<AdditionalsData> }
   | { type: "SET_GUARDIAN_DATA"; payload: Partial<GuardianData> }
   | { type: "SET_PROFILE_DATA"; payload: Partial<ProfileData> }
-  | { type: "SET_STEP"; payload: MembersRegisterStep };
+  | { type: "SET_STEP"; payload: MembersRegisterStep }
+  | { type: "LOAD_ALL_DATA"; payload: MembersRegisterState };
 
 function membersRegisterReducer(
   state: MembersRegisterState,
@@ -171,6 +174,8 @@ function membersRegisterReducer(
       return { ...state, profile: { ...state.profile, ...action.payload } };
     case "SET_STEP":
       return { ...state, step: action.payload };
+    case "LOAD_ALL_DATA":
+      return { ...action.payload };
     default:
       return state;
   }
@@ -188,6 +193,7 @@ const initialState: MembersRegisterState = {
   },
   address: { cep: "", state: "", city: "", district: "", street: "" },
   additionals: {
+    id: undefined,
     diseases: "",
     medications: "",
     vaccines: [],
@@ -255,120 +261,128 @@ export function MembersRegisterProvider({
         dispatch({ type: "SET_STEP", payload: step }),
       [],
     ),
+    loadAllData: useCallback(
+      (data: MembersRegisterState) =>
+        dispatch({ type: "LOAD_ALL_DATA", payload: data }),
+      [],
+    ),
   };
 
-  const register = useCallback(async () => {
-    const { personal, address, additionals, guardian, kinships, profile } =
-      state;
+  const register = useCallback(
+    async (id?: string) => {
+      const { personal, address, additionals, guardian, kinships, profile } =
+        state;
 
-    const parseBirthCertificate = (certificate: string) => {
-      const p = certificate.trim().split(/\s+/);
-      return {
-        cartorio: p[0] || "",
-        acervo: p[1] || "",
-        servicoRegistroCivil: p[2] || "",
-        ano: p[3] || "",
-        tipo: p[4] || "",
-        livro: p[5] || "",
-        folha: p[6] || "",
-        termo: p[7] || "",
-        digitoVerificador: p[8] || "",
+      const formatDate = (date: any) => {
+        if (!date) return null;
+        const d = new Date(date);
+        return isNaN(d.getTime()) ? null : d.toISOString().split("T")[0];
       };
-    };
 
-    const { cartorio, livro, folha } = parseBirthCertificate(
-      personal.birth.certificate,
-    );
-    const hoje = new Date().toISOString().split("T")[0];
+      const parseIncome = (val: string) => {
+        const clean = String(val).replace(/[^\d]/g, ""); 
+        const num = parseFloat(clean) * 0.01; 
+        return isNaN(num) ? 0.0 : num;
+      };
 
-    const patient = {
-      fullName: personal.name,
-      nationality: personal.birth.place,
-      birthDate: personal.birth.date.toISOString().split("T")[0],
-      contact: personal.phone,
-      birthCertificateNumber: personal.birth.certificate,
-      registryOffice: cartorio,
-      fls: folha,
-      book: livro,
-      rg: personal.rg.number,
-      issueDate: personal.rg.issuing.date.toISOString().split("T")[0],
-      issuingAgency: personal.rg.issuing.body,
-      cpf: personal.cpf,
-      cns: personal.cns,
-      nis: personal.nis,
-      registrationDate: hoje,
-      allergies: additionals.allergies,
-      isStudent: profile.role === "student",
-      address: {
-        city: address.city,
-        cep: address.cep,
-        state: address.state,
-        neighborhood: address.district,
-        street: address.street.replace(/, *\d+$/, "").trim(),
-        number:
-          address.street.split(",").pop()?.trim().replace(/\D/g, "") || "",
-        complement: "",
-      },
-      guardian: {
-        name: guardian.name,
-        contact: guardian.contact,
-        kinship: guardian.kinship,
+      const patient: any = {
+        fullName: personal.name || "Não informado",
+        nationality: personal.birth.place || "Brasileiro",
+        birthDate: formatDate(personal.birth.date),
+        contact: personal.phone || "Não informado",
+        birthCertificateNumber: personal.birth.certificate || "0",
+        registryOffice: "Cartorio",
+        fls: "0",
+        book: "0",
+        rg: personal.rg.number || "0",
+        issueDate: formatDate(personal.rg.issuing.date),
+        issuingAgency: personal.rg.issuing.body || "SSP/SP",
+        cpf: personal.cpf,
+        cns: personal.cns || "000 0000 0000 0000",
+        nis: personal.nis || "0",
+        registrationDate: formatDate(new Date()),
+        allergies: additionals.allergies || "Nenhuma",
+        isStudent: profile.role === "student",
         address: {
-          city: guardian.address.city,
-          cep: guardian.address.cep,
-          state: guardian.address.state,
-          neighborhood: guardian.address.district,
-          street: guardian.address.street.replace(/, *\d+$/, "").trim(),
-          number:
-            guardian.address.street
-              .split(",")
-              .pop()
-              ?.trim()
-              .replace(/\D/g, "") || "",
+          city: address.city || "Não informado",
+          cep: address.cep || "00000-000",
+          state: address.state || "Não informado",
+          neighborhood: address.district || "Não informado",
+          street: address.street.split(",")[0].trim() || "Não informado",
+          number: address.street.split(",")[1]?.trim() || "S/N",
           complement: "",
         },
-      },
-      parents: kinships.map((k) => ({
-        name: k.name,
-        rg: k.rg,
-        cpf: k.cpf,
-        profession: k.occupation,
-        isAlive: k.alive,
-        kinship: k.type,
-      })),
-      vaccineNames: additionals.vaccines.map((v) => ({ name: v })),
-      annualRegistry: {
-        bpc: additionals.bpc,
-        diseases: additionals.diseases,
-        serviceArea: additionals.care.types.map((area) => ({ area })),
-        familyIncome:
-          Number(additionals.householdIncome.replace(/\D/g, "")) * 0.01,
-        year: new Date().getFullYear(),
-        disorders: additionals.disability.types.map((name) => ({ name })),
-      },
-    };
+        guardian: {
+          name: guardian.name || "Não informado",
+          contact: guardian.contact || "Não informado",
+          kinship: guardian.kinship || "Não informado",
+          address: {
+            city: guardian.address.city || "Não informado",
+            cep: guardian.address.cep || "00000-000",
+            state: guardian.address.state || "Não informado",
+            neighborhood: guardian.address.district || "Não informado",
+            street: guardian.address.street.split(",")[0].trim() || "Não informado",
+            number: guardian.address.street.split(",")[1]?.trim() || "S/N",
+            complement: "",
+          },
+        },
+        parents: kinships.map((k) => ({
+          name: k.name || "Não informado",
+          rg: k.rg || "0",
+          cpf: k.cpf || "000.000.000-00",
+          profession: k.occupation || "Não informado",
+          isAlive: k.alive,
+          kinship: k.type || "Pai/Mãe",
+        })),
+        vaccineNames: additionals.vaccines.map((v) => ({ name: v })),
+      };
 
-    const formData = new FormData();
-    formData.append(
-      "patient",
-      new Blob([JSON.stringify(patient)], { type: "application/json" }),
-    );
-    formData.append("photo", profile.photo!);
-    formData.append("reports", additionals.disability.report!);
-    formData.append("referrals", additionals.care.referral!);
+      if (id) {
+        const responsePessoa = await fetch(`/api/pessoas/${id}`, {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(patient),
+        });
 
-    const response = await fetch("/api/pessoas", {
-      method: "POST",
-      body: formData,
-    });
+        if (profile.photo instanceof File && responsePessoa.ok) {
+          const photoFormData = new FormData();
+          photoFormData.append("photo", profile.photo);
+          await fetch(`/api/pessoas/${id}/photo`, {
+            method: "PUT",
+            body: photoFormData,
+          });
+        }
 
-    const responseData = await response.json().catch(() => ({}));
+        let resData = {};
+        const text = await responsePessoa.text();
+        if (text) {
+          try { resData = JSON.parse(text); } catch(e) {}
+        }
+        return { status: responsePessoa.status, data: resData };
 
-    return {
-      status: response.status,
-      data: responseData,
-    };
-  }, [state]);
+      } else {
+        patient.annualRegistry = {
+          bpc: additionals.bpc,
+          diseases: additionals.diseases,
+          serviceArea: additionals.care.types.map((area: string) => ({ area })),
+          familyIncome: parseIncome(additionals.householdIncome),
+          year: new Date().getFullYear(),
+          disorders: additionals.disability.types.map((name: string) => ({ name })),
+        };
+
+        const formData = new FormData();
+        formData.append("patient", new Blob([JSON.stringify(patient)], { type: "application/json" }));
+        if (profile.photo instanceof File) formData.append("photo", profile.photo);
+        if (additionals.disability.report instanceof File) formData.append("reports", additionals.disability.report);
+        if (additionals.care.referral instanceof File) formData.append("referrals", additionals.care.referral);
+
+        const response = await fetch("/api/pessoas", { method: "POST", body: formData });
+        const data = await response.json().catch(() => ({}));
+        return { status: response.status, data };
+      }
+    },
+    [state],
+  );
 
   return (
     <MembersRegisterContext.Provider value={{ state, setters, register }}>
@@ -379,9 +393,6 @@ export function MembersRegisterProvider({
 
 export function useMembersRegisterContext() {
   const context = useContext(MembersRegisterContext);
-  if (!context)
-    throw new Error(
-      "useMembersRegisterContext must be used within a MembersRegisterProvider",
-    );
+  if (!context) throw new Error("useMembersRegisterContext must be used within a MembersRegisterProvider");
   return context;
 }

@@ -29,7 +29,7 @@ export function RegistrarFaltaButton({
 }: RegistrarFaltaButtonProps) {
   const [motivo, setMotivo] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-  const [open, setOpen] = useState(false); // controla abertura do dialog
+  const [open, setOpen] = useState(false); 
 
   const handleConfirm = async () => {
     if (!motivo.trim()) {

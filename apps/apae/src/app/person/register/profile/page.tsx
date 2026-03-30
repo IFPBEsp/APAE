@@ -13,6 +13,7 @@ import {
   useMembersRegisterContext,
 } from "@/hooks/use-members-register-context";
 import { Profile } from "@/schemas/member-schemas";
+import { EditProfile } from "@/schemas/edit-member-schemas"; 
 import { zodResolver } from "@hookform/resolvers/zod";
 import React, { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
@@ -21,7 +22,7 @@ import { handleBackendValidationErrors } from "@/utils/form-errors";
 import z from "zod";
 import { FileInputButton, FormButton, MembersRegisterForm } from "../form";
 import { Checkbox } from "@/components/ui/checkbox";
-import { useRouter } from "next/navigation";
+import { useRouter, useParams, usePathname } from "next/navigation"; 
 import { toast } from "react-toastify";
 
 export default function MembersRegisterProfilePage() {
@@ -30,26 +31,43 @@ export default function MembersRegisterProfilePage() {
     setters: { setProfileData, setStep },
     register,
   } = useMembersRegisterContext();
+  
   const [submitted, setSubmitted] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
 
-  const form = useForm<z.infer<typeof Profile>>({
+  const params = useParams();
+  const pathname = usePathname();
+  const id = params?.id as string;
+  const isEditing = pathname.includes("/edit");
+
+  const currentSchema = isEditing ? EditProfile : Profile;
+
+  const form = useForm<any>({
     mode: "onBlur",
-    resolver: zodResolver(Profile),
+    resolver: zodResolver(currentSchema),
     defaultValues: profile,
   });
+
+  const [isInitialized, setIsInitialized] = useState(false);
+  useEffect(() => {
+    if (isEditing && profile.role && !isInitialized) {
+      form.reset(profile);
+      setIsInitialized(true);
+    }
+  }, [profile, form, isEditing, isInitialized]);
 
   useEffect(() => {
     if (submitted && profile) {
       (async () => {
         setIsLoading(true);
         try {
-          const res = await register();
+          const res = await register(id);
 
-          if (res.status === 201 || res.status === 200) {
-            toast.success("Membro cadastrado com sucesso!");
-            router.push("/visualization-patients");
+          if (res.status === 201 || res.status === 200 || res.status === 204) {
+            toast.success(isEditing ? "Paciente atualizado com sucesso!" : "Membro cadastrado com sucesso!");
+            
+            router.push(isEditing ? `/person/${id}` : "/visualization-patients");
           }
 
           else if (res.status === 409) {
@@ -144,7 +162,7 @@ export default function MembersRegisterProfilePage() {
         }
       })();
     }
-  }, [submitted, profile, register, router, form.setError, setStep]);
+  }, [submitted, profile, register, router, form.setError, setStep, id, isEditing]);
 
   const onSubmit = async (values: z.infer<typeof Profile>) => {
     setProfileData(values);
@@ -154,7 +172,7 @@ export default function MembersRegisterProfilePage() {
   return (
     <Form {...form}>
       <MembersRegisterForm
-        title="Informações Importantes"
+        title={isEditing ? "Finalizar Edição" : "Informações Importantes"}
         onSubmit={form.handleSubmit(onSubmit)}
         buttons={
           <>
@@ -167,7 +185,7 @@ export default function MembersRegisterProfilePage() {
             </FormButton>
 
             <FormButton type="submit" disabled={isLoading}>
-              {isLoading ? "Salvando..." : "Salvar"}
+              {isLoading ? "Salvando..." : (isEditing ? "Salvar Alterações" : "Salvar")}
             </FormButton>
           </>
         }
@@ -178,21 +196,11 @@ export default function MembersRegisterProfilePage() {
             name="photo"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Adicione uma foto *</FormLabel>
-                {/* [Caso o seletor de arquivos esteja com problemas]
-                  
-                  <Input
-                    id={field.name}
-                    type="file"
-                    accept="application/pdf"
-                    onChange={(e) =>
-                      field.onChange(e.target.files?.[0] ?? null)
-                    }
-                  /> */}
+                <FormLabel>Foto {isEditing ? "(Opcional na edição)" : "*"}</FormLabel>
                 <FormControl>
                   <FileInputButton
                     id={field.name}
-                    className="min-w-3xs"
+                    className="min-w-3xs !cursor-pointer bg-gradient-to-b hover:bg-zinc-300/55"  
                     disabled={isLoading}
                     onChange={(e) => {
                       if (e.target.files && e.target.files[0]) {
@@ -200,12 +208,16 @@ export default function MembersRegisterProfilePage() {
                       }
                     }}
                   >
-                    {field.value ? (
+                    {field.value instanceof File ? (
                       <span
                         className="truncate text-left"
                         title={field.value.name}
                       >
                         Arquivo selecionado: {field.value.name}
+                      </span>
+                    ) : typeof field.value === "string" && field.value ? (
+                      <span className="truncate text-left" title="Foto atual">
+                        Clique para alterar
                       </span>
                     ) : (
                       "Selecionar Foto"
@@ -231,11 +243,11 @@ export default function MembersRegisterProfilePage() {
                       checked={
                         field.value === "patient" || field.value === "student"
                       }
-                      disabled={field.value === "student" || isLoading}
+                      disabled={isLoading}
                       onCheckedChange={() => field.onChange("patient")}
                     />
                   </FormControl>
-                  <FormLabel>Paciente</FormLabel>
+                  <FormLabel className="cursor-pointer">Paciente</FormLabel>
                 </FormItem>
                 <FormItem className="flex flex-row items-center gap-2">
                   <FormControl>
@@ -247,7 +259,7 @@ export default function MembersRegisterProfilePage() {
                       }
                     />
                   </FormControl>
-                  <FormLabel>Aluno</FormLabel>
+                  <FormLabel className="cursor-pointer">Aluno</FormLabel>
                 </FormItem>
               </FormItem>
             )}

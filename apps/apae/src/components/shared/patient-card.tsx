@@ -38,7 +38,6 @@ export function PatientCard({ patient }: PatientCardProps) {
     return (
          <Card
             className={cn(
-                // 1. ADICIONADO: 'h-full flex flex-col' para o card esticar na altura do grid
                 "overflow-hidden relative rounded-lg shadow-md/30 h-full flex flex-col",
                 statusBorderStyles[patientStatus]
             )}
@@ -48,13 +47,12 @@ export function PatientCard({ patient }: PatientCardProps) {
                 className="absolute top-2 right-2 h-8 w-8 z-10 !bg-transparent hover:!bg-transparent"
                 asChild
             >
-                <Link href="/">
+                <Link href={`/person/${patient.id}/edit`}>
                     <SquarePen className="h-5 w-5 text-[#145095]" />
                     <span className="sr-only">Editar</span>
                 </Link>
             </Button>
 
-            {/* 2. ADICIONADO: 'flex-1' no CardContent para ele preencher o espaço restante */}
             <CardContent className="p-4 flex-1">
                 {/* 3. ALTERADO: 'items-center' para 'items-start' e adicionado 'h-full'. 
                     Isso alinha o avatar e os textos pelo topo, e permite que o botão vá pro fundo. */}

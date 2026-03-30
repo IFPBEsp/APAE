@@ -73,6 +73,16 @@ public interface PatientController {
         ResponseEntity<PatientResponseDTO> updatePatient(@PathVariable UUID id,
                         @RequestBody @Valid UpdatePatientDTO updatePatientDTO);
 
+        @Operation(summary = "Atualizar foto de perfil do paciente")
+        @ApiResponses(value = {
+                        @ApiResponse(responseCode = "200", description = "Foto atualizada com sucesso"),
+                        @ApiResponse(responseCode = "400", description = "Arquivo invalido"),
+                        @ApiResponse(responseCode = "404", description = "Paciente nao encontrado")
+        })
+        @PutMapping(value = "/{id}/photo", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+        ResponseEntity<PatientResponseDTO> updatePatientPhoto(@PathVariable UUID id,
+                        @RequestPart("photo") org.springframework.web.multipart.MultipartFile photo);
+
         @Operation(summary = "Excluir um paciente", description = "Remove um paciente do sistema a partir do seu ID.")
         @ApiResponses(value = {
                 @ApiResponse(responseCode = "204", description = "Paciente excluído com sucesso"),

@@ -9,6 +9,7 @@ import java.util.logging.Logger;
 import br.org.apae.api.documents.interfaces.dto.DocumentDTO;
 import br.org.apae.api.documents.interfaces.dto.GetPresignedDocumentUrlArgsDTO;
 import br.org.apae.api.documents.interfaces.dto.ListDocumentsArgsDTO;
+import br.org.apae.api.documents.interfaces.dto.RemoveDocumentArgsDTO;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -71,6 +72,32 @@ class PatientDocumentsService {
     public void storePatientDocuments(Patient patient, CreateDocumentsDTO documents) {
         this.storePersonalDocuments(patient, documents);
         this.storeMedicalDocuments(patient, documents);
+    }
+
+    public void storePatientPhoto(Patient patient, MultipartFile photo) {
+        try {
+            Iterable<DocumentDTO> existingPhotos = this.documentService.listDocuments(
+                    ListDocumentsArgsDTO.builder()
+                            .owner(patient.getId().toString())
+                            .category(DocumentCategory.PERSONAL)
+                            .type(DocumentType.PHOTO)
+                            .year(Year.now())
+                            .build()
+            );
+
+            for (DocumentDTO doc : existingPhotos) {
+                this.documentService.removeDocument(
+                        RemoveDocumentArgsDTO.builder()
+                                .owner(patient.getId().toString())
+                                .name(doc.name())
+                                .build()
+                );
+            }
+        } catch (Exception e) {
+            Logger.getGlobal().log(Level.WARNING, "Nao foi possivel remover foto anterior: " + e.getMessage());
+        }
+
+        this.storePatientDocument(patient, DocumentCategory.PERSONAL, DocumentType.PHOTO, photo);
     }
 
     public String getPatientPhoto(UUID patientId) {
