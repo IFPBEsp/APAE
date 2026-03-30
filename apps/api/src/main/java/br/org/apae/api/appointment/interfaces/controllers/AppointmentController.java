@@ -77,7 +77,7 @@ public interface AppointmentController {
 
   @Operation(summary = "Lista agendamentos de hoje")
   @GetMapping("/today")
-  ResponseEntity<Page<TodayAppointmentsResponseDTO>> listTodayAppointment(Pageable pageable);
+  ResponseEntity<Page<TodayAppointmentsResponseDTO>> listTodayAppointment(LocalDate date, Pageable pageable);
 
   @Operation(summary = "Buscar agendamento gerado por ID")
   @GetMapping("/today/{id}")
