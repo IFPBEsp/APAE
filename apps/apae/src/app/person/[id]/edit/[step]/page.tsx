@@ -2,7 +2,7 @@
 
 import { useParams, useRouter } from "next/navigation"; 
 import { useEffect } from "react";
-import { useMembersRegisterContext, MembersRegisterStep } from "@/hooks/use-members-register-context";
+import { useMembersRegisterContext, MembersRegisterStep } from "../../../../../hooks/use-members-register-context";
 import PersonalForm from "../../../register/personal/page";
 import KinshipsForm from "../../../register/kinships/page";
 import AddressForm from "../../../register/address/page";
