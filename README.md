@@ -16,6 +16,7 @@ Projeto em desenvolvimento, fruto de uma parceria entre o IFPB (Campus Esperanç
   - [Apresentação do Projeto](#apresentação-do-projeto)
     - [Como Executar](#como-executar)
       - [Outros Comandos:](#outros-comandos)
+      - [Credenciais do usuário para testes:](#credenciais-do-usuário-para-testes)
   - [Fluxo de Trabalho](#fluxo-de-trabalho)
     - [Convenção de Commits](#convenção-de-commits)
       - [Dicionário de Tipos](#dicionário-de-tipos)
@@ -63,6 +64,11 @@ O projeto foi automatizado para rodar com o mínimo de comandos utilizando **pnp
 - `pnpm docker:down`: Para os containers e os remove da memória.
 - `pnpm docker:drop`: Para os containers, os remove e apaga os volumes associados.
 - `pnpm db:seed`: Cria um usuário admin no banco de dados para fins de testes.
+
+#### Credenciais do usuário para testes:
+- Email: `admin@teste.com`
+- CPF: `123.456.789-00`
+- Senha: `123456`
 
 ---
 
