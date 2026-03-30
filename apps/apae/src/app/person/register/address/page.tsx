@@ -57,7 +57,11 @@ export default function MembersRegisterAddressPage() {
     setIsLoading(true);
     try {
       setAddressData(values);
-      setStep(MembersRegisterStep.ADDITIONALS);
+        if (isEditing) {
+        setStep(MembersRegisterStep.GUARDIAN); 
+      } else {
+        setStep(MembersRegisterStep.ADDITIONALS);
+      }
     } catch (error: any) {
       if (error.response?.data) {
         handleBackendValidationErrors(error.response.data, form.setError);

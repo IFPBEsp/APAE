@@ -47,7 +47,7 @@ export function PatientCard({ patient }: PatientCardProps) {
                 className="absolute top-2 right-2 h-8 w-8 z-10 !bg-transparent hover:!bg-transparent"
                 asChild
             >
-                <Link href={`/person/${patient.id}/edit`}>
+                <Link href={`/person/${patient.id}/edit/personal`}>
                     <SquarePen className="h-5 w-5 text-[#145095]" />
                     <span className="sr-only">Editar</span>
                 </Link>
