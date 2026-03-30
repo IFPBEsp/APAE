@@ -3,6 +3,8 @@
 import { Button } from "@/components/ui/button";
 import { Edit, Trash2 } from "lucide-react";
 import { Transtorno } from "@/schemas/transtornosSchema";
+import { ConfirmModal } from "@/components/ui/confirm-modal";
+
 
 interface TranstornoListItemProps {
   transtorno: Transtorno; 
@@ -30,15 +32,23 @@ export function TranstornoListItem({
         >
           <Edit className="h-4 w-4" />
         </Button>
-        <Button
-          variant="outline"
-          size="icon"
-          className="h-8 w-8 hover:bg-red-50 hover:border-red-500"
-          onClick={onDelete}
-          aria-label="Excluir"
-        >
-          <Trash2 className="h-4 w-4 text-red-500" />
-        </Button>
+        
+        <ConfirmModal
+          title="Tem certeza?"
+          description={<>Essa ação não pode ser desfeita. Isso irá excluir permanentemente o transtorno <strong>{transtorno.name}</strong>.</>}
+          onConfirm={onDelete}
+          trigger={
+              <Button
+                  variant="outline"
+                  size="icon"
+                  className="h-8 w-8 hover:bg-red-50 hover:border-red-500"
+                  aria-label="Excluir"
+              >
+                  <Trash2 className="h-4 w-4 text-red-500" />
+              </Button>
+          }
+          />
+
       </div>
     </div>
   );
