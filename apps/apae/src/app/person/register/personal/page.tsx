@@ -22,10 +22,11 @@ import {
   formatRG,
 } from "@/lib/formats";
 import { Personal } from "@/schemas/member-schemas";
+import { EditPersonal } from "@/schemas/edit-member-schemas"; 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
-import z from "zod";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { usePathname } from "next/navigation"; 
 import { handleBackendValidationErrors } from "@/utils/form-errors";
 
 import { DoubleColumn, FormButton, MembersRegisterForm } from "../form";
@@ -37,20 +38,33 @@ export default function MembersRegisterPersonalPage() {
   } = useMembersRegisterContext();
 
   const [isLoading, setIsLoading] = useState(false);
+  
+  const pathname = usePathname();
+  const isEditing = pathname.includes("/edit");
+  const currentSchema = isEditing ? EditPersonal : Personal;
 
-  const form = useForm<z.infer<typeof Personal>>({
+  const form = useForm<any>({
     mode: "onBlur",
-    resolver: zodResolver(Personal),
+    resolver: zodResolver(currentSchema), 
     defaultValues: personal,
   });
 
-  const onSubmit = async (values: z.infer<typeof Personal>) => {
-    setIsLoading(true);
+  const [isInitialized, setIsInitialized] = useState(false);
 
+  useEffect(() => {
+    if (personal.name && !isInitialized) {
+      form.reset(personal);
+      setIsInitialized(true); 
+    }
+  }, [personal, form, isInitialized]);
+
+  const onSubmit = async (values: any) => {
+    setIsLoading(true);
     try {
       setPersonalData(values);
 
       setStep(MembersRegisterStep.KINSHIPS);
+
     } catch (error: any) {
       if (error.response?.data) {
         handleBackendValidationErrors(error.response.data, form.setError);
@@ -63,7 +77,7 @@ export default function MembersRegisterPersonalPage() {
   return (
     <Form {...form}>
       <MembersRegisterForm
-        title="Dados Pessoais"
+        title={isEditing ? "Editar Dados Pessoais" : "Dados Pessoais"}
         onSubmit={form.handleSubmit(onSubmit)}
         buttons={
           <FormButton type="submit" disabled={isLoading}>

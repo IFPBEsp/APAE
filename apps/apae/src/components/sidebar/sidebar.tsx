@@ -30,7 +30,7 @@ import {
 } from "../ui/collapsible";
 import styles from "./sidebar.module.css";
 import { useSidebar } from "@/components/ui/sidebar";
-import { redirect, usePathname, useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { cn } from "@/lib/utils";
 import logo from "../../assets/logo.png";
 import {
@@ -39,6 +39,8 @@ import {
   Syringe,
   Stethoscope,
   LogOut,
+  ShieldUser,
+  UserRoundPlus,
 } from "lucide-react";
 import { removeSessionCookie } from "@/lib/cookies";
 
@@ -254,6 +256,42 @@ export function AppSidebar() {
                     >
                       <Syringe size={16} />
                       <span className="text-base">Vacinas</span>
+                    </SidebarMenuButton>
+                  </Link>
+                </SidebarMenuItem>
+              </SidebarMenu>
+            </CollapsibleContent>
+          </SidebarGroup>
+        </Collapsible>
+        
+        <Collapsible defaultOpen={false} className="group/collapsible">
+          <SidebarGroup>
+            <SidebarGroupLabel asChild>
+              <CollapsibleTrigger
+                className={`${styles.menuButton} font-base gap-2`}
+              >
+                <ShieldUser size={20} />
+                <span className="text-base">Área do Administrador</span>
+                <ChevronDownIcon
+                  size={16}
+                  className="ml-auto transition-transform group-data-[state=open]/collapsible:rotate-180"
+                />
+              </CollapsibleTrigger>
+            </SidebarGroupLabel>
+            <CollapsibleContent>
+              <SidebarMenu>
+                <SidebarMenuItem>
+                  <Link href="/register">
+                    <SidebarMenuButton
+                      className={`${styles.menuButton} font-base gap-2 ${cn(
+                        "h-10 transition-colors",
+                        pathname == ""
+                          ? "bg-[#FFFFFF] !text-[#000000]"
+                          : "text-[#0D4F97] hover:bg-[#0D4F97] hover:!text-white"
+                      )}`}
+                    >
+                      <UserRoundPlus size={16} />
+                      <span className="text-base">Cadastrar Usuário</span>
                     </SidebarMenuButton>
                   </Link>
                 </SidebarMenuItem>

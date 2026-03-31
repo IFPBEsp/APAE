@@ -7,8 +7,23 @@ SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 ROOT_DIR="$(cd "$SCRIPT_DIR/.." && pwd)"
 MAVEN_CMD="$ROOT_DIR/apps/api/mvnw"
 ENV_FILE="$ROOT_DIR/.env"
+ENV_EXAMPLE="$ROOT_DIR/.env.example"
+
+check_env_file() {
+  if [ ! -f "$ENV_FILE" ]; then
+    echo "[.env] Arquivo .env não encontrado"
+    if [ -f "$ENV_EXAMPLE" ]; then
+      echo "[.env] Criando .env a partir do .env.example"
+      cp "$ENV_EXAMPLE" "$ENV_FILE"
+      echo "[.env] Arquivo .env criado"
+    else
+      echo "[.env] Erro ao criar o .env, arquivo .env.example não encontrado"
+    fi
+  fi
+}
 
 load_env() {
+  check_env_file
   if [ -f "$ENV_FILE" ]; then
     echo "Carregando variáveis de ambiente de $ENV_FILE..."
     set -a
@@ -19,24 +34,22 @@ load_env() {
   fi
 }
 
-DB_HOST="localhost"
-DB_PORT=5200
 DB_MAX_RETRIES=5
 DB_WAIT_SECONDS=2
 
 check_db_up() {
   local attempt=1
-  echo "Verificando banco de dados em $DB_HOST:$DB_PORT..."
+  echo "Verificando banco de dados em $POSTGRES_HOST:$POSTGRES_PORT..."
   while [ "$attempt" -le "$DB_MAX_RETRIES" ]; do
     if command -v nc >/dev/null 2>&1; then
     #nc - Netcat : verificação do linux
-      if nc -z "$DB_HOST" "$DB_PORT" >/dev/null 2>&1; then
+      if nc -z "$POSTGRES_HOST" "$POSTGRES_PORT" >/dev/null 2>&1; then
         echo "Banco de dados online (nc)"
         return 0
       fi
       #Verificação para o Windows (PowerShell)
     elif command -v powershell.exe >/dev/null 2>&1; then
-      if powershell.exe -Command "Test-NetConnection -ComputerName $DB_HOST -Port $DB_PORT -InformationLevel Quiet" | grep -q "True"; then
+      if powershell.exe -Command "Test-NetConnection -ComputerName $POSTGRES_HOST -Port $POSTGRES_PORT -InformationLevel Quiet" | grep -q "True"; then
         echo "Banco de dados online (ps)"
         return 0
       fi

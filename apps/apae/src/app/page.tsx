@@ -57,13 +57,17 @@ export default function DashboardPage() {
 
 
   const fetchTodayAppointments = async () => {
-    const todayAppointmentsPage = await listTodayAppointment();
-    setTodayAppointments(todayAppointmentsPage.content);
+    const formattedDate = format(selectedDate, 'yyyy-MM-dd');  
+    const todayAppointmentsPage: Page<TodayAppointment> =
+      await listTodayAppointment(formattedDate); 
+      
+    setTodayAppointments(todayAppointmentsPage.content || []);
   };
 
   const fetchAllAppointments = async () => {
-    const allAppointmentsPage = await getAppointments();
-    setAllAppointments(allAppointmentsPage.content);
+    const allAppointmentsPage: Page<AppointmentResponseDTO> =
+      await getAppointments();
+    setAllAppointments(allAppointmentsPage.content || []);
   };
 
   useEffect(() => {
@@ -88,7 +92,7 @@ export default function DashboardPage() {
       <main className="flex-1 p-3 sm:p-6 max-w-[100vw] mx-auto">
         <div className="mb-4 flex flex-col justify-between gap-3 sm:mb-6 sm:flex-row sm:items-center">
           <h1 className="text-lg font-bold sm:text-2xl text-[#0D4F97]">
-            Agendamentos de Hoje
+            Agendamentos do Dia
           </h1>
           <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
             <Popover>
@@ -111,7 +115,7 @@ export default function DashboardPage() {
                 <Calendar
                   mode="single"
                   selected={selectedDate}
-                  onSelect={setSelectedDate}
+                  onSelect={(date) => date && setSelectedDate(date)}
                   initialFocus
                   locale={ptBR}
                   required
@@ -142,10 +146,10 @@ export default function DashboardPage() {
 
         <div className="mb-4 grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
           <InfoCard
-            title="Agendados pra hoje"
+            title="Agendados pro dia"
             icon={Users}
             value={todayAppointments.length}
-            subtitle={`${todayAppointments.length} confirmados, ${todayAppointments.length} pendentes`}
+            subtitle={`${todayAppointments.filter(a => a.performed).length} realizados`}
             titleClassName="text-[#0D4F97]"
             valueClassName="text-[#0D4F97]"
           />
@@ -163,6 +167,9 @@ export default function DashboardPage() {
             <Table>
               <TableHeader>
                 <TableRow>
+                  <TableHead className="px-3 py-2 text-xs text-[#0D4F97] sm:px-4 sm:py-3 sm:text-sm">
+                    Horário
+                  </TableHead>
                   <TableHead className="px-3 py-2 text-xs text-[#0D4F97] sm:px-4 sm:py-3 sm:text-sm">
                     Paciente
                   </TableHead>
@@ -183,6 +190,9 @@ export default function DashboardPage() {
               <TableBody>
                 {todayAppointments.map((item, index) => (
                   <TableRow key={index}>
+                    <TableCell className="px-3 py-2 font-bold text-[#0D4F97] text-xs sm:px-4 sm:py-3 sm:text-sm">
+                      {item.effectiveDateTime ? format(new Date(item.effectiveDateTime), 'HH:mm') : '—'}
+                    </TableCell>
                     <TableCell className="px-3 py-2 text-xs sm:px-4 sm:py-3 sm:text-sm">
                       {item.patient.fullName}
                     </TableCell>
@@ -209,6 +219,13 @@ export default function DashboardPage() {
                     </TableCell>
                   </TableRow>
                 ))}
+                {todayAppointments.length === 0 && (
+                  <TableRow>
+                    <TableCell colSpan={6} className="h-24 text-center text-muted-foreground">
+                      Nenhum agendamento encontrado para esta data.
+                    </TableCell>
+                  </TableRow>
+                )}
               </TableBody>
             </Table>
           </CardContent>

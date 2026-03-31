@@ -7,6 +7,7 @@ import { Plus, Loader2, Edit, Trash2 } from "lucide-react";
 import { SearchFilters } from "@/components/search-filters";
 import { useVaccinesContext, Vaccine } from "@/hooks/use-vaccines";
 import { useRouter } from "next/navigation";
+import { ConfirmModal } from "@/components/ui/confirm-modal";
 
 type VaccinesListItemProps = Readonly<{
     vaccine: Vaccine;
@@ -21,9 +22,7 @@ function VaccinesListItem({ vaccine }: VaccinesListItemProps) {
     };
 
     const onDelete = () => {
-        if (confirm("Tem certeza que deseja excluir esta vacina?")) {
-            deleteVaccine(vaccine);
-        }
+        deleteVaccine(vaccine);
     };
 
     return (
@@ -43,15 +42,22 @@ function VaccinesListItem({ vaccine }: VaccinesListItemProps) {
                 >
                     <Edit className="h-4 w-4" />
                 </Button>
-                <Button
-                    variant="outline"
-                    size="icon"
-                    className="h-8 w-8 hover:bg-red-50 hover:border-red-500"
-                    onClick={onDelete}
-                    aria-label="Excluir"
-                >
-                    <Trash2 className="h-4 w-4 text-red-500" />
-                </Button>
+
+                <ConfirmModal
+                    title="Tem certeza?"
+                    description={<>Essa ação não pode ser desfeita. Isso irá excluir permanentemente a vacina <strong>{vaccine.name}</strong>.</>}
+                    onConfirm={onDelete}
+                    trigger={
+                        <Button
+                            variant="outline"
+                            size="icon"
+                            className="h-8 w-8 hover:bg-red-50 hover:border-red-500"
+                            aria-label="Excluir"
+                        >
+                            <Trash2 className="h-4 w-4 text-red-500" />
+                        </Button>
+                    }
+                />
             </div>
         </div>
     );
@@ -81,12 +87,11 @@ function VaccinesList({ searchName }: { searchName: string }) {
     }
 
     return (
-        <>
+         <>
             <p className="text-sm text-gray-500 mb-4">
                 {filteredVaccines.length} vacinas encontradas
             </p>
             <div className="space-y-2">
-                {/* IMPORTANTE: Foi trocado 'vaccines.map' por 'filteredVaccines.map' */}
                 {filteredVaccines.map((vaccine) => (
                     <VaccinesListItem key={vaccine.id} vaccine={vaccine} />
                 ))}

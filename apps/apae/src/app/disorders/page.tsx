@@ -41,9 +41,7 @@ export default function TranstornosPage() {
   }, []);
 
   const handleDelete = async (id: string) => {
-    if (!confirm("Tem certeza que deseja excluir este transtorno?")) {
-      return;
-    }
+    
     try {
       const response = await fetch(`/api/transtornos/${id}`, {
         method: "DELETE",
