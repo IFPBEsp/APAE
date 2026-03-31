@@ -29,20 +29,16 @@ const makeInterceptors = (api: AxiosInstance) => {
 
       return config;
     },
-    (error: AxiosError) => {
-      return Promise.reject(error);
-    }
+    (error: AxiosError) => Promise.reject(error)
   );
 
   api.interceptors.response.use(
-    (response: AxiosResponse) => {
-      return response;
-    },
+    (response: AxiosResponse) => response,
     async (error: AxiosError) => {
       if (error.response?.status === 401) {
         console.warn("Token expirado ou inválido. Removendo sessão...");
-
         await removeSessionCookie();
+
         if (typeof window === "undefined") {
           redirect("/auth/login");
         }
@@ -56,13 +52,15 @@ const makeInterceptors = (api: AxiosInstance) => {
 };
 
 export const createDocumentsAPI = async () => {
-  const api = createAxiosInstance("http://localhost:8092/api/documents");
+  const api = createAxiosInstance(
+    process.env.NEXT_PUBLIC_DOCUMENTS_API_URL || "http://localhost:8092/api/documents"
+  );
   return makeInterceptors(api);
 };
 
 export const createBaseApi = async () => {
   const api = createAxiosInstance(
-    process.env.NEXT_PUBLIC_API || "http://localhost:8090/api"
+    process.env.NEXT_PUBLIC_API_URL || "http://localhost:8090/api"
   );
 
   return makeInterceptors(api);

@@ -22,14 +22,14 @@ export async function getAllProfissionais(ativo?: boolean) {
 }*/
 
 export async function inactivateProfissional(id: string) {
-  const response = await fetch(`${API_URL}/professionals/${id}/inactivate`, {
+  const response = await fetch(`/api/professionals/${id}/inactivate`, {
     method: "PUT",
   });
   return response;
 }
 
 export async function activateProfissional(id: string) {
-  const response = await fetch(`${API_URL}/professionals/${id}/activate`, {
+  const response = await fetch('/api/professionals/${id}/activate', {
     method: "PUT",
   });
   return response;
@@ -70,7 +70,7 @@ export async function getProfissionalById(id: string) {
 
 export async function getProfessionalDocuments(id: string) {
   try {
-    const response = await axios.get(`${API_URL}/professionals/${id}/documents`);
+    const response = await axios.get('/api/professionals/${id}/documents');
     return response.data || [];
   } catch (error) {
     if (axios.isAxiosError(error)) {
@@ -93,7 +93,7 @@ export async function removeProfessionalDocument(
   documentId: string
 ) {
   const response = await fetch(
-    `${API_URL}/professionals/${professionalId}/documents/${documentId}`,
+    '/api/professionals/${params.id}/documents/${params.documentId}',
     { method: "DELETE" }
   );
 
