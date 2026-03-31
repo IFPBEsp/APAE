@@ -24,7 +24,14 @@ public interface GeneratedAppointmentRepository extends JpaRepository<GeneratedA
     Page<GeneratedAppointment> findByPatientIdAndScheduledDateTimeBetween(
             UUID patientId, LocalDateTime start, LocalDateTime end, Pageable pageable);
 
-    @Query("SELECT g FROM GeneratedAppointment g " +
-       "WHERE FUNCTION('DATE', COALESCE(g.overriddenDateTime, g.scheduledDateTime)) = :date")
-    Page<GeneratedAppointment> listAppointmentsForToday(@Param("date") java.time.LocalDate date, Pageable pageable);
+    @Query("""
+        SELECT g FROM GeneratedAppointment g
+        WHERE COALESCE(g.overriddenDateTime, g.scheduledDateTime)
+        BETWEEN :start AND :end
+    """)
+    Page<GeneratedAppointment> listAppointmentsForToday(
+            @Param("start") LocalDateTime start,
+            @Param("end") LocalDateTime end,
+            Pageable pageable
+    );
 }
