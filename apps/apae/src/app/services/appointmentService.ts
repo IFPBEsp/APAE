@@ -280,11 +280,11 @@ export async function getAppointmentById(
   return await response.json();
 }
 
-export async function updateAppointmentRule(
+export async function updateAppointment(
   id: UUID,
   dto: UpdateAppointmentDTO,
 ): Promise<AppointmentResponseDTO> {
-  const response = await fetch(`/api/appointments/${id}/rule`, {
+  const response = await fetch(`/api/appointments/${id}`, {
     method: "PATCH",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(dto),

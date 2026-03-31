@@ -433,7 +433,7 @@ public class AppointmentApplicationServiceImpl implements AppointmentApplication
         current.setEndDate(startDate.minusDays(1));
         appointmentRepo.save(current);
 
-        generatedRepo.deleteFutureByAppointmentId(current.getId(), startDate.atStartOfDay().plusDays(60));
+        generatedRepo.deleteFutureByAppointmentId(current.getId(), startDate.atStartOfDay());
 
         Appointment newRule = new Appointment(
                 current.getProfessional(),
