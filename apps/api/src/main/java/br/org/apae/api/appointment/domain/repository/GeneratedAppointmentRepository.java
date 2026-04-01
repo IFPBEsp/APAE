@@ -35,10 +35,10 @@ public interface GeneratedAppointmentRepository extends JpaRepository<GeneratedA
        "AND FUNCTION('DATE', COALESCE(g.overriddenDateTime, g.scheduledDateTime)) = :date " +
        "AND (g.cancelled IS NULL OR g.cancelled = false) " +
        "AND (:excludeAppointmentId IS NULL OR g.appointment.id <> :excludeAppointmentId)")
-boolean existsConflictForPatientAndProfessional(
+    boolean existsConflictForPatientAndProfessional(
         @Param("patientId") UUID patientId,
         @Param("professionalId") UUID professionalId,
         @Param("date") LocalDate date,
         @Param("excludeAppointmentId") UUID excludeAppointmentId
-);
+    );
 }

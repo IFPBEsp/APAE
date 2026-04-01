@@ -190,7 +190,7 @@ export function AppointmentForm({ editAppointment }: AppointmentFormProps) {
     if (dayOfWeek === 0 || dayOfWeek === 6) return true;
 
     const dayName = mapDayOfWeek[dayOfWeek];
-    const isPast = isBefore(day, today);
+    const isPastOrToday = day.getTime() <= today.getTime();
     const professionalWorksThisDay = availabilities.some(
       (a) => a.day === dayName,
     );
@@ -204,7 +204,7 @@ export function AppointmentForm({ editAppointment }: AppointmentFormProps) {
       }
     }
 
-    return isPast || !professionalWorksThisDay;
+    return isPastOrToday || !professionalWorksThisDay;
   };
 
   const handleSubmit = async (e: React.FormEvent) => {

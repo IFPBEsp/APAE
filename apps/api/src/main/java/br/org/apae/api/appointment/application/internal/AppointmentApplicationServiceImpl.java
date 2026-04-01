@@ -106,6 +106,10 @@ public class AppointmentApplicationServiceImpl implements AppointmentApplication
                 throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
                         "A frequência deve ser 7 (semanal), 14 (quinzenal) ou 30 (mensal).");
         }
+        if (!dto.initialDate().isAfter(LocalDate.now())) {
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, 
+                    "A data do agendamento deve ser a partir de amanhã.");
+        }
         
         AnnualRegistry annualRegistry = this.registryRepo
                 .findByPatientIdAndYear(dto.patientId(), Year.now().getValue())
@@ -415,7 +419,7 @@ public class AppointmentApplicationServiceImpl implements AppointmentApplication
    */
   public AppointmentResponseDTO updateAppointment(UUID appointmentId, Integer newFrequency, LocalTime newTime) {
       if (newFrequency != null) {
-          List<Integer> validFrequencies = List.of(7, 14, 30);
+        List<Integer> validFrequencies = List.of(7, 14, 30);
           if (!validFrequencies.contains(newFrequency)) {
               throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
                       "A nova frequência deve ser 7 (semanal), 14 (quinzenal) ou 30 (mensal).");
@@ -609,7 +613,7 @@ public class AppointmentApplicationServiceImpl implements AppointmentApplication
             
             if (conflict) {
                 throw new ResponseStatusException(HttpStatus.BAD_REQUEST, 
-                    "Este paciente já está agendado para este dia com este profissional");
+                    "Este paciente já está agendado para este dia com este profissional.");
             }
         }
     }
