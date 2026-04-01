@@ -17,10 +17,6 @@ import { Textarea } from "@/components/ui/textarea";
 import { toast } from "react-toastify"
 import { useState } from "react";
 
-import { useRouter } from "next/navigation"
-
-
-
 interface RegistrarFaltaButtonProps {
   generatedAppointmentId: string;
   absenceDate: string;
