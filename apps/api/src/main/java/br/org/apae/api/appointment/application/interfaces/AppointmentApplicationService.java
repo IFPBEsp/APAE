@@ -25,7 +25,7 @@ public interface AppointmentApplicationService {
 
   AppointmentResponseDTO findById(UUID id);
 
-  AppointmentResponseDTO updateAppointment(UUID appointmentId, Integer newFrequency, LocalTime newTime);
+  AppointmentResponseDTO update(UUID appointmentId, UpdateAppointmentDTO dto);
 
   void delete(UUID id);
 
