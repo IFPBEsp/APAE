@@ -12,6 +12,7 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+import br.org.apae.api.common.dto.appointment.request.appointment.UpdateAppointmentDTO;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -395,75 +396,77 @@ public class AppointmentApplicationServiceImpl implements AppointmentApplication
       return result;
   }
 
-  /**
-   * Updates an active appointment rule by deactivating the current rule and creating a new one
-   * with updated frequency and/or time. Generates new future appointments and removes outdated ones.
-   * <p>
-   * This creates a historical trail of rule changes.
-   *
-   * @param appointmentId the ID of the active rule to update
-   * @param newFrequency optional new frequency in days (null to keep current)
-   * @param newTime optional new appointment time (null to keep current)
-   * @return the newly created active rule
-   * @throws IllegalArgumentException if the rule is not found
-   * @throws IllegalStateException if the rule is not active
-   */
-  public AppointmentResponseDTO updateAppointment(UUID appointmentId, Integer newFrequency, LocalTime newTime) {
-      if (newFrequency != null) {
-          List<Integer> validFrequencies = List.of(7, 14, 30);
-          if (!validFrequencies.contains(newFrequency)) {
-              throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
-                      "A nova frequência deve ser 7 (semanal), 14 (quinzenal) ou 30 (mensal).");
-          }
-      }
+    /**
+     * Updates an active appointment rule by deactivating the current rule and creating a new one
+     * with updated data. Allows changing frequency, start date, time, and end date.
+     * Removes future generated appointments and regenerates them based on the updated rule.
+     *
+     * @param appointmentId the ID of the active appointment rule to update
+     * @param dto data to update the appointment (null fields keep current values)
+     * @return the newly created active rule
+     * @throws IllegalArgumentException if the rule is not found
+     * @throws IllegalStateException if the rule is not active
+     */
+    public AppointmentResponseDTO update(UUID appointmentId, UpdateAppointmentDTO dto) {
+        if (dto.frequencyDays() != null) {
+            List<Integer> validFrequencies = List.of(7, 14, 30);
+            if (!validFrequencies.contains(dto.frequencyDays())) {
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
+                        "A nova frequência deve ser 7 (semanal), 14 (quinzenal) ou 30 (mensal).");
+            }
+        }
 
-      Appointment current = appointmentRepo.findById(appointmentId)
-              .orElseThrow(() -> new IllegalArgumentException("Rule not found"));
+        Appointment current = appointmentRepo.findById(appointmentId)
+                .orElseThrow(() -> new IllegalArgumentException("Rule not found"));
 
-      if (!current.isActive()) {
-          throw new IllegalStateException("Only active rules can be edited");
-      }
+        if (!current.isActive()) {
+            throw new IllegalStateException("Only active rules can be edited");
+        }
 
-      LocalDate editDate = current.getInitialDate();
-      LocalTime timeToCheck = newTime != null ? newTime : current.getHour();
+        LocalDate startDate = dto.initialDate() != null ? dto.initialDate() : current.getInitialDate();
+        Integer frequencyDays = dto.frequencyDays() != null ? dto.frequencyDays() : current.getFrequencyDays();
+        LocalTime appointmentHour = dto.hour() != null ? dto.hour() : current.getHour();
 
-      validateProfessionalAvailability(current.getProfessional(), editDate, timeToCheck);
+        validateProfessionalAvailability(current.getProfessional(), startDate, appointmentHour);
 
-      current.setActive(false);
-      current.setEndDate(editDate.minusDays(1));
-      appointmentRepo.save(current);
+        current.setActive(false);
+        current.setEndDate(startDate.minusDays(1));
+        appointmentRepo.save(current);
 
-      Appointment newRule = new Appointment(
-              current.getProfessional(),
-              current.getAnnualRegistration(),
-              newFrequency != null ? newFrequency : current.getFrequencyDays(),
-              timeToCheck,
-              current.getInitialDate(),
-              null
-      );
-      newRule = appointmentRepo.save(newRule);
+        generatedRepo.deleteFutureByAppointmentId(current.getId(), startDate.atStartOfDay());
 
-      LocalDate end = editDate.plusYears(1);
+        Appointment newRule = new Appointment(
+                current.getProfessional(),
+                current.getAnnualRegistration(),
+                frequencyDays,
+                appointmentHour,
+                startDate,
+                null
+        );
+        newRule = appointmentRepo.save(newRule);
 
-      generateAppointments(current.getAnnualRegistration().getId(), editDate, end);
-      generatedRepo.deleteFutureByAppointmentId(current.getId(), editDate.atStartOfDay());
+        LocalDate end = startDate.plusYears(1);
+        generateAppointments(newRule.getAnnualRegistration().getId(), startDate, end);
 
-      Patient patient = patientRepo.findById(newRule.getAnnualRegistration().getPatientId()).get();
-      Guardian guardian = guardianRepo.findByPatientId(patient.getId()).get();
-      List<Parent> pais = parentRepo.findAllByPatientId(patient.getId());
+        Patient patient = patientRepo.findById(newRule.getAnnualRegistration().getPatientId())
+                .orElseThrow();
+        Guardian guardian = guardianRepo.findByPatientId(patient.getId())
+                .orElseThrow();
+        List<Parent> parents = parentRepo.findAllByPatientId(patient.getId());
 
-      AddressResponseDTO adto = new AddressResponseDTO(patient.getAddress());
-      Set<Vaccine> vaccines = patient.getVaccines();
+        AddressResponseDTO addressDTO = new AddressResponseDTO(patient.getAddress());
 
-      PatientResponseDTO pdto = new PatientResponseDTO(
-              patient,
-              adto,
-              new GuardianResponseDTO(guardian, adto),
-              pais.stream().map(parentMapper::toResponseDTO).collect(Collectors.toList()),
-              vaccines.stream().map(vaccineMapper::toResponseDTO).collect(Collectors.toSet()), null);
+        PatientResponseDTO patientDTO = new PatientResponseDTO(
+                patient,
+                addressDTO,
+                new GuardianResponseDTO(guardian, addressDTO),
+                parents.stream().map(parentMapper::toResponseDTO).toList(),
+                patient.getVaccines().stream().map(vaccineMapper::toResponseDTO).collect(Collectors.toSet()),
+                null
+        );
 
-      return mapper.toResponse(newRule, pdto);
-  }
+        return mapper.toResponse(newRule, patientDTO);
+    }
 
   /**
    * Reschedules a single generated appointment to a new date and time.

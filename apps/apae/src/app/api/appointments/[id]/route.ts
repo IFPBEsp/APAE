@@ -4,7 +4,7 @@ import { AxiosError } from "axios";
 
 export async function GET(
   req: Request,
-  { params }: { params: Promise<{ id: string }> }
+  { params }: { params: Promise<{ id: string }> },
 ) {
   try {
     const { id } = await params;
@@ -18,24 +18,59 @@ export async function GET(
       if (error.response?.status === 404) {
         return NextResponse.json(
           { message: "Agendamento não encontrado" },
-          { status: 404 }
+          { status: 404 },
         );
       }
       return NextResponse.json(
         { message: "Erro ao buscar agendamento" },
-        { status: error.response?.status || 500 }
+        { status: error.response?.status || 500 },
       );
     }
     return NextResponse.json(
       { message: "Erro interno do servidor" },
-      { status: 500 }
+      { status: 500 },
+    );
+  }
+}
+
+export async function PATCH(
+  request: Request,
+  { params }: { params: { id: string } },
+) {
+  try {
+    const { id } = params;
+    const body = await request.json();
+
+    const api = await createBaseApi();
+
+    const response = await api.patch(`/appointments/${id}`, body);
+
+    return NextResponse.json(response.data, { status: 200 });
+  } catch (error: unknown) {
+    if (error instanceof AxiosError) {
+      if (error.response?.status === 404) {
+        return NextResponse.json(
+          { message: "Agendamento não encontrado" },
+          { status: 404 },
+        );
+      }
+
+      return NextResponse.json(
+        { message: "Erro ao editar agendamento" },
+        { status: error.response?.status ?? 500 },
+      );
+    }
+
+    return NextResponse.json(
+      { message: "Erro interno do servidor" },
+      { status: 500 },
     );
   }
 }
 
 export async function PUT(
   req: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: { id: string } },
 ) {
   try {
     const { id } = params;
@@ -50,22 +85,21 @@ export async function PUT(
       return NextResponse.json(
         {
           message:
-            error.response?.data?.message ||
-            "Erro ao atualizar agendamento",
+            error.response?.data?.message || "Erro ao atualizar agendamento",
         },
-        { status: error.response?.status || 500 }
+        { status: error.response?.status || 500 },
       );
     }
     return NextResponse.json(
       { message: "Erro interno do servidor" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
 
 export async function DELETE(
   req: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: { id: string } },
 ) {
   try {
     const { id } = params;
@@ -74,24 +108,24 @@ export async function DELETE(
 
     return NextResponse.json(
       { message: "Agendamento excluído com sucesso" },
-      { status: 200 }
+      { status: 200 },
     );
   } catch (error) {
     if (error instanceof AxiosError) {
       if (error.response?.status === 404) {
         return NextResponse.json(
           { message: "Agendamento não encontrado" },
-          { status: 404 }
+          { status: 404 },
         );
       }
       return NextResponse.json(
         { message: "Erro ao excluir agendamento" },
-        { status: error.response?.status || 500 }
+        { status: error.response?.status || 500 },
       );
     }
     return NextResponse.json(
       { message: "Erro interno do servidor" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

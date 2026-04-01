@@ -1,5 +1,5 @@
-import { TodayAppointment } from '@/types/appointment';
-import { Page } from '@/types/pagination';
+import { TodayAppointment } from "@/types/appointment";
+import { Page } from "@/types/pagination";
 
 export type UUID = string;
 
@@ -141,9 +141,14 @@ export interface Vaccine {
   name: string;
 }
 
-export interface UpdateAppointmentRuleDTO {
-  newFrequency: number;
-  newTime: string;
+export interface UpdateAppointmentDTO {
+  professionalId?: string;
+  annualRegistrationId?: string;
+  serviceId?: string;
+  frequencyDays?: number;
+  initialDate?: string;
+  hour?: string;
+  endDate?: string;
 }
 
 export interface RescheduleGeneratedAppointmentDTO {
@@ -211,8 +216,9 @@ export const parseTimeFromBackend = (timeString: string): string => {
   return timeString.substring(0, 5);
 };
 
-
-export async function saveAppointment(dto: CreateAppointmentDTO): Promise<void> {
+export async function saveAppointment(
+  dto: CreateAppointmentDTO,
+): Promise<void> {
   const res = await fetch(`/api/appointments`, {
     method: "POST",
     headers: {
@@ -223,17 +229,17 @@ export async function saveAppointment(dto: CreateAppointmentDTO): Promise<void> 
 
   if (!res.ok) {
     const errorData = await res.json().catch(() => null);
-    
+
     if (errorData && errorData.message) {
       let cleanMessage = errorData.message;
-      
-      if (cleanMessage.includes('BAD_REQUEST') && cleanMessage.includes('"')) {
+
+      if (cleanMessage.includes("BAD_REQUEST") && cleanMessage.includes('"')) {
         cleanMessage = cleanMessage.split('"')[1] || cleanMessage;
       }
-      
+
       throw new Error(cleanMessage);
     }
-    
+
     throw new Error(`Erro ao criar agendamento: ${res.status}`);
   }
 }
@@ -242,7 +248,7 @@ export async function getAppointments(
   date?: string,
   time?: string,
   page: number = 0,
-  size: number = 20
+  size: number = 20,
 ): Promise<Page<AppointmentResponseDTO>> {
   const query = new URLSearchParams({
     page: `${page}`,
@@ -253,39 +259,42 @@ export async function getAppointments(
   if (time) query.append("time", time);
 
   const response = await fetch(`/api/appointments?${query}`);
-  
+
   if (!response.ok) {
     throw new Error("Erro ao buscar agendamentos");
   }
-  
+
   const res = await response.json();
   return ensurePageFormat<AppointmentResponseDTO>(res);
 }
 
-export async function getAppointmentById(id: UUID): Promise<AppointmentResponseDTO> {
+export async function getAppointmentById(
+  id: UUID,
+): Promise<AppointmentResponseDTO> {
   const response = await fetch(`/api/appointments/${id}`);
-  
+
   if (!response.ok) {
     throw new Error("Erro ao buscar detalhes do agendamento");
   }
-  
+
   return await response.json();
 }
 
-export async function updateAppointmentRule(
+export async function updateAppointment(
   id: UUID,
-  dto: UpdateAppointmentRuleDTO
+  dto: UpdateAppointmentDTO,
 ): Promise<AppointmentResponseDTO> {
-  
-  const response = await fetch(`/api/appointments/${id}/rule`, { 
+  const response = await fetch(`/api/appointments/${id}`, {
     method: "PATCH",
-    headers: { "Content-Type": "application/json" }, 
-    body: JSON.stringify(dto), 
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(dto),
   });
 
   if (!response.ok) {
     const errorText = await response.text();
-    throw new Error(`Erro ao atualizar regra do agendamento: ${response.status} - ${errorText}`);
+    throw new Error(
+      `Erro ao atualizar regra do agendamento: ${response.status} - ${errorText}`,
+    );
   }
 
   return await response.json();
@@ -303,25 +312,25 @@ export async function deleteAppointment(id: UUID): Promise<void> {
 
 export async function rescheduleGeneratedAppointment(
   id: UUID,
-  dto: RescheduleGeneratedAppointmentDTO
+  dto: RescheduleGeneratedAppointmentDTO,
 ): Promise<GeneratedAppointmentResponseDTO> {
   const dateObj = new Date(dto.newDateTime);
 
   const year = dateObj.getFullYear();
-  const month = String(dateObj.getMonth() + 1).padStart(2, '0');
-  const day = String(dateObj.getDate()).padStart(2, '0');
-  const hours = String(dateObj.getHours()).padStart(2, '0');
-  const minutes = String(dateObj.getMinutes()).padStart(2, '0');
-  const seconds = String(dateObj.getSeconds()).padStart(2, '0');
+  const month = String(dateObj.getMonth() + 1).padStart(2, "0");
+  const day = String(dateObj.getDate()).padStart(2, "0");
+  const hours = String(dateObj.getHours()).padStart(2, "0");
+  const minutes = String(dateObj.getMinutes()).padStart(2, "0");
+  const seconds = String(dateObj.getSeconds()).padStart(2, "0");
 
   const localDateTimeString = `${year}-${month}-${day}T${hours}:${minutes}:${seconds}`;
 
   const backendDto = {
-    newDateTime: localDateTimeString, 
+    newDateTime: localDateTimeString,
   };
 
   const response = await fetch(`/api/appointments/generated/${id}/reschedule`, {
-    method: "PATCH", 
+    method: "PATCH",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(backendDto),
   });
@@ -333,9 +342,11 @@ export async function rescheduleGeneratedAppointment(
   return await response.json();
 }
 
-export async function markAsPerformed(id: UUID): Promise<GeneratedAppointmentResponseDTO> {
+export async function markAsPerformed(
+  id: UUID,
+): Promise<GeneratedAppointmentResponseDTO> {
   const response = await fetch(`/api/appointments/generated/${id}/performed`, {
-    method: 'PATCH',
+    method: "PATCH",
   });
 
   if (!response.ok) {
@@ -347,10 +358,10 @@ export async function markAsPerformed(id: UUID): Promise<GeneratedAppointmentRes
 
 export async function cancelGeneratedAppointment(
   id: UUID,
-  dto: CancelGeneratedAppointmentDTO
+  dto: CancelGeneratedAppointmentDTO,
 ): Promise<GeneratedAppointmentResponseDTO> {
-  const response = await fetch(`/api/appointments/generated/${id}/cancel`, { 
-    method: "PATCH", 
+  const response = await fetch(`/api/appointments/generated/${id}/cancel`, {
+    method: "PATCH",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(dto),
   });
@@ -358,7 +369,7 @@ export async function cancelGeneratedAppointment(
   if (!response.ok) {
     throw new Error(`Erro ao cancelar consulta`);
   }
-  
+
   return await response.json();
 }
 
@@ -367,7 +378,7 @@ export async function listByPatient(
   start: string,
   end: string,
   page: number = 0,
-  size: number = 20
+  size: number = 20,
 ): Promise<Page<GeneratedAppointmentResponseDTO>> {
   const query = new URLSearchParams({
     page: `${page}`,
@@ -377,34 +388,36 @@ export async function listByPatient(
   if (start) query.append("start", start);
   if (end) query.append("end", end);
 
-  const response = await fetch(`/api/appointments/patient/${patientId}?${query}`);
-  
+  const response = await fetch(
+    `/api/appointments/patient/${patientId}?${query}`,
+  );
+
   if (!response.ok) {
     throw new Error("Erro ao buscar agendamentos do paciente");
   }
-  
+
   const res = await response.json();
   return ensurePageFormat<GeneratedAppointmentResponseDTO>(res);
 }
 
 export async function registerAbsence(
   generatedAppointmentId: UUID,
-  justification: string
+  justification: string,
 ): Promise<Absence> {
   const dateObj = new Date();
   const year = dateObj.getFullYear();
-  const month = String(dateObj.getMonth() + 1).padStart(2, '0');
-  const day = String(dateObj.getDate()).padStart(2, '0');
-  const localDateString = `${year}-${month}-${day}`; 
+  const month = String(dateObj.getMonth() + 1).padStart(2, "0");
+  const day = String(dateObj.getDate()).padStart(2, "0");
+  const localDateString = `${year}-${month}-${day}`;
 
   const body = {
     generatedAppointmentId,
     justification,
-    date: localDateString, 
+    date: localDateString,
     notified: false,
   };
 
-  const res = await fetch(`/api/absences`, { 
+  const res = await fetch(`/api/absences`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(body),
@@ -413,45 +426,47 @@ export async function registerAbsence(
   if (!res.ok) {
     throw new Error(`Erro ao registrar ausÃªncia`);
   }
-  
+
   return await res.json();
 }
 
 export async function getPacientes(): Promise<Patient[]> {
   const response = await fetch(`/api/pessoas?page=0&size=100`);
-  
+
   if (!response.ok) {
     throw new Error("Erro ao buscar pacientes");
   }
-  
+
   const data = await response.json();
   return data.content || data || [];
 }
 
 export async function getProfissionaisDaSaude(): Promise<Professional[]> {
   const response = await fetch(`/api/professionals?page=0&size=100`);
-  
+
   if (!response.ok) {
     throw new Error("Erro ao buscar profissionais");
   }
-  
+
   const data = await response.json();
   return data.content || data || [];
 }
 
-export async function getProfissionalDaSaude(id: string): Promise<Professional> {
+export async function getProfissionalDaSaude(
+  id: string,
+): Promise<Professional> {
   const response = await fetch(`/api/professionals/${id}`);
-  
+
   if (!response.ok) {
     throw new Error(`Profissional nÃ£o encontrado (ID: ${id})`);
   }
-  
+
   return await response.json();
 }
 
 export async function getAreasDaSaude(): Promise<string[]> {
   const profissionais = await getProfissionaisDaSaude();
-  const areas = profissionais.map(p => p.healthSector);
+  const areas = profissionais.map((p) => p.healthSector);
   return [...new Set(areas)].filter(Boolean) as string[];
 }
 
@@ -459,7 +474,7 @@ export const toggleConfirmacao = async (id: UUID): Promise<void> => {
   const appointment = await getAppointmentById(id);
 
   if (!appointment.professional || !appointment.annualRegistration?.id) {
-    throw new Error('Dados do agendamento incompletos para confirmaÃ§Ã£o');
+    throw new Error("Dados do agendamento incompletos para confirmaÃ§Ã£o");
   }
 
   const dto: CreateAppointmentDTO = {
@@ -474,7 +489,9 @@ export const toggleConfirmacao = async (id: UUID): Promise<void> => {
   await saveAppointment(dto);
 };
 
-export async function getTodayAppointmentById(id: string): Promise<TodayAppointment> {
+export async function getTodayAppointmentById(
+  id: string,
+): Promise<TodayAppointment> {
   const res = await fetch(`/api/appointments/today/${id}`);
 
   if (!res.ok) {
@@ -484,10 +501,11 @@ export async function getTodayAppointmentById(id: string): Promise<TodayAppointm
   return await res.json();
 }
 
-export async function listTodayAppointment(date?: string): Promise<Page<TodayAppointment>> {
-  
-  const url = date 
-    ? `/api/appointments/today?date=${date}` 
+export async function listTodayAppointment(
+  date?: string,
+): Promise<Page<TodayAppointment>> {
+  const url = date
+    ? `/api/appointments/today?date=${date}`
     : `/api/appointments/today`;
 
   const res = await fetch(url, {
