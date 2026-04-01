@@ -155,7 +155,7 @@ export default function AtualizarProfissional(): JSX.Element {
   useEffect(() => {
     if (!profissional?.id) return;
     refreshDocuments(profissional.id);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+     
   }, [profissional?.id]);
 
   const groupedDocs = useMemo(() => {
