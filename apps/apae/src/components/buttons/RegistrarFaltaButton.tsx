@@ -14,18 +14,25 @@ import {
 } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import { toast } from "react-toastify"
 import { useState } from "react";
+
+import { useRouter } from "next/navigation"
+
+
 
 interface RegistrarFaltaButtonProps {
   generatedAppointmentId: string;
   absenceDate: string;
   disabled?: boolean;
+  onSuccess?: () => void;
 }
 
 export function RegistrarFaltaButton({
   generatedAppointmentId,
   absenceDate,
   disabled,
+  onSuccess,
 }: RegistrarFaltaButtonProps) {
   const [motivo, setMotivo] = useState("");
   const [isLoading, setIsLoading] = useState(false);
@@ -60,7 +67,8 @@ export function RegistrarFaltaButton({
 
       setMotivo("");
       setOpen(false);
-      window.location.reload();
+      onSuccess?.();
+      toast.success("Salvo com sucesso!");
     } catch (error: any) {
       console.error("Erro ao registrar falta:", error);
 
@@ -68,6 +76,8 @@ export function RegistrarFaltaButton({
         error.message?.includes("Já existe uma falta")
           ? "Esta consulta já possui uma falta registrada."
           : error.message || "Erro ao registrar a falta. Tente novamente.";
+
+          toast.error(message);
     } finally {
       setIsLoading(false);
     }
