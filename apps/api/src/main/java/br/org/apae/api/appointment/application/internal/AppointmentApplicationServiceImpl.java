@@ -103,8 +103,8 @@ public class AppointmentApplicationServiceImpl implements AppointmentApplication
     public void create(CreateAppointmentDTO dto) {
         List<Integer> validFrequencies = List.of(7, 14, 30);
         if (!validFrequencies.contains(dto.frequencyDays())) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
-                    "A frequência deve ser 7 (semanal), 14 (quinzenal) ou 30 (mensal).");
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
+                        "A frequência deve ser 7 (semanal), 14 (quinzenal) ou 30 (mensal).");
         }
         
         AnnualRegistry annualRegistry = this.registryRepo
@@ -117,28 +117,34 @@ public class AppointmentApplicationServiceImpl implements AppointmentApplication
 
         validateProfessionalAvailability(professional, dto.initialDate(), dto.hour());
 
-    LocalTime exactTime = dto.hour().truncatedTo(ChronoUnit.MINUTES);
+        LocalTime exactTime = dto.hour().truncatedTo(ChronoUnit.MINUTES);
 
-
-    boolean isTimeSlotTaken = appointmentRepo.existsByProfessionalIdAndInitialDateAndHourAndIsActiveTrue(
-            professional.getId(),
-            dto.initialDate(),
-            exactTime
-    );
-    if (isTimeSlotTaken) {
-        throw new AppointmentConflictException();
-    }
-    Appointment appointment = mapper.toEntity(dto, professional, annualRegistry);
-    try {
-        appointmentRepo.save(appointment);
-    } catch (DataIntegrityViolationException ex) {
-        throw new AppointmentConflictException();
-    }
-
-        LocalDate start = appointment.getInitialDate();
+        LocalDate start = dto.initialDate();
         LocalDate end = start.plusYears(1);
+        
+        List<LocalDateTime> projectedDates = calculateRecurrence(start, dto.frequencyDays(), exactTime, start, end);
 
-        generateAppointments(annualRegistry.getId(), start, end);
+        validateNoDuplicateAppointments(dto.patientId(), dto.professionalId(), projectedDates, null);
+
+        boolean isTimeSlotTaken = appointmentRepo.existsByProfessionalIdAndInitialDateAndHourAndIsActiveTrue(
+                professional.getId(),
+                dto.initialDate(),
+                exactTime
+        );
+        
+        if (isTimeSlotTaken) {
+                throw new AppointmentConflictException();
+        }
+        
+        Appointment appointment = mapper.toEntity(dto, professional, annualRegistry);
+        
+        try {
+                appointmentRepo.save(appointment);
+        } catch (DataIntegrityViolationException ex) {
+                throw new AppointmentConflictException();
+        }
+
+        generateAppointments(appointment.getId(), start, end);
     }
 
   @Override
@@ -299,11 +305,10 @@ public class AppointmentApplicationServiceImpl implements AppointmentApplication
    */
 
   public List<GeneratedAppointmentResponseDTO> generateAppointments(
-          UUID annualRegistrationId, LocalDate start, LocalDate end) {
+          UUID appointmentId, LocalDate start, LocalDate end) {
 
-    Appointment activeRule = appointmentRepo.findByAnnualRegistrationIdAndIsActiveTrue(annualRegistrationId)
-            .stream().findFirst()
-            .orElseThrow(() -> new IllegalStateException("No active rule found"));
+    Appointment activeRule = appointmentRepo.findById(appointmentId)
+            .orElseThrow(() -> new IllegalStateException("Regra não encontrada"));
 
     List<LocalDateTime> dates = calculateRecurrence(
             activeRule.getInitialDate(),
@@ -426,9 +431,9 @@ public class AppointmentApplicationServiceImpl implements AppointmentApplication
 
       LocalDate editDate = current.getInitialDate();
       LocalTime timeToCheck = newTime != null ? newTime : current.getHour();
-
+      int freqToCheck = newFrequency != null ? newFrequency : current.getFrequencyDays();
+      
       validateProfessionalAvailability(current.getProfessional(), editDate, timeToCheck);
-
       current.setActive(false);
       current.setEndDate(editDate.minusDays(1));
       appointmentRepo.save(current);
@@ -444,8 +449,10 @@ public class AppointmentApplicationServiceImpl implements AppointmentApplication
       newRule = appointmentRepo.save(newRule);
 
       LocalDate end = editDate.plusYears(1);
+      List<LocalDateTime> projectedDates = calculateRecurrence(editDate, freqToCheck, timeToCheck, editDate, end);
+      validateNoDuplicateAppointments(current.getAnnualRegistration().getPatientId(), current.getProfessional().getId(), projectedDates, current.getId());
 
-      generateAppointments(current.getAnnualRegistration().getId(), editDate, end);
+      generateAppointments(newRule.getId(), editDate, end);
       generatedRepo.deleteFutureByAppointmentId(current.getId(), editDate.atStartOfDay());
 
       Patient patient = patientRepo.findById(newRule.getAnnualRegistration().getPatientId()).get();
@@ -593,4 +600,18 @@ public class AppointmentApplicationServiceImpl implements AppointmentApplication
       throw new ProfessionalUnavailableException();
     }
   }
+
+  private void validateNoDuplicateAppointments(UUID patientId, UUID professionalId, List<LocalDateTime> generatedDates, UUID excludeAppointmentId) {
+        for (LocalDateTime dt : generatedDates) {
+            boolean conflict = generatedRepo.existsConflictForPatientAndProfessional(
+                    patientId, professionalId, dt.toLocalDate(), excludeAppointmentId
+            );
+            
+            if (conflict) {
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, 
+                    "Este paciente já está agendado para este dia com este profissional");
+            }
+        }
+    }
+
 }

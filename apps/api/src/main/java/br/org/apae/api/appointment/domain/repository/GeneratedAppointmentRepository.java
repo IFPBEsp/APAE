@@ -9,6 +9,7 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Optional;
 import java.util.UUID;
@@ -27,4 +28,17 @@ public interface GeneratedAppointmentRepository extends JpaRepository<GeneratedA
     @Query("SELECT g FROM GeneratedAppointment g " +
        "WHERE FUNCTION('DATE', COALESCE(g.overriddenDateTime, g.scheduledDateTime)) = :date")
     Page<GeneratedAppointment> listAppointmentsForToday(@Param("date") java.time.LocalDate date, Pageable pageable);
+
+    @Query("SELECT CASE WHEN COUNT(g) > 0 THEN true ELSE false END FROM GeneratedAppointment g " +
+       "WHERE g.patientId = :patientId " +
+       "AND g.appointment.professional.id = :professionalId " +
+       "AND FUNCTION('DATE', COALESCE(g.overriddenDateTime, g.scheduledDateTime)) = :date " +
+       "AND (g.cancelled IS NULL OR g.cancelled = false) " +
+       "AND (:excludeAppointmentId IS NULL OR g.appointment.id <> :excludeAppointmentId)")
+boolean existsConflictForPatientAndProfessional(
+        @Param("patientId") UUID patientId,
+        @Param("professionalId") UUID professionalId,
+        @Param("date") LocalDate date,
+        @Param("excludeAppointmentId") UUID excludeAppointmentId
+);
 }

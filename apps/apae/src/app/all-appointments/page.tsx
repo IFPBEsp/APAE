@@ -73,7 +73,7 @@ useEffect(() => {
     try {
       initialized.current = true;
 
-      const response = await getAppointments();
+      const response = await getAppointments(undefined, undefined, 0, 100);
       
       const activeAppointments = (response.content as Appointment[]).filter(
         appointment => appointment.isActive

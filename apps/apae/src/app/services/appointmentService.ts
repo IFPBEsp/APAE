@@ -484,11 +484,22 @@ export async function getTodayAppointmentById(id: string): Promise<TodayAppointm
   return await res.json();
 }
 
-export async function listTodayAppointment(date?: string): Promise<Page<TodayAppointment>> {
+export async function listTodayAppointment(
+  date?: string,
+  page: number = 0,
+  size: number = 100 
+): Promise<Page<TodayAppointment>> {
   
-  const url = date 
-    ? `/api/appointments/today?date=${date}` 
-    : `/api/appointments/today`;
+  const query = new URLSearchParams({
+    page: `${page}`,
+    size: `${size}`,
+  });
+
+  if (date) {
+    query.append("date", date);
+  }
+
+  const url = `/api/appointments/today?${query.toString()}`;
 
   const res = await fetch(url, {
     method: "GET",
