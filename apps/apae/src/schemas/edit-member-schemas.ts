@@ -22,7 +22,11 @@ export const EditPersonal = z.object({
     }),
   }),
   cns: z.string().optional().or(z.literal("")),
-  nis: z.string().optional().or(z.literal("")),
+  nis: z
+    .string()
+    .min(1, "NIS é obrigatório")
+    .length(11, "O NIS deve ter exatamente 11 dígitos")
+    .regex(/^\d+$/, "O NIS deve conter apenas números"),
   birth: z.object({
     certificate: z.string().min(1, "Obrigatório"),
     date: z.coerce.date() as any,
