@@ -12,8 +12,8 @@ export function VaccinesLayoutClient({
     const { feedback } = useVaccinesContext();
 
     useEffect(() => {
-        feedback.error && toast.error(feedback.message);
-        feedback.success && toast.success(feedback.message);
+    if (feedback.error) toast.error(feedback.message);
+    if (feedback.success) toast.success(feedback.message);
     }, [feedback]);
 
     return children;
