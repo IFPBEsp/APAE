@@ -74,6 +74,7 @@ export function RegistrarFaltaButton({
           : error.message || "Erro ao registrar a falta. Tente novamente.";
 
           toast.error(message);
+          setOpen(false);
     } finally {
       setIsLoading(false);
     }
