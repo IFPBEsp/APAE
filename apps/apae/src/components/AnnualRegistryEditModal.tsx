@@ -199,7 +199,7 @@ export default function AnnualRegistryEditModal({
             toast.success("Documento anexado!");
             fetchDocuments();
             if (fileInputRef.current) fileInputRef.current.value = "";
-        } catch (error) { toast.error("Erro ao enviar documento."); }
+        } catch { toast.error("Erro ao enviar documento."); }
         finally { setIsUploading(false); }
     };
 
@@ -208,16 +208,17 @@ export default function AnnualRegistryEditModal({
     const formatCurrencyForDisplay = (value: number | string) => (!value ? "" : Number(value).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }));
 
     const handleMoneyChange = (e: React.ChangeEvent<HTMLInputElement>, onChange: (value: string) => void) => {
-        let value = e.target.value.replace(/\D/g, "");
+        const value = e.target.value.replace(/\D/g, "");
         if (value === "") { onChange(""); return; }
         onChange((parseFloat(value) / 100).toLocaleString("pt-BR", { style: "currency", currency: "BRL" }));
     };
 
 
     const cleanPatientData = (data: any) => {
-        if (!data) return {};
-        const { documents, annualRegistry, createdAt, updatedAt, deleted, isDeleted, age, ...rest } = data;
-        return rest;
+    if (!data) return {};
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const { documents, annualRegistry, createdAt, updatedAt, deleted, isDeleted, age, ...rest } = data;
+    return rest;
     };
 
 

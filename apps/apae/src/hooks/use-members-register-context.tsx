@@ -356,7 +356,7 @@ export function MembersRegisterProvider({
         let resData = {};
         const text = await responsePessoa.text();
         if (text) {
-          try { resData = JSON.parse(text); } catch(e) {}
+          try { resData = JSON.parse(text); } catch {}
         }
         return { status: responsePessoa.status, data: resData };
 
