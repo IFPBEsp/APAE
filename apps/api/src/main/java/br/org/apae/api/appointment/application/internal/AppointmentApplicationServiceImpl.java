@@ -102,14 +102,15 @@ public class AppointmentApplicationServiceImpl implements AppointmentApplication
 
     @Override
     public void create(CreateAppointmentDTO dto) {
-        List<Integer> validFrequencies = List.of(7, 14, 30);
-        if (!validFrequencies.contains(dto.frequencyDays())) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
-                    "A frequência deve ser 7 (semanal), 14 (quinzenal) ou 30 (mensal).");
+        LocalDate today = LocalDate.now();
+        LocalTime now = LocalTime.now();
+        if (dto.initialDate().isBefore(today)) {
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, 
+                    "A data do agendamento não pode ser no passado.");
         }
-        if (!dto.initialDate().isAfter(LocalDate.now())) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, 
-                "A data do agendamento deve ser a partir de amanhã.");
+        if (dto.initialDate().isEqual(today) && dto.hour().isBefore(now)) {
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, 
+                "O horário selecionado já passou.");
         }
         
         AnnualRegistry annualRegistry = this.registryRepo
@@ -416,7 +417,7 @@ public class AppointmentApplicationServiceImpl implements AppointmentApplication
      * @throws IllegalArgumentException if the rule is not found
      * @throws IllegalStateException if the rule is not active
      */
-    public AppointmentResponseDTO update(UUID appointmentId, UpdateAppointmentDTO dto) {
+      public AppointmentResponseDTO update(UUID appointmentId, UpdateAppointmentDTO dto) {
         if (dto.frequencyDays() != null) {
             List<Integer> validFrequencies = List.of(7, 14, 30);
             if (!validFrequencies.contains(dto.frequencyDays())) {
@@ -436,11 +437,30 @@ public class AppointmentApplicationServiceImpl implements AppointmentApplication
         Integer frequencyDays = dto.frequencyDays() != null ? dto.frequencyDays() : current.getFrequencyDays();
         LocalTime appointmentHour = dto.hour() != null ? dto.hour() : current.getHour();
 
+        LocalDate today = LocalDate.now();
+        LocalTime now = LocalTime.now();
+
+        boolean dateChanged = dto.initialDate() != null && !dto.initialDate().isEqual(current.getInitialDate());
+        boolean timeChanged = dto.hour() != null && !dto.hour().equals(current.getHour());
+
+        if (dateChanged && startDate.isBefore(today)) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
+                    "A nova data do agendamento não pode ser no passado.");
+        }
+
+        if (startDate.isEqual(today) && appointmentHour.isBefore(now)) {
+            if (dateChanged || timeChanged) {
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
+                        "O novo horário selecionado já passou.");
+            }
+        }
+
         validateProfessionalAvailability(current.getProfessional(), startDate, appointmentHour);
 
         LocalDate end = startDate.plusYears(1);
         List<LocalDateTime> projectedDates = calculateRecurrence(startDate, frequencyDays, appointmentHour, startDate, end);
         validateNoDuplicateAppointments(current.getAnnualRegistration().getPatientId(), current.getProfessional().getId(), projectedDates, current.getId());
+        
         current.setActive(false);
         current.setEndDate(startDate.minusDays(1));
         appointmentRepo.save(current);

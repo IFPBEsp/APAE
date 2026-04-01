@@ -187,7 +187,9 @@ export function AppointmentForm({ editAppointment }: AppointmentFormProps) {
     if (dayOfWeek === 0 || dayOfWeek === 6) return true;
 
     const dayName = mapDayOfWeek[dayOfWeek];
-    const isPastOrToday = day.getTime() <= today.getTime();
+    
+    const isPast = day.getTime() < today.getTime(); 
+    
     const professionalWorksThisDay = availabilities.some(
       (a) => a.day === dayName,
     );
@@ -201,7 +203,7 @@ export function AppointmentForm({ editAppointment }: AppointmentFormProps) {
       }
     }
 
-    return isPastOrToday || !professionalWorksThisDay;
+    return isPast || !professionalWorksThisDay;
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -247,6 +249,23 @@ export function AppointmentForm({ editAppointment }: AppointmentFormProps) {
       setSubmitError(error.message || "Erro inesperado ao salvar o agendamento.");
     }
   };
+
+  const isToday = date && format(date, "yyyy-MM-dd") === format(new Date(), "yyyy-MM-dd");  
+  const validTimeSlots = availableTimeSlots.filter(slot => {
+    if (!isToday) return true;
+
+    if (editAppointment && editAppointment.hour.startsWith(slot)) return true;
+
+    const [slotHour, slotMinute] = slot.split(':').map(Number);
+    const now = new Date();
+    const currentHour = now.getHours();
+    const currentMinute = now.getMinutes();
+
+    if (slotHour > currentHour) return true;
+    if (slotHour === currentHour && slotMinute > currentMinute) return true;
+    
+    return false;
+  });
 
   return (
     <Card className="w-full mx-auto border-none shadow-none">
@@ -375,12 +394,12 @@ export function AppointmentForm({ editAppointment }: AppointmentFormProps) {
                     </SelectTrigger>
 
                     <SelectContent>
-                      {availableTimeSlots.length === 0 ? (
-                        <div className="p-2 text-sm text-muted-foreground">
+                      {validTimeSlots.length === 0 ? (
+                        <div className="p-2 text-sm text-muted-foreground text-red-500">
                           Nenhum horário disponível
                         </div>
                       ) : (
-                        availableTimeSlots.map((slot) => (
+                        validTimeSlots.map((slot) => (
                           <SelectItem key={slot} value={slot}>
                             {slot}
                           </SelectItem>

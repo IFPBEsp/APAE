@@ -15,6 +15,8 @@ import br.org.apae.api.professional.domain.exceptions.ProfessionalDocumentConfli
 import br.org.apae.api.professional.domain.model.HealthProfessional;
 import br.org.apae.api.professional.domain.repository.HealthProfessionalRepository;
 import br.org.apae.api.servicearea.application.interfaces.ServiceAreaApplicationService;
+import br.org.apae.api.professional.domain.model.enums.Day;
+import br.org.apae.api.professional.domain.model.enums.Shift;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -187,25 +189,50 @@ public class HealthProfessionalApplicationServiceImpl implements HealthProfessio
     private List<LocalTime> generateSlots(LocalTime start, LocalTime end) {
         List<LocalTime> slots = new ArrayList<>();
         LocalTime current = start;
-
         while (current.isBefore(end)) {
             slots.add(current);
             current = current.plusMinutes(30);
         }
-
         return slots;
     }
-
+    
     public List<LocalTime> getAvailableTimes(UUID professionalId, LocalDate date) {
         List<LocalTime> occupied = repository.findOccupiedHours(professionalId, date);
+    
+        HealthProfessional professional = repository.findById(professionalId)
+            .orElseThrow(HealthProfessionalNotFoundException::new);
+    
+        java.time.DayOfWeek dayOfWeek = date.getDayOfWeek();
+        Day requestedDay = switch (dayOfWeek) {
+            case MONDAY    -> Day.SEGUNDA;
+            case TUESDAY   -> Day.TERCA;
+            case WEDNESDAY -> Day.QUARTA;
+            case THURSDAY  -> Day.QUINTA;
+            case FRIDAY    -> Day.SEXTA;
+            default        -> null;
+        };
+    
+        if (requestedDay == null) return List.of(); 
+    
+        List<LocalTime> allSlots = new ArrayList<>();
+    
+        boolean worksManha = professional.getAvailabilities().stream().anyMatch(a -> a.getDay().equals(requestedDay) && a.getShift().equals(Shift.MANHA));
 
-        List<LocalTime> allSlots = generateSlots(
-                LocalTime.of(8, 0),
-                LocalTime.of(12, 0)
-        );
-
+        boolean worksTarde = professional.getAvailabilities().stream().anyMatch(a -> a.getDay().equals(requestedDay) && a.getShift().equals(Shift.TARDE));
+    
+        if (worksManha) allSlots.addAll(generateSlots(LocalTime.of(8, 0), LocalTime.of(12, 0)));
+        if (worksTarde) allSlots.addAll(generateSlots(LocalTime.of(13, 0), LocalTime.of(17, 0)));
+    
+        LocalDate today = LocalDate.now();
+        LocalTime now = LocalTime.now();
+        if (date.isEqual(today)) {
+            allSlots = allSlots.stream()
+                .filter(slot -> slot.isAfter(now))
+                .collect(java.util.stream.Collectors.toCollection(ArrayList::new));
+        }
+    
         return allSlots.stream()
-                .filter(slot -> !occupied.contains(slot))
-                .toList();
+            .filter(slot -> !occupied.contains(slot))
+            .toList();
     }
 }
