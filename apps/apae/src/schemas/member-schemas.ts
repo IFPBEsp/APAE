@@ -18,9 +18,13 @@ const CNS = z
   .min(18, "CNS deve ter pelo menos 18 dígitos")
   .regex(/^\d{3} \d{4} \d{4} \d{4}$/, "Formato de CNS inválido");
 
-const NIS = z.string().min(1, "NIS é obrigatório");
+const NIS = z
+  .string()
+  .min(1, "NIS é obrigatório")
+  .length(11, "O NIS deve ter exatamente 11 dígitos") 
+  .regex(/^\d+$/, "O NIS deve conter apenas números");
 
-export const Personal = z
+  export const Personal = z
   .object({
     name: z
       .string()

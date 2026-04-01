@@ -37,9 +37,9 @@ const InfoRow: React.FC<InfoRowProps> = ({ label, value }) => {
   }
 
   return (
-    <div className="mb-2">
+    <div className="mb-2 overflow-hidden"> 
       <span className="text-sm font-semibold text-gray-500">{label}</span>
-      <p className="text-base text-black">{displayValue}</p>
+      <p className="text-base text-black break-all">{displayValue}</p>
     </div>
   );
 };

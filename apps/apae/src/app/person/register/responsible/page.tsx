@@ -21,6 +21,7 @@ import React, { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { handleBackendValidationErrors } from "@/utils/form-errors";
 import { usePathname } from "next/navigation"; 
+import { formatPhone } from "@/lib/formats";
 
 import z from "zod";
 import { DoubleColumn, FormButton, MembersRegisterForm } from "../form";
@@ -124,8 +125,10 @@ export default function MembersRegisterGuardianPage() {
                 <FormLabel>Contato de Emergência *</FormLabel>
                 <FormControl>
                   <Input
-                    placeholder="Número de telefone, email e etc."
-                    {...field}
+                    placeholder="(00) 00000-0000"{...field}maxLength={15} onChange={(e) => {
+                      const formatted = formatPhone(e.target.value); 
+                      field.onChange(formatted);
+                  }}
                   />
                 </FormControl>
                 <FormMessage />

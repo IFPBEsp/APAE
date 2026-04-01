@@ -151,7 +151,10 @@ export default function MembersRegisterPersonalPage() {
               <FormItem>
                 <FormLabel>NIS *</FormLabel>
                 <FormControl>
-                  <Input placeholder="Digite o NIS" {...field} />
+                  <Input placeholder="Apenas 11 números" {...field}maxLength={11}onChange={(e) => {
+                    const value = e.target.value.replace(/\D/g, "");
+                    field.onChange(value);
+            }} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
