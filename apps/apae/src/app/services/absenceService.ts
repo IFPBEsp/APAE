@@ -43,7 +43,6 @@ export class AbsenceService {
 
   private static getAuthHeaders(): HeadersInit {
     const token = localStorage.getItem('token');
-    console.log('[AbsenceService] token:', token ? 'presente' : 'AUSENTE');
     return {
       'Content-Type': 'application/json',
       ...(token ? { Authorization: `Bearer ${token}` } : {}),
