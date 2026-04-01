@@ -29,7 +29,7 @@ export function RegistrarFaltaButton({
 }: RegistrarFaltaButtonProps) {
   const [motivo, setMotivo] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-  const [open, setOpen] = useState(false); 
+  const [open, setOpen] = useState(false);
 
   const handleConfirm = async () => {
     if (!motivo.trim()) {
@@ -45,9 +45,22 @@ export function RegistrarFaltaButton({
         justification: motivo.trim(),
       };
 
-      await AbsenceService.registerAbsence(dto);
+      const response = await fetch("/api/absence", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(dto),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message);
+      }
+
       setMotivo("");
       setOpen(false);
+      window.location.reload();
     } catch (error: any) {
       console.error("Erro ao registrar falta:", error);
 
