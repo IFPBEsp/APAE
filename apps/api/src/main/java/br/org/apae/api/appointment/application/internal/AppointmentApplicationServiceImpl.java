@@ -337,14 +337,20 @@ public class AppointmentApplicationServiceImpl implements AppointmentApplication
 
   @Override
   public Page<TodayAppointmentsResponseDTO> listAppointmentForToday(LocalDate date, Pageable pageable) {
-    return this.generatedRepo.listAppointmentsForToday(date, pageable).map(appointment -> {
+
+    LocalDate target = (date != null) ? date : LocalDate.now();
+
+    LocalDateTime start = target.atStartOfDay();
+    LocalDateTime end = target.atTime(23, 59, 59);
+
+    return this.generatedRepo.listAppointmentsForToday(start , end, pageable).map(appointment -> {
         try {
         Patient patient = patientRepo.findById(appointment.getPatientId())
                 .orElseThrow(() -> new RuntimeException("Paciente não encontrado"));
-            
+
         Guardian guardian = guardianRepo.findByPatientId(patient.getId())
                 .orElseThrow(() -> new RuntimeException("Responsável não encontrado"));
-                
+
             List<Parent> pais = parentRepo.findAllByPatientId(patient.getId());
 
             AddressResponseDTO adto = new AddressResponseDTO(patient.getAddress());
