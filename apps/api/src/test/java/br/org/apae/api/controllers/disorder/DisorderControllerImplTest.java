@@ -90,7 +90,7 @@ class DisorderControllerImplTest {
         CreateDisorderDTO requestDto = new CreateDisorderDTO("Transtorno Ansioso");
         UUID idGerado = UUID.randomUUID();
 
-        DisorderResponseDTO responseDto = new DisorderResponseDTO(idGerado, requestDto.name());
+        DisorderResponseDTO responseDto = new DisorderResponseDTO(idGerado, requestDto.name(), false);
 
         when(disorderService.createDisorder(requestDto)).thenReturn(responseDto);
 
@@ -107,8 +107,8 @@ class DisorderControllerImplTest {
 
     @Test
     void shouldGetAllDisordersSucess() throws Exception {
-        DisorderResponseDTO d1 = new DisorderResponseDTO(UUID.randomUUID(), "Transtorno A");
-        DisorderResponseDTO d2 = new DisorderResponseDTO(UUID.randomUUID(), "Transtorno B");
+        DisorderResponseDTO d1 = new DisorderResponseDTO(UUID.randomUUID(), "Transtorno A", false);
+        DisorderResponseDTO d2 = new DisorderResponseDTO(UUID.randomUUID(), "Transtorno B", false);
         List<DisorderResponseDTO> lista = Arrays.asList(d1, d2);
 
         when(disorderService.findAllDisorders()).thenReturn(lista);
@@ -126,7 +126,7 @@ class DisorderControllerImplTest {
     @Test
     void shouldSearchDisordsByIdSucess() throws Exception {
         UUID id = UUID.randomUUID();
-        DisorderResponseDTO responseDto = new DisorderResponseDTO(id, "Transtorno Específico");
+        DisorderResponseDTO responseDto = new DisorderResponseDTO(id, "Transtorno Específico", false);
 
         when(disorderService.findDisorderById(id)).thenReturn(responseDto);
 
@@ -143,7 +143,7 @@ class DisorderControllerImplTest {
     void SouldUpdateDisorderSucess() throws Exception {
         UUID id = UUID.randomUUID();
         UpdateDisorderDTO updateDto = new UpdateDisorderDTO("Transtorno Atualizado");
-        DisorderResponseDTO responseDto = new DisorderResponseDTO(id, updateDto.name());
+        DisorderResponseDTO responseDto = new DisorderResponseDTO(id, updateDto.name(), false);
 
         when(disorderService.updateDisorder(id, updateDto)).thenReturn(responseDto);
 

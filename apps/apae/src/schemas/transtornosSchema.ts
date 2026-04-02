@@ -3,6 +3,7 @@ import { z } from "zod";
 export const transtornoSchema = z.object({
   id: z.string(),
   name: z.string(),
+  hasPatient: z.boolean(),
 });
 
 export const createTranstornoSchema = z.object({

@@ -103,7 +103,7 @@ public class AppointmentMapper {
   public AnnualRegistryResponseDTO toResponse(AnnualRegistry annualRegistry, PatientResponseDTO patient) {
     List<DisorderResponseDTO> disorderResponseDTOS = annualRegistry.getDisorders()
         .stream()
-        .map(disorder -> new DisorderResponseDTO(disorder.getId(), disorder.getName())).toList();
+        .map(disorder -> new DisorderResponseDTO(disorder.getId(), disorder.getName(), false)).toList();
 
     return new AnnualRegistryResponseDTO(
         annualRegistry.getId(),
