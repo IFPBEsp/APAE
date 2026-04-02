@@ -82,7 +82,7 @@ export async function getProfessionalDocuments(id: string) {
 
 
 export async function updateProfessionalDocuments(id: string, formData: FormData) {
-  return fetch(`${API_URL}/professionals/${id}/documents`, {
+  return fetch(`/api/professionals/${id}/documents`, {
     method: "PATCH",
     body: formData,
   });

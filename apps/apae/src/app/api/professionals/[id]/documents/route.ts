@@ -1,15 +1,68 @@
 import { createBaseApi } from "@/lib/axios";
 import { NextResponse } from "next/server";
+import { AxiosError } from "axios";
 
 export async function GET(
   req: Request,
   { params }: { params: { id: string } }
 ) {
-  const api = await createBaseApi();
+  try {
+    const api = await createBaseApi();
 
-  const response = await api.get(
-    `/professionals/${params.id}/documents`
-  );
+    const response = await api.get(`/professionals/${params.id}/documents`);
 
-  return NextResponse.json(response.data);
+    return NextResponse.json(response.data);
+  } catch (error) {
+    if (error instanceof AxiosError) {
+      return NextResponse.json(
+        {
+          message:
+            error.response?.data?.message || "Erro ao buscar documentos",
+        },
+        { status: error.response?.status || 500 }
+      );
+    }
+
+    return NextResponse.json(
+      { message: "Erro interno do servidor" },
+      { status: 500 }
+    );
+  }
+}
+
+export async function PATCH(
+  req: Request,
+  { params }: { params: { id: string } }
+) {
+  try {
+    const api = await createBaseApi();
+    const formData = await req.formData();
+
+    const response = await api.patch(
+      `/professionals/${params.id}/documents`,
+      formData,
+      {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      }
+    );
+
+    return NextResponse.json(response.data, { status: 200 });
+  } catch (error) {
+    if (error instanceof AxiosError) {
+      return NextResponse.json(
+        {
+          message:
+            error.response?.data?.message || "Erro ao enviar documentos",
+        },
+        { status: error.response?.status || 500 }
+      );
+    }
+
+    return NextResponse.json(
+      { message: "Erro interno do servidor" },
+      { status: 500 }
+    );
+  }
 }
