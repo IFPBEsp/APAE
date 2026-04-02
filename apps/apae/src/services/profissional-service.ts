@@ -22,14 +22,14 @@ export async function getAllProfissionais(ativo?: boolean) {
 }*/
 
 export async function inactivateProfissional(id: string) {
-  const response = await fetch(`${API_URL}/professionals/${id}/inactivate`, {
+  const response = await fetch(`/api/professionals/${id}/inactivate`, {
     method: "PUT",
   });
   return response;
 }
 
 export async function activateProfissional(id: string) {
-  const response = await fetch(`${API_URL}/professionals/${id}/activate`, {
+  const response = await fetch(`/api/professionals/${id}/activate`, {
     method: "PUT",
   });
   return response;
@@ -70,7 +70,7 @@ export async function getProfissionalById(id: string) {
 
 export async function getProfessionalDocuments(id: string) {
   try {
-    const response = await axios.get(`${API_URL}/professionals/${id}/documents`);
+    const response = await axios.get(`/api/professionals/${id}/documents`);
     return response.data || [];
   } catch (error) {
     if (axios.isAxiosError(error)) {
@@ -82,7 +82,7 @@ export async function getProfessionalDocuments(id: string) {
 
 
 export async function updateProfessionalDocuments(id: string, formData: FormData) {
-  return fetch(`${API_URL}/professionals/${id}/documents`, {
+  return fetch(`/api/professionals/${id}/documents`, {
     method: "PATCH",
     body: formData,
   });
@@ -90,21 +90,18 @@ export async function updateProfessionalDocuments(id: string, formData: FormData
 
 export async function removeProfessionalDocument(
   professionalId: string,
-  documentId: string
+  documentId: string,
 ) {
   const response = await fetch(
-    `${API_URL}/professionals/${professionalId}/documents/${documentId}`,
-    { method: "DELETE" }
+    `/api/professionals/${professionalId}/documents/${documentId}`,
+    { method: "DELETE" },
   );
 
+  const data = await response.json(); 
+
   if (!response.ok) {
-    const contentType = response.headers.get("content-type");
-    const data = contentType?.includes("application/json")
-      ? await response.json().catch(() => ({}))
-      : {};
-    throw new Error((data as any)?.message || "Erro ao remover documento");
+    throw new Error(data.message || "Erro ao remover documento");
   }
 
-  return true;
+  return data; 
 }
-
