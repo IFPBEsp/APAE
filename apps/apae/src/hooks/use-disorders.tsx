@@ -61,7 +61,7 @@ function withFeedback<TArgs extends readonly unknown[], TReturn>(
   setFeedback: (feedback: Feedback) => void,
   messages: WithFeedbackMessages,
 ) {
-  return async (...args: TArgs): Promise<TReturn | void> => {
+  return async (...args: TArgs): Promise<TReturn> => {
     setLoading(true);
     try {
       const result = await fn(...args);
@@ -99,8 +99,8 @@ function DisordersProvider({
   });
   const [disorders, setDisorders] = useState<Disorder[]>([]);
 
-  const fetchDisorders = useCallback(
-    withFeedback(
+  const fetchDisorders = useCallback(async () => {
+    return withFeedback(
       async () => {
         const response = await fetch("/api/transtornos");
 
@@ -116,14 +116,13 @@ function DisordersProvider({
       {
         success: "Transtornos carregadas com sucesso.",
       },
-    ),
-    [],
-  );
+    )();
+  }, []);
 
-  const fetchDisorder = useCallback(
-    withFeedback(
-      async (params: FetchDisorderParams) => {
-        const response = await fetch(`/api/transtornos/${params.id}`);
+  const fetchDisorder = useCallback(async (params: FetchDisorderParams) => {
+    return withFeedback(
+      async (currentParams: FetchDisorderParams) => {
+        const response = await fetch(`/api/transtornos/${currentParams.id}`);
 
         if (!response.ok) {
           throw Error("Ocorreu um erro ao carregar transtorno.");
@@ -136,82 +135,89 @@ function DisordersProvider({
       {
         success: "Transtorno carregada com sucesso.",
       },
-    ),
-    [],
-  );
+    )(params);
+  }, []);
 
   const createDisorder = useCallback(
-    withFeedback(
-      async (params: CreateDisorderParams): Promise<void> => {
-        const response = await fetch("/api/transtornos", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(params),
-        });
+    async (params: CreateDisorderParams) => {
+      return withFeedback(
+        async (currentParams: CreateDisorderParams): Promise<void> => {
+          const response = await fetch("/api/transtornos", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(currentParams),
+          });
 
-        if (!response.ok) {
-          throw new Error("Ocorreu um erro ao criar transtorno.");
-        }
+          if (!response.ok) {
+            throw new Error("Ocorreu um erro ao criar transtorno.");
+          }
 
-        fetchDisorders();
-      },
-      setLoading,
-      setFeedback,
-      { success: "Transtorno criada com sucesso." },
-    ),
-    [],
+          await fetchDisorders();
+        },
+        setLoading,
+        setFeedback,
+        { success: "Transtorno criada com sucesso." },
+      )(params);
+    },
+    [fetchDisorders],
   );
 
   const updateDisorder = useCallback(
-    withFeedback(
-      async ({ id, ...data }: UpdateDisorderParams) => {
-        const response = await fetch(`/api/transtornos/${id}`, {
-          method: "PUT",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(data),
-        });
+    async (params: UpdateDisorderParams) => {
+      return withFeedback(
+        async ({ id, ...data }: UpdateDisorderParams) => {
+          const response = await fetch(`/api/transtornos/${id}`, {
+            method: "PUT",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(data),
+          });
 
-        if (!response.ok) {
-          throw new Error("Ocorreu um erro ao atualizar transtorno.");
-        }
+          if (!response.ok) {
+            throw new Error("Ocorreu um erro ao atualizar transtorno.");
+          }
 
-        fetchDisorders();
-      },
-      setLoading,
-      setFeedback,
-      {
-        success: "Transtorno atualizado com sucesso.",
-      },
-    ),
-    [],
+          await fetchDisorders();
+        },
+        setLoading,
+        setFeedback,
+        {
+          success: "Transtorno atualizado com sucesso.",
+        },
+      )(params);
+    },
+    [fetchDisorders],
   );
 
   const deleteDisorder = useCallback(
-    withFeedback(
-      async (params: DeleteDisorderParams) => {
-        const response = await fetch(`/api/transtornos/${params.id}`, {
-          method: "DELETE",
-        });
+    async (params: DeleteDisorderParams) => {
+      return withFeedback(
+        async (currentParams: DeleteDisorderParams) => {
+          const response = await fetch(`/api/transtornos/${currentParams.id}`, {
+            method: "DELETE",
+          });
 
-        if (!response.ok) {
-          const errorMessage = await response.text();
-          throw new Error(errorMessage || "Ocorreu um erro ao excluir transtorno.");
-        }
+          if (!response.ok) {
+            const errorData = await response.json().catch(() => null);
+            throw new Error(
+              errorData?.message || "Ocorreu um erro ao excluir transtorno.",
+            );
+          }
 
-        fetchDisorders();
-      },
-      setLoading,
-      setFeedback,
-      {
-        success: "Transtorno excluído com sucesso.",
-      },
-    ),
-    [],
+          await fetchDisorders();
+        },
+        setLoading,
+        setFeedback,
+        {
+          success: "Transtorno excluído com sucesso.",
+        },
+      )(params);
+    },
+    [fetchDisorders],
   );
 
   useEffect(() => {
     fetchDisorders();
-  }, []);
+  }, [fetchDisorders]);
 
   return (
     <DisordersContext.Provider

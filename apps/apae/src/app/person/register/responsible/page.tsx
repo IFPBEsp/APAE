@@ -23,7 +23,6 @@ import { handleBackendValidationErrors } from "@/utils/form-errors";
 import { usePathname } from "next/navigation"; 
 import { formatPhone } from "@/lib/formats";
 
-import z from "zod";
 import { DoubleColumn, FormButton, MembersRegisterForm } from "../form";
 
 export default function MembersRegisterGuardianPage() {

@@ -1,12 +1,12 @@
 "use client";
 
-import { useEffect, useState, useRef } from "react";
+import { Button } from "@/components/ui/button";
 import {
   Dialog,
   DialogContent,
+  DialogFooter,
   DialogHeader,
   DialogTitle,
-  DialogFooter,
 } from "@/components/ui/dialog";
 import {
   Form,
@@ -17,7 +17,6 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
 import {
   Select,
   SelectContent,
@@ -25,23 +24,24 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
 import {
   AnnualRegistryFormSchema,
   AnnualRegistryFormValues,
 } from "@/schemas/anualRegistrySchema";
-import { toast } from "react-toastify";
+import { zodResolver } from "@hookform/resolvers/zod";
 import {
-  Loader2,
-  Upload,
-  FileText,
-  RefreshCw,
   ExternalLink,
+  FileText,
+  Loader2,
+  RefreshCw,
+  Upload,
 } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
+import { useForm } from "react-hook-form";
+import { toast } from "react-toastify";
 
-import { StringMultiSelect } from "@/components/StringMultiSelect";
 import { GenericDatabaseSelect } from "@/components/GenericDatabaseSelect";
+import { StringMultiSelect } from "@/components/StringMultiSelect";
 
 interface DocumentDTO {
   id: string;
@@ -102,12 +102,10 @@ export default function AnnualRegistryEditModal({
   const [isLoadingDocs, setIsLoadingDocs] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
   const [docType, setDocType] = useState("MEDICAL_REPORT");
-
   const [fullPatientData, setFullPatientData] = useState<any>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const currentYearInt = new Date().getFullYear();
-
   const availableYears = Array.from({ length: 32 }, (_, i) =>
     (currentYearInt + 1 - i).toString(),
   );
@@ -245,7 +243,7 @@ export default function AnnualRegistryEditModal({
       toast.success("Documento anexado!");
       fetchDocuments();
       if (fileInputRef.current) fileInputRef.current.value = "";
-    } catch (error) {
+    } catch {
       toast.error("Erro ao enviar documento.");
     } finally {
       setIsUploading(false);
@@ -266,7 +264,7 @@ export default function AnnualRegistryEditModal({
     e: React.ChangeEvent<HTMLInputElement>,
     onChange: (value: string) => void,
   ) => {
-    let value = e.target.value.replace(/\D/g, "");
+    const value = e.target.value.replace(/\D/g, "");
     if (value === "") {
       onChange("");
       return;
@@ -297,7 +295,6 @@ export default function AnnualRegistryEditModal({
   const onSubmit = async (data: AnnualRegistryFormValues) => {
     try {
       const registryId = initialData?.id;
-
       const finalDiseases =
         data.diseases && data.diseases.trim() !== ""
           ? data.diseases
@@ -338,7 +335,6 @@ export default function AnnualRegistryEditModal({
 
       if (mode === "create") {
         regPayload.year = parseInt(data.year);
-
         regRes = await fetch(`/api/pessoas/${patientId}/registro-anual`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -346,7 +342,6 @@ export default function AnnualRegistryEditModal({
         });
       } else {
         if (!registryId) throw new Error("ID do registro não encontrado.");
-
         regRes = await fetch(
           `/api/pessoas/${patientId}/registro-anual/${registryId}`,
           {
@@ -407,7 +402,6 @@ export default function AnnualRegistryEditModal({
 
       const savedYear = mode === "create" ? data.year : undefined;
       onClose(savedYear);
-
       toast.success(
         mode === "create"
           ? "Registro criado com sucesso!"
@@ -599,7 +593,9 @@ export default function AnnualRegistryEditModal({
                       name="vaccines"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel className="...">Vacinas</FormLabel>
+                          <FormLabel className="text-slate-700 font-bold text-xs">
+                            Vacinas
+                          </FormLabel>
                           <FormControl>
                             <GenericDatabaseSelect<Vaccine>
                               value={field.value}
@@ -607,7 +603,7 @@ export default function AnnualRegistryEditModal({
                               endpoint="/api/vacinas"
                               labelSingular="Vacina"
                               labelKey="name"
-                              placeholder="Selecione ou crie vacinas..."
+                              placeholder="Selecione as vacinas"
                             />
                           </FormControl>
                           <FormMessage />
@@ -615,7 +611,6 @@ export default function AnnualRegistryEditModal({
                       )}
                     />
                   </div>
-
                   <div className="pt-1 space-y-3">
                     <FormField
                       control={form.control}
@@ -632,7 +627,7 @@ export default function AnnualRegistryEditModal({
                               endpoint="/api/transtornos"
                               labelSingular="Transtorno"
                               labelKey="name"
-                              placeholder="Selecione ou crie transtornos..."
+                              placeholder="Selecione os transtornos"
                             />
                           </FormControl>
                           <FormMessage />
@@ -652,10 +647,10 @@ export default function AnnualRegistryEditModal({
                             <GenericDatabaseSelect<ServiceType>
                               value={field.value}
                               onChange={field.onChange}
-                              endpoint="/api/tipo-atendimento"
+                              endpoint="/api/tipos-atendimento"
                               labelSingular="Tipo de Atendimento"
                               labelKey="area"
-                              placeholder="Selecione ou crie tipos..."
+                              placeholder="Selecione os atendimentos"
                             />
                           </FormControl>
                           <FormMessage />
@@ -666,6 +661,7 @@ export default function AnnualRegistryEditModal({
                 </form>
               </Form>
             </div>
+
             <div className="flex flex-col h-full bg-white p-5 rounded-xl shadow-sm border border-slate-200">
               <h3 className="text-[#0D4F97] font-bold text-base mb-4 pb-2 border-b border-slate-100 flex items-center justify-between">
                 <div className="flex items-center gap-2">

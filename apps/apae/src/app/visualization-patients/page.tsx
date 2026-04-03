@@ -24,9 +24,8 @@ export default function PatientsAndStudentsScreen() {
   const debouncedSearchName = useDebounce(searchName, 500);
   const [page, setPage] = useState(0);
   const [size] = useState(10);
-  const [totalPages, setTotalPages] = useState(0);
-  const [totalElements, setTotalElements] = useState(0);
-
+  const [, setTotalPages] = useState(0);
+  const [, setTotalElements] = useState(0);
   const {
     transtornoOptions,
     anoOptions,
