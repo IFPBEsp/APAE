@@ -1,3 +1,5 @@
+import { ReactNode } from "react";
+
 import {
   Table,
   TableBody,
@@ -5,20 +7,20 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/components/ui/table"
+} from "@/components/ui/table";
 
-interface Column {
-  header: string
-  accessor: string
+interface Column<T> {
+  header: string;
+  accessor: keyof T;
 }
 
-interface DataTableProps {
-  columns: Column[]
-  data: any[]
-  actions?: (row: any) => React.ReactNode
+interface DataTableProps<T> {
+  columns: Column<T>[];
+  data: T[];
+  actions?: (row: T) => ReactNode;
 }
 
-export function DataTable({ columns, data, actions }: DataTableProps) {
+export function DataTable<T>({ columns, data, actions }: DataTableProps<T>) {
   return (
     <Table>
       <TableHeader>
@@ -33,12 +35,14 @@ export function DataTable({ columns, data, actions }: DataTableProps) {
         {data.map((row, i) => (
           <TableRow key={i}>
             {columns.map((col, j) => (
-              <TableCell key={j}>{row[col.accessor]}</TableCell>
+              <TableCell key={j}>
+                {row[col.accessor] as React.ReactNode}
+              </TableCell>
             ))}
             {actions && <TableCell>{actions(row)}</TableCell>}
           </TableRow>
         ))}
       </TableBody>
     </Table>
-  )
+  );
 }
