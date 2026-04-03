@@ -10,6 +10,8 @@ import jakarta.validation.Valid;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 import br.org.apae.api.common.dto.patient.request.documents.CreateDocumentsDTO;
 import br.org.apae.api.common.dto.patient.request.patient.CreatePatientDTO;
@@ -54,10 +56,11 @@ public interface PatientController {
         @Parameter(name = "city", description = "Cidade", in = ParameterIn.QUERY)
         @Parameter(name = "treatmentType", description = "Tipo de atendimento", in = ParameterIn.QUERY)
         @GetMapping
-        ResponseEntity<List<PatientSummaryResponseDTO>> findWithFilters(
+        ResponseEntity<Page<PatientSummaryResponseDTO>> findWithFilters(
                 // Ocultamos o Map do Swagger para ele não criar um campo JSON estranho
                 @Parameter(hidden = true)
-                @RequestParam Map<String, String> filters
+                @RequestParam Map<String, String> filters,
+                @Parameter(hidden = true) Pageable pageable
         );
 
         @Operation(summary = "Atualizar um paciente")
@@ -69,6 +72,16 @@ public interface PatientController {
         @PutMapping("/{id}")
         ResponseEntity<PatientResponseDTO> updatePatient(@PathVariable UUID id,
                         @RequestBody @Valid UpdatePatientDTO updatePatientDTO);
+
+        @Operation(summary = "Atualizar foto de perfil do paciente")
+        @ApiResponses(value = {
+                        @ApiResponse(responseCode = "200", description = "Foto atualizada com sucesso"),
+                        @ApiResponse(responseCode = "400", description = "Arquivo invalido"),
+                        @ApiResponse(responseCode = "404", description = "Paciente nao encontrado")
+        })
+        @PutMapping(value = "/{id}/photo", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+        ResponseEntity<PatientResponseDTO> updatePatientPhoto(@PathVariable UUID id,
+                        @RequestPart("photo") org.springframework.web.multipart.MultipartFile photo);
 
         @Operation(summary = "Excluir um paciente", description = "Remove um paciente do sistema a partir do seu ID.")
         @ApiResponses(value = {

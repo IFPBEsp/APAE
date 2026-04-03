@@ -19,6 +19,7 @@ public class PatientSpecification {
     public static Specification<Patient> filterBy(Map<String, String> filters) {
         return (root, query, criteriaBuilder) -> {
             List<Predicate> predicates = new ArrayList<>();
+            predicates.add(criteriaBuilder.isFalse(root.get("isDeleted")));
             filters.forEach((key, value) -> {
                 if (value != null && !value.isBlank()) {
                     switch (key) {
@@ -30,17 +31,20 @@ public class PatientSpecification {
                             predicates.add(criteriaBuilder.like(criteriaBuilder.lower(root.get("address").get("city")), "%" + value.toLowerCase() + "%"));
                             break;
                         case "year":
-                            Integer anoValor = Integer.parseInt(value);
+                            try {
+                                Integer anoValor = Integer.parseInt(value);
 
-                            Subquery<UUID> anoSubQuery = query.subquery(UUID.class);
-                            Root<AnnualRegistry> anoRoot = anoSubQuery.from(AnnualRegistry.class);
+                                Subquery<UUID> anoSubQuery = query.subquery(UUID.class);
+                                Root<AnnualRegistry> anoRoot = anoSubQuery.from(AnnualRegistry.class);
 
-                            anoSubQuery.select(anoRoot.get("patientId"))
-                                    .where(
-                                            criteriaBuilder.equal(anoRoot.get("year"), anoValor)
-                                    );
+                                anoSubQuery.select(anoRoot.get("patientId"))
+                                        .where(
+                                                criteriaBuilder.equal(anoRoot.get("year"), anoValor)
+                                        );
 
-                            predicates.add(root.get("id").in(anoSubQuery));
+                                predicates.add(root.get("id").in(anoSubQuery));
+                            } catch (NumberFormatException ignored) {
+                            }
                             break;
 
                         case "disorder":

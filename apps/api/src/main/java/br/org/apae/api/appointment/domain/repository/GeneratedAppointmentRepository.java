@@ -3,6 +3,7 @@ package br.org.apae.api.appointment.domain.repository;
 import br.org.apae.api.appointment.domain.model.GeneratedAppointment;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.repository.query.Param;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -23,7 +24,14 @@ public interface GeneratedAppointmentRepository extends JpaRepository<GeneratedA
     Page<GeneratedAppointment> findByPatientIdAndScheduledDateTimeBetween(
             UUID patientId, LocalDateTime start, LocalDateTime end, Pageable pageable);
 
-    @Query("SELECT g FROM GeneratedAppointment g " +
-        "WHERE FUNCTION('DATE', COALESCE(g.overriddenDateTime, g.scheduledDateTime)) = CURRENT_DATE")
-    Page<GeneratedAppointment> listAppointmentsForToday(Pageable pageable);
+    @Query("""
+        SELECT g FROM GeneratedAppointment g
+        WHERE COALESCE(g.overriddenDateTime, g.scheduledDateTime)
+        BETWEEN :start AND :end
+    """)
+    Page<GeneratedAppointment> listAppointmentsForToday(
+            @Param("start") LocalDateTime start,
+            @Param("end") LocalDateTime end,
+            Pageable pageable
+    );
 }

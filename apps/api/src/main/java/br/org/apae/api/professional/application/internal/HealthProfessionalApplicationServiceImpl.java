@@ -199,10 +199,19 @@ public class HealthProfessionalApplicationServiceImpl implements HealthProfessio
     public List<LocalTime> getAvailableTimes(UUID professionalId, LocalDate date) {
         List<LocalTime> occupied = repository.findOccupiedHours(professionalId, date);
 
-        List<LocalTime> allSlots = generateSlots(
+        List<LocalTime> morningSlots = generateSlots(
                 LocalTime.of(8, 0),
                 LocalTime.of(12, 0)
         );
+
+        List<LocalTime> afternoonSlots = generateSlots(
+                LocalTime.of(14, 0),
+                LocalTime.of(17, 0)
+        );
+
+        List<LocalTime> allSlots = new ArrayList<>();
+        allSlots.addAll(morningSlots);
+        allSlots.addAll(afternoonSlots);
 
         return allSlots.stream()
                 .filter(slot -> !occupied.contains(slot))

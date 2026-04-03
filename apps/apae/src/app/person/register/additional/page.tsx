@@ -14,10 +14,12 @@ import {
   useMembersRegisterContext,
 } from "@/hooks/use-members-register-context";
 import { Additionals } from "@/schemas/member-schemas";
+import { EditAdditionals } from "@/schemas/edit-member-schemas"; 
 import { zodResolver } from "@hookform/resolvers/zod";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react"; 
 import { useForm } from "react-hook-form";
 import { handleBackendValidationErrors } from "@/utils/form-errors";
+import { usePathname } from "next/navigation"; 
 
 import z from "zod";
 import {
@@ -53,7 +55,6 @@ type DialogProps = Readonly<{
 
 function CreateVaccineDialog({ open, onOpenChange, onSuccess }: DialogProps) {
   const { createVaccine } = useVaccinesContext();
-
   const form = useForm<z.infer<typeof CreateVaccine>>({
     resolver: zodResolver(CreateVaccine),
     defaultValues: { name: "" },
@@ -69,10 +70,7 @@ function CreateVaccineDialog({ open, onOpenChange, onSuccess }: DialogProps) {
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent>
-        <DialogHeader>
-          <DialogTitle>Nova Vacina</DialogTitle>
-        </DialogHeader>
-
+        <DialogHeader><DialogTitle>Nova Vacina</DialogTitle></DialogHeader>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
             <FormField
@@ -81,25 +79,14 @@ function CreateVaccineDialog({ open, onOpenChange, onSuccess }: DialogProps) {
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Nome da Vacina</FormLabel>
-                  <FormControl>
-                    <Input placeholder="Ex: Hepatite B" {...field} />
-                  </FormControl>
+                  <FormControl><Input placeholder="Ex: Hepatite B" {...field} /></FormControl>
                   <FormMessage />
                 </FormItem>
               )}
             />
-
             <DialogFooter>
-              <Button
-                variant="outline"
-                type="button"
-                onClick={() => onOpenChange(false)}
-              >
-                Cancelar
-              </Button>
-              <Button type="submit" disabled={form.formState.isSubmitting}>
-                {form.formState.isSubmitting ? "Salvando..." : "Salvar"}
-              </Button>
+              <Button variant="outline" type="button" onClick={() => onOpenChange(false)}>Cancelar</Button>
+              <Button type="submit" disabled={form.formState.isSubmitting}>Salvar</Button>
             </DialogFooter>
           </form>
         </Form>
@@ -108,14 +95,8 @@ function CreateVaccineDialog({ open, onOpenChange, onSuccess }: DialogProps) {
   );
 }
 
-function CreateCareDialog({
-  open,
-  onConfirm,
-  onOpenChange,
-  onSuccess
-}: DialogProps & { onConfirm?: () => Promise<void> }) {
+function CreateCareDialog({ open, onOpenChange, onSuccess, onConfirm }: DialogProps & { onConfirm?: () => Promise<void> }) {
   const { create } = useCreateServiceArea();
-
   const form = useForm<z.infer<typeof CreateCare>>({
     resolver: zodResolver(CreateCare),
     defaultValues: { name: "" },
@@ -132,10 +113,7 @@ function CreateCareDialog({
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent>
-        <DialogHeader>
-          <DialogTitle>Novo Atendimento</DialogTitle>
-        </DialogHeader>
-
+        <DialogHeader><DialogTitle>Novo Atendimento</DialogTitle></DialogHeader>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
             <FormField
@@ -144,25 +122,14 @@ function CreateCareDialog({
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Nome do Atendimento</FormLabel>
-                  <FormControl>
-                    <Input placeholder="Ex: Oftamologista" {...field} />
-                  </FormControl>
+                  <FormControl><Input placeholder="Ex: Oftamologista" {...field} /></FormControl>
                   <FormMessage />
                 </FormItem>
               )}
             />
-
             <DialogFooter>
-              <Button
-                variant="outline"
-                type="button"
-                onClick={() => onOpenChange(false)}
-              >
-                Cancelar
-              </Button>
-              <Button type="submit" disabled={form.formState.isSubmitting}>
-                {form.formState.isSubmitting ? "Salvando..." : "Salvar"}
-              </Button>
+              <Button variant="outline" type="button" onClick={() => onOpenChange(false)}>Cancelar</Button>
+              <Button type="submit" disabled={form.formState.isSubmitting}>Salvar</Button>
             </DialogFooter>
           </form>
         </Form>
@@ -173,7 +140,6 @@ function CreateCareDialog({
 
 function CreateDisorderDialog({ open, onOpenChange, onSuccess }: DialogProps) {
   const { createDisorder } = useDisordersContext();
-
   const form = useForm<z.infer<typeof CreateDisorder>>({
     resolver: zodResolver(CreateDisorder),
     defaultValues: { name: "" },
@@ -189,10 +155,7 @@ function CreateDisorderDialog({ open, onOpenChange, onSuccess }: DialogProps) {
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent>
-        <DialogHeader>
-          <DialogTitle>Novo Transtorno</DialogTitle>
-        </DialogHeader>
-
+        <DialogHeader><DialogTitle>Novo Transtorno</DialogTitle></DialogHeader>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
             <FormField
@@ -201,25 +164,14 @@ function CreateDisorderDialog({ open, onOpenChange, onSuccess }: DialogProps) {
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Nome do Transtorno</FormLabel>
-                  <FormControl>
-                    <Input placeholder="Ex: TDAH" {...field} />
-                  </FormControl>
+                  <FormControl><Input placeholder="Ex: TDAH" {...field} /></FormControl>
                   <FormMessage />
                 </FormItem>
               )}
             />
-
             <DialogFooter>
-              <Button
-                variant="outline"
-                type="button"
-                onClick={() => onOpenChange(false)}
-              >
-                Cancelar
-              </Button>
-              <Button type="submit" disabled={form.formState.isSubmitting}>
-                {form.formState.isSubmitting ? "Salvando..." : "Salvar"}
-              </Button>
+              <Button variant="outline" type="button" onClick={() => onOpenChange(false)}>Cancelar</Button>
+              <Button type="submit" disabled={form.formState.isSubmitting}>Salvar</Button>
             </DialogFooter>
           </form>
         </Form>
@@ -230,12 +182,12 @@ function CreateDisorderDialog({ open, onOpenChange, onSuccess }: DialogProps) {
 
 export default function MembersRegisterAdditionalsPage() {
   const [modal, setModal] = useState<"disorder" | "vaccine" | "care" | null>(null);
-  
   const [refreshKey, setRefreshKey] = useState(0); 
 
   const { areas: cares, fetchCares } = useFetchServiceAreas();
   const { vaccines } = useVaccinesContext();
   const { disorders } = useDisordersContext();
+  
   const {
     state: { additionals },
     setters: { setAdditionalsData, setStep },
@@ -243,13 +195,27 @@ export default function MembersRegisterAdditionalsPage() {
 
   const [isLoading, setIsLoading] = useState(false);
 
-  const form = useForm<z.infer<typeof Additionals>>({
+  const pathname = usePathname();
+  const isEditing = pathname.includes("/edit");
+  const currentSchema = isEditing ? EditAdditionals : Additionals;
+
+  const form = useForm<any>({
     mode: "onBlur",
-    resolver: zodResolver(Additionals),
+    resolver: zodResolver(currentSchema),
     defaultValues: additionals,
   });
 
-  const onSubmit = async (values: z.infer<typeof Additionals>) => {
+  const [isInitialized, setIsInitialized] = useState(false);
+
+  useEffect(() => {
+    if (isEditing && !isInitialized && (additionals.diseases || additionals.vaccines.length > 0)) {
+      form.reset(additionals);
+      setIsInitialized(true);
+      setRefreshKey(prev => prev + 1);
+    }
+  }, [additionals, form, isEditing, isInitialized]);
+
+  const onSubmit = async (values: any) => {
     setIsLoading(true);
     try {
       setAdditionalsData(values);
@@ -268,8 +234,8 @@ export default function MembersRegisterAdditionalsPage() {
       <CreateCareDialog
         open={modal === "care"}
         onConfirm={fetchCares}
-        onOpenChange={(value) => setModal(value ? "care" : null)}
-        onSuccess={(newName) => {
+        onOpenChange={(value: boolean) => setModal(value ? "care" : null)}
+        onSuccess={(newName: string) => {
           const currentValues = form.getValues("care.types") ||[];
           if (!currentValues.includes(newName)) {
             form.setValue("care.types",[...currentValues, newName], { shouldDirty: true, shouldValidate: true });
@@ -279,8 +245,8 @@ export default function MembersRegisterAdditionalsPage() {
       />
       <CreateDisorderDialog
         open={modal === "disorder"}
-        onOpenChange={(value) => setModal(value ? "disorder" : null)}
-        onSuccess={(newName) => {
+        onOpenChange={(value: boolean) => setModal(value ? "disorder" : null)}
+        onSuccess={(newName: string) => {
           const currentValues = form.getValues("disability.types") ||[];
           if (!currentValues.includes(newName)) {
             form.setValue("disability.types", [...currentValues, newName], { shouldDirty: true, shouldValidate: true });
@@ -290,8 +256,8 @@ export default function MembersRegisterAdditionalsPage() {
       />
       <CreateVaccineDialog
         open={modal === "vaccine"}
-        onOpenChange={(value) => setModal(value ? "vaccine" : null)}
-        onSuccess={(newName) => {
+        onOpenChange={(value: boolean) => setModal(value ? "vaccine" : null)}
+        onSuccess={(newName: string) => {
           const currentValues = form.getValues("vaccines") ||[];
           if (!currentValues.includes(newName)) {
              form.setValue("vaccines",[...currentValues, newName], { shouldDirty: true, shouldValidate: true });
@@ -302,7 +268,7 @@ export default function MembersRegisterAdditionalsPage() {
       
       <Form {...form}>
         <MembersRegisterForm
-          title="Informações Adicionais"
+          title={isEditing ? "Editar Informações Adicionais" : "Informações Adicionais"}
           onSubmit={form.handleSubmit(onSubmit)}
           buttons={
             <>
@@ -422,7 +388,7 @@ export default function MembersRegisterAdditionalsPage() {
               name="disability.report"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Laudo da Deficiência *</FormLabel>
+                  <FormLabel>Laudo da Deficiência {isEditing ? "(Opcional na edição)" : "*"}</FormLabel>
                   <FormControl>
                     <FileInputButton
                       id={field.name}
@@ -433,9 +399,9 @@ export default function MembersRegisterAdditionalsPage() {
                         }
                       }}
                     >
-                      {field.value ? (
+                      {field.value instanceof File ? (
                         <span className="truncate text-left" title={field.value.name}>
-                          Arquivo selecionado: {field.value.name}
+                          Arquivo: {field.value.name}
                         </span>
                       ) : (
                         "Selecionar Laudo"
@@ -479,7 +445,7 @@ export default function MembersRegisterAdditionalsPage() {
               name="care.referral"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Encaminhamento *</FormLabel>
+                  <FormLabel>Encaminhamento {isEditing ? "(Opcional na edição)" : "*"}</FormLabel>
                   <FormControl>
                     <FileInputButton
                       id={field.name}
@@ -490,9 +456,9 @@ export default function MembersRegisterAdditionalsPage() {
                         }
                       }}
                     >
-                      {field.value ? (
+                      {field.value instanceof File ? (
                         <span className="truncate text-left" title={field.value.name}>
-                          Arquivo selecionado: {field.value.name}
+                          Arquivo: {field.value.name}
                         </span>
                       ) : (
                         "Selecionar Encaminhamento"

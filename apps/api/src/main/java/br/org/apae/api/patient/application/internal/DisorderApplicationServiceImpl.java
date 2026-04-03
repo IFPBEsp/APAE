@@ -6,8 +6,11 @@ import br.org.apae.api.common.dto.patient.response.disorder.DisorderResponseDTO;
 import br.org.apae.api.patient.application.interfaces.DisorderApplicationService;
 import br.org.apae.api.patient.application.mappers.DisorderMapper;
 import br.org.apae.api.patient.domain.exceptions.DisorderConflictException;
+import br.org.apae.api.patient.domain.exceptions.DisorderInUseException;
 import br.org.apae.api.patient.domain.exceptions.DisorderNotFoundException;
+import org.springframework.dao.DataIntegrityViolationException;
 import br.org.apae.api.patient.domain.model.Disorder;
+import br.org.apae.api.patient.domain.repository.AnnualRegistryRepository;
 import br.org.apae.api.patient.domain.repository.DisorderRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -21,9 +24,10 @@ public class DisorderApplicationServiceImpl implements DisorderApplicationServic
 
     private final DisorderRepository repository;
     private final DisorderMapper mapper;
-
-    public DisorderApplicationServiceImpl(DisorderRepository repository, DisorderMapper mapper) {
+    private final AnnualRegistryRepository annualRegistryRepository;
+    public DisorderApplicationServiceImpl(DisorderRepository repository, AnnualRegistryRepository annualRegistryRepository, DisorderMapper mapper) {
         this.repository = repository;
+        this.annualRegistryRepository = annualRegistryRepository;
         this.mapper = mapper;
     }
 
@@ -37,7 +41,7 @@ public class DisorderApplicationServiceImpl implements DisorderApplicationServic
         Disorder disorder = mapper.toEntity(createDisorderDto);
         Disorder savedDisorder = repository.save(disorder);
 
-        return mapper.toResponseDTO(savedDisorder);
+        return new DisorderResponseDTO(savedDisorder, false);
     }
 
     @Override
@@ -50,7 +54,7 @@ public class DisorderApplicationServiceImpl implements DisorderApplicationServic
         Set<Disorder> disorders = repository.findByNameIn(names);
 
         return disorders.stream()
-                .map(mapper::toResponseDTO)
+                .map(disorder -> new DisorderResponseDTO(disorder, false))
                 .collect(Collectors.toSet());
     }
 
@@ -67,8 +71,15 @@ public class DisorderApplicationServiceImpl implements DisorderApplicationServic
     @Override
     @Transactional(readOnly = true)
     public List<DisorderResponseDTO> findAllDisorders() {
-        return repository.findAll().stream()
-                .map(mapper::toResponseDTO)
+        List<Disorder> disorders = repository.findAll();
+
+        Set<UUID> idsInUse =annualRegistryRepository.findAllUseDisordersIds().stream().collect(Collectors.toSet());
+
+        return disorders.stream()
+                .map(disorder -> {
+                    boolean hasPatient = idsInUse.contains(disorder.getId());
+                    return new DisorderResponseDTO(disorder, hasPatient);
+                })
                 .toList();
     }
 
@@ -76,7 +87,8 @@ public class DisorderApplicationServiceImpl implements DisorderApplicationServic
     @Transactional(readOnly = true)
     public DisorderResponseDTO findDisorderById(UUID id) {
         Disorder disorder = findDisorderOrThrow(id);
-        return mapper.toResponseDTO(disorder);
+        boolean hasPatient = annualRegistryRepository.isDisorderInUse(id);
+        return new DisorderResponseDTO(disorder, hasPatient);
     }
 
     @Override
@@ -89,16 +101,30 @@ public class DisorderApplicationServiceImpl implements DisorderApplicationServic
                 throw new DisorderConflictException(dto.name());
             }
             disorder.setName(dto.name());
-        }
+        } 
 
-        return mapper.toResponseDTO(repository.save(disorder));
+        boolean hasPatient = annualRegistryRepository.isDisorderInUse(id);
+
+        return new DisorderResponseDTO(disorder, hasPatient);
     }
 
     @Override
     @Transactional
     public void deleteDisorder(UUID id) {
-        Disorder disorder = findDisorderOrThrow(id);
-        repository.delete(disorder);
+        if (!repository.existsById(id)) {
+            throw new DisorderNotFoundException();
+        }
+
+        if (annualRegistryRepository.isDisorderInUse(id)) {
+            throw new DisorderInUseException();
+        }
+
+        try {
+            repository.deleteById(id);
+            repository.flush();
+        } catch (DataIntegrityViolationException e) {
+            throw new DisorderInUseException();
+        }
     }
 
     private Disorder findDisorderOrThrow(UUID id) {

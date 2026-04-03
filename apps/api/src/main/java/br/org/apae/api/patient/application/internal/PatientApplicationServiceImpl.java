@@ -105,16 +105,16 @@ public class PatientApplicationServiceImpl implements PatientApplicationService 
         });
     }
 
-    @Override
+   @Override
     @Transactional(readOnly = true)
-    public List<PatientSummaryResponseDTO> findPatientByFilter(Map<String, String> filters) {
+    public Page<PatientSummaryResponseDTO> findPatientByFilter(Map<String, String> filters, Pageable pageable) {
         Specification<Patient> spec = PatientSpecification.filterBy(filters);
-        return patientRepository.findAll(spec).stream()
+
+        return patientRepository.findAll(spec, pageable)
                 .map(patient -> {
                     String photo = documentService.getPatientPhoto(patient.getId());
                     return patientMapper.toSummaryResponseDTO(patient, photo);
-                })
-                .toList();
+                });
     }
 
     @Override
@@ -134,6 +134,19 @@ public class PatientApplicationServiceImpl implements PatientApplicationService 
         String photo = documentService.getPatientPhoto(id);
 
         return patientMapper.toResponseDTO(updatedPatient, guardianDto, parentDtos, photo);
+    }
+
+    @Override
+    @Transactional
+    public PatientResponseDTO updatePatientPhoto(UUID id, org.springframework.web.multipart.MultipartFile photo) {
+        Patient patient = patientDomainService.getByIdOrThrow(id);
+        documentService.storePatientPhoto(patient, photo);
+
+        GuardianResponseDTO guardianDto = guardianService.findGuardianByPatientId(id);
+        List<ParentResponseDTO> parentDtos = parentService.findParentsByPatientId(id);
+        String photoUrl = documentService.getPatientPhoto(id);
+
+        return patientMapper.toResponseDTO(patient, guardianDto, parentDtos, photoUrl);
     }
 
     @Override

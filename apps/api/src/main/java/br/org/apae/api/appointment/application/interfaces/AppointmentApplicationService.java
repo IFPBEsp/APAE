@@ -25,7 +25,7 @@ public interface AppointmentApplicationService {
 
   AppointmentResponseDTO findById(UUID id);
 
-  AppointmentResponseDTO updateAppointment(UUID appointmentId, Integer newFrequency, LocalTime newTime);
+  AppointmentResponseDTO update(UUID appointmentId, UpdateAppointmentDTO dto);
 
   void delete(UUID id);
 
@@ -41,7 +41,7 @@ public interface AppointmentApplicationService {
   List<GeneratedAppointmentResponseDTO> generateAppointments(
           UUID annualRegistrationId, LocalDate start, LocalDate end);
 
-  Page<TodayAppointmentsResponseDTO> listAppointmentForToday(Pageable pageable);
+  Page<TodayAppointmentsResponseDTO> listAppointmentForToday(LocalDate date, Pageable pageable);
 
   TodayAppointmentsResponseDTO findGeneratedAppointmentById(UUID id);
 }

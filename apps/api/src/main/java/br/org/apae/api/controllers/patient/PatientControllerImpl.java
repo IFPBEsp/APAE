@@ -19,6 +19,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 import java.util.HashMap;
 import java.util.List;
@@ -58,17 +60,29 @@ public class PatientControllerImpl implements PatientController {
         return ResponseEntity.ok(patient);
     }
 
-    @Override
-    public ResponseEntity<List<PatientSummaryResponseDTO>> findWithFilters(@RequestParam Map<String, String> filters) {
+   @Override
+    public ResponseEntity<Page<PatientSummaryResponseDTO>> findWithFilters(
+            @RequestParam Map<String, String> filters,
+            Pageable pageable
+    ) {
         filters.values().removeIf(String::isBlank);
+        filters.remove("page");
+        filters.remove("size");
+        filters.remove("sort");
 
-        List<PatientSummaryResponseDTO> patients = patientService.findPatientByFilter(filters);
+        Page<PatientSummaryResponseDTO> patients = patientService.findPatientByFilter(filters, pageable);
         return ResponseEntity.ok(patients);
     }
 
     @Override
     public ResponseEntity<PatientResponseDTO> updatePatient(UUID id, UpdatePatientDTO updatePatientDTO) {
         PatientResponseDTO updatedPatient = patientService.updatePatient(id, updatePatientDTO);
+        return ResponseEntity.ok(updatedPatient);
+    }
+
+    @Override
+    public ResponseEntity<PatientResponseDTO> updatePatientPhoto(UUID id, org.springframework.web.multipart.MultipartFile photo) {
+        PatientResponseDTO updatedPatient = patientService.updatePatientPhoto(id, photo);
         return ResponseEntity.ok(updatedPatient);
     }
 

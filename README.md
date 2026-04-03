@@ -10,15 +10,30 @@ Projeto em desenvolvimento, fruto de uma parceria entre o IFPB (Campus Esperanç
 
 ## Índice
 
-1. [Introdução](#introdução)
-2. [Apresentação do Projeto](#apresentação-do-projeto)
+- [APAE](#apae)
+  - [Índice](#índice)
+  - [Introdução](#introdução)
+  - [Apresentação do Projeto](#apresentação-do-projeto)
     - [Como Executar](#como-executar)
-3. [Fluxo de Trabalho](#fluxo-de-trabalho)
-   - [Convenção de Commits](#convenção-de-commits)
-   - [Criação de Branches](#criação-de-branches)
-   - [Labels](#labels)
-   - [Raia do Kanban](#raia-do-kanban)
-4. [Configuração do Projeto](#configuração-do-projeto)
+      - [Outros Comandos:](#outros-comandos)
+      - [Credenciais do usuário para testes:](#credenciais-do-usuário-para-testes)
+  - [Fluxo de Trabalho](#fluxo-de-trabalho)
+    - [Convenção de Commits](#convenção-de-commits)
+      - [Dicionário de Tipos](#dicionário-de-tipos)
+      - [Dicionário de Escopo](#dicionário-de-escopo)
+    - [Criação de Branches](#criação-de-branches)
+    - [Labels](#labels)
+      - [Tipos de Projeto](#tipos-de-projeto)
+      - [Equipes](#equipes)
+      - [GitFlow](#gitflow)
+      - [Outras Labels Úteis](#outras-labels-úteis)
+    - [Raia do Kanban](#raia-do-kanban)
+  - [Configuração do Projeto](#configuração-do-projeto)
+    - [Variáveis de Ambiente (Opcional)](#variáveis-de-ambiente-opcional)
+    - [Como configurar](#como-configurar)
+    - [Envio de e-mails](#envio-de-e-mails)
+    - [Segurança](#segurança)
+    - [Observações](#observações)
 
 ---
 
@@ -48,6 +63,12 @@ O projeto foi automatizado para rodar com o mínimo de comandos utilizando **pnp
 - `pnpm docker:up`: Sobe apenas o banco de dados e MinIO.
 - `pnpm docker:down`: Para os containers e os remove da memória.
 - `pnpm docker:drop`: Para os containers, os remove e apaga os volumes associados.
+- `pnpm db:seed`: Cria um usuário admin no banco de dados para fins de testes.
+
+#### Credenciais do usuário para testes:
+- Email: `admin@teste.com`
+- CPF: `123.456.789-00`
+- Senha: `123456`
 
 ---
 
@@ -184,6 +205,15 @@ O Kanban é usado para organizar as **issues** no processo de desenvolvimento. A
 ---
 
 ## Configuração do Projeto
+
+### Configuração de Ambiente
+
+Este projeto automatiza a configuração inicial das variáveis de ambiente. 
+Ao rodar `pnpm dev`, o script verifica a existência do arquivo `.env`. 
+Caso ele não exista, uma cópia será criada automaticamente a partir do `.env.example`.
+
+**Nota:** O script nunca sobrescreverá um arquivo `.env` já existente. 
+Caso precise resetar as configurações, delete o `.env` manualmente, faça as modificações necessárias no .env.example e execute o comando novamente.
 
 ### Variáveis de Ambiente (Opcional)
 

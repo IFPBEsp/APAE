@@ -95,7 +95,10 @@ export default function RecoveryPage() {
   return (
     <div className="flex items-center justify-center min-h-screen bg-gray-50">
       <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)} className="w-full h-full flex justify-center">
+        <form
+          onSubmit={form.handleSubmit(onSubmit)}
+          className="w-full h-full flex justify-center"
+        >
           <Card
             className="min-w-[326px] w-[30vw] max-h-[90vh]
               bg-white rounded-[20px] overflow-hidden flex flex-col gap-y-1"
@@ -112,7 +115,6 @@ export default function RecoveryPage() {
             <CardContent className="flex-grow overflow-y-auto px-6">
               <div className="flex flex-col space-y-4 max-w-sm mx-auto">
                 
-                {/* EMAIL */}
                 <FormField
                   control={form.control}
                   name="email"
@@ -141,7 +143,6 @@ export default function RecoveryPage() {
                   )}
                 />
 
-                {/* CÓDIGO */}
                 <FormField
                   control={form.control}
                   name="code"

@@ -1,22 +1,21 @@
 "use client";
 
-import { format, getDay, isBefore, startOfDay, isValid } from "date-fns";
+import { format, getDay, isBefore, isValid, startOfDay } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { CalendarIcon } from "lucide-react";
-import React, { useEffect, useMemo, useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 
 import {
   Appointment,
   getPacientes,
   getProfissionaisDaSaude,
   saveAppointment,
-  updateAppointmentRule,
+  updateAppointment,
 } from "@/app/services/appointmentService";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
 import { Card, CardContent } from "@/components/ui/card";
 import { Combobox } from "@/components/ui/combobox";
-import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import {
   Popover,
@@ -53,8 +52,6 @@ export function AppointmentForm({ editAppointment }: AppointmentFormProps) {
   const isInitialMount = useRef(true);
   const prevProfessionalId = useRef(editAppointment?.professional?.id || "");
   const dataFetched = useRef(false);
-
-
 
   const [date, setDate] = useState<Date | undefined>(() => {
     if (editAppointment?.initialDate) {
@@ -161,26 +158,26 @@ export function AppointmentForm({ editAppointment }: AppointmentFormProps) {
   const [availableTimeSlots, setAvailableTimeSlots] = useState<string[]>([]);
 
   useEffect(() => {
-  const fetchAvailableTimes = async () => {
-    if (!date || !professional.value) return;
+    const fetchAvailableTimes = async () => {
+      if (!date || !professional.value) return;
 
-    try {
-      const formattedDate = format(date, "yyyy-MM-dd");
+      try {
+        const formattedDate = format(date, "yyyy-MM-dd");
 
-      const res = await fetch(
-        `/api/professionals/${professional.value}/available-times?date=${formattedDate}`
-      );
+        const res = await fetch(
+          `/api/professionals/${professional.value}/available-times?date=${formattedDate}`,
+        );
 
-      const data = await res.json();
+        const data = await res.json();
 
-      setAvailableTimeSlots(data || []);
-    } catch (err) {
-      setAvailableTimeSlots([]);
-    }
-  };
+        setAvailableTimeSlots(data || []);
+      } catch {
+        setAvailableTimeSlots([]);
+      }
+    };
 
-  fetchAvailableTimes();
-}, [date, professional.value]);
+    fetchAvailableTimes();
+  }, [date, professional.value]);
 
   const isDayDisabled = (day: Date) => {
     const today = startOfDay(new Date());
@@ -225,9 +222,13 @@ export function AppointmentForm({ editAppointment }: AppointmentFormProps) {
     const hourStr = `${selectedTime}:00`;
 
     if (editAppointment?.id) {
-      await updateAppointmentRule(editAppointment.id, {
-        newFrequency: frequencyDays,
-        newTime: hourStr,
+      await updateAppointment(editAppointment.id, {
+        professionalId: professional.value,
+        annualRegistrationId: editAppointment.annualRegistration.id,
+        serviceId: editAppointment.serviceId,
+        initialDate,
+        hour: hourStr,
+        frequencyDays,
       });
     } else {
       await saveAppointment({
@@ -239,6 +240,7 @@ export function AppointmentForm({ editAppointment }: AppointmentFormProps) {
         frequencyDays,
       });
     }
+
     window.location.reload();
   };
 
@@ -366,11 +368,11 @@ export function AppointmentForm({ editAppointment }: AppointmentFormProps) {
                             : "Selecione a data primeiro"
                         }
                       />
-                      </SelectTrigger>
+                    </SelectTrigger>
 
-                      <SelectContent>
+                    <SelectContent>
                       {availableTimeSlots.length === 0 ? (
-                        <div className="p-2 text-sm text-muted-foreground text-red-500">
+                        <div className="p-2 text-sm text-muted-foreground">
                           Nenhum horário disponível
                         </div>
                       ) : (
@@ -389,19 +391,32 @@ export function AppointmentForm({ editAppointment }: AppointmentFormProps) {
 
           <div className="space-y-2">
             <Label>
-              Frequência (dias) <span className="text-red-500">*</span>
+              Frequência <span className="text-red-500">*</span>
             </Label>
 
-            <Input
-              type="number"
-              min="1"
-              value={frequencyDays < 1 ? "" : frequencyDays}
-              onChange={(e) => setFrequencyDays(Number(e.target.value))}
-              placeholder="Ex: 7"
-              className="w-full"
-            />
+            <Select
+              onValueChange={(value) => setFrequencyDays(Number(value))}
+              value={frequencyDays > 0 ? String(frequencyDays) : undefined}
+            >
+              <SelectTrigger
+                className={cn(
+                  "w-full",
+                  validationErrors.frequencyDays && "border-red-500",
+                )}
+              >
+                <SelectValue placeholder="Selecione a frequência" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="7">Semanal (a cada 7 dias)</SelectItem>
+                <SelectItem value="14">Quinzenal (a cada 14 dias)</SelectItem>
+                <SelectItem value="30">Mensal (a cada mês)</SelectItem>
+              </SelectContent>
+            </Select>
+
             {validationErrors.frequencyDays && (
-              <p className="text-sm text-red-500">Maior que 0.</p>
+              <p className="text-sm text-red-500">
+                Selecione uma frequência válida.
+              </p>
             )}
           </div>
 

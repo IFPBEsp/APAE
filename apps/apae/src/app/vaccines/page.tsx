@@ -7,6 +7,7 @@ import { Plus, Loader2, Edit, Trash2 } from "lucide-react";
 import { SearchFilters } from "@/components/search-filters";
 import { useVaccinesContext, Vaccine } from "@/hooks/use-vaccines";
 import { useRouter } from "next/navigation";
+import { ConfirmModal } from "@/components/ui/confirm-modal";
 
 type VaccinesListItemProps = Readonly<{
     vaccine: Vaccine;
@@ -21,9 +22,7 @@ function VaccinesListItem({ vaccine }: VaccinesListItemProps) {
     };
 
     const onDelete = () => {
-        if (confirm("Tem certeza que deseja excluir esta vacina?")) {
-            deleteVaccine(vaccine);
-        }
+        deleteVaccine(vaccine);
     };
 
     return (
@@ -43,22 +42,33 @@ function VaccinesListItem({ vaccine }: VaccinesListItemProps) {
                 >
                     <Edit className="h-4 w-4" />
                 </Button>
-                <Button
-                    variant="outline"
-                    size="icon"
-                    className="h-8 w-8 hover:bg-red-50 hover:border-red-500"
-                    onClick={onDelete}
-                    aria-label="Excluir"
-                >
-                    <Trash2 className="h-4 w-4 text-red-500" />
-                </Button>
+
+                <ConfirmModal
+                    title="Tem certeza?"
+                    description={<>Essa ação não pode ser desfeita. Isso irá excluir permanentemente a vacina <strong>{vaccine.name}</strong>.</>}
+                    onConfirm={onDelete}
+                    trigger={
+                        <Button
+                            variant="outline"
+                            size="icon"
+                            className="h-8 w-8 hover:bg-red-50 hover:border-red-500"
+                            aria-label="Excluir"
+                        >
+                            <Trash2 className="h-4 w-4 text-red-500" />
+                        </Button>
+                    }
+                />
             </div>
         </div>
     );
 }
 
-function VaccinesList() {
-    const { vaccines, loading, feedback } = useVaccinesContext();
+function VaccinesList({ searchName }: { searchName: string }) {
+    const { vaccines, loading } = useVaccinesContext();
+
+    const filteredVaccines = vaccines.filter((vaccine) =>
+        vaccine.name.toLowerCase().includes(searchName.toLowerCase())
+    );
 
     if (loading) {
         return (
@@ -68,25 +78,21 @@ function VaccinesList() {
         );
     }
 
-    if (feedback.error) {
-        return <p className="text-center text-red-500">{feedback.message}</p>;
-    }
-
-    if (vaccines.length === 0) {
+    if (filteredVaccines.length === 0) {
         return (
-            <p className="text-center text-gray-500">
-                Nenhuma vacina encontrada.
+            <p className="text-center text-gray-500 p-10">
+                Nenhuma vacina encontrada para "{searchName}".
             </p>
         );
     }
 
     return (
-        <>
+         <>
             <p className="text-sm text-gray-500 mb-4">
-                {vaccines.length} vacinas encontradas
+                {filteredVaccines.length} vacinas encontradas
             </p>
             <div className="space-y-2">
-                {vaccines.map((vaccine) => (
+                {filteredVaccines.map((vaccine) => (
                     <VaccinesListItem key={vaccine.id} vaccine={vaccine} />
                 ))}
             </div>
@@ -127,7 +133,7 @@ export default function VaccinesPage() {
                         </h2>
                     </div>
 
-                    <VaccinesList />
+                    <VaccinesList searchName={searchName} />
                 </section>
             </main>
 

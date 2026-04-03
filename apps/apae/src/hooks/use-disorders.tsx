@@ -11,6 +11,7 @@ import {
 type Disorder = Readonly<{
   id: string;
   name: string;
+  hasPatient: boolean;
 }>;
 
 type FetchDisorderParams = Readonly<{
@@ -193,7 +194,8 @@ function DisordersProvider({
         });
 
         if (!response.ok) {
-          throw new Error("Ocorreu um erro ao excluir transtorno.");
+          const errorMessage = await response.text();
+          throw new Error(errorMessage || "Ocorreu um erro ao excluir transtorno.");
         }
 
         fetchDisorders();

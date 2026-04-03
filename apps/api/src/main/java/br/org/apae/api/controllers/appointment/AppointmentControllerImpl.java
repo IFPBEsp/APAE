@@ -44,12 +44,9 @@ public class AppointmentControllerImpl implements AppointmentController {
   }
 
   @Override
-  public ResponseEntity<AppointmentResponseDTO> updateRule(UUID id, @Valid UpdateAppointmentRuleDTO dto) {
-    AppointmentResponseDTO updated = service.updateAppointment(
-            id,
-            dto.newFrequency(),
-            dto.newTime()
-    );
+  public ResponseEntity<AppointmentResponseDTO> update(UUID id, @Valid UpdateAppointmentDTO dto) {
+    AppointmentResponseDTO updated = service.update(id, dto);
+
     return ResponseEntity.ok(updated);
   }
 
@@ -83,8 +80,8 @@ public class AppointmentControllerImpl implements AppointmentController {
   }
 
   @Override
-  public ResponseEntity<Page<TodayAppointmentsResponseDTO>> listTodayAppointment(Pageable pageable) {
-    return ResponseEntity.ok(this.service.listAppointmentForToday(pageable));
+  public ResponseEntity<Page<TodayAppointmentsResponseDTO>> listTodayAppointment(LocalDate date, Pageable pageable) {
+    return ResponseEntity.ok(this.service.listAppointmentForToday(date, pageable));
   }
 
   @Override

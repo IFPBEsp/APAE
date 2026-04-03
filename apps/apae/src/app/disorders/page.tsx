@@ -41,20 +41,22 @@ export default function TranstornosPage() {
   }, []);
 
   const handleDelete = async (id: string) => {
-    if (!confirm("Tem certeza que deseja excluir este transtorno?")) {
-      return;
-    }
+    
     try {
       const response = await fetch(`/api/transtornos/${id}`, {
         method: "DELETE",
       });
+      
       if (!response.ok) {
-        throw new Error("Falha ao excluir o transtorno.");
+        const errorMessage = await response.text();
+        
+        throw new Error(errorMessage || "Falha ao excluir o transtorno.");
       }
+      
       setTranstornos((current) => current.filter((d) => d.id !== id));
       toast.success("Transtorno excluído com sucesso!");
     } catch (err: any) {
-      toast.error(err.message);
+      toast.error(err.message); 
     }
   };
   const filteredTranstornos = transtornos.filter((transtorno) =>

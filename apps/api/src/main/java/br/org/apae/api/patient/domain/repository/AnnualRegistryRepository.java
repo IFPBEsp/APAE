@@ -8,6 +8,7 @@ import org.springframework.stereotype.Repository;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
 
 @Repository
@@ -22,4 +23,11 @@ public interface AnnualRegistryRepository extends JpaRepository<AnnualRegistry, 
 
     @Query("SELECT DISTINCT ar.year FROM AnnualRegistry ar WHERE ar.patientId = :patientId ORDER BY ar.year DESC")
     List<Integer> findYearsByPatientId(@Param("patientId") UUID patientId);
+
+    @Query("SELECT COUNT(ar) > 0 FROM AnnualRegistry ar JOIN ar.disorders d WHERE d.id = :disorderId")
+    boolean isDisorderInUse(@Param("disorderId") UUID disorderId);
+
+    @Query("SELECT DISTINCT d.id FROM AnnualRegistry ar JOIN ar.disorders d")
+    Set<UUID> findAllUseDisordersIds();
+
 }
