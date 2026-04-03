@@ -40,10 +40,10 @@ interface DisordersContextData {
   loading: boolean;
   feedback: Feedback;
   disorders: Disorder[];
-  fetchDisorder: (params: FetchDisorderParams) => Promise<Disorder | void>;
-  createDisorder: (params: CreateDisorderParams) => Promise<void | void>;
-  updateDisorder: (params: UpdateDisorderParams) => Promise<void | void>;
-  deleteDisorder: (params: DeleteDisorderParams) => Promise<void | void>;
+  fetchDisorder: (params: FetchDisorderParams) => Promise<Disorder>;
+  createDisorder: (params: CreateDisorderParams) => Promise<void>;
+  updateDisorder: (params: UpdateDisorderParams) => Promise<void>;
+  deleteDisorder: (params: DeleteDisorderParams) => Promise<void>;
 }
 
 const DisordersContext = createContext<DisordersContextData | undefined>(
@@ -60,7 +60,7 @@ function withFeedback<TArgs extends readonly unknown[], TReturn>(
   setFeedback: (feedback: Feedback) => void,
   messages: WithFeedbackMessages,
 ) {
-  return async (...args: TArgs): Promise<TReturn | void> => {
+  return async (...args: TArgs): Promise<TReturn> => {
     setLoading(true);
     try {
       const result = await fn(...args);

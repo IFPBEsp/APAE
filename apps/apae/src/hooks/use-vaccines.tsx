@@ -40,10 +40,10 @@ interface VaccinesContextData {
   loading: boolean;
   feedback: Feedback;
   vaccines: Vaccine[];
-  fetchVaccine: (params: FetchVaccineParams) => Promise<Vaccine | void>;
-  createVaccine: (params: CreateVaccineParams) => Promise<void | void>;
-  updateVaccine: (params: UpdateVaccineParams) => Promise<void | void>;
-  deleteVaccine: (params: DeleteVaccineParams) => Promise<void | void>;
+  fetchVaccine: (params: FetchVaccineParams) => Promise<Vaccine>;
+  createVaccine: (params: CreateVaccineParams) => Promise<void>;
+  updateVaccine: (params: UpdateVaccineParams) => Promise<void>;
+  deleteVaccine: (params: DeleteVaccineParams) => Promise<void>;
 }
 
 const VaccinesContext = createContext<VaccinesContextData | undefined>(
@@ -60,7 +60,7 @@ function withFeedback<TArgs extends readonly unknown[], TReturn>(
   setFeedback: (feedback: Feedback) => void,
   messages?: WithFeedbackMessages,
 ) {
-  return async (...args: TArgs): Promise<TReturn | void> => {
+  return async (...args: TArgs): Promise<TReturn> => {
     setLoading(true);
     try {
       const result = await fn(...args);
