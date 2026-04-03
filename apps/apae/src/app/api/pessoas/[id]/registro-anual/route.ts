@@ -30,7 +30,7 @@ export async function POST(
             if (extracted) {
                 finalToken = extracted;
             }
-        } catch (e) {
+        } catch {
         }
     }
 
