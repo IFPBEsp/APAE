@@ -33,8 +33,8 @@ export default function EditTranstornoPage() {
           if (!response.ok) throw new Error("Transtorno não encontrado.");
           const data = await response.json();
           setValue("name", data.name);
-        } catch (error: any) {
-          toast.error(error.message);
+        } catch (error) {
+          toast.error(error instanceof Error ? error.message : "Erro ao carregar transtorno");
           router.push("/disorders");
         }
       };
@@ -55,8 +55,8 @@ export default function EditTranstornoPage() {
       toast.success("Transtorno atualizado com sucesso!");
       router.push("/disorders");
       router.refresh();
-    } catch (error: any) {
-      toast.error(error.message);
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : "Erro ao atualizar transtorno");
     }
   };
 

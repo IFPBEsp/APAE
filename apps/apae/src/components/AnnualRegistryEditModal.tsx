@@ -320,9 +320,9 @@ export default function AnnualRegistryEditModal({
             toast.success(mode === "create" ? "Registro criado com sucesso!" : "Alterações salvas!");
 
 
-        } catch (error: any) {
+        } catch (error) {
             console.error(error);
-            toast.error(error.message || "Erro ao salvar.");
+            toast.error(error instanceof Error ? error.message : "Erro ao salvar.");
         }
     };
 

@@ -68,9 +68,9 @@ export default function PersonDetailsPage() {
       if (!response.ok) throw new Error("Falha ao buscar dados do paciente.");
       const data = await response.json();
       setPessoa(data);
-    } catch (err: any) {
+    } catch (err) {
       console.error(err);
-      toast.error(err.message);
+      toast.error(err instanceof Error ? err.message : "Erro ao buscar paciente");
       router.push("/visualization-patients");
     } finally {
       if (!silent) setLoadingPessoa(false); 

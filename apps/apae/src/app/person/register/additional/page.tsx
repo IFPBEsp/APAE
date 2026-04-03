@@ -199,7 +199,9 @@ export default function MembersRegisterAdditionalsPage() {
   const isEditing = pathname.includes("/edit");
   const currentSchema = isEditing ? EditAdditionals : Additionals;
 
-  const form = useForm<any>({
+  type AdditionalsFormValues = z.infer<typeof Additionals> | z.infer<typeof EditAdditionals>;
+
+  const form = useForm<AdditionalsFormValues>({
     mode: "onBlur",
     resolver: zodResolver(currentSchema),
     defaultValues: additionals,
@@ -215,14 +217,17 @@ export default function MembersRegisterAdditionalsPage() {
     }
   }, [additionals, form, isEditing, isInitialized]);
 
-  const onSubmit = async (values: any) => {
+  const onSubmit = async (values: AdditionalsFormValues) => {
     setIsLoading(true);
     try {
       setAdditionalsData(values);
       setStep(MembersRegisterStep.GUARDIAN);
-    } catch (error: any) {
-      if (error.response?.data) {
-        handleBackendValidationErrors(error.response.data, form.setError);
+    } catch (error) {
+      if (error && typeof error === "object" && "response" in error) {
+        const axiosError = error as { response?: { data?: unknown } };
+        if (axiosError.response?.data) {
+          handleBackendValidationErrors(axiosError.response.data, form.setError);
+        }
       }
     } finally {
       setIsLoading(false);

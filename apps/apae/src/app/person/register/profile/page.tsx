@@ -16,7 +16,7 @@ import { Profile } from "@/schemas/member-schemas";
 import { EditProfile } from "@/schemas/edit-member-schemas"; 
 import { zodResolver } from "@hookform/resolvers/zod";
 import React, { useEffect, useState } from "react";
-import { useForm } from "react-hook-form";
+import { useForm, Path } from "react-hook-form";
 import { handleBackendValidationErrors } from "@/utils/form-errors";
 
 import z from "zod";
@@ -43,7 +43,9 @@ export default function MembersRegisterProfilePage() {
 
   const currentSchema = isEditing ? EditProfile : Profile;
 
-  const form = useForm<any>({
+  type ProfileFormValues = z.infer<typeof Profile> | z.infer<typeof EditProfile>;
+
+  const form = useForm<ProfileFormValues>({
     mode: "onBlur",
     resolver: zodResolver(currentSchema),
     defaultValues: profile,
@@ -91,7 +93,7 @@ export default function MembersRegisterProfilePage() {
             toast.error(displayMsg);
             setStep(MembersRegisterStep.PERSONAL);
 
-            form.setError(targetField as any, {
+            form.setError(targetField as Path<ProfileFormValues>, {
               type: "manual",
               message: displayMsg,
             });

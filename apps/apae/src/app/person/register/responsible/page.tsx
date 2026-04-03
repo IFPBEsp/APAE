@@ -58,9 +58,12 @@ export default function MembersRegisterGuardianPage() {
     try {
       setGuardianData(values);
       setStep(MembersRegisterStep.PROFILE);
-    } catch (error: any) {
-      if (error.response?.data) {
-        handleBackendValidationErrors(error.response.data, form.setError);
+    } catch (error) {
+      if (error && typeof error === "object" && "response" in error) {
+        const axiosError = error as { response?: { data?: unknown } };
+        if (axiosError.response?.data) {
+          handleBackendValidationErrors(axiosError.response.data, form.setError);
+        }
       }
     } finally {
       setIsLoading(false);

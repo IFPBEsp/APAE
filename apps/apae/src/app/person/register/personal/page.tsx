@@ -28,6 +28,7 @@ import { useForm } from "react-hook-form";
 import { useState, useEffect } from "react";
 import { usePathname } from "next/navigation"; 
 import { handleBackendValidationErrors } from "@/utils/form-errors";
+import z from "zod";
 
 import { DoubleColumn, FormButton, MembersRegisterForm } from "../form";
 
@@ -43,9 +44,11 @@ export default function MembersRegisterPersonalPage() {
   const isEditing = pathname.includes("/edit");
   const currentSchema = isEditing ? EditPersonal : Personal;
 
-  const form = useForm<any>({
+  type PersonalFormValues = z.infer<typeof Personal> | z.infer<typeof EditPersonal>;
+
+  const form = useForm<PersonalFormValues>({
     mode: "onBlur",
-    resolver: zodResolver(currentSchema), 
+    resolver: zodResolver(currentSchema),
     defaultValues: personal,
   });
 
@@ -58,16 +61,19 @@ export default function MembersRegisterPersonalPage() {
     }
   }, [personal, form, isInitialized]);
 
-  const onSubmit = async (values: any) => {
+  const onSubmit = async (values: PersonalFormValues) => {
     setIsLoading(true);
     try {
       setPersonalData(values);
 
       setStep(MembersRegisterStep.KINSHIPS);
 
-    } catch (error: any) {
-      if (error.response?.data) {
-        handleBackendValidationErrors(error.response.data, form.setError);
+    } catch (error) {
+      if (error && typeof error === "object" && "response" in error) {
+        const axiosError = error as { response?: { data?: unknown } };
+        if (axiosError.response?.data) {
+          handleBackendValidationErrors(axiosError.response.data, form.setError);
+        }
       }
     } finally {
       setIsLoading(false);

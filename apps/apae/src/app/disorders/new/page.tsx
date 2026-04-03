@@ -35,8 +35,8 @@ export default function NewTranstornoPage() {
       toast.success("Transtorno criado com sucesso!");
       router.push("/disorders");
       router.refresh();
-    } catch (error: any) {
-      toast.error(error.message);
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : "Erro ao criar transtorno");
     }
   };
 
