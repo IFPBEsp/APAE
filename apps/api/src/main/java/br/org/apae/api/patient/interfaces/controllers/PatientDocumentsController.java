@@ -17,15 +17,21 @@ public interface PatientDocumentsController {
 
     @Operation(summary = "Listar documentos médicos")
     @GetMapping("/medicals")
-    ResponseEntity<List<DocumentWithUrlResponseDTO>> findMedicalDocuments(@PathVariable UUID id);
+    ResponseEntity<List<DocumentWithUrlResponseDTO>> findMedicalDocuments(
+            @PathVariable UUID id,
+            @RequestParam(required = false) Integer year);
 
     @Operation(summary = "Listar documentos pessoais")
     @GetMapping("/personals")
-    ResponseEntity<List<DocumentWithUrlResponseDTO>> findPersonalDocuments(@PathVariable UUID id);
+    ResponseEntity<List<DocumentWithUrlResponseDTO>> findPersonalDocuments(
+            @PathVariable UUID id,
+            @RequestParam(required = false) Integer year);
 
     @Operation(summary = "Listar documentos escolares")
     @GetMapping("/schools")
-    ResponseEntity<List<DocumentWithUrlResponseDTO>> findSchoolDocuments(@PathVariable UUID id);
+    ResponseEntity<List<DocumentWithUrlResponseDTO>> findSchoolDocuments(
+            @PathVariable UUID id,
+            @RequestParam(required = false) Integer year);
 
     @Operation(summary = "Fazer upload de um documento")
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
@@ -33,6 +39,7 @@ public interface PatientDocumentsController {
             @PathVariable UUID id,
             @RequestPart("file") MultipartFile file,
             @RequestParam("category") String category,
-            @RequestParam("type") String type
+            @RequestParam("type") String type,
+            @RequestParam(required = false) Integer year
     );
 }

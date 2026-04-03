@@ -6,6 +6,7 @@ import { ArrowLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import FileCard from "@/components/fileCard";
 import { toast } from "react-toastify";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 const documentTypeTranslations: Record<string, string> = {
   MEDICAL_REPORT: "Laudo Médico",
@@ -56,6 +57,16 @@ export default function DocumentTypePage() {
   const [typeFilter, setTypeFilter] = React.useState<string>("");
   const [files, setFiles] = React.useState<FileItem[]>([]);
 
+  // Gerar lista de anos (últimos 5 anos + ano atual + próximo ano)
+  const availableYears = React.useMemo(() => {
+    const currentYear = new Date().getFullYear();
+    const years = [];
+    for (let i = currentYear + 1; i >= currentYear - 5; i--) {
+      years.push(i.toString());
+    }
+    return years;
+  }, []);
+
   React.useEffect(() => {
     async function fetchDocuments() {
       try {
@@ -97,7 +108,7 @@ export default function DocumentTypePage() {
       <div
         className={`flex flex-col mt-6 md:hidden ${brandColor} items-center`}
       >
-        <div className="flex items-center justify-start bg-white rounded-4xl shadow-md mb-6 gap-6 border w-full p-4">
+        <div className="flex items-center justify-between bg-white rounded-4xl shadow-md mb-4 gap-4 border w-full p-4">
           <Button
             variant="ghost"
             size="icon"
@@ -107,6 +118,16 @@ export default function DocumentTypePage() {
             <ArrowLeft size={20} />
           </Button>
           <h1 className="text-xl font-bold">{pageTitle}</h1>
+          <Select value={yearFilter} onValueChange={setYearFilter}>
+            <SelectTrigger className="w-20 bg-white border-gray-300 text-sm">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              {availableYears.map((year) => (
+                <SelectItem key={year} value={year}>{year}</SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
         </div>
       </div>
 
@@ -116,6 +137,19 @@ export default function DocumentTypePage() {
           <ArrowLeft size={20} />
         </Button>
         <h1 className="text-xl font-bold whitespace-nowrap">{pageTitle}</h1>
+        <div className="flex items-center gap-2">
+          <span className="text-sm font-medium text-gray-600">Ano:</span>
+          <Select value={yearFilter} onValueChange={setYearFilter}>
+            <SelectTrigger className="w-24 bg-white border-gray-300">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              {availableYears.map((year) => (
+                <SelectItem key={year} value={year}>{year}</SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
       </div>
 
      {/* --- Lista de Arquivos --- */}
