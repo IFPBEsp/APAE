@@ -154,7 +154,7 @@ export default function MembersRegisterProfilePage() {
             toast.error(res.data?.message || "Erro inesperado no servidor.");
             setSubmitted(false);
           }
-        } catch (error) {
+        } catch {
           toast.error("Falha na conexão com o servidor.");
           setSubmitted(false);
         } finally {

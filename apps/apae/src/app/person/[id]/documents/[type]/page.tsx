@@ -50,10 +50,10 @@ export default function DocumentTypePage() {
 
   const category = params?.type as keyof typeof documentCategory;
 
-  const [yearFilter, setYearFilter] = React.useState<string>(
+  const [yearFilter] = React.useState<string>(
     new Date().getFullYear().toString()
   );
-  const [typeFilter, setTypeFilter] = React.useState<string>("");
+  const [typeFilter] = React.useState<string>("");
   const [files, setFiles] = React.useState<FileItem[]>([]);
 
   React.useEffect(() => {

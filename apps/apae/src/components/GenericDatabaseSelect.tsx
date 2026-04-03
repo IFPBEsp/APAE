@@ -97,7 +97,7 @@ export const GenericDatabaseSelect = ({
           body: JSON.stringify(payload) 
         });
         
-        let newOption: Option = { label: normalizedName, value: normalizedName };
+        const newOption: Option = { label: normalizedName, value: normalizedName };
         
         if (res.ok || res.status === 201 || res.status === 409) {
             const created = await res.json().catch(() => ({}));
