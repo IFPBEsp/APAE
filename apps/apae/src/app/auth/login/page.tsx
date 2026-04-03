@@ -1,6 +1,7 @@
 "use client";
 
 import React from "react";
+import { Send } from "lucide-react";
 import {
   Card,
   CardContent,
@@ -16,155 +17,175 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import { PrimaryButton } from "@/components/buttons/ButtonPrimary";
+
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import Link from "next/link";
-import { PrimaryButton } from "@/components/buttons/ButtonPrimary";
-import { PasswordInput } from "@/components/forms/PasswordInputs";
-import { loginSchema, FormLogin } from "@/schemas/authSchema";
+import { recoverySchema, FormRecovery } from "@/schemas/authSchema";
+
 import { toast } from "react-toastify";
 import { useRouter } from "next/navigation";
-import { formatCPF } from "@/lib/formats";
 
-function LoginPage() {
+export default function RecoveryPage() {
   const router = useRouter();
-  const form = useForm<FormLogin>({
-    resolver: zodResolver(loginSchema),
+
+  const form = useForm<FormRecovery>({
+    resolver: zodResolver(recoverySchema),
     defaultValues: {
-      username: "",
-      password: "",
+      email: "",
+      code: "",
     },
     mode: "all",
   });
 
-  const onSubmit = async (data: FormLogin) => {
+  const handleSendCode = async () => {
+    const email = form.getValues("email");
+
+    if (!email) {
+      toast.error("Informe um email válido.");
+      return;
+    }
+
     try {
-      const res = await fetch("/api/auth/login", {
+      const res = await fetch("/api/auth/send-recovery-code", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ email }),
+      });
+
+      const data = await res.json();
+
+      if (res.ok) {
+        toast.success(data.message || "Código enviado com sucesso!");
+      } else {
+        toast.error(data.message || "Erro ao enviar código.");
+      }
+    } catch (err) {
+      console.error(err);
+      toast.error("Erro inesperado ao enviar código.");
+    }
+  };
+
+  const onSubmit = async (data: FormRecovery) => {
+    try {
+      const res = await fetch("/api/auth/validate-recovery-code", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
         body: JSON.stringify(data),
       });
 
       const responseData = await res.json();
 
       if (res.ok) {
-        toast.success(responseData.message || "Login bem-sucedido!");
-        router.push("/");
+        toast.success(responseData.message || "Código validado!");
+        router.push("/auth/reset-password");
       } else {
-        toast.error(responseData.message || "Credenciais inválidas");
+        toast.error(responseData.message || "Código inválido.");
       }
     } catch (err) {
       console.error(err);
-      toast.error("Erro inesperado. Tente novamente mais tarde.");
+      toast.error("Erro inesperado. Tente novamente.");
     }
   };
 
   return (
-    <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="w-full h-full">
-        <Card
-          className="min-w-[326px] w-[30vw] max-h-[90vh]
-                  bg-white rounded-[20px] overflow-hidden flex flex-col gap-y-1"
-          style={{ boxShadow: "4px 4px 10px rgba(0, 0, 0, 0.25)" }}
-        >
-          <CardHeader className="flex-shrink-0 pt-10 pb-4">
-            <div className="w-full flex justify-center">
-              <span className="font-baloo2 font-semibold text-[2.25rem] leading-normal mt-10 text-center text-blue-900">
-                Entrar
-              </span>
-            </div>
-          </CardHeader>
-          <CardContent className="flex-grow overflow-y-auto px-6">
-            <div className="flex flex-col space-y-1 max-w-sm mx-auto">
-              <FormField
-                control={form.control}
-                name="username"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel className="text-sm font-medium text-foreground">
-                      Usuário
-                    </FormLabel>
-                    <FormControl>
-                      <Input
-                        {...field}
-                        onChange={(e) => {
-                          const regexForPossibleCPF = new RegExp(
-                            /(^\d{4,}$)|(^\d{3}\.\d{4,}$)|(^\d{3}\.\d{3}\.\d{4,}$)|^\d{3}\.\d{3}\.\d{3}\-\d{2,}$/,
-                          );
-                          const formatted = regexForPossibleCPF.test(
-                            e.target.value,
-                          )
-                            ? formatCPF(e.target.value)
-                            : e.target.value;
+    <div className="flex items-center justify-center min-h-screen bg-gray-50">
+      <Form {...form}>
+        <form onSubmit={form.handleSubmit(onSubmit)} className="w-full h-full flex justify-center">
+          <Card
+            className="min-w-[326px] w-[30vw] max-h-[90vh]
+              bg-white rounded-[20px] overflow-hidden flex flex-col gap-y-1"
+            style={{ boxShadow: "4px 4px 10px rgba(0, 0, 0, 0.25)" }}
+          >
+            <CardHeader className="flex-shrink-0 pt-10 pb-4">
+              <div className="w-full flex justify-center">
+                <span className="font-baloo2 font-semibold text-[2.25rem] mt-10 text-center text-blue-900">
+                  Recuperar Senha
+                </span>
+              </div>
+            </CardHeader>
 
-                          field.onChange(formatted);
-                        }}
-                        placeholder="Digite seu email ou CPF"
-                        className="w-full bg-white border border-border rounded-md h-12 px-3"
-                      />
-                    </FormControl>
-                    <div className="min-h-[18px]">
+            <CardContent className="flex-grow overflow-y-auto px-6">
+              <div className="flex flex-col space-y-4 max-w-sm mx-auto">
+                
+                {/* EMAIL */}
+                <FormField
+                  control={form.control}
+                  name="email"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Usuário</FormLabel>
+                      <FormControl>
+                        <div className="flex">
+                          <Input
+                            {...field}
+                            type="email"
+                            placeholder="Digite seu email"
+                            className="rounded-r-none h-12"
+                          />
+                          <button
+                            type="button"
+                            onClick={handleSendCode}
+                            className="bg-blue-700 text-white px-4 flex items-center justify-center rounded-r-md hover:bg-blue-800"
+                          >
+                            <Send size={18} />
+                          </button>
+                        </div>
+                      </FormControl>
                       <FormMessage />
-                    </div>
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="password"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel className="text-sm font-medium text-foreground">
-                      Senha
-                    </FormLabel>
-                    <FormControl>
-                      <PasswordInput
-                        {...field}
-                        placeholder="Digite sua senha"
-                        className="w-full bg-white border border-border rounded-md h-12 px-3"
-                      />
-                    </FormControl>
-                    <div className="min-h-[18px]">
+                    </FormItem>
+                  )}
+                />
+
+                {/* CÓDIGO */}
+                <FormField
+                  control={form.control}
+                  name="code"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Código de verificação</FormLabel>
+                      <FormControl>
+                        <Input
+                          {...field}
+                          placeholder="Digite o código"
+                          className="h-12"
+                        />
+                      </FormControl>
                       <FormMessage />
-                    </div>
-                  </FormItem>
-                )}
-              />
-            </div>
-            <div className="text-right mt-0">
-              {/* Precisa fazer */}
-              <Link
-                href="/auth/recovery"
-                className="text-sm text-gray-600 hover:text-blue-600 transition-colors duration-200"
+                    </FormItem>
+                  )}
+                />
+
+                <p className="text-xs text-gray-500 text-center">
+                  Um código será enviado para seu email.
+                </p>
+              </div>
+            </CardContent>
+
+            <CardFooter className="flex flex-col gap-3 py-4">
+              <PrimaryButton
+                type="submit"
+                loading={form.formState.isSubmitting}
+                disabled={form.formState.isSubmitting}
               >
-                Esqueceu a senha?
-              </Link>
-            </div>
-          </CardContent>
-          <CardFooter className="flex-shrink-0 w-full flex-col justify-center mt-1 py-0 border-gray-100">
-            <PrimaryButton
-              type="submit"
-              loading={form.formState.isSubmitting}
-              disabled={form.formState.isSubmitting}
-            >
-              Entrar
-            </PrimaryButton>
-            <div className="mt-2 font-baloo2 font-medium text-xs sm:text-sm leading-[150%] text-[#222222] text-center px-4">
-              {" "}
-              Não possui uma conta ainda?{" "}
-              <Link
-                href="/auth/register"
-                className="!text-[#F28C38] hover:!text-[#F28C38]/80 underline hover:no-underline font-medium transition-colors duration-200 focus:outline-none focus:ring-2 focus:!ring-[#F28C38]/50 focus:ring-offset-1 rounded-sm px-1 [&]:!text-[#F28C38] [&:hover]:!text-[#F28C38]/80"
-                style={{ color: "#F28C38 !important" }}
+                Enviar
+              </PrimaryButton>
+
+              <button
+                type="button"
+                onClick={() => router.push("/auth/login")}
+                className="text-orange-500 text-sm hover:underline"
               >
-                Criar uma conta
-              </Link>
-            </div>
-          </CardFooter>
-        </Card>
-      </form>
-    </Form>
+                Voltar para tela de login
+              </button>
+            </CardFooter>
+          </Card>
+        </form>
+      </Form>
+    </div>
   );
 }
-
-export default LoginPage;
