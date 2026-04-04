@@ -58,7 +58,6 @@ export class AbsenceService {
     return response.json();
   }
 
-  // POST /absences → registrar falta
   static async registerAbsence(dto: CreateAbsenceDTO): Promise<AbsenceResponseDTO> {
     if (this.useMock) {
       await new Promise((resolve) => setTimeout(resolve, 500));
@@ -88,7 +87,6 @@ export class AbsenceService {
     return this.handleResponse<AbsenceResponseDTO>(response);
   }
 
-  // GET /absences com filtros e paginação → 100% compatível com Spring Pageable
   static async findAllByFilters(
     filters: {
       generatedId?: UUID;
@@ -133,7 +131,6 @@ export class AbsenceService {
       };
     }
 
-    // Query string exatamente como o Spring espera
     const params = new URLSearchParams();
     if (generatedId) params.append('generatedId', generatedId);
     if (patientId) params.append('patientId', patientId);
@@ -143,7 +140,7 @@ export class AbsenceService {
 
     const url = `${this.API_BASE_URL}${this.API_PATH}?${params.toString()}`;
 
-    const response = await fetch(url, {
+    const response = await fetch("/api/absence", {
       method: 'GET',
       headers: this.getAuthHeaders(),
     });
@@ -151,7 +148,6 @@ export class AbsenceService {
     return this.handleResponse<Page<AbsenceResponseDTO>>(response);
   }
 
-  // Função auxiliar: buscar todas as ausências (para estatísticas)
   private static async getAllAbsences(): Promise<AbsenceResponseDTO[]> {
     if (this.useMock) return mockAbsences;
 
@@ -169,12 +165,10 @@ export class AbsenceService {
     return all;
   }
 
-// src/services/absenceService.ts (apenas a parte alterada)
 
-static async getPatientsWithAbsences(minAbsences: number = 3): Promise<PatientWithAbsences[]> {
+static async getPatientsWithAbsences(minAbsences: number = 1): Promise<PatientWithAbsences[]> {
   const allAbsences = await this.getAllAbsences();
 
-  // Agrupa ausências por patientId
   const absencesByPatient = new Map<UUID, AbsenceResponseDTO[]>();
   allAbsences.forEach((absence) => {
     const list = absencesByPatient.get(absence.patientId) || [];
@@ -184,28 +178,27 @@ static async getPatientsWithAbsences(minAbsences: number = 3): Promise<PatientWi
 
   const result: PatientWithAbsences[] = [];
 
-  // Para cada patientId com 3+ faltas, busca os dados do paciente
   for (const [patientId, absences] of absencesByPatient) {
     if (absences.length < minAbsences) continue;
 
     try {
-      // Chama o endpoint real: GET /pessoas/{id}
       const patientResponse = await fetch(
-        `${this.API_BASE_URL}/pessoas/${patientId}`,
+        `api/pessoas/${patientId}`,
         {
           method: 'GET',
-          headers: this.getAuthHeaders(),
+          headers: {
+            "Content-Type": "application/json",
+          },
         }
       );
 
       if (!patientResponse.ok) {
         console.warn(`Paciente ${patientId} não encontrado (404 ou erro). Pulando...`);
-        continue; // pula se o paciente foi excluído ou não existe mais
+        continue;
       }
 
       const patientData = await patientResponse.json();
 
-      // Assumindo que PatientResponseDTO tem: id, name (ou fullName?), contact, birthDate
       const patient = {
         id: patientData.id,
         name: patientData.name || patientData.fullName || 'Nome não informado',
@@ -213,7 +206,6 @@ static async getPatientsWithAbsences(minAbsences: number = 3): Promise<PatientWi
         birthDate: patientData.birthDate || '',
       };
 
-      // Ordena as faltas por data (mais recente primeiro)
       const sortedAbsences = [...absences].sort(
         (a, b) => new Date(b.absenceDate).getTime() - new Date(a.absenceDate).getTime()
       );
@@ -226,22 +218,19 @@ static async getPatientsWithAbsences(minAbsences: number = 3): Promise<PatientWi
       });
     } catch (error) {
       console.error(`Erro ao buscar paciente ${patientId}:`, error);
-      // Opcional: adicionar com dados parciais ou pular
       continue;
     }
   }
 
-  // Ordena por número de faltas (maior primeiro)
   return result.sort((a, b) => b.absenceCount - a.absenceCount);
 }
 
-  // Estatísticas gerais
   static async getAbsenceStatistics(): Promise<AbsenceStatistics> {
     const patientsWithAbsences = await this.getPatientsWithAbsences(3);
 
     return {
       totalPatients: mockPatients.length,
-      totalAppointments: 50, // substituir por endpoint real no futuro
+      totalAppointments: 50,
       patientsWithMinAbsences: patientsWithAbsences.length,
     };
   }
