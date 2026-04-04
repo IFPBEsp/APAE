@@ -11,19 +11,32 @@ import { toast } from "react-toastify";
 import { useDebounce } from "@/hooks/use-debounce";
 import { usePatientFilters } from "@/hooks/use-patients-filters";
 import type { Page } from "@/types/pagination";
+import { parseAsInteger, useQueryState } from "nuqs";
 
 export default function PatientsAndStudentsScreen() {
   const [patients, setPatients] = useState<PatientCardData[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [searchName, setSearchName] = useState<string>("");
-  const [transtorno, setTranstorno] = useState<string>("");
-  const [ano, setAno] = useState<string>("");
-  const [cidade, setCidade] = useState<string>("");
-  const [tipoAtendimento, setTipoAtendimento] = useState<string>("");
-  const debouncedSearchName = useDebounce(searchName, 500);
-  const [page, setPage] = useState(0);
-  const [size] = useState(10);
+
+  const [searchName, setSearchName] = useQueryState("name", {
+    defaultValue: "",
+  });
+  const [transtorno, setTranstorno] = useQueryState("disorder", {
+    defaultValue: "",
+  });
+  const [ano, setAno] = useQueryState("year", {
+    defaultValue: "",
+  });
+  const [cidade, setCidade] = useQueryState("city", {
+    defaultValue: "",
+  });
+  const [tipoAtendimento, setTipoAtendimento] = useQueryState("treatmentType", {
+    defaultValue: "",
+  });
+  const [page, setPage] = useQueryState("page", parseAsInteger.withDefault(0));
+
+  const debouncedSearchName = useDebounce(searchName ?? "", 500);
+  const size = 10;
   const [totalPages, setTotalPages] = useState(0);
   const [totalElements, setTotalElements] = useState(0);
 
@@ -34,9 +47,30 @@ export default function PatientsAndStudentsScreen() {
     tipoAtendimentoOptions,
   } = usePatientFilters();
 
-  useEffect(() => {
-    setPage(0);
-  }, [debouncedSearchName, transtorno, ano, cidade, tipoAtendimento]);
+  const handleSearchNameChange = (value: string) => {
+    void setPage(0);
+    return setSearchName(value || null);
+  };
+
+  const handleTranstornoChange = (value: string) => {
+    void setPage(0);
+    return setTranstorno(value || null);
+  };
+
+  const handleAnoChange = (value: string) => {
+    void setPage(0);
+    return setAno(value || null);
+  };
+
+  const handleCidadeChange = (value: string) => {
+    void setPage(0);
+    return setCidade(value || null);
+  };
+
+  const handleTipoAtendimentoChange = (value: string) => {
+    void setPage(0);
+    return setTipoAtendimento(value || null);
+  };
 
   useEffect(() => {
     const loadData = async () => {
@@ -84,15 +118,7 @@ export default function PatientsAndStudentsScreen() {
     };
 
     loadData();
-  }, [
-    debouncedSearchName,
-    transtorno,
-    ano,
-    cidade,
-    tipoAtendimento,
-    page,
-    size,
-  ]);
+  }, [debouncedSearchName, transtorno, ano, cidade, tipoAtendimento, page]);
 
   const renderContent = () => {
     if (isLoading) {
@@ -110,11 +136,43 @@ export default function PatientsAndStudentsScreen() {
     }
 
     return (
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-        {patients.map((patient) => (
-          <PatientCard key={patient.id} patient={patient} />
-        ))}
-      </div>
+      <>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+          {patients.map((patient) => (
+            <PatientCard key={patient.id} patient={patient} />
+          ))}
+        </div>
+
+        {totalPages > 1 && (
+          <div className="mt-6 flex items-center justify-between">
+            <p className="text-sm text-gray-600">
+              Total de registros: {totalElements}
+            </p>
+
+            <div className="flex items-center gap-2">
+              <Button
+                variant="outline"
+                disabled={page === 0}
+                onClick={() => void setPage(page - 1)}
+              >
+                Anterior
+              </Button>
+
+              <span className="text-sm text-gray-600">
+                Página {page + 1} de {totalPages}
+              </span>
+
+              <Button
+                variant="outline"
+                disabled={page + 1 >= totalPages}
+                onClick={() => void setPage(page + 1)}
+              >
+                Próxima
+              </Button>
+            </div>
+          </div>
+        )}
+      </>
     );
   };
 
@@ -123,16 +181,16 @@ export default function PatientsAndStudentsScreen() {
       <main className="container mx-auto p-4 md:p-6">
         <div className="bg-white rounded-xl shadow-md border-2 p-6 mb-4">
           <SearchFilters
-            searchName={searchName}
-            setSearchName={setSearchName}
-            transtorno={transtorno}
-            setTranstorno={setTranstorno}
-            ano={ano}
-            setAno={setAno}
-            cidade={cidade}
-            setCidade={setCidade}
-            tipoAtendimento={tipoAtendimento}
-            setTipoAtendimento={setTipoAtendimento}
+            searchName={searchName ?? ""}
+            setSearchName={handleSearchNameChange}
+            transtorno={transtorno ?? ""}
+            setTranstorno={handleTranstornoChange}
+            ano={ano ?? ""}
+            setAno={handleAnoChange}
+            cidade={cidade ?? ""}
+            setCidade={handleCidadeChange}
+            tipoAtendimento={tipoAtendimento ?? ""}
+            setTipoAtendimento={handleTipoAtendimentoChange}
             transtornoOptions={transtornoOptions}
             anoOptions={anoOptions}
             cidadeOptions={cidadeOptions}
