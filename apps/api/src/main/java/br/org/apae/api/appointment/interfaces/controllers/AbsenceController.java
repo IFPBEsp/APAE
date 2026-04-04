@@ -8,8 +8,10 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.UUID;
 
@@ -17,19 +19,44 @@ import java.util.UUID;
 @RequestMapping("/absences")
 public interface AbsenceController {
 
-    @Operation(summary = "Registrar nova falta", description = "Registra uma falta vinculada a um Agendamento Gerado existente. A falta deve ser única por agendamento.")
+    @Operation(
+            summary = "Registrar nova falta",
+            description = "Registra uma falta vinculada a um Agendamento Gerado existente. A falta deve ser única por agendamento."
+    )
     @PostMapping
     ResponseEntity<AbsenceResponseDTO> register(@RequestBody @Valid CreateAbsenceDTO dto);
 
-    @Operation(summary = "Listar faltas com filtros", description = "Lista todas as faltas registradas com opções de filtros dinâmicos e paginação.")
+    @Operation(
+            summary = "Listar faltas com filtros",
+            description = "Lista todas as faltas registradas com opções de filtros dinâmicos e paginação."
+    )
     @GetMapping
     ResponseEntity<Page<AbsenceResponseDTO>> findAll(
-            @RequestParam(required = false) @Schema(description = "ID do Agendamento Gerado (GeneratedAppointment) para filtro.")
+            @RequestParam(required = false)
+            @Schema(description = "ID do Agendamento Gerado (GeneratedAppointment) para filtro.")
             UUID generatedId,
-            @RequestParam(required = false) @Schema(description = "ID do Paciente (Patient) para filtro.")
+
+            @RequestParam(required = false)
+            @Schema(description = "ID do Paciente (Patient) para filtro.")
             UUID patientId,
-            @RequestParam(required = false) @Schema(description = "ID do Profissional (Professional) para filtro.")
+
+            @RequestParam(required = false)
+            @Schema(description = "ID do Profissional (Professional) para filtro.")
             UUID professionalId,
             Pageable pageable
+    );
+
+    @Operation(
+            summary = "Registrar justificativa de falta",
+            description = "Registra um documento de justificativa de falta vinculada a um Agendamento Gerado existente. O documento deve ser único por agendamento gerado."
+    )
+    @PostMapping(
+            path = "/document",
+            consumes = MediaType.MULTIPART_FORM_DATA_VALUE
+    )
+    ResponseEntity<String> uploadDocument(
+            @RequestParam("generatedAppointmentId") UUID generatedAppointmentId,
+            @RequestPart("file") MultipartFile file,
+            @RequestParam("type") String type
     );
 }
