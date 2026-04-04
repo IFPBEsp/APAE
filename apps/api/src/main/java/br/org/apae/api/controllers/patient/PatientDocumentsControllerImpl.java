@@ -32,7 +32,7 @@ public class PatientDocumentsControllerImpl implements PatientDocumentsControlle
     }
 
     @Override
-    public ResponseEntity<Void> uploadDocument(UUID id, MultipartFile file, String category, String type, @RequestParam(required = false) Integer year) {
+    public ResponseEntity<DocumentDTO> uploadDocument(UUID id, MultipartFile file, String category, String type, @RequestParam(required = false) Integer year) {
         try {
             DocumentCategory docCategory = DocumentCategory.valueOf(category);
             DocumentType docType = DocumentType.valueOf(type);
@@ -47,9 +47,9 @@ public class PatientDocumentsControllerImpl implements PatientDocumentsControlle
                     .stream(file.getInputStream())
                     .build();
 
-            this.documentService.putDocument(args);
+            DocumentDTO documentDTO = this.documentService.putDocument(args);
 
-            return ResponseEntity.status(HttpStatus.CREATED).build();
+            return ResponseEntity.status(HttpStatus.CREATED).body(documentDTO);
 
         } catch (IllegalArgumentException e) {
             throw new RuntimeException("Categoria ou Tipo de documento inválido: " + category + " / " + type, e);
