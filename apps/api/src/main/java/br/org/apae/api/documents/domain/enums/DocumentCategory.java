@@ -5,7 +5,8 @@ public enum DocumentCategory {
     MEDICAL("MEDICO"),
     PERSONAL("PESSOAL"),
     PROFESSIONAL("PROFISSIONAL"),
-    SCHOOL("ESCOLAR");
+    SCHOOL("ESCOLAR"),
+    ABSENCE("FALTA");
 
     private String value;
 
