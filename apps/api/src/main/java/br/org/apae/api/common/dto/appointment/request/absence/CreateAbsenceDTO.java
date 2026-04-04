@@ -17,7 +17,13 @@ public record CreateAbsenceDTO(
         @NotNull(message = "A data da falta é obrigatória.")
         LocalDate absenceDate,
 
+        @Schema(description = "Status de justificativa da ausência.")
+        String isJustified,
+
         @Schema(description = "Justificativa da falta.", nullable = true, example = "Motivo de saúde urgente.")
-        String justification
+        String justification,
+
+        @Schema(description = "Documento para justificativa da falta.", nullable = true)
+        String justificationDocumentId
 ) {
 }
