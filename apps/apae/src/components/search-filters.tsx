@@ -13,18 +13,16 @@ import { cn } from "@/lib/utils";
 
 interface SearchFiltersProps {
   readonly searchName?: string;
-  readonly setSearchName?: (name: string) => void | Promise<URLSearchParams>;
+  readonly setSearchName?: (name: string) => void;
 
   readonly transtorno?: string;
-  readonly setTranstorno?: (status: string) => void | Promise<URLSearchParams>;
+  readonly setTranstorno?: (status: string) => void;
   readonly ano?: string;
-  readonly setAno?: (status: string) => void | Promise<URLSearchParams>;
+  readonly setAno?: (status: string) => void;
   readonly cidade?: string;
-  readonly setCidade?: (status: string) => void | Promise<URLSearchParams>;
+  readonly setCidade?: (status: string) => void;
   readonly tipoAtendimento?: string;
-  readonly setTipoAtendimento?: (
-    status: string,
-  ) => void | Promise<URLSearchParams>;
+  readonly setTipoAtendimento?: (status: string) => void;
 
   readonly transtornoOptions?: string[];
   readonly anoOptions?: string[];
