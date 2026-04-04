@@ -1,7 +1,6 @@
 package br.org.apae.api.common.dto.appointment.request.absence;
 
 import io.swagger.v3.oas.annotations.media.Schema;
-import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 
 import java.time.LocalDate;
@@ -18,7 +17,7 @@ public record CreateAbsenceDTO(
         LocalDate absenceDate,
 
         @Schema(description = "Status de justificativa da ausência.")
-        String isJustified,
+        Boolean isJustified,
 
         @Schema(description = "Justificativa da falta.", nullable = true, example = "Motivo de saúde urgente.")
         String justification,

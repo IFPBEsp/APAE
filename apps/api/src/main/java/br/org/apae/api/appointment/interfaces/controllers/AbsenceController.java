@@ -8,10 +8,8 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.util.UUID;
 
@@ -44,19 +42,5 @@ public interface AbsenceController {
             @Schema(description = "ID do Profissional (Professional) para filtro.")
             UUID professionalId,
             Pageable pageable
-    );
-
-    @Operation(
-            summary = "Registrar justificativa de falta",
-            description = "Registra um documento de justificativa de falta vinculada a um Agendamento Gerado existente. O documento deve ser único por agendamento gerado."
-    )
-    @PostMapping(
-            path = "/document",
-            consumes = MediaType.MULTIPART_FORM_DATA_VALUE
-    )
-    ResponseEntity<String> uploadDocument(
-            @RequestParam("generatedAppointmentId") UUID generatedAppointmentId,
-            @RequestPart("file") MultipartFile file,
-            @RequestParam("type") String type
     );
 }

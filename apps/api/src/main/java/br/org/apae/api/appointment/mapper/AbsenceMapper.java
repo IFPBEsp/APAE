@@ -11,11 +11,16 @@ import java.util.UUID;
 public class AbsenceMapper {
 
     public Absence toEntity(CreateAbsenceDTO dto) {
-        return new Absence(
+        Absence absence = new Absence(
                 null,
                 dto.absenceDate(),
                 dto.justification()
         );
+
+        absence.setIsJustified(dto.isJustified());
+        absence.setJustificationDocumentId(dto.justificationDocumentId());
+
+        return absence;
     }
 
     public AbsenceResponseDTO toAbsenceResponse(Absence entity) {
