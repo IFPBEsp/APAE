@@ -81,9 +81,7 @@ export function AbsenceForm({
         }
 
         const document = (await docResponse.json()) as DocumentWithOutUrl;
-
-        documentId = document.id;
-        
+        documentId = document.name;
       }
 
       const absencePayload = {
