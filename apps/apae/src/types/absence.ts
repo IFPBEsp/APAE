@@ -14,6 +14,8 @@ export interface AbsenceResponseDTO {
   absenceDate: string;
   justification: string;
   notified: boolean;
+  justificationDocumentId: string;
+  isJustified: boolean;
 }
 
 export interface Patient {
