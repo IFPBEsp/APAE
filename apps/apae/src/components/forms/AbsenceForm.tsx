@@ -91,7 +91,7 @@ export function AbsenceForm({
         justification:
           data.hasJustification === "yes"
             ? data.justificationText
-            : false,
+            : "Sem justificativa",
         justificationDocumentId: documentId,
       };
 
@@ -130,7 +130,6 @@ export function AbsenceForm({
         <form onSubmit={form.handleSubmit(onSubmit)}>
           <CardContent className="space-y-6">
 
-            {/* Select justificativa */}
             <FormField
               control={form.control}
               name="hasJustification"
