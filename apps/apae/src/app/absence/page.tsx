@@ -51,7 +51,7 @@ export default function AbsenceDetails() {
         setLoading(true);
 
         const [absencesData, statsData] = await Promise.all([
-          AbsenceService.getPatientsWithAbsences(3),
+          AbsenceService.getPatientsWithAbsences(1),
           AbsenceService.getAbsenceStatistics(),
         ]);
 
