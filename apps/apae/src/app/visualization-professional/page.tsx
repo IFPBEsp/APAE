@@ -1,276 +1,214 @@
 "use client";
 
+import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
-import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { parseAsInteger, parseAsString, useQueryStates } from "nuqs";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
-import {
-  MoreHorizontal,
-  Edit,
-  Eye,
-  UserX,
-  UserCheck,
-} from "lucide-react";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-  AlertDialogTrigger,
-} from "@/components/ui/alert-dialog";
+import { Plus } from "lucide-react";
+import { PatientCard } from "@/components/shared/patient-card";
+import { SearchFilters } from "@/components/search-filters";
+import { Pagination } from "@/components/shared/pagination";
+import { toast } from "react-toastify";
+import { useDebounce } from "@/hooks/use-debounce";
+import { usePatientFilters } from "@/hooks/use-patients-filters";
+import type { PatientCardData } from "@/schemas/patientSchema";
+import type { Page } from "@/types/pagination";
 
-import { useFetchProfessionals } from "@/hooks/profissional/use-fetch-profissional";
-import { useInactivateProfissional } from "@/hooks/profissional/use-inactivate-profissional";
-import { useActivateProfissional } from "@/hooks/profissional/use-activate-profissional";
+export default function PatientsAndStudentsScreen() {
+  const [patients, setPatients] = useState<PatientCardData[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [totalPages, setTotalPages] = useState(0);
+  const [totalElements, setTotalElements] = useState(0);
 
-type StatusFilter = "ativo" | "inativo";
+  const {
+    transtornoOptions,
+    anoOptions,
+    cidadeOptions,
+    tipoAtendimentoOptions,
+  } = usePatientFilters();
 
-export default function VisualizationProfessionalPage() {
-  const router = useRouter();
+  const [query, setQuery] = useQueryStates(
+    {
+      name: parseAsString.withDefault(""),
+      disorder: parseAsString.withDefault(""),
+      year: parseAsString.withDefault(""),
+      city: parseAsString.withDefault(""),
+      treatmentType: parseAsString.withDefault(""),
+      page: parseAsInteger.withDefault(0),
+      size: parseAsInteger.withDefault(10),
+    },
+    {
+      history: "push",
+      clearOnDefault: true,
+      shallow: false,
+    },
+  );
 
-  const [searchTerm, setSearchTerm] = useState("");
-  const [areaFilter, setAreaFilter] = useState("all");
-  const [statusFilter, setStatusFilter] = useState<StatusFilter>("ativo");
+  const debouncedSearchName = useDebounce(query.name, 500);
 
-  const { profissionais, loading, error, setProfissionais } =
-    useFetchProfessionals(statusFilter === "ativo");
+  const requestParams = useMemo(() => {
+    const params = new URLSearchParams();
 
-  const { inactivate } = useInactivateProfissional();
-  const { activate } = useActivateProfissional();
+    if (debouncedSearchName) params.set("name", debouncedSearchName);
+    if (query.disorder) params.set("disorder", query.disorder);
+    if (query.year) params.set("year", query.year);
+    if (query.city) params.set("city", query.city);
+    if (query.treatmentType) params.set("treatmentType", query.treatmentType);
 
-  const handleAddNew = () => router.push("/register-profissional");
-  const handleEdit = (id: string) => router.push(`/update-profissional/${id}`);
+    params.set("page", String(query.page));
+    params.set("size", String(query.size));
 
-  const handleConfirm = async (id: string) => {
-    try {
-      if (statusFilter === "ativo") {
-        await inactivate(id);
-      } else {
-        await activate(id);
+    return params.toString();
+  }, [
+    debouncedSearchName,
+    query.disorder,
+    query.year,
+    query.city,
+    query.treatmentType,
+    query.page,
+    query.size,
+  ]);
+
+  useEffect(() => {
+    const loadData = async () => {
+      setIsLoading(true);
+
+      try {
+        const response = await fetch(`/api/patients?${requestParams}`);
+
+        if (!response.ok) {
+          const errorData = await response.json();
+          console.error(
+            "[ERRO API PATIENTS]:",
+            errorData.response?.data || errorData.message,
+          );
+          throw new Error(errorData.message || "Erro ao buscar dados");
+        }
+
+        const data: Page<PatientCardData> = await response.json();
+
+        setPatients(data.content);
+        setTotalPages(data.totalPages);
+        setTotalElements(data.totalElements);
+        setError(null);
+
+        if (data.totalPages > 0 && query.page > data.totalPages - 1) {
+          await setQuery({ page: Math.max(data.totalPages - 1, 0) });
+        }
+      } catch (err) {
+        console.error("Erro ao buscar dados (pacientes):", err);
+        const errorMsg =
+          err instanceof Error
+            ? err.message
+            : "Não foi possível carregar os dados.";
+        setError(errorMsg);
+        toast.error(errorMsg);
+      } finally {
+        setIsLoading(false);
       }
+    };
 
-      setProfissionais((prev) => prev.filter((p) => p.id !== id));
-    } catch (err) {
-      console.error(err);
-    }
+    loadData();
+  }, [requestParams, query.page, setQuery]);
+
+  const updateFilter = async (
+    field: "name" | "disorder" | "year" | "city" | "treatmentType",
+    value: string,
+  ) => {
+    await setQuery({
+      [field]: value,
+      page: 0,
+    });
   };
 
-  const filteredProfissionais = profissionais.filter((prof) => {
-    const matchesSearch =
-      prof.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      prof.professionalDocument
-        .toLowerCase()
-        .includes(searchTerm.toLowerCase());
+  const handlePageChange = async (page: number) => {
+    if (page < 0 || page >= totalPages) return;
+    await setQuery({ page });
+  };
 
-    const matchesArea =
-      areaFilter === "all" || prof.serviceArea.area === areaFilter;
+  const renderContent = () => {
+    if (isLoading) {
+      return <p className="text-center text-gray-500">Carregando...</p>;
+    }
 
-    return matchesSearch && matchesArea;
-  });
+    if (error) {
+      return <p className="text-center text-red-500">{error}</p>;
+    }
 
-  const uniqueAreas = [
-    "all",
-    ...Array.from(new Set(profissionais.map((p) => p.serviceArea.area))),
-  ];
+    if (patients.length === 0) {
+      return (
+        <p className="text-center text-gray-500">
+          Nenhum resultado encontrado.
+        </p>
+      );
+    }
 
-  const actionLabel = statusFilter === "ativo" ? "Inativar" : "Reativar";
-
-  const actionIcon =
-    statusFilter === "ativo" ? (
-      <UserX className="mr-2 h-4 w-4" />
-    ) : (
-      <UserCheck className="mr-2 h-4 w-4" />
-    );
-
-  const actionItemClass =
-    statusFilter === "ativo"
-      ? "text-destructive focus:text-destructive"
-      : "text-green-600 focus:text-green-600";
-
-  const actionButtonClass =
-    statusFilter === "ativo"
-      ? ""
-      : "bg-green-600 hover:bg-green-700 text-white";
-
-  return (
-    <div className="w-full bg-background p-4 md:p-6 lg:p-8">
-      <div className="mx-auto w-full max-w-[1400px]">
-        <header className="mb-8 flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
-          <h1 className="text-2xl font-semibold lg:text-3xl text-[#0D4F97]">
-            Profissionais da Saúde
-          </h1>
-          <Button
-            className="bg-[#0D4F97] hover:bg-blue-900"
-            onClick={handleAddNew}
-          >
-            Cadastrar Profissional
-          </Button>
-        </header>
-
-        <div className="mb-6 flex flex-col gap-4 md:flex-row">
-          <Input
-            placeholder="Buscar por nome ou documento..."
-            className="flex-grow border-[#0D4F97]"
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-          />
-
-          <Select
-            value={statusFilter}
-            onValueChange={(v) => setStatusFilter(v as StatusFilter)}
-          >
-            <SelectTrigger className="w-full md:w-[200px] border-[#0D4F97] text-[#0D4F97]">
-              <SelectValue placeholder="Situação" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="ativo">Ativo</SelectItem>
-              <SelectItem value="inativo">Inativo</SelectItem>
-            </SelectContent>
-          </Select>
-
-          <Select value={areaFilter} onValueChange={setAreaFilter}>
-            <SelectTrigger className="w-full md:w-[200px] border-[#0D4F97] text-[#0D4F97]">
-              <SelectValue placeholder="Filtrar por área" />
-            </SelectTrigger>
-            <SelectContent>
-              {uniqueAreas.map((area) => (
-                <SelectItem key={area} value={area}>
-                  {area === "all" ? "Todas as Áreas" : area}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
+    return (
+      <>
+        <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+          {patients.map((patient) => (
+            <PatientCard key={patient.id} patient={patient} />
+          ))}
         </div>
 
-        {loading && <p>Carregando...</p>}
-        {error && <p className="text-red-500">{error}</p>}
+        <Pagination
+          currentPage={query.page}
+          totalPages={totalPages}
+          totalElements={totalElements}
+          onPageChange={handlePageChange}
+        />
+      </>
+    );
+  };
 
-        {!loading && !error && (
-          <div className="rounded-lg border bg-card">
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Profissional</TableHead>
-                  <TableHead>Documento</TableHead>
-                  <TableHead>Área</TableHead>
-                  <TableHead className="hidden md:table-cell">
-                    Telefone
-                  </TableHead>
-                  <TableHead />
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {filteredProfissionais.length > 0 ? (
-                  filteredProfissionais.map((prof) => (
-                    <TableRow key={prof.id}>
-                      <TableCell className="font-medium">
-                        {prof.name}
-                      </TableCell>
-                      <TableCell>{prof.professionalDocument}</TableCell>
-                      <TableCell>{prof.serviceArea.area}</TableCell>
-                      <TableCell className="hidden md:table-cell">
-                        {prof.phoneNumber}
-                      </TableCell>
-                      <TableCell className="text-right">
-                        <AlertDialog>
-                          <DropdownMenu>
-                            <DropdownMenuTrigger asChild>
-                              <Button variant="ghost" className="h-8 w-8 p-0">
-                                <MoreHorizontal className="h-4 w-4" />
-                              </Button>
-                            </DropdownMenuTrigger>
-                            <DropdownMenuContent align="end">
-                              <DropdownMenuLabel>Ações</DropdownMenuLabel>
-                              <Link href={`/profissionais/${prof.id}`}>
-                                <DropdownMenuItem>
-                                  <Eye className="mr-2 h-4 w-4" />
-                                  Visualizar Perfil
-                                </DropdownMenuItem>
-                              </Link>
+  return (
+    <div className="!bg-slate-100 min-h-screen">
+      <main className="container mx-auto p-4 md:p-6">
+        <div className="bg-white rounded-xl shadow-md border-2 p-6 mb-4">
+          <SearchFilters
+            searchName={query.name}
+            setSearchName={(value) => updateFilter("name", value)}
+            transtorno={query.disorder}
+            setTranstorno={(value) => updateFilter("disorder", value)}
+            ano={query.year}
+            setAno={(value) => updateFilter("year", value)}
+            cidade={query.city}
+            setCidade={(value) => updateFilter("city", value)}
+            tipoAtendimento={query.treatmentType}
+            setTipoAtendimento={(value) => updateFilter("treatmentType", value)}
+            transtornoOptions={transtornoOptions}
+            anoOptions={anoOptions}
+            cidadeOptions={cidadeOptions}
+            tipoAtendimentoOptions={tipoAtendimentoOptions}
+          />
+        </div>
 
-                              <DropdownMenuItem
-                                onClick={() => handleEdit(prof.id)}
-                              >
-                                <Edit className="mr-2 h-4 w-4" />
-                                Editar
-                              </DropdownMenuItem>
-                              <DropdownMenuSeparator />
-                              <AlertDialogTrigger asChild>
-                                <DropdownMenuItem className={actionItemClass}>
-                                  {actionIcon}
-                                  {actionLabel}
-                                </DropdownMenuItem>
-                              </AlertDialogTrigger>
-                            </DropdownMenuContent>
-                          </DropdownMenu>
-
-                          <AlertDialogContent>
-                            <AlertDialogHeader>
-                              <AlertDialogTitle>
-                                Você tem certeza?
-                              </AlertDialogTitle>
-                              <AlertDialogDescription>
-                                {statusFilter === "ativo"
-                                  ? `Esta ação irá inativar o profissional ${prof.name}.`
-                                  : `Esta ação irá reativar o profissional ${prof.name}.`}
-                              </AlertDialogDescription>
-                            </AlertDialogHeader>
-                            <AlertDialogFooter>
-                              <AlertDialogCancel>
-                                Cancelar
-                              </AlertDialogCancel>
-                              <AlertDialogAction
-                                className={actionButtonClass}
-                                onClick={() => handleConfirm(prof.id)}
-                              >
-                                {actionLabel}
-                              </AlertDialogAction>
-                            </AlertDialogFooter>
-                          </AlertDialogContent>
-                        </AlertDialog>
-                      </TableCell>
-                    </TableRow>
-                  ))
-                ) : (
-                  <TableRow>
-                    <TableCell colSpan={5} className="h-24 text-center">
-                      Nenhum profissional encontrado.
-                    </TableCell>
-                  </TableRow>
-                )}
-              </TableBody>
-            </Table>
+        <section className="relative md:bg-white md:rounded-xl md:shadow-md md:border-2 md:p-6">
+          <div className="hidden md:flex justify-between items-center mb-4">
+            <h2 className="text-xl font-bold text-[#003B93]">
+              Pacientes e Alunos
+            </h2>
+            <Button
+              asChild
+              className="!bg-[#0D4F97] !hover:bg-[#0b427d] text-white"
+            >
+              <Link href="/person/register">Adicionar</Link>
+            </Button>
           </div>
-        )}
-      </div>
+          {renderContent()}
+        </section>
+      </main>
+
+      <Button
+        asChild
+        className="fixed bottom-6 right-6 h-[53px] w-[53px] rounded-full shadow-lg md:hidden bg-[#0D4F97] !hover:bg-[#0b427d]"
+      >
+        <Link href="/person/register">
+          <Plus className="h-7 w-7" />
+          <span className="sr-only">Adicionar Pessoa</span>
+        </Link>
+      </Button>
     </div>
   );
 }
