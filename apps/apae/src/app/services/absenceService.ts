@@ -24,6 +24,8 @@ const mockAbsences: AbsenceResponseDTO[] = [
     absenceDate: '2024-01-15',
     justification: 'Paciente não compareceu',
     notified: true,
+    justificationDocumentId: "",
+    isJustified: false
   },
 ];
 
@@ -73,6 +75,8 @@ export class AbsenceService {
         patientId: 'patient-mock',
         professionalId: 'prof-mock',
         notified: false,
+        justificationDocumentId: "",
+        isJustified: false
       };
       mockAbsences.push(newAbsence);
       return newAbsence;
