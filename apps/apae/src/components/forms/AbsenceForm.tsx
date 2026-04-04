@@ -25,8 +25,11 @@ import { Textarea } from "@/components/ui/textarea";
 
 import { toast } from "react-toastify";
 
+import { DocumentWithOutUrl } from "@/types/document";
+
 interface AbsenceFormProps {
   generatedAppointmentId: string;
+  patientId: string;
   absenceDate: string;
   onSuccess?: () => void;
 }
@@ -38,6 +41,7 @@ type FormDataType = {
 
 export function AbsenceForm({
   generatedAppointmentId,
+  patientId,
   absenceDate,
   onSuccess,
 }: AbsenceFormProps) {
@@ -59,14 +63,14 @@ export function AbsenceForm({
       let documentId: string | null = null;
 
       if (data.hasJustification === "yes" && file) {
-
         const docFormData = new FormData();
 
         docFormData.append("file", file);
-        docFormData.append("generatedAppointmentId", generatedAppointmentId);
-        docFormData.append("type", "MEDICAL_CERTIFICATE");
+        docFormData.append("category", "ABSENCE");
+        docFormData.append("type", "ATTACHMENTANY");
+        docFormData.append("year", String(new Date().getFullYear()));
 
-        const docResponse = await fetch("/api/absence/document", {
+        const docResponse = await fetch(`/api/pessoas/${patientId}/documentos`, {
           method: "POST",
           body: docFormData,
         });
@@ -76,13 +80,16 @@ export function AbsenceForm({
           throw new Error(errorData.message);
         }
 
-        documentId = await docResponse.text();
+        const document = (await docResponse.json()) as DocumentWithOutUrl;
+
+        documentId = document.id;
+        
       }
 
       const absencePayload = {
         generatedAppointmentId,
         absenceDate,
-        is_justified: data.hasJustification === "yes",
+        isJustified: data.hasJustification === "yes",
         justification:
           data.hasJustification === "yes"
             ? data.justificationText
@@ -112,7 +119,7 @@ export function AbsenceForm({
         fileInputRef.current.value = "";
       }
 
-      onSuccess?.();
+      window.location.reload();
 
     } catch (error: any) {
       toast.error(error.message || "Erro ao registrar falta");
