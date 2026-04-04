@@ -7,11 +7,12 @@ import { Plus } from "lucide-react";
 import { PatientCard } from "@/components/shared/patient-card";
 import { PatientCardData } from "@/schemas/patientSchema";
 import { SearchFilters } from "@/components/search-filters";
+import { Pagination } from "@/components/shared/pagination";
 import { toast } from "react-toastify";
 import { useDebounce } from "@/hooks/use-debounce";
 import { usePatientFilters } from "@/hooks/use-patients-filters";
 import type { Page } from "@/types/pagination";
-import { parseAsInteger, useQueryState } from "nuqs";
+import { useQueryState, parseAsInteger } from "nuqs";
 
 export default function PatientsAndStudentsScreen() {
   const [patients, setPatients] = useState<PatientCardData[]>([]);
@@ -24,19 +25,18 @@ export default function PatientsAndStudentsScreen() {
   const [transtorno, setTranstorno] = useQueryState("disorder", {
     defaultValue: "",
   });
-  const [ano, setAno] = useQueryState("year", {
-    defaultValue: "",
-  });
-  const [cidade, setCidade] = useQueryState("city", {
-    defaultValue: "",
-  });
+  const [ano, setAno] = useQueryState("year", { defaultValue: "" });
+  const [cidade, setCidade] = useQueryState("city", { defaultValue: "" });
   const [tipoAtendimento, setTipoAtendimento] = useQueryState("treatmentType", {
     defaultValue: "",
   });
+
   const [page, setPage] = useQueryState("page", parseAsInteger.withDefault(0));
 
   const debouncedSearchName = useDebounce(searchName ?? "", 500);
+
   const size = 10;
+
   const [totalPages, setTotalPages] = useState(0);
   const [totalElements, setTotalElements] = useState(0);
 
@@ -47,36 +47,17 @@ export default function PatientsAndStudentsScreen() {
     tipoAtendimentoOptions,
   } = usePatientFilters();
 
-  const handleSearchNameChange = (value: string) => {
+  useEffect(() => {
     void setPage(0);
-    return setSearchName(value || null);
-  };
-
-  const handleTranstornoChange = (value: string) => {
-    void setPage(0);
-    return setTranstorno(value || null);
-  };
-
-  const handleAnoChange = (value: string) => {
-    void setPage(0);
-    return setAno(value || null);
-  };
-
-  const handleCidadeChange = (value: string) => {
-    void setPage(0);
-    return setCidade(value || null);
-  };
-
-  const handleTipoAtendimentoChange = (value: string) => {
-    void setPage(0);
-    return setTipoAtendimento(value || null);
-  };
+  }, [debouncedSearchName, transtorno, ano, cidade, tipoAtendimento]);
 
   useEffect(() => {
     const loadData = async () => {
       setIsLoading(true);
+
       try {
         const params = new URLSearchParams();
+
         if (debouncedSearchName) params.append("name", debouncedSearchName);
         if (transtorno) params.append("disorder", transtorno);
         if (ano) params.append("year", ano);
@@ -87,6 +68,7 @@ export default function PatientsAndStudentsScreen() {
         params.append("size", String(size));
 
         const queryString = params.toString();
+
         const response = await fetch(`/api/patients?${queryString}`);
 
         if (!response.ok) {
@@ -106,10 +88,12 @@ export default function PatientsAndStudentsScreen() {
         setError(null);
       } catch (err) {
         console.error("Erro ao buscar dados (pacientes):", err);
+
         const errorMsg =
           err instanceof Error
             ? err.message
             : "Não foi possível carregar os dados.";
+
         setError(errorMsg);
         toast.error(errorMsg);
       } finally {
@@ -118,15 +102,25 @@ export default function PatientsAndStudentsScreen() {
     };
 
     loadData();
-  }, [debouncedSearchName, transtorno, ano, cidade, tipoAtendimento, page]);
+  }, [
+    debouncedSearchName,
+    transtorno,
+    ano,
+    cidade,
+    tipoAtendimento,
+    page,
+    size,
+  ]);
 
   const renderContent = () => {
     if (isLoading) {
       return <p className="text-center text-gray-500">Carregando...</p>;
     }
+
     if (error) {
       return <p className="text-center text-red-500">{error}</p>;
     }
+
     if (patients.length === 0) {
       return (
         <p className="text-center text-gray-500">
@@ -143,35 +137,12 @@ export default function PatientsAndStudentsScreen() {
           ))}
         </div>
 
-        {totalPages > 1 && (
-          <div className="mt-6 flex items-center justify-between">
-            <p className="text-sm text-gray-600">
-              Total de registros: {totalElements}
-            </p>
-
-            <div className="flex items-center gap-2">
-              <Button
-                variant="outline"
-                disabled={page === 0}
-                onClick={() => void setPage(page - 1)}
-              >
-                Anterior
-              </Button>
-
-              <span className="text-sm text-gray-600">
-                Página {page + 1} de {totalPages}
-              </span>
-
-              <Button
-                variant="outline"
-                disabled={page + 1 >= totalPages}
-                onClick={() => void setPage(page + 1)}
-              >
-                Próxima
-              </Button>
-            </div>
-          </div>
-        )}
+        <Pagination
+          currentPage={page ?? 0}
+          totalPages={totalPages}
+          totalElements={totalElements}
+          onPageChange={(nextPage) => setPage(nextPage)}
+        />
       </>
     );
   };
@@ -182,26 +153,28 @@ export default function PatientsAndStudentsScreen() {
         <div className="bg-white rounded-xl shadow-md border-2 p-6 mb-4">
           <SearchFilters
             searchName={searchName ?? ""}
-            setSearchName={handleSearchNameChange}
+            setSearchName={(v) => setSearchName(v || null)}
             transtorno={transtorno ?? ""}
-            setTranstorno={handleTranstornoChange}
+            setTranstorno={(v) => setTranstorno(v || null)}
             ano={ano ?? ""}
-            setAno={handleAnoChange}
+            setAno={(v) => setAno(v || null)}
             cidade={cidade ?? ""}
-            setCidade={handleCidadeChange}
+            setCidade={(v) => setCidade(v || null)}
             tipoAtendimento={tipoAtendimento ?? ""}
-            setTipoAtendimento={handleTipoAtendimentoChange}
+            setTipoAtendimento={(v) => setTipoAtendimento(v || null)}
             transtornoOptions={transtornoOptions}
             anoOptions={anoOptions}
             cidadeOptions={cidadeOptions}
             tipoAtendimentoOptions={tipoAtendimentoOptions}
           />
         </div>
+
         <section className="relative md:bg-white md:rounded-xl md:shadow-md md:border-2 md:p-6">
           <div className="hidden md:flex justify-between items-center mb-4">
             <h2 className="text-xl font-bold text-[#003B93]">
               Pacientes e Alunos
             </h2>
+
             <Button
               asChild
               className="!bg-[#0D4F97] !hover:bg-[#0b427d] text-white"
@@ -209,9 +182,11 @@ export default function PatientsAndStudentsScreen() {
               <Link href="/person/register">Adicionar</Link>
             </Button>
           </div>
+
           {renderContent()}
         </section>
       </main>
+
       <Button
         asChild
         className="fixed bottom-6 right-6 h-[53px] w-[53px] rounded-full shadow-lg md:hidden bg-[#0D4F97] !hover:bg-[#0b427d]"
