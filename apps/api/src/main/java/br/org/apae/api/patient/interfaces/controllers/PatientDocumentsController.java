@@ -43,4 +43,11 @@ public interface PatientDocumentsController {
             @RequestParam("type") String type,
             @RequestParam(required = false) Integer year
     );
+
+    @Operation(summary = "Retorna um documento pelo nome")
+    @GetMapping("/download")
+    ResponseEntity<DocumentWithUrlResponseDTO> findDocumentByName(
+            @PathVariable UUID id,
+            @RequestParam String documentName
+    );
 }
