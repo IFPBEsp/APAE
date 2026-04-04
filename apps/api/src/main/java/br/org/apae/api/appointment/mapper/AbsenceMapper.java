@@ -29,7 +29,9 @@ public class AbsenceMapper {
                 professionalId,
                 entity.getAbsenceDate(),
                 entity.getJustification(),
-                entity.getNotified()
+                entity.getNotified(),
+                entity.getIsJustified(),
+                entity.getJustificationDocumentId()
         );
     }
 }
