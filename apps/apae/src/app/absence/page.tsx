@@ -123,6 +123,23 @@ export default function AbsenceDetails() {
     );
   }
 
+  const handleDownload = async (patientId: string, documentName: string) => {
+  try {
+    const res = await fetch(
+      `/api/pessoas/${patientId}/documentos/download?name=${encodeURIComponent(documentName)}`
+    );
+
+    if (!res.ok) throw new Error("Erro ao buscar URL");
+
+    const data = await res.json();
+
+    window.open(data.url, "_blank");
+
+  } catch (error) {
+    console.error("Erro ao baixar documento:", error);
+  }
+};
+
   return (
     <div className="min-h-screen w-full text-sm overflow-x-hidden">
       <main className="flex-1 p-3 sm:p-6 w-full max-w-none">
@@ -281,14 +298,32 @@ export default function AbsenceDetails() {
                                               {formatDate(absence.absenceDate)}
                                             </span>
                                           </div>
-                                          {absence.justification && (
-                                            <div className="text-sm text-gray-600 max-w-md">
-                                              <span className="font-medium">
-                                                Justificativa:{" "}
-                                              </span>
-                                              {absence.justification}
-                                            </div>
-                                          )}
+
+                                          <div className="flex items-center gap-4">
+                                            {absence.justification && (
+                                              <div className="text-sm text-gray-600 max-w-md">
+                                                <span className="font-medium">
+                                                  Justificativa:{" "}
+                                                </span>
+                                                {absence.justification}
+                                              </div>
+                                            )}
+
+                                            {absence.justificationDocumentId && (
+                                              <Button
+                                                size="sm"
+                                                variant="outline"
+                                                onClick={() =>
+                                                  handleDownload(
+                                                    patientWithAbsence.patient.id!,
+                                                    absence.justificationDocumentId
+                                                  )
+                                                }
+                                              >
+                                                Baixar documento
+                                              </Button>
+                                            )}
+                                          </div>
                                         </div>
                                       )
                                     )}
