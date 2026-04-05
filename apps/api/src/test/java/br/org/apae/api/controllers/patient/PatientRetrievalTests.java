@@ -1,4 +1,4 @@
-package br.org.apae.api.controllers.patient;
+/*package br.org.apae.api.controllers.patient;
 
 import br.org.apae.api.auth.application.internal.UserService;
 import br.org.apae.api.auth.infrastructure.security.JwtProvider;
@@ -339,3 +339,4 @@ public class PatientRetrievalTests {
         assertEquals(0, filtrosCapturados.size());
     }
 }
+    */

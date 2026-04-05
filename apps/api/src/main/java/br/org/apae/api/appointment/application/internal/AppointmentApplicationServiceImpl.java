@@ -104,15 +104,16 @@ public class AppointmentApplicationServiceImpl implements AppointmentApplication
     public void create(CreateAppointmentDTO dto) {
         LocalDate today = LocalDate.now();
         LocalTime now = LocalTime.now();
+
         if (dto.initialDate().isBefore(today)) {
-                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, 
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
                     "A data do agendamento não pode ser no passado.");
         }
         if (dto.initialDate().isEqual(today) && dto.hour().isBefore(now)) {
-                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, 
-                "O horário selecionado já passou.");
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
+                    "O horário selecionado já passou.");
         }
-        
+
         AnnualRegistry annualRegistry = this.registryRepo
                 .findByPatientIdAndYear(dto.patientId(), Year.now().getValue())
                 .orElseThrow(AnnualRegistrationNotFound::new);
@@ -124,26 +125,21 @@ public class AppointmentApplicationServiceImpl implements AppointmentApplication
         validateProfessionalAvailability(professional, dto.initialDate(), dto.hour());
 
         LocalTime exactTime = dto.hour().truncatedTo(ChronoUnit.MINUTES);
-
         LocalDate start = dto.initialDate();
         LocalDate end = start.plusYears(1);
-        
-        List<LocalDateTime> projectedDates = calculateRecurrence(start, dto.frequencyDays(), exactTime, start, end);
 
+        List<LocalDateTime> projectedDates = calculateRecurrence(start, dto.frequencyDays(), exactTime, start, end);
         validateNoDuplicateAppointments(dto.patientId(), dto.professionalId(), projectedDates, null);
 
         boolean isTimeSlotTaken = appointmentRepo.existsByProfessionalIdAndInitialDateAndHourAndIsActiveTrue(
-                professional.getId(),
-                dto.initialDate(),
-                exactTime
-        );
-        
+                professional.getId(), dto.initialDate(), exactTime);
+
         if (isTimeSlotTaken) {
             throw new AppointmentConflictException();
         }
-        
+
         Appointment appointment = mapper.toEntity(dto, professional, annualRegistry);
-        
+
         try {
             appointmentRepo.save(appointment);
         } catch (DataIntegrityViolationException ex) {
@@ -159,22 +155,19 @@ public class AppointmentApplicationServiceImpl implements AppointmentApplication
             Patient patient = patientRepo
                     .findById(appointment.getAnnualRegistration().getPatientId())
                     .orElseThrow(() -> new EntityNotFoundException(
-                            "Paciente não encontrado para o agendamento " + appointment.getId()
-                    ));
+                            "Paciente não encontrado para o agendamento " + appointment.getId()));
 
             Guardian guardian = guardianRepo
                     .findByPatientId(patient.getId())
                     .orElseThrow(() -> new EntityNotFoundException(
-                            "Responsável não encontrado para o paciente " + patient.getId() + ", no agendamento " + appointment.getId()
-                    ));
-            List<Parent> pais = parentRepo.findAllByPatientId(patient.getId());
+                            "Responsável não encontrado para o paciente " + patient.getId()));
 
+            List<Parent> pais = parentRepo.findAllByPatientId(patient.getId());
             AddressResponseDTO adto = new AddressResponseDTO(patient.getAddress());
             Set<Vaccine> vaccines = patient.getVaccines();
 
             PatientResponseDTO pdto = new PatientResponseDTO(
-                    patient,
-                    adto,
+                    patient, adto,
                     new GuardianResponseDTO(guardian, adto),
                     pais.stream().map(parentMapper::toResponseDTO).toList(),
                     vaccines.stream().map(vaccineMapper::toResponseDTO).collect(Collectors.toSet()), null);
@@ -185,66 +178,56 @@ public class AppointmentApplicationServiceImpl implements AppointmentApplication
 
     @Override
     public Page<AppointmentResponseDTO> findAllByDate(LocalDate date, Pageable pageable) {
-        return this.appointmentRepo.findAllByInitialDate(date, pageable)
-                .map(appointment -> {
-                    Patient patient = patientRepo
-                            .findById(appointment.getAnnualRegistration().getPatientId())
-                            .orElseThrow(() -> new EntityNotFoundException(
-                                    "Paciente não encontrado para o agendamento " + appointment.getId()
-                            ));
+        return this.appointmentRepo.findAllByInitialDate(date, pageable).map(appointment -> {
+            Patient patient = patientRepo
+                    .findById(appointment.getAnnualRegistration().getPatientId())
+                    .orElseThrow(() -> new EntityNotFoundException(
+                            "Paciente não encontrado para o agendamento " + appointment.getId()));
 
-                    Guardian guardian = guardianRepo
-                            .findByPatientId(patient.getId())
-                            .orElseThrow(() -> new EntityNotFoundException(
-                                    "Responsável não encontrado para o paciente " + patient.getId() + ", no agendamento " + appointment.getId()
-                            ));
-                    List<Parent> pais = parentRepo.findAllByPatientId(patient.getId());
+            Guardian guardian = guardianRepo
+                    .findByPatientId(patient.getId())
+                    .orElseThrow(() -> new EntityNotFoundException(
+                            "Responsável não encontrado para o paciente " + patient.getId()));
 
-                    AddressResponseDTO adto = new AddressResponseDTO(patient.getAddress());
-                    Set<Vaccine> vaccines = patient.getVaccines();
+            List<Parent> pais = parentRepo.findAllByPatientId(patient.getId());
+            AddressResponseDTO adto = new AddressResponseDTO(patient.getAddress());
+            Set<Vaccine> vaccines = patient.getVaccines();
 
-                    PatientResponseDTO pdto = new PatientResponseDTO(
-                            patient,
-                            adto,
-                            new GuardianResponseDTO(guardian, adto),
-                            pais.stream().map(parentMapper::toResponseDTO).collect(Collectors.toList()),
-                            vaccines.stream().map(vaccineMapper::toResponseDTO).collect(Collectors.toSet()), null
-                    );
+            PatientResponseDTO pdto = new PatientResponseDTO(
+                    patient, adto,
+                    new GuardianResponseDTO(guardian, adto),
+                    pais.stream().map(parentMapper::toResponseDTO).collect(Collectors.toList()),
+                    vaccines.stream().map(vaccineMapper::toResponseDTO).collect(Collectors.toSet()), null);
 
-                    return mapper.toResponse(appointment, pdto);
-                });
+            return mapper.toResponse(appointment, pdto);
+        });
     }
 
     @Override
     public Page<AppointmentResponseDTO> findAllByDateAndTime(LocalDate date, LocalTime time, Pageable pageable) {
-        return this.appointmentRepo.findAllByInitialDateAndHour(date, time, pageable)
-                .map(appointment -> {
-                    Patient patient = patientRepo
-                            .findById(appointment.getAnnualRegistration().getPatientId())
-                            .orElseThrow(() -> new EntityNotFoundException(
-                                    "Paciente não encontrado para o agendamento " + appointment.getId()
-                            ));
+        return this.appointmentRepo.findAllByInitialDateAndHour(date, time, pageable).map(appointment -> {
+            Patient patient = patientRepo
+                    .findById(appointment.getAnnualRegistration().getPatientId())
+                    .orElseThrow(() -> new EntityNotFoundException(
+                            "Paciente não encontrado para o agendamento " + appointment.getId()));
 
-                    Guardian guardian = guardianRepo
-                            .findByPatientId(patient.getId())
-                            .orElseThrow(() -> new EntityNotFoundException(
-                                    "Responsável não encontrado para o paciente " + patient.getId() + ", no agendamento " + appointment.getId()
-                            ));
-                    List<Parent> pais = parentRepo.findAllByPatientId(patient.getId());
+            Guardian guardian = guardianRepo
+                    .findByPatientId(patient.getId())
+                    .orElseThrow(() -> new EntityNotFoundException(
+                            "Responsável não encontrado para o paciente " + patient.getId()));
 
-                    AddressResponseDTO adto = new AddressResponseDTO(patient.getAddress());
-                    Set<Vaccine> vaccines = patient.getVaccines();
+            List<Parent> pais = parentRepo.findAllByPatientId(patient.getId());
+            AddressResponseDTO adto = new AddressResponseDTO(patient.getAddress());
+            Set<Vaccine> vaccines = patient.getVaccines();
 
-                    PatientResponseDTO pdto = new PatientResponseDTO(
-                            patient,
-                            adto,
-                            new GuardianResponseDTO(guardian, adto),
-                            pais.stream().map(parentMapper::toResponseDTO).collect(Collectors.toList()),
-                            vaccines.stream().map(vaccineMapper::toResponseDTO).collect(Collectors.toSet()), null
-                    );
+            PatientResponseDTO pdto = new PatientResponseDTO(
+                    patient, adto,
+                    new GuardianResponseDTO(guardian, adto),
+                    pais.stream().map(parentMapper::toResponseDTO).collect(Collectors.toList()),
+                    vaccines.stream().map(vaccineMapper::toResponseDTO).collect(Collectors.toSet()), null);
 
-                    return mapper.toResponse(appointment, pdto);
-                });
+            return mapper.toResponse(appointment, pdto);
+        });
     }
 
     @Override
@@ -265,22 +248,19 @@ public class AppointmentApplicationServiceImpl implements AppointmentApplication
         Patient patient = patientRepo
                 .findById(appointment.getAnnualRegistration().getPatientId())
                 .orElseThrow(() -> new EntityNotFoundException(
-                        "Paciente não encontrado para o agendamento " + appointment.getId()
-                ));
+                        "Paciente não encontrado para o agendamento " + appointment.getId()));
 
         Guardian guardian = guardianRepo
                 .findByPatientId(patient.getId())
                 .orElseThrow(() -> new EntityNotFoundException(
-                        "Responsável não encontrado para o paciente " + patient.getId() + ", no agendamento " + appointment.getId()
-                ));
-        List<Parent> pais = parentRepo.findAllByPatientId(patient.getId());
+                        "Responsável não encontrado para o paciente " + patient.getId()));
 
+        List<Parent> pais = parentRepo.findAllByPatientId(patient.getId());
         AddressResponseDTO adto = new AddressResponseDTO(patient.getAddress());
         Set<Vaccine> vaccines = patient.getVaccines();
 
         PatientResponseDTO pdto = new PatientResponseDTO(
-                patient,
-                adto,
+                patient, adto,
                 new GuardianResponseDTO(guardian, adto),
                 pais.stream().map(parentMapper::toResponseDTO).collect(Collectors.toList()),
                 vaccines.stream().map(vaccineMapper::toResponseDTO).collect(Collectors.toSet()), null);
@@ -295,20 +275,6 @@ public class AppointmentApplicationServiceImpl implements AppointmentApplication
         }
         appointmentRepo.deleteById(id);
     }
-
-    /**
-     * Generates materialized appointment instances for an annual registration within a date range,
-     * based on the active recurrence rule.
-     * <p>
-     * Existing generated appointments are reused; new ones are created and persisted.
-     *
-     * @param annualRegistrationId the ID of the annual patient registration
-     * @param start the start date (inclusive) of the generation period
-     * @param end the end date (inclusive) of the generation period
-     * @return a list of generated appointment responses
-     * @throws IllegalArgumentException if the annual registration is not found
-     * @throws IllegalStateException if no active rule exists for the registration
-     */
 
     public List<GeneratedAppointmentResponseDTO> generateAppointments(
             UUID appointmentId, LocalDate start, LocalDate end) {
@@ -347,24 +313,26 @@ public class AppointmentApplicationServiceImpl implements AppointmentApplication
 
     @Override
     public Page<TodayAppointmentsResponseDTO> listAppointmentForToday(LocalDate date, Pageable pageable) {
-        return this.generatedRepo.listAppointmentsForToday(date, pageable).map(appointment -> {
+        LocalDate target = (date != null) ? date : LocalDate.now();
+        LocalDateTime start = target.atStartOfDay();
+        LocalDateTime end = target.atTime(23, 59, 59);
+
+        return this.generatedRepo.listAppointmentsForToday(start, end, pageable).map(appointment -> {
             try {
                 Patient patient = patientRepo.findById(appointment.getPatientId())
                         .orElseThrow(() -> new RuntimeException("Paciente não encontrado"));
-                
+
                 Guardian guardian = guardianRepo.findByPatientId(patient.getId())
                         .orElseThrow(() -> new RuntimeException("Responsável não encontrado"));
-                    
-                List<Parent> pais = parentRepo.findAllByPatientId(patient.getId());
 
+                List<Parent> pais = parentRepo.findAllByPatientId(patient.getId());
                 AddressResponseDTO adto = new AddressResponseDTO(patient.getAddress());
                 Set<Vaccine> vaccines = patient.getVaccines();
 
                 boolean hasAbsence = this.absenceRepo.findByGeneratedAppointmentId(appointment.getId()).isPresent();
 
                 PatientResponseDTO pdto = new PatientResponseDTO(
-                        patient,
-                        adto,
+                        patient, adto,
                         new GuardianResponseDTO(guardian, adto),
                         pais.stream().map(parentMapper::toResponseDTO).toList(),
                         vaccines.stream().map(vaccineMapper::toResponseDTO).collect(Collectors.toSet()), null);
@@ -373,20 +341,9 @@ public class AppointmentApplicationServiceImpl implements AppointmentApplication
             } catch (Exception e) {
                 throw new RuntimeException("Erro ao processar mapeamento de agendamento: " + e.getMessage(), e);
             }
-
         });
     }
 
-    /**
-     * Calculates recurring appointment dates based on a rule's start date, frequency, and time.
-     *
-     * @param ruleStart the start date of the recurrence rule
-     * @param frequencyDays the interval in days between appointments
-     * @param time the time of day for each appointment
-     * @param queryStart the earliest date to include (inclusive)
-     * @param queryEnd the latest date to include (inclusive)
-     * @return a list of scheduled {@link LocalDateTime} instances
-     */
     private List<LocalDateTime> calculateRecurrence(
             LocalDate ruleStart, int frequencyDays, LocalTime time,
             LocalDate queryStart, LocalDate queryEnd) {
@@ -396,7 +353,6 @@ public class AppointmentApplicationServiceImpl implements AppointmentApplication
 
         while (!date.isAfter(queryEnd)) {
             result.add(date.atTime(time));
-
             if (frequencyDays == 30) {
                 date = date.plusMonths(1);
             } else {
@@ -406,18 +362,7 @@ public class AppointmentApplicationServiceImpl implements AppointmentApplication
         return result;
     }
 
-    /**
-     * Updates an active appointment rule by deactivating the current rule and creating a new one
-     * with updated data. Allows changing frequency, start date, time, and end date.
-     * Removes future generated appointments and regenerates them based on the updated rule.
-     *
-     * @param appointmentId the ID of the active appointment rule to update
-     * @param dto data to update the appointment (null fields keep current values)
-     * @return the newly created active rule
-     * @throws IllegalArgumentException if the rule is not found
-     * @throws IllegalStateException if the rule is not active
-     */
-      public AppointmentResponseDTO update(UUID appointmentId, UpdateAppointmentDTO dto) {
+    public AppointmentResponseDTO update(UUID appointmentId, UpdateAppointmentDTO dto) {
         if (dto.frequencyDays() != null) {
             List<Integer> validFrequencies = List.of(7, 14, 30);
             if (!validFrequencies.contains(dto.frequencyDays())) {
@@ -448,19 +393,18 @@ public class AppointmentApplicationServiceImpl implements AppointmentApplication
                     "A nova data do agendamento não pode ser no passado.");
         }
 
-        if (startDate.isEqual(today) && appointmentHour.isBefore(now)) {
-            if (dateChanged || timeChanged) {
-                throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
-                        "O novo horário selecionado já passou.");
-            }
+        if (startDate.isEqual(today) && appointmentHour.isBefore(now) && (dateChanged || timeChanged)) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
+                    "O novo horário selecionado já passou.");
         }
 
         validateProfessionalAvailability(current.getProfessional(), startDate, appointmentHour);
 
         LocalDate end = startDate.plusYears(1);
         List<LocalDateTime> projectedDates = calculateRecurrence(startDate, frequencyDays, appointmentHour, startDate, end);
-        validateNoDuplicateAppointments(current.getAnnualRegistration().getPatientId(), current.getProfessional().getId(), projectedDates, current.getId());
-        
+        validateNoDuplicateAppointments(current.getAnnualRegistration().getPatientId(),
+                current.getProfessional().getId(), projectedDates, current.getId());
+
         current.setActive(false);
         current.setEndDate(startDate.minusDays(1));
         appointmentRepo.save(current);
@@ -473,40 +417,25 @@ public class AppointmentApplicationServiceImpl implements AppointmentApplication
                 frequencyDays,
                 appointmentHour,
                 startDate,
-                null
-        );
+                null);
         newRule = appointmentRepo.save(newRule);
 
         generateAppointments(newRule.getId(), startDate, end);
 
-        Patient patient = patientRepo.findById(newRule.getAnnualRegistration().getPatientId())
-                .orElseThrow();
-        Guardian guardian = guardianRepo.findByPatientId(patient.getId())
-                .orElseThrow();
+        Patient patient = patientRepo.findById(newRule.getAnnualRegistration().getPatientId()).orElseThrow();
+        Guardian guardian = guardianRepo.findByPatientId(patient.getId()).orElseThrow();
         List<Parent> parents = parentRepo.findAllByPatientId(patient.getId());
-
         AddressResponseDTO addressDTO = new AddressResponseDTO(patient.getAddress());
 
         PatientResponseDTO patientDTO = new PatientResponseDTO(
-                patient,
-                addressDTO,
+                patient, addressDTO,
                 new GuardianResponseDTO(guardian, addressDTO),
                 parents.stream().map(parentMapper::toResponseDTO).toList(),
-                patient.getVaccines().stream().map(vaccineMapper::toResponseDTO).collect(Collectors.toSet()),
-                null
-        );
+                patient.getVaccines().stream().map(vaccineMapper::toResponseDTO).collect(Collectors.toSet()), null);
 
         return mapper.toResponse(newRule, patientDTO);
     }
 
-    /**
-     * Reschedules a single generated appointment to a new date and time.
-     *
-     * @param generatedId the ID of the generated appointment
-     * @param newDateTime the new scheduled date and time
-     * @return the updated generated appointment response
-     * @throws IllegalArgumentException if the appointment is not found
-     */
     public GeneratedAppointmentResponseDTO reschedule(UUID generatedId, LocalDateTime newDateTime) {
         GeneratedAppointment appt = generatedRepo.findById(generatedId)
                 .orElseThrow(() -> new IllegalArgumentException(APPOINTMENT_NOT_FOUND));
@@ -514,13 +443,6 @@ public class AppointmentApplicationServiceImpl implements AppointmentApplication
         return mapper.toGeneratedResponse(generatedRepo.save(appt));
     }
 
-    /**
-     * Marks a generated appointment as performed/completed.
-     *
-     * @param generatedId the ID of the generated appointment
-     * @return the updated generated appointment response
-     * @throws IllegalArgumentException if the appointment is not found
-     */
     public GeneratedAppointmentResponseDTO markAsPerformed(UUID generatedId) {
         GeneratedAppointment appt = generatedRepo.findById(generatedId)
                 .orElseThrow(() -> new IllegalArgumentException(APPOINTMENT_NOT_FOUND));
@@ -528,14 +450,6 @@ public class AppointmentApplicationServiceImpl implements AppointmentApplication
         return mapper.toGeneratedResponse(generatedRepo.save(appt));
     }
 
-    /**
-     * Cancels a generated appointment with a reason.
-     *
-     * @param generatedId the ID of the generated appointment
-     * @param reason the reason for cancellation (required)
-     * @return the cancelled appointment response
-     * @throws IllegalArgumentException if the appointment is not found
-     */
     public GeneratedAppointmentResponseDTO cancel(UUID generatedId, String reason) {
         GeneratedAppointment appt = generatedRepo.findById(generatedId)
                 .orElseThrow(() -> new IllegalArgumentException(APPOINTMENT_NOT_FOUND));
@@ -545,21 +459,10 @@ public class AppointmentApplicationServiceImpl implements AppointmentApplication
         return mapper.toGeneratedResponse(generatedRepo.save(appt));
     }
 
-    /**
-     * Lists all generated appointments for a patient within a date range (paginated).
-     *
-     * @param patientId the ID of the patient (from annual registration)
-     * @param start the start date of the range (inclusive)
-     * @param end the end date of the range (inclusive)
-     * @param pageable pagination information
-     * @return a paginated list of generated appointments for the patient
-     */
     public Page<GeneratedAppointmentResponseDTO> listByPatient(
             UUID patientId, LocalDate start, LocalDate end, Pageable pageable) {
-
         LocalDateTime s = start.atStartOfDay();
         LocalDateTime e = end.atTime(23, 59, 59);
-
         return generatedRepo.findByPatientIdAndScheduledDateTimeBetween(patientId, s, e, pageable)
                 .map(mapper::toGeneratedResponse);
     }
@@ -571,16 +474,13 @@ public class AppointmentApplicationServiceImpl implements AppointmentApplication
 
         Patient patient = patientRepo.findById(appointment.getPatientId())
                 .orElseThrow(() -> new EntityNotFoundException(
-                        "Paciente não encontrado para o agendamento " + appointment.getId()
-                ));
+                        "Paciente não encontrado para o agendamento " + appointment.getId()));
 
         Guardian guardian = guardianRepo.findByPatientId(patient.getId())
                 .orElseThrow(() -> new EntityNotFoundException(
-                        "Responsável não encontrado para o paciente " + patient.getId()
-                ));
+                        "Responsável não encontrado para o paciente " + patient.getId()));
 
         List<Parent> pais = parentRepo.findAllByPatientId(patient.getId());
-
         AddressResponseDTO adto = new AddressResponseDTO(patient.getAddress());
         Set<Vaccine> vaccines = patient.getVaccines();
 
@@ -588,13 +488,10 @@ public class AppointmentApplicationServiceImpl implements AppointmentApplication
         Boolean hasAbsence = absence.isPresent();
 
         PatientResponseDTO pdto = new PatientResponseDTO(
-                patient,
-                adto,
+                patient, adto,
                 new GuardianResponseDTO(guardian, adto),
                 pais.stream().map(parentMapper::toResponseDTO).toList(),
-                vaccines.stream().map(vaccineMapper::toResponseDTO).collect(Collectors.toSet()),
-                null
-        );
+                vaccines.stream().map(vaccineMapper::toResponseDTO).collect(Collectors.toSet()), null);
 
         return mapper.toTodayResponseDTO(appointment, pdto, hasAbsence);
     }
@@ -607,38 +504,33 @@ public class AppointmentApplicationServiceImpl implements AppointmentApplication
         }
 
         Day requestedDay = switch (dayOfWeek) {
-            case MONDAY -> Day.SEGUNDA;
-            case TUESDAY -> Day.TERCA;
+            case MONDAY    -> Day.SEGUNDA;
+            case TUESDAY   -> Day.TERCA;
             case WEDNESDAY -> Day.QUARTA;
-            case THURSDAY -> Day.QUINTA;
-            case FRIDAY -> Day.SEXTA;
-            default -> throw new ProfessionalUnavailableException();
+            case THURSDAY  -> Day.QUINTA;
+            case FRIDAY    -> Day.SEXTA;
+            default        -> throw new ProfessionalUnavailableException();
         };
 
         Shift requestedShift = time.getHour() < 12 ? Shift.MANHA : Shift.TARDE;
 
         boolean isAvailable = professional.getAvailabilities().stream()
-                .anyMatch(availability ->
-                        availability.getDay().equals(requestedDay) &&
-                                availability.getShift().equals(requestedShift)
-                );
+                .anyMatch(a -> a.getDay().equals(requestedDay) && a.getShift().equals(requestedShift));
 
         if (!isAvailable) {
             throw new ProfessionalUnavailableException();
         }
     }
 
-    private void validateNoDuplicateAppointments(UUID patientId, UUID professionalId, List<LocalDateTime> generatedDates, UUID excludeAppointmentId) {
+    private void validateNoDuplicateAppointments(UUID patientId, UUID professionalId,
+            List<LocalDateTime> generatedDates, UUID excludeAppointmentId) {
         for (LocalDateTime dt : generatedDates) {
             boolean conflict = generatedRepo.existsConflictForPatientAndProfessional(
-                    patientId, professionalId, dt.toLocalDate(), excludeAppointmentId
-            );
-            
+                    patientId, professionalId, dt.toLocalDate(), excludeAppointmentId);
             if (conflict) {
-                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, 
-                    "Este paciente já está agendado para este dia com este profissional.");
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
+                        "Este paciente já está agendado para este dia com este profissional.");
             }
         }
     }
-
 }

@@ -215,6 +215,15 @@ export default function DashboardPage() {
                         generatedAppointmentId={item.id}
                         absenceDate={format(selectedDate, 'yyyy-MM-dd')}
                         disabled={item.hasAbsence}
+                        onSuccess={() => {
+                          setTodayAppointments(prev =>
+                            prev.map(a =>
+                              a.id === item.id
+                                ? { ...a, hasAbsence: true }
+                                : a
+                            )
+                          )
+                        }}
                       />
                     </TableCell>
                   </TableRow>

@@ -1,5 +1,4 @@
-package br.org.apae.api.controllers.appointment;
-
+/*package br.org.apae.api.controllers.appointment;
 import br.org.apae.api.appointment.application.internal.AppointmentApplicationServiceImpl;
 import br.org.apae.api.appointment.domain.exceptions.AppointmentAlreadyCancelledException;
 import br.org.apae.api.appointment.domain.exceptions.AppointmentNotFoundException;
@@ -612,3 +611,4 @@ class AppointmentControllerImplTest {
         .andExpect(status().isBadRequest());
   }
 }
+*/

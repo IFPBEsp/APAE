@@ -39,6 +39,8 @@ export async function DELETE(request: Request, { params }: IParams) {
     const { data } = await api.delete(`/disorders/${id}`);
     return NextResponse.json(data);
   } catch (error: any) {
-    return new NextResponse(JSON.stringify(error.response?.data), { status: 500 });
+    const errorMessage = error.response?.data || "Erro ao excluir transtorno";
+    const status = error.response?.status || 500;
+    return new NextResponse(JSON.stringify(errorMessage), { status: 500 });
   }
 }

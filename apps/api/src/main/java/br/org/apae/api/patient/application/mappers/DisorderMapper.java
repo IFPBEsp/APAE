@@ -34,7 +34,8 @@ public class DisorderMapper {
     public DisorderResponseDTO toResponseDTO(Disorder disorder) {
         return new DisorderResponseDTO(
                 disorder.getId(),
-                disorder.getName());
+                disorder.getName(),
+                false);
     }
 
     public Set<DisorderResponseDTO> toResponseDTOSet(Set<Disorder> disorders) {
