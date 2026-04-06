@@ -4,25 +4,20 @@ import { AxiosError } from "axios";
 
 export async function GET(req: Request) {
   try {
+    const authHeader = req.headers.get("Authorization");
     const { searchParams } = new URL(req.url);
 
-    const authHeader = req.headers.get("authorization");
-
     const api = await createBaseApi();
-    
-    const response = await api.get(`/absences?${searchParams.toString()}`, {
+    const response = await api.get("/absences", {
       headers: authHeader ? { Authorization: authHeader } : {},
+      params: Object.fromEntries(searchParams.entries()), // repassa page, size, etc.
     });
 
     return NextResponse.json(response.data, { status: 200 });
   } catch (error) {
     if (error instanceof AxiosError) {
       return NextResponse.json(
-        {
-          message:
-            error.response?.data?.message ||
-            "Erro ao buscar faltas",
-        },
+        { message: error.response?.data?.message || "Erro ao buscar faltas" },
         { status: error.response?.status || 500 }
       );
     }
@@ -35,9 +30,8 @@ export async function GET(req: Request) {
 
 export async function POST(req: Request) {
   try {
+    const authHeader = req.headers.get("Authorization");
     const body = await req.json();
-    
-    const authHeader = req.headers.get("authorization");
 
     const api = await createBaseApi();
     const response = await api.post("/absences", body, {
@@ -48,11 +42,7 @@ export async function POST(req: Request) {
   } catch (error) {
     if (error instanceof AxiosError) {
       return NextResponse.json(
-        {
-          message:
-            error.response?.data?.message ||
-            "Erro ao criar falta",
-        },
+        { message: error.response?.data?.message || "Erro ao criar falta" },
         { status: error.response?.status || 500 }
       );
     }

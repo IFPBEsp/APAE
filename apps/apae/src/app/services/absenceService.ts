@@ -37,13 +37,13 @@ const mockPatients = [
 ];
 
 export class AbsenceService {
-  private static readonly API_BASE_URL =
-    process.env.NEXT_PUBLIC_API_URL || '/api';
+  private static readonly API_BASE_URL = '/api';
   private static readonly API_PATH = '/absence';
   private static useMock = false;
 
   private static getAuthHeaders(): HeadersInit {
     const token = localStorage.getItem('token');
+    console.log('[AbsenceService] token:', token ? 'presente' : 'AUSENTE');
     return {
       'Content-Type': 'application/json',
       ...(token ? { Authorization: `Bearer ${token}` } : {}),
