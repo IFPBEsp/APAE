@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 
-const PUBLIC_PATHS = ["/auth/login"];
+const PUBLIC_PATHS = ["/auth/login", "/auth/reset-password", "/auth/new-password"];
 
 export function middleware(req: NextRequest) {
   const session = req.cookies.get("session")?.value;
