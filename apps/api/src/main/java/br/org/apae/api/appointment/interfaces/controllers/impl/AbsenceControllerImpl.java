@@ -16,7 +16,6 @@ import java.net.URI;
 import java.util.UUID;
 
 @RestController
-@CrossOrigin(origins = "http://localhost:3000")
 public class AbsenceControllerImpl implements AbsenceController {
 
     private final AbsenceApplicationService service;

@@ -4,8 +4,15 @@ import { AxiosError } from "axios";
 
 export async function GET(req: Request) {
   try {
+    const { searchParams } = new URL(req.url);
+
+    const authHeader = req.headers.get("authorization");
+
     const api = await createBaseApi();
-    const response = await api.get("/absences");
+    
+    const response = await api.get(`/absences?${searchParams.toString()}`, {
+      headers: authHeader ? { Authorization: authHeader } : {},
+    });
 
     return NextResponse.json(response.data, { status: 200 });
   } catch (error) {
@@ -29,9 +36,13 @@ export async function GET(req: Request) {
 export async function POST(req: Request) {
   try {
     const body = await req.json();
+    
+    const authHeader = req.headers.get("authorization");
 
     const api = await createBaseApi();
-    const response = await api.post("/absences", body);
+    const response = await api.post("/absences", body, {
+      headers: authHeader ? { Authorization: authHeader } : {},
+    });
 
     return NextResponse.json(response.data, { status: 201 });
   } catch (error) {
