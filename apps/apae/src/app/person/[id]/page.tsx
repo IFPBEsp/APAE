@@ -190,14 +190,7 @@ export default function PersonDetailsPage() {
       </div>
 
       <DocumentCategoriesCard onClickCategoria={(tipo: string) => { router.push(`/person/${id}/documents/${tipo}`); }} />
-      <div className="w-full flex justify-center mt-4">
-          <Button 
-             className="bg-[#0D4F97] text-white hover:bg-[#0b427d]"
-             onClick={() => router.push(`/person/${id}/escolares`)}
-          >
-             Acessar Relatórios Escolares
-          </Button>
-      </div>
+      
       
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-6">
