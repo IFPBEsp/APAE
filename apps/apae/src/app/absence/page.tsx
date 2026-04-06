@@ -103,9 +103,6 @@ export default function AbsenceDetails() {
   });
 };
 
-  const formatTime = (timeString: string) => {
-    return timeString.substring(0, 5);
-  };
 
   const togglePatientExpansion = (patientId: string) => {
     setExpandedPatient(expandedPatient === patientId ? null : patientId);
@@ -270,7 +267,7 @@ export default function AbsenceDetails() {
                                   </h4>
                                   <div className="space-y-2">
                                     {patientWithAbsence.absences.map(
-                                      (absence, idx) => (
+                                      (absence) => (
                                         <div
                                           key={absence.id}
                                           className="flex items-center justify-between p-3 bg-white rounded border"

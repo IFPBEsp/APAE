@@ -30,7 +30,7 @@ export default function TranstornosPage() {
         }
         const data = await response.json();
         setTranstornos(data);
-      } catch (err) {
+      } catch (err: unknown) {
         const msg = err instanceof Error ? err.message : "Erro ao buscar transtornos";
         setError(msg);
         toast.error(msg);
@@ -56,7 +56,7 @@ export default function TranstornosPage() {
       
       setTranstornos((current) => current.filter((d) => d.id !== id));
       toast.success("Transtorno excluído com sucesso!");
-    } catch (err) {
+    } catch (err: unknown) {
       toast.error(err instanceof Error ? err.message : "Erro ao excluir transtorno");
     }
   };

@@ -1,8 +1,7 @@
-import { useState } from "react";
-import { useEffect } from "react";
+import { useState, useEffect } from "react";
 
-function fetchCares() {
-    const [cares, setCares] = useState([]);
+function useCares() {
+    const [cares, setCares] = useState<unknown[]>([]);
 
     useEffect(() => {
         const fetching = async () => {
@@ -11,7 +10,7 @@ function fetchCares() {
                 });
 
             const data = await caresTypes.json();
-            
+
             setCares(data);
         }
         fetching()
@@ -20,4 +19,4 @@ function fetchCares() {
     return cares;
 }
 
-export default fetchCares;
+export default useCares;

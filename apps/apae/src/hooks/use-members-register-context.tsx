@@ -2,7 +2,7 @@
 
 import { createContext, useCallback, useContext, useReducer } from "react";
 
-interface PersonalData {
+export interface PersonalData {
   name: string;
   cpf: string;
   phone: string;
@@ -39,7 +39,7 @@ interface AddressData {
   street: string;
 }
 
-interface AdditionalsData {
+export interface AdditionalsData {
   id?: string;
   diseases: string;
   medications: string;
@@ -64,7 +64,7 @@ interface GuardianData {
   contact: string;
 }
 
-interface ProfileData {
+export interface ProfileData {
   photo: File | string | undefined;
   role: "student" | "patient";
 }
@@ -88,6 +88,17 @@ interface MembersRegisterState {
   step: MembersRegisterStep;
 }
 
+interface RegisterResponse {
+  status: number;
+  data: {
+    message?: string;
+    fields?: Array<{
+      field: string;
+      message: string;
+    }>;
+  };
+}
+
 interface MembersRegisterContextData {
   state: MembersRegisterState;
   setters: {
@@ -100,7 +111,7 @@ interface MembersRegisterContextData {
     setStep: (step: MembersRegisterStep) => void;
     loadAllData: (data: MembersRegisterState) => void;
   };
-  register: (id?: string) => Promise<{ status: number; data: any }>;
+  register: (id?: string) => Promise<RegisterResponse>;
 }
 
 type MembersRegisterAction =
@@ -273,7 +284,7 @@ export function MembersRegisterProvider({
       const { personal, address, additionals, guardian, kinships, profile } =
         state;
 
-      const formatDate = (date: any) => {
+      const formatDate = (date: Date | string | null | undefined) => {
         if (!date) return null;
         const d = new Date(date);
         return isNaN(d.getTime()) ? null : d.toISOString().split("T")[0];
@@ -285,7 +296,67 @@ export function MembersRegisterProvider({
         return isNaN(num) ? 0.0 : num;
       };
 
-      const patient: any = {
+      interface PatientPayload {
+        fullName: string;
+        nationality: string;
+        birthDate: string | null;
+        contact: string;
+        birthCertificateNumber: string;
+        registryOffice: string;
+        fls: string;
+        book: string;
+        rg: string;
+        issueDate: string | null;
+        issuingAgency: string;
+        cpf: string;
+        cns: string;
+        nis: string;
+        registrationDate: string | null;
+        allergies: string;
+        isStudent: boolean;
+        address: {
+          city: string;
+          cep: string;
+          state: string;
+          neighborhood: string;
+          street: string;
+          number: string;
+          complement: string;
+        };
+        guardian: {
+          name: string;
+          contact: string;
+          kinship: string;
+          address: {
+            city: string;
+            cep: string;
+            state: string;
+            neighborhood: string;
+            street: string;
+            number: string;
+            complement: string;
+          };
+        };
+        parents: Array<{
+          name: string;
+          rg: string;
+          cpf: string;
+          profession: string;
+          isAlive: boolean;
+          kinship: string;
+        }>;
+        vaccineNames: Array<{ name: string }>;
+        annualRegistry?: {
+          bpc: boolean;
+          diseases: string;
+          serviceArea: Array<{ area: string }>;
+          familyIncome: number;
+          year: number;
+          disorders: Array<{ name: string }>;
+        };
+      }
+
+      const patient: PatientPayload = {
         fullName: personal.name || "Não informado",
         nationality: personal.birth.place || "Brasileiro",
         birthDate: formatDate(personal.birth.date),
@@ -356,7 +427,7 @@ export function MembersRegisterProvider({
         let resData = {};
         const text = await responsePessoa.text();
         if (text) {
-          try { resData = JSON.parse(text); } catch(e) {}
+          try { resData = JSON.parse(text); } catch {}
         }
         return { status: responsePessoa.status, data: resData };
 

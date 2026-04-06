@@ -8,12 +8,14 @@ interface Option {
   label: string;
   value: string;
   id?: string | number;
-  [key: string]: any;
+  name?: string;
+  area?: string;
+  [key: string]: string | number | undefined;
 }
 
 interface GenericDatabaseSelectProps {
-  value: any[]; 
-  onChange: (value: any[]) => void;
+  value: Option[];
+  onChange: (value: Option[]) => void;
   endpoint: string; 
   placeholder?: string;
   labelSingular: string; 
@@ -43,10 +45,15 @@ export const GenericDatabaseSelect = ({
         if (res.ok) {
             const data = await res.json();
             const safeData = Array.isArray(data) ? data :[];
-            setOptions(safeData.map((d: any) => ({ 
-                label: d[labelKey] || d.name || "Sem nome", 
-                value: d[labelKey] || d.name || "Sem nome", 
-                id: d.id
+            interface ApiData {
+              [key: string]: string | number | undefined;
+              id?: string | number;
+              name?: string;
+            }
+            setOptions(safeData.map((d: ApiData) => ({
+                label: String(d[labelKey] || d.name || "Sem nome"),
+                value: String(d[labelKey] || d.name || "Sem nome"),
+                id: d.id?.toString()
             })));
         }
       } catch (error) { console.error(error); }
@@ -57,15 +64,16 @@ export const GenericDatabaseSelect = ({
   const getCurrentValue = (): Option[] => {
     if (!value || !Array.isArray(value)) return[];
     return value.map((v) => {
-        const text = v[labelKey] || v.name || v.label || v.value;
-        return { label: text, value: text, id: v.id };
-    }).filter(v => v.label); 
+        const vRecord = v as unknown as Record<string, string | number | undefined>;
+        const text = vRecord[labelKey] || vRecord.name || v.label || v.value;
+        return { label: String(text), value: String(text), id: v.id };
+    }).filter(v => v.label);
   };
 
   const handleChange = (newValue: MultiValue<Option>) => {
-    const formatted = newValue.map(v => ({ 
-        [labelKey]: v.value, 
-        name: v.value,       
+    const formatted = newValue.map(v => ({
+        label: v.value,
+        value: v.value,
         id: v.id
     }));
     onChange(formatted);
@@ -77,11 +85,13 @@ export const GenericDatabaseSelect = ({
     
     if (existingOption) {
         const currentSelected = Array.isArray(value) ? value :[];
-        if (!currentSelected.some(s => s.id === existingOption.id || s[labelKey] === existingOption.value)) {
+        if (!currentSelected.some(s => s.id === existingOption.id || (s as unknown as Record<string, string>)[labelKey] === existingOption.value)) {
             onChange([...currentSelected, {
                 [labelKey]: existingOption.value,
                 name: existingOption.value,
-                id: existingOption.id
+                id: existingOption.id,
+                label: existingOption.label,
+                value: existingOption.value
             }]);
         }
         return;
@@ -97,7 +107,7 @@ export const GenericDatabaseSelect = ({
           body: JSON.stringify(payload) 
         });
         
-        let newOption: Option = { label: normalizedName, value: normalizedName };
+        const newOption: Option = { label: normalizedName, value: normalizedName };
         
         if (res.ok || res.status === 201 || res.status === 409) {
             const created = await res.json().catch(() => ({}));
@@ -112,10 +122,12 @@ export const GenericDatabaseSelect = ({
         
         // CORREÇÃO 3: 2. Injeta direto no formulário com o onChange!
         const currentSelected = Array.isArray(value) ? value : [];
-        onChange([...currentSelected, { 
-            [labelKey]: newOption.value, 
+        onChange([...currentSelected, {
+            [labelKey]: newOption.value,
             name: newOption.value,
-            id: newOption.id
+            id: newOption.id,
+            label: newOption.label,
+            value: newOption.value
         }]);
 
     } catch (error) { 

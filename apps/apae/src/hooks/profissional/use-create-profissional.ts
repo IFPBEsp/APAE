@@ -24,8 +24,9 @@ export function useCreateProfissional() {
 
       setSuccess(true);
       router.push("/visualization-professional");
-    } catch (err: any) {
-      setError(err.message || "Erro inesperado");
+    } catch (err: unknown) {
+      const error = err as { message?: string };
+      setError(error.message || "Erro inesperado");
       throw err;
     } finally {
       setLoading(false);

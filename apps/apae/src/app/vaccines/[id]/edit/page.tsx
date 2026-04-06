@@ -5,7 +5,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Loader2, ArrowLeft } from "lucide-react";
+import { ArrowLeft } from "lucide-react";
 import { useVaccinesContext, Vaccine } from "@/hooks/use-vaccines";
 import { z } from "zod";
 import { UpdateVaccine } from "@/schemas/vaccine-schemas";
@@ -47,15 +47,8 @@ export default function EditVaccinePage() {
         router.push("/vaccines");
     };
 
-    if (!id) {
-        return (
-            <div className="flex justify-center items-center p-10">
-                <Loader2 className="h-8 w-8 animate-spin text-gray-500" />
-            </div>
-        );
-    }
-
     useEffect(() => {
+        if (!id) return;
         const loadVaccine = async () => {
             try {
                 if (typeof id !== "string") {

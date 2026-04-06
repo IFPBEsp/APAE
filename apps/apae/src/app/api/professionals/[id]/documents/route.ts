@@ -4,12 +4,13 @@ import { AxiosError } from "axios";
 
 export async function GET(
   req: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await params;
     const api = await createBaseApi();
 
-    const response = await api.get(`/professionals/${params.id}/documents`);
+    const response = await api.get(`/professionals/${id}/documents`);
 
     return NextResponse.json(response.data);
   } catch (error) {
@@ -32,14 +33,15 @@ export async function GET(
 
 export async function PATCH(
   req: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await params;
     const api = await createBaseApi();
     const formData = await req.formData();
 
     const response = await api.patch(
-      `/professionals/${params.id}/documents`,
+      `/professionals/${id}/documents`,
       formData,
       {
         headers: {

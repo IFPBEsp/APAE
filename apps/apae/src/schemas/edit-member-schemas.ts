@@ -9,6 +9,15 @@ export const EditAddress = z.object({
   street: z.string().min(1, "Obrigatório"),
 });
 
+// Schema para datas flexível - aceita Date, string ISO, ou null/undefined
+// O valor é mantido como está; a conversão é feida no componente se necessário
+const flexibleDateSchema = z.union([
+  z.string(),
+  z.date(),
+  z.null(),
+  z.undefined(),
+]);
+
 // 2. Dados Pessoais relaxados
 export const EditPersonal = z.object({
   name: z.string().min(2, "Nome é obrigatório"),
@@ -18,7 +27,7 @@ export const EditPersonal = z.object({
     number: z.string().min(1, "RG é obrigatório"),
     issuing: z.object({
       body: z.string().min(1, "Órgão emissor é obrigatório"),
-      date: z.union([z.date(), z.string(), z.null()]).optional(),
+      date: flexibleDateSchema,
     }),
   }),
   cns: z.string().optional().or(z.literal("")),
@@ -29,7 +38,7 @@ export const EditPersonal = z.object({
     .regex(/^\d+$/, "O NIS deve conter apenas números"),
   birth: z.object({
     certificate: z.string().min(1, "Obrigatório"),
-    date: z.union([z.date(), z.string(), z.null()]).optional(),
+    date: flexibleDateSchema,
     place: z.string().min(1, "Obrigatório"),
   }),
 });
@@ -44,11 +53,11 @@ export const EditAdditionals = z.object({
   householdIncome: z.string().optional(),
   disability: z.object({
     types: z.array(z.string()).optional(),
-    report: z.union([z.instanceof(File), z.string(), z.null(), z.undefined()]).optional(),
+    report: z.union([z.instanceof(File), z.string(), z.null()]).optional(),
   }).optional(),
   care: z.object({
     types: z.array(z.string()).optional(),
-    referral: z.union([z.instanceof(File), z.string(), z.null(), z.undefined()]).optional(),
+    referral: z.union([z.instanceof(File), z.string(), z.null()]).optional(),
   }).optional(),
 });
 
@@ -63,5 +72,5 @@ export const EditGuardian = z.object({
 // 5. Perfil relaxado
 export const EditProfile = z.object({
   role: z.enum(["student", "patient"]),
-  photo: z.union([z.instanceof(File), z.string(), z.null(), z.undefined()]).optional(),
+  photo: z.union([z.instanceof(File), z.string(), z.null()]).optional(),
 });

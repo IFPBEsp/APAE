@@ -4,10 +4,10 @@ import { AxiosError } from "axios";
 
 export async function GET(
   req: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const { id } = params;
+    const { id } = await params;
     const api = await createBaseApi();
 
     const response = await api.get(`/consultation-histories/${id}`);
@@ -37,10 +37,10 @@ export async function GET(
 
 export async function DELETE(
   req: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const { id } = params;
+    const { id } = await params;
     const api = await createBaseApi();
 
     await api.delete(`/consultation-histories/${id}`);

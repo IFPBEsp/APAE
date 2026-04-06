@@ -65,7 +65,7 @@ export default function MembersRegisterAddressPage() {
       } else {
         setStep(MembersRegisterStep.ADDITIONALS);
       }
-    } catch (error) {
+    } catch (error: unknown) {
       if (error && typeof error === "object" && "response" in error) {
         const axiosError = error as { response?: { data?: unknown } };
         if (axiosError.response?.data) {

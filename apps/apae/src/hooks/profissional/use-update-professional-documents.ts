@@ -22,8 +22,11 @@ export function useUpdateProfessionalDocuments() {
           ? await response.json().catch(() => ({}))
           : {};
 
+      interface ErrorData {
+        message?: string;
+      }
       if (!response.ok) {
-        throw new Error((data as any)?.message || "Erro ao enviar documentos");
+        throw new Error((data as ErrorData)?.message || "Erro ao enviar documentos");
       }
 
       setSuccessDocs(true);

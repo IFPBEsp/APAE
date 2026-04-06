@@ -4,13 +4,14 @@ import { AxiosError } from "axios";
 
 export async function PUT(
   req: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await params;
     const api = await createBaseApi();
 
     const response = await api.put(
-      `/professionals/${params.id}/activate`
+      `/professionals/${id}/activate`
     );
 
     return NextResponse.json(response.data, { status: 200 });

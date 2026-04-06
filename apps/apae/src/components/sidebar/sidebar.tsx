@@ -45,7 +45,7 @@ import {
 import { removeSessionCookie } from "@/lib/cookies";
 
 export function AppSidebar() {
-  const { open, setOpen, isMobile, setOpenMobile } = useSidebar();
+  const { setOpen, isMobile, setOpenMobile } = useSidebar();
   const pathname = usePathname();
   const router = useRouter();
 

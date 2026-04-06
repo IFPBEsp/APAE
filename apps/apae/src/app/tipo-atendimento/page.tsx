@@ -27,9 +27,10 @@ export default function ServiceTypesPage() {
         }
         const data = await response.json();
         setServiceTypes(data);
-      } catch (err: any) {
-        setError(err.message);
-        toast.error(err.message);
+      } catch (err: unknown) {
+        const error = err as { message?: string };
+        setError(error.message || "Erro ao buscar tipos de atendimentos");
+        toast.error(error.message || "Erro ao buscar tipos de atendimentos");
       } finally {
         setIsLoading(false);
       }

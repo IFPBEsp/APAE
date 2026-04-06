@@ -4,13 +4,14 @@ import { AxiosError } from "axios";
 
 export async function DELETE(
   req: Request,
-  { params }: { params: { id: string; documentId: string } }
+  { params }: { params: Promise<{ id: string; documentId: string }> }
 ) {
   try {
+    const { id, documentId } = await params;
     const api = await createBaseApi();
 
     await api.delete(
-      `/professionals/${params.id}/documents/${params.documentId}`
+      `/professionals/${id}/documents/${documentId}`
     );
 
     return NextResponse.json({ success: true }, { status: 200 });

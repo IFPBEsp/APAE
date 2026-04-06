@@ -220,3 +220,8 @@
 //     </div>
 //   );
 // }
+
+// Placeholder export to prevent build error
+export default function HistoricoConsultasPage() {
+  return null;
+}

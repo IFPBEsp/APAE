@@ -20,7 +20,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import React, { useState, useEffect } from "react"; 
 import { useForm } from "react-hook-form";
 import { handleBackendValidationErrors } from "@/utils/form-errors";
-import { usePathname } from "next/navigation"; 
+import { usePathname } from "next/navigation";
 import { formatPhone } from "@/lib/formats";
 
 import z from "zod";
@@ -38,9 +38,11 @@ export default function MembersRegisterGuardianPage() {
   const isEditing = pathname.includes("/edit");
   const currentSchema = isEditing ? EditGuardian : Guardian; 
 
-  const form = useForm<any>({ 
+  type GuardianFormValues = z.infer<typeof Guardian> | z.infer<typeof EditGuardian>;
+
+  const form = useForm<GuardianFormValues>({
     mode: "onBlur",
-    resolver: zodResolver(currentSchema), 
+    resolver: zodResolver(currentSchema),
     defaultValues: guardian,
   });
 
@@ -53,12 +55,12 @@ export default function MembersRegisterGuardianPage() {
     }
   }, [isEditing, guardian, form, isInitialized]);
 
-  const onSubmit = async (values: any) => {
+  const onSubmit = async (values: GuardianFormValues) => {
     setIsLoading(true);
     try {
       setGuardianData(values);
       setStep(MembersRegisterStep.PROFILE);
-    } catch (error) {
+    } catch (error: unknown) {
       if (error && typeof error === "object" && "response" in error) {
         const axiosError = error as { response?: { data?: unknown } };
         if (axiosError.response?.data) {

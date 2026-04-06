@@ -17,7 +17,7 @@ export async function GET(
     if (token && token.trim().startsWith("{")) {
         try {
             token = JSON.parse(token).accessToken || token;
-        } catch(e) {}
+        } catch {}
     }
     
     if (token) token = token.replace(/^"|"$/g, '').replace(/^Bearer\s+/i, '').trim();
@@ -38,7 +38,7 @@ export async function GET(
     const data = await res.json();
     return NextResponse.json(data, { status: 200 });
 
-  } catch (error) {
+  } catch {
     return NextResponse.json([], { status: 500 });
   }
 }

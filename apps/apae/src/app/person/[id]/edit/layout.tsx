@@ -3,7 +3,7 @@
 import { MembersRegisterProvider, useMembersRegisterContext, MembersRegisterStep } from "@/hooks/use-members-register-context";
 import { VaccinesProvider } from "@/hooks/use-vaccines";
 import { DisordersProvider } from "@/hooks/use-disorders";
-import { useParams, useRouter, usePathname } from "next/navigation";
+import { useParams, usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import { Loader2 } from "lucide-react";
 
@@ -25,7 +25,12 @@ function EditPatientDataLoader({ children }: { children: React.ReactNode }) {
         if (!res.ok) throw new Error("Erro ao buscar dados do paciente");
         const data = await res.json();
         
-        const formatStreet = (addr: any) => {
+        interface AddressData {
+          street?: string;
+          number?: string;
+        }
+
+        const formatStreet = (addr: AddressData | null | undefined) => {
           if (!addr?.street) return "";
           const street = addr.street.trim();
           const number = addr.number ? addr.number.trim() : "";
@@ -34,7 +39,74 @@ function EditPatientDataLoader({ children }: { children: React.ReactNode }) {
           return number ? `${street}, ${number}` : street;
         };
 
-        const mappedData: any = {
+        interface MappedData {
+          personal: {
+            name: string;
+            cpf: string;
+            phone: string;
+            rg: { number: string; issuing: { body: string; date: Date } };
+            cns: string;
+            nis: string;
+            birth: { certificate: string; date: Date; place: string };
+          };
+          address: {
+            cep: string;
+            state: string;
+            city: string;
+            district: string;
+            street: string;
+          };
+          additionals: {
+            diseases: string;
+            medications: string;
+            vaccines: string[];
+            allergies: string;
+            disability: { types: string[]; report: undefined };
+            care: { types: string[]; referral: undefined };
+            bpc: boolean;
+            householdIncome: string;
+          };
+          guardian: {
+            name: string;
+            contact: string;
+            kinship: string;
+            address: {
+              cep: string;
+              state: string;
+              city: string;
+              district: string;
+              street: string;
+            };
+          };
+          kinships: Array<{
+            name: string;
+            cpf: string;
+            rg: string;
+            occupation: string;
+            alive: boolean;
+            type: string;
+          }>;
+          profile: {
+            role: "student" | "patient";
+            photo: undefined;
+          };
+          step: MembersRegisterStep;
+        }
+
+        interface VaccineData {
+          name: string;
+        }
+
+        interface ParentData {
+          name?: string;
+          cpf?: string;
+          rg?: string;
+          profession?: string;
+          isAlive?: boolean;
+          kinship?: string;
+        }
+
+        const mappedData: MappedData = {
            personal: { 
              name: data.fullName || "", 
              cpf: data.cpf || "", 
@@ -57,7 +129,7 @@ function EditPatientDataLoader({ children }: { children: React.ReactNode }) {
            additionals: { 
              diseases: data.annualRegistry?.diseases || "", 
              medications: data.annualRegistry?.continuousMedication || "", 
-             vaccines: data.vaccineNames?.map((v: any) => v.name) || [], 
+             vaccines: data.vaccineNames?.map((v: VaccineData) => v.name) || [], 
              allergies: data.allergies || "", 
              disability: { types: [], report: undefined }, 
              care: { types: [], referral: undefined }, 
@@ -76,7 +148,7 @@ function EditPatientDataLoader({ children }: { children: React.ReactNode }) {
                street: formatStreet(data.guardian?.address)  
              } 
            },
-           kinships: data.parents?.map((p: any) => ({ 
+           kinships: data.parents?.map((p: ParentData) => ({ 
              name: p.name || "", 
              cpf: p.cpf || "", 
              rg: p.rg || "", 
@@ -88,7 +160,7 @@ function EditPatientDataLoader({ children }: { children: React.ReactNode }) {
              role: data.isStudent ? "student" : "patient", 
              photo: undefined 
            },
-           step: pathname.split('/').pop() as any 
+           step: pathname.split('/').pop() as MembersRegisterStep 
         };
 
         setters.loadAllData(mappedData);
@@ -115,7 +187,6 @@ function EditPatientDataLoader({ children }: { children: React.ReactNode }) {
 export default function EditPatientLayout({ children }: { children: React.ReactNode }) {
   return (
     <VaccinesProvider>
-      {/* @ts-ignore */}
       <DisordersProvider>
         <MembersRegisterProvider>
           <EditPatientDataLoader>{children}</EditPatientDataLoader>

@@ -14,8 +14,8 @@ interface Column {
 
 interface DataTableProps {
   columns: Column[]
-  data: any[]
-  actions?: (row: any) => React.ReactNode
+  data: Record<string, string | number | boolean | null | undefined>[]
+  actions?: (row: Record<string, string | number | boolean | null | undefined>) => React.ReactNode
 }
 
 export function DataTable({ columns, data, actions }: DataTableProps) {

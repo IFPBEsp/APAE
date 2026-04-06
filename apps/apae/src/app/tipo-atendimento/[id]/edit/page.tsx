@@ -33,8 +33,9 @@ export default function EditServiceTypePage() {
           if (!response.ok) throw new Error("Tipo de atendimento não encontrado.");
           const data = await response.json();
           setValue("area", data.area);
-        } catch (error: any) {
-          toast.error(error.message);
+        } catch (error: unknown) {
+          const err = error as { message?: string };
+          toast.error(err.message || "Erro ao carregar tipo de atendimento");
           router.push("/tipo-atendimento");
         }
       };
@@ -55,8 +56,9 @@ export default function EditServiceTypePage() {
       toast.success("Tipo de atendimento atualizado com sucesso!");
       router.push("/tipo-atendimento");
       router.refresh();
-    } catch (error: any) {
-      toast.error(error.message);
+    } catch (error: unknown) {
+      const err = error as { message?: string };
+      toast.error(err.message || "Erro ao atualizar tipo de atendimento");
     }
   };
 

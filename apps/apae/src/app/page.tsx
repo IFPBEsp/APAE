@@ -37,16 +37,14 @@ import { TodayAppointment } from '@/types/appointment';
 import {
   getAppointments,
   listTodayAppointment,
-  markAsPerformed,
-  UUID,
   type AppointmentResponseDTO,
 } from './services/appointmentService';
 
 import { AppointmentForm } from '@/components/forms/AppointmentForm';
 import { InfoCard } from '@/components/shared/InfoCard';
+import { RegistrarFaltaButton } from '@/components/buttons/RegistrarFaltaButton';
 import Link from 'next/link';
 
-import { RegistrarFaltaButton } from '@/components/buttons/RegistrarFaltaButton';
 
 export default function DashboardPage() {
   const [selectedDate, setSelectedDate] = useState<Date>(new Date());
@@ -81,11 +79,6 @@ export default function DashboardPage() {
     fetchTodayAppointments();
     fetchAllAppointments();
   }, [selectedDate]);
-
-  const markAsPerformedHandle = async (id: UUID) => {
-    await markAsPerformed(id);
-    window.location.reload();
-  };
 
   return (
     <div className="min-h-screen w-full text-sm overflow-x-hidden">

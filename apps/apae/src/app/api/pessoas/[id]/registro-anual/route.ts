@@ -30,7 +30,7 @@ export async function POST(
             if (extracted) {
                 finalToken = extracted;
             }
-        } catch (e) {
+        } catch {
         }
     }
 
@@ -65,10 +65,11 @@ export async function POST(
     const data = await res.json();
     return NextResponse.json(data, { status: 201 });
 
-  } catch (error: any) {
+  } catch (error: unknown) {
+    const err = error as { message?: string };
     console.error("Erro interno rota Next.js:", error);
     return NextResponse.json(
-      { message: "Erro interno de conexão.", details: error.message },
+      { message: "Erro interno de conexão.", details: err.message },
       { status: 500 }
     );
   }

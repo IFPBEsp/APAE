@@ -79,7 +79,7 @@ export default function DocumentTypePage() {
         const data = await response.json();
 
         setFiles(data);
-      } catch (err) {
+      } catch (err: unknown) {
         console.error("Erro ao buscar documentos:", err);
         toast.error(err instanceof Error ? err.message : "Erro ao processar resposta da API");
         setFiles([]);

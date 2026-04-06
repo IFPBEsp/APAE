@@ -12,6 +12,7 @@ import { Input } from "@/components/ui/input";
 import {
   MembersRegisterStep,
   useMembersRegisterContext,
+  AdditionalsData,
 } from "@/hooks/use-members-register-context";
 import { Additionals } from "@/schemas/member-schemas";
 import { EditAdditionals } from "@/schemas/edit-member-schemas"; 
@@ -46,6 +47,7 @@ import { formatCurrency } from "@/lib/formats";
 import { useCreateServiceArea } from "@/hooks/service-area/use-create-service-area";
 import { useFetchServiceAreas } from "@/hooks/service-area/use-fetch-service-areas";
 import { CreateCare } from "@/schemas/care-schemas";
+import { ServiceArea } from "@/types/service-area";
 
 type DialogProps = Readonly<{
   open: boolean;
@@ -220,9 +222,9 @@ export default function MembersRegisterAdditionalsPage() {
   const onSubmit = async (values: AdditionalsFormValues) => {
     setIsLoading(true);
     try {
-      setAdditionalsData(values);
+      setAdditionalsData(values as Partial<AdditionalsData>);
       setStep(MembersRegisterStep.GUARDIAN);
-    } catch (error) {
+    } catch (error: unknown) {
       if (error && typeof error === "object" && "response" in error) {
         const axiosError = error as { response?: { data?: unknown } };
         if (axiosError.response?.data) {
@@ -430,8 +432,8 @@ export default function MembersRegisterAdditionalsPage() {
                       defaultValue={field.value || []}
                       value={field.value || []}
                       options={[
-                        ...cares.map((care: any) => ({ label: care.area, value: care.area })),
-                        ...(field.value || []).filter((val: string) => !cares.some((c: any) => c.area === val))
+                        ...cares.map((care: ServiceArea) => ({ label: care.area, value: care.area })),
+                        ...(field.value || []).filter((val: string) => !cares.some((c: ServiceArea) => c.area === val))
                           .map((val: string) => ({ label: val, value: val }))
                       ]}
                       onValueChange={field.onChange}

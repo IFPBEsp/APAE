@@ -175,8 +175,8 @@ export interface Disorder {
   name: string;
 }
 
-function ensurePageFormat<T>(data: any): Page<T> {
-  if (data && Array.isArray(data.content)) {
+function ensurePageFormat<T>(data: unknown): Page<T> {
+  if (data && typeof data === "object" && "content" in data && Array.isArray((data as Record<string, unknown>).content)) {
     return data as Page<T>;
   }
   if (Array.isArray(data)) {

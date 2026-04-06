@@ -11,6 +11,7 @@ import {
 import {
   MembersRegisterStep,
   useMembersRegisterContext,
+  ProfileData,
 } from "@/hooks/use-members-register-context";
 import { Profile } from "@/schemas/member-schemas";
 import { EditProfile } from "@/schemas/edit-member-schemas"; 
@@ -156,7 +157,8 @@ export default function MembersRegisterProfilePage() {
             toast.error(res.data?.message || "Erro inesperado no servidor.");
             setSubmitted(false);
           }
-        } catch (error) {
+        } catch (error: unknown) {
+          console.error(error);
           toast.error("Falha na conexão com o servidor.");
           setSubmitted(false);
         } finally {
@@ -166,10 +168,14 @@ export default function MembersRegisterProfilePage() {
     }
   }, [submitted, profile, register, router, form.setError, setStep, id, isEditing]);
 
-  const onSubmit = async (values: z.infer<typeof Profile>) => {
-    setProfileData(values);
-    setSubmitted(true);
+ const onSubmit = async (values: ProfileFormValues) => {
+  const profileData: Partial<ProfileData> = {
+    role: values.role,
+    photo: values.photo ?? undefined,
   };
+  setProfileData(profileData);
+  setSubmitted(true);
+};
 
   return (
     <Form {...form}>

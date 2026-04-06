@@ -24,11 +24,12 @@ import {
 import { Personal } from "@/schemas/member-schemas";
 import { EditPersonal } from "@/schemas/edit-member-schemas"; 
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm } from "react-hook-form";
+import { Resolver, useForm } from "react-hook-form";
 import { useState, useEffect } from "react";
 import { usePathname } from "next/navigation"; 
 import { handleBackendValidationErrors } from "@/utils/form-errors";
 import z from "zod";
+import { PersonalData } from "@/hooks/use-members-register-context";
 
 import { DoubleColumn, FormButton, MembersRegisterForm } from "../form";
 
@@ -48,9 +49,9 @@ export default function MembersRegisterPersonalPage() {
 
   const form = useForm<PersonalFormValues>({
     mode: "onBlur",
-    resolver: zodResolver(currentSchema),
-    defaultValues: personal,
-  });
+    resolver: zodResolver(currentSchema) as Resolver<PersonalFormValues>,
+  defaultValues: personal,
+});
 
   const [isInitialized, setIsInitialized] = useState(false);
 
@@ -61,24 +62,22 @@ export default function MembersRegisterPersonalPage() {
     }
   }, [personal, form, isInitialized]);
 
-  const onSubmit = async (values: PersonalFormValues) => {
-    setIsLoading(true);
-    try {
-      setPersonalData(values);
-
-      setStep(MembersRegisterStep.KINSHIPS);
-
-    } catch (error) {
-      if (error && typeof error === "object" && "response" in error) {
-        const axiosError = error as { response?: { data?: unknown } };
-        if (axiosError.response?.data) {
-          handleBackendValidationErrors(axiosError.response.data, form.setError);
-        }
+ const onSubmit = async (values: PersonalFormValues) => {
+  setIsLoading(true);
+  try {
+    setPersonalData(values as Partial<PersonalData>);
+    setStep(MembersRegisterStep.KINSHIPS);
+  } catch (error: unknown) {
+    if (error && typeof error === "object" && "response" in error) {
+      const axiosError = error as { response?: { data?: unknown } };
+      if (axiosError.response?.data) {
+        handleBackendValidationErrors(axiosError.response.data, form.setError);
       }
-    } finally {
-      setIsLoading(false);
     }
-  };
+  } finally {
+    setIsLoading(false);
+  }
+};
 
   return (
     <Form {...form}>

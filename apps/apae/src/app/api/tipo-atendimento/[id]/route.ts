@@ -12,8 +12,9 @@ export async function GET(request: Request, { params }: IParams) {
     const api = await createBaseApi();
     const { data } = await api.get(`/service-areas/${id}`);
     return NextResponse.json(data);
-  } catch (error: any) {
-    return new NextResponse(JSON.stringify(error.response?.data), { status: 500 });
+  } catch (error: unknown) {
+    const err = error as { response?: { data?: unknown }; message?: string };
+    return new NextResponse(JSON.stringify(err.response?.data || { message: err.message }), { status: 500 });
   }
 }
 
@@ -27,7 +28,8 @@ export async function PUT(request: Request, { params }: IParams) {
     const api = await createBaseApi();
     const { data } = await api.put(`/service-areas/${id}`, validation.data);
     return NextResponse.json(data);
-  } catch (error: any) {
-    return new NextResponse(JSON.stringify(error.response?.data), { status: 500 });
+  } catch (error: unknown) {
+    const err = error as { response?: { data?: unknown }; message?: string };
+    return new NextResponse(JSON.stringify(err.response?.data || { message: err.message }), { status: 500 });
   }
 }

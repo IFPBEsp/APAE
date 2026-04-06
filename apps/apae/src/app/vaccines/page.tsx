@@ -81,7 +81,7 @@ function VaccinesList({ searchName }: { searchName: string }) {
     if (filteredVaccines.length === 0) {
         return (
             <p className="text-center text-gray-500 p-10">
-                Nenhuma vacina encontrada para "{searchName}".
+                Nenhuma vacina encontrada para &quot;{searchName}&quot;.
             </p>
         );
     }

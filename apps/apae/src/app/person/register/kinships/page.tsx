@@ -55,7 +55,7 @@ export default function MembersRegisterKinshipsPage() {
     try {
       setKinshipsData(values.kinships);
       setStep(MembersRegisterStep.ADDRESS);
-    } catch (error) {
+    } catch (error: unknown) {
       if (error && typeof error === "object" && "response" in error) {
         const axiosError = error as { response?: { data?: unknown } };
         if (axiosError.response?.data) {

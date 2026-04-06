@@ -38,7 +38,7 @@ export async function GET(req: Request) {
 
     const api = await createBaseApi();
 
-    let url = "/consultation-histories";
+    const url = "/consultation-histories";
     const params: Record<string, string> = {};
 
     if (agendamentoId) params.agendamentoId = agendamentoId;

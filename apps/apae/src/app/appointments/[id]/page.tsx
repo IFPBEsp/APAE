@@ -22,15 +22,14 @@ import {
 } from '@/components/ui/dialog';
 import { Pencil } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { format } from 'date-fns';
-import { RegistrarFaltaButton } from '@/components/buttons/RegistrarFaltaButton';
+import { formatDatePTBR, separaETransformaEmNumero } from '@/lib/utils';
 import {
   getAppointmentById,
   Appointment,
 } from '@/app/services/appointmentService';
 import { AppointmentForm } from '@/components/forms/AppointmentForm';
 import TrashButton from '@/components/buttons/trashButton';
-import { formatDatePTBR, separaETransformaEmNumero } from '@/lib/utils';
+import { RegistrarFaltaButton } from '@/components/buttons/RegistrarFaltaButton';
 
 export default function ViewAppointment() {
   const { id } = useParams<{ id: string }>();

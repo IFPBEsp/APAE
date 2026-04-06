@@ -11,6 +11,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { AnnualRegistryFormSchema, AnnualRegistryFormValues } from "@/schemas/anualRegistrySchema";
 import { toast } from "react-toastify";
+import { Patient, PatientVaccine, AnnualRegistryServiceArea, AnnualRegistryDisorder, PatientParent,AnnualRegistry } from "@/types/patient";
 import { Loader2, Upload, FileText, RefreshCw, ExternalLink } from "lucide-react";
 
 
@@ -32,7 +33,7 @@ interface AnnualRegistryEditModalProps {
     onClose: (str?: string) => void;
     patientId: string;
     currentYear: string;
-    initialData: any;
+    initialData: AnnualRegistry | null;
     mode?: "create" | "edit";
 }
 
@@ -66,7 +67,7 @@ export default function AnnualRegistryEditModal({
     const [isUploading, setIsUploading] = useState(false);
     const [docType, setDocType] = useState("MEDICAL_REPORT");
 
-    const [fullPatientData, setFullPatientData] = useState<any>(null);
+    const [fullPatientData, setFullPatientData] = useState<Patient | null>(null);
     const fileInputRef = useRef<HTMLInputElement>(null);
 
 
@@ -112,12 +113,12 @@ export default function AnnualRegistryEditModal({
 
 
                 const vaccineList = Array.isArray(fullPatientData?.vaccineNames)
-                    ? fullPatientData.vaccineNames.map((v: any) => (typeof v === 'string' ? { name: v } : v))
+                    ? fullPatientData.vaccineNames.map((v: PatientVaccine | string) => (typeof v === 'string' ? { name: v } : v))
                     : [];
 
 
                 const sourceServiceAreas = initialData.serviceArea || initialData.serviceAreas || initialData.serviceTypes || [];
-                const serviceTypeList = Array.isArray(sourceServiceAreas) ? sourceServiceAreas.map((s: any) => ({
+                const serviceTypeList = Array.isArray(sourceServiceAreas) ? sourceServiceAreas.map((s) => ({
                     id: s.id,
                     area: s.area || s.name,
                     name: s.name || s.area
@@ -142,8 +143,8 @@ export default function AnnualRegistryEditModal({
 
             } else if (mode === "create") {
                 const vaccineList = Array.isArray(fullPatientData?.vaccineNames)
-                    ? fullPatientData.vaccineNames.map((v: any) => (typeof v === 'string' ? { name: v } : v))
-                    : [];
+                    ? fullPatientData.vaccineNames.map((v: PatientVaccine | string) => (typeof v === 'string' ? { name: v } : v))
+                    : []
 
 
                 form.reset({
@@ -199,7 +200,7 @@ export default function AnnualRegistryEditModal({
             toast.success("Documento anexado!");
             fetchDocuments();
             if (fileInputRef.current) fileInputRef.current.value = "";
-        } catch (error) { toast.error("Erro ao enviar documento."); }
+        } catch { toast.error("Erro ao enviar documento."); }
         finally { setIsUploading(false); }
     };
 
@@ -208,15 +209,16 @@ export default function AnnualRegistryEditModal({
     const formatCurrencyForDisplay = (value: number | string) => (!value ? "" : Number(value).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }));
 
     const handleMoneyChange = (e: React.ChangeEvent<HTMLInputElement>, onChange: (value: string) => void) => {
-        let value = e.target.value.replace(/\D/g, "");
+        const value = e.target.value.replace(/\D/g, "");
         if (value === "") { onChange(""); return; }
         onChange((parseFloat(value) / 100).toLocaleString("pt-BR", { style: "currency", currency: "BRL" }));
     };
 
 
-    const cleanPatientData = (data: any) => {
+    const cleanPatientData = (data: Patient | null): Record<string, unknown> => {
         if (!data) return {};
-        const { documents, annualRegistry, createdAt, updatedAt, deleted, isDeleted, age, ...rest } = data;
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        const { photoUrl, ...rest } = data as Patient & Record<string, unknown>;
         return rest;
     };
 
@@ -233,19 +235,29 @@ export default function AnnualRegistryEditModal({
             const bpcToSend = data.bpc === "true";
 
 
-            const formattedDisorders = (data.disorders || []).map((d: any) => ({
-                name: d.name || d.label || d.value,
-                id: d.id
+            const formattedDisorders = (data.disorders || []).map((d) => ({
+                name: d.name || (d as { label?: string; value?: string }).label || (d as { label?: string; value?: string }).value,
+                id: d.id?.toString()
             }));
 
 
-            const formattedServiceAreas = (data.serviceTypes || []).map((s: any) => ({
-                id: s.id,
-                area: s.area || s.name || s.label || s.value
+            const formattedServiceAreas = (data.serviceTypes || []).map((s) => ({
+                id: s.id?.toString(),
+                area: s.area || s.name || (s as { label?: string; value?: string }).label || (s as { label?: string; value?: string }).value
             }));
 
 
-            const regPayload: any = {
+            interface RegPayload {
+                bpc: boolean;
+                familyIncome: number;
+                diseases: string;
+                continuousMedication: string;
+                disorders: AnnualRegistryDisorder[];
+                serviceArea: AnnualRegistryServiceArea[];
+                serviceAreas: AnnualRegistryServiceArea[];
+                year?: number;
+            }
+            const regPayload: RegPayload = {
                 bpc: bpcToSend,
                 familyIncome: income,
                 diseases: finalDiseases,
@@ -290,9 +302,9 @@ export default function AnnualRegistryEditModal({
 
 
             if (fullPatientData) {
-                const vaccineList = (data.vaccines || []).map((v: any) => ({ name: v.name || v.label || v.value, id: v.id }));
+                const vaccineList = (data.vaccines || []).map((v) => ({ name: v.name || (v as { label?: string; value?: string }).label || (v as { label?: string; value?: string }).value, id: v.id }));
                 const baseData = cleanPatientData(fullPatientData);
-                const safeNationality = baseData.nationality || baseData.birthplace || "Brasileira";
+                const safeNationality = (baseData as { nationality?: string; birthplace?: string }).nationality || (baseData as { nationality?: string; birthplace?: string }).birthplace || "Brasileira";
 
 
                 const patientPayload = {
@@ -302,7 +314,7 @@ export default function AnnualRegistryEditModal({
                     vaccineNames: vaccineList,
                     address: fullPatientData.address ? { ...fullPatientData.address } : null,
                     guardian: fullPatientData.guardian ? { ...fullPatientData.guardian } : null,
-                    parents: fullPatientData.parents?.map((p: any) => ({
+                    parents: fullPatientData.parents?.map((p: PatientParent) => ({
                         id: p.id, name: p.name, rg: p.rg, cpf: p.cpf, profession: p.profession, isAlive: p.isAlive, kinship: p.kinship
                     })) ?? []
                 };
@@ -320,7 +332,7 @@ export default function AnnualRegistryEditModal({
             toast.success(mode === "create" ? "Registro criado com sucesso!" : "Alterações salvas!");
 
 
-        } catch (error) {
+        } catch (error: unknown) {
             console.error(error);
             toast.error(error instanceof Error ? error.message : "Erro ao salvar.");
         }
@@ -400,8 +412,12 @@ export default function AnnualRegistryEditModal({
                                                 <FormLabel className="text-slate-700 font-bold text-xs">Vacinas</FormLabel>
                                                 <FormControl>
                                                     <GenericDatabaseSelect
-                                                        value={field.value || []}
-                                                        onChange={field.onChange}
+                                                        value={(field.value || []).map((v: { id?: string | number; name?: string; area?: string; label?: string; value?: string }) => ({
+                                                            label: v.label || v.name || v.value || "",
+                                                            value: v.value || v.name || v.label || "",
+                                                            id: v.id
+                                                        }))}
+                                                        onChange={(selected) => field.onChange(selected.map((s) => ({ id: s.id, name: s.label })))}
                                                         endpoint="/api/vacinas"
                                                         labelSingular="Vacina"
                                                         placeholder="Selecione ou crie vacinas..."
@@ -415,8 +431,12 @@ export default function AnnualRegistryEditModal({
                                                 <FormLabel className="text-slate-700 font-bold text-xs mb-1.5 block">Transtornos</FormLabel>
                                                 <FormControl>
                                                     <GenericDatabaseSelect
-                                                        value={field.value || []}
-                                                        onChange={field.onChange}
+                                                        value={(field.value || []).map((v: { id?: string | number; name?: string; area?: string; label?: string; value?: string }) => ({
+                                                            label: v.label || v.name || v.value || "",
+                                                            value: v.value || v.name || v.label || "",
+                                                            id: v.id
+                                                        }))}
+                                                        onChange={(selected) => field.onChange(selected.map((s) => ({ id: s.id, name: s.label })))}
                                                         endpoint="/api/transtornos"
                                                         labelSingular="Transtorno"
                                                         placeholder="Selecione ou crie transtornos..."
@@ -430,8 +450,12 @@ export default function AnnualRegistryEditModal({
                                                 <FormLabel className="text-slate-700 font-bold text-xs mb-1.5 block">Tipos de Atendimento</FormLabel>
                                                 <FormControl>
                                                     <GenericDatabaseSelect
-                                                        value={field.value || []}
-                                                        onChange={field.onChange}
+                                                        value={(field.value || []).map((v: { id?: string | number; name?: string; area?: string; label?: string; value?: string }) => ({
+                                                            label: v.label || v.area || v.name || v.value || "",
+                                                            value: v.value || v.area || v.name || v.label || "",
+                                                            id: v.id
+                                                        }))}
+                                                        onChange={(selected) => field.onChange(selected.map((s) => ({ id: s.id, area: s.label, name: s.label })))}
                                                         endpoint="/api/tipo-atendimento"
                                                         labelSingular="Tipo de Atendimento"
                                                         placeholder="Selecione ou crie tipos..."

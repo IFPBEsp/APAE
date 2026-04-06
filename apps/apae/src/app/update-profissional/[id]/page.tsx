@@ -145,8 +145,9 @@ export default function AtualizarProfissional(): JSX.Element {
     try {
       const data = await getProfessionalDocuments(professionalId);
       setDocs(data);
-    } catch (e: any) {
-      setDocsError(e?.message ?? "Erro ao carregar documentos");
+    } catch (e: unknown) {
+      const err = e as { message?: string };
+      setDocsError(err?.message ?? "Erro ao carregar documentos");
     } finally {
       setDocsLoading(false);
     }
@@ -186,9 +187,10 @@ export default function AtualizarProfissional(): JSX.Element {
       await refreshDocuments(profissional.id);
       setRemoveModalOpen(false);
       setDocToRemove(null);
-    } catch (e: any) {
+    } catch (e: unknown) {
+      const err = e as { message?: string };
       console.error(e);
-      alert(e?.message ?? "Erro ao remover documento");
+      alert(err?.message ?? "Erro ao remover documento");
     } finally {
       setRemovingIds((prev) => {
         const next = new Set(prev);

@@ -19,9 +19,9 @@ interface ApiErrorResponse {
  * * @param errorData Objeto de erro retornado pela API contendo a lista de campos.
  * @param setError Função setError proveniente do useForm do React Hook Form.
  */
-export function handleBackendValidationErrors(
+export function handleBackendValidationErrors<TFieldValues extends Record<string, unknown>>(
   errorData: ApiErrorResponse,
-  setError: UseFormSetError<any>,
+  setError: UseFormSetError<TFieldValues>,
 ) {
   if (errorData.fields && Array.isArray(errorData.fields)) {
     errorData.fields.forEach((err) => {
@@ -38,7 +38,7 @@ export function handleBackendValidationErrors(
       if (fieldName === "contact") fieldName = "phone";
       if (fieldName === "familyIncome") fieldName = "householdIncome";
 
-      setError(fieldName as any, {
+      setError(fieldName as Parameters<typeof setError>[0], {
         type: "server",
         message: err.message,
       });
