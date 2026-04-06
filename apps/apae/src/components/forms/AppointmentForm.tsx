@@ -52,6 +52,7 @@ export function AppointmentForm({ editAppointment }: AppointmentFormProps) {
   const isInitialMount = useRef(true);
   const prevProfessionalId = useRef(editAppointment?.professional?.id || "");
   const dataFetched = useRef(false);
+  const [submitError, setSubmitError] = useState<string | null>(null);
 
   const [date, setDate] = useState<Date | undefined>(() => {
     if (editAppointment?.initialDate) {
@@ -186,7 +187,9 @@ export function AppointmentForm({ editAppointment }: AppointmentFormProps) {
     if (dayOfWeek === 0 || dayOfWeek === 6) return true;
 
     const dayName = mapDayOfWeek[dayOfWeek];
-    const isPast = isBefore(day, today);
+    
+    const isPast = day.getTime() < today.getTime(); 
+    
     const professionalWorksThisDay = availabilities.some(
       (a) => a.day === dayName,
     );
@@ -205,44 +208,64 @@ export function AppointmentForm({ editAppointment }: AppointmentFormProps) {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setSubmitError(null); 
 
     const errors = {
       date: !date || !isValid(date),
       time: !selectedTime,
       patient: !patient.value,
       professional: !professional.value,
-      frequencyDays:
-        !frequencyDays || isNaN(frequencyDays) || frequencyDays <= 0,
+      frequencyDays: !frequencyDays || isNaN(frequencyDays) || frequencyDays <= 0,
     };
 
     setValidationErrors(errors);
     if (Object.values(errors).some(Boolean)) return;
 
-    const initialDate = format(date!, "yyyy-MM-dd");
-    const hourStr = `${selectedTime}:00`;
+    try {
+      const initialDate = format(date!, "yyyy-MM-dd");
+      const hourStr = `${selectedTime}:00`;
 
-    if (editAppointment?.id) {
-      await updateAppointment(editAppointment.id, {
-        professionalId: professional.value,
-        annualRegistrationId: editAppointment.annualRegistration.id,
-        serviceId: editAppointment.serviceId,
-        initialDate,
-        hour: hourStr,
-        frequencyDays,
-      });
-    } else {
-      await saveAppointment({
-        patientId: patient.value,
-        professionalId: professional.value,
-        serviceId: "ea4c3a4d-c3f4-4a83-ab29-ff24c50e844c",
-        initialDate,
-        hour: hourStr,
-        frequencyDays,
-      });
+      if (editAppointment?.id) {
+        await updateAppointment(editAppointment.id, {
+          professionalId: professional.value,
+          annualRegistrationId: editAppointment.annualRegistration.id,
+          serviceId: editAppointment.serviceId,
+          initialDate,
+          hour: hourStr,
+          frequencyDays,
+        });
+      } else {
+        await saveAppointment({
+          patientId: patient.value,
+          professionalId: professional.value,
+          serviceId: "ea4c3a4d-c3f4-4a83-ab29-ff24c50e844c",
+          initialDate,
+          hour: hourStr,
+          frequencyDays,
+        });
+      }
+      window.location.reload();
+    } catch (error: any) {
+      setSubmitError(error.message || "Erro inesperado ao salvar o agendamento.");
     }
-
-    window.location.reload();
   };
+
+  const isToday = date && format(date, "yyyy-MM-dd") === format(new Date(), "yyyy-MM-dd");  
+  const validTimeSlots = availableTimeSlots.filter(slot => {
+    if (!isToday) return true;
+
+    if (editAppointment && editAppointment.hour.startsWith(slot)) return true;
+
+    const [slotHour, slotMinute] = slot.split(':').map(Number);
+    const now = new Date();
+    const currentHour = now.getHours();
+    const currentMinute = now.getMinutes();
+
+    if (slotHour > currentHour) return true;
+    if (slotHour === currentHour && slotMinute > currentMinute) return true;
+    
+    return false;
+  });
 
   return (
     <Card className="w-full mx-auto border-none shadow-none">
@@ -371,12 +394,12 @@ export function AppointmentForm({ editAppointment }: AppointmentFormProps) {
                     </SelectTrigger>
 
                     <SelectContent>
-                      {availableTimeSlots.length === 0 ? (
-                        <div className="p-2 text-sm text-muted-foreground">
+                      {validTimeSlots.length === 0 ? (
+                        <div className="p-2 text-sm text-muted-foreground text-red-500">
                           Nenhum horário disponível
                         </div>
                       ) : (
-                        availableTimeSlots.map((slot) => (
+                        validTimeSlots.map((slot) => (
                           <SelectItem key={slot} value={slot}>
                             {slot}
                           </SelectItem>
@@ -419,6 +442,12 @@ export function AppointmentForm({ editAppointment }: AppointmentFormProps) {
               </p>
             )}
           </div>
+
+          {submitError && (
+            <div className="p-3 mt-4 bg-red-50 text-red-600 border border-red-200 rounded-md text-sm font-medium text-center">
+              {submitError}
+            </div>
+          )}
 
           <div className="flex justify-end pt-4">
             <Button className="w-full bg-[#0D4F97] text-white hover:bg-blue-900 sm:w-auto">

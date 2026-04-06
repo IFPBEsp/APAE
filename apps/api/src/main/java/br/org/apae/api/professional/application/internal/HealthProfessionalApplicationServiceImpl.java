@@ -13,6 +13,8 @@ import br.org.apae.api.professional.domain.exceptions.HealthProfessionalNotFound
 import br.org.apae.api.professional.domain.exceptions.IdentityDocumentConflictException;
 import br.org.apae.api.professional.domain.exceptions.ProfessionalDocumentConflictException;
 import br.org.apae.api.professional.domain.model.HealthProfessional;
+import br.org.apae.api.professional.domain.model.enums.Day;
+import br.org.apae.api.professional.domain.model.enums.Shift;
 import br.org.apae.api.professional.domain.repository.HealthProfessionalRepository;
 import br.org.apae.api.servicearea.application.interfaces.ServiceAreaApplicationService;
 
@@ -21,11 +23,13 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Service
 public class HealthProfessionalApplicationServiceImpl implements HealthProfessionalApplicationService {
@@ -33,7 +37,6 @@ public class HealthProfessionalApplicationServiceImpl implements HealthProfessio
     private final HealthProfessionalRepository repository;
     private final HealthProfessionalMapper mapper;
     private final ProfessionalDocumentsService documentsService;
-
     private final ServiceAreaApplicationService serviceAreaApplicationService;
 
     public HealthProfessionalApplicationServiceImpl(HealthProfessionalRepository repository,
@@ -63,9 +66,7 @@ public class HealthProfessionalApplicationServiceImpl implements HealthProfessio
                 .findServiceAreaByArea(dto.serviceArea().area());
 
         HealthProfessional professionalToSave = mapper.toEntity(dto, serviceAreaDto);
-
         HealthProfessional savedProfessional = repository.save(professionalToSave);
-
         documentsService.storeProfessionalDocuments(professionalToSave, documentsDTO);
         return mapper.toResponseDTO(savedProfessional);
     }
@@ -85,19 +86,15 @@ public class HealthProfessionalApplicationServiceImpl implements HealthProfessio
             throw new ProfessionalDocumentConflictException();
         }
 
-        String area =
-                (dto.serviceArea() != null
-                        && dto.serviceArea().area() != null
-                        && !dto.serviceArea().area().isBlank())
-                        ? dto.serviceArea().area()
-                        : entityToUpdate.getServiceArea().getArea();
+        String area = (dto.serviceArea() != null
+                && dto.serviceArea().area() != null
+                && !dto.serviceArea().area().isBlank())
+                ? dto.serviceArea().area()
+                : entityToUpdate.getServiceArea().getArea();
 
         ServiceAreaResponseDTO serviceAreaDto = serviceAreaApplicationService.findServiceAreaByArea(area);
-
         HealthProfessional updatedProfessional = mapper.updateEntityFromDto(entityToUpdate, dto, serviceAreaDto);
-
         repository.save(updatedProfessional);
-
         return mapper.toResponseDTO(updatedProfessional);
     }
 
@@ -109,60 +106,30 @@ public class HealthProfessionalApplicationServiceImpl implements HealthProfessio
                 .orElseThrow(HealthProfessionalNotFoundException::new);
     }
 
-    /*    @Override
-    @Transactional
-    public void deleteProfessional(UUID id) {
-        if (!repository.existsById(id)) {
-            throw new HealthProfessionalNotFoundException();
-        }
-        repository.deleteById(id);
-    }
-*/
-
     @Override
     @Transactional
     public void activateProfessional(UUID id) {
-        HealthProfessional professional = repository.findById(id)
-            .orElseThrow(HealthProfessionalNotFoundException::new);
-
-        professional.setAtivo(true);
-
+        repository.findById(id).orElseThrow(HealthProfessionalNotFoundException::new).setAtivo(true);
     }
 
     @Override
     @Transactional
     public void inactivateProfessional(UUID id) {
-        HealthProfessional professional = repository.findById(id)
-            .orElseThrow(HealthProfessionalNotFoundException::new);
-
-        professional.setAtivo(false);
-
+        repository.findById(id).orElseThrow(HealthProfessionalNotFoundException::new).setAtivo(false);
     }
 
     @Override
     @Transactional
     public void reactivateProfessional(UUID id) {
-        HealthProfessional professional = repository.findById(id)
-            .orElseThrow(HealthProfessionalNotFoundException::new);
-
-        professional.setAtivo(true);
+        repository.findById(id).orElseThrow(HealthProfessionalNotFoundException::new).setAtivo(true);
     }
-
-    /*@Override
-    @Transactional(readOnly = true)
-    public Page<HealthProfessionalResponseDTO> findAllProfessionals(Pageable pageable) {
-        return repository.findAll(pageable).map(mapper::toResponseDTO);
-    }*/
 
     @Override
     @Transactional(readOnly = true)
     public Page<HealthProfessionalResponseDTO> findAllProfessionals(Boolean ativo, Pageable pageable) {
-        Page<HealthProfessional> page;
-        if (ativo == null) {
-            page = repository.findAll(pageable);
-        } else{
-            page = repository.findByAtivo(ativo, pageable);
-        }
+        Page<HealthProfessional> page = ativo == null
+                ? repository.findAll(pageable)
+                : repository.findByAtivo(ativo, pageable);
         return page.map(mapper::toResponseDTO);
     }
 
@@ -170,8 +137,7 @@ public class HealthProfessionalApplicationServiceImpl implements HealthProfessio
     @Transactional
     public void updateProfessionalDocuments(UUID id, UpdateProfessionalDocumentsDTO dto) {
         HealthProfessional professional = repository.findById(id)
-            .orElseThrow(HealthProfessionalNotFoundException::new);
-
+                .orElseThrow(HealthProfessionalNotFoundException::new);
         documentsService.updateProfessionalDocuments(professional, dto);
     }
 
@@ -179,39 +145,54 @@ public class HealthProfessionalApplicationServiceImpl implements HealthProfessio
     @Transactional
     public void removeProfessionalDocument(UUID professionalId, UUID documentId) {
         HealthProfessional professional = repository.findById(professionalId)
-            .orElseThrow(HealthProfessionalNotFoundException::new);
-
+                .orElseThrow(HealthProfessionalNotFoundException::new);
         documentsService.removeProfessionalDocument(professional, documentId);
     }
 
     private List<LocalTime> generateSlots(LocalTime start, LocalTime end) {
         List<LocalTime> slots = new ArrayList<>();
         LocalTime current = start;
-
         while (current.isBefore(end)) {
             slots.add(current);
             current = current.plusMinutes(30);
         }
-
         return slots;
     }
 
+    @Override
     public List<LocalTime> getAvailableTimes(UUID professionalId, LocalDate date) {
         List<LocalTime> occupied = repository.findOccupiedHours(professionalId, date);
 
-        List<LocalTime> morningSlots = generateSlots(
-                LocalTime.of(8, 0),
-                LocalTime.of(12, 0)
-        );
+        HealthProfessional professional = repository.findById(professionalId)
+                .orElseThrow(HealthProfessionalNotFoundException::new);
 
-        List<LocalTime> afternoonSlots = generateSlots(
-                LocalTime.of(14, 0),
-                LocalTime.of(17, 0)
-        );
+        DayOfWeek dayOfWeek = date.getDayOfWeek();
+        Day requestedDay = switch (dayOfWeek) {
+            case MONDAY    -> Day.SEGUNDA;
+            case TUESDAY   -> Day.TERCA;
+            case WEDNESDAY -> Day.QUARTA;
+            case THURSDAY  -> Day.QUINTA;
+            case FRIDAY    -> Day.SEXTA;
+            default        -> null;
+        };
+
+        if (requestedDay == null) return List.of();
+
+        boolean worksManha = professional.getAvailabilities().stream()
+                .anyMatch(a -> a.getDay().equals(requestedDay) && a.getShift().equals(Shift.MANHA));
+        boolean worksTarde = professional.getAvailabilities().stream()
+                .anyMatch(a -> a.getDay().equals(requestedDay) && a.getShift().equals(Shift.TARDE));
 
         List<LocalTime> allSlots = new ArrayList<>();
-        allSlots.addAll(morningSlots);
-        allSlots.addAll(afternoonSlots);
+        if (worksManha) allSlots.addAll(generateSlots(LocalTime.of(8, 0), LocalTime.of(12, 0)));
+        if (worksTarde) allSlots.addAll(generateSlots(LocalTime.of(13, 0), LocalTime.of(17, 0)));
+
+        if (date.isEqual(LocalDate.now())) {
+            LocalTime now = LocalTime.now();
+            allSlots = allSlots.stream()
+                    .filter(slot -> slot.isAfter(now))
+                    .collect(Collectors.toCollection(ArrayList::new));
+        }
 
         return allSlots.stream()
                 .filter(slot -> !occupied.contains(slot))
