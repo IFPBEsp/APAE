@@ -23,13 +23,11 @@ export default function ResetPasswordPage() {
       mode: "all",
   });
 
-  const [isLoading, setIsLoading] = React.useState(false);
 
   const handleSendCode = async () => {
     const isEmailValid = await form.trigger("email");
     if (isEmailValid) {
       try {
-        setIsLoading(true);
         const emailDigitado = form.getValues("email");
 
         // Chamada para o Backend para verificar se o email existe no banco
@@ -49,8 +47,6 @@ export default function ResetPasswordPage() {
         
       } catch (error) {
         toast.error("Erro de conexão. Tente novamente mais tarde.");
-      } finally {
-        setIsLoading(false);
       }
     }
   };
