@@ -64,4 +64,14 @@ export const loginSchema = z.object({
     .min(6, { message: "Senha deve ter pelo menos 6 caracteres." }),
 });
 
+export const recoverySchema = z.object({
+  email: z
+  .string()
+  .trim()
+  .min(1, "E-mail é obrigatório")
+  .email("Email inválido"),
+  code: z.string().min(4, "Código inválido"),
+});
+
 export type FormLogin = z.infer<typeof loginSchema>;
+export type FormRecovery = z.infer<typeof recoverySchema>;
