@@ -1,103 +1,165 @@
 "use client";
 
+import React from "react";
 import { Send } from "lucide-react";
-import React, { useState } from "react";
 import { useRouter } from "next/navigation";
+import { toast } from "react-toastify";
 
-type RecoverPasswordModalProps = {
-  isOpen: boolean;
-  onClose: () => void;
-};
+import {
+  Card,
+  CardContent,
+  CardFooter,
+  CardHeader,
+} from "@/components/ui/card";
 
-const RecoverPasswordModal: React.FC<RecoverPasswordModalProps> = ({
-  isOpen,
-  onClose,
-}) => {
-  const [email, setEmail] = useState("");
-  const [code, setCode] = useState("");
+import {
+  Form,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormControl,
+  FormMessage,
+} from "@/components/ui/form";
 
-  const onSubmit = () => {
-    // Lógica para enviar o código de recuperação e validar o código
-    // Deve adicionar chamadas à API aqui para lidar com a recuperação de senha
-  }
+import { Input } from "@/components/ui/input";
+import { PrimaryButton } from "@/components/buttons/ButtonPrimary";
 
-  if (!isOpen) return null;
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
 
-  return (
-    <div className="flex items-center justify-center">
-      <div className="w-full max-w-md bg-white rounded-2xl shadow-lg p-6 pt-25 relative">
-        
-        <div className="flex flex-col items-center mb-4">
-          <h2 className="text-lg font-semibold text-blue-700 mt-1">
-            Recuperar Senha
-          </h2>
-        </div>
-
-        <div className="mb-4">
-          <label className="text-sm font-medium text-gray-700">
-            Usuário
-          </label>
-          <div className="flex mt-1">
-            <input
-              type="email"
-              placeholder="Digite seu email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              className="flex-1 border rounded-l-md px-3 py-2 outline-none focus:ring-2 focus:ring-blue-500"
-            />
-            <button
-              className="bg-blue-700 text-white px-4 flex items-center justify-center rounded-r-md hover:bg-blue-800 cursor-pointer"
-              title="Enviar código"
-              onClick={() => {}}
-            >
-              <Send size={18} />
-            </button>
-          </div>
-          <p className="text-xs text-gray-500 mt-1">
-            Um código de verificação será enviado para o seu email.
-          </p>
-        </div>
-
-        <div className="mb-6">
-          <label className="text-sm font-medium text-gray-700">
-            Código de verificação
-          </label>
-          <input
-            type="text"
-            placeholder="Digite o código"
-            value={code}
-            onChange={(e) => setCode(e.target.value)}
-            className="w-full mt-1 border rounded-md px-3 py-2 outline-none focus:ring-2 focus:ring-blue-500"
-          />
-        </div>
-
-        <button 
-          className="w-full bg-blue-700 text-white py-2 rounded-md hover:bg-blue-800 transition cursor-pointer"
-          onClick={onSubmit}>
-          
-          Enviar
-        </button>
-
-        <div className="text-center mt-3">
-          <button
-            onClick={onClose}
-            className="text-orange-500 text-sm hover:underline cursor-pointer transition-colors duration-200"
-          >
-            Voltar para tela de login.
-          </button>
-        </div>
-      </div>
-    </div>
-  );
-};
+import { recoverySchema, FormRecovery } from "@/schemas/authSchema";
 
 export default function RecoveryPage() {
   const router = useRouter();
 
+  const form = useForm<FormRecovery>({
+    resolver: zodResolver(recoverySchema),
+    defaultValues: {
+      email: "",
+      code: "",
+    },
+    mode: "all",
+  });
+
+  const handleSendCode = async () => {
+    const email = form.getValues("email");
+
+    if (!email) {
+      form.setError("email", {
+        message: "E-mail é obrigatório",
+      });
+      return;
+    }
+
+    try {
+      //lógica para enviar o código de recuperação para o email
+    } catch {
+      //toast.error("Erro inesperado.");
+    }
+  };
+
+  const onSubmit = async (data: FormRecovery) => {
+    try {
+      //lógica para validar o código e permitir a redefinição de senha
+    } catch {
+      //toast.error("Erro inesperado.");
+    }
+  };
+
   return (
-    <RecoverPasswordModal
-      isOpen={true}
-      onClose={() => (router.push("/auth/login"))}
-    />
+      <Form {...form}>
+        <form
+          onSubmit={form.handleSubmit(onSubmit)}
+          className="w-full h-full flex justify-center"
+        >
+          <Card
+            className="min-w-[326px] w-[30vw] max-h-[90vh]
+            bg-white rounded-[20px] overflow-hidden flex flex-col gap-y-1"
+            style={{ boxShadow: "4px 4px 10px rgba(0, 0, 0, 0.25)" }}
+          >
+            <CardHeader className="flex-shrink-0 pt-10 pb-4">
+              <div className="w-full flex justify-center">
+                <span className="font-baloo2 font-semibold text-[2.25rem] text-center text-blue-900 mt-10">
+                  Recuperar Senha
+                </span>
+              </div>
+            </CardHeader>
+
+            <CardContent className="flex-grow overflow-y-auto px-6">
+              <div className="flex flex-col space-y-4 max-w-sm mx-auto mt-4">
+                {/* EMAIL */}
+                <FormField
+                  control={form.control}
+                  name="email"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Usuário</FormLabel>
+                      <FormControl>
+                        <div className="flex">
+                          <Input
+                            {...field}
+                            type="email"
+                            placeholder="Digite seu email"
+                            className="rounded-r-none h-12"
+                          />
+                          <button
+                            type="button"
+                            onClick={handleSendCode}
+                            className="bg-blue-700 text-white px-4 flex items-center justify-center rounded-r-md hover:bg-blue-800"
+                          >
+                            <Send size={18} />
+                          </button>
+                        </div>
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                {/* CODE */}
+                <FormField
+                  control={form.control}
+                  name="code"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Código de verificação</FormLabel>
+                      <FormControl>
+                        <Input
+                          {...field}
+                          placeholder="Digite o código"
+                          className="h-12"
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <p className="text-xs text-gray-500 text-center">
+                  Um código será enviado para seu email.
+                </p>
+              </div>
+            </CardContent>
+
+            <CardFooter className="flex flex-col gap-3 py-4">
+              <PrimaryButton
+                type="submit"
+                loading={form.formState.isSubmitting}
+                disabled={form.formState.isSubmitting}
+              >
+                Validar código
+              </PrimaryButton>
+
+              <button
+                type="button"
+                onClick={() => router.push("/auth/login")}
+                className="text-orange-500 text-sm hover:underline"
+              >
+                Voltar para tela de login
+              </button>
+            </CardFooter>
+          </Card>
+        </form>
+      </Form>
   );
 }
