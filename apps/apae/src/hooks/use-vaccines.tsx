@@ -11,6 +11,7 @@ import {
 type Vaccine = Readonly<{
     id: string;
     name: string;
+    hasPatient: boolean;
 }>;
 
 type FetchVaccineParams = Readonly<{

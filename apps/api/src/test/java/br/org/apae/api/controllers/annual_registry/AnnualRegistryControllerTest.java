@@ -5,7 +5,6 @@ import br.org.apae.api.auth.infrastructure.security.JwtProvider;
 import br.org.apae.api.auth.infrastructure.security.SecurityConfiguration;
 import br.org.apae.api.common.dto.patient.request.annual_registry.CreateAnnualRegistryDTO;
 import br.org.apae.api.common.dto.patient.request.annual_registry.ReplaceAnnualRegistryDTO;
-import br.org.apae.api.common.dto.patient.request.annual_registry.UpdateAnnualRegistryDTO;
 import br.org.apae.api.common.dto.patient.response.annual_registry.AnnualRegistryResponseDTO;
 import br.org.apae.api.common.exceptions.handler.GlobalExceptionHandler;
 import br.org.apae.api.helpers.AuthTestHelper;
