@@ -17,15 +17,15 @@ import {
 } from "@/components/ui/table";
 import { Checkbox } from "@/components/ui/checkbox";
 import { diasDaSemana, turnos } from "@/types/profissional";
-import { Control, UseFormWatch } from "react-hook-form";
+import { Control, UseFormWatch, FieldValues, Path } from "react-hook-form";
 
-type Props = {
-  control: Control<any>;
-  watch: UseFormWatch<any>;
+type Props<T extends FieldValues> = {
+  control: Control<T>;
+  watch: UseFormWatch<T>;
 };
 
-export default function Disponibilidade({ control, watch }: Readonly<Props>) {
-  const disponibilidade = watch("disponibilidade") || [];
+export default function Disponibilidade<T extends FieldValues>({ control, watch }: Readonly<Props<T>>) {
+  const disponibilidade = watch("disponibilidade" as Path<T>) || [];
 
   return (
     <div className="space-y-4">
@@ -54,14 +54,14 @@ export default function Disponibilidade({ control, watch }: Readonly<Props>) {
 
                 {diasDaSemana.map((dia) => {
                   const index = disponibilidade.findIndex(
-                    (d: any) => d.dia === dia.id && d.turno === turno.id
+                    (d: { dia: string; turno: string }) => d.dia === dia.id && d.turno === turno.id
                   );
 
                   return (
                     <TableCell key={dia.id} className="text-center">
                       <FormField
                         control={control}
-                        name={`disponibilidade.${index}.checked`}
+                        name={`disponibilidade.${index}.checked` as Path<T>}
                         render={({ field }) => (
                           <FormItem className="flex items-center justify-center">
                             <FormControl>
