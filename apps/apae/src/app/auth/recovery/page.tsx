@@ -105,7 +105,7 @@ export default function RecoveryPage() {
                           <button
                             type="button"
                             onClick={handleSendCode}
-                            className="bg-blue-700 text-white px-4 flex items-center justify-center rounded-r-md hover:bg-blue-800"
+                            className="bg-[#0D4F97]! text-white px-4 flex items-center justify-center rounded-r-md hover:bg-[#0D4F97]/90! cursor-pointer"
                           >
                             <Send size={18} />
                           </button>
@@ -146,6 +146,7 @@ export default function RecoveryPage() {
                 type="submit"
                 loading={form.formState.isSubmitting}
                 disabled={form.formState.isSubmitting}
+                className="cursor-pointer"
               >
                 Validar código
               </PrimaryButton>
@@ -153,7 +154,7 @@ export default function RecoveryPage() {
               <button
                 type="button"
                 onClick={() => router.push("/auth/login")}
-                className="text-orange-500 text-sm hover:underline"
+                className="text-orange-500 text-sm hover:underline cursor-pointer"
               >
                 Voltar para tela de login
               </button>
