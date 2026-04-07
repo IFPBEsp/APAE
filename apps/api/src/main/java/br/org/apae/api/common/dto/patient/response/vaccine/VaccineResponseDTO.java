@@ -6,10 +6,12 @@ import br.org.apae.api.patient.domain.model.Vaccine;
 
 public record VaccineResponseDTO(
     UUID id,
-    String name) {
-  public VaccineResponseDTO(Vaccine vaccine) {
+    String name,
+    Boolean hasPatient) {
+  public VaccineResponseDTO(Vaccine vaccine, Boolean hasPatient) {
     this(
         vaccine.getId(),
-        vaccine.getName());
+        vaccine.getName(),
+        hasPatient);
   }
 }

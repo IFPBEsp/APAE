@@ -81,7 +81,7 @@ public class VaccineControllerTest {
     void shouldCreateVaccineSuccess() throws Exception {
         CreateVaccineDTO requestDto = new CreateVaccineDTO("BCG");
         UUID idGerado = UUID.randomUUID();
-        VaccineResponseDTO responseDto = new VaccineResponseDTO(idGerado, requestDto.name());
+        VaccineResponseDTO responseDto = new VaccineResponseDTO(idGerado, requestDto.name(), false);
 
         when(vaccineService.createVaccine(any(CreateVaccineDTO.class)))
                 .thenReturn(responseDto);
@@ -129,8 +129,8 @@ public class VaccineControllerTest {
     @Test
     @DisplayName("Deve listar todas as vacinas com sucesso (200)")
     void shouldGetAllVaccinesSuccess() throws Exception {
-        VaccineResponseDTO v1 = new VaccineResponseDTO(UUID.randomUUID(), "BCG");
-        VaccineResponseDTO v2 = new VaccineResponseDTO(UUID.randomUUID(), "Viral");
+        VaccineResponseDTO v1 = new VaccineResponseDTO(UUID.randomUUID(), "BCG", false);
+        VaccineResponseDTO v2 = new VaccineResponseDTO(UUID.randomUUID(), "Viral", true);
         List<VaccineResponseDTO> lista = List.of(v1, v2);
 
         when(vaccineService.findAllVaccines()).thenReturn(lista);
@@ -149,7 +149,7 @@ public class VaccineControllerTest {
     @DisplayName("Deve buscar vacina por ID com sucesso (200)")
     void shouldSearchVaccineByIdSuccess() throws Exception {
         UUID id = UUID.randomUUID();
-        VaccineResponseDTO responseDto = new VaccineResponseDTO(id, "BCG");
+        VaccineResponseDTO responseDto = new VaccineResponseDTO(id, "BCG", false);
 
         when(vaccineService.findVaccineById(id)).thenReturn(responseDto);
 
@@ -178,7 +178,7 @@ public class VaccineControllerTest {
     @DisplayName("Deve buscar vacina por nome com sucesso (200)")
     void shouldSearchVaccineByNameSuccess() throws Exception {
         String name = "BCG";
-        VaccineResponseDTO responseDto = new VaccineResponseDTO(UUID.randomUUID(), name);
+        VaccineResponseDTO responseDto = new VaccineResponseDTO(UUID.randomUUID(), name, false);
 
         when(vaccineService.findVaccineByName(name)).thenReturn(responseDto);
 
@@ -209,7 +209,7 @@ public class VaccineControllerTest {
     void shouldUpdateVaccineSuccess() throws Exception {
         UUID id = UUID.randomUUID();
         CreateVaccineDTO updateDto = new CreateVaccineDTO("BCG Atualizada");
-        VaccineResponseDTO responseDto = new VaccineResponseDTO(id, updateDto.name());
+        VaccineResponseDTO responseDto = new VaccineResponseDTO(id, updateDto.name(), false);
 
         when(vaccineService.updateVaccine(eq(id), any(CreateVaccineDTO.class)))
                 .thenReturn(responseDto);

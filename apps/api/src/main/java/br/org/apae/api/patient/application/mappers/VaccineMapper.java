@@ -29,7 +29,7 @@ public class VaccineMapper {
     }
 
     public VaccineResponseDTO toResponseDTO(Vaccine vaccine) {
-        return new VaccineResponseDTO(vaccine.getId(), vaccine.getName());
+        return new VaccineResponseDTO(vaccine.getId(), vaccine.getName(), false);
     }
 
     public Set<VaccineResponseDTO> toResponseDTOSet(Set<Vaccine> vaccines) {

@@ -5,6 +5,7 @@ import br.org.apae.api.patient.domain.exceptions.VaccineInUseException;
 import br.org.apae.api.patient.domain.exceptions.VaccineMismatchException;
 import br.org.apae.api.patient.domain.exceptions.VaccineNotFoundException;
 import br.org.apae.api.patient.domain.model.Vaccine;
+import br.org.apae.api.patient.domain.repository.PatientRepository;
 import br.org.apae.api.patient.domain.repository.VaccineRepository;
 import br.org.apae.api.common.dto.patient.request.vaccine.CreateVaccineDTO;
 import br.org.apae.api.common.dto.patient.response.vaccine.VaccineResponseDTO;
@@ -31,11 +32,13 @@ public class VaccineApplicationServiceImpl implements VaccineApplicationService 
 
     private final VaccineRepository vaccineRepository;
     private final VaccineMapper vaccineMapper;
+    private final PatientRepository patientRepository;
 
     @Autowired
-    public VaccineApplicationServiceImpl(VaccineRepository vaccineRepository, VaccineMapper vaccineMapper) {
+    public VaccineApplicationServiceImpl(VaccineRepository vaccineRepository, VaccineMapper vaccineMapper, PatientRepository patientRepository) {
         this.vaccineRepository = vaccineRepository;
         this.vaccineMapper = vaccineMapper;
+        this.patientRepository = patientRepository;
     }
 
     @Override
@@ -97,7 +100,10 @@ public class VaccineApplicationServiceImpl implements VaccineApplicationService 
     public List<VaccineResponseDTO> findAllVaccines() {
         List<Vaccine> vaccines = vaccineRepository.findAll();
 
-        return vaccines.stream().map(vaccineMapper::toResponseDTO).toList();
+        return vaccines.stream().map( vaccine -> {
+            boolean inUse = patientRepository.isVaccineInUse(vaccine.getId());
+            return new VaccineResponseDTO(vaccine.getId(), vaccine.getName(), inUse);
+        }).toList();
     }
 
     @Override

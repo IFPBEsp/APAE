@@ -108,7 +108,7 @@ public class PatientMapper {
                         List<ParentResponseDTO> parentResponseDTOs, String photoUrl) {
                 AddressResponseDTO addressResponseDTO = new AddressResponseDTO(patient.getAddress());
                 Set<VaccineResponseDTO> vaccineResponseDTOs = patient.getVaccines().stream()
-                                .map(VaccineResponseDTO::new)
+                                .map(vaccine -> new VaccineResponseDTO(vaccine.getId(), vaccine.getName(), false))
                                 .collect(Collectors.toSet());
 
                 return new PatientResponseDTO(patient, addressResponseDTO, guardianResponseDTO, parentResponseDTOs,
