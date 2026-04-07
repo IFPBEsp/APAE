@@ -1,7 +1,9 @@
-import { createBaseApi } from "@/lib/axios";
-import { createTranstornoSchema } from "@/schemas/transtornosSchema";
-import { NextResponse } from "next/server";
 import { AxiosError } from "axios";
+import { NextResponse } from "next/server";
+
+import { createBaseApi } from "@/lib/axios";
+import { handleError } from "@/lib/handle-error";
+import { createTranstornoSchema } from "@/schemas/transtornosSchema";
 
 export async function POST(request: Request) {
   try {
@@ -14,30 +16,23 @@ export async function POST(request: Request) {
           message: "Dados inválidos.",
           errors: validation.error.flatten().fieldErrors,
         }),
-        { status: 400 }
+        { status: 400 },
       );
     }
 
     const api = await createBaseApi();
-
     const { data } = await api.post("/disorders", validation.data);
 
     return NextResponse.json(data, { status: 201 });
-
-  } catch (error: any) {
-    const err = error as AxiosError;
-    
-    if (err.response?.status === 409) {
-        return NextResponse.json(
-            { message: "Transtorno já existente, prosseguindo." }, 
-            { status: 200 }
-        );
+  } catch (error) {
+    if (error instanceof AxiosError && error.response?.status === 409) {
+      return NextResponse.json(
+        { message: "Transtorno já existente, prosseguindo." },
+        { status: 200 },
+      );
     }
 
-    return new NextResponse(
-      JSON.stringify(err.response?.data || { message: err.message }),
-      { status: err.response?.status || 500 }
-    );
+    return handleError(error);
   }
 }
 
@@ -45,11 +40,9 @@ export async function GET() {
   try {
     const api = await createBaseApi();
     const { data } = await api.get("/disorders");
+
     return NextResponse.json(data);
-  } catch (error: any) {
-    return new NextResponse(
-      JSON.stringify(error.response?.data || { message: error.message }),
-      { status: error.response?.status || 500 }
-    );
+  } catch (error) {
+    return handleError(error);
   }
 }

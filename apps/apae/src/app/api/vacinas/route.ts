@@ -1,33 +1,37 @@
-import { createBaseApi } from "@/lib/axios";
-import { NextResponse } from "next/server";
 import { AxiosError } from "axios";
+import { NextResponse } from "next/server";
+
+import { createBaseApi } from "@/lib/axios";
+import { handleError } from "@/lib/handle-error";
 
 export async function POST(request: Request) {
-    try {
-        const body = await request.json();
-        const api = await createBaseApi();
-        const { data } = await api.post("/vaccines", body);
-        
-        return NextResponse.json(data, { status: 201 });
-    } catch (error: any) {
-        const err = error as AxiosError;
-        if (err.response?.status === 409) {
-             return NextResponse.json({ message: "Vacina já existe" }, { status: 200 });
-        }
-        return new NextResponse(
-            JSON.stringify(err.response?.data || { message: err.message }),
-            { status: err.response?.status || 500 },
-        );
+  try {
+    const body = await request.json();
+    const api = await createBaseApi();
+    const { data } = await api.post("/vaccines", body);
+
+    return NextResponse.json(data, { status: 201 });
+  } catch (error) {
+    if (error instanceof AxiosError && error.response?.status === 409) {
+      return NextResponse.json(
+        { message: "Vacina já existe" },
+        { status: 200 },
+      );
     }
+
+    return handleError(error);
+  }
 }
 
 export async function GET() {
-    try {
-        const api = await createBaseApi();
-        const { data } = await api.get("/vaccines");
-        return NextResponse.json(data);
-    } catch (error: any) {
-        console.error("Erro ao buscar vacinas:", error.message);
-        return NextResponse.json([], { status: 200 });
-    }
+  try {
+    const api = await createBaseApi();
+    const { data } = await api.get("/vaccines");
+
+    return NextResponse.json(data);
+  } catch (error) {
+    console.error("Erro ao buscar vacinas:", error);
+
+    return NextResponse.json([], { status: 200 });
+  }
 }

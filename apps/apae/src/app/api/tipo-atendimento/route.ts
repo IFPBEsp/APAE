@@ -1,6 +1,8 @@
+import { NextResponse } from "next/server";
+
 import { createBaseApi } from "@/lib/axios";
 import { createserviceTypeSchema } from "@/schemas/service-type-schemas";
-import { NextResponse } from "next/server";
+import { handleError } from "@/lib/handle-error";
 
 export async function POST(request: Request) {
   try {
@@ -13,20 +15,16 @@ export async function POST(request: Request) {
           message: "Dados inválidos.",
           errors: validation.error.flatten().fieldErrors,
         }),
-        { status: 400 }
+        { status: 400 },
       );
     }
 
     const api = await createBaseApi();
-
     const { data } = await api.post("/service-areas", validation.data);
 
     return NextResponse.json(data);
-  } catch (error: any) {
-    return new NextResponse(
-      JSON.stringify(error.response?.data || { message: error.message }),
-      { status: error.response?.status || 500 }
-    );
+  } catch (error) {
+    return handleError(error);
   }
 }
 
@@ -34,11 +32,9 @@ export async function GET() {
   try {
     const api = await createBaseApi();
     const { data } = await api.get("/service-areas");
+
     return NextResponse.json(data);
-  } catch (error: any) {
-    return new NextResponse(
-      JSON.stringify(error.response?.data || { message: error.message }),
-      { status: error.response?.status || 500 }
-    );
+  } catch (error) {
+    return handleError(error);
   }
 }
