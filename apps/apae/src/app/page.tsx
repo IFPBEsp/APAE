@@ -213,6 +213,7 @@ export default function DashboardPage() {
                     <TableCell className="px-3 py-2 text-xs sm:px-4 sm:py-3 sm:text-sm">
                       <RegistrarFaltaButton
                         generatedAppointmentId={item.id}
+                        patientId={item.patient.id}
                         absenceDate={format(selectedDate, 'yyyy-MM-dd')}
                         disabled={item.hasAbsence}
                         onSuccess={() => {
