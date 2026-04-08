@@ -24,7 +24,7 @@ export async function POST(request: Request) {
 
     return NextResponse.json(data, { status: 201 });
 
-  } catch (error: any) {
+  } catch (error) { 
     const err = error as AxiosError;
     
     if (err.response?.status === 409) {
@@ -46,10 +46,11 @@ export async function GET() {
     const api = await createBaseApi();
     const { data } = await api.get("/disorders");
     return NextResponse.json(data);
-  } catch (error: any) {
+  } catch (error) {
+    const err = error as AxiosError;
     return new NextResponse(
-      JSON.stringify(error.response?.data || { message: error.message }),
-      { status: error.response?.status || 500 }
+      JSON.stringify(err.response?.data || { message: err.message }),
+      { status: err.response?.status || 500 }
     );
   }
 }

@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createDocumentsAPI } from "@/lib/axios";
+import { AxiosError } from "axios";
 
 export async function GET(
   req: NextRequest,
@@ -28,8 +29,9 @@ export async function GET(
     });
 
     return NextResponse.json(response.data);
-  } catch (error: any) {
-    console.error("Erro na API:", error?.response?.data || error);
+  } catch (error) { 
+    const axiosError = error as AxiosError;
+    console.error("Erro na API:", axiosError.response?.data || error);
     return NextResponse.json(
       { error: "Erro ao buscar documentos" },
       { status: 500 }

@@ -9,7 +9,7 @@ export async function POST(request: Request) {
         const { data } = await api.post("/vaccines", body);
         
         return NextResponse.json(data, { status: 201 });
-    } catch (error: any) {
+    } catch (error) {
         const err = error as AxiosError;
         if (err.response?.status === 409) {
              return NextResponse.json({ message: "Vacina já existe" }, { status: 200 });
@@ -26,8 +26,9 @@ export async function GET() {
         const api = await createBaseApi();
         const { data } = await api.get("/vaccines");
         return NextResponse.json(data);
-    } catch (error: any) {
-        console.error("Erro ao buscar vacinas:", error.message);
+    } catch (error) {
+        const err = error as AxiosError;
+        console.error("Erro ao buscar vacinas:", err.message);
         return NextResponse.json([], { status: 200 });
     }
 }
