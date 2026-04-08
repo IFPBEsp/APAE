@@ -1,6 +1,3 @@
-import { getApiBaseUrl } from "@/lib/client-service";
-
-const API_URL = getApiBaseUrl();
 
 export async function getAllServiceAreas() {
   return fetch(`/api/service-areas`, { method: "GET" });
