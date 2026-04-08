@@ -1,4 +1,4 @@
-import z from "zod";
+import z, { number } from "zod";
 
 // 1. Endereço relaxado 
 export const EditAddress = z.object({
@@ -7,6 +7,9 @@ export const EditAddress = z.object({
   city: z.string().min(1, "Obrigatório"),
   district: z.string().min(1, "Obrigatório"),
   street: z.string().min(1, "Obrigatório"),
+  noNumber: z.boolean().optional(),
+  number: z.string().min(1, "Número é obrigatório").regex(/^(\d+|SN|sn|S\/N|s\/n)$/, "Número deve conter apenas dígitos ou SN"),
+  complement: z.string().optional(),
 });
 
 // 2. Dados Pessoais relaxados

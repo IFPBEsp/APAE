@@ -21,6 +21,7 @@ import { useForm } from "react-hook-form";
 import { useState, useEffect } from "react";
 import { usePathname } from "next/navigation"; 
 import { handleBackendValidationErrors } from "@/utils/form-errors";
+import { Checkbox } from "@/components/ui/checkbox";
 
 import { DoubleColumn, FormButton, MembersRegisterForm } from "../form";
 
@@ -40,15 +41,33 @@ export default function MembersRegisterAddressPage() {
   const form = useForm<any>({
     mode: "onBlur",
     resolver: zodResolver(currentSchema),
-    defaultValues: address,
+    defaultValues: {
+      address,
+      noNumber: address.number === "SN" || false 
+    },
   });
 
-  
   const [isInitialized, setIsInitialized] = useState(false);
+
+  const isNoNumber = form.watch("noNumber");
+
+  useEffect(() => {
+    if(isNoNumber) {
+      form.setValue("number", "SN");
+      form.clearErrors("number");
+    } else {
+        if (form.getValues("number") === "SN") {
+        form.setValue("number", "");
+      }
+  }
+  }, [isNoNumber, form]);
 
   useEffect(() => {
     if (isEditing && address.cep && !isInitialized) {
-      form.reset(address);
+      form.reset({
+        ...address,
+        noNumber: address.number === "SN"
+      });
       setIsInitialized(true);
     }
   }, [address, form, isEditing, isInitialized]);
@@ -56,7 +75,9 @@ export default function MembersRegisterAddressPage() {
   const onSubmit = async (values: any) => {
     setIsLoading(true);
     try {
-      setAddressData(values);
+      const {noNumber, ...dataToSave} = values;
+      setAddressData(dataToSave);
+      
         if (isEditing) {
         setStep(MembersRegisterStep.GUARDIAN); 
       } else {
@@ -100,13 +121,64 @@ export default function MembersRegisterAddressPage() {
               <FormItem className="md:col-span-2">
                 <FormLabel>Rua *</FormLabel>
                 <FormControl>
-                  <Input placeholder="Adielson Assis Alves, 49" {...field} />
+                  <Input placeholder="Adielson Assis Alves" {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="number"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Número *</FormLabel>
+
+                <FormField 
+                  control={form.control}
+                  name="noNumber"
+                  render={({ field: checkField }) => (
+                    <div className="flex items-center space-x-2">
+                      <FormControl>
+                        <Checkbox
+                          id="noNumber"
+                          checked={checkField.value}
+                          onCheckedChange={checkField.onChange}
+                        />
+                      </FormControl>
+                      <label 
+                      htmlFor="noNumber" 
+                      className="text-[10px] font-bold uppercase text-slate-500 cursor-pointer select-none">
+                        Sem número?
+                      </label>
+                    </div>
+                  )}
+                />
+                <FormControl>
+                  <Input 
+                  placeholder={isNoNumber ? "Sem número" : "49"} {...field}
+                  disabled={isNoNumber}
+                  className={isNoNumber ? "bg-slate-50 italic text-slate-400" : ""}
+                  />
                 </FormControl>
                 <FormMessage />
               </FormItem>
             )}
           />
 
+          <FormField
+            control={form.control}
+            name="complement"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Complemento</FormLabel>
+                <FormControl>
+                  <Input placeholder="Apartamento 101" {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
           <FormField
             control={form.control}
             name="cep"

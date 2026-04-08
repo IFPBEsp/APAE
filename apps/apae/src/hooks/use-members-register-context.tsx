@@ -37,6 +37,9 @@ interface AddressData {
   city: string;
   district: string;
   street: string;
+  noNumber?: boolean;
+  number: string;
+  complement?: string;
 }
 
 interface AdditionalsData {
@@ -191,7 +194,7 @@ const initialState: MembersRegisterState = {
     nis: "",
     birth: { certificate: "", date: new Date(), place: "" },
   },
-  address: { cep: "", state: "", city: "", district: "", street: "" },
+  address: { cep: "", state: "", city: "", district: "", street: "", number: "", complement: "", noNumber: false },
   additionals: {
     id: undefined,
     diseases: "",
@@ -204,7 +207,7 @@ const initialState: MembersRegisterState = {
     householdIncome: "",
   },
   guardian: {
-    address: { cep: "", state: "", city: "", district: "", street: "" },
+    address: { cep: "", state: "", city: "", district: "", street: "", number: "", complement: "", noNumber: false },
     contact: "",
     kinship: "",
     name: "",
@@ -276,7 +279,8 @@ export function MembersRegisterProvider({
       const formatDate = (date: any) => {
         if (!date) return null;
         const d = new Date(date);
-        return isNaN(d.getTime()) ? null : d.toISOString().split("T")[0];
+        if (isNaN(d.getTime())) return null;
+        return d.toLocaleDateString('en-CA');
       };
 
       const parseIncome = (val: string) => {
@@ -308,8 +312,8 @@ export function MembersRegisterProvider({
           cep: address.cep || "00000-000",
           state: address.state || "Não informado",
           neighborhood: address.district || "Não informado",
-          street: address.street.split(",")[0].trim() || "Não informado",
-          number: address.street.split(",")[1]?.trim() || "S/N",
+          street: address.street || "Não informado",
+          number: address.number || "S/N",
           complement: "",
         },
         guardian: {
@@ -321,8 +325,8 @@ export function MembersRegisterProvider({
             cep: guardian.address.cep || "00000-000",
             state: guardian.address.state || "Não informado",
             neighborhood: guardian.address.district || "Não informado",
-            street: guardian.address.street.split(",")[0].trim() || "Não informado",
-            number: guardian.address.street.split(",")[1]?.trim() || "S/N",
+            street: guardian.address.street || "Não informado",
+            number: guardian.address.number || "S/N",
             complement: "",
           },
         },
