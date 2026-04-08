@@ -1,6 +1,10 @@
 import { useState } from "react";
 import { updateProfissional } from "@/services/profissional-service";
 
+type ApiResponse = {
+  message?: string;
+};
+
 export function useUpdateProfissional() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -15,18 +19,22 @@ export function useUpdateProfissional() {
       const response = await updateProfissional(id, data);
 
       const contentType = response.headers.get("content-type");
-      const body = contentType?.includes("application/json")
+      const body: ApiResponse = contentType?.includes("application/json")
         ? await response.json().catch(() => ({}))
         : {};
 
       if (!response.ok) {
-        throw new Error((body as any)?.message || "Erro ao atualizar profissional");
+        throw new Error(body.message || "Erro ao atualizar profissional");
       }
 
       setSuccess(true);
       return true;
-    } catch (err: any) {
-      setError(err.message || "Erro inesperado");
+    } catch (err: unknown) {
+      if (err instanceof Error) {
+        setError(err.message);
+      } else {
+        setError("Erro inesperado");
+      }
       return false;
     } finally {
       setLoading(false);

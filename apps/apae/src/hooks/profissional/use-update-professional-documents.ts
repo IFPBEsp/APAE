@@ -3,6 +3,10 @@
 import { useState } from "react";
 import { updateProfessionalDocuments } from "@/services/profissional-service";
 
+type ApiError = {
+  message?: string;
+};
+
 export function useUpdateProfessionalDocuments() {
   const [loadingDocs, setLoadingDocs] = useState(false);
   const [errorDocs, setErrorDocs] = useState<string | null>(null);
@@ -17,7 +21,7 @@ export function useUpdateProfessionalDocuments() {
       const response = await updateProfessionalDocuments(id, formData);
 
       const contentType = response.headers.get("content-type");
-      const data =
+      const data: ApiError =
         contentType?.includes("application/json")
           ? await response.json().catch(() => ({}))
           : {};
