@@ -3,7 +3,7 @@ import { createBaseApi } from "@/lib/axios";
 import { AxiosError } from "axios";
 
 export async function GET(
-  req: Request,
+  _req: Request,
   { params }: { params: { id: string } }
 ) {
   try {
@@ -36,7 +36,7 @@ export async function GET(
 }
 
 export async function DELETE(
-  req: Request,
+  _req: Request,
   { params }: { params: { id: string } }
 ) {
   try {
