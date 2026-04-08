@@ -28,8 +28,9 @@ export async function GET(
     });
 
     return NextResponse.json(response.data);
-  } catch (error: any) {
-    console.error("Erro na API:", error?.response?.data || error);
+  } catch (error) {
+    const axiosError = error as { response?: { data?: unknown } };
+    console.error("Erro na API:", axiosError?.response?.data || error);
     return NextResponse.json(
       { error: "Erro ao buscar documentos" },
       { status: 500 }

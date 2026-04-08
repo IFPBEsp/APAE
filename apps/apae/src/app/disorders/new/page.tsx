@@ -35,8 +35,9 @@ export default function NewTranstornoPage() {
       toast.success("Transtorno criado com sucesso!");
       router.push("/disorders");
       router.refresh();
-    } catch (error: any) {
-      toast.error(error.message);
+    } catch (error: unknown) {
+      const errorMessage = error instanceof Error ? error.message : "Erro desconhecido";
+      toast.error(errorMessage);
     }
   };
 

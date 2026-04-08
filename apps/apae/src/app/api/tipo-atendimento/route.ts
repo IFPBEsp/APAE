@@ -22,10 +22,11 @@ export async function POST(request: Request) {
     const { data } = await api.post("/service-areas", validation.data);
 
     return NextResponse.json(data);
-  } catch (error: any) {
+  } catch (error) {
+    const err = error as { response?: { data?: unknown; status?: number }; message?: string };
     return new NextResponse(
-      JSON.stringify(error.response?.data || { message: error.message }),
-      { status: error.response?.status || 500 }
+      JSON.stringify(err.response?.data || { message: err.message || "Erro desconhecido" }),
+      { status: err.response?.status || 500 }
     );
   }
 }
@@ -35,10 +36,11 @@ export async function GET() {
     const api = await createBaseApi();
     const { data } = await api.get("/service-areas");
     return NextResponse.json(data);
-  } catch (error: any) {
+  } catch (error) {
+    const err = error as { response?: { data?: unknown; status?: number }; message?: string };
     return new NextResponse(
-      JSON.stringify(error.response?.data || { message: error.message }),
-      { status: error.response?.status || 500 }
+      JSON.stringify(err.response?.data || { message: err.message || "Erro desconhecido" }),
+      { status: err.response?.status || 500 }
     );
   }
 }

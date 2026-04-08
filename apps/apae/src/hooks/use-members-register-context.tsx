@@ -100,7 +100,7 @@ interface MembersRegisterContextData {
     setStep: (step: MembersRegisterStep) => void;
     loadAllData: (data: MembersRegisterState) => void;
   };
-  register: (id?: string) => Promise<{ status: number; data: any }>;
+  register: (id?: string) => Promise<{ status: number; data: unknown }>;
 }
 
 type MembersRegisterAction =
@@ -273,9 +273,9 @@ export function MembersRegisterProvider({
       const { personal, address, additionals, guardian, kinships, profile } =
         state;
 
-      const formatDate = (date: any) => {
+      const formatDate = (date: Date | string | null | undefined) => {
         if (!date) return null;
-        const d = new Date(date);
+        const d = date instanceof Date ? date : new Date(date);
         return isNaN(d.getTime()) ? null : d.toISOString().split("T")[0];
       };
 
@@ -285,7 +285,8 @@ export function MembersRegisterProvider({
         return isNaN(num) ? 0.0 : num;
       };
 
-      const patient: any = {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const patient: Record<string, unknown> = {
         fullName: personal.name || "Não informado",
         nationality: personal.birth.place || "Brasileiro",
         birthDate: formatDate(personal.birth.date),

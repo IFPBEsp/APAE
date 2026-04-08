@@ -28,6 +28,7 @@ import { useForm } from "react-hook-form";
 import { useState, useEffect } from "react";
 import { usePathname } from "next/navigation"; 
 import { handleBackendValidationErrors } from "@/utils/form-errors";
+import { EditPersonalType } from "@/schemas/edit-member-schemas";
 
 import { DoubleColumn, FormButton, MembersRegisterForm } from "../form";
 
@@ -43,9 +44,9 @@ export default function MembersRegisterPersonalPage() {
   const isEditing = pathname.includes("/edit");
   const currentSchema = isEditing ? EditPersonal : Personal;
 
-  const form = useForm<any>({
+  const form = useForm<EditPersonalType>({
     mode: "onBlur",
-    resolver: zodResolver(currentSchema), 
+    resolver: zodResolver(currentSchema),
     defaultValues: personal,
   });
 
@@ -58,16 +59,17 @@ export default function MembersRegisterPersonalPage() {
     }
   }, [personal, form, isInitialized]);
 
-  const onSubmit = async (values: any) => {
+  const onSubmit = async (values: EditPersonalType) => {
     setIsLoading(true);
     try {
       setPersonalData(values);
 
       setStep(MembersRegisterStep.KINSHIPS);
 
-    } catch (error: any) {
-      if (error.response?.data) {
-        handleBackendValidationErrors(error.response.data, form.setError);
+    } catch (error: unknown) {
+      const apiError = error as { response?: { data?: unknown } };
+      if (apiError.response?.data) {
+        handleBackendValidationErrors(apiError.response.data, form.setError);
       }
     } finally {
       setIsLoading(false);

@@ -55,9 +55,10 @@ export default function MembersRegisterKinshipsPage() {
     try {
       setKinshipsData(values.kinships);
       setStep(MembersRegisterStep.ADDRESS);
-    } catch (error: any) {
-      if (error.response?.data) {
-        handleBackendValidationErrors(error.response.data, form.setError);
+    } catch (error: unknown) {
+      const apiError = error as { response?: { data?: unknown } };
+      if (apiError.response?.data) {
+        handleBackendValidationErrors(apiError.response.data, form.setError);
       }
     } finally {
       setIsLoading(false);

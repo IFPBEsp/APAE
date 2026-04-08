@@ -12,7 +12,7 @@ interface PatientCardProps {
     patient: PatientCardData;
 }
 
-const getStatus = (patient: any) => {
+const getStatus = (patient: PatientCardData) => {
     if (patient.isDeleted) return "Inativo";
     if (patient.isStudent) return "Aluno";
     return "Paciente";

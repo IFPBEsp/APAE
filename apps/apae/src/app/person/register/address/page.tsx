@@ -21,6 +21,7 @@ import { useForm } from "react-hook-form";
 import { useState, useEffect } from "react";
 import { usePathname } from "next/navigation"; 
 import { handleBackendValidationErrors } from "@/utils/form-errors";
+import { EditAddressType } from "@/schemas/edit-member-schemas";
 
 import { DoubleColumn, FormButton, MembersRegisterForm } from "../form";
 
@@ -37,7 +38,7 @@ export default function MembersRegisterAddressPage() {
   const isEditing = pathname.includes("/edit");
   const currentSchema = isEditing ? EditAddress : Address;
 
-  const form = useForm<any>({
+  const form = useForm<EditAddressType>({
     mode: "onBlur",
     resolver: zodResolver(currentSchema),
     defaultValues: address,
@@ -53,18 +54,19 @@ export default function MembersRegisterAddressPage() {
     }
   }, [address, form, isEditing, isInitialized]);
 
-  const onSubmit = async (values: any) => {
+  const onSubmit = async (values: EditAddressType) => {
     setIsLoading(true);
     try {
       setAddressData(values);
         if (isEditing) {
-        setStep(MembersRegisterStep.GUARDIAN); 
+        setStep(MembersRegisterStep.GUARDIAN);
       } else {
         setStep(MembersRegisterStep.ADDITIONALS);
       }
-    } catch (error: any) {
-      if (error.response?.data) {
-        handleBackendValidationErrors(error.response.data, form.setError);
+    } catch (error: unknown) {
+      const apiError = error as { response?: { data?: unknown } };
+      if (apiError.response?.data) {
+        handleBackendValidationErrors(apiError.response.data, form.setError);
       }
     } finally {
       setIsLoading(false);

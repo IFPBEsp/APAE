@@ -46,11 +46,13 @@ import { formatCurrency } from "@/lib/formats";
 import { useCreateServiceArea } from "@/hooks/service-area/use-create-service-area";
 import { useFetchServiceAreas } from "@/hooks/service-area/use-fetch-service-areas";
 import { CreateCare } from "@/schemas/care-schemas";
+import { EditAdditionalsType } from "@/schemas/edit-member-schemas";
+import { ServiceArea } from "@/types/service-area";
 
 type DialogProps = Readonly<{
   open: boolean;
   onOpenChange: (value: boolean) => void;
-  onSuccess?: (name: string) => void; 
+  onSuccess?: (name: string) => void;
 }>;
 
 function CreateVaccineDialog({ open, onOpenChange, onSuccess }: DialogProps) {
@@ -199,7 +201,7 @@ export default function MembersRegisterAdditionalsPage() {
   const isEditing = pathname.includes("/edit");
   const currentSchema = isEditing ? EditAdditionals : Additionals;
 
-  const form = useForm<any>({
+  const form = useForm<EditAdditionalsType>({
     mode: "onBlur",
     resolver: zodResolver(currentSchema),
     defaultValues: additionals,
@@ -215,14 +217,15 @@ export default function MembersRegisterAdditionalsPage() {
     }
   }, [additionals, form, isEditing, isInitialized]);
 
-  const onSubmit = async (values: any) => {
+  const onSubmit = async (values: EditAdditionalsType) => {
     setIsLoading(true);
     try {
       setAdditionalsData(values);
       setStep(MembersRegisterStep.GUARDIAN);
-    } catch (error: any) {
-      if (error.response?.data) {
-        handleBackendValidationErrors(error.response.data, form.setError);
+    } catch (error: unknown) {
+      const apiError = error as { response?: { data?: unknown } };
+      if (apiError.response?.data) {
+        handleBackendValidationErrors(apiError.response.data, form.setError);
       }
     } finally {
       setIsLoading(false);
@@ -425,8 +428,8 @@ export default function MembersRegisterAdditionalsPage() {
                       defaultValue={field.value || []}
                       value={field.value || []}
                       options={[
-                        ...cares.map((care: any) => ({ label: care.area, value: care.area })),
-                        ...(field.value || []).filter((val: string) => !cares.some((c: any) => c.area === val))
+                        ...cares.map((care: ServiceArea) => ({ label: care.area || "", value: care.area || "" })),
+                        ...(field.value || []).filter((val: string) => !cares.some((c: ServiceArea) => c.area === val))
                           .map((val: string) => ({ label: val, value: val }))
                       ]}
                       onValueChange={field.onChange}

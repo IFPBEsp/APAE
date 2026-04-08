@@ -20,10 +20,10 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import React, { useState, useEffect } from "react"; 
 import { useForm } from "react-hook-form";
 import { handleBackendValidationErrors } from "@/utils/form-errors";
-import { usePathname } from "next/navigation"; 
+import { usePathname } from "next/navigation";
 import { formatPhone } from "@/lib/formats";
+import { EditGuardianType } from "@/schemas/edit-member-schemas";
 
-import z from "zod";
 import { DoubleColumn, FormButton, MembersRegisterForm } from "../form";
 
 export default function MembersRegisterGuardianPage() {
@@ -38,9 +38,9 @@ export default function MembersRegisterGuardianPage() {
   const isEditing = pathname.includes("/edit");
   const currentSchema = isEditing ? EditGuardian : Guardian; 
 
-  const form = useForm<any>({ 
+  const form = useForm<EditGuardianType>({
     mode: "onBlur",
-    resolver: zodResolver(currentSchema), 
+    resolver: zodResolver(currentSchema),
     defaultValues: guardian,
   });
 
@@ -53,14 +53,15 @@ export default function MembersRegisterGuardianPage() {
     }
   }, [isEditing, guardian, form, isInitialized]);
 
-  const onSubmit = async (values: any) => {
+  const onSubmit = async (values: EditGuardianType) => {
     setIsLoading(true);
     try {
       setGuardianData(values);
       setStep(MembersRegisterStep.PROFILE);
-    } catch (error: any) {
-      if (error.response?.data) {
-        handleBackendValidationErrors(error.response.data, form.setError);
+    } catch (error: unknown) {
+      const apiError = error as { response?: { data?: unknown } };
+      if (apiError.response?.data) {
+        handleBackendValidationErrors(apiError.response.data, form.setError);
       }
     } finally {
       setIsLoading(false);

@@ -22,8 +22,10 @@ import { handleBackendValidationErrors } from "@/utils/form-errors";
 import z from "zod";
 import { FileInputButton, FormButton, MembersRegisterForm } from "../form";
 import { Checkbox } from "@/components/ui/checkbox";
-import { useRouter, useParams, usePathname } from "next/navigation"; 
+import { useRouter, useParams, usePathname } from "next/navigation";
 import { toast } from "react-toastify";
+import { EditProfileType } from "@/schemas/edit-member-schemas";
+import { ApiError } from "@/types/patient";
 
 export default function MembersRegisterProfilePage() {
   const {
@@ -43,7 +45,7 @@ export default function MembersRegisterProfilePage() {
 
   const currentSchema = isEditing ? EditProfile : Profile;
 
-  const form = useForm<any>({
+  const form = useForm<EditProfileType>({
     mode: "onBlur",
     resolver: zodResolver(currentSchema),
     defaultValues: profile,
@@ -91,7 +93,7 @@ export default function MembersRegisterProfilePage() {
             toast.error(displayMsg);
             setStep(MembersRegisterStep.PERSONAL);
 
-            form.setError(targetField as any, {
+            form.setError(targetField as "role" | "photo", {
               type: "manual",
               message: displayMsg,
             });

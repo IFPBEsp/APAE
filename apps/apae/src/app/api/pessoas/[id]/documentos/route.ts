@@ -44,7 +44,7 @@ export async function GET(
 
   try {
     const api = await createBaseApi();
-    const config: any = {};
+    const config: { params?: { year: number } } = {};
     if (year) {
       config.params = { year: parseInt(year) };
     }
@@ -110,7 +110,7 @@ export async function POST(
     return NextResponse.json(response.data, { status: 201 });
 
 
-  } catch (error: any) {
+  } catch (error) {
     const err = error as AxiosError;
     const status = err.response?.status || 500;
     const errorMsg = err.response?.data ? JSON.stringify(err.response.data) : err.message;

@@ -11,8 +11,9 @@ export async function GET(request: Request, { params }: Params) {
         const api = await createBaseApi();
         const { data } = await api.get(`/vaccines/${id}`);
         return NextResponse.json(data);
-    } catch (error: any) {
-        return new NextResponse(JSON.stringify(error.response?.data), { status: 500 });
+    } catch (error) {
+        const axiosError = error as { response?: { data?: unknown } };
+        return new NextResponse(JSON.stringify(axiosError.response?.data), { status: 500 });
     }
 }
 
@@ -23,8 +24,9 @@ export async function PUT(request: Request, { params }: Params) {
         const api = await createBaseApi();
         const { data } = await api.put(`/vaccines/${id}`, body);
         return NextResponse.json(data);
-    } catch (error: any) {
-        return new NextResponse(JSON.stringify(error.response?.data), { status: 500 });
+    } catch (error) {
+        const axiosError = error as { response?: { data?: unknown } };
+        return new NextResponse(JSON.stringify(axiosError.response?.data), { status: 500 });
     }
 }
 
@@ -34,7 +36,8 @@ export async function DELETE(request: Request, { params }: Params) {
         const api = await createBaseApi();
         const { data } = await api.delete(`/vaccines/${id}`);
         return NextResponse.json(data);
-    } catch (error: any) {
-        return new NextResponse(JSON.stringify(error.response?.data), { status: 500 });
+    } catch (error) {
+        const axiosError = error as { response?: { data?: unknown } };
+        return new NextResponse(JSON.stringify(axiosError.response?.data), { status: 500 });
     }
 }

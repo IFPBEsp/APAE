@@ -12,6 +12,7 @@ import { toast } from "react-toastify";
 import { Loader2, ArrowLeft, SquarePen, Plus } from "lucide-react"; 
 import AnnualRegistryEditModal from "@/components/AnnualRegistryEditModal";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import { Patient, AnnualRegistry, Parent, Vaccine, Disorder, ServiceArea } from "@/types/patient";
 
 interface InfoRowProps {
   label: string;
@@ -52,8 +53,8 @@ export default function PersonDetailsPage() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [modalMode, setModalMode] = useState<"create" | "edit">("edit");
 
-  const [pessoa, setPessoa] = useState<any>(null);
-  const [registroAnual, setRegistroAnual] = useState<any>(null);
+  const [pessoa, setPessoa] = useState<Patient | null>(null);
+  const [registroAnual, setRegistroAnual] = useState<AnnualRegistry | null>(null);
   
   const [existingYears, setExistingYears] = useState<string[]>([]);
   const [selectedYear, setSelectedYear] = useState<string>(new Date().getFullYear().toString());
@@ -68,9 +69,10 @@ export default function PersonDetailsPage() {
       if (!response.ok) throw new Error("Falha ao buscar dados do paciente.");
       const data = await response.json();
       setPessoa(data);
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error(err);
-      toast.error(err.message);
+      const errorMessage = err instanceof Error ? err.message : "Erro ao buscar dados";
+      toast.error(errorMessage);
       router.push("/visualization-patients");
     } finally {
       if (!silent) setLoadingPessoa(false); 
@@ -252,7 +254,7 @@ export default function PersonDetailsPage() {
                 <InfoRow label="Endereço" value={`${pessoa.guardian.address?.street ?? ""}, ${pessoa.guardian.address?.number ?? ""}`} />
               </div>
             )}
-            {pessoa.parents?.map((parent: any) => (
+            {pessoa.parents?.map((parent: Parent) => (
               <div key={parent.id} className="mb-2 p-2 border-t border-gray-200">
                 <p className="font-bold text-base">Parentes</p>
                 <InfoRow label="Nome" value={parent.name} />
@@ -318,7 +320,7 @@ export default function PersonDetailsPage() {
           
           <CardContent>
             <InfoRow label="Alergias" value={pessoa.allergies} />
-            <InfoRow label="Vacinas" value={pessoa.vaccineNames?.map((v: any) => v.name).join(", ")} />
+            <InfoRow label="Vacinas" value={pessoa.vaccineNames?.map((v: Vaccine) => v.name).join(", ")} />
             
             <h3 className="font-bold text-base mt-4 pt-4 border-t text-[#0D4F97]">Registro Anual ({selectedYear})</h3>
 
@@ -328,10 +330,10 @@ export default function PersonDetailsPage() {
               <div className="mt-2 animate-in fade-in slide-in-from-bottom-2">
                 <InfoRow label="Recebe BPC?" value={registroAnual.bpc} />
                 <InfoRow label="Renda Familiar" value={registroAnual.familyIncome} />
-                <InfoRow label="Tipo de Atendimento" value={registroAnual.serviceAreas?.map((atendimento: any) => atendimento.area).join(", ")} />
+                <InfoRow label="Tipo de Atendimento" value={registroAnual.serviceAreas?.map((atendimento: ServiceArea) => atendimento.area || atendimento.name).join(", ")} />
                 <InfoRow label="Doenças" value={registroAnual.diseases} />
                 <InfoRow label="Medicamentos Contínuos" value={registroAnual.continuousMedication} />
-                <InfoRow label="Transtornos" value={registroAnual.disorders?.map((d: any) => d.name).join(", ")} />
+                <InfoRow label="Transtornos" value={registroAnual.disorders?.map((d: Disorder) => d.name).join(", ")} />
               </div>
             ) : (
               <div className="text-center py-6 bg-slate-50 rounded-lg mt-2 border border-dashed border-slate-200">
