@@ -13,8 +13,10 @@ export async function GET(request: Request, { params }: Params) {
         const { data } = await api.get(`/vaccines/${id}`);
         return NextResponse.json(data);
     } catch (error) {
-        const err = error as AxiosError;
-        return new NextResponse(JSON.stringify(err.response?.data), { status: 500 });
+        if (error instanceof AxiosError) {
+            return new NextResponse(JSON.stringify(error.response?.data || { message: error.message }), { status: error.response?.status || 500 });
+        }
+        return new NextResponse(JSON.stringify({ message: "Erro ao buscar dados." }), { status: 500 });
     }
 }
 
@@ -26,8 +28,10 @@ export async function PUT(request: Request, { params }: Params) {
         const { data } = await api.put(`/vaccines/${id}`, body);
         return NextResponse.json(data);
     } catch (error) {
-        const err = error as AxiosError;
-        return new NextResponse(JSON.stringify(err.response?.data), { status: 500 });
+        if (error instanceof AxiosError) {
+            return new NextResponse(JSON.stringify(error.response?.data || { message: error.message }), { status: error.response?.status || 500 });
+        }
+        return new NextResponse(JSON.stringify({ message: "Erro ao atualizar dados." }), { status: 500 });
     }
 }
 
@@ -38,7 +42,9 @@ export async function DELETE(request: Request, { params }: Params) {
         const { data } = await api.delete(`/vaccines/${id}`);
         return NextResponse.json(data);
     } catch (error) {
-        const err = error as AxiosError;
-        return new NextResponse(JSON.stringify(err.response?.data), { status: 500 });
+        if (error instanceof AxiosError) {
+            return new NextResponse(JSON.stringify(error.response?.data || { message: error.message }), { status: error.response?.status || 500 });
+        }
+        return new NextResponse(JSON.stringify({ message: "Erro ao excluir dados." }), { status: 500 });
     }
 }

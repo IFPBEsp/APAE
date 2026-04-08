@@ -10,14 +10,16 @@ export async function POST(request: Request) {
         
         return NextResponse.json(data, { status: 201 });
     } catch (error) {
-        const err = error as AxiosError;
-        if (err.response?.status === 409) {
-             return NextResponse.json({ message: "Vacina já existe" }, { status: 200 });
+        if(error instanceof AxiosError) {
+            if (error.response?.status === 409) {
+             return new NextResponse(JSON.stringify({ message: "Vacina já existe" }), { status: 200 });
+            }
+            return new NextResponse(
+                JSON.stringify(error.response?.data || { message: error.message }), { status: error.response?.status || 500 }
+            );
         }
-        return new NextResponse(
-            JSON.stringify(err.response?.data || { message: err.message }),
-            { status: err.response?.status || 500 },
-        );
+        
+        return new NextResponse(JSON.stringify({ message: "Erro inesperado ao criar vacina" }), { status: 500 });
     }
 }
 
@@ -27,8 +29,9 @@ export async function GET() {
         const { data } = await api.get("/vaccines");
         return NextResponse.json(data);
     } catch (error) {
-        const err = error as AxiosError;
-        console.error("Erro ao buscar vacinas:", err.message);
-        return NextResponse.json([], { status: 200 });
+        const message = error instanceof Error ? error.message : "Erro desconhecido";
+        console.error("Erro ao buscar vacinas:", message);
+        return NextResponse.json({ message: "Erro ao buscar a lista de vacinas." }, { status: 500 }
+        );
     }
 }

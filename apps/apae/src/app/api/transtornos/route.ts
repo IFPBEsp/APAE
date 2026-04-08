@@ -24,20 +24,22 @@ export async function POST(request: Request) {
 
     return NextResponse.json(data, { status: 201 });
 
-  } catch (error) { 
-    const err = error as AxiosError;
-    
-    if (err.response?.status === 409) {
-        return NextResponse.json(
-            { message: "Transtorno já existente, prosseguindo." }, 
-            { status: 200 }
+  } catch (error) {    
+    if (error instanceof AxiosError) {
+      if (error.response?.status === 409) {
+        return new NextResponse(
+          JSON.stringify({ message: "Transtorno já existente, prosseguindo." }), 
+          { status: 200 }
         );
-    }
+      }
 
-    return new NextResponse(
-      JSON.stringify(err.response?.data || { message: err.message }),
-      { status: err.response?.status || 500 }
-    );
+      return new NextResponse(
+        JSON.stringify(error.response?.data || { message: error.message }),
+        { status: error.response?.status || 500 } 
+      );
+    }
+    
+    return new NextResponse(JSON.stringify({ message: "Erro inesperado ao criar dados" }), { status: 500 });
   }
 }
 
@@ -47,10 +49,10 @@ export async function GET() {
     const { data } = await api.get("/disorders");
     return NextResponse.json(data);
   } catch (error) {
-    const err = error as AxiosError;
-    return new NextResponse(
-      JSON.stringify(err.response?.data || { message: err.message }),
-      { status: err.response?.status || 500 }
-    );
+    if (error instanceof AxiosError) {
+      return new NextResponse(JSON.stringify(error.response?.data || { message: error.message }), { status: error.response?.status || 500 });
+    }
+
+    return new NextResponse(JSON.stringify({ message: "Erro ao buscar transtornos." }), { status: 500 });
   }
 }
