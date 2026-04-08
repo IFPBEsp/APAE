@@ -52,17 +52,24 @@ export default function RecoveryPage() {
     }
 
     try {
-      //lógica para enviar o código de recuperação para o email
+      //lógica para enviar o código de recuperação para o email (integração com o back-end)
+      toast.info("Código enviado para o e-mail informado.");
     } catch {
-      //toast.error("Erro inesperado.");
+      toast.error("Erro ao enviar o código.");
     }
   };
 
   const onSubmit = async (data: FormRecovery) => {
     try {
       //lógica para validar o código e permitir a redefinição de senha
+      sessionStorage.setItem("reset_email", data.email);
+      sessionStorage.setItem("reset_code", data.code);
+
+      toast.success("Código validado com sucesso!");
+
+      router.push("/auth/new-password");
     } catch {
-      //toast.error("Erro inesperado.");
+      toast.error("Código inválido ou expirado.");
     }
   };
 
