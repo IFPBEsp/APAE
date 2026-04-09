@@ -32,7 +32,7 @@ public class PatientDocumentsControllerImpl implements PatientDocumentsControlle
     }
 
     @Override
-    public ResponseEntity<Void> uploadDocument(UUID id, MultipartFile file, String category, String type, @RequestParam(required = false) Integer year) {
+    public ResponseEntity<DocumentDTO> uploadDocument(UUID id, MultipartFile file, String category, String type, @RequestParam(required = false) Integer year) {
         try {
             DocumentCategory docCategory = DocumentCategory.valueOf(category);
             DocumentType docType = DocumentType.valueOf(type);
@@ -47,9 +47,9 @@ public class PatientDocumentsControllerImpl implements PatientDocumentsControlle
                     .stream(file.getInputStream())
                     .build();
 
-            this.documentService.putDocument(args);
+            DocumentDTO documentDTO = this.documentService.putDocument(args);
 
-            return ResponseEntity.status(HttpStatus.CREATED).build();
+            return ResponseEntity.status(HttpStatus.CREATED).body(documentDTO);
 
         } catch (IllegalArgumentException e) {
             throw new RuntimeException("Categoria ou Tipo de documento inválido: " + category + " / " + type, e);
@@ -110,5 +110,37 @@ public class PatientDocumentsControllerImpl implements PatientDocumentsControlle
     @Override
     public ResponseEntity<List<DocumentWithUrlResponseDTO>> findSchoolDocuments(UUID id, @RequestParam(required = false) Integer year) {
         return ResponseEntity.ok(findDocumentsByCategory(id, DocumentCategory.SCHOOL, year != null ? Year.of(year) : null));
+    }
+
+    @Override
+    public ResponseEntity<DocumentWithUrlResponseDTO> findDocumentByName(UUID id, String documentName) {
+        try {
+
+            String url = this.documentService.getPresignedDocumentUrl(
+                    GetPresignedDocumentUrlArgsDTO.builder()
+                            .name(documentName)
+                            .owner(id.toString())
+                            .category(DocumentCategory.ABSENCE)
+                            .year(Year.now())
+                            .type(DocumentType.ATTACHMENTANY)
+                            .expiry(1, TimeUnit.HOURS)
+                            .build()
+            );
+
+            return ResponseEntity.ok(
+                    new DocumentWithUrlResponseDTO(
+                            null,
+                            documentName,
+                            DocumentCategory.ABSENCE,
+                            DocumentType.ATTACHMENTANY,
+                            id.toString(),
+                            Year.now(),
+                            url
+                    )
+            );
+
+        } catch (Exception e) {
+            throw new RuntimeException("Erro ao gerar URL do documento", e);
+        }
     }
 }

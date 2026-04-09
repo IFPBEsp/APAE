@@ -123,6 +123,23 @@ export default function AbsenceDetails() {
     );
   }
 
+  const handleDownload = async (patientId: string, documentName: string) => {
+  try {
+    const res = await fetch(
+      `/api/pessoas/${patientId}/documentos/download?name=${encodeURIComponent(documentName)}`
+    );
+
+    if (!res.ok) throw new Error("Erro ao buscar URL");
+
+    const data = await res.json();
+
+    window.open(data.url, "_blank");
+
+  } catch (error) {
+    console.error("Erro ao baixar documento:", error);
+  }
+};
+
   return (
     <div className="min-h-screen w-full text-sm overflow-x-hidden">
       <main className="flex-1 p-3 sm:p-6 w-full max-w-none">
@@ -273,22 +290,38 @@ export default function AbsenceDetails() {
                                       (absence, idx) => (
                                         <div
                                           key={absence.id}
-                                          className="flex items-center justify-between p-3 bg-white rounded border"
+                                          className="flex flex-col md:flex-row md:items-start md:justify-between gap-4 p-3 bg-white rounded border"
                                         >
-                                          <div className="flex items-center gap-4">
-                                            <Calendar className="h-4 w-4 text-red-500" />
-                                            <span className="font-medium">
-                                              {formatDate(absence.absenceDate)}
-                                            </span>
+                                        <div className="flex items-center gap-4">
+                                        <Calendar className="h-4 w-4 text-red-500" />
+                                          <span className="font-medium">
+                                            {formatDate(absence.absenceDate)}
+                                          </span>
+                                        </div>
+
+                                      <div className="flex items-center gap-2 flex-wrap">
+                                        {absence.justification && (
+                                          <div className="text-sm text-gray-600 max-w-md break-words whitespace-pre-wrap">
+                                            <span className="font-medium">Justificativa: </span>
+                                            {absence.justification}
                                           </div>
-                                          {absence.justification && (
-                                            <div className="text-sm text-gray-600 max-w-md">
-                                              <span className="font-medium">
-                                                Justificativa:{" "}
-                                              </span>
-                                              {absence.justification}
-                                            </div>
-                                          )}
+                                        )}
+
+                                        {absence.justificationDocumentId && (
+                                          <Button
+                                            size="sm"
+                                            variant="outline"
+                                            onClick={() =>
+                                              handleDownload(
+                                                patientWithAbsence.patient.id!,
+                                                absence.justificationDocumentId
+                                              )
+                                            }
+                                          >
+                                            Baixar documento
+                                          </Button>
+                                        )}
+                                      </div>
                                         </div>
                                       )
                                     )}

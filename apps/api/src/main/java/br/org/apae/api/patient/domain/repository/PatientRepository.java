@@ -16,4 +16,9 @@ public interface PatientRepository extends JpaRepository<Patient, UUID>, JpaSpec
     @Query("SELECT DISTINCT p.address.city FROM Patient p WHERE p.address.city IS NOT NULL AND p.address.city <> '' ORDER BY p.address.city ASC")
     List<String> findDistinctCities();
 
+    @Query("SELECT COUNT(p) > 0 FROM Patient p JOIN p.vaccines v WHERE v.id = :vaccineId")
+    boolean isVaccineInUse(UUID vaccineId);
+
+    @Query("SELECT DISTINCT v.id FROM Patient p JOIN p.vaccines v WHERE p.id = :patientId")
+    List<UUID> findVaccineIdsByPatientId(UUID patientId);
 }

@@ -16,6 +16,9 @@ public record AbsenceResponseDTO(
         UUID professionalId,
         LocalDate absenceDate,
         String justification,
-        Boolean notified
+        Boolean notified,
+        Boolean isJustified,
+        @Schema(description = "ID do documento de justificativa associado a falta.")
+        String justificationDocumentId
 ) {
 }

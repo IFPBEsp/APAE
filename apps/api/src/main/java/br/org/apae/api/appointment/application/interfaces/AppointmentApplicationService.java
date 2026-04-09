@@ -39,7 +39,7 @@ public interface AppointmentApplicationService {
           UUID patientId, LocalDate start, LocalDate end, Pageable pageable);
 
   List<GeneratedAppointmentResponseDTO> generateAppointments(
-          UUID annualRegistrationId, LocalDate start, LocalDate end);
+          UUID appointmentId, LocalDate start, LocalDate end);
 
   Page<TodayAppointmentsResponseDTO> listAppointmentForToday(LocalDate date, Pageable pageable);
 

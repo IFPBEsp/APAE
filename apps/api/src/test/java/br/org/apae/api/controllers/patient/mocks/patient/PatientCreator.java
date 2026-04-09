@@ -123,7 +123,7 @@ public class PatientCreator {
                 UUID.randomUUID(), "Pai", "123456", "000.000.000-00",
                 "Autônomo", "PAI", true);
 
-        VaccineResponseDTO vaccine = new VaccineResponseDTO(UUID.randomUUID(), "BCG");
+        VaccineResponseDTO vaccine = new VaccineResponseDTO(UUID.randomUUID(), "BCG", false);
 
         return new PatientResponseDTO(
                 id,
