@@ -110,7 +110,11 @@ useEffect(() => {
         .toLowerCase()
         .includes(search);
 
-    return matchesDate && matchesSearch;
+    const matchesArea = selectedArea
+      ? appointment.professional.healthSector === selectedArea
+        : true;
+
+    return matchesDate && matchesSearch && matchesArea;
   });
 
   const clearFilter = () => {
