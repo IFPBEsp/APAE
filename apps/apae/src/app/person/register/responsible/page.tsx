@@ -14,7 +14,7 @@ import {
   useMembersRegisterContext,
 } from "@/hooks/use-members-register-context";
 import { formatCEP } from "@/lib/formats";
-import { Guardian } from "@/schemas/member-schemas";
+import { Guardian, GuardianData } from "@/schemas/member-schemas";
 import { EditGuardian } from "@/schemas/edit-member-schemas";
 import { zodResolver } from "@hookform/resolvers/zod";
 import React, { useState, useEffect } from "react"; 
@@ -35,11 +35,11 @@ export default function MembersRegisterGuardianPage() {
 
   const pathname = usePathname();
   const isEditing = pathname.includes("/edit");
-  const currentSchema = isEditing ? EditGuardian : Guardian; 
+  const currentSchema = isEditing ? EditGuardian : Guardian;
 
-  const form = useForm<any>({ 
+  const form = useForm<z.infer<typeof Guardian>>({
     mode: "onBlur",
-    resolver: zodResolver(currentSchema), 
+    resolver: zodResolver(currentSchema),
     defaultValues: guardian,
   });
 
@@ -52,14 +52,15 @@ export default function MembersRegisterGuardianPage() {
     }
   }, [isEditing, guardian, form, isInitialized]);
 
-  const onSubmit = async (values: any) => {
+  const onSubmit = async (values: z.infer<typeof Guardian>) => {
     setIsLoading(true);
     try {
-      setGuardianData(values);
+      setGuardianData(values as GuardianData);
       setStep(MembersRegisterStep.PROFILE);
-    } catch (error: any) {
-      if (error.response?.data) {
-        handleBackendValidationErrors(error.response.data, form.setError);
+    } catch (error: unknown) {
+      const err = error as { response?: { data?: Record<string, string[]> } };
+      if (err.response?.data) {
+        handleBackendValidationErrors(err.response.data, form.setError);
       }
     } finally {
       setIsLoading(false);

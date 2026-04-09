@@ -78,7 +78,7 @@ export enum MembersRegisterStep {
   PROFILE = "profile",
 }
 
-interface MembersRegisterState {
+export interface MembersRegisterState {
   personal: PersonalData;
   kinships: KinshipData[];
   address: AddressData;
@@ -100,7 +100,7 @@ interface MembersRegisterContextData {
     setStep: (step: MembersRegisterStep) => void;
     loadAllData: (data: MembersRegisterState) => void;
   };
-  register: (id?: string) => Promise<{ status: number; data: any }>;
+  register: (id?: string) => Promise<{ status: number; data: Record<string, unknown> }>;
 }
 
 type MembersRegisterAction =
@@ -273,19 +273,79 @@ export function MembersRegisterProvider({
       const { personal, address, additionals, guardian, kinships, profile } =
         state;
 
-      const formatDate = (date: any) => {
+      const formatDate = (date: Date | string | number | null | undefined) => {
         if (!date) return null;
         const d = new Date(date);
         return isNaN(d.getTime()) ? null : d.toISOString().split("T")[0];
       };
 
       const parseIncome = (val: string) => {
-        const clean = String(val).replace(/[^\d]/g, ""); 
-        const num = parseFloat(clean) * 0.01; 
+        const clean = String(val).replace(/[^\d]/g, "");
+        const num = parseFloat(clean) * 0.01;
         return isNaN(num) ? 0.0 : num;
       };
 
-      const patient: any = {
+      interface PatientPayload {
+        fullName: string;
+        nationality: string;
+        birthDate: string | null;
+        contact: string;
+        birthCertificateNumber: string;
+        registryOffice: string;
+        fls: string;
+        book: string;
+        rg: string;
+        issueDate: string | null;
+        issuingAgency: string;
+        cpf: string;
+        cns: string;
+        nis: string;
+        registrationDate: string | null;
+        allergies: string;
+        isStudent: boolean;
+        address: {
+          city: string;
+          cep: string;
+          state: string;
+          neighborhood: string;
+          street: string;
+          number: string;
+          complement: string;
+        };
+        guardian: {
+          name: string;
+          contact: string;
+          kinship: string;
+          address: {
+            city: string;
+            cep: string;
+            state: string;
+            neighborhood: string;
+            street: string;
+            number: string;
+            complement: string;
+          };
+        };
+        parents: {
+          name: string;
+          rg: string;
+          cpf: string;
+          profession: string;
+          isAlive: boolean;
+          kinship: string;
+        }[];
+        vaccineNames: { name: string }[];
+        annualRegistry?: {
+          bpc: boolean;
+          diseases: string;
+          serviceArea: { area: string }[];
+          familyIncome: number;
+          year: number;
+          disorders: { name: string }[];
+        };
+      }
+
+      const patient: PatientPayload = {
         fullName: personal.name || "Não informado",
         nationality: personal.birth.place || "Brasileiro",
         birthDate: formatDate(personal.birth.date),
