@@ -66,11 +66,10 @@ export const loginSchema = z.object({
 
 export const recoverySchema = z.object({
   email: z
-  .string()
-  .trim()
-  .min(1, "E-mail é obrigatório")
-  .email("Email inválido"),
-  code: z.string().min(4, "Código inválido"),
+    .string()
+    .trim()
+    .min(1, "E-mail é obrigatório")
+    .email("Email inválido"),
 });
 
 export type FormLogin = z.infer<typeof loginSchema>;
