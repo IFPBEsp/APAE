@@ -7,6 +7,7 @@ import jakarta.validation.constraints.NotBlank;
 public record JustifyAbsenceDTO(
         @NotBlank(message = "A justificativa é obrigatória.")
         @Schema(description = "Texto descrevendo o motivo da justificativa.")
-        String justification
+        String justification,
+        String justificationDocumentId
 ) {
 }

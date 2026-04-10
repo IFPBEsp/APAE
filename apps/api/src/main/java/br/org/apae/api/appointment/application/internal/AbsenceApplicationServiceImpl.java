@@ -74,6 +74,7 @@ public class AbsenceApplicationServiceImpl implements AbsenceApplicationService 
 
         absence.setIsJustified(true);
         absence.setJustification(dto.justification());
+        absence.setJustificationDocumentId(dto.justificationDocumentId());
     
         absence = absenceRepo.save(absence);
         return absenceMapper.toAbsenceResponse(absence);
