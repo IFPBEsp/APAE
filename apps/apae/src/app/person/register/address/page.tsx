@@ -71,6 +71,12 @@ export default function MembersRegisterAddressPage() {
     }
   };
 
+  useEffect(() => {
+    if (address.cep !== "") { 
+       form.reset(address);
+    }
+  }, [address, form]);
+
   return (
     <Form {...form}>
       <MembersRegisterForm

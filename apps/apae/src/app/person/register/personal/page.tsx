@@ -58,6 +58,12 @@ export default function MembersRegisterPersonalPage() {
     }
   }, [personal, form, isInitialized]);
 
+  useEffect(() => {
+    if (personal.name !== "") {
+      form.reset(personal);
+    }
+  }, [personal, form]);
+
   const onSubmit = async (values: any) => {
     setIsLoading(true);
     try {
