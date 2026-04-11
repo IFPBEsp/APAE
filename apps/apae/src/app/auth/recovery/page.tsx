@@ -119,9 +119,8 @@ export default function RecoveryPage() {
               type="submit"
               loading={form.formState.isSubmitting}
               disabled={form.formState.isSubmitting}
-              className="cursor-pointer w-full text-sm px-4 py-3 whitespace-nowrap"
             >
-              Enviar link de recuperação
+              Enviar
             </PrimaryButton>
 
             <button
