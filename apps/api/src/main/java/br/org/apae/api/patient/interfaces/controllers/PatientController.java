@@ -1,5 +1,6 @@
 package br.org.apae.api.patient.interfaces.controllers;
 
+import br.org.apae.api.common.dto.patient.response.patient.PatientWithAbsencesResponseDTO;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;
@@ -29,17 +30,17 @@ public interface PatientController {
 
         @Operation(summary = "Cadastrar um novo paciente", description = "Cria um novo paciente no sistema com todos os seus dados.")
         @ApiResponses(value = {
-                        @ApiResponse(responseCode = "201", description = "Paciente cadastrado com sucesso"),
-                        @ApiResponse(responseCode = "400", description = "Dados inválidos fornecidos")
+                @ApiResponse(responseCode = "201", description = "Paciente cadastrado com sucesso"),
+                @ApiResponse(responseCode = "400", description = "Dados inválidos fornecidos")
         })
         @PostMapping(consumes = { MediaType.MULTIPART_FORM_DATA_VALUE })
         ResponseEntity<PatientResponseDTO> createPatient(@RequestPart("patient") @Valid CreatePatientDTO patient,
-                        @ModelAttribute @Valid CreateDocumentsDTO documents);
+                                                         @ModelAttribute @Valid CreateDocumentsDTO documents);
 
         @Operation(summary = "Buscar paciente por ID", description = "Retorna os dados completos de um paciente específico pelo seu ID.")
         @ApiResponses(value = {
-                        @ApiResponse(responseCode = "200", description = "Paciente encontrado com sucesso"),
-                        @ApiResponse(responseCode = "404", description = "Paciente não encontrado")
+                @ApiResponse(responseCode = "200", description = "Paciente encontrado com sucesso"),
+                @ApiResponse(responseCode = "404", description = "Paciente não encontrado")
         })
         @GetMapping("/{id}")
         ResponseEntity<PatientResponseDTO> findById(@PathVariable UUID id);
@@ -71,17 +72,17 @@ public interface PatientController {
         })
         @PutMapping("/{id}")
         ResponseEntity<PatientResponseDTO> updatePatient(@PathVariable UUID id,
-                        @RequestBody @Valid UpdatePatientDTO updatePatientDTO);
+                                                         @RequestBody @Valid UpdatePatientDTO updatePatientDTO);
 
         @Operation(summary = "Atualizar foto de perfil do paciente")
         @ApiResponses(value = {
-                        @ApiResponse(responseCode = "200", description = "Foto atualizada com sucesso"),
-                        @ApiResponse(responseCode = "400", description = "Arquivo invalido"),
-                        @ApiResponse(responseCode = "404", description = "Paciente nao encontrado")
+                @ApiResponse(responseCode = "200", description = "Foto atualizada com sucesso"),
+                @ApiResponse(responseCode = "400", description = "Arquivo invalido"),
+                @ApiResponse(responseCode = "404", description = "Paciente nao encontrado")
         })
         @PutMapping(value = "/{id}/photo", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
         ResponseEntity<PatientResponseDTO> updatePatientPhoto(@PathVariable UUID id,
-                        @RequestPart("photo") org.springframework.web.multipart.MultipartFile photo);
+                                                              @RequestPart("photo") org.springframework.web.multipart.MultipartFile photo);
 
         @Operation(summary = "Excluir um paciente", description = "Remove um paciente do sistema a partir do seu ID.")
         @ApiResponses(value = {
@@ -90,6 +91,22 @@ public interface PatientController {
         })
         @PatchMapping("/{id}")
         ResponseEntity<Void> deletePatient(@PathVariable UUID id);
+
+        @Operation(
+                summary = "Obter pacientes com faltas",
+                description = "Retorna pacientes que possuem um número mínimo de faltas"
+        )
+        @ApiResponses(value = {
+                @ApiResponse(responseCode = "200", description = "Lista retornada com sucesso")
+        })
+        @GetMapping("/with-absences")
+        ResponseEntity<Page<PatientWithAbsencesResponseDTO>> findPatientsWithAbsences(
+                @Parameter(description = "Mínimo de faltas", in = ParameterIn.QUERY)
+                @RequestParam(defaultValue = "1") Integer minAbsences,
+
+                @Parameter(hidden = true)
+                Pageable pageable
+        );
 
         @Operation(summary = "Lista os tipos de atendimento para o filtro")
         @GetMapping("/filtros/tipos-atendimento")
