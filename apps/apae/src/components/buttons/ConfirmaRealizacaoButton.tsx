@@ -1,14 +1,11 @@
 'use client';
 
-import { Check, X } from 'lucide-react';
+import { Check } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import {
-  Agendamento,
-  getAgendamentoById,
-  saveAgendamentoRealizado,
+  markAsPerformed,
 } from '@/app/services/appointmentService';
 import { useRouter } from 'next/navigation';
-import { useEffect, useState } from 'react';
 import {
   Dialog,
   DialogClose,
@@ -21,22 +18,14 @@ import {
 } from '../ui/dialog';
 
 export default function ConfirmaRealizacaoButton({ id }: { id: string }) {
-  const [agendamento, setAgendamento] = useState<Agendamento>();
   const router = useRouter();
 
-  useEffect(() => {
-    const fetchAgendamento = async () => {
-      const agendamentoAConfirmarRealizacao = await getAgendamentoById(id);
-      setAgendamento(agendamentoAConfirmarRealizacao);
-    };
-
-    fetchAgendamento();
-  }, []);
-
   const confirmarRealizacaoDaConsulta = async () => {
-    if (agendamento) {
-      const agendamentoRealizado = await saveAgendamentoRealizado(agendamento);
+    try {
+      const agendamentoRealizado = await markAsPerformed(id);
       router.push(`/historico-consultas/${agendamentoRealizado.id}`);
+    } catch (e) {
+      console.error(e);
     }
   };
 

@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { AxiosError } from "axios";
 
 import { createBaseApi } from "@/lib/axios";
 import { handleError } from "@/lib/handle-error";
