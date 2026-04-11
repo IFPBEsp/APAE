@@ -169,73 +169,11 @@ export class AbsenceService {
     return all;
   }
 
-
-static async getPatientsWithAbsences(minAbsences: number = 1): Promise<PatientWithAbsences[]> {
-  const allAbsences = await this.getAllAbsences();
-
-  const absencesByPatient = new Map<UUID, AbsenceResponseDTO[]>();
-  allAbsences.forEach((absence) => {
-    const list = absencesByPatient.get(absence.patientId) || [];
-    list.push(absence);
-    absencesByPatient.set(absence.patientId, list);
-  });
-
-  const result: PatientWithAbsences[] = [];
-
-  for (const [patientId, absences] of absencesByPatient) {
-    if (absences.length < minAbsences) continue;
-
-    try {
-      const patientResponse = await fetch(
-        `api/pessoas/${patientId}`,
-        {
-          method: 'GET',
-          headers: {
-            "Content-Type": "application/json",
-          },
-        }
-      );
-
-      if (!patientResponse.ok) {
-        console.warn(`Paciente ${patientId} não encontrado (404 ou erro). Pulando...`);
-        continue;
-      }
-
-      const patientData = await patientResponse.json();
-
-      const patient = {
-        id: patientData.id,
-        name: patientData.name || patientData.fullName || 'Nome não informado',
-        contact: patientData.contact || patientData.phone || 'Não informado',
-        birthDate: patientData.birthDate || '',
-      };
-
-      const sortedAbsences = [...absences].sort(
-        (a, b) => new Date(b.absenceDate).getTime() - new Date(a.absenceDate).getTime()
-      );
-
-      result.push({
-        patient,
-        absenceCount: absences.length,
-        lastAbsenceDate: sortedAbsences[0]?.absenceDate || absences[0].absenceDate,
-        absences: sortedAbsences,
-      });
-    } catch (error) {
-      console.error(`Erro ao buscar paciente ${patientId}:`, error);
-      continue;
-    }
-  }
-
-  return result.sort((a, b) => b.absenceCount - a.absenceCount);
-}
-
   static async getAbsenceStatistics(): Promise<AbsenceStatistics> {
-    const patientsWithAbsences = await this.getPatientsWithAbsences(3);
-
     return {
       totalPatients: mockPatients.length,
       totalAppointments: 50,
-      patientsWithMinAbsences: patientsWithAbsences.length,
+      patientsWithMinAbsences: 0,
     };
   }
 }
