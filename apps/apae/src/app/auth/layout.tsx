@@ -1,4 +1,5 @@
-import Image from "@/assets/background_image.jpg";
+import Image from "next/image";
+import BackgroundImage from "@/assets/background_image.jpg";
 import Logo from "@/assets/logo.png";
 
 export default function AuthLayout({
@@ -11,7 +12,7 @@ export default function AuthLayout({
       <div
         className="absolute inset-0 bg-cover bg-center bg-no-repeat grayscale-90"
         style={{
-          backgroundImage: `url(${Image.src})`,
+          backgroundImage: `url(${BackgroundImage.src})`,
           backgroundAttachment: "fixed",
         }}
       />
@@ -24,16 +25,17 @@ export default function AuthLayout({
         }}
       />
 
-      <div className="relative z-10 relative flex items-center justify-center p-4">
+      <div className="relative z-10 flex items-center justify-center p-4">
         <div
-          className="absolute top-[-2vh] left-1/2 transform -translate-x-1/2 z-[10]
+          className="absolute top-[-2vh] left-1/2 transform -translate-x-1/2 z-10
                 w-18 sm:w-18 md:w-20 lg:w-22
                 bg-white rounded-t-full flex items-center justify-center overflow-hidden"
         >
           <div className="relative w-full">
-            <img
-              src={Logo.src}
+            <Image
+              src={Logo}
               alt="Logo"
+              priority
               className="w-full h-auto object-contain"
             />
           </div>

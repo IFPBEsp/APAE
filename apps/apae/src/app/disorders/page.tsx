@@ -49,9 +49,9 @@ export default function TranstornosPage() {
       });
       
       if (!response.ok) {
-        const errorData = await response.json().catch(() => null);
+        const errorMessage = await response.text();
         
-        throw new Error(errorData?.message || "Falha ao excluir o transtorno.");
+        throw new Error(errorMessage || "Falha ao excluir o transtorno.");
       }
       
       setTranstornos((current) => current.filter((d) => d.id !== id));

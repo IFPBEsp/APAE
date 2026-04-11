@@ -1,6 +1,8 @@
 "use client";
 
-import * as React from "react";
+import Image from "next/image";
+import { useState } from "react";
+
 import {
   Dialog,
   DialogContent,
@@ -18,7 +20,8 @@ interface Props {
 }
 
 export default function FileCard({ file }: Props) {
-  const [open, setOpen] = React.useState(false);
+  const [open, setOpen] = useState(false);
+  const descriptionId = `dialog-description-${file.fileName.replace(/\s+/g, "-")}`;
 
   return (
     <>
@@ -27,29 +30,42 @@ export default function FileCard({ file }: Props) {
         onClick={() => setOpen(true)}
       >
         <p className="truncate">{file.fileName}</p>
-        <img
-          src={file.link}
-          alt={file.fileName}
-          className="w-full h-32 object-contain mt-2"
-        />
+        <div className="relative w-full h-32 mt-2">
+          <Image
+            src={file.link}
+            alt={file.fileName}
+            fill
+            priority
+            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+            className="object-contain"
+          />
+        </div>
       </div>
 
       <Dialog open={open} onOpenChange={setOpen}>
-        <DialogContent className="sm:max-w-[800px]">
+        <DialogContent
+          className="sm:max-w-[800px]"
+          aria-describedby={descriptionId}
+        >
           <DialogHeader>
             <DialogTitle>{file.fileName}</DialogTitle>
           </DialogHeader>
-          <div className="flex justify-center">
-            <img
+          <div
+            id={descriptionId}
+            className="relative w-full h-[60vh] flex justify-center"
+          >
+            <Image
               src={file.link}
               alt={file.fileName}
-              className="max-w-full max-h-[80vh] object-contain"
+              fill
+              sizes="(max-width: 800px) 100vw, 800px"
+              className="object-contain"
             />
           </div>
           <DialogFooter>
             <Button
               variant="secondary"
-              onClick={() => window.open(file.link, file.fileName)}
+              onClick={() => window.open(file.link, "_blank")}
               className="cursor-pointer hover:bg-gray-300 hover:text-black transition-colors"
             >
               Visualizar Arquivo

@@ -321,7 +321,6 @@ export const CreatableMultiSelect = React.forwardRef<
       animationConfig,
       maxCount = 3,
       modalPopover = false,
-      asChild = false,
       className,
       hideSelectAll = false,
       searchable = true,
@@ -874,7 +873,7 @@ export const CreatableMultiSelect = React.forwardRef<
                                 "text-xs px-1.5 py-0.5",
                               screenSize === "mobile" &&
                                 "max-w-[120px] truncate",
-                              singleLine && "flex-shrink-0 whitespace-nowrap",
+                              singleLine && "shrink-0 whitespace-nowrap",
                               "[&>svg]:pointer-events-auto",
                             )}
                             style={{
@@ -945,7 +944,7 @@ export const CreatableMultiSelect = React.forwardRef<
                           multiSelectVariants({ variant }),
                           responsiveSettings.compactMode &&
                             "text-xs px-1.5 py-0.5",
-                          singleLine && "flex-shrink-0 whitespace-nowrap",
+                          singleLine && "shrink-0 whitespace-nowrap",
                           "[&>svg]:pointer-events-auto",
                         )}
                         style={{

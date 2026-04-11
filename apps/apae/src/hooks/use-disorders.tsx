@@ -11,6 +11,7 @@ import {
 type Disorder = Readonly<{
   id: string;
   name: string;
+  hasPatient: boolean;
 }>;
 
 type FetchDisorderParams = Readonly<{

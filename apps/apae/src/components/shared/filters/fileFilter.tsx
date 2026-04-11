@@ -14,7 +14,6 @@ type FileFilterProps = {
   readonly type: string;
   readonly onYearChange: (year: string) => void;
   readonly onTypeChange: (type: string) => void;
-  readonly categoryTypes: string[];
 };
 
 const years = [2023, 2024, 2025];
@@ -29,7 +28,6 @@ export default function FileFilter({
   type,
   onYearChange,
   onTypeChange,
-  categoryTypes,
 }: FileFilterProps) {
   console.log(type);
   return (

@@ -71,6 +71,7 @@ interface FullPatientData {
   parents?: Array<Record<string, string | boolean>>;
   nationality?: string;
   birthplace?: string;
+  [key: string]: unknown;
 }
 
 
@@ -464,6 +465,7 @@ export default function AnnualRegistryEditModal({
                                                         onChange={field.onChange}
                                                         endpoint="/api/vacinas"
                                                         labelSingular="Vacina"
+                                                        labelKey="name"
                                                         placeholder="Selecione ou crie vacinas..."
                                                     />
                                                 </FormControl><FormMessage /></FormItem>)}
@@ -479,6 +481,7 @@ export default function AnnualRegistryEditModal({
                                                         onChange={field.onChange}
                                                         endpoint="/api/transtornos"
                                                         labelSingular="Transtorno"
+                                                        labelKey="name"
                                                         placeholder="Selecione ou crie transtornos..."
                                                     />
                                                 </FormControl><FormMessage /></FormItem>)}
