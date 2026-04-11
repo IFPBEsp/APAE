@@ -27,9 +27,10 @@ export default function ServiceTypesPage() {
         }
         const data = await response.json();
         setServiceTypes(data);
-      } catch (err: any) {
-        setError(err.message);
-        toast.error(err.message);
+      } catch (err) {
+        const error = err as Error;
+        setError(error.message);
+        toast.error(error.message);
       } finally {
         setIsLoading(false);
       }

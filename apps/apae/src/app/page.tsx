@@ -37,8 +37,6 @@ import { TodayAppointment } from '@/types/appointment';
 import {
   getAppointments,
   listTodayAppointment,
-  markAsPerformed,
-  UUID,
   type AppointmentResponseDTO,
 } from './services/appointmentService';
 
@@ -80,12 +78,8 @@ export default function DashboardPage() {
 
     fetchTodayAppointments();
     fetchAllAppointments();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedDate]);
-
-  const markAsPerformedHandle = async (id: UUID) => {
-    await markAsPerformed(id);
-    window.location.reload();
-  };
 
   return (
     <div className="min-h-screen w-full text-sm overflow-x-hidden">

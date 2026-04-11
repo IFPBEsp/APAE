@@ -14,7 +14,7 @@ import {
   useMembersRegisterContext,
 } from "@/hooks/use-members-register-context";
 import { formatCEP } from "@/lib/formats";
-import { Address } from "@/schemas/member-schemas";
+import { Address, AddressData } from "@/schemas/member-schemas";
 import { EditAddress } from "@/schemas/edit-member-schemas";  
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
@@ -37,7 +37,7 @@ export default function MembersRegisterAddressPage() {
   const isEditing = pathname.includes("/edit");
   const currentSchema = isEditing ? EditAddress : Address;
 
-  const form = useForm<any>({
+  const form = useForm<z.infer<typeof Address>>({
     mode: "onBlur",
     resolver: zodResolver(currentSchema),
     defaultValues: address,
@@ -53,18 +53,19 @@ export default function MembersRegisterAddressPage() {
     }
   }, [address, form, isEditing, isInitialized]);
 
-  const onSubmit = async (values: any) => {
+  const onSubmit = async (values: z.infer<typeof Address>) => {
     setIsLoading(true);
     try {
-      setAddressData(values);
-        if (isEditing) {
-        setStep(MembersRegisterStep.GUARDIAN); 
+      setAddressData(values as AddressData);
+      if (isEditing) {
+        setStep(MembersRegisterStep.GUARDIAN);
       } else {
         setStep(MembersRegisterStep.ADDITIONALS);
       }
-    } catch (error: any) {
-      if (error.response?.data) {
-        handleBackendValidationErrors(error.response.data, form.setError);
+    } catch (error: unknown) {
+      const err = error as { response?: { data?: Record<string, string[]> } };
+      if (err.response?.data) {
+        handleBackendValidationErrors(err.response.data, form.setError);
       }
     } finally {
       setIsLoading(false);

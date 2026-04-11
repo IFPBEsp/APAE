@@ -22,8 +22,6 @@ import {
 } from '@/components/ui/dialog';
 import { Pencil } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { format } from 'date-fns';
-import { RegistrarFaltaButton } from '@/components/buttons/RegistrarFaltaButton';
 import {
   getAppointmentById,
   Appointment,

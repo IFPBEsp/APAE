@@ -1,6 +1,5 @@
 "use client";
 
-import AbsenceService from "@/app/services/absenceService";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -65,13 +64,14 @@ export function RegistrarFaltaButton({
       setOpen(false);
       onSuccess?.();
       toast.success("Salvo com sucesso!");
-    } catch (error: any) {
+    } catch (error) {
       console.error("Erro ao registrar falta:", error);
 
+      const errorMessage = error instanceof Error ? error.message : String(error);
       const message =
-        error.message?.includes("Já existe uma falta")
+        errorMessage.includes("Já existe uma falta")
           ? "Esta consulta já possui uma falta registrada."
-          : error.message || "Erro ao registrar a falta. Tente novamente.";
+          : errorMessage || "Erro ao registrar a falta. Tente novamente.";
 
           toast.error(message);
           setOpen(false);
