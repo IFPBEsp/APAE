@@ -47,3 +47,12 @@ else
   echo "Erro ao inserir usuário."
   exit 1
 fi
+
+echo "Criando views mockadas do contexto escolar..."
+
+if docker exec -i "$DB_CONTAINER" psql -v ON_ERROR_STOP=1 -U "$DB_USERNAME" -d "$DB_NAME" < .scripts/manuais/create_mock_views_escolar.sql; then
+  echo "Views mockadas escolares criadas com sucesso(Relatórios e Avaliações)."
+else
+  echo "Erro ao criar views mockadas escolares."
+  exit 1
+fi
