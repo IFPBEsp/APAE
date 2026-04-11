@@ -27,7 +27,7 @@ export function useUpdateProfessionalDocuments() {
           : {};
 
       if (!response.ok) {
-        throw new Error((data as any)?.message || "Erro ao enviar documentos");
+        throw new Error(data?.message || "Erro ao enviar documentos");
       }
 
       setSuccessDocs(true);

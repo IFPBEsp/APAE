@@ -1,6 +1,16 @@
 import { useState } from "react";
 import { updateProfissional } from "@/services/profissional-service";
 
+type UpdateProfissionalDto = {
+  name: string;
+  email: string;
+  phoneNumber: string;
+  address: any;
+  professionalDocument: string;
+  serviceArea: any;
+  identityDocument: string;
+};
+
 type ApiResponse = {
   message?: string;
 };
@@ -10,7 +20,7 @@ export function useUpdateProfissional() {
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
 
-  async function doUpdate(id: string, data: any) {
+  async function doUpdate(id: string, data: UpdateProfissionalDto) {
     setLoading(true);
     setError(null);
     setSuccess(false);
