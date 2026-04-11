@@ -1,5 +1,6 @@
 package br.org.apae.api.patient.application.interfaces;
 
+import br.org.apae.api.common.dto.patient.response.patient.PatientWithAbsencesResponseDTO;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
@@ -26,6 +27,8 @@ public interface PatientApplicationService {
     PatientResponseDTO updatePatient(UUID id, UpdatePatientDTO updatePatientDTO);
 
     PatientResponseDTO updatePatientPhoto(UUID id, org.springframework.web.multipart.MultipartFile photo);
+
+    Page<PatientWithAbsencesResponseDTO> findPatientsWithAbsences(Integer minAbsences, Pageable pageable);
 
     void disablePatient(UUID id);
 
