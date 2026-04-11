@@ -43,7 +43,7 @@ export default function MembersRegisterProfilePage() {
 
   const currentSchema = isEditing ? EditProfile : Profile;
 
-  const form = useForm<any>({
+  const form = useForm<z.infer<typeof Profile>>({
     mode: "onBlur",
     resolver: zodResolver(currentSchema),
     defaultValues: profile,
@@ -91,7 +91,7 @@ export default function MembersRegisterProfilePage() {
             toast.error(displayMsg);
             setStep(MembersRegisterStep.PERSONAL);
 
-            form.setError(targetField as any, {
+            form.setError(targetField as "cpf" | "rg" | "cns", {
               type: "manual",
               message: displayMsg,
             });

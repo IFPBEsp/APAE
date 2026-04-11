@@ -13,7 +13,7 @@ import {
   MembersRegisterStep,
   useMembersRegisterContext,
 } from "@/hooks/use-members-register-context";
-import { Additionals } from "@/schemas/member-schemas";
+import { Additionals, AdditionalsData } from "@/schemas/member-schemas";
 import { EditAdditionals } from "@/schemas/edit-member-schemas"; 
 import { zodResolver } from "@hookform/resolvers/zod";
 import React, { useState, useEffect } from "react"; 
@@ -199,7 +199,7 @@ export default function MembersRegisterAdditionalsPage() {
   const isEditing = pathname.includes("/edit");
   const currentSchema = isEditing ? EditAdditionals : Additionals;
 
-  const form = useForm<any>({
+  const form = useForm<z.infer<typeof Additionals>>({
     mode: "onBlur",
     resolver: zodResolver(currentSchema),
     defaultValues: additionals,
@@ -215,14 +215,15 @@ export default function MembersRegisterAdditionalsPage() {
     }
   }, [additionals, form, isEditing, isInitialized]);
 
-  const onSubmit = async (values: any) => {
+  const onSubmit = async (values: z.infer<typeof Additionals>) => {
     setIsLoading(true);
     try {
-      setAdditionalsData(values);
+      setAdditionalsData(values as AdditionalsData);
       setStep(MembersRegisterStep.GUARDIAN);
-    } catch (error: any) {
-      if (error.response?.data) {
-        handleBackendValidationErrors(error.response.data, form.setError);
+    } catch (error: unknown) {
+      const err = error as { response?: { data?: Record<string, string[]> } };
+      if (err.response?.data) {
+        handleBackendValidationErrors(err.response.data, form.setError);
       }
     } finally {
       setIsLoading(false);
@@ -425,8 +426,8 @@ export default function MembersRegisterAdditionalsPage() {
                       defaultValue={field.value || []}
                       value={field.value || []}
                       options={[
-                        ...cares.map((care: any) => ({ label: care.area, value: care.area })),
-                        ...(field.value || []).filter((val: string) => !cares.some((c: any) => c.area === val))
+                        ...cares.map((care: { area: string }) => ({ label: care.area, value: care.area })),
+                        ...(field.value || []).filter((val: string) => !cares.some((c: { area: string }) => c.area === val))
                           .map((val: string) => ({ label: val, value: val }))
                       ]}
                       onValueChange={field.onChange}

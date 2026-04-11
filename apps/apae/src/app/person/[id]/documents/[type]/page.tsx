@@ -50,10 +50,10 @@ export default function DocumentTypePage() {
 
   const category = params?.type as keyof typeof documentCategory;
 
-  const [yearFilter] = React.useState<string>(
+  const [yearFilter, _setYearFilter] = React.useState<string>(
     new Date().getFullYear().toString()
   );
-  const [typeFilter] = React.useState<string>("");
+  const [typeFilter, _setTypeFilter] = React.useState<string>("");
   const [files, setFiles] = React.useState<FileItem[]>([]);
 
   React.useEffect(() => {
@@ -79,10 +79,10 @@ export default function DocumentTypePage() {
         const data = await response.json();
 
         setFiles(data);
-      } catch (err: any) {
+      } catch (err: unknown) {
         console.error("Erro ao buscar documentos:", err);
-        toast.error(err.message || "Erro ao processar resposta da API");
-        setFiles([]);
+        const errorMessage = err instanceof Error ? err.message : "Erro ao processar resposta da API";
+        toast.error(errorMessage);
       }
     }
 
