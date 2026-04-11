@@ -8,6 +8,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -31,6 +32,12 @@ public interface AbsenceRepository extends JpaRepository<Absence, UUID> {
     """)
     Page<Absence> findByProfessionalId(UUID professionalId, Pageable pageable);
 
+    @EntityGraph(attributePaths = {"generatedAppointment"})
+    @Query("""
+        SELECT a FROM Absence a
+        WHERE a.generatedAppointment.patientId IN :patientIds
+    """)
+    List<Absence> findByPatientIds(List<UUID> patientIds);
 
     @EntityGraph(attributePaths = {"generatedAppointment", "generatedAppointment.appointment"})
     @Query("""
