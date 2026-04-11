@@ -3,6 +3,7 @@
 import { createContext, useCallback, useContext, useReducer, useEffect, useMemo } from "react";
 import { useParams } from "next/navigation";
 
+// --- INTERFACES ---
 interface PersonalData {
   name: string;
   cpf: string;
@@ -88,6 +89,28 @@ interface MembersRegisterContextData {
   register: (id?: string) => Promise<{ status: number; data: any }>;
 }
 
+// --- UTILS: FILE CONVERSION (Foras do componente) ---
+const fileToBase64 = (file: File): Promise<string> => {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.readAsDataURL(file);
+    reader.onload = () => resolve(reader.result as string);
+    reader.onerror = (error) => reject(error);
+  });
+};
+
+const base64ToFile = (base64: string, filename: string, mimeType: string): File => {
+  const arr = base64.split(",");
+  const bstr = atob(arr[1]);
+  let n = bstr.length;
+  const u8arr = new Uint8Array(n);
+  while (n--) {
+    u8arr[n] = bstr.charCodeAt(n);
+  }
+  return new File([u8arr], filename, { type: mimeType });
+};
+
+// --- REDUCER ---
 type MembersRegisterAction =
   | { type: "SET_PERSONAL_DATA"; payload: Partial<PersonalData> }
   | { type: "SET_KINSHIPS_DATA"; payload: KinshipData[] }
@@ -114,31 +137,13 @@ function membersRegisterReducer(state: MembersRegisterState, action: MembersRegi
 }
 
 const initialState: MembersRegisterState = {
-  personal: { name: "", cpf: "", phone: "", rg: { number: "", issuing: { body: "", date: new Date() } }, cns: "", nis: "", birth: { certificate: "", date: new Date(), place: "" } },
+  personal: { name: "", cpf: "", phone: "", rg: { number: "", issuing: { body: "", date: undefined as any } }, cns: "", nis: "", birth: { certificate: "", date: undefined as any, place: "" } },
   address: { cep: "", state: "", city: "", district: "", street: "" },
   additionals: { id: undefined, diseases: "", medications: "", vaccines: [], allergies: "", disability: { types: [], report: undefined }, care: { types: [], referral: undefined }, bpc: false, householdIncome: "" },
   guardian: { address: { cep: "", state: "", city: "", district: "", street: "" }, contact: "", kinship: "", name: "" },
   kinships: [],
   step: MembersRegisterStep.PERSONAL,
   profile: { role: "patient", photo: undefined },
-};
-const fileToBase64 = (file: File): Promise<string> => {
-  return new Promise((resolve, reject) => {
-    const reader = new FileReader();
-    reader.readAsDataURL(file);
-    reader.onload = () => resolve(reader.result as string);
-    reader.onerror = (error) => reject(error);
-  });
-};
-const base64ToFile = (base64: string, filename: string, mimeType: string): File => {
-  const arr = base64.split(",");
-  const bstr = atob(arr[1]);
-  let n = bstr.length;
-  const u8arr = new Uint8Array(n);
-  while (n--) {
-    u8arr[n] = bstr.charCodeAt(n);
-  }
-  return new File([u8arr], filename, { type: mimeType });
 };
 
 const MembersRegisterContext = createContext<MembersRegisterContextData | undefined>(undefined);
@@ -147,78 +152,14 @@ export function MembersRegisterProvider({ children }: { children: React.ReactNod
   const [state, dispatch] = useReducer(membersRegisterReducer, initialState);
   const params = useParams();
   
+  // 1. CHAVE DE CACHE
   const STORAGE_KEY = useMemo(() => {
     const patientId = params?.id as string;
     return patientId ? `apae_edit_cache_${patientId}` : "apae_register_cache";
   }, [params?.id]);
 
-  const setters = {
-    setPersonalData: useCallback((data: Partial<PersonalData>) => dispatch({ type: "SET_PERSONAL_DATA", payload: data }), []),
-    setKinshipsData: useCallback((data: KinshipData[]) => dispatch({ type: "SET_KINSHIPS_DATA", payload: data }), []),
-    setAddressData: useCallback((data: Partial<AddressData>) => dispatch({ type: "SET_ADDRESS_DATA", payload: data }), []),
-    setAdditionalsData: useCallback((data: Partial<AdditionalsData>) => dispatch({ type: "SET_ADDITIONALS_DATA", payload: data }), []),
-    setGuardianData: useCallback((data: Partial<GuardianData>) => dispatch({ type: "SET_GUARDIAN_DATA", payload: data }), []),
-    setProfileData: useCallback((data: Partial<ProfileData>) => dispatch({ type: "SET_PROFILE_DATA", payload: data }), []),
-    setStep: useCallback((step: MembersRegisterStep) => dispatch({ type: "SET_STEP", payload: step }), []),
-    loadAllData: useCallback((apiData: MembersRegisterState) => {
-      if (typeof window !== "undefined") {
-        const saved = localStorage.getItem(STORAGE_KEY);
-        if (saved) {
-          try {
-            const parsed = JSON.parse(saved);
-
-            if (parsed.additionals?.disability?.report?.base64) {
-              parsed.additionals.disability.report = base64ToFile(
-                parsed.additionals.disability.report.base64,
-                parsed.additionals.disability.report.name,
-                parsed.additionals.disability.report.type
-              );
-            }
-            if (parsed.additionals?.care?.referral?.base64) {
-              parsed.additionals.care.referral = base64ToFile(
-                parsed.additionals.care.referral.base64,
-                parsed.additionals.care.referral.name,
-                parsed.additionals.care.referral.type
-              );
-            }
-            if (parsed.profile?.photo?.base64) {
-              parsed.profile.photo = base64ToFile(
-                parsed.profile.photo.base64,
-                parsed.profile.photo.name,
-                parsed.profile.photo.type
-              );
-            }
-
-            dispatch({ 
-              type: "LOAD_ALL_DATA", 
-              payload: { ...apiData, ...parsed } 
-            });
-            return; 
-          } catch (e) {
-            console.error("Erro ao carregar rascunho na edição", e);
-          }
-        }
-      }
-      dispatch({ type: "LOAD_ALL_DATA", payload: apiData });
-    }, [STORAGE_KEY]),
-  };
-
-  useEffect(() => {
-  if (typeof window !== "undefined") {
-    const saved = localStorage.getItem(STORAGE_KEY);
-    if (saved) {
-      try {
-        const parsed = JSON.parse(saved);
-        if (!params?.id && state.personal.name === "") {
-           const draftWithFiles = reconstructFiles(parsed);
-           dispatch({ type: "LOAD_ALL_DATA", payload: { ...state, ...draftWithFiles } });
-        }
-      } catch (e) { console.error("Erro no rascunho", e); }
-    }
-  }
-}, [STORAGE_KEY, params?.id]);  
-
-  const reconstructFiles = (obj: any) => {
+  // 2. FUNÇÃO DE RECONSTRUÇÃO (Declarada antes de ser usada)
+  const reconstructFiles = useCallback((obj: any) => {
     if (obj.additionals?.disability?.report?.base64) {
       obj.additionals.disability.report = base64ToFile(
         obj.additionals.disability.report.base64,
@@ -240,16 +181,62 @@ export function MembersRegisterProvider({ children }: { children: React.ReactNod
         obj.profile.photo.type
       );
     }
+    if (obj.personal?.rg?.issuing?.date) {
+      obj.personal.rg.issuing.date = new Date(obj.personal.rg.issuing.date);
+    }
+    if (obj.personal?.birth?.date) {
+      obj.personal.birth.date = new Date(obj.personal.birth.date);
+    }
     return obj;
+  }, []);
+
+  // 3. SETTERS
+  const setters = {
+    setPersonalData: useCallback((data: Partial<PersonalData>) => dispatch({ type: "SET_PERSONAL_DATA", payload: data }), []),
+    setKinshipsData: useCallback((data: KinshipData[]) => dispatch({ type: "SET_KINSHIPS_DATA", payload: data }), []),
+    setAddressData: useCallback((data: Partial<AddressData>) => dispatch({ type: "SET_ADDRESS_DATA", payload: data }), []),
+    setAdditionalsData: useCallback((data: Partial<AdditionalsData>) => dispatch({ type: "SET_ADDITIONALS_DATA", payload: data }), []),
+    setGuardianData: useCallback((data: Partial<GuardianData>) => dispatch({ type: "SET_GUARDIAN_DATA", payload: data }), []),
+    setProfileData: useCallback((data: Partial<ProfileData>) => dispatch({ type: "SET_PROFILE_DATA", payload: data }), []),
+    setStep: useCallback((step: MembersRegisterStep) => dispatch({ type: "SET_STEP", payload: step }), []),
+    loadAllData: useCallback((apiData: MembersRegisterState) => {
+      if (typeof window !== "undefined") {
+        const saved = localStorage.getItem(STORAGE_KEY);
+        if (saved) {
+          try {
+            const parsed = JSON.parse(saved);
+            const draftWithFiles = reconstructFiles(parsed);
+            dispatch({ type: "LOAD_ALL_DATA", payload: { ...apiData, ...draftWithFiles } });
+            return; 
+          } catch (e) { console.error(e); }
+        }
+      }
+      dispatch({ type: "LOAD_ALL_DATA", payload: apiData });
+    }, [STORAGE_KEY, reconstructFiles]),
   };
 
+  // 4. EFEITO DE RECUPERAÇÃO (Hydration)
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const saved = localStorage.getItem(STORAGE_KEY);
+      if (saved) {
+        try {
+          const parsed = JSON.parse(saved);
+          if (state.personal.name === "") {
+             const draftWithFiles = reconstructFiles(parsed);
+             dispatch({ type: "LOAD_ALL_DATA", payload: { ...state, ...draftWithFiles } });
+          }
+        } catch (e) { console.error("Erro no rascunho", e); }
+      }
+    }
+  }, [STORAGE_KEY, reconstructFiles]);   
+
+  // 5. EFEITO DE SALVAMENTO AUTOMÁTICO
   useEffect(() => {
     if (typeof window === "undefined") return;
 
     const saveDraft = async () => {
-      if (params?.id && state.personal.name === "") {
-        return;
-      }
+      if (params?.id && state.personal.name === "") return;
 
       try {
         const draft = JSON.parse(JSON.stringify(state, (key, value) => value));
@@ -261,7 +248,6 @@ export function MembersRegisterProvider({ children }: { children: React.ReactNod
             type: state.additionals.disability.report.type
           };
         }
-        
         if (state.additionals.care.referral instanceof File) {
           draft.additionals.care.referral = {
             base64: await fileToBase64(state.additionals.care.referral),
@@ -269,7 +255,6 @@ export function MembersRegisterProvider({ children }: { children: React.ReactNod
             type: state.additionals.care.referral.type
           };
         }
-        
         if (state.profile.photo instanceof File) {
           draft.profile.photo = {
             base64: await fileToBase64(state.profile.photo),
@@ -289,6 +274,7 @@ export function MembersRegisterProvider({ children }: { children: React.ReactNod
     saveDraft();
   }, [state, STORAGE_KEY, params?.id]);
   
+  // 6. FUNÇÃO REGISTER
   const register = useCallback(
     async (id?: string) => {
       const { personal, address, additionals, guardian, kinships, profile } = state;
@@ -318,7 +304,6 @@ export function MembersRegisterProvider({ children }: { children: React.ReactNod
       if (id) {
         const res = await fetch(`/api/pessoas/${id}`, { method: "PUT", headers: { "Content-Type": "application/json" }, body: JSON.stringify(patient) });
         if (res.ok) { localStorage.removeItem(STORAGE_KEY); }
-
         if (profile.photo instanceof File && res.ok) {
           const photoFormData = new FormData(); photoFormData.append("photo", profile.photo);
           await fetch(`/api/pessoas/${id}/photo`, { method: "PUT", body: photoFormData });
