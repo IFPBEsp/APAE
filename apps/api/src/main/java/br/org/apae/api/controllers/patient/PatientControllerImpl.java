@@ -96,10 +96,11 @@ public class PatientControllerImpl implements PatientController {
     @Override
     public ResponseEntity<Page<PatientWithAbsencesResponseDTO>> findPatientsWithAbsences(
             Integer minAbsences,
+            String name,
             Pageable pageable
     ) {
         Page<PatientWithAbsencesResponseDTO> result =
-                patientService.findPatientsWithAbsences(minAbsences, pageable);
+                patientService.findPatientsWithAbsences(minAbsences, name, pageable);
 
         return ResponseEntity.ok(result);
     }

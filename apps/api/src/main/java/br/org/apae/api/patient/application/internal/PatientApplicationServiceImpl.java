@@ -30,10 +30,7 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -186,10 +183,13 @@ public class PatientApplicationServiceImpl implements PatientApplicationService 
     @Transactional(readOnly = true)
     public Page<PatientWithAbsencesResponseDTO> findPatientsWithAbsences(
             Integer minAbsences,
+            String name,
             Pageable pageable
     ) {
+        name = Optional.ofNullable(name).orElse("");
+
         Page<PatientWithAbsenceProjection> page =
-                patientRepository.findPatientsWithAbsences(minAbsences, pageable);
+                patientRepository.findPatientsWithAbsences(minAbsences, name, pageable);
 
         List<UUID> patientIds = page.getContent()
                 .stream()

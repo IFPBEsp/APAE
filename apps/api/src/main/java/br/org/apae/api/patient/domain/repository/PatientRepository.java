@@ -1,6 +1,5 @@
 package br.org.apae.api.patient.domain.repository;
 
-import br.org.apae.api.appointment.domain.model.Absence;
 import br.org.apae.api.patient.domain.model.Patient;
 import br.org.apae.api.patient.domain.repository.projection.PatientWithAbsenceProjection;
 import org.springframework.data.domain.Page;
@@ -8,6 +7,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -27,11 +27,13 @@ public interface PatientRepository extends JpaRepository<Patient, UUID>, JpaSpec
       FROM Patient p
       LEFT JOIN Absence a
           ON a.generatedAppointment.patientId = p.id
-      GROUP BY p
+      WHERE LOWER(p.fullName) LIKE CONCAT('%', :name, '%')
+      GROUP BY p.id
       HAVING COUNT(a) >= COALESCE(:minAbsences, 0)
     """)
     Page<PatientWithAbsenceProjection> findPatientsWithAbsences(
-            Integer minAbsences,
+            @Param("minAbsences") Integer minAbsences,
+            @Param("name") String name,
             Pageable pageable
     );
 

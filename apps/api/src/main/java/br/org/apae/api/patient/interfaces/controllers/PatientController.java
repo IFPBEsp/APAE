@@ -107,6 +107,11 @@ public interface PatientController {
                         example = "2"
                 )
                 @RequestParam(defaultValue = "1") Integer minAbsences,
+                @Parameter(
+                        description = "Texto para busca (ex: nome do paciente)",
+                        example = "John"
+                )
+                @RequestParam(required = false) String name,
                 @Parameter(hidden = true)
                 Pageable pageable
         );

@@ -28,7 +28,11 @@ public interface PatientApplicationService {
 
     PatientResponseDTO updatePatientPhoto(UUID id, org.springframework.web.multipart.MultipartFile photo);
 
-    Page<PatientWithAbsencesResponseDTO> findPatientsWithAbsences(Integer minAbsences, Pageable pageable);
+    Page<PatientWithAbsencesResponseDTO> findPatientsWithAbsences(
+            Integer minAbsences,
+            String name,
+            Pageable pageable
+    );
 
     void disablePatient(UUID id);
 
