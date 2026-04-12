@@ -207,19 +207,22 @@ export default function DocumentTypePage() {
               </div>
             </div>
 
-            <div className="flex-1 bg-gray-200 flex items-center justify-center p-2 overflow-auto">
-              {/* Lógica invertida robusta: Se for imagem óbvia, usa <img>. Senão, força o <iframe> */}
-              {selectedFile.url?.toLowerCase().match(/\.(jpeg|jpg|gif|png)$/) != null ? (
-                <img 
-                  src={selectedFile.url} 
-                  alt="Documento Preview" 
-                  className="max-w-full max-h-full object-contain rounded shadow-sm"
-                />
+            <div className="flex-1 bg-gray-200 flex items-center justify-center p-4 overflow-auto">
+              {/* Detecção unificada: imagens vs outros documentos */}
+              {selectedFile.url?.toLowerCase().match(/\.(jpeg|jpg|gif|png|webp)$/) != null ? (
+                /* Container fixo 800x600 para imagens - preenche com object-cover */
+                <div className="w-[800px] h-[600px] bg-white rounded-lg shadow-lg overflow-hidden flex items-center justify-center">
+                  <img
+                    src={selectedFile.url}
+                    alt="Documento Preview"
+                    className="w-full h-full object-cover"
+                  />
+                </div>
               ) : (
-                <iframe 
-                  src={selectedFile.url} 
+                <iframe
+                  src={selectedFile.url}
                   className="w-full h-full rounded shadow-sm bg-white"
-                  title="PDF Preview"
+                  title="Documento Preview"
                 />
               )}
             </div>
