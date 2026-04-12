@@ -93,17 +93,20 @@ public interface PatientController {
         ResponseEntity<Void> deletePatient(@PathVariable UUID id);
 
         @Operation(
-                summary = "Obter pacientes com faltas",
-                description = "Retorna pacientes que possuem um número mínimo de faltas"
+                summary = "Listar pacientes com faltas",
+                description = "Retorna uma lista paginada de pacientes que possuem pelo menos o número mínimo de faltas informado."
         )
         @ApiResponses(value = {
-                @ApiResponse(responseCode = "200", description = "Lista retornada com sucesso")
+                @ApiResponse(responseCode = "200", description = "Lista de pacientes retornada com sucesso"),
+                @ApiResponse(responseCode = "400", description = "Parâmetro de requisição inválido")
         })
         @GetMapping("/with-absences")
         ResponseEntity<Page<PatientWithAbsencesResponseDTO>> findPatientsWithAbsences(
-                @Parameter(description = "Mínimo de faltas", in = ParameterIn.QUERY)
+                @Parameter(
+                        description = "Número mínimo de faltas para filtrar os pacientes",
+                        example = "2"
+                )
                 @RequestParam(defaultValue = "1") Integer minAbsences,
-
                 @Parameter(hidden = true)
                 Pageable pageable
         );
