@@ -5,9 +5,9 @@ type UpdateProfissionalDto = {
   name: string;
   email: string;
   phoneNumber: string;
-  address: any;
+  address: string;
   professionalDocument: string;
-  serviceArea: any;
+  serviceArea: string;
   identityDocument: string;
 };
 
