@@ -4,6 +4,7 @@ import { InfoCard } from "@/components/shared/InfoCard";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { PatientWithAbsences } from "@/types/absence";
+import { DashboardOverview } from "@/types/dashboard/dashboard-overview";
 import { Calendar, SearchIcon, Users } from "lucide-react";
 import React, { useEffect, useState, useCallback } from "react";
 
@@ -27,9 +28,10 @@ export default function AbsenceDetails() {
     totalItems: 0,
     itemsPerPage: 6,
   });
-  const [statistics, setStatistics] = useState({
+  const [statistics, setStatistics] = useState<DashboardOverview>({
     totalPatients: 0,
     totalAppointments: 0,
+    totalPatientsWithAbsences: 0,
   });
 
   const fetchData = useCallback(
@@ -40,25 +42,26 @@ export default function AbsenceDetails() {
           minAbsences: "3",
           page: page.toString(),
           size: pagination.itemsPerPage.toString(),
-          name: name,
+          name: name.trim(),
         });
 
         const [patientsRes, statsRes] = await Promise.all([
           fetch(`/api/patients/with-absences?${queryParams}`),
-          fetch("/api/dashboard/overview"),
+          fetch("/api/dashboard/overview?minAbsences=3"),
         ]);
 
         if (!patientsRes.ok || !statsRes.ok) {
           throw new Error("Erro ao buscar dados");
         }
-          
+
         const patientsData = await patientsRes.json();
-        const statsData = await statsRes.json();
+        const statsData: DashboardOverview = await statsRes.json();
 
         setPatientsWithAbsences(patientsData.content);
         setStatistics({
           totalPatients: statsData.totalPatients,
           totalAppointments: statsData.totalAppointments,
+          totalPatientsWithAbsences: statsData.totalPatientsWithAbsences,
         });
         setPagination((prev) => ({
           ...prev,
@@ -128,7 +131,7 @@ export default function AbsenceDetails() {
           <InfoCard
             title="Pacientes com 3+ Faltas"
             icon={Users}
-            value={pagination.totalItems}
+            value={statistics.totalPatientsWithAbsences}
             titleClassName="text-red-600"
             valueClassName="text-red-600"
           />
