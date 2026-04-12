@@ -2,7 +2,7 @@
 
 import * as React from "react";
 import { useRouter, useParams } from "next/navigation";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import FileCard from "@/components/fileCard";
 import { toast } from "react-toastify";
@@ -48,14 +48,17 @@ export default function DocumentTypePage() {
   const router = useRouter();
   const params = useParams();
   const patientId = params?.id as string;
-
   const category = params?.type as keyof typeof documentCategory;
 
+  // Estados
   const [yearFilter, setYearFilter] = React.useState<string>(
     new Date().getFullYear().toString()
   );
   const [typeFilter, setTypeFilter] = React.useState<string>("");
   const [files, setFiles] = React.useState<FileItem[]>([]);
+  
+  // Estado responsável por controlar o Preview (Modal)
+  const [selectedFile, setSelectedFile] = React.useState<FileItem | null>(null);
 
   // Gerar lista de anos (últimos 5 anos + ano atual + próximo ano)
   const availableYears = React.useMemo(() => {
@@ -104,7 +107,7 @@ export default function DocumentTypePage() {
   const pageTitle = documentCategory[category] || "Documentos";
 
   return (
-    <main className="pt-6 md:pt-12 px-4 py-6 max-w-7xl mx-auto font-baloo">
+    <main className="pt-6 md:pt-12 px-4 py-6 max-w-7xl mx-auto font-baloo relative">
       <div
         className={`flex flex-col mt-6 md:hidden ${brandColor} items-center`}
       >
@@ -160,16 +163,69 @@ export default function DocumentTypePage() {
           </p>
         ) : (
           files.map((file: FileItem) => (
-            <FileCard
-              key={file.id}
-              file={{
-                fileName: translateDocumentType(file.type || file.name),
-                link: file.url,
+            <div 
+              key={file.id} 
+              onClickCapture={(e) => {
+                e.preventDefault();
+                e.stopPropagation(); // Impede outras ações do clique padrão
+                setSelectedFile(file); // Abre o Preview Modal
               }}
-            />
+              className="cursor-pointer transition-transform hover:scale-105"
+            >
+              <FileCard
+                file={{
+                  fileName: translateDocumentType(file.type || file.name),
+                  link: file.url,
+                }}
+              />
+            </div>
           ))
         )}
       </div>
+
+      {/* --- MODAL DE PREVIEW DO DOCUMENTO --- */}
+      {selectedFile && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm p-4">
+          <div className="bg-white rounded-xl shadow-2xl w-full max-w-5xl h-[85vh] flex flex-col overflow-hidden">
+            
+            <div className="flex justify-between items-center p-4 border-b bg-gray-50">
+              <h2 className="text-lg font-bold text-[#0d4f97]">
+                Preview: {translateDocumentType(selectedFile.type || selectedFile.name)}
+              </h2>
+              <div className="flex gap-4 items-center">
+                <a 
+                  href={selectedFile.url} 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className="text-sm font-semibold text-[#0d4f97] hover:underline bg-blue-50 px-3 py-1 rounded"
+                >
+                  Abrir em nova aba
+                </a>
+                <Button variant="ghost" size="icon" onClick={() => setSelectedFile(null)} className="hover:bg-red-100">
+                  <X size={24} className="text-white bg-red-700 border-red-700 border rounded-2xl" />
+                </Button>
+              </div>
+            </div>
+
+            <div className="flex-1 bg-gray-200 flex items-center justify-center p-2 overflow-auto">
+              {/* Lógica invertida robusta: Se for imagem óbvia, usa <img>. Senão, força o <iframe> */}
+              {selectedFile.url?.toLowerCase().match(/\.(jpeg|jpg|gif|png)$/) != null ? (
+                <img 
+                  src={selectedFile.url} 
+                  alt="Documento Preview" 
+                  className="max-w-full max-h-full object-contain rounded shadow-sm"
+                />
+              ) : (
+                <iframe 
+                  src={selectedFile.url} 
+                  className="w-full h-full rounded shadow-sm bg-white"
+                  title="PDF Preview"
+                />
+              )}
+            </div>
+          </div>
+        </div>
+      )}
     </main>
   );
 }
