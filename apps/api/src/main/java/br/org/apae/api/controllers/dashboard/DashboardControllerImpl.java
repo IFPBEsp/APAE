@@ -5,6 +5,7 @@ import br.org.apae.api.dashboard.application.interfaces.DashboardApplicationServ
 import br.org.apae.api.dashboard.interfaces.controllers.DashboardController;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.RequestParam;
 
 @RestController
 public class DashboardControllerImpl implements DashboardController {
@@ -16,7 +17,7 @@ public class DashboardControllerImpl implements DashboardController {
     }
 
     @Override
-    public ResponseEntity<DashboardOverviewResponseDTO> getOverview() {
-        return ResponseEntity.ok(dashboardService.getOverview());
+    public ResponseEntity<DashboardOverviewResponseDTO> getOverview(@RequestParam(defaultValue = "3") int minAbsences) {
+        return ResponseEntity.ok(dashboardService.getOverview(minAbsences));
     }
 }

@@ -6,6 +6,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -52,4 +53,15 @@ public interface AbsenceRepository extends JpaRepository<Absence, UUID> {
             UUID professionalId,
             Pageable pageable
     );
+
+    @Query("""
+    SELECT COUNT(sub.patientId)
+        FROM (
+            SELECT a.generatedAppointment.patientId AS patientId
+            FROM Absence a
+            GROUP BY a.generatedAppointment.patientId
+            HAVING COUNT(a) >= :minAbsences
+        ) sub
+    """)
+    long countPatientsWithAbsences(@Param("minAbsences") int minAbsences);
 }

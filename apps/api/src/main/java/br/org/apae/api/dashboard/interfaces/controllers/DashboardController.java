@@ -6,6 +6,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 @Tag(name = "Dashboard", description = "Endpoints de visão geral do sistema")
 @RequestMapping("/dashboard")
@@ -16,5 +17,7 @@ public interface DashboardController {
             description = "Retorna KPIs principais do sistema"
     )
     @GetMapping("/overview")
-    ResponseEntity<DashboardOverviewResponseDTO> getOverview();
+    ResponseEntity<DashboardOverviewResponseDTO> getOverview(
+            @RequestParam(defaultValue = "1") int minAbsences
+    );
 }
