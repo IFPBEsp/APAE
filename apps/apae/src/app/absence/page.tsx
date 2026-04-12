@@ -1,6 +1,5 @@
 "use client";
 
-import AbsenceService from "@/app/services/absenceService";
 import { InfoCard } from "@/components/shared/InfoCard";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -31,7 +30,6 @@ export default function AbsenceDetails() {
   const [statistics, setStatistics] = useState({
     totalPatients: 0,
     totalAppointments: 0,
-    patientsWithMinAbsences: 0,
   });
 
   const fetchData = useCallback(
@@ -45,17 +43,23 @@ export default function AbsenceDetails() {
           name: name,
         });
 
-        const [patientsRes, statsData] = await Promise.all([
+        const [patientsRes, statsRes] = await Promise.all([
           fetch(`/api/patients/with-absences?${queryParams}`),
-          AbsenceService.getAbsenceStatistics(),
+          fetch("/api/dashboard/overview"),
         ]);
 
-        if (!patientsRes.ok) throw new Error("Erro ao buscar pacientes");
-
+        if (!patientsRes.ok || !statsRes.ok) {
+          throw new Error("Erro ao buscar dados");
+        }
+          
         const patientsData = await patientsRes.json();
+        const statsData = await statsRes.json();
 
         setPatientsWithAbsences(patientsData.content);
-        setStatistics(statsData);
+        setStatistics({
+          totalPatients: statsData.totalPatients,
+          totalAppointments: statsData.totalAppointments,
+        });
         setPagination((prev) => ({
           ...prev,
           currentPage: page,
@@ -124,7 +128,7 @@ export default function AbsenceDetails() {
           <InfoCard
             title="Pacientes com 3+ Faltas"
             icon={Users}
-            value={patientsWithAbsences.length}
+            value={pagination.totalItems}
             titleClassName="text-red-600"
             valueClassName="text-red-600"
           />
