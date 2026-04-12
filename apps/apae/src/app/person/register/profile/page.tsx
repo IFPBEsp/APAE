@@ -58,6 +58,11 @@ export default function MembersRegisterProfilePage() {
   }, [profile, form, isEditing, isInitialized]);
 
   useEffect(() => {
+    if (profile.role || profile.photo instanceof File) {
+      form.reset(profile);
+    }
+  }, [profile, form]);
+  useEffect(() => {
     if (submitted && profile) {
       (async () => {
         setIsLoading(true);
