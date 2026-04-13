@@ -632,7 +632,7 @@ export default function AtualizarProfissional(): JSX.Element {
               <FormControl>
                 <Input
                   type="file"
-                  accept="application/pdf"
+                  accept="image/*, application/pdf"
                   onChange={(e) =>
                     setVolunteerFile(e.target.files?.[0] ?? null)
                   }
@@ -650,7 +650,7 @@ export default function AtualizarProfissional(): JSX.Element {
               <FormControl>
                 <Input
                   type="file"
-                  accept="application/pdf"
+                  accept="image/*, application/pdf"
                   onChange={(e) =>
                     setCurriculumFile(e.target.files?.[0] ?? null)
                   }
@@ -668,7 +668,7 @@ export default function AtualizarProfissional(): JSX.Element {
               <FormControl>
                 <Input
                   type="file"
-                  accept="application/pdf"
+                  accept="image/*, application/pdf"
                   multiple
                   onChange={(e) => {
                     const list = Array.from(e.target.files ?? []);
