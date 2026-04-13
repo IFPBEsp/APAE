@@ -15,14 +15,15 @@ import {
 } from "@/hooks/use-members-register-context";
 import { formatCEP } from "@/lib/formats";
 import { Address, AddressData } from "@/schemas/member-schemas";
-import { EditAddress } from "@/schemas/edit-member-schemas";  
+import { EditAddress } from "@/schemas/edit-member-schemas";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { useState, useEffect } from "react";
-import { usePathname } from "next/navigation"; 
+import { usePathname } from "next/navigation";
 import { handleBackendValidationErrors } from "@/utils/form-errors";
 
 import { DoubleColumn, FormButton, MembersRegisterForm } from "../form";
+import z from "zod";
 
 export default function MembersRegisterAddressPage() {
   const {
@@ -31,7 +32,6 @@ export default function MembersRegisterAddressPage() {
   } = useMembersRegisterContext();
 
   const [isLoading, setIsLoading] = useState(false);
-
 
   const pathname = usePathname();
   const isEditing = pathname.includes("/edit");
@@ -43,7 +43,6 @@ export default function MembersRegisterAddressPage() {
     defaultValues: address,
   });
 
-  
   const [isInitialized, setIsInitialized] = useState(false);
 
   useEffect(() => {

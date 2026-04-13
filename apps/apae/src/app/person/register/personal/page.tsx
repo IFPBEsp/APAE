@@ -22,14 +22,15 @@ import {
   formatRG,
 } from "@/lib/formats";
 import { Personal, PersonalData } from "@/schemas/member-schemas";
-import { EditPersonal } from "@/schemas/edit-member-schemas"; 
+import { EditPersonal } from "@/schemas/edit-member-schemas";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { useState, useEffect } from "react";
-import { usePathname } from "next/navigation"; 
+import { usePathname } from "next/navigation";
 import { handleBackendValidationErrors } from "@/utils/form-errors";
 
 import { DoubleColumn, FormButton, MembersRegisterForm } from "../form";
+import z from "zod";
 
 export default function MembersRegisterPersonalPage() {
   const {
@@ -38,14 +39,14 @@ export default function MembersRegisterPersonalPage() {
   } = useMembersRegisterContext();
 
   const [isLoading, setIsLoading] = useState(false);
-  
+
   const pathname = usePathname();
   const isEditing = pathname.includes("/edit");
   const currentSchema = isEditing ? EditPersonal : Personal;
 
   const form = useForm<z.infer<typeof Personal>>({
     mode: "onBlur",
-    resolver: zodResolver(currentSchema),
+    resolver: zodResolver(Personal),
     defaultValues: personal,
   });
 
@@ -54,7 +55,7 @@ export default function MembersRegisterPersonalPage() {
   useEffect(() => {
     if (personal.name && !isInitialized) {
       form.reset(personal);
-      setIsInitialized(true); 
+      setIsInitialized(true);
     }
   }, [personal, form, isInitialized]);
 
@@ -150,10 +151,15 @@ export default function MembersRegisterPersonalPage() {
               <FormItem>
                 <FormLabel>NIS *</FormLabel>
                 <FormControl>
-                  <Input placeholder="Apenas 11 números" {...field}maxLength={11}onChange={(e) => {
-                    const value = e.target.value.replace(/\D/g, "");
-                    field.onChange(value);
-            }} />
+                  <Input
+                    placeholder="Apenas 11 números"
+                    {...field}
+                    maxLength={11}
+                    onChange={(e) => {
+                      const value = e.target.value.replace(/\D/g, "");
+                      field.onChange(value);
+                    }}
+                  />
                 </FormControl>
                 <FormMessage />
               </FormItem>

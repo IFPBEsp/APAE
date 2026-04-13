@@ -24,7 +24,7 @@ export function useProfessionalDocuments(id?: string) {
         setLoading(true);
         setError(null);
 
-        const data = await getProfessionalDocuments(id);
+        const data = await getProfessionalDocuments(id as string);
 
         if (!cancelled) setDocuments(data ?? []);
       } catch (err) {

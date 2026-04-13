@@ -1,6 +1,11 @@
 "use client";
 
-import { MembersRegisterProvider, useMembersRegisterContext, MembersRegisterState, MembersRegisterStep } from "@/hooks/use-members-register-context";
+import {
+  MembersRegisterProvider,
+  useMembersRegisterContext,
+  MembersRegisterState,
+  MembersRegisterStep,
+} from "@/hooks/use-members-register-context";
 import { VaccinesProvider } from "@/hooks/use-vaccines";
 import { DisordersProvider } from "@/hooks/use-disorders";
 import { useParams, usePathname } from "next/navigation";
@@ -12,7 +17,9 @@ interface AddressData {
   number?: string;
 }
 
-interface VaccineName { name: string }
+interface VaccineName {
+  name: string;
+}
 
 interface ParentData {
   name?: string;
@@ -37,7 +44,7 @@ function EditPatientDataLoader({ children }: { children: React.ReactNode }) {
 
     async function load() {
       try {
-        const res = await fetch(`/api/pessoas/${id}`, { cache: 'no-store' });
+        const res = await fetch(`/api/pessoas/${id}`, { cache: "no-store" });
         if (!res.ok) throw new Error("Erro ao buscar dados do paciente");
         const data = await res.json();
 
@@ -51,60 +58,70 @@ function EditPatientDataLoader({ children }: { children: React.ReactNode }) {
         };
 
         const mappedData: MembersRegisterState = {
-           personal: {
-             name: data.fullName || "",
-             cpf: data.cpf || "",
-             phone: data.contact || "",
-             rg: {
-               number: data.rg || "",
-               issuing: { body: data.issuingAgency || "", date: data.issueDate ? new Date(data.issueDate) : new Date() }
-             },
-             cns: data.cns || "",
-             nis: data.nis || "",
-             birth: { certificate: data.birthCertificateNumber || "", date: data.birthDate ? new Date(data.birthDate) : new Date(), place: data.birthplace || data.nationality || "" }
-           },
-           address: {
-             cep: data.address?.cep || "",
-             state: data.address?.state || "",
-             city: data.address?.city || "",
-             district: data.address?.neighborhood || "",
-             street: formatStreet(data.address)
-           },
-           additionals: {
-             diseases: data.annualRegistry?.diseases || "",
-             medications: data.annualRegistry?.continuousMedication || "",
-             vaccines: data.vaccineNames?.map((v: VaccineName) => v.name) || [],
-             allergies: data.allergies || "",
-             disability: { types: [], report: undefined },
-             care: { types: [], referral: undefined },
-             bpc: data.annualRegistry?.bpc ?? false,
-             householdIncome: data.annualRegistry?.familyIncome ? (data.annualRegistry.familyIncome * 100).toString() : "0"
-           },
-           guardian: {
-             name: data.guardian?.name || "",
-             contact: data.guardian?.contact || "",
-             kinship: data.guardian?.kinship || "",
-             address: {
-               cep: data.guardian?.address?.cep || "",
-               state: data.guardian?.address?.state || "",
-               city: data.guardian?.address?.city || "",
-               district: data.guardian?.address?.neighborhood || "",
-               street: formatStreet(data.guardian?.address)
-             }
-           },
-           kinships: data.parents?.map((p: ParentData) => ({
-             name: p.name || "",
-             cpf: p.cpf || "",
-             rg: p.rg || "",
-             occupation: p.profession || "",
-             alive: p.isAlive ?? true,
-             type: p.kinship || ""
-           })) || [],
-           profile: {
-             role: data.isStudent ? "student" : "patient",
-             photo: undefined
-           },
-           step: pathname.split('/').pop() as MembersRegisterStep
+          personal: {
+            name: data.fullName || "",
+            cpf: data.cpf || "",
+            phone: data.contact || "",
+            rg: {
+              number: data.rg || "",
+              issuing: {
+                body: data.issuingAgency || "",
+                date: data.issueDate ? new Date(data.issueDate) : new Date(),
+              },
+            },
+            cns: data.cns || "",
+            nis: data.nis || "",
+            birth: {
+              certificate: data.birthCertificateNumber || "",
+              date: data.birthDate ? new Date(data.birthDate) : new Date(),
+              place: data.birthplace || data.nationality || "",
+            },
+          },
+          address: {
+            cep: data.address?.cep || "",
+            state: data.address?.state || "",
+            city: data.address?.city || "",
+            district: data.address?.neighborhood || "",
+            street: formatStreet(data.address),
+          },
+          additionals: {
+            diseases: data.annualRegistry?.diseases || "",
+            medications: data.annualRegistry?.continuousMedication || "",
+            vaccines: data.vaccineNames?.map((v: VaccineName) => v.name) || [],
+            allergies: data.allergies || "",
+            disability: { types: [], report: undefined },
+            care: { types: [], referral: undefined },
+            bpc: data.annualRegistry?.bpc ?? false,
+            householdIncome: data.annualRegistry?.familyIncome
+              ? (data.annualRegistry.familyIncome * 100).toString()
+              : "0",
+          },
+          guardian: {
+            name: data.guardian?.name || "",
+            contact: data.guardian?.contact || "",
+            kinship: data.guardian?.kinship || "",
+            address: {
+              cep: data.guardian?.address?.cep || "",
+              state: data.guardian?.address?.state || "",
+              city: data.guardian?.address?.city || "",
+              district: data.guardian?.address?.neighborhood || "",
+              street: formatStreet(data.guardian?.address),
+            },
+          },
+          kinships:
+            data.parents?.map((p: ParentData) => ({
+              name: p.name || "",
+              cpf: p.cpf || "",
+              rg: p.rg || "",
+              occupation: p.profession || "",
+              alive: p.isAlive ?? true,
+              type: p.kinship || "",
+            })) || [],
+          profile: {
+            role: data.isStudent ? "student" : "patient",
+            photo: undefined,
+          },
+          step: pathname.split("/").pop() as MembersRegisterStep,
         };
 
         setters.loadAllData(mappedData);
@@ -120,7 +137,9 @@ function EditPatientDataLoader({ children }: { children: React.ReactNode }) {
     return (
       <div className="flex h-screen items-center justify-center flex-col gap-4">
         <Loader2 className="animate-spin text-[#0D4F97] h-10 w-10" />
-        <p className="text-gray-500 font-medium">Carregando dados para edição...</p>
+        <p className="text-gray-500 font-medium">
+          Carregando dados para edição...
+        </p>
       </div>
     );
   }
@@ -128,10 +147,13 @@ function EditPatientDataLoader({ children }: { children: React.ReactNode }) {
   return <>{children}</>;
 }
 
-export default function EditPatientLayout({ children }: { children: React.ReactNode }) {
+export default function EditPatientLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
   return (
     <VaccinesProvider>
-      {/* @ts-expect-error Provider component typing */}
       <DisordersProvider>
         <MembersRegisterProvider>
           <EditPatientDataLoader>{children}</EditPatientDataLoader>

@@ -17,13 +17,14 @@ import { formatCEP } from "@/lib/formats";
 import { Guardian, GuardianData } from "@/schemas/member-schemas";
 import { EditGuardian } from "@/schemas/edit-member-schemas";
 import { zodResolver } from "@hookform/resolvers/zod";
-import React, { useState, useEffect } from "react"; 
+import React, { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { handleBackendValidationErrors } from "@/utils/form-errors";
-import { usePathname } from "next/navigation"; 
+import { usePathname } from "next/navigation";
 import { formatPhone } from "@/lib/formats";
 
 import { DoubleColumn, FormButton, MembersRegisterForm } from "../form";
+import z from "zod";
 
 export default function MembersRegisterGuardianPage() {
   const {
@@ -70,34 +71,39 @@ export default function MembersRegisterGuardianPage() {
   return (
     <Form {...form}>
       <MembersRegisterForm
-        title={isEditing ? "Editar Dados do Responsável" : "Dados do Responsável"}
+        title={
+          isEditing ? "Editar Dados do Responsável" : "Dados do Responsável"
+        }
         onSubmit={form.handleSubmit(onSubmit)}
-
-
-       buttons={
+        buttons={
           <div className="flex justify-end gap-3 w-full">
             {/* Botão Voltar*/}
             <FormButton
               type="button"
               onClick={() => {
-                const destino = isEditing 
-                  ? MembersRegisterStep.ADDRESS 
+                const destino = isEditing
+                  ? MembersRegisterStep.ADDRESS
                   : MembersRegisterStep.ADDITIONALS;
                 setStep(destino);
               }}
               disabled={isLoading}
- 
-              className="bg-[#FCD511] text-[#0D4F97] hover:bg-[#0D4F97] hover:text-white font-baloo font-medium h-10 px-8 border-none shadow-sm transition-colors">              Voltar
+              className="bg-[#FCD511] text-[#0D4F97] hover:bg-[#0D4F97] hover:text-white font-baloo font-medium h-10 px-8 border-none shadow-sm transition-colors"
+            >
+              {" "}
+              Voltar
             </FormButton>
 
             {/* Botão Próximo */}
-              <FormButton 
-                type="submit" 
-                disabled={isLoading}
-                className="bg-[#FCD511] text-[#0D4F97] hover:bg-[#0D4F97] hover:text-white font-baloo font-medium h-10 px-8 border-none shadow-sm transition-colors">              {isLoading ? "Validando..." : "Próximo"}
+            <FormButton
+              type="submit"
+              disabled={isLoading}
+              className="bg-[#FCD511] text-[#0D4F97] hover:bg-[#0D4F97] hover:text-white font-baloo font-medium h-10 px-8 border-none shadow-sm transition-colors"
+            >
+              {" "}
+              {isLoading ? "Validando..." : "Próximo"}
             </FormButton>
           </div>
-        }    
+        }
       >
         <DoubleColumn>
           <FormField
@@ -125,10 +131,13 @@ export default function MembersRegisterGuardianPage() {
                 <FormLabel>Contato de Emergência *</FormLabel>
                 <FormControl>
                   <Input
-                    placeholder="(00) 00000-0000"{...field}maxLength={15} onChange={(e) => {
-                      const formatted = formatPhone(e.target.value); 
+                    placeholder="(00) 00000-0000"
+                    {...field}
+                    maxLength={15}
+                    onChange={(e) => {
+                      const formatted = formatPhone(e.target.value);
                       field.onChange(formatted);
-                  }}
+                    }}
                   />
                 </FormControl>
                 <FormMessage />

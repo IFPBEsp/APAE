@@ -156,7 +156,6 @@ export default function AtualizarProfissional(): JSX.Element {
   useEffect(() => {
     if (!profissional?.id) return;
     refreshDocuments(profissional.id);
-
   }, [profissional?.id]);
 
   const groupedDocs = useMemo(() => {
@@ -211,13 +210,13 @@ export default function AtualizarProfissional(): JSX.Element {
       }));
 
     const payload = {
-      serviceArea: { area: values.areaAtendimento },
+      serviceArea: values.areaAtendimento,
       phoneNumber: values.telefone,
       professionalDocument: values.documentoProfissional.trim(),
       email: values.email.trim(),
       name: values.nomeCompleto.trim(),
       identityDocument: values.rg.trim(),
-      address: {
+      address: JSON.stringify({
         state: values.estado,
         city: values.cidade.trim(),
         neighborhood: values.bairro.trim(),
@@ -225,7 +224,7 @@ export default function AtualizarProfissional(): JSX.Element {
         number: values.numero?.trim(),
         complement: values.complemento?.trim(),
         cep: values.cep,
-      },
+      }),
       availabilities,
     };
 
@@ -406,10 +405,11 @@ export default function AtualizarProfissional(): JSX.Element {
                   <FormControl>
                     <Select onValueChange={field.onChange} value={field.value}>
                       <SelectTrigger
-                        className={`w-full ${fieldState.invalid
+                        className={`w-full ${
+                          fieldState.invalid
                             ? "border-red-500"
                             : "border-gray-300"
-                          }`}
+                        }`}
                       >
                         <SelectValue placeholder="Selecione um estado" />
                       </SelectTrigger>

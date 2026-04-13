@@ -13,7 +13,7 @@ import {
   useMembersRegisterContext,
 } from "@/hooks/use-members-register-context";
 import { Profile } from "@/schemas/member-schemas";
-import { EditProfile } from "@/schemas/edit-member-schemas"; 
+import { EditProfile } from "@/schemas/edit-member-schemas";
 import { zodResolver } from "@hookform/resolvers/zod";
 import React, { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
@@ -22,7 +22,7 @@ import { handleBackendValidationErrors } from "@/utils/form-errors";
 import z from "zod";
 import { FileInputButton, FormButton, MembersRegisterForm } from "../form";
 import { Checkbox } from "@/components/ui/checkbox";
-import { useRouter, useParams, usePathname } from "next/navigation"; 
+import { useRouter, useParams, usePathname } from "next/navigation";
 import { toast } from "react-toastify";
 
 export default function MembersRegisterProfilePage() {
@@ -31,7 +31,7 @@ export default function MembersRegisterProfilePage() {
     setters: { setProfileData, setStep },
     register,
   } = useMembersRegisterContext();
-  
+
   const [submitted, setSubmitted] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
@@ -43,7 +43,7 @@ export default function MembersRegisterProfilePage() {
 
   const currentSchema = isEditing ? EditProfile : Profile;
 
-  const form = useForm<z.infer<typeof Profile>>({
+  const form = useForm<z.infer<typeof currentSchema>>({
     mode: "onBlur",
     resolver: zodResolver(currentSchema),
     defaultValues: profile,
@@ -65,13 +65,17 @@ export default function MembersRegisterProfilePage() {
           const res = await register(id);
 
           if (res.status === 201 || res.status === 200 || res.status === 204) {
-            toast.success(isEditing ? "Paciente atualizado com sucesso!" : "Membro cadastrado com sucesso!");
-            
-            router.push(isEditing ? `/person/${id}` : "/visualization-patients");
-          }
+            toast.success(
+              isEditing
+                ? "Paciente atualizado com sucesso!"
+                : "Membro cadastrado com sucesso!",
+            );
 
-          else if (res.status === 409) {
-            const msg = res.data?.message || "";
+            router.push(
+              isEditing ? `/person/${id}` : "/visualization-patients",
+            );
+          } else if (res.status === 409) {
+            const msg = (res.data?.message || "") as string;
             const msgLower = msg.toLowerCase();
 
             let targetField = "cpf";
@@ -91,16 +95,14 @@ export default function MembersRegisterProfilePage() {
             toast.error(displayMsg);
             setStep(MembersRegisterStep.PERSONAL);
 
-            form.setError(targetField as "cpf" | "rg" | "cns", {
+            form.setError("root", {
               type: "manual",
               message: displayMsg,
             });
 
             setSubmitted(false);
-          }
-
-          else if (res.status === 400) {
-            const firstError = res.data?.fields?.[0];
+          } else if (res.status === 400) {
+            const firstError = (res.data?.fields as any[])?.[0];
             const backendField = firstError?.field || "";
             const fieldLower = backendField.toLowerCase();
             const errorMessage = firstError?.message || "Erro de validação";
@@ -151,7 +153,9 @@ export default function MembersRegisterProfilePage() {
             handleBackendValidationErrors(res.data, form.setError);
             setSubmitted(false);
           } else {
-            toast.error(res.data?.message || "Erro inesperado no servidor.");
+            toast.error(
+              (res.data?.message as string) || "Erro inesperado no servidor.",
+            );
             setSubmitted(false);
           }
         } catch {
@@ -162,9 +166,18 @@ export default function MembersRegisterProfilePage() {
         }
       })();
     }
-  }, [submitted, profile, register, router, form.setError, setStep, id, isEditing]);
+  }, [
+    submitted,
+    profile,
+    register,
+    router,
+    form.setError,
+    setStep,
+    id,
+    isEditing,
+  ]);
 
-  const onSubmit = async (values: z.infer<typeof Profile>) => {
+  const onSubmit = async (values: z.infer<typeof currentSchema>) => {
     setProfileData(values);
     setSubmitted(true);
   };
@@ -185,7 +198,11 @@ export default function MembersRegisterProfilePage() {
             </FormButton>
 
             <FormButton type="submit" disabled={isLoading}>
-              {isLoading ? "Salvando..." : (isEditing ? "Salvar Alterações" : "Salvar")}
+              {isLoading
+                ? "Salvando..."
+                : isEditing
+                  ? "Salvar Alterações"
+                  : "Salvar"}
             </FormButton>
           </>
         }
@@ -196,11 +213,13 @@ export default function MembersRegisterProfilePage() {
             name="photo"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Foto {isEditing ? "(Opcional na edição)" : "*"}</FormLabel>
+                <FormLabel>
+                  Foto {isEditing ? "(Opcional na edição)" : "*"}
+                </FormLabel>
                 <FormControl>
                   <FileInputButton
                     id={field.name}
-                    className="min-w-3xs !cursor-pointer bg-gradient-to-b hover:bg-zinc-300/55"  
+                    className="min-w-3xs !cursor-pointer bg-gradient-to-b hover:bg-zinc-300/55"
                     disabled={isLoading}
                     onChange={(e) => {
                       if (e.target.files && e.target.files[0]) {
