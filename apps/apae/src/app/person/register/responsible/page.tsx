@@ -51,8 +51,6 @@ export default function MembersRegisterGuardianPage() {
     },
   });
 
-  const [isInitialized, setIsInitialized] = useState(false);
-
   const isNoNumber = form.watch("address.noNumber");
 
   useEffect(() => {
@@ -67,11 +65,16 @@ export default function MembersRegisterGuardianPage() {
   }, [isNoNumber, form]);
 
   useEffect(() => {
-    if (isEditing && guardian.name && !isInitialized) {
-      form.reset(guardian);
-      setIsInitialized(true);
+    if (guardian && Object.keys(guardian).length > 0) {
+      form.reset({
+        ...guardian,
+        address: {
+          ...guardian.address,
+          noNumber: guardian.address?.number === "SN"
+        }
+      });
     }
-  }, [isEditing, guardian, form, isInitialized]);
+  }, [guardian, form]);
 
   const onSubmit = async (values: any) => {
     setIsLoading(true);

@@ -8,7 +8,7 @@ export const EditAddress = z.object({
   district: z.string().min(1, "Obrigatório"),
   street: z.string().min(1, "Obrigatório"),
   noNumber: z.boolean().optional(),
-  number: z.string().min(1, "Número é obrigatório").regex(/^(\d+|SN|sn|S\/N|s\/n)$/, "Número deve conter apenas dígitos ou SN"),
+  number: z.string().min(1, "Número é obrigatório"),
   complement: z.string().optional(),
 });
 

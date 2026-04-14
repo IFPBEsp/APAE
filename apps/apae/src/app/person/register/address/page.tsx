@@ -42,12 +42,10 @@ export default function MembersRegisterAddressPage() {
     mode: "onBlur",
     resolver: zodResolver(currentSchema),
     defaultValues: {
-      address,
+      ...address,
       noNumber: address.number === "SN" || false 
     },
   });
-
-  const [isInitialized, setIsInitialized] = useState(false);
 
   const isNoNumber = form.watch("noNumber");
 
@@ -59,23 +57,23 @@ export default function MembersRegisterAddressPage() {
         if (form.getValues("number") === "SN") {
         form.setValue("number", "");
       }
-  }
+    }
   }, [isNoNumber, form]);
 
   useEffect(() => {
-    if (isEditing && address.cep && !isInitialized) {
+    if (address && Object.keys(address).length > 0) {
       form.reset({
         ...address,
-        noNumber: address.number === "SN"
+        noNumber: address.number === "SN" || false
       });
-      setIsInitialized(true);
     }
-  }, [address, form, isEditing, isInitialized]);
+  }, [address, form]);
 
   const onSubmit = async (values: any) => {
     setIsLoading(true);
     try {
       const {noNumber, ...dataToSave} = values;
+      if(noNumber) dataToSave.number = "SN";
       setAddressData(dataToSave);
       
         if (isEditing) {

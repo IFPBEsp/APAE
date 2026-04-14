@@ -24,15 +24,6 @@ function EditPatientDataLoader({ children }: { children: React.ReactNode }) {
         const res = await fetch(`/api/pessoas/${id}`, { cache: 'no-store' });
         if (!res.ok) throw new Error("Erro ao buscar dados do paciente");
         const data = await res.json();
-        
-        const formatStreet = (addr: any) => {
-          if (!addr?.street) return "";
-          const street = addr.street.trim();
-          const number = addr.number ? addr.number.trim() : "";
-          
-          if (street.includes(",")) return street;
-          return number ? `${street}, ${number}` : street;
-        };
 
         const mappedData: any = {
            personal: { 
@@ -52,7 +43,10 @@ function EditPatientDataLoader({ children }: { children: React.ReactNode }) {
              state: data.address?.state || "", 
              city: data.address?.city || "", 
              district: data.address?.neighborhood || "", 
-             street: formatStreet(data.address) 
+             street: data.address?.street || "",
+              number: data.address?.number || "",
+              noNumber: data.address?.number === "SN" || false,
+              complement: data.address?.complement || ""
            },
            additionals: { 
              diseases: data.annualRegistry?.diseases || "", 
@@ -73,7 +67,10 @@ function EditPatientDataLoader({ children }: { children: React.ReactNode }) {
                state: data.guardian?.address?.state || "", 
                city: data.guardian?.address?.city || "", 
                district: data.guardian?.address?.neighborhood || "", 
-               street: formatStreet(data.guardian?.address)  
+               street: data.guardian?.address?.street || "",
+               number: data.guardian?.address?.number || "",
+               noNumber: data.guardian?.address?.noNumber === "SN" || false,
+               complement: data.guardian?.address?.complement || ""
              } 
            },
            kinships: data.parents?.map((p: any) => ({ 

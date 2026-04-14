@@ -249,7 +249,14 @@ export default function PersonDetailsPage() {
                 <InfoRow label="Nome" value={pessoa.guardian.name} />
                 <InfoRow label="Parentesco" value={pessoa.guardian.kinship} />
                 <InfoRow label="Contato" value={pessoa.guardian.contact} />
-                <InfoRow label="Endereço" value={`${pessoa.guardian.address?.street ?? ""}, ${pessoa.guardian.address?.number ?? ""}`} />
+                <InfoRow label="Rua" value={pessoa.guardian.address?.street} />
+                <InfoRow label="Número" value={pessoa.guardian.address?.number} />
+                <InfoRow label="Sem Número" value={pessoa.guardian.address?.noNumber} />
+                <InfoRow label="Bairro" value={pessoa.guardian.address?.neighborhood} />
+                <InfoRow label="Cidade" value={pessoa.guardian.address?.city} />
+                <InfoRow label="Estado" value={pessoa.guardian.address?.state} />
+                <InfoRow label="CEP" value={pessoa.guardian.address?.cep} />
+                <InfoRow label="Complemento" value={pessoa.guardian.address?.complement} />
               </div>
             )}
             {pessoa.parents?.map((parent: any) => (
