@@ -31,4 +31,6 @@ public interface AppointmentRepository extends JpaRepository<Appointment, UUID> 
           LocalDate initialDate,
           LocalTime hour
   );
+
+  long countByIsActiveTrue();
 }

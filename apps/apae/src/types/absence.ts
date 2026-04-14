@@ -1,4 +1,4 @@
-import { UUID } from '@/app/services/appointmentService';
+import { Patient, UUID } from '@/app/services/appointmentService';
 
 export interface CreateAbsenceDTO {
   generatedAppointmentId: UUID;
@@ -16,13 +16,6 @@ export interface AbsenceResponseDTO {
   notified: boolean;
   justificationDocumentId: string;
   isJustified: boolean;
-}
-
-export interface Patient {
-  id: UUID;
-  name: string;
-  contact: string;
-  birthDate: string;
 }
 
 export interface PatientWithAbsences {
