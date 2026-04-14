@@ -26,6 +26,7 @@ export default function NewPasswordPage() {
   });
 
   React.useEffect(() => {
+    // Conexão com a tela de validação vencida, atualize para o link enviado por email
     const email = sessionStorage.getItem("reset_email");
     const code = sessionStorage.getItem("reset_code");
 
