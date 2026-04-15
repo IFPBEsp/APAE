@@ -27,7 +27,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 
 import { recoverySchema, FormRecovery } from "@/schemas/authSchema";
-import { createBaseApi } from "@/lib/axios";
+import axios from "axios";
 
 export default function RecoveryPage() {
   const router = useRouter();
@@ -40,21 +40,13 @@ export default function RecoveryPage() {
     mode: "all",
   });
 
-  const handleSendCode = async () => {
-    const email = form.getValues("email");
+  const API_URL = process.env.NEXT_PUBLIC_API || "http://localhost:8090/api";
 
-    if (!email) {
-      form.setError("email", {
-        message: "E-mail é obrigatório",
-      });
-      return;
-    }
-
+  const handleSendCode = async (data: FormRecovery) => {
     try {
-      const api = await createBaseApi();
 
-      await api.post("/auth/password-recovery", {
-        email: email,
+      await axios.post(`${API_URL}/auth/password-recovery/request`, {
+        email: data.email,
       });
 
       toast.success("Se o e-mail existir, um link de recuperação foi enviado.");
@@ -63,14 +55,10 @@ export default function RecoveryPage() {
     }
   };
 
-  const onSubmit = async () => {
-    await handleSendCode();
-  };
-
   return (
     <Form {...form}>
       <form
-        onSubmit={form.handleSubmit(onSubmit)}
+        onSubmit={form.handleSubmit(handleSendCode)}
         className="w-full h-full flex justify-center"
       >
         <Card
