@@ -27,7 +27,7 @@ interface AddressData {
   cep: string;
   state: string;
   city: string;
-  district: string;
+  neighborhood: string;
   street: string;
   noNumber?: boolean;
   number: string;
@@ -149,7 +149,7 @@ const initialState: MembersRegisterState = {
     nis: "",
     birth: { certificate: "", date: new Date(), place: "" },
   },
-  address: { cep: "", state: "", city: "", district: "", street: "", number: "", complement: "", noNumber: false },
+  address: { cep: "", state: "", city: "", neighborhood: "", street: "", number: "", complement: "", noNumber: false },
   additionals: {
     id: undefined,
     diseases: "",
@@ -162,7 +162,7 @@ const initialState: MembersRegisterState = {
     householdIncome: "",
   },
   guardian: {
-    address: { cep: "", state: "", city: "", district: "", street: "", number: "", complement: "", noNumber: false },
+    address: { cep: "", state: "", city: "", neighborhood: "", street: "", number: "", complement: "", noNumber: false },
     contact: "",
     kinship: "",
     name: "",
@@ -337,10 +337,10 @@ export function MembersRegisterProvider({ children }: { children: React.ReactNod
           city: address.city || "Não informado",
           cep: address.cep || "00000-000",
           state: address.state || "Não informado",
-          neighborhood: address.district || "Não informado",
+          neighborhood: address.neighborhood || "Não informado",
           street: address.street || "Não informado",
           number: address.number || "S/N",
-          complement: "",
+          complement: address.complement || "",
         },
         guardian: {
           name: guardian.name || "Não informado",
@@ -350,10 +350,10 @@ export function MembersRegisterProvider({ children }: { children: React.ReactNod
             city: guardian.address.city || "Não informado",
             cep: guardian.address.cep || "00000-000",
             state: guardian.address.state || "Não informado",
-            neighborhood: guardian.address.district || "Não informado",
+            neighborhood: guardian.address.neighborhood || "Não informado",
             street: guardian.address.street || "Não informado",
             number: guardian.address.number || "S/N",
-            complement: "",
+            complement: guardian.address.complement || "",
           },
         },
         parents: kinships.map((k) => ({

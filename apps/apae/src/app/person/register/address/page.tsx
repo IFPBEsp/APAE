@@ -235,7 +235,7 @@ export default function MembersRegisterAddressPage() {
 
           <FormField
             control={form.control}
-            name="district"
+            name="neighborhood"
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Bairro *</FormLabel>

@@ -107,8 +107,11 @@ export const Address = z.object({
   cep: z.string().min(1, "CEP é obrigatório.").min(9, "CEP deve ter 8 dígitos"),
   state: z.string().min(3, "Estado deve ter pelo menos 3 letras (ex: Paraíba)"),
   city: z.string().min(2, "Cidade inválida"),
-  district: z.string().min(2, "Bairro inválido"),
+  neighborhood: z.string().min(2, "Bairro inválido"),
   street: z.string().min(2, "Rua inválida"),
+  number: z.string().min(1, "Número é obrigatório"),
+  noNumber: z.boolean(),
+  complement: z.string().optional(),
 });
 
 export const Additionals = z.object({

@@ -251,7 +251,6 @@ export default function PersonDetailsPage() {
                 <InfoRow label="Contato" value={pessoa.guardian.contact} />
                 <InfoRow label="Rua" value={pessoa.guardian.address?.street} />
                 <InfoRow label="Número" value={pessoa.guardian.address?.number} />
-                <InfoRow label="Sem Número" value={pessoa.guardian.address?.noNumber} />
                 <InfoRow label="Bairro" value={pessoa.guardian.address?.neighborhood} />
                 <InfoRow label="Cidade" value={pessoa.guardian.address?.city} />
                 <InfoRow label="Estado" value={pessoa.guardian.address?.state} />

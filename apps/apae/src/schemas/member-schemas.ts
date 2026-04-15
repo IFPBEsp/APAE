@@ -122,7 +122,7 @@ export const Address = z.object({
     .min(3, "Estado deve ser o nome completo (ex: Paraíba)")
     .regex(/^[a-zA-ZÀ-ÿ\s]+$/, "O estado deve conter apenas letras"),
   city: z.string().min(2, "Cidade inválida"),
-  district: z.string().min(2, "Bairro inválido"),
+  neighborhood: z.string().min(2, "Bairro inválido"),
   street: z
     .string()
     .min(2, "Rua é obrigatória")
