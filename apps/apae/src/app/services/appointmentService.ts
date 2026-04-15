@@ -248,7 +248,7 @@ export async function getAppointments(
   date?: string,
   time?: string,
   page: number = 0,
-  size: number = 20,
+  size: number = 100,
 ): Promise<Page<AppointmentResponseDTO>> {
   const query = new URLSearchParams({
     page: `${page}`,

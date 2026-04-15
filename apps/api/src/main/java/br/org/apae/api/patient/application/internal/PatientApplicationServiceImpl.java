@@ -1,5 +1,8 @@
 package br.org.apae.api.patient.application.internal;
 
+import br.org.apae.api.appointment.domain.repository.AbsenceRepository;
+import br.org.apae.api.appointment.mapper.AbsenceMapper;
+import br.org.apae.api.common.dto.appointment.response.absence.AbsenceResponseDTO;
 import br.org.apae.api.common.dto.patient.request.documents.CreateDocumentsDTO;
 import br.org.apae.api.common.dto.patient.request.patient.CreatePatientDTO;
 import br.org.apae.api.common.dto.patient.request.patient.UpdatePatientDTO;
@@ -7,6 +10,7 @@ import br.org.apae.api.common.dto.patient.response.guardian.GuardianResponseDTO;
 import br.org.apae.api.common.dto.patient.response.parent.ParentResponseDTO;
 import br.org.apae.api.common.dto.patient.response.patient.PatientResponseDTO;
 import br.org.apae.api.common.dto.patient.response.patient.PatientSummaryResponseDTO;
+import br.org.apae.api.common.dto.patient.response.patient.PatientWithAbsencesResponseDTO;
 import br.org.apae.api.common.dto.patient.response.vaccine.VaccineResponseDTO;
 import br.org.apae.api.patient.application.interfaces.AnnualRegistryApplicationService;
 import br.org.apae.api.patient.application.interfaces.GuardianApplicationService;
@@ -19,16 +23,15 @@ import br.org.apae.api.patient.domain.model.Patient;
 import br.org.apae.api.patient.domain.repository.PatientRepository;
 import br.org.apae.api.patient.domain.repository.PatientSpecification;
 
+import br.org.apae.api.patient.domain.repository.projection.PatientWithAbsenceProjection;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class PatientApplicationServiceImpl implements PatientApplicationService {
@@ -41,13 +44,17 @@ public class PatientApplicationServiceImpl implements PatientApplicationService 
     private final ParentApplicationService parentService;
     private final AnnualRegistryApplicationService annualRegistryService;
     private final PatientDocumentsService documentService;
+    private final AbsenceRepository absenceRepository;
+    private final AbsenceMapper absenceMapper;
 
     public PatientApplicationServiceImpl(PatientRepository patientRepository, PatientMapper patientMapper,
             PatientDomainService patientDomainService,
             GuardianApplicationService guardianService, VaccineApplicationService vaccineService,
             ParentApplicationService parentService,
             AnnualRegistryApplicationService annualRegistryService,
-            PatientDocumentsService documentService) {
+            PatientDocumentsService documentService,
+            AbsenceRepository absenceRepository,
+                                         AbsenceMapper absenceMapper) {
         this.patientRepository = patientRepository;
         this.patientMapper = patientMapper;
         this.patientDomainService = patientDomainService;
@@ -56,6 +63,8 @@ public class PatientApplicationServiceImpl implements PatientApplicationService 
         this.parentService = parentService;
         this.annualRegistryService = annualRegistryService;
         this.documentService = documentService;
+        this.absenceRepository = absenceRepository;
+        this.absenceMapper = absenceMapper;
     }
 
     @Override
@@ -168,6 +177,57 @@ public class PatientApplicationServiceImpl implements PatientApplicationService 
         annualRegistryService.deleteAllRegistriesByPatient(patient.getId());
 
         patientRepository.save(patient);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Page<PatientWithAbsencesResponseDTO> findPatientsWithAbsences(
+            Integer minAbsences,
+            String name,
+            Pageable pageable
+    ) {
+        name = Optional.ofNullable(name).orElse("");
+
+        Page<PatientWithAbsenceProjection> page =
+                patientRepository.findPatientsWithAbsences(minAbsences, name, pageable);
+
+        List<UUID> patientIds = page.getContent()
+                .stream()
+                .map(row -> row.getPatient().getId())
+                .toList();
+
+        final Map<UUID, List<AbsenceResponseDTO>> absencesGrouped;
+
+        if (!patientIds.isEmpty()) {
+            absencesGrouped =
+                    absenceRepository.findByPatientIds(patientIds)
+                            .stream()
+                            .collect(Collectors.groupingBy(
+                                    a -> a.getGeneratedAppointment().getPatientId(),
+                                    Collectors.mapping(
+                                            absenceMapper::toAbsenceResponse,
+                                            Collectors.toList()
+                                    )
+                            ));
+        } else {
+            absencesGrouped = Map.of();
+        }
+
+        return page.map(row -> {
+            UUID patientId = row.getPatient().getId();
+
+            String photo = documentService.getPatientPhoto(patientId);
+
+            List<AbsenceResponseDTO> absences =
+                    absencesGrouped.getOrDefault(patientId, List.of());
+
+            return new PatientWithAbsencesResponseDTO(
+                    patientMapper.toSummaryResponseDTO(row.getPatient(), photo),
+                    row.getAbsenceCount(),
+                    row.getLastAbsenceDate(),
+                    absences
+            );
+        });
     }
 
     @Override

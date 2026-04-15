@@ -63,7 +63,7 @@ O projeto foi automatizado para rodar com o mínimo de comandos utilizando **pnp
 - `pnpm docker:up`: Sobe apenas o banco de dados e MinIO.
 - `pnpm docker:down`: Para os containers e os remove da memória.
 - `pnpm docker:drop`: Para os containers, os remove e apaga os volumes associados.
-- `pnpm db:seed`: Cria um usuário admin no banco de dados para fins de testes.
+- `pnpm db:seed`: Cria um usuário admin e views em mock no banco de dados para fins de testes.
 
 #### Credenciais do usuário para testes:
 - Email: `admin@teste.com`

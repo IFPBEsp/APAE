@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import jakarta.persistence.ForeignKey;
 import jakarta.persistence.Index;
 import jakarta.persistence.Table;
+import org.checkerframework.common.aliasing.qual.Unique;
 import org.hibernate.annotations.*;
 
 import java.time.LocalDate;
@@ -36,6 +37,12 @@ public class Absence {
     @Column(name = "notificado", nullable = false)
     private Boolean notified = false;
 
+    @Column(name = "is_justificada", nullable = false)
+    private Boolean isJustified;
+
+    @Column(name= "documento_justificativa_id", unique = true)
+    private String justificationDocumentId;
+
     public Absence() {}
 
     public Absence(GeneratedAppointment generatedAppointment, LocalDate absenceDate, String justification) {
@@ -43,6 +50,7 @@ public class Absence {
         this.absenceDate = absenceDate;
         this.justification = justification;
         this.notified = false;
+        this.justificationDocumentId = null;
     }
 
     public UUID getId() { return id; }
@@ -59,4 +67,10 @@ public class Absence {
 
     public Boolean getNotified() { return notified; }
     public void setNotified(Boolean notified) { this.notified = notified; }
+
+    public Boolean getIsJustified() { return isJustified; }
+    public void setIsJustified(Boolean isJustified) { this.isJustified = isJustified; }
+
+    public String getJustificationDocumentId() { return justificationDocumentId; }
+    public void setJustificationDocumentId(String justificationDocumentId) { this.justificationDocumentId = justificationDocumentId; }
 }

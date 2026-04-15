@@ -76,6 +76,12 @@ export default function MembersRegisterGuardianPage() {
     }
   }, [guardian, form]);
 
+  useEffect(() => {
+    if (guardian.name !== "") {
+      form.reset(guardian);
+    }
+  }, [guardian, form]);
+
   const onSubmit = async (values: any) => {
     setIsLoading(true);
     try {

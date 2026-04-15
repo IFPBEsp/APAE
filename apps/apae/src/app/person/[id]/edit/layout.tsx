@@ -6,6 +6,8 @@ import { DisordersProvider } from "@/hooks/use-disorders";
 import { useParams, useRouter, usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import { Loader2 } from "lucide-react";
+import Image from "@/assets/background_image.jpg";
+import { SidebarSteps } from "@/components/shared/SidebarSteps";
 
 function EditPatientDataLoader({ children }: { children: React.ReactNode }) {
   const { setters, state } = useMembersRegisterContext();
@@ -115,7 +117,33 @@ export default function EditPatientLayout({ children }: { children: React.ReactN
       {/* @ts-ignore */}
       <DisordersProvider>
         <MembersRegisterProvider>
-          <EditPatientDataLoader>{children}</EditPatientDataLoader>
+          <EditPatientDataLoader>
+            {/* 🚀 NOVA ESTRUTURA VISUAL (Duas Colunas) */}
+            <div className="h-[90vh] md:h-screen rounded-xl md:rounded-none md:mx-0 mx-4 my-4 md:my-0 relative grid grid-cols-1 md:grid-cols-[1fr_2fr] antialiased overflow-hidden shadow-2xl">
+              
+              {/* Fundo e degradê da coluna esquerda */}
+              <div className="hidden md:block absolute inset-0 bg-cover bg-center bg-no-repeat grayscale-90 w-1/3" style={{ backgroundImage: `url(${Image.src})`, backgroundAttachment: "fixed" }} />
+              <div className="hidden md:block absolute inset-0 w-1/3" style={{ background: "linear-gradient(180deg, rgba(13, 79, 151, 0.9) 0%, rgba(13, 79, 151, 0.95) 100%)" }} />
+
+              {/* O MENU LATERAL */}
+              <div className="hidden md:flex relative z-10 w-full h-full bg-[#0D4F97]/90 backdrop-blur-sm">
+                <SidebarSteps />
+              </div>
+
+              {/* O FORMULÁRIO (Coluna direita) */}
+              <div className="relative flex flex-col w-full h-full p-4 md:p-12 bg-slate-50 overflow-y-auto">
+                <div className="max-w-3xl mx-auto w-full">
+                  <h1 className="text-2xl md:text-3xl font-bold text-[#0D4F97] mb-6 border-b pb-4">
+                    Edição de Paciente
+                  </h1>
+                  <div className="bg-white p-6 md:p-8 rounded-xl shadow-sm border border-slate-200">
+                    {children}
+                  </div>
+                </div>
+              </div>
+
+            </div>
+          </EditPatientDataLoader>
         </MembersRegisterProvider>
       </DisordersProvider>
     </VaccinesProvider>

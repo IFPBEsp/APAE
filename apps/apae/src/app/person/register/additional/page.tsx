@@ -215,6 +215,18 @@ export default function MembersRegisterAdditionalsPage() {
     }
   }, [additionals, form, isEditing, isInitialized]);
 
+  useEffect(() => {
+    const hasData = 
+      additionals.diseases !== "" || 
+      additionals.vaccines.length > 0 || 
+      additionals.disability.report instanceof File || 
+      additionals.care.referral instanceof File;
+
+    if (hasData) {
+      form.reset(additionals);
+    }
+  }, [additionals, form]);
+
   const onSubmit = async (values: any) => {
     setIsLoading(true);
     try {

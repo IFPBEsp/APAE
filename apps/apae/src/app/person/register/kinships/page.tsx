@@ -16,7 +16,7 @@ import {
 import { formatCPF, formatRG } from "@/lib/formats";
 import { Kinships } from "@/schemas/member-schemas";
 import { zodResolver } from "@hookform/resolvers/zod";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useFieldArray, useForm } from "react-hook-form";
 import { handleBackendValidationErrors } from "@/utils/form-errors";
 
@@ -44,6 +44,11 @@ export default function MembersRegisterKinshipsPage() {
       kinships,
     },
   });
+  useEffect(() => {
+    if (kinships.length > 0) {
+      form.reset({ kinships }); 
+    }
+  }, [kinships, form]);
 
   const { fields, append, remove } = useFieldArray({
     control: form.control,

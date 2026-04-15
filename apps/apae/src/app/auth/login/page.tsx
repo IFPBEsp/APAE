@@ -132,9 +132,8 @@ function LoginPage() {
               />
             </div>
             <div className="text-right mt-0">
-              {/* Precisa fazer */}
               <Link
-                href="#"
+                href="/auth/recovery"
                 className="text-sm text-gray-600 hover:text-blue-600 transition-colors duration-200"
               >
                 Esqueceu a senha?

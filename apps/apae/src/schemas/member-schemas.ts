@@ -1,5 +1,7 @@
 import z, { number, ZodCoercedDate } from "zod";
 
+const MAX_FILE_SIZE = 2 * 1024 * 1024; 
+
 const CPF = z
   .string()
   .min(1, "CPF é obrigatório")

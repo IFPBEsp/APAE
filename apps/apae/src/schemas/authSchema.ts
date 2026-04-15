@@ -41,7 +41,7 @@ export const signUpSchema = z
     message: "As senhas não coincidem",
     path: ["confirmarSenha"],
   });
-
+''
 export type FormSignUp = z.infer<typeof signUpSchema>;
 
 export const loginSchema = z.object({
@@ -64,4 +64,24 @@ export const loginSchema = z.object({
     .min(6, { message: "Senha deve ter pelo menos 6 caracteres." }),
 });
 
+export const recoverySchema = z.object({
+  email: z
+    .string()
+    .trim()
+    .min(1, "E-mail é obrigatório")
+    .email("Email inválido"),
+});
+
 export type FormLogin = z.infer<typeof loginSchema>;
+
+export const newPasswordSchema = z.object({
+  senha: z.string().min(6, "A senha deve ter pelo menos 6 caracteres"),
+  confirmarSenha: z.string(),
+}).refine((data) => data.senha === data.confirmarSenha, {
+  message: "As senhas não coincidem",
+  path: ["confirmarSenha"],
+});
+
+export type FormNewPasswordSchema = z.infer<typeof newPasswordSchema>;
+
+export type FormRecovery = z.infer<typeof recoverySchema>;
