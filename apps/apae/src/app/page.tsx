@@ -21,7 +21,9 @@ import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import {
   CalendarDays,
-  Users
+  Users,
+  UserRoundCheck,
+  UserRoundX
 } from 'lucide-react';
 import { useEffect, useState, useRef } from 'react';
 
@@ -52,6 +54,8 @@ export default function DashboardPage() {
   const [selectedDate, setSelectedDate] = useState<Date>(new Date());
   const [todayAppointments, setTodayAppointments] = useState<TodayAppointment[]>([]);
   const [allAppointments, setAllAppointments] = useState<AppointmentResponseDTO[]>([]);
+  const [activeAppointments, setActiveAppointments] = useState<TodayAppointment[]>([]);
+  const [inactiveAppointments, setInactiveAppointments] = useState<TodayAppointment[]>([]);
   const [isCreateOpen, setIsCreateOpen] = useState(false);
   const lastFetchedDate = useRef<string | null>(null);
 
@@ -70,6 +74,32 @@ export default function DashboardPage() {
     setAllAppointments(allAppointmentsPage.content || []);
   };
 
+  const fetchTodayAppointmentsByStatus = async () => {
+    if (!todayAppointments.length || !allAppointments.length) return;
+
+    const appointmentMap = new Map(
+      allAppointments.map(a => [a.id, a])
+    );
+
+    const active: TodayAppointment[] = [];
+    const inactive: TodayAppointment[] = [];
+
+    for (const today of todayAppointments) {
+      const related = appointmentMap.get(today.ruleId);
+
+      if (!related) continue;
+
+      if (related.isActive) {
+        active.push(today);
+      } else {
+        inactive.push(today);
+      }
+    }
+
+    setActiveAppointments(active);
+    setInactiveAppointments(inactive);
+  };
+
   useEffect(() => {
 
     const dateKey = format(selectedDate, 'yyyy-MM-dd');
@@ -81,6 +111,10 @@ export default function DashboardPage() {
     fetchTodayAppointments();
     fetchAllAppointments();
   }, [selectedDate]);
+
+  useEffect(() => {
+    fetchTodayAppointmentsByStatus();
+  }, [todayAppointments, allAppointments]);
 
   const markAsPerformedHandle = async (id: UUID) => {
     await markAsPerformed(id);
@@ -157,6 +191,20 @@ export default function DashboardPage() {
             title="Todos os agendamentos"
             icon={Users}
             value={allAppointments.length}
+            titleClassName="text-[#0D4F97]"
+            valueClassName="text-[#0D4F97]"
+          />
+          <InfoCard
+            title="Ativos"
+            icon={UserRoundCheck}
+            value={activeAppointments.length}
+            titleClassName="text-[#0D4F97]"
+            valueClassName="text-[#0D4F97]"
+          />
+          <InfoCard
+            title="Inativos"
+            icon={UserRoundX}
+            value={inactiveAppointments.length}
             titleClassName="text-[#0D4F97]"
             valueClassName="text-[#0D4F97]"
           />
