@@ -194,7 +194,7 @@ useEffect(() => {
             />
           </div>
 
-          <Select onValueChange={setSelectedArea}>
+          <Select value={selectedArea} onValueChange={setSelectedArea}>
             <SelectTrigger className="data-[placeholder]:text-[#0D4F97] border-[#0D4F97] hover:bg-accent">
               <SelectValue placeholder="Área da Saúde" />
             </SelectTrigger>
