@@ -110,7 +110,11 @@ useEffect(() => {
         .toLowerCase()
         .includes(search);
 
-    return matchesDate && matchesSearch;
+    const matchesArea = selectedArea
+      ? appointment.professional.healthSector === selectedArea
+        : true;
+
+    return matchesDate && matchesSearch && matchesArea;
   });
 
   const clearFilter = () => {
@@ -190,7 +194,7 @@ useEffect(() => {
             />
           </div>
 
-          <Select onValueChange={setSelectedArea}>
+          <Select value={selectedArea} onValueChange={setSelectedArea}>
             <SelectTrigger className="data-[placeholder]:text-[#0D4F97] border-[#0D4F97] hover:bg-accent">
               <SelectValue placeholder="Área da Saúde" />
             </SelectTrigger>
