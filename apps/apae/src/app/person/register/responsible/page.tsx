@@ -17,13 +17,11 @@ import { formatCEP } from "@/lib/formats";
 import { Guardian } from "@/schemas/member-schemas";
 import { EditGuardian } from "@/schemas/edit-member-schemas";
 import { zodResolver } from "@hookform/resolvers/zod";
-import React, { useState, useEffect } from "react"; 
+import React, { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { handleBackendValidationErrors } from "@/utils/form-errors";
-import { usePathname } from "next/navigation"; 
+import { usePathname } from "next/navigation";
 import { formatPhone } from "@/lib/formats";
-
-import z from "zod";
 import { DoubleColumn, FormButton, MembersRegisterForm } from "../form";
 
 export default function MembersRegisterGuardianPage() {
@@ -36,11 +34,11 @@ export default function MembersRegisterGuardianPage() {
 
   const pathname = usePathname();
   const isEditing = pathname.includes("/edit");
-  const currentSchema = isEditing ? EditGuardian : Guardian; 
+  const currentSchema = isEditing ? EditGuardian : Guardian;
 
-  const form = useForm<any>({ 
+  const form = useForm<any>({
     mode: "onBlur",
-    resolver: zodResolver(currentSchema), 
+    resolver: zodResolver(currentSchema),
     defaultValues: guardian,
   });
 
@@ -78,39 +76,32 @@ export default function MembersRegisterGuardianPage() {
       <MembersRegisterForm
         title={isEditing ? "Editar Dados do Responsável" : "Dados do Responsável"}
         onSubmit={form.handleSubmit(onSubmit)}
-
-
-       buttons={
-          <div className="flex justify-end gap-3 w-full">
-            {/* Botão Voltar*/}
+        buttons={
+          <>
             <FormButton
               type="button"
               onClick={() => {
-                const destino = isEditing 
-                  ? MembersRegisterStep.ADDRESS 
+                const destino = isEditing
+                  ? MembersRegisterStep.ADDRESS
                   : MembersRegisterStep.ADDITIONALS;
                 setStep(destino);
               }}
               disabled={isLoading}
- 
-              className="bg-[#FCD511] text-[#0D4F97] hover:bg-[#0D4F97] hover:text-white font-baloo font-medium h-10 px-8 border-none shadow-sm transition-colors">              Voltar
+            >
+              Voltar
             </FormButton>
-
-            {/* Botão Próximo */}
-              <FormButton 
-                type="submit" 
-                disabled={isLoading}
-                className="bg-[#FCD511] text-[#0D4F97] hover:bg-[#0D4F97] hover:text-white font-baloo font-medium h-10 px-8 border-none shadow-sm transition-colors">              {isLoading ? "Validando..." : "Próximo"}
+            <FormButton type="submit" disabled={isLoading}>
+              {isLoading ? "Validando..." : "Próximo"}
             </FormButton>
-          </div>
-        }    
+          </>
+        }
       >
         <DoubleColumn>
           <FormField
             control={form.control}
             name="name"
             render={({ field }) => (
-              <FormItem>
+              <FormItem className="md:col-span-2">
                 <FormLabel>Nome Completo *</FormLabel>
                 <FormControl>
                   <Input
@@ -131,10 +122,30 @@ export default function MembersRegisterGuardianPage() {
                 <FormLabel>Contato de Emergência *</FormLabel>
                 <FormControl>
                   <Input
-                    placeholder="(00) 00000-0000"{...field}maxLength={15} onChange={(e) => {
-                      const formatted = formatPhone(e.target.value); 
+                    placeholder="(00) 00000-0000"
+                    maxLength={15}
+                    value={field.value}
+                    onChange={(e) => {
+                      const formatted = formatPhone(e.target.value);
                       field.onChange(formatted);
-                  }}
+                    }}
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          <FormField
+            control={form.control}
+            name="kinship"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Parentesco *</FormLabel>
+                <FormControl>
+                  <Input
+                    placeholder="Mãe, Pai, Irmã, etc."
+                    {...field}
                   />
                 </FormControl>
                 <FormMessage />
@@ -146,7 +157,7 @@ export default function MembersRegisterGuardianPage() {
             control={form.control}
             name="address.street"
             render={({ field }) => (
-              <FormItem>
+              <FormItem className="md:col-span-2">
                 <FormLabel>Rua *</FormLabel>
                 <FormControl>
                   <Input placeholder="Rua exemplo, 123" {...field} />
@@ -168,8 +179,8 @@ export default function MembersRegisterGuardianPage() {
                     maxLength={9}
                     value={field.value}
                     onChange={(e) => {
-                      const formated = formatCEP(e.target.value);
-                      field.onChange(formated);
+                      const formatted = formatCEP(e.target.value);
+                      field.onChange(formatted);
                     }}
                   />
                 </FormControl>
@@ -214,20 +225,6 @@ export default function MembersRegisterGuardianPage() {
                 <FormLabel>Bairro *</FormLabel>
                 <FormControl>
                   <Input placeholder="Centro" {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-
-          <FormField
-            control={form.control}
-            name="kinship"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Parentesco *</FormLabel>
-                <FormControl>
-                  <Input placeholder="Irmã" {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>

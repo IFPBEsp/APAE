@@ -207,7 +207,7 @@ export function MembersRegisterProvider({ children }: { children: React.ReactNod
             const parsed = JSON.parse(saved);
             const draftWithFiles = reconstructFiles(parsed);
             dispatch({ type: "LOAD_ALL_DATA", payload: { ...apiData, ...draftWithFiles } });
-            return; 
+            return;
           } catch (e) { console.error(e); }
         }
       }
@@ -223,7 +223,7 @@ export function MembersRegisterProvider({ children }: { children: React.ReactNod
         try {
           const parsed = JSON.parse(saved);
           if (state.personal.name === "") {
-             const draftWithFiles = reconstructFiles(parsed);
+             const draftWithFiles = reconstructFiles(parsed.state || parsed);
              dispatch({ type: "LOAD_ALL_DATA", payload: { ...state, ...draftWithFiles } });
           }
         } catch (e) { console.error("Erro no rascunho", e); }
