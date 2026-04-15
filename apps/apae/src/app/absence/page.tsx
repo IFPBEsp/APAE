@@ -7,8 +7,7 @@ import { PatientWithAbsences } from "@/types/absence";
 import { DashboardOverview } from "@/types/dashboard/dashboard-overview";
 import { Calendar, SearchIcon, Users } from "lucide-react";
 import React, { useEffect, useState, useCallback, useRef } from "react";
-import AbsenceService from "@/app/services/absenceService";
-
+import AbsenceService from "../services/absenceService";
 interface PaginationInfo {
   currentPage: number;
   totalPages: number;
