@@ -58,7 +58,7 @@ function EditPatientDataLoader({ children }: { children: React.ReactNode }) {
            },
            additionals: { 
              diseases: data.annualRegistry?.diseases || "", 
-             medications: data.annualRegistry?.continuousMedication || "", 
+             continuousMedication: data.annualRegistry?.continuousMedication || "", 
              vaccines: data.vaccineNames?.map((v: any) => v.name) || [], 
              allergies: data.allergies || "", 
              disability: { types: [], report: undefined }, 

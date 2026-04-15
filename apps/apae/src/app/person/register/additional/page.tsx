@@ -202,7 +202,15 @@ export default function MembersRegisterAdditionalsPage() {
   const form = useForm<any>({
     mode: "onBlur",
     resolver: zodResolver(currentSchema),
-    defaultValues: additionals,
+    defaultValues: {
+      ...Additionals,
+      continuousMedication: additionals.continuousMedication || "",
+      diseases: additionals.diseases || "",
+      allergies: additionals.allergies || "",
+      vaccines: additionals.vaccines || [],
+      bpc: additionals.bpc ?? false,
+      householdIncome: additionals.householdIncome || "",
+    },
   });
 
   const [isInitialized, setIsInitialized] = useState(false);
@@ -218,6 +226,8 @@ export default function MembersRegisterAdditionalsPage() {
   useEffect(() => {
     const hasData = 
       additionals.diseases !== "" || 
+      additionals.continuousMedication !== "" || 
+      additionals.allergies !== "" ||
       additionals.vaccines.length > 0 || 
       additionals.disability.report instanceof File || 
       additionals.care.referral instanceof File;
@@ -228,6 +238,7 @@ export default function MembersRegisterAdditionalsPage() {
   }, [additionals, form]);
 
   const onSubmit = async (values: any) => {
+    console.log("Form values on submit:", values);
     setIsLoading(true);
     try {
       setAdditionalsData(values);
@@ -342,7 +353,7 @@ export default function MembersRegisterAdditionalsPage() {
 
             <FormField
               control={form.control}
-              name="medications"
+              name="continuousMedication"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Tipo de medicação que toma *</FormLabel>

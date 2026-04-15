@@ -37,7 +37,7 @@ export const EditPersonal = z.object({
 // 3. Adicionais relaxados
 export const EditAdditionals = z.object({
   diseases: z.string().optional(),
-  medications: z.string().optional(),
+  continuousMedication: z.string().optional(),
   vaccines: z.array(z.string()).optional(),
   allergies: z.string().optional(),
   bpc: z.boolean().optional(),

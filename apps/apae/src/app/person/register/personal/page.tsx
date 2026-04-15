@@ -221,11 +221,12 @@ export default function MembersRegisterPersonalPage() {
                   <Input
                     type="date"
                     {...field}
-                    value={
-                      field.value instanceof Date &&
-                      !Number.isNaN(field.value.getTime())
-                        ? field.value.toISOString().split("T")[0]
-                        : ""
+                   value={
+                    field.value instanceof Date && !isNaN(field.value.getTime())
+                    ? `${field.value.getFullYear()}-${String(field.value.getMonth() + 1)
+                      .padStart(2, '0')}-${String(field.value.getDate())
+                      .padStart(2, '0')}`
+                    : ""
                     }
                     onChange={(e) => field.onChange(new Date(e.target.value))}
                   />
@@ -267,10 +268,11 @@ export default function MembersRegisterPersonalPage() {
                     type="date"
                     {...field}
                     value={
-                      field.value instanceof Date &&
-                      !isNaN(field.value.getTime())
-                        ? field.value.toISOString().split("T")[0]
-                        : ""
+                    field.value instanceof Date && !isNaN(field.value.getTime())
+                    ? `${field.value.getFullYear()}-${String(field.value.getMonth() + 1)
+                      .padStart(2, '0')}-${String(field.value.getDate())
+                      .padStart(2, '0')}`
+                    : ""
                     }
                     onChange={(e) => field.onChange(new Date(e.target.value))}
                   />

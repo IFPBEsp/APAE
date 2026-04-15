@@ -40,6 +40,7 @@ export async function POST(req: Request) {
     const api = await createBaseApi();
 
     const response = await api.postForm("/patients", data);
+    console.log("Resposta do Java:", response.data); 
 
     if (response.status !== 201 && response.status !== 200) {
       return NextResponse.json(response.data, { status: response.status });

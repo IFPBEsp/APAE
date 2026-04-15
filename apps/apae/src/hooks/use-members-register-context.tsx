@@ -34,7 +34,7 @@ interface AddressData {
 interface AdditionalsData {
   id?: string;
   diseases: string;
-  medications: string;
+  continuousMedication: string;
   vaccines: string[];
   allergies: string;
   disability: { types: string[]; report: File | string | undefined };
@@ -139,7 +139,7 @@ function membersRegisterReducer(state: MembersRegisterState, action: MembersRegi
 const initialState: MembersRegisterState = {
   personal: { name: "", cpf: "", phone: "", rg: { number: "", issuing: { body: "", date: undefined as any } }, cns: "", nis: "", birth: { certificate: "", date: undefined as any, place: "" } },
   address: { cep: "", state: "", city: "", district: "", street: "" },
-  additionals: { id: undefined, diseases: "", medications: "", vaccines: [], allergies: "", disability: { types: [], report: undefined }, care: { types: [], referral: undefined }, bpc: false, householdIncome: "" },
+  additionals: { id: undefined, diseases: "", continuousMedication: "", vaccines: [], allergies: "", disability: { types: [], report: undefined }, care: { types: [], referral: undefined }, bpc: false, householdIncome: "" },
   guardian: { address: { cep: "", state: "", city: "", district: "", street: "" }, contact: "", kinship: "", name: "" },
   kinships: [],
   step: MembersRegisterStep.PERSONAL,
@@ -278,7 +278,16 @@ export function MembersRegisterProvider({ children }: { children: React.ReactNod
   const register = useCallback(
     async (id?: string) => {
       const { personal, address, additionals, guardian, kinships, profile } = state;
-      const formatDate = (date: any) => (date && !isNaN(new Date(date).getTime())) ? new Date(date).toISOString().split("T")[0] : null;
+      const formatDate = (date: any) => {
+        if(!date) return null;
+        const d = new Date(date);
+        if (isNaN(d.getTime())) return null;
+
+        const year = d.getFullYear();
+        const month = String(d.getMonth() + 1).padStart(2, "0");
+        const day = String(d.getDate()).padStart(2, "0");
+        return `${year}-${month}-${day}`;
+      };
       const parseIncome = (val: string) => { const clean = String(val).replace(/[^\d]/g, ""); return isNaN(parseFloat(clean)) ? 0 : parseFloat(clean) * 0.01; };
 
       const patient: any = {
@@ -311,7 +320,15 @@ export function MembersRegisterProvider({ children }: { children: React.ReactNod
         const data = await res.json().catch(() => ({}));
         return { status: res.status, data };
       } else {
-        patient.annualRegistry = { bpc: additionals.bpc, diseases: additionals.diseases, serviceArea: additionals.care.types.map((area: string) => ({ area })), familyIncome: parseIncome(additionals.householdIncome), year: new Date().getFullYear(), disorders: additionals.disability.types.map((name: string) => ({ name })) };
+        patient.annualRegistry = { 
+          bpc: additionals.bpc, 
+          diseases: additionals.diseases, 
+          continuousMedication: additionals.continuousMedication,
+          serviceArea: additionals.care.types.map((area: string) => ({ area })), 
+          familyIncome: parseIncome(additionals.householdIncome), 
+          year: new Date().getFullYear(), 
+          disorders: additionals.disability.types.map((name: string) => ({ name })) 
+        };
         const formData = new FormData();
         formData.append("patient", new Blob([JSON.stringify(patient)], { type: "application/json" }));
         if (profile.photo instanceof File) formData.append("photo", profile.photo);
