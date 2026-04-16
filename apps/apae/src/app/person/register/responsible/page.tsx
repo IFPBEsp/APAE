@@ -61,7 +61,7 @@ export default function MembersRegisterGuardianPage() {
     setIsLoading(true);
     try {
       setGuardianData(values);
-      setStep(MembersRegisterStep.PROFILE);
+      setStep(MembersRegisterStep.ADDRESS);
     } catch (error: any) {
       if (error.response?.data) {
         handleBackendValidationErrors(error.response.data, form.setError);
@@ -80,12 +80,7 @@ export default function MembersRegisterGuardianPage() {
           <>
             <FormButton
               type="button"
-              onClick={() => {
-                const destino = isEditing
-                  ? MembersRegisterStep.ADDRESS
-                  : MembersRegisterStep.ADDITIONALS;
-                setStep(destino);
-              }}
+              onClick={() => setStep(MembersRegisterStep.KINSHIPS)}
               disabled={isLoading}
             >
               Voltar

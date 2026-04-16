@@ -21,6 +21,7 @@ interface KinshipData {
   alive: boolean;
   name: string;
   occupation: string;
+  isLegalGuardian?: boolean;
 }
 
 interface AddressData {

@@ -30,6 +30,7 @@ import {
   MembersRegisterForm,
 } from "../form";
 import { Button } from "@/components/ui/button";
+import { usePathname } from "next/navigation";
 
 export default function MembersRegisterKinshipsPage() {
   const {
@@ -38,6 +39,9 @@ export default function MembersRegisterKinshipsPage() {
   } = useMembersRegisterContext();
 
   const [isLoading, setIsLoading] = useState(false);
+
+  const pathname = usePathname();
+  const isEditing = pathname.includes("/edit");
 
   const form = useForm<z.infer<typeof Kinships>>({
     mode: "onBlur",
@@ -63,26 +67,29 @@ export default function MembersRegisterKinshipsPage() {
     try {
       setKinshipsData(values.kinships);
 
-      const legalGuardianKinship = values.kinships.find((k) => k.isLegalGuardian);
+      // Apenas preenche dados do responsável automaticamente se NÃO estiver editando
+      if (!isEditing) {
+        const legalGuardianKinship = values.kinships.find((k) => k.isLegalGuardian);
 
-      if (legalGuardianKinship) {
-        // Preenche automaticamente os dados do responsável com as informações do parente
-        setGuardianData({
-          name: legalGuardianKinship.name,
-          kinship: legalGuardianKinship.type,
-          // Campos não fornecidos em kinships devem ser preenchidos manualmente
-          contact: "",
-          address: {
-            cep: "",
-            state: "",
-            city: "",
-            district: "",
-            street: "",
-          },
-        });
+        if (legalGuardianKinship) {
+          // Preenche automaticamente os dados do responsável com as informações do parente
+          setGuardianData({
+            name: legalGuardianKinship.name,
+            kinship: legalGuardianKinship.type,
+            // Campos não fornecidos em kinships devem ser preenchidos manualmente
+            contact: "",
+            address: {
+              cep: "",
+              state: "",
+              city: "",
+              district: "",
+              street: "",
+            },
+          });
+        }
       }
 
-      setStep(MembersRegisterStep.ADDRESS);
+      setStep(MembersRegisterStep.GUARDIAN);
     } catch (error: any) {
       if (error.response?.data) {
         handleBackendValidationErrors(error.response.data, form.setError);
@@ -227,46 +234,56 @@ export default function MembersRegisterKinshipsPage() {
               />
             </div>
 
-            {/* CHECKBOX DO RESPONSÁVEL LEGAL (ÚNICO) */}
-            <div className="md:col-span-2 mt-1">
-              <FormField
-                control={form.control}
-                name={`kinships.${index}.isLegalGuardian`}
-                render={({ field }) => (
-                  <FormItem className="flex flex-row items-center space-x-3 space-y-0 rounded-md border p-4 shadow-sm border-gray-300/60">
-                    <FormControl>
-                      <Checkbox
-                        className="border-zinc-300"
-                        checked={field.value}
-                        onCheckedChange={(checked) => {  
-                          if (checked) {
-                            const currentKinships = form.getValues("kinships");
-                            currentKinships.forEach((_, i) => {                             
-                              if (i !== index) {
-                                form.setValue(
-                                  `kinships.${i}.isLegalGuardian`,
-                                  false
-                                );
-                              }
-                            });
-                          }                         
-                          field.onChange(checked);
-                        }}
-                      />
-                    </FormControl>
-                    <div className="space-y-1 leading-none">
-                      <FormLabel>
-                        Este parente é o Responsável Legal do paciente?
-                      </FormLabel>
-                      <FormDescription>
-                        Apenas uma pessoa pode ser marcada como o contato
-                        principal e responsável legal.
-                      </FormDescription>
-                    </div>
-                  </FormItem>
-                )}
-              />
-            </div>
+            {/* CHECKBOX DO RESPONSÁVEL LEGAL (ÚNICO) - Não exibe na edição */}
+            {!isEditing && (
+              <div className="md:col-span-2 mt-1">
+                <FormField
+                  control={form.control}
+                  name={`kinships.${index}.isLegalGuardian`}
+                  render={({ field }) => (
+                    <FormItem className="flex flex-row items-center space-x-3 space-y-0 rounded-md border p-4 shadow-sm border-gray-300/60">
+                      <FormControl>
+                        <Checkbox
+                          className="border-zinc-300"
+                          checked={field.value}
+                          onCheckedChange={(checked) => {
+                            if (checked) {
+                              const currentKinships = form.getValues("kinships");
+                              currentKinships.forEach((_, i) => {
+                                if (i !== index) {
+                                  form.setValue(
+                                    `kinships.${i}.isLegalGuardian`,
+                                    false
+                                  );
+                                }
+                              });
+                              field.onChange(checked);
+                            } else {
+                              // Se desmarcou, limpa apenas nome e parentesco do responsável
+                              // mantendo outros dados já preenchidos manualmente
+                              field.onChange(checked);
+                              setGuardianData({
+                                name: "",
+                                kinship: "",
+                              });
+                            }
+                          }}
+                        />
+                      </FormControl>
+                      <div className="space-y-1 leading-none">
+                        <FormLabel>
+                          Este parente é o Responsável Legal do paciente?
+                        </FormLabel>
+                        <FormDescription>
+                          Apenas uma pessoa pode ser marcada como o contato
+                          principal e responsável legal.
+                        </FormDescription>
+                      </div>
+                    </FormItem>
+                  )}
+                />
+              </div>
+            )}
           </DoubleColumn>
         ))}
 

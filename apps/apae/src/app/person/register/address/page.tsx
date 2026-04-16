@@ -86,7 +86,7 @@ export default function MembersRegisterAddressPage() {
           <>
             <FormButton
               type="button"
-              onClick={() => setStep(MembersRegisterStep.KINSHIPS)}
+              onClick={() => setStep(MembersRegisterStep.GUARDIAN)}
               disabled={isLoading}
             >
               Voltar

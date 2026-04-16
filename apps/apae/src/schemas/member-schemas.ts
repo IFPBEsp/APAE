@@ -204,7 +204,6 @@ export const Guardian = z.object({
   contact: z.string().min(1, "Contato de emergência é obrigatório."),
   kinship: z.string().min(1, "Informar o parentesco é obrigatório."),
   address: Address,
-  isLegalGuardian: z.boolean().default(false).optional(),
 });
 
 export const Profile = z.object({

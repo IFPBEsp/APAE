@@ -183,7 +183,7 @@ export default function MembersRegisterProfilePage() {
           <>
             <FormButton
               type="button"
-              onClick={() => setStep(MembersRegisterStep.GUARDIAN)}
+              onClick={() => setStep(MembersRegisterStep.ADDITIONALS)}
               disabled={isLoading}
             >
               Voltar
