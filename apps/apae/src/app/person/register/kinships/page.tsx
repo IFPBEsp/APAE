@@ -31,6 +31,77 @@ import {
 } from "../form";
 import { Button } from "@/components/ui/button";
 import { usePathname } from "next/navigation";
+import { UseFormReturn } from "react-hook-form";
+
+interface LegalGuardianCheckboxProps {
+  form: UseFormReturn<z.infer<typeof Kinships>>;
+  index: number;
+  setGuardianData: (data: { name: string; kinship: string }) => void;
+}
+
+function LegalGuardianCheckbox({
+  form,
+  index,
+  setGuardianData,
+}: LegalGuardianCheckboxProps) {
+  const isAlive = form.watch(`kinships.${index}.alive`);
+  const isLegalGuardian = form.watch(`kinships.${index}.isLegalGuardian`);
+
+  const fieldOnChange = (value: boolean) => {
+    form.setValue(`kinships.${index}.isLegalGuardian`, value);
+  };
+
+  // Se marcou como não vivo, desmarca o responsável automaticamente
+  useEffect(() => {
+    if (!isAlive && isLegalGuardian) {
+      fieldOnChange(false);
+      setGuardianData({ name: "", kinship: "" });
+    }
+  }, [isAlive, isLegalGuardian, setGuardianData]);
+
+  return (
+    <FormItem
+      className={`flex flex-row items-center space-x-3 space-y-0 rounded-md border p-4 shadow-sm ${
+        !isAlive ? "border-gray-200/40 opacity-50" : "border-gray-300/60"
+      }`}
+    >
+      <FormControl>
+        <Checkbox
+          className="border-zinc-300"
+          checked={isLegalGuardian}
+          disabled={!isAlive}
+          onCheckedChange={(checked) => {
+            if (checked) {
+              const currentKinships = form.getValues("kinships");
+              currentKinships.forEach((_, i) => {
+                if (i !== index) {
+                  form.setValue(`kinships.${i}.isLegalGuardian`, false);
+                }
+              });
+              fieldOnChange(checked);
+            } else {
+              fieldOnChange(checked);
+              setGuardianData({
+                name: "",
+                kinship: "",
+              });
+            }
+          }}
+        />
+      </FormControl>
+      <div className="space-y-1 leading-none">
+        <FormLabel className={!isAlive ? "text-gray-400" : ""}>
+          Este parente é o Responsável Legal do paciente?
+        </FormLabel>
+        <FormDescription>
+          {!isAlive
+            ? "Não é possível definir um parente falecido como responsável legal."
+            : "Apenas uma pessoa pode ser marcada como o contato principal e responsável legal."}
+        </FormDescription>
+      </div>
+    </FormItem>
+  );
+}
 
 export default function MembersRegisterKinshipsPage() {
   const {
@@ -72,11 +143,9 @@ export default function MembersRegisterKinshipsPage() {
         const legalGuardianKinship = values.kinships.find((k) => k.isLegalGuardian);
 
         if (legalGuardianKinship) {
-          // Preenche automaticamente os dados do responsável com as informações do parente
           setGuardianData({
             name: legalGuardianKinship.name,
             kinship: legalGuardianKinship.type,
-            // Campos não fornecidos em kinships devem ser preenchidos manualmente
             contact: "",
             address: {
               cep: "",
@@ -237,50 +306,10 @@ export default function MembersRegisterKinshipsPage() {
             {/* CHECKBOX DO RESPONSÁVEL LEGAL (ÚNICO) - Não exibe na edição */}
             {!isEditing && (
               <div className="md:col-span-2 mt-1">
-                <FormField
-                  control={form.control}
-                  name={`kinships.${index}.isLegalGuardian`}
-                  render={({ field }) => (
-                    <FormItem className="flex flex-row items-center space-x-3 space-y-0 rounded-md border p-4 shadow-sm border-gray-300/60">
-                      <FormControl>
-                        <Checkbox
-                          className="border-zinc-300"
-                          checked={field.value}
-                          onCheckedChange={(checked) => {
-                            if (checked) {
-                              const currentKinships = form.getValues("kinships");
-                              currentKinships.forEach((_, i) => {
-                                if (i !== index) {
-                                  form.setValue(
-                                    `kinships.${i}.isLegalGuardian`,
-                                    false
-                                  );
-                                }
-                              });
-                              field.onChange(checked);
-                            } else {
-                              // Se desmarcou, limpa apenas nome e parentesco do responsável
-                              // mantendo outros dados já preenchidos manualmente
-                              field.onChange(checked);
-                              setGuardianData({
-                                name: "",
-                                kinship: "",
-                              });
-                            }
-                          }}
-                        />
-                      </FormControl>
-                      <div className="space-y-1 leading-none">
-                        <FormLabel>
-                          Este parente é o Responsável Legal do paciente?
-                        </FormLabel>
-                        <FormDescription>
-                          Apenas uma pessoa pode ser marcada como o contato
-                          principal e responsável legal.
-                        </FormDescription>
-                      </div>
-                    </FormItem>
-                  )}
+                <LegalGuardianCheckbox
+                  form={form}
+                  index={index}
+                  setGuardianData={setGuardianData}
                 />
               </div>
             )}
