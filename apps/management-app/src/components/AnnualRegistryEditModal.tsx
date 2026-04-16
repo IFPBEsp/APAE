@@ -271,7 +271,7 @@ export default function AnnualRegistryEditModal({
             }
 
             const savedYear = mode === "create" ? data.year : undefined;
-            onClose(savedYear);
+            onClose();
             
             toast.success(mode === "create" ? "Registro criado com sucesso!" : "Alterações salvas!");
 

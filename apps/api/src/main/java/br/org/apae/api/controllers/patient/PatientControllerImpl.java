@@ -5,6 +5,7 @@ import br.org.apae.api.common.dto.patient.request.patient.CreatePatientDTO;
 import br.org.apae.api.common.dto.patient.request.patient.UpdatePatientDTO;
 import br.org.apae.api.common.dto.patient.response.patient.PatientResponseDTO;
 import br.org.apae.api.common.dto.patient.response.patient.PatientSummaryResponseDTO;
+import br.org.apae.api.common.dto.patient.response.patient.PatientWithAbsencesResponseDTO;
 import br.org.apae.api.common.dto.servicearea.response.ServiceAreaResponseDTO;
 import br.org.apae.api.patient.application.interfaces.PatientApplicationService;
 import br.org.apae.api.patient.interfaces.controllers.PatientController;
@@ -60,7 +61,7 @@ public class PatientControllerImpl implements PatientController {
         return ResponseEntity.ok(patient);
     }
 
-   @Override
+    @Override
     public ResponseEntity<Page<PatientSummaryResponseDTO>> findWithFilters(
             @RequestParam Map<String, String> filters,
             Pageable pageable
@@ -90,6 +91,18 @@ public class PatientControllerImpl implements PatientController {
     public ResponseEntity<Void> deletePatient(UUID id) {
         patientService.deletePatient(id);
         return ResponseEntity.noContent().build();
+    }
+
+    @Override
+    public ResponseEntity<Page<PatientWithAbsencesResponseDTO>> findPatientsWithAbsences(
+            Integer minAbsences,
+            String name,
+            Pageable pageable
+    ) {
+        Page<PatientWithAbsencesResponseDTO> result =
+                patientService.findPatientsWithAbsences(minAbsences, name, pageable);
+
+        return ResponseEntity.ok(result);
     }
 
     @Override

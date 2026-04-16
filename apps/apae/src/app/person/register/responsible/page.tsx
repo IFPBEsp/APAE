@@ -22,6 +22,8 @@ import { useForm } from "react-hook-form";
 import { handleBackendValidationErrors } from "@/utils/form-errors";
 import { usePathname } from "next/navigation";
 import { formatPhone } from "@/lib/formats";
+import { Checkbox } from "@/components/ui/checkbox";
+import z from "zod";
 import { DoubleColumn, FormButton, MembersRegisterForm } from "../form";
 
 export default function MembersRegisterGuardianPage() {
@@ -39,33 +41,57 @@ export default function MembersRegisterGuardianPage() {
   const form = useForm<any>({
     mode: "onBlur",
     resolver: zodResolver(currentSchema),
-    defaultValues: guardian,
+    defaultValues: {
+      ...guardian,
+      address: {
+        ...guardian.address,
+        noNumber: guardian.address?.number === "SN"
+      }
+    },
   });
 
-  const [isInitialized, setIsInitialized] = useState(false);
+  const isNoNumber = form.watch("address.noNumber");
 
   useEffect(() => {
-    if (isEditing && guardian.name && !isInitialized) {
-      form.reset(guardian);
-      setIsInitialized(true);
+    if (isNoNumber){
+      form.setValue("address.number", "SN");
+      form.clearErrors("address.number");
+    } else {
+      if (form.getValues("address.number") === "SN") {
+        form.setValue("address.number", "");
+      }
     }
-  }, [isEditing, guardian, form, isInitialized]);
+  }, [isNoNumber, form]);
 
   useEffect(() => {
-    if (guardian.name !== "") {
-      form.reset(guardian);
+    if (guardian && Object.keys(guardian).length > 0) {
+      form.reset({
+        ...guardian,
+        address: {
+          ...guardian.address,
+          noNumber: guardian.address?.number === "SN"
+        }
+      });
     }
   }, [guardian, form]);
 
   const onSubmit = async (values: any) => {
     setIsLoading(true);
     try {
-      setGuardianData(values);
-      setStep(MembersRegisterStep.ADDRESS);
+      const dataToSave = {
+        ...values,
+        address: {
+          ...values.address,
+          number: values.address.noNumber ? "SN" : values.address.number
+        }
+      };
+
+      setGuardianData(dataToSave);
+      setStep(MembersRegisterStep.PROFILE);
     } catch (error: any) {
       if (error.response?.data) {
         handleBackendValidationErrors(error.response.data, form.setError);
-      }
+      } 
     } finally {
       setIsLoading(false);
     }
@@ -80,7 +106,15 @@ export default function MembersRegisterGuardianPage() {
           <>
             <FormButton
               type="button"
-              onClick={() => setStep(MembersRegisterStep.KINSHIPS)}
+              onClick={() => {
+                const currentValues = form.getValues();
+                setGuardianData(currentValues);
+
+                const destino = isEditing 
+                  ? MembersRegisterStep.ADDRESS 
+                  : MembersRegisterStep.ADDITIONALS;
+                setStep(destino);
+              }}
               disabled={isLoading}
             >
               Voltar
@@ -155,7 +189,62 @@ export default function MembersRegisterGuardianPage() {
               <FormItem className="md:col-span-2">
                 <FormLabel>Rua *</FormLabel>
                 <FormControl>
-                  <Input placeholder="Rua exemplo, 123" {...field} />
+                  <Input placeholder="Rua exemplo" {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          <FormField
+            control={form.control}
+            name="address.number"
+            render={({ field }) => (
+              <FormItem>
+                <div className="flex justify-between items-center mb-1">
+                  <FormLabel>Número *</FormLabel>
+                  <FormField
+                    control={form.control}
+                    name="address.noNumber"
+                    render={({ field: checkField }) => (
+                      <div className="flex items-center space-x-2">
+                        <FormControl>
+                          <Checkbox
+                            id="noNumber"
+                            checked={checkField.value}
+                            onCheckedChange={checkField.onChange}
+                            disabled={isLoading}
+                          />
+                        </FormControl>
+                        <label 
+                          htmlFor="noNumber" 
+                          className="text-[10px] font-bold uppercase text-slate-500 cursor-pointer select-none">
+                            Sem número?
+                        </label>
+                      </div>
+                    )}
+                  />
+                </div>
+                <FormControl>
+                  <Input
+                    placeholder={isNoNumber ? "Sem número" : "49"} {...field}
+                    disabled={isNoNumber}
+                    className={isNoNumber ? "bg-slate-50 italic text-slate-400" : ""}
+                  />
+                </FormControl>   
+                <FormMessage /> 
+              </FormItem>
+            )}
+          />
+
+          <FormField
+            control={form.control}
+            name="address.complement"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Complemento</FormLabel>
+                <FormControl>
+                  <Input placeholder="Apartamento 101" {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -214,7 +303,7 @@ export default function MembersRegisterGuardianPage() {
 
           <FormField
             control={form.control}
-            name="address.district"
+            name="address.neighborhood"
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Bairro *</FormLabel>

@@ -53,7 +53,7 @@ app:
   token:
     secret: ${JWT_SECRET}
   frontend:
-    reset-password-url: ${APP_FRONTEND_RESET_PASSWORD_URL:http://localhost:3000/reset-password}
+    reset-password-url: ${APP_FRONTEND_RESET_PASSWORD_URL:http://localhost:3000/auth/reset-password}
 
 minio:
   access:

@@ -21,6 +21,7 @@ import { useForm } from "react-hook-form";
 import { useState, useEffect } from "react";
 import { usePathname } from "next/navigation"; 
 import { handleBackendValidationErrors } from "@/utils/form-errors";
+import { Checkbox } from "@/components/ui/checkbox";
 
 import { DoubleColumn, FormButton, MembersRegisterForm } from "../form";
 
@@ -40,23 +41,43 @@ export default function MembersRegisterAddressPage() {
   const form = useForm<any>({
     mode: "onBlur",
     resolver: zodResolver(currentSchema),
-    defaultValues: address,
+    defaultValues: {
+      ...address,
+      noNumber: address.number === "SN" || false 
+    },
   });
 
-  
-  const [isInitialized, setIsInitialized] = useState(false);
+  const isNoNumber = form.watch("noNumber");
 
   useEffect(() => {
-    if (isEditing && address.cep && !isInitialized) {
-      form.reset(address);
-      setIsInitialized(true);
+    if(isNoNumber) {
+      form.setValue("number", "SN");
+      form.clearErrors("number");
+    } else {
+        if (form.getValues("number") === "SN") {
+        form.setValue("number", "");
+      }
     }
-  }, [address, form, isEditing, isInitialized]);
+  }, [isNoNumber, form]);
+
+  useEffect(() => {
+    if (address && Object.keys(address).length > 0) {
+      form.reset({
+        ...address,
+        noNumber: address.number === "SN" || false
+      });
+    }
+  }, [address, form]);
 
   const onSubmit = async (values: any) => {
     setIsLoading(true);
     try {
-      setAddressData(values);
+      const dataToSave = {
+        ...values,
+        number: values.noNumber ? "SN" : values.number
+      }
+      setAddressData(dataToSave);
+      
         if (isEditing) {
         setStep(MembersRegisterStep.GUARDIAN); 
       } else {
@@ -77,6 +98,7 @@ export default function MembersRegisterAddressPage() {
     }
   }, [address, form]);
 
+
   return (
     <Form {...form}>
       <MembersRegisterForm
@@ -86,7 +108,11 @@ export default function MembersRegisterAddressPage() {
           <>
             <FormButton
               type="button"
-              onClick={() => setStep(MembersRegisterStep.GUARDIAN)}
+              onClick={() => {
+                const currentValues = form.getValues();
+                setAddressData(currentValues);
+                setStep(MembersRegisterStep.KINSHIPS);
+              }}
               disabled={isLoading}
             >
               Voltar
@@ -106,13 +132,70 @@ export default function MembersRegisterAddressPage() {
               <FormItem className="md:col-span-2">
                 <FormLabel>Rua *</FormLabel>
                 <FormControl>
-                  <Input placeholder="Adielson Assis Alves, 49" {...field} />
+                  <Input placeholder="Adielson Assis Alves" {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
             )}
           />
-
+          <div className="space-y-2">
+            <div className="flex justify-between items-center">
+              <FormLabel>Número *</FormLabel>
+              <FormField
+                control={form.control}
+                name="noNumber"
+                render={({ field }) => (
+                  <div className="flex items-center space-x-2">
+                    <Checkbox 
+                      id="noNumber"
+                      checked={field.value}
+                      onCheckedChange={(checked) => {
+                        field.onChange(checked);
+                        if (checked){
+                          form.setValue("number", "SN");
+                          form.clearErrors("number");
+                        } else {
+                          form.setValue("number", "");
+                        }
+                      }}
+                    />
+                    <label htmlFor="noNumber" className="text-sm text-gray-600">Sem número? </label>
+                    </div>
+                  )}
+                />  
+              </div>
+              <FormField
+                control={form.control}
+                name="number"  
+                render={({ field }) => (
+                  <FormItem>
+                    <FormControl>
+                      <Input
+                        placeholder="Número"
+                        {...field}
+                        disabled={isNoNumber}
+                        aria-placeholder={isNoNumber ? "SN" : "Número"}
+                        className={isNoNumber ? "bg-gray-100 cursor-not-allowed" : ""}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+          </div>      
+          <FormField
+            control={form.control}
+            name="complement"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Complemento</FormLabel>
+                <FormControl>
+                  <Input placeholder="Apartamento 101" {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
           <FormField
             control={form.control}
             name="cep"
@@ -165,7 +248,7 @@ export default function MembersRegisterAddressPage() {
 
           <FormField
             control={form.control}
-            name="district"
+            name="neighborhood"
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Bairro *</FormLabel>

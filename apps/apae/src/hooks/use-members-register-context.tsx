@@ -28,8 +28,11 @@ interface AddressData {
   cep: string;
   state: string;
   city: string;
-  district: string;
+  neighborhood: string;
   street: string;
+  noNumber?: boolean;
+  number: string;
+  complement?: string;
 }
 
 interface AdditionalsData {
@@ -138,10 +141,33 @@ function membersRegisterReducer(state: MembersRegisterState, action: MembersRegi
 }
 
 const initialState: MembersRegisterState = {
-  personal: { name: "", cpf: "", phone: "", rg: { number: "", issuing: { body: "", date: undefined as any } }, cns: "", nis: "", birth: { certificate: "", date: undefined as any, place: "" } },
-  address: { cep: "", state: "", city: "", district: "", street: "" },
-  additionals: { id: undefined, diseases: "", medications: "", vaccines: [], allergies: "", disability: { types: [], report: undefined }, care: { types: [], referral: undefined }, bpc: false, householdIncome: "" },
-  guardian: { address: { cep: "", state: "", city: "", district: "", street: "" }, contact: "", kinship: "", name: "" },
+  personal: {
+    name: "",
+    cpf: "",
+    phone: "",
+    rg: { number: "", issuing: { body: "", date: new Date() } },
+    cns: "",
+    nis: "",
+    birth: { certificate: "", date: new Date(), place: "" },
+  },
+  address: { cep: "", state: "", city: "", neighborhood: "", street: "", number: "", complement: "", noNumber: false },
+  additionals: {
+    id: undefined,
+    diseases: "",
+    medications: "",
+    vaccines: [],
+    allergies: "",
+    disability: { types: [], report: undefined },
+    care: { types: [], referral: undefined },
+    bpc: false,
+    householdIncome: "",
+  },
+  guardian: {
+    address: { cep: "", state: "", city: "", neighborhood: "", street: "", number: "", complement: "", noNumber: false },
+    contact: "",
+    kinship: "",
+    name: "",
+  },
   kinships: [],
   step: MembersRegisterStep.PERSONAL,
   profile: { role: "patient", photo: undefined },
@@ -278,9 +304,21 @@ export function MembersRegisterProvider({ children }: { children: React.ReactNod
   // 6. FUNÇÃO REGISTER
   const register = useCallback(
     async (id?: string) => {
-      const { personal, address, additionals, guardian, kinships, profile } = state;
-      const formatDate = (date: any) => (date && !isNaN(new Date(date).getTime())) ? new Date(date).toISOString().split("T")[0] : null;
-      const parseIncome = (val: string) => { const clean = String(val).replace(/[^\d]/g, ""); return isNaN(parseFloat(clean)) ? 0 : parseFloat(clean) * 0.01; };
+      const { personal, address, additionals, guardian, kinships, profile } =
+        state;
+
+      const formatDate = (date: any) => {
+        if (!date) return null;
+        const d = new Date(date);
+        if (isNaN(d.getTime())) return null;
+        return d.toLocaleDateString('en-CA');
+      };
+
+      const parseIncome = (val: string) => {
+        const clean = String(val).replace(/[^\d]/g, ""); 
+        const num = parseFloat(clean) * 0.01; 
+        return isNaN(num) ? 0.0 : num;
+      };
 
       const patient: any = {
         fullName: personal.name || "Não informado",
@@ -296,9 +334,39 @@ export function MembersRegisterProvider({ children }: { children: React.ReactNod
         registrationDate: formatDate(new Date()),
         allergies: additionals.allergies || "Nenhuma",
         isStudent: profile.role === "student",
-        address: { city: address.city || "Não informado", cep: address.cep || "00000-000", state: address.state || "Não informado", neighborhood: address.district || "Não informado", street: address.street.split(",")[0].trim() || "Não informado", number: address.street.split(",")[1]?.trim() || "S/N", complement: "" },
-        guardian: { name: guardian.name || "Não informado", contact: guardian.contact || "Não informado", kinship: guardian.kinship || "Não informado", address: { city: guardian.address.city || "Não informado", cep: guardian.address.cep || "00000-000", state: guardian.address.state || "Não informado", neighborhood: guardian.address.district || "Não informado", street: guardian.address.street.split(",")[0].trim() || "Não informado", number: guardian.address.street.split(",")[1]?.trim() || "S/N", complement: "" } },
-        parents: kinships.map((k) => ({ name: k.name || "Não informado", rg: k.rg || "0", cpf: k.cpf || "000.000.000-00", profession: k.occupation || "Não informado", isAlive: k.alive, kinship: k.type || "Pai/Mãe" })),
+        address: {
+          city: address.city || "Não informado",
+          cep: address.cep || "00000-000",
+          state: address.state || "Não informado",
+          neighborhood: address.neighborhood || "Não informado",
+          street: address.street || "Não informado",
+          number: address.number || "S/N",
+          noNumber: address.noNumber || false,
+          complement: address.complement || "",
+        },
+        guardian: {
+          name: guardian.name || "Não informado",
+          contact: guardian.contact || "Não informado",
+          kinship: guardian.kinship || "Não informado",
+          address: {
+            city: guardian.address.city || "Não informado",
+            cep: guardian.address.cep || "00000-000",
+            state: guardian.address.state || "Não informado",
+            neighborhood: guardian.address.neighborhood || "Não informado",
+            street: guardian.address.street || "Não informado",
+            number: guardian.address.number || "SN",
+            noNumber: guardian.address.noNumber || false,
+            complement: guardian.address.complement || "",
+          },
+        },
+        parents: kinships.map((k) => ({
+          name: k.name || "Não informado",
+          rg: k.rg || "0",
+          cpf: k.cpf || "000.000.000-00",
+          profession: k.occupation || "Não informado",
+          isAlive: k.alive,
+          kinship: k.type || "Pai/Mãe",
+        })),
         vaccineNames: additionals.vaccines.map((v) => ({ name: v })),
       };
 
