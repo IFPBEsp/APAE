@@ -80,19 +80,25 @@ export default function MembersRegisterGuardianPage() {
     if (guardian.name !== "") {
       form.reset(guardian);
     }
-  }, [guardian, form]);
+  }, [guardian, form]); 
 
   const onSubmit = async (values: any) => {
     setIsLoading(true);
     try {
-      const { address: { noNumber, ...addressData }, ...rest } = values;
-      const dataToSave = { ...rest, address: addressData };
+      const dataToSave = {
+        ...values,
+        address: {
+          ...values.address,
+          number: values.address.noNumber ? "SN" : values.address.number
+        }
+      };
+
       setGuardianData(dataToSave);
       setStep(MembersRegisterStep.PROFILE);
     } catch (error: any) {
       if (error.response?.data) {
         handleBackendValidationErrors(error.response.data, form.setError);
-      }
+      } 
     } finally {
       setIsLoading(false);
     }
@@ -111,6 +117,9 @@ export default function MembersRegisterGuardianPage() {
             <FormButton
               type="button"
               onClick={() => {
+                const currentValues = form.getValues();
+                setGuardianData(currentValues);
+
                 const destino = isEditing 
                   ? MembersRegisterStep.ADDRESS 
                   : MembersRegisterStep.ADDITIONALS;

@@ -71,7 +71,7 @@ function EditPatientDataLoader({ children }: { children: React.ReactNode }) {
                neighborhood: data.guardian?.address?.neighborhood || "", 
                street: data.guardian?.address?.street || "",
                number: data.guardian?.address?.number || "",
-               noNumber: data.guardian?.address?.noNumber === "SN" || false,
+               noNumber: data.guardian?.address?.number === "SN" || false,
                complement: data.guardian?.address?.complement || ""
              } 
            },

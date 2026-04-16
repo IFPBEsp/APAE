@@ -72,8 +72,10 @@ export default function MembersRegisterAddressPage() {
   const onSubmit = async (values: any) => {
     setIsLoading(true);
     try {
-      const {noNumber, ...dataToSave} = values;
-      if(noNumber) dataToSave.number = "SN";
+      const dataToSave = {
+        ...values,
+        number: values.noNumber ? "SN" : values.number
+      }
       setAddressData(dataToSave);
       
         if (isEditing) {
@@ -96,6 +98,7 @@ export default function MembersRegisterAddressPage() {
     }
   }, [address, form]);
 
+
   return (
     <Form {...form}>
       <MembersRegisterForm
@@ -105,7 +108,11 @@ export default function MembersRegisterAddressPage() {
           <>
             <FormButton
               type="button"
-              onClick={() => setStep(MembersRegisterStep.KINSHIPS)}
+              onClick={() => {
+                const currentValues = form.getValues();
+                setAddressData(currentValues);
+                setStep(MembersRegisterStep.KINSHIPS);
+              }}
               disabled={isLoading}
             >
               Voltar
@@ -131,45 +138,51 @@ export default function MembersRegisterAddressPage() {
               </FormItem>
             )}
           />
-          <FormField
-            control={form.control}
-            name="number"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Número *</FormLabel>
-
-                <FormField 
-                  control={form.control}
-                  name="noNumber"
-                  render={({ field: checkField }) => (
-                    <div className="flex items-center space-x-2">
-                      <FormControl>
-                        <Checkbox
-                          id="noNumber"
-                          checked={checkField.value}
-                          onCheckedChange={checkField.onChange}
-                        />
-                      </FormControl>
-                      <label 
-                      htmlFor="noNumber" 
-                      className="text-[10px] font-bold uppercase text-slate-500 cursor-pointer select-none">
-                        Sem número?
-                      </label>
+          <div className="space-y-2">
+            <div className="flex justify-between items-center">
+              <FormLabel>Número *</FormLabel>
+              <FormField
+                control={form.control}
+                name="noNumber"
+                render={({ field }) => (
+                  <div className="flex items-center space-x-2">
+                    <Checkbox 
+                      id="noNumber"
+                      checked={field.value}
+                      onCheckedChange={(checked) => {
+                        field.onChange(checked);
+                        if (checked){
+                          form.setValue("number", "SN");
+                          form.clearErrors("number");
+                        } else {
+                          form.setValue("number", "");
+                        }
+                      }}
+                    />
+                    <label htmlFor="noNumber" className="text-sm text-gray-600">Sem número? </label>
                     </div>
                   )}
-                />
-                <FormControl>
-                  <Input 
-                  placeholder={isNoNumber ? "Sem número" : "49"} {...field}
-                  disabled={isNoNumber}
-                  className={isNoNumber ? "bg-slate-50 italic text-slate-400" : ""}
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-
+                />  
+              </div>
+              <FormField
+                control={form.control}
+                name="number"  
+                render={({ field }) => (
+                  <FormItem>
+                    <FormControl>
+                      <Input
+                        placeholder="Número"
+                        {...field}
+                        disabled={isNoNumber}
+                        aria-placeholder={isNoNumber ? "SN" : "Número"}
+                        className={isNoNumber ? "bg-gray-100 cursor-not-allowed" : ""}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+          </div>      
           <FormField
             control={form.control}
             name="complement"

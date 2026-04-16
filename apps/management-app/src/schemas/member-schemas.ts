@@ -110,7 +110,7 @@ export const Address = z.object({
   neighborhood: z.string().min(2, "Bairro inválido"),
   street: z.string().min(2, "Rua inválida"),
   number: z.string().min(1, "Número é obrigatório"),
-  noNumber: z.boolean(),
+  noNumber: z.boolean().optional(),
   complement: z.string().optional(),
 });
 

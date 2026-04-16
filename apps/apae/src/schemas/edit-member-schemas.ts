@@ -8,6 +8,7 @@ export const EditAddress = z.object({
   neighborhood: z.string().min(1, "Obrigatório"),
   street: z.string().min(1, "Obrigatório"),
   number: z.string().min(1, "Número é obrigatório"),
+  noNumber: z.boolean().optional(),
   complement: z.string().optional(),
 });
 

@@ -340,6 +340,7 @@ export function MembersRegisterProvider({ children }: { children: React.ReactNod
           neighborhood: address.neighborhood || "Não informado",
           street: address.street || "Não informado",
           number: address.number || "S/N",
+          noNumber: address.noNumber || false,
           complement: address.complement || "",
         },
         guardian: {
@@ -352,7 +353,8 @@ export function MembersRegisterProvider({ children }: { children: React.ReactNod
             state: guardian.address.state || "Não informado",
             neighborhood: guardian.address.neighborhood || "Não informado",
             street: guardian.address.street || "Não informado",
-            number: guardian.address.number || "S/N",
+            number: guardian.address.number || "SN",
+            noNumber: guardian.address.noNumber || false,
             complement: guardian.address.complement || "",
           },
         },
