@@ -113,39 +113,45 @@ function EditPatientDataLoader({ children }: { children: React.ReactNode }) {
 
 export default function EditPatientLayout({ children }: { children: React.ReactNode }) {
   return (
-    <VaccinesProvider>
-      {/* @ts-ignore */}
-      <DisordersProvider>
-        <MembersRegisterProvider>
-          <EditPatientDataLoader>
-            {/* 🚀 NOVA ESTRUTURA VISUAL (Duas Colunas) */}
-            <div className="h-[90vh] md:h-screen rounded-xl md:rounded-none md:mx-0 mx-4 my-4 md:my-0 relative grid grid-cols-1 md:grid-cols-[1fr_2fr] antialiased overflow-hidden shadow-2xl">
-              
-              {/* Fundo e degradê da coluna esquerda */}
-              <div className="hidden md:block absolute inset-0 bg-cover bg-center bg-no-repeat grayscale-90 w-1/3" style={{ backgroundImage: `url(${Image.src})`, backgroundAttachment: "fixed" }} />
-              <div className="hidden md:block absolute inset-0 w-1/3" style={{ background: "linear-gradient(180deg, rgba(13, 79, 151, 0.9) 0%, rgba(13, 79, 151, 0.95) 100%)" }} />
+  <VaccinesProvider>
+    {/* @ts-ignore */}
+    <DisordersProvider>
+      <MembersRegisterProvider>
+        <EditPatientDataLoader>
 
-              {/* O MENU LATERAL */}
-              <div className="hidden md:flex relative z-10 w-full h-full bg-[#0D4F97]/90 backdrop-blur-sm">
-                <SidebarSteps />
-              </div>
+          <div className="h-screen rounded-lg mx-10 relative grid grid-cols-1 md:grid-cols-[1fr_2fr] antialiased overflow-hidden">
+            
+            <div
+              className="absolute inset-0 bg-cover bg-center bg-no-repeat grayscale-90"
+              style={{
+                backgroundImage: `url(${Image.src})`,
+              }}
+            />
 
-              {/* O FORMULÁRIO (Coluna direita) */}
-              <div className="relative flex flex-col w-full h-full p-4 md:p-12 bg-slate-50 overflow-y-auto">
-                <div className="max-w-3xl mx-auto w-full">
-                  <h1 className="text-2xl md:text-3xl font-bold text-[#0D4F97] mb-6 border-b pb-4">
-                    Edição de Paciente
-                  </h1>
-                  <div className="bg-white p-6 md:p-8 rounded-xl shadow-sm border border-slate-200">
-                    {children}
-                  </div>
-                </div>
-              </div>
+            <div
+              className="absolute inset-0"
+              style={{
+                background:
+                  "linear-gradient(180deg, rgba(13, 79, 151, 0.2) 54.32%, rgba(255, 255, 255, 0.6) 110.28%)",
+              }}
+            />
 
+            <div className="hidden md:flex relative z-10 w-full h-full bg-[#0D4F97]/40 backdrop-blur-sm">
+              <SidebarSteps />
             </div>
-          </EditPatientDataLoader>
-        </MembersRegisterProvider>
-      </DisordersProvider>
-    </VaccinesProvider>
-  );
+
+            <div className="relative flex flex-col w-full h-full p-8 bg-muted overflow-y-auto">
+              <h1 className="text-2xl font-bold text-blue-900 mb-4">
+                Edição de paciente
+              </h1>
+              {children}
+            </div>
+
+          </div>
+
+        </EditPatientDataLoader>
+      </MembersRegisterProvider>
+    </DisordersProvider>
+  </VaccinesProvider>
+);
 }
