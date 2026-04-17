@@ -32,8 +32,8 @@ export function handleBackendValidationErrors(
         fieldName = parts[parts.length - 1];
       }
 
-      if (fieldName === "number") fieldName = "street";
-      if (fieldName === "neighborhood") fieldName = "district";
+      if (fieldName === "number") fieldName = "number";
+      if (fieldName === "neighborhood") fieldName = "neighborhood";
       if (fieldName === "fullName") fieldName = "name";
       if (fieldName === "contact") fieldName = "phone";
       if (fieldName === "familyIncome") fieldName = "householdIncome";

@@ -167,7 +167,9 @@ export const GenericDatabaseSelect = ({
       blurInputOnSelect={false}
       maxMenuHeight={250}
       menuPlacement={menuPlacement}
-      menuPortalTarget={typeof document !== "undefined" ? document.body : null} // CORREÇÃO 5: Tira o menu de dentro do clipping do modal
+      captureMenuScroll={false} // Evita bugs de scroll no modal
+      closeMenuOnSelect={false} // Bom para MultiSelect
+      tabSelectsValue={false}   // Melhora a acessibilidade no teclado 
     />
   );
 };

@@ -21,19 +21,28 @@ function MembersRegisterForm({
   buttons: React.ReactNode;
 } & React.ComponentProps<"form">) {
   return (
-    <>
+    <div className="relative w-full">
       <h2 className="text-xl font-bold text-blue-900/50 mb-4">{title}</h2>
+      
       <form
         onSubmit={onSubmit}
         className={cn(
-          "flex flex-col grow justify-between space-y-7",
+          "flex flex-col w-full", 
           className,
         )}
       >
-        {children}
-        <div className="flex justify-end gap-4">{buttons}</div>
+        <div className="pb-32 space-y-7">
+          {children}
+        </div>
+
+        <div className="fixed bottom-8 right-12 md:right-24 z-[99] pointer-events-none">          
+          <div className="flex gap-4 pointer-events-auto">
+            {buttons}
+          </div>
+          
+        </div>
       </form>
-    </>
+    </div>
   );
 }
 
