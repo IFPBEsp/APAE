@@ -136,7 +136,7 @@ export default function EditPatientLayout({ children }: { children: React.ReactN
               }}
             />
 
-            <div className="hidden md:flex relative z-10 w-full h-full bg-[#0D4F97]/40 backdrop-blur-sm">
+            <div className="hidden md:flex relative z-10 w-full h-full bg-[#0D4F97]/50">
               <SidebarSteps />
             </div>
 
