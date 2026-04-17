@@ -2,11 +2,12 @@
 
 import * as React from "react";
 import { useRouter, useParams } from "next/navigation";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, FileText } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import FileCard from "@/components/fileCard";
 import { toast } from "react-toastify";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { file } from "zod";
 
 const documentTypeTranslations: Record<string, string> = {
   MEDICAL_REPORT: "Laudo Médico",
@@ -44,10 +45,22 @@ const documentCategory = {
   escolares: "Documentos escolares", 
 };
 
+interface FileCardProps {
+  file: {
+    fileName: string;
+    link: string;
+    originalName?: string; 
+  };
+}
+
 export default function DocumentTypePage() {
   const router = useRouter();
   const params = useParams();
   const patientId = params?.id as string;
+
+  const isPdf = 
+    file.link?.toLowerCase().includes(".pdf") || 
+    file.originalName?.toLowerCase().includes(".pdf");
 
   const category = params?.type as keyof typeof documentCategory;
 
@@ -165,6 +178,9 @@ export default function DocumentTypePage() {
               file={{
                 fileName: translateDocumentType(file.type || file.name),
                 link: file.url,
+                // ADICIONE ESTAS DUAS LINHAS ABAIXO:
+                originalName: file.name,
+                type: file.type 
               }}
             />
           ))
