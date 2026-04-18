@@ -87,7 +87,7 @@ export default function MembersRegisterGuardianPage() {
       };
 
       setGuardianData(dataToSave);
-      setStep(MembersRegisterStep.PROFILE);
+      setStep(MembersRegisterStep.ADDRESS);
     } catch (error: any) {
       if (error.response?.data) {
         handleBackendValidationErrors(error.response.data, form.setError);
@@ -109,11 +109,7 @@ export default function MembersRegisterGuardianPage() {
               onClick={() => {
                 const currentValues = form.getValues();
                 setGuardianData(currentValues);
-
-                const destino = isEditing 
-                  ? MembersRegisterStep.ADDRESS 
-                  : MembersRegisterStep.ADDITIONALS;
-                setStep(destino);
+                setStep(MembersRegisterStep.KINSHIPS);
               }}
               disabled={isLoading}
             >

@@ -77,9 +77,9 @@ export default function MembersRegisterAddressPage() {
         number: values.noNumber ? "SN" : values.number
       }
       setAddressData(dataToSave);
-      
-        if (isEditing) {
-        setStep(MembersRegisterStep.GUARDIAN); 
+
+      if (isEditing) {
+        setStep(MembersRegisterStep.PROFILE);
       } else {
         setStep(MembersRegisterStep.ADDITIONALS);
       }
@@ -111,7 +111,7 @@ export default function MembersRegisterAddressPage() {
               onClick={() => {
                 const currentValues = form.getValues();
                 setAddressData(currentValues);
-                setStep(MembersRegisterStep.KINSHIPS);
+                setStep(MembersRegisterStep.GUARDIAN);
               }}
               disabled={isLoading}
             >
