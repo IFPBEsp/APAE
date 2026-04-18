@@ -1,6 +1,13 @@
 "use client";
 
-import { createContext, useCallback, useContext, useReducer, useEffect, useMemo } from "react";
+import {
+  createContext,
+  useCallback,
+  useContext,
+  useReducer,
+  useEffect,
+  useMemo,
+} from "react";
 import { useParams } from "next/navigation";
 
 // --- INTERFACES ---
@@ -102,7 +109,11 @@ const fileToBase64 = (file: File): Promise<string> => {
   });
 };
 
-const base64ToFile = (base64: string, filename: string, mimeType: string): File => {
+const base64ToFile = (
+  base64: string,
+  filename: string,
+  mimeType: string,
+): File => {
   const arr = base64.split(",");
   const bstr = atob(arr[1]);
   let n = bstr.length;
@@ -124,18 +135,62 @@ type MembersRegisterAction =
   | { type: "SET_STEP"; payload: MembersRegisterStep }
   | { type: "LOAD_ALL_DATA"; payload: MembersRegisterState };
 
-function membersRegisterReducer(state: MembersRegisterState, action: MembersRegisterAction): MembersRegisterState {
+function membersRegisterReducer(
+  state: MembersRegisterState,
+  action: MembersRegisterAction,
+): MembersRegisterState {
   switch (action.type) {
     case "SET_PERSONAL_DATA":
-      return { ...state, personal: { ...state.personal, ...action.payload, rg: { ...state.personal.rg, ...action.payload.rg, issuing: { ...state.personal.rg.issuing, ...action.payload.rg?.issuing } }, birth: { ...state.personal.birth, ...action.payload.birth } } };
-    case "SET_KINSHIPS_DATA": return { ...state, kinships: action.payload };
-    case "SET_ADDRESS_DATA": return { ...state, address: { ...state.address, ...action.payload } };
-    case "SET_ADDITIONALS_DATA": return { ...state, additionals: { ...state.additionals, ...action.payload, disability: { ...state.additionals.disability, ...action.payload.disability }, care: { ...state.additionals.care, ...action.payload.care } } };
-    case "SET_GUARDIAN_DATA": return { ...state, guardian: { ...state.guardian, ...action.payload, address: { ...state.guardian.address, ...action.payload.address } } };
-    case "SET_PROFILE_DATA": return { ...state, profile: { ...state.profile, ...action.payload } };
-    case "SET_STEP": return { ...state, step: action.payload };
-    case "LOAD_ALL_DATA": return { ...action.payload };
-    default: return state;
+      return {
+        ...state,
+        personal: {
+          ...state.personal,
+          ...action.payload,
+          rg: {
+            ...state.personal.rg,
+            ...action.payload.rg,
+            issuing: {
+              ...state.personal.rg.issuing,
+              ...action.payload.rg?.issuing,
+            },
+          },
+          birth: { ...state.personal.birth, ...action.payload.birth },
+        },
+      };
+    case "SET_KINSHIPS_DATA":
+      return { ...state, kinships: action.payload };
+    case "SET_ADDRESS_DATA":
+      return { ...state, address: { ...state.address, ...action.payload } };
+    case "SET_ADDITIONALS_DATA":
+      return {
+        ...state,
+        additionals: {
+          ...state.additionals,
+          ...action.payload,
+          disability: {
+            ...state.additionals.disability,
+            ...action.payload.disability,
+          },
+          care: { ...state.additionals.care, ...action.payload.care },
+        },
+      };
+    case "SET_GUARDIAN_DATA":
+      return {
+        ...state,
+        guardian: {
+          ...state.guardian,
+          ...action.payload,
+          address: { ...state.guardian.address, ...action.payload.address },
+        },
+      };
+    case "SET_PROFILE_DATA":
+      return { ...state, profile: { ...state.profile, ...action.payload } };
+    case "SET_STEP":
+      return { ...state, step: action.payload };
+    case "LOAD_ALL_DATA":
+      return { ...action.payload };
+    default:
+      return state;
   }
 }
 
@@ -149,7 +204,16 @@ const initialState: MembersRegisterState = {
     nis: "",
     birth: { certificate: "", date: new Date(), place: "" },
   },
-  address: { cep: "", state: "", city: "", neighborhood: "", street: "", number: "", complement: "", noNumber: false },
+  address: {
+    cep: "",
+    state: "",
+    city: "",
+    neighborhood: "",
+    street: "",
+    number: "",
+    complement: "",
+    noNumber: false,
+  },
   additionals: {
     id: undefined,
     diseases: "",
@@ -162,7 +226,16 @@ const initialState: MembersRegisterState = {
     householdIncome: "",
   },
   guardian: {
-    address: { cep: "", state: "", city: "", neighborhood: "", street: "", number: "", complement: "", noNumber: false },
+    address: {
+      cep: "",
+      state: "",
+      city: "",
+      neighborhood: "",
+      street: "",
+      number: "",
+      complement: "",
+      noNumber: false,
+    },
     contact: "",
     kinship: "",
     name: "",
@@ -172,12 +245,18 @@ const initialState: MembersRegisterState = {
   profile: { role: "patient", photo: undefined },
 };
 
-const MembersRegisterContext = createContext<MembersRegisterContextData | undefined>(undefined);
+const MembersRegisterContext = createContext<
+  MembersRegisterContextData | undefined
+>(undefined);
 
-export function MembersRegisterProvider({ children }: { children: React.ReactNode }) {
+export function MembersRegisterProvider({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
   const [state, dispatch] = useReducer(membersRegisterReducer, initialState);
   const params = useParams();
-  
+
   // 1. CHAVE DE CACHE
   const STORAGE_KEY = useMemo(() => {
     const patientId = params?.id as string;
@@ -190,21 +269,21 @@ export function MembersRegisterProvider({ children }: { children: React.ReactNod
       obj.additionals.disability.report = base64ToFile(
         obj.additionals.disability.report.base64,
         obj.additionals.disability.report.name,
-        obj.additionals.disability.report.type
+        obj.additionals.disability.report.type,
       );
     }
     if (obj.additionals?.care?.referral?.base64) {
       obj.additionals.care.referral = base64ToFile(
         obj.additionals.care.referral.base64,
         obj.additionals.care.referral.name,
-        obj.additionals.care.referral.type
+        obj.additionals.care.referral.type,
       );
     }
     if (obj.profile?.photo?.base64) {
       obj.profile.photo = base64ToFile(
         obj.profile.photo.base64,
         obj.profile.photo.name,
-        obj.profile.photo.type
+        obj.profile.photo.type,
       );
     }
     if (obj.personal?.rg?.issuing?.date) {
@@ -218,27 +297,63 @@ export function MembersRegisterProvider({ children }: { children: React.ReactNod
 
   // 3. SETTERS
   const setters = {
-    setPersonalData: useCallback((data: Partial<PersonalData>) => dispatch({ type: "SET_PERSONAL_DATA", payload: data }), []),
-    setKinshipsData: useCallback((data: KinshipData[]) => dispatch({ type: "SET_KINSHIPS_DATA", payload: data }), []),
-    setAddressData: useCallback((data: Partial<AddressData>) => dispatch({ type: "SET_ADDRESS_DATA", payload: data }), []),
-    setAdditionalsData: useCallback((data: Partial<AdditionalsData>) => dispatch({ type: "SET_ADDITIONALS_DATA", payload: data }), []),
-    setGuardianData: useCallback((data: Partial<GuardianData>) => dispatch({ type: "SET_GUARDIAN_DATA", payload: data }), []),
-    setProfileData: useCallback((data: Partial<ProfileData>) => dispatch({ type: "SET_PROFILE_DATA", payload: data }), []),
-    setStep: useCallback((step: MembersRegisterStep) => dispatch({ type: "SET_STEP", payload: step }), []),
-    loadAllData: useCallback((apiData: MembersRegisterState) => {
-      if (typeof window !== "undefined") {
-        const saved = localStorage.getItem(STORAGE_KEY);
-        if (saved) {
-          try {
-            const parsed = JSON.parse(saved);
-            const draftWithFiles = reconstructFiles(parsed);
-            dispatch({ type: "LOAD_ALL_DATA", payload: { ...apiData, ...draftWithFiles } });
-            return; 
-          } catch (e) { console.error(e); }
+    setPersonalData: useCallback(
+      (data: Partial<PersonalData>) =>
+        dispatch({ type: "SET_PERSONAL_DATA", payload: data }),
+      [],
+    ),
+    setKinshipsData: useCallback(
+      (data: KinshipData[]) =>
+        dispatch({ type: "SET_KINSHIPS_DATA", payload: data }),
+      [],
+    ),
+    setAddressData: useCallback(
+      (data: Partial<AddressData>) =>
+        dispatch({ type: "SET_ADDRESS_DATA", payload: data }),
+      [],
+    ),
+    setAdditionalsData: useCallback(
+      (data: Partial<AdditionalsData>) =>
+        dispatch({ type: "SET_ADDITIONALS_DATA", payload: data }),
+      [],
+    ),
+    setGuardianData: useCallback(
+      (data: Partial<GuardianData>) =>
+        dispatch({ type: "SET_GUARDIAN_DATA", payload: data }),
+      [],
+    ),
+    setProfileData: useCallback(
+      (data: Partial<ProfileData>) =>
+        dispatch({ type: "SET_PROFILE_DATA", payload: data }),
+      [],
+    ),
+    setStep: useCallback(
+      (step: MembersRegisterStep) =>
+        dispatch({ type: "SET_STEP", payload: step }),
+      [],
+    ),
+    loadAllData: useCallback(
+      (apiData: MembersRegisterState) => {
+        if (typeof window !== "undefined") {
+          const saved = localStorage.getItem(STORAGE_KEY);
+          if (saved) {
+            try {
+              const parsed = JSON.parse(saved);
+              const draftWithFiles = reconstructFiles(parsed);
+              dispatch({
+                type: "LOAD_ALL_DATA",
+                payload: { ...apiData, ...draftWithFiles },
+              });
+              return;
+            } catch (e) {
+              console.error(e);
+            }
+          }
         }
-      }
-      dispatch({ type: "LOAD_ALL_DATA", payload: apiData });
-    }, [STORAGE_KEY, reconstructFiles]),
+        dispatch({ type: "LOAD_ALL_DATA", payload: apiData });
+      },
+      [STORAGE_KEY, reconstructFiles],
+    ),
   };
 
   // 4. EFEITO DE RECUPERAÇÃO (Hydration)
@@ -249,13 +364,18 @@ export function MembersRegisterProvider({ children }: { children: React.ReactNod
         try {
           const parsed = JSON.parse(saved);
           if (state.personal.name === "") {
-             const draftWithFiles = reconstructFiles(parsed);
-             dispatch({ type: "LOAD_ALL_DATA", payload: { ...state, ...draftWithFiles } });
+            const draftWithFiles = reconstructFiles(parsed);
+            dispatch({
+              type: "LOAD_ALL_DATA",
+              payload: { ...state, ...draftWithFiles },
+            });
           }
-        } catch (e) { console.error("Erro no rascunho", e); }
+        } catch (e) {
+          console.error("Erro no rascunho", e);
+        }
       }
     }
-  }, [STORAGE_KEY, reconstructFiles]);   
+  }, [STORAGE_KEY, reconstructFiles]);
 
   // 5. EFEITO DE SALVAMENTO AUTOMÁTICO
   useEffect(() => {
@@ -271,27 +391,27 @@ export function MembersRegisterProvider({ children }: { children: React.ReactNod
           draft.additionals.disability.report = {
             base64: await fileToBase64(state.additionals.disability.report),
             name: state.additionals.disability.report.name,
-            type: state.additionals.disability.report.type
+            type: state.additionals.disability.report.type,
           };
         }
         if (state.additionals.care.referral instanceof File) {
           draft.additionals.care.referral = {
             base64: await fileToBase64(state.additionals.care.referral),
             name: state.additionals.care.referral.name,
-            type: state.additionals.care.referral.type
+            type: state.additionals.care.referral.type,
           };
         }
         if (state.profile.photo instanceof File) {
           draft.profile.photo = {
             base64: await fileToBase64(state.profile.photo),
             name: state.profile.photo.name,
-            type: state.profile.photo.type
+            type: state.profile.photo.type,
           };
         }
 
         localStorage.setItem(STORAGE_KEY, JSON.stringify(draft));
       } catch (error: any) {
-        if (error.name === 'QuotaExceededError') {
+        if (error.name === "QuotaExceededError") {
           console.warn("Aviso: Limite do LocalStorage excedido.");
         }
       }
@@ -299,7 +419,7 @@ export function MembersRegisterProvider({ children }: { children: React.ReactNod
 
     saveDraft();
   }, [state, STORAGE_KEY, params?.id]);
-  
+
   // 6. FUNÇÃO REGISTER
   const register = useCallback(
     async (id?: string) => {
@@ -308,14 +428,20 @@ export function MembersRegisterProvider({ children }: { children: React.ReactNod
 
       const formatDate = (date: any) => {
         if (!date) return null;
+
         const d = new Date(date);
         if (isNaN(d.getTime())) return null;
-        return d.toLocaleDateString('en-CA');
+
+        const year = d.getFullYear();
+        const month = String(d.getMonth() + 1).padStart(2, "0");
+        const day = String(d.getDate()).padStart(2, "0");
+
+        return `${year}-${month}-${day}`;
       };
 
       const parseIncome = (val: string) => {
-        const clean = String(val).replace(/[^\d]/g, ""); 
-        const num = parseFloat(clean) * 0.01; 
+        const clean = String(val).replace(/[^\d]/g, "");
+        const num = parseFloat(clean) * 0.01;
         return isNaN(num) ? 0.0 : num;
       };
 
@@ -325,12 +451,15 @@ export function MembersRegisterProvider({ children }: { children: React.ReactNod
         birthDate: formatDate(personal.birth.date),
         contact: personal.phone || "Não informado",
         birthCertificateNumber: personal.birth.certificate || "0",
-        registryOffice: "Cartorio", fls: "0", book: "0",
+        registryOffice: "Cartorio",
+        fls: "0",
+        book: "0",
         rg: personal.rg.number || "0",
         issueDate: formatDate(personal.rg.issuing.date),
         issuingAgency: personal.rg.issuing.body || "SSP/SP",
-        cpf: personal.cpf, cns: personal.cns || "000 0000 0000 0000", nis: personal.nis || "0",
-        registrationDate: formatDate(new Date()),
+        cpf: personal.cpf,
+        cns: personal.cns || "000 0000 0000 0000",
+        nis: personal.nis || "0",
         allergies: additionals.allergies || "Nenhuma",
         isStudent: profile.role === "student",
         address: {
@@ -370,29 +499,73 @@ export function MembersRegisterProvider({ children }: { children: React.ReactNod
       };
 
       if (id) {
-        const res = await fetch(`/api/pessoas/${id}`, { method: "PUT", headers: { "Content-Type": "application/json" }, body: JSON.stringify(patient) });
-        if (res.ok) { localStorage.removeItem(STORAGE_KEY); }
-        if (profile.photo instanceof File && res.ok) {
-          const photoFormData = new FormData(); photoFormData.append("photo", profile.photo);
-          await fetch(`/api/pessoas/${id}/photo`, { method: "PUT", body: photoFormData });
+        const res = await fetch(`/api/pessoas/${id}`, {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(patient),
+        });
+
+        if (res.ok) {
+          localStorage.removeItem(STORAGE_KEY);
         }
+
+        if (profile.photo instanceof File && res.ok) {
+          const photoFormData = new FormData();
+          photoFormData.append("photo", profile.photo);
+
+          await fetch(`/api/pessoas/${id}/photo`, {
+            method: "PUT",
+            body: photoFormData,
+          });
+        }
+
         const data = await res.json().catch(() => ({}));
         return { status: res.status, data };
       } else {
-        patient.annualRegistry = { bpc: additionals.bpc, diseases: additionals.diseases, serviceArea: additionals.care.types.map((area: string) => ({ area })), familyIncome: parseIncome(additionals.householdIncome), year: new Date().getFullYear(), disorders: additionals.disability.types.map((name: string) => ({ name })) };
-        const formData = new FormData();
-        formData.append("patient", new Blob([JSON.stringify(patient)], { type: "application/json" }));
-        if (profile.photo instanceof File) formData.append("photo", profile.photo);
-        if (additionals.disability.report instanceof File) formData.append("reports", additionals.disability.report);
-        if (additionals.care.referral instanceof File) formData.append("referrals", additionals.care.referral);
+        patient.registrationDate = formatDate(new Date());
+        patient.annualRegistry = {
+          bpc: additionals.bpc,
+          diseases: additionals.diseases,
+          serviceArea: additionals.care.types.map((area: string) => ({ area })),
+          familyIncome: parseIncome(additionals.householdIncome),
+          year: new Date().getFullYear(),
+          disorders: additionals.disability.types.map((name: string) => ({
+            name,
+          })),
+        };
 
-        const res = await fetch("/api/pessoas", { method: "POST", body: formData });
-        if (res.ok) { localStorage.removeItem(STORAGE_KEY); }
+        const formData = new FormData();
+        formData.append(
+          "patient",
+          new Blob([JSON.stringify(patient)], { type: "application/json" }),
+        );
+
+        if (profile.photo instanceof File) {
+          formData.append("photo", profile.photo);
+        }
+
+        if (additionals.disability.report instanceof File) {
+          formData.append("reports", additionals.disability.report);
+        }
+
+        if (additionals.care.referral instanceof File) {
+          formData.append("referrals", additionals.care.referral);
+        }
+
+        const res = await fetch("/api/pessoas", {
+          method: "POST",
+          body: formData,
+        });
+
+        if (res.ok) {
+          localStorage.removeItem(STORAGE_KEY);
+        }
+
         const data = await res.json().catch(() => ({}));
         return { status: res.status, data };
       }
     },
-    [state, STORAGE_KEY]
+    [state, STORAGE_KEY],
   );
 
   return (
@@ -404,6 +577,9 @@ export function MembersRegisterProvider({ children }: { children: React.ReactNod
 
 export function useMembersRegisterContext() {
   const context = useContext(MembersRegisterContext);
-  if (!context) throw new Error("useMembersRegisterContext must be used within a MembersRegisterProvider");
+  if (!context)
+    throw new Error(
+      "useMembersRegisterContext must be used within a MembersRegisterProvider",
+    );
   return context;
 }

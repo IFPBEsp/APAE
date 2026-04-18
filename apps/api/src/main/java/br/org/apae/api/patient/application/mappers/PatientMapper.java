@@ -85,7 +85,7 @@ public class PatientMapper {
                                 dto.registryOffice(),
                                 dto.fls(),
                                 dto.book(),
-                                dto.registrationDate());
+                                patient.getRegistrationDate());
 
                 Identification identification = new Identification(
                                 dto.rg(),

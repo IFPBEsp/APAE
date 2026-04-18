@@ -44,8 +44,6 @@ public record UpdatePatientDTO(
 
         @NotBlank(message = "O NIS não pode estar em branco") String nis,
 
-        @NotNull(message = "A data de cadastro não pode ser nula") LocalDate registrationDate,
-
         @NotBlank(message = "As alergias não podem estar em branco") String allergies,
 
         @NotNull(message = "O campo 'é estudante' não pode ser nulo") boolean isStudent,
