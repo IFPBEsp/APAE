@@ -8,6 +8,7 @@ import { DashboardOverview } from "@/types/dashboard/dashboard-overview";
 import { Calendar, SearchIcon, Users } from "lucide-react";
 import React, { useEffect, useState, useCallback, useRef } from "react";
 import AbsenceService from "../services/absenceService";
+
 interface PaginationInfo {
   currentPage: number;
   totalPages: number;
@@ -30,7 +31,6 @@ export default function AbsenceDetails() {
   });
   const [statistics, setStatistics] = useState<DashboardOverview>({
     totalPatients: 0,
-    totalAppointments: 0,
     totalPatientsWithAbsences: 0,
   });
 
@@ -108,7 +108,6 @@ export default function AbsenceDetails() {
         setPatientsWithAbsences(patientsData.content);
         setStatistics({
           totalPatients: statsData.totalPatients,
-          totalAppointments: statsData.totalAppointments,
           totalPatientsWithAbsences: statsData.totalPatientsWithAbsences,
         });
         setPagination((prev) => ({
@@ -166,13 +165,6 @@ export default function AbsenceDetails() {
             title="Total de Pacientes"
             icon={Users}
             value={statistics.totalPatients}
-            titleClassName="text-[#0D4F97]"
-            valueClassName="text-[#0D4F97]"
-          />
-          <InfoCard
-            title="Agendamentos Ativos"
-            icon={Calendar}
-            value={statistics.totalAppointments}
             titleClassName="text-[#0D4F97]"
             valueClassName="text-[#0D4F97]"
           />
