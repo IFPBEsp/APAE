@@ -188,13 +188,6 @@ export default function DashboardPage() {
             valueClassName="text-[#0D4F97]"
           />
           <InfoCard
-            title="Todos os agendamentos"
-            icon={Users}
-            value={allAppointments.length}
-            titleClassName="text-[#0D4F97]"
-            valueClassName="text-[#0D4F97]"
-          />
-          <InfoCard
             title="Ativos"
             icon={UserRoundCheck}
             value={activeAppointments.length}
