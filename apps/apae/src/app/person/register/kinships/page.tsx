@@ -55,7 +55,21 @@ function LegalGuardianCheckbox({
   useEffect(() => {
     if (!isAlive && isLegalGuardian) {
       fieldOnChange(false);
-      setGuardianData({ name: "", kinship: "" });
+      setGuardianData({
+        name: "",
+        kinship: "",
+        contact: "",
+        address: {
+          cep: "",
+          state: "",
+          city: "",
+          neighborhood: "",
+          street: "",
+          number: "",
+          complement: "",
+          noNumber: false,
+        },
+      });
     }
   }, [isAlive, isLegalGuardian, setGuardianData]);
 
@@ -84,6 +98,17 @@ function LegalGuardianCheckbox({
               setGuardianData({
                 name: "",
                 kinship: "",
+                contact: "",
+                address: {
+                  cep: "",
+                  state: "",
+                  city: "",
+                  neighborhood: "",
+                  street: "",
+                  number: "",
+                  complement: "",
+                  noNumber: false,
+                },
               });
             }
           }}
