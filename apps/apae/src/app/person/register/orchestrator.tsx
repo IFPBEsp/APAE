@@ -22,9 +22,9 @@ export function PageOrchestrator({
     const stepPaths: Record<string, string> = {
       [MembersRegisterStep.PERSONAL]: "personal",
       [MembersRegisterStep.KINSHIPS]: "kinships",
+      [MembersRegisterStep.GUARDIAN]: "responsible",
       [MembersRegisterStep.ADDRESS]: "address",
       [MembersRegisterStep.ADDITIONALS]: "additional",
-      [MembersRegisterStep.GUARDIAN]: "responsible",
       [MembersRegisterStep.PROFILE]: "profile",
     };
 

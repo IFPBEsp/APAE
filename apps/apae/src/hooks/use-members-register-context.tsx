@@ -7,6 +7,7 @@ import {
   useReducer,
   useEffect,
   useMemo,
+  useRef,
 } from "react";
 import { useParams } from "next/navigation";
 
@@ -99,7 +100,7 @@ interface MembersRegisterContextData {
   register: (id?: string) => Promise<{ status: number; data: any }>;
 }
 
-// --- UTILS: FILE CONVERSION (Foras do componente) ---
+// --- UTILS: FILE CONVERSION ---
 const fileToBase64 = (file: File): Promise<string> => {
   return new Promise((resolve, reject) => {
     const reader = new FileReader();
@@ -256,6 +257,7 @@ export function MembersRegisterProvider({
 }) {
   const [state, dispatch] = useReducer(membersRegisterReducer, initialState);
   const params = useParams();
+  const hasHydrated = useRef(false);
 
   // 1. CHAVE DE CACHE
   const STORAGE_KEY = useMemo(() => {
@@ -263,7 +265,7 @@ export function MembersRegisterProvider({
     return patientId ? `apae_edit_cache_${patientId}` : "apae_register_cache";
   }, [params?.id]);
 
-  // 2. FUNÇÃO DE RECONSTRUÇÃO (Declarada antes de ser usada)
+  // 2. FUNÇÃO DE RECONSTRUÇÃO
   const reconstructFiles = useCallback((obj: any) => {
     if (obj.additionals?.disability?.report?.base64) {
       obj.additionals.disability.report = base64ToFile(
@@ -334,58 +336,49 @@ export function MembersRegisterProvider({
     ),
     loadAllData: useCallback(
       (apiData: MembersRegisterState) => {
-        if (typeof window !== "undefined") {
-          const saved = localStorage.getItem(STORAGE_KEY);
-          if (saved) {
-            try {
-              const parsed = JSON.parse(saved);
-              const draftWithFiles = reconstructFiles(parsed);
-              dispatch({
-                type: "LOAD_ALL_DATA",
-                payload: { ...apiData, ...draftWithFiles },
-              });
-              return;
-            } catch (e) {
-              console.error(e);
-            }
-          }
-        }
         dispatch({ type: "LOAD_ALL_DATA", payload: apiData });
       },
-      [STORAGE_KEY, reconstructFiles],
+      [],
     ),
   };
 
-  // 4. EFEITO DE RECUPERAÇÃO (Hydration)
+  // 4. EFEITO DE HIDRATAÇÃO (executa apenas uma vez)
   useEffect(() => {
-    if (typeof window !== "undefined") {
-      const saved = localStorage.getItem(STORAGE_KEY);
-      if (saved) {
-        try {
-          const parsed = JSON.parse(saved);
-          if (state.personal.name === "") {
-            const draftWithFiles = reconstructFiles(parsed);
-            dispatch({
-              type: "LOAD_ALL_DATA",
-              payload: { ...state, ...draftWithFiles },
-            });
-          }
-        } catch (e) {
-          console.error("Erro no rascunho", e);
-        }
+    // Evita hidratação duplicada
+    if (hasHydrated.current) return;
+    if (typeof window === "undefined") return;
+
+    const saved = localStorage.getItem(STORAGE_KEY);
+    if (saved) {
+      try {
+        const parsed = JSON.parse(saved);
+        const draftWithFiles = reconstructFiles(parsed);
+        dispatch({
+          type: "LOAD_ALL_DATA",
+          payload: draftWithFiles,
+        });
+        hasHydrated.current = true;
+        return;
+      } catch (e) {
+        console.error("Erro ao carregar rascunho:", e);
       }
     }
+
+    hasHydrated.current = true;
   }, [STORAGE_KEY, reconstructFiles]);
 
   // 5. EFEITO DE SALVAMENTO AUTOMÁTICO
   useEffect(() => {
     if (typeof window === "undefined") return;
+    // Não salva se ainda não foi hidratado
+    if (!hasHydrated.current) return;
 
     const saveDraft = async () => {
+      // Não salva se está em modo de edição e state está vazio
       if (params?.id && state.personal.name === "") return;
 
       try {
-        const draft = JSON.parse(JSON.stringify(state, (key, value) => value));
+        const draft = JSON.parse(JSON.stringify(state));
 
         if (state.additionals.disability.report instanceof File) {
           draft.additionals.disability.report = {
@@ -413,11 +406,14 @@ export function MembersRegisterProvider({
       } catch (error: any) {
         if (error.name === "QuotaExceededError") {
           console.warn("Aviso: Limite do LocalStorage excedido.");
+        } else {
+          console.error("Erro ao salvar rascunho:", error);
         }
       }
     };
 
-    saveDraft();
+    const timer = setTimeout(saveDraft, 1000);
+    return () => clearTimeout(timer);
   }, [state, STORAGE_KEY, params?.id]);
 
   // 6. FUNÇÃO REGISTER

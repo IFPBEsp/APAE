@@ -210,7 +210,12 @@ export default function MembersRegisterProfilePage() {
           <>
             <FormButton
               type="button"
-              onClick={() => setStep(MembersRegisterStep.GUARDIAN)}
+              onClick={() => {
+                const destino = isEditing
+                  ? MembersRegisterStep.ADDRESS
+                  : MembersRegisterStep.ADDITIONALS;
+                setStep(destino);
+              }}
               disabled={isLoading}
             >
               Voltar

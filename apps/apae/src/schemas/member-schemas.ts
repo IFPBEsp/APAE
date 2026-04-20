@@ -182,6 +182,7 @@ export const Kinship = z.object({
     ),
   occupation: z.string().min(2, "Profissão inválida"),
   type: z.string().min(1, "Informar o parentesco é obrigatório."),
+  isLegalGuardian: z.boolean().default(false).optional(),
 });
 
 export const Kinships = z.object({

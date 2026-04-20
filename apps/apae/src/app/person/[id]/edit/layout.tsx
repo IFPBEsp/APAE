@@ -75,13 +75,14 @@ function EditPatientDataLoader({ children }: { children: React.ReactNode }) {
                complement: data.guardian?.address?.complement || ""
              } 
            },
-           kinships: data.parents?.map((p: any) => ({ 
-             name: p.name || "", 
-             cpf: p.cpf || "", 
-             rg: p.rg || "", 
-             occupation: p.profession || "", 
-             alive: p.isAlive ?? true, 
-             type: p.kinship || "" 
+           kinships: data.parents?.map((p: any) => ({
+             name: p.name || "",
+             cpf: p.cpf || "",
+             rg: p.rg || "",
+             occupation: p.profession || "",
+             alive: p.isAlive ?? true,
+             type: p.kinship || "",
+             isLegalGuardian: p.name === data.guardian?.name && p.kinship === data.guardian?.kinship
            })) || [],
            profile: { 
              role: data.isStudent ? "student" : "patient", 

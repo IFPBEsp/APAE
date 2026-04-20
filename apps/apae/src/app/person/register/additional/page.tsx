@@ -231,7 +231,7 @@ export default function MembersRegisterAdditionalsPage() {
     setIsLoading(true);
     try {
       setAdditionalsData(values);
-      setStep(MembersRegisterStep.GUARDIAN);
+      setStep(MembersRegisterStep.PROFILE);
     } catch (error: any) {
       if (error.response?.data) {
         handleBackendValidationErrors(error.response.data, form.setError);
