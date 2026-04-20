@@ -347,7 +347,7 @@ export default function CadastroProfissional(): JSX.Element {
                 <FormControl>
                   <Input
                     type="file"
-                    accept="application/pdf"
+                    accept="image/*, application/pdf"
                     onChange={(e) =>
                       field.onChange(e.target.files?.[0] ?? null)
                     }
@@ -367,7 +367,7 @@ export default function CadastroProfissional(): JSX.Element {
                 <FormControl>
                   <Input
                     type="file"
-                    accept="application/pdf"
+                    accept="image/*, application/pdf"
                     onChange={(e) =>
                       field.onChange(e.target.files?.[0] ?? null)
                     }
@@ -377,6 +377,7 @@ export default function CadastroProfissional(): JSX.Element {
               </FormItem>
             )}
           />
+          
           <FormField
             control={form.control}
             name="anexoQualquer"
@@ -386,7 +387,7 @@ export default function CadastroProfissional(): JSX.Element {
                 <FormControl>
                   <Input
                     type="file"
-                    accept="application/pdf"
+                    accept="image/*, application/pdf"
                     onChange={(e) =>
                       field.onChange(e.target.files?.[0] ?? null)
                     }

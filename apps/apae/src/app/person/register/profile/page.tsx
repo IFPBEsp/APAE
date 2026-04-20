@@ -13,7 +13,7 @@ import {
   useMembersRegisterContext,
 } from "@/hooks/use-members-register-context";
 import { Profile } from "@/schemas/member-schemas";
-import { EditProfile } from "@/schemas/edit-member-schemas"; 
+import { EditProfile } from "@/schemas/edit-member-schemas";
 import { zodResolver } from "@hookform/resolvers/zod";
 import React, { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
@@ -22,7 +22,7 @@ import { handleBackendValidationErrors } from "@/utils/form-errors";
 import z from "zod";
 import { FileInputButton, FormButton, MembersRegisterForm } from "../form";
 import { Checkbox } from "@/components/ui/checkbox";
-import { useRouter, useParams, usePathname } from "next/navigation"; 
+import { useRouter, useParams, usePathname } from "next/navigation";
 import { toast } from "react-toastify";
 
 export default function MembersRegisterProfilePage() {
@@ -31,7 +31,7 @@ export default function MembersRegisterProfilePage() {
     setters: { setProfileData, setStep },
     register,
   } = useMembersRegisterContext();
-  
+
   const [submitted, setSubmitted] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
@@ -50,6 +50,23 @@ export default function MembersRegisterProfilePage() {
   });
 
   const [isInitialized, setIsInitialized] = useState(false);
+
+  const getErrorMessage = (data: any) => {
+    if (!data) return "Erro inesperado no servidor.";
+
+    if (typeof data === "string") return data;
+
+    if (typeof data.message === "string") return data.message;
+
+    if (data.message && typeof data.message.message === "string") {
+      return data.message.message;
+    }
+
+    if (typeof data.error === "string") return data.error;
+
+    return "Erro inesperado no servidor.";
+  };
+
   useEffect(() => {
     if (isEditing && profile.role && !isInitialized) {
       form.reset(profile);
@@ -70,13 +87,20 @@ export default function MembersRegisterProfilePage() {
           const res = await register(id);
 
           if (res.status === 201 || res.status === 200 || res.status === 204) {
-            toast.success(isEditing ? "Paciente atualizado com sucesso!" : "Membro cadastrado com sucesso!");
-            
-            router.push(isEditing ? `/person/${id}` : "/visualization-patients");
+            toast.success(
+              isEditing
+                ? "Paciente atualizado com sucesso!"
+                : "Membro cadastrado com sucesso!",
+            );
+
+            router.push(
+              isEditing ? `/person/${id}` : "/visualization-patients",
+            );
+            return;
           }
 
-          else if (res.status === 409) {
-            const msg = res.data?.message || "";
+          if (res.status === 409) {
+            const msg = getErrorMessage(res.data);
             const msgLower = msg.toLowerCase();
 
             let targetField = "cpf";
@@ -102,13 +126,15 @@ export default function MembersRegisterProfilePage() {
             });
 
             setSubmitted(false);
+            return;
           }
 
-          else if (res.status === 400) {
+          if (res.status === 400) {
             const firstError = res.data?.fields?.[0];
             const backendField = firstError?.field || "";
             const fieldLower = backendField.toLowerCase();
-            const errorMessage = firstError?.message || "Erro de validação";
+            const errorMessage =
+              firstError?.message || getErrorMessage(res.data);
 
             if (backendField) {
               if (
@@ -155,10 +181,11 @@ export default function MembersRegisterProfilePage() {
             toast.error(errorMessage);
             handleBackendValidationErrors(res.data, form.setError);
             setSubmitted(false);
-          } else {
-            toast.error(res.data?.message || "Erro inesperado no servidor.");
-            setSubmitted(false);
+            return;
           }
+
+          toast.error(getErrorMessage(res.data));
+          setSubmitted(false);
         } catch (error) {
           toast.error("Falha na conexão com o servidor.");
           setSubmitted(false);
@@ -167,7 +194,7 @@ export default function MembersRegisterProfilePage() {
         }
       })();
     }
-  }, [submitted, profile, register, router, form.setError, setStep, id, isEditing]);
+  }, [submitted, profile, register, router, form, setStep, id, isEditing]);
 
   const onSubmit = async (values: z.infer<typeof Profile>) => {
     setProfileData(values);
@@ -195,7 +222,11 @@ export default function MembersRegisterProfilePage() {
             </FormButton>
 
             <FormButton type="submit" disabled={isLoading}>
-              {isLoading ? "Salvando..." : (isEditing ? "Salvar Alterações" : "Salvar")}
+              {isLoading
+                ? "Salvando..."
+                : isEditing
+                  ? "Salvar Alterações"
+                  : "Salvar"}
             </FormButton>
           </>
         }
@@ -206,11 +237,13 @@ export default function MembersRegisterProfilePage() {
             name="photo"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Foto {isEditing ? "(Opcional na edição)" : "*"}</FormLabel>
+                <FormLabel>
+                  Foto {isEditing ? "(Opcional na edição)" : "*"}
+                </FormLabel>
                 <FormControl>
                   <FileInputButton
                     id={field.name}
-                    className="min-w-3xs !cursor-pointer bg-gradient-to-b hover:bg-zinc-300/55"  
+                    className="min-w-3xs !cursor-pointer bg-gradient-to-b hover:bg-zinc-300/55"
                     disabled={isLoading}
                     onChange={(e) => {
                       if (e.target.files && e.target.files[0]) {

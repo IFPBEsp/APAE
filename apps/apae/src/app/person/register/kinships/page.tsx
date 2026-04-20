@@ -229,7 +229,7 @@ export default function MembersRegisterKinshipsPage() {
                     />
                   </FormControl>
                   <FormMessage />
-                </FormItem>
+           </FormItem>
               )}
             />
 

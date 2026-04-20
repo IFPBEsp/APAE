@@ -71,7 +71,6 @@ export default function MembersRegisterLayout({
                 className="absolute inset-0 bg-cover bg-center bg-no-repeat grayscale-90"
                 style={{
                   backgroundImage: `url(${Image.src})`,
-                  backgroundAttachment: "fixed",
                 }}
               />
 
@@ -79,10 +78,10 @@ export default function MembersRegisterLayout({
                 className="absolute inset-0"
                 style={{
                   background:
-                    "linear-gradient(180deg, rgba(13, 79, 151, 0.7) 54.32%, rgba(255, 255, 255, 0.6) 110.28%)",
+                    "linear-gradient(180deg, rgba(13, 79, 151, 0.2) 54.32%, rgba(255, 255, 255, 0.6) 110.28%)",
                 }}
               />
-               <div className="hidden md:flex relative z-10 w-full h-full bg-[#0D4F97]/90 backdrop-blur-sm">
+               <div className="hidden md:flex relative z-10 w-full h-full bg-[#0D4F97]/50">
                 <SidebarSteps />
               </div>
               <div className="relative flex flex-col w-full h-full p-8 bg-muted overflow-y-auto">
