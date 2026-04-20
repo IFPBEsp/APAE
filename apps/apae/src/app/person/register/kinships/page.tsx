@@ -158,16 +158,53 @@ export default function MembersRegisterKinshipsPage() {
     name: "kinships",
   });
 
+  // Sincroniza alterações do parente-responsável com os dados do responsável (em edição)
+  useEffect(() => {
+    if (!isEditing) return;
+
+    const subscription = form.watch((value) => {
+      const kinships = value.kinships || [];
+      const legalGuardianKinship = kinships.find((k: any) => k?.isLegalGuardian);
+
+      if (legalGuardianKinship) {
+        const currentGuardian = form.getValues();
+        setGuardianData({
+          name: legalGuardianKinship.name || "",
+          kinship: legalGuardianKinship.type || "",
+          contact: "",
+          address: {
+            cep: "",
+            state: "",
+            city: "",
+            neighborhood: "",
+            street: "",
+            number: "",
+            complement: "",
+            noNumber: false,
+          },
+        });
+      }
+    });
+
+    return () => subscription.unsubscribe();
+  }, [form, isEditing, setGuardianData]);
+
   const onSubmit = async (values: z.infer<typeof Kinships>) => {
     setIsLoading(true);
     try {
       setKinshipsData(values.kinships);
 
-      // Apenas preenche dados do responsável automaticamente se NÃO estiver editando
-      if (!isEditing) {
-        const legalGuardianKinship = values.kinships.find((k) => k.isLegalGuardian);
+      const legalGuardianKinship = values.kinships.find((k) => k.isLegalGuardian);
 
-        if (legalGuardianKinship) {
+      if (legalGuardianKinship) {
+        // Em edição, mantém os dados existentes do responsável e atualiza apenas nome/parentesco
+        if (isEditing) {
+          setGuardianData({
+            name: legalGuardianKinship.name,
+            kinship: legalGuardianKinship.type,
+          });
+        } else {
+          // Em cadastro, preenche com dados limpos
           setGuardianData({
             name: legalGuardianKinship.name,
             kinship: legalGuardianKinship.type,
