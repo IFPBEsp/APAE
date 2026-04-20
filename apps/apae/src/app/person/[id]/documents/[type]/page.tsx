@@ -166,7 +166,7 @@ export default function DocumentTypePage() {
       </div>
 
      {/* --- Lista de Arquivos --- */}
-      <div className="grid grid-cols-2 lg:grid-cols-6 gap-4 mt-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-4 mt-4">
         {files.length === 0 ? (
           <p className="col-span-full text-center text-gray-500">
             Nenhum arquivo encontrado.
@@ -180,7 +180,7 @@ export default function DocumentTypePage() {
                 link: file.url,
                 // ADICIONE ESTAS DUAS LINHAS ABAIXO:
                 originalName: file.name,
-                type: file.type 
+                type: file.type
               }}
             />
           ))

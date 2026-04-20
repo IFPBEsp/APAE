@@ -60,8 +60,8 @@ export function SearchFilters({
   const showTipoAtendimentoFilter = setTipoAtendimento !== undefined;
 
   return (
-    <div className="flex items-center gap-2">
-      <div className="relative flex-1">
+    <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2">
+      <div className="relative w-full sm:flex-1">
         <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-500" />
         <Input
           placeholder="Busque por nome"
@@ -75,11 +75,11 @@ export function SearchFilters({
         showAnoFilter ||
         showCidadeFilter ||
         showTipoAtendimentoFilter) && (
-        <div className="flex flex-shrink-0 items-center gap-2">
+        <div className="flex flex-wrap sm:flex-nowrap items-center gap-2 w-full sm:w-auto">
           {showTipoAtendimentoFilter && (
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button className={cn(dropdownTriggerStyle, "w-[150px]")}>
+                <Button className={cn(dropdownTriggerStyle, "w-full sm:w-[150px]")}>
                   <span className="flex-1 w-0 truncate text-left">
                     {tipoAtendimento || "Tipo de Atendimento"}
                   </span>
@@ -111,7 +111,7 @@ export function SearchFilters({
           {showTranstornoFilter && (
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button className={cn(dropdownTriggerStyle, "w-[150px]")}>
+                <Button className={cn(dropdownTriggerStyle, "w-full sm:w-[150px]")}>
                   <span className="flex-1 w-0 truncate text-left">
                     {transtorno || "Transtorno"}
                   </span>
@@ -141,7 +141,7 @@ export function SearchFilters({
           {showAnoFilter && (
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button className={cn(dropdownTriggerStyle, "w-[90px]")}>
+                <Button className={cn(dropdownTriggerStyle, "w-full sm:w-[90px]")}>
                   <span className="flex-1 w-0 truncate text-left">
                     {ano || "Ano"}
                   </span>
@@ -168,7 +168,7 @@ export function SearchFilters({
           {showCidadeFilter && (
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button className={cn(dropdownTriggerStyle, "w-[150px]")}>
+                <Button className={cn(dropdownTriggerStyle, "w-full sm:w-[150px]")}>
                   <span className="flex-1 w-0 truncate text-left">
                     {cidade || "Cidade"}
                   </span>
