@@ -5,7 +5,7 @@ import { VaccinesProvider } from "@/hooks/use-vaccines";
 import { DisordersProvider } from "@/hooks/use-disorders";
 import { useParams, useRouter, usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
-import { Loader2 } from "lucide-react";
+import { Loader2, CheckCircle2, Circle } from "lucide-react";
 import Image from "@/assets/background_image.jpg";
 import { SidebarSteps } from "@/components/shared/SidebarSteps";
 
@@ -112,6 +112,52 @@ function EditPatientDataLoader({ children }: { children: React.ReactNode }) {
   return <>{children}</>;
 }
 
+function MobileStepIndicator() {
+  const { state: { step } } = useMembersRegisterContext();
+
+  const stepsList = [
+    { id: MembersRegisterStep.PERSONAL, label: "Dados Pessoais", shortLabel: "Pessoal" },
+    { id: MembersRegisterStep.KINSHIPS, label: "Parentesco", shortLabel: "Parentes" },
+    { id: MembersRegisterStep.ADDRESS, label: "Endereço", shortLabel: "Endereço" },
+    { id: MembersRegisterStep.ADDITIONALS, label: "Saúde & Social", shortLabel: "Saúde" },
+    { id: MembersRegisterStep.GUARDIAN, label: "Responsável", shortLabel: "Resp." },
+    { id: MembersRegisterStep.PROFILE, label: "Perfil & Documentos", shortLabel: "Perfil" },
+  ];
+
+  const currentStepIndex = stepsList.findIndex((s) => s.id === step);
+
+  return (
+    <div className="xl:hidden bg-[#0D4F97] px-4 py-3 rounded-t-lg">
+      <div className="flex items-center justify-between overflow-x-auto gap-2">
+        {stepsList.map((s, index) => {
+          const isCompleted = index < currentStepIndex;
+          const isCurrent = index === currentStepIndex;
+
+          return (
+            <div key={s.id} className="flex flex-col items-center gap-1 flex-shrink-0">
+              {isCompleted ? (
+                <CheckCircle2 className="w-5 h-5 text-green-400" />
+              ) : isCurrent ? (
+                <div className="w-5 h-5 rounded-full bg-white flex items-center justify-center text-[#0D4F97] text-xs font-bold">{index + 1}</div>
+              ) : (
+                <Circle className="w-5 h-5 text-blue-300" />
+              )}
+              <span className={`text-[10px] whitespace-nowrap ${isCurrent ? "text-white font-semibold" : "text-blue-200"}`}>
+                {s.shortLabel}
+              </span>
+            </div>
+          );
+        })}
+      </div>
+      <div className="mt-2 text-center">
+        <p className="text-sm text-white font-semibold">
+          {stepsList[currentStepIndex]?.label}
+        </p>
+      </div>
+    </div>
+  );
+}
+
 export default function EditPatientLayout({ children }: { children: React.ReactNode }) {
   return (
   <VaccinesProvider>
@@ -120,8 +166,8 @@ export default function EditPatientLayout({ children }: { children: React.ReactN
       <MembersRegisterProvider>
         <EditPatientDataLoader>
 
-          <div className="h-screen rounded-lg mx-10 relative grid grid-cols-1 md:grid-cols-[1fr_2fr] antialiased overflow-hidden">
-            
+          <div className="h-screen rounded-lg mx-2 sm:mx-4 md:mx-10 relative grid grid-cols-1 xl:grid-cols-[1fr_2fr] antialiased overflow-hidden">
+
             <div
               className="absolute inset-0 bg-cover bg-center bg-no-repeat grayscale-90"
               style={{
@@ -137,15 +183,18 @@ export default function EditPatientLayout({ children }: { children: React.ReactN
               }}
             />
 
-            <div className="hidden md:flex relative z-10 w-full h-full bg-[#0D4F97]/50">
+            <div className="hidden xl:flex relative z-10 w-full h-full bg-[#0D4F97]/50">
               <SidebarSteps />
             </div>
 
-            <div className="relative flex flex-col w-full h-full p-8 bg-muted overflow-y-auto">
-              <h1 className="text-2xl font-bold text-blue-900 mb-4">
-                Edição de paciente
-              </h1>
-              {children}
+            <div className="relative flex flex-col w-full h-full bg-muted overflow-y-auto">
+              <MobileStepIndicator />
+              <div className="flex-1 p-4 sm:p-6 md:p-8 overflow-y-auto">
+                <h1 className="hidden xl:block text-2xl font-bold text-blue-900 mb-4">
+                  Edição de paciente
+                </h1>
+                {children}
+              </div>
             </div>
 
           </div>

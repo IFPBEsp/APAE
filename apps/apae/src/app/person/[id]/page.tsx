@@ -273,9 +273,9 @@ export default function PersonDetailsPage() {
 
         {/* --- CARD DE SAÚDE DINÂMICO --- */}
         <Card className="w-full relative font-nunito">
-          <CardHeader className="flex flex-row items-center justify-between">
+          <CardHeader className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
             <CardTitle className="text-[#0D4F97]">Informações de Saúde</CardTitle>
-            <div className="flex items-center gap-2">
+            <div className="flex flex-wrap items-center gap-2">
               <TooltipProvider>
                 <Tooltip>
                     <TooltipTrigger asChild>
@@ -289,10 +289,10 @@ export default function PersonDetailsPage() {
               <TooltipProvider>
                 <Tooltip>
                     <TooltipTrigger asChild>
-                         <span tabIndex={0}> 
-                            <Button 
-                                size="sm" 
-                                onClick={handleEditClick} 
+                         <span tabIndex={0}>
+                            <Button
+                                size="sm"
+                                onClick={handleEditClick}
                                 disabled={!hasRegistro || loadingRegistro}
                                 className="gap-1 hover:!bg-gray-100 text-[#0D4F97] border-0 disabled:opacity-50 disabled:cursor-not-allowed h-8"
                                 variant="outline"
