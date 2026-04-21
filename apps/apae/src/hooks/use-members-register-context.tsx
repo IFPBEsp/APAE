@@ -278,16 +278,7 @@ export function MembersRegisterProvider({ children }: { children: React.ReactNod
   const register = useCallback(
     async (id?: string) => {
       const { personal, address, additionals, guardian, kinships, profile } = state;
-      const formatDate = (date: any) => {
-        if(!date) return null;
-        const d = new Date(date);
-        if (isNaN(d.getTime())) return null;
-
-        const year = d.getFullYear();
-        const month = String(d.getMonth() + 1).padStart(2, "0");
-        const day = String(d.getDate()).padStart(2, "0");
-        return `${year}-${month}-${day}`;
-      };
+      const formatDate = (date: any) => (date && !isNaN(new Date(date).getTime())) ? new Date(date).toISOString().split("T")[0] : null;
       const parseIncome = (val: string) => { const clean = String(val).replace(/[^\d]/g, ""); return isNaN(parseFloat(clean)) ? 0 : parseFloat(clean) * 0.01; };
 
       const patient: any = {
