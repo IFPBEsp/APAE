@@ -1,15 +1,25 @@
 import { useState } from "react";
 import { updateProfissional } from "@/services/profissional-service";
 
-type UpdateProfissionalDto = {
+export type UpdateProfissionalDto = {
   name: string;
   email: string;
   phoneNumber: string;
-  address: string;
+  address: {
+    state: string;
+    city: string;
+    neighborhood: string;
+    street: string;
+    number: string;
+    complement: string;
+    cep: string;
+  };
   professionalDocument: string;
-  serviceArea: string;
+  serviceArea: { area: string };
   identityDocument: string;
+  availabilities?: { day?: string; shift?: string }[];
 };
+
 
 type ApiResponse = {
   message?: string;
