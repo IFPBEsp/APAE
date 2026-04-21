@@ -1,25 +1,25 @@
 "use client";
 
-import { createContext, useCallback, useContext, useReducer } from "react";
+import {
+  createContext,
+  useCallback,
+  useContext,
+  useReducer,
+  useEffect,
+  useMemo,
+  useRef,
+} from "react";
+import { useParams } from "next/navigation";
 
+// --- INTERFACES ---
 interface PersonalData {
   name: string;
   cpf: string;
   phone: string;
-  rg: {
-    number: string;
-    issuing: {
-      body: string;
-      date: Date;
-    };
-  };
+  rg: { number: string; issuing: { body: string; date: Date } };
   cns: string;
   nis: string;
-  birth: {
-    certificate: string;
-    date: Date;
-    place: string;
-  };
+  birth: { certificate: string; date: Date; place: string };
 }
 
 interface KinshipData {
@@ -35,8 +35,11 @@ interface AddressData {
   cep: string;
   state: string;
   city: string;
-  district: string;
+  neighborhood: string;
   street: string;
+  noNumber?: boolean;
+  number: string;
+  complement?: string;
 }
 
 interface AdditionalsData {
@@ -45,14 +48,8 @@ interface AdditionalsData {
   medications: string;
   vaccines: string[];
   allergies: string;
-  disability: {
-    types: string[];
-    report: File | undefined;
-  };
-  care: {
-    types: string[];
-    referral: File | undefined;
-  };
+  disability: { types: string[]; report: File | string | undefined };
+  care: { types: string[]; referral: File | string | undefined };
   bpc: boolean;
   householdIncome: string;
 }
@@ -103,6 +100,32 @@ interface MembersRegisterContextData {
   register: (id?: string) => Promise<{ status: number; data: Record<string, unknown> }>;
 }
 
+// --- UTILS: FILE CONVERSION ---
+const fileToBase64 = (file: File): Promise<string> => {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.readAsDataURL(file);
+    reader.onload = () => resolve(reader.result as string);
+    reader.onerror = (error) => reject(error);
+  });
+};
+
+const base64ToFile = (
+  base64: string,
+  filename: string,
+  mimeType: string,
+): File => {
+  const arr = base64.split(",");
+  const bstr = atob(arr[1]);
+  let n = bstr.length;
+  const u8arr = new Uint8Array(n);
+  while (n--) {
+    u8arr[n] = bstr.charCodeAt(n);
+  }
+  return new File([u8arr], filename, { type: mimeType });
+};
+
+// --- REDUCER ---
 type MembersRegisterAction =
   | { type: "SET_PERSONAL_DATA"; payload: Partial<PersonalData> }
   | { type: "SET_KINSHIPS_DATA"; payload: KinshipData[] }
@@ -132,10 +155,7 @@ function membersRegisterReducer(
               ...action.payload.rg?.issuing,
             },
           },
-          birth: {
-            ...state.personal.birth,
-            ...action.payload.birth,
-          },
+          birth: { ...state.personal.birth, ...action.payload.birth },
         },
       };
     case "SET_KINSHIPS_DATA":
@@ -152,10 +172,7 @@ function membersRegisterReducer(
             ...state.additionals.disability,
             ...action.payload.disability,
           },
-          care: {
-            ...state.additionals.care,
-            ...action.payload.care,
-          },
+          care: { ...state.additionals.care, ...action.payload.care },
         },
       };
     case "SET_GUARDIAN_DATA":
@@ -164,10 +181,7 @@ function membersRegisterReducer(
         guardian: {
           ...state.guardian,
           ...action.payload,
-          address: {
-            ...state.guardian.address,
-            ...action.payload.address,
-          },
+          address: { ...state.guardian.address, ...action.payload.address },
         },
       };
     case "SET_PROFILE_DATA":
@@ -191,7 +205,16 @@ const initialState: MembersRegisterState = {
     nis: "",
     birth: { certificate: "", date: new Date(), place: "" },
   },
-  address: { cep: "", state: "", city: "", district: "", street: "" },
+  address: {
+    cep: "",
+    state: "",
+    city: "",
+    neighborhood: "",
+    street: "",
+    number: "",
+    complement: "",
+    noNumber: false,
+  },
   additionals: {
     id: undefined,
     diseases: "",
@@ -204,7 +227,16 @@ const initialState: MembersRegisterState = {
     householdIncome: "",
   },
   guardian: {
-    address: { cep: "", state: "", city: "", district: "", street: "" },
+    address: {
+      cep: "",
+      state: "",
+      city: "",
+      neighborhood: "",
+      street: "",
+      number: "",
+      complement: "",
+      noNumber: false,
+    },
     contact: "",
     kinship: "",
     name: "",
@@ -224,7 +256,48 @@ export function MembersRegisterProvider({
   children: React.ReactNode;
 }) {
   const [state, dispatch] = useReducer(membersRegisterReducer, initialState);
+  const params = useParams();
+  const hasHydrated = useRef(false);
 
+  // 1. CHAVE DE CACHE
+  const STORAGE_KEY = useMemo(() => {
+    const patientId = params?.id as string;
+    return patientId ? `apae_edit_cache_${patientId}` : "apae_register_cache";
+  }, [params?.id]);
+
+  // 2. FUNÇÃO DE RECONSTRUÇÃO
+  const reconstructFiles = useCallback((obj: any) => {
+    if (obj.additionals?.disability?.report?.base64) {
+      obj.additionals.disability.report = base64ToFile(
+        obj.additionals.disability.report.base64,
+        obj.additionals.disability.report.name,
+        obj.additionals.disability.report.type,
+      );
+    }
+    if (obj.additionals?.care?.referral?.base64) {
+      obj.additionals.care.referral = base64ToFile(
+        obj.additionals.care.referral.base64,
+        obj.additionals.care.referral.name,
+        obj.additionals.care.referral.type,
+      );
+    }
+    if (obj.profile?.photo?.base64) {
+      obj.profile.photo = base64ToFile(
+        obj.profile.photo.base64,
+        obj.profile.photo.name,
+        obj.profile.photo.type,
+      );
+    }
+    if (obj.personal?.rg?.issuing?.date) {
+      obj.personal.rg.issuing.date = new Date(obj.personal.rg.issuing.date);
+    }
+    if (obj.personal?.birth?.date) {
+      obj.personal.birth.date = new Date(obj.personal.birth.date);
+    }
+    return obj;
+  }, []);
+
+  // 3. SETTERS
   const setters = {
     setPersonalData: useCallback(
       (data: Partial<PersonalData>) =>
@@ -262,12 +335,88 @@ export function MembersRegisterProvider({
       [],
     ),
     loadAllData: useCallback(
-      (data: MembersRegisterState) =>
-        dispatch({ type: "LOAD_ALL_DATA", payload: data }),
+      (apiData: MembersRegisterState) => {
+        dispatch({ type: "LOAD_ALL_DATA", payload: apiData });
+      },
       [],
     ),
   };
 
+  // 4. EFEITO DE HIDRATAÇÃO (executa apenas uma vez)
+  useEffect(() => {
+    // Evita hidratação duplicada
+    if (hasHydrated.current) return;
+    if (typeof window === "undefined") return;
+
+    const saved = localStorage.getItem(STORAGE_KEY);
+    if (saved) {
+      try {
+        const parsed = JSON.parse(saved);
+        const draftWithFiles = reconstructFiles(parsed);
+        dispatch({
+          type: "LOAD_ALL_DATA",
+          payload: draftWithFiles,
+        });
+        hasHydrated.current = true;
+        return;
+      } catch (e) {
+        console.error("Erro ao carregar rascunho:", e);
+      }
+    }
+
+    hasHydrated.current = true;
+  }, [STORAGE_KEY, reconstructFiles]);
+
+  // 5. EFEITO DE SALVAMENTO AUTOMÁTICO
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    // Não salva se ainda não foi hidratado
+    if (!hasHydrated.current) return;
+
+    const saveDraft = async () => {
+      // Não salva se está em modo de edição e state está vazio
+      if (params?.id && state.personal.name === "") return;
+
+      try {
+        const draft = JSON.parse(JSON.stringify(state));
+
+        if (state.additionals.disability.report instanceof File) {
+          draft.additionals.disability.report = {
+            base64: await fileToBase64(state.additionals.disability.report),
+            name: state.additionals.disability.report.name,
+            type: state.additionals.disability.report.type,
+          };
+        }
+        if (state.additionals.care.referral instanceof File) {
+          draft.additionals.care.referral = {
+            base64: await fileToBase64(state.additionals.care.referral),
+            name: state.additionals.care.referral.name,
+            type: state.additionals.care.referral.type,
+          };
+        }
+        if (state.profile.photo instanceof File) {
+          draft.profile.photo = {
+            base64: await fileToBase64(state.profile.photo),
+            name: state.profile.photo.name,
+            type: state.profile.photo.type,
+          };
+        }
+
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(draft));
+      } catch (error: any) {
+        if (error.name === "QuotaExceededError") {
+          console.warn("Aviso: Limite do LocalStorage excedido.");
+        } else {
+          console.error("Erro ao salvar rascunho:", error);
+        }
+      }
+    };
+
+    const timer = setTimeout(saveDraft, 1000);
+    return () => clearTimeout(timer);
+  }, [state, STORAGE_KEY, params?.id]);
+
+  // 6. FUNÇÃO REGISTER
   const register = useCallback(
     async (id?: string) => {
       const { personal, address, additionals, guardian, kinships, profile } =
@@ -275,8 +424,15 @@ export function MembersRegisterProvider({
 
       const formatDate = (date: Date | string | number | null | undefined) => {
         if (!date) return null;
+
         const d = new Date(date);
-        return isNaN(d.getTime()) ? null : d.toISOString().split("T")[0];
+        if (isNaN(d.getTime())) return null;
+
+        const year = d.getFullYear();
+        const month = String(d.getMonth() + 1).padStart(2, "0");
+        const day = String(d.getDate()).padStart(2, "0");
+
+        return `${year}-${month}-${day}`;
       };
 
       const parseIncome = (val: string) => {
@@ -360,17 +516,17 @@ export function MembersRegisterProvider({
         cpf: personal.cpf,
         cns: personal.cns || "000 0000 0000 0000",
         nis: personal.nis || "0",
-        registrationDate: formatDate(new Date()),
         allergies: additionals.allergies || "Nenhuma",
         isStudent: profile.role === "student",
         address: {
           city: address.city || "Não informado",
           cep: address.cep || "00000-000",
           state: address.state || "Não informado",
-          neighborhood: address.district || "Não informado",
-          street: address.street.split(",")[0].trim() || "Não informado",
-          number: address.street.split(",")[1]?.trim() || "S/N",
-          complement: "",
+          neighborhood: address.neighborhood || "Não informado",
+          street: address.street || "Não informado",
+          number: address.number || "S/N",
+          noNumber: address.noNumber || false,
+          complement: address.complement || "",
         },
         guardian: {
           name: guardian.name || "Não informado",
@@ -380,10 +536,11 @@ export function MembersRegisterProvider({
             city: guardian.address.city || "Não informado",
             cep: guardian.address.cep || "00000-000",
             state: guardian.address.state || "Não informado",
-            neighborhood: guardian.address.district || "Não informado",
-            street: guardian.address.street.split(",")[0].trim() || "Não informado",
-            number: guardian.address.street.split(",")[1]?.trim() || "S/N",
-            complement: "",
+            neighborhood: guardian.address.neighborhood || "Não informado",
+            street: guardian.address.street || "Não informado",
+            number: guardian.address.number || "SN",
+            noNumber: guardian.address.noNumber || false,
+            complement: guardian.address.complement || "",
           },
         },
         parents: kinships.map((k) => ({
@@ -398,50 +555,73 @@ export function MembersRegisterProvider({
       };
 
       if (id) {
-        const responsePessoa = await fetch(`/api/pessoas/${id}`, {
+        const res = await fetch(`/api/pessoas/${id}`, {
           method: "PUT",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(patient),
         });
 
-        if (profile.photo instanceof File && responsePessoa.ok) {
+        if (res.ok) {
+          localStorage.removeItem(STORAGE_KEY);
+        }
+
+        if (profile.photo instanceof File && res.ok) {
           const photoFormData = new FormData();
           photoFormData.append("photo", profile.photo);
+
           await fetch(`/api/pessoas/${id}/photo`, {
             method: "PUT",
             body: photoFormData,
           });
         }
 
-        let resData = {};
-        const text = await responsePessoa.text();
-        if (text) {
-          try { resData = JSON.parse(text); } catch {}
-        }
-        return { status: responsePessoa.status, data: resData };
-
+        const data = await res.json().catch(() => ({}));
+        return { status: res.status, data };
       } else {
+        patient.registrationDate = formatDate(new Date());
         patient.annualRegistry = {
           bpc: additionals.bpc,
           diseases: additionals.diseases,
           serviceArea: additionals.care.types.map((area: string) => ({ area })),
           familyIncome: parseIncome(additionals.householdIncome),
           year: new Date().getFullYear(),
-          disorders: additionals.disability.types.map((name: string) => ({ name })),
+          disorders: additionals.disability.types.map((name: string) => ({
+            name,
+          })),
         };
 
         const formData = new FormData();
-        formData.append("patient", new Blob([JSON.stringify(patient)], { type: "application/json" }));
-        if (profile.photo instanceof File) formData.append("photo", profile.photo);
-        if (additionals.disability.report instanceof File) formData.append("reports", additionals.disability.report);
-        if (additionals.care.referral instanceof File) formData.append("referrals", additionals.care.referral);
+        formData.append(
+          "patient",
+          new Blob([JSON.stringify(patient)], { type: "application/json" }),
+        );
 
-        const response = await fetch("/api/pessoas", { method: "POST", body: formData });
-        const data = await response.json().catch(() => ({}));
-        return { status: response.status, data };
+        if (profile.photo instanceof File) {
+          formData.append("photo", profile.photo);
+        }
+
+        if (additionals.disability.report instanceof File) {
+          formData.append("reports", additionals.disability.report);
+        }
+
+        if (additionals.care.referral instanceof File) {
+          formData.append("referrals", additionals.care.referral);
+        }
+
+        const res = await fetch("/api/pessoas", {
+          method: "POST",
+          body: formData,
+        });
+
+        if (res.ok) {
+          localStorage.removeItem(STORAGE_KEY);
+        }
+
+        const data = await res.json().catch(() => ({}));
+        return { status: res.status, data };
       }
     },
-    [state],
+    [state, STORAGE_KEY],
   );
 
   return (
@@ -453,6 +633,9 @@ export function MembersRegisterProvider({
 
 export function useMembersRegisterContext() {
   const context = useContext(MembersRegisterContext);
-  if (!context) throw new Error("useMembersRegisterContext must be used within a MembersRegisterProvider");
+  if (!context)
+    throw new Error(
+      "useMembersRegisterContext must be used within a MembersRegisterProvider",
+    );
   return context;
 }

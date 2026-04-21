@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 
-const PUBLIC_PATHS = ["/auth/login"];
+const PUBLIC_PATHS = ["/auth/login", "/auth/recovery", "/auth/reset-password"];
 
 export function proxy(req: NextRequest) {
   const session = req.cookies.get("session")?.value;

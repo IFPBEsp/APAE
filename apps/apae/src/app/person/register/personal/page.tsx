@@ -39,7 +39,7 @@ export default function MembersRegisterPersonalPage() {
   } = useMembersRegisterContext();
 
   const [isLoading, setIsLoading] = useState(false);
-
+  
   const pathname = usePathname();
   const isEditing = pathname.includes("/edit");
   const currentSchema = isEditing ? EditPersonal : Personal;
@@ -55,9 +55,15 @@ export default function MembersRegisterPersonalPage() {
   useEffect(() => {
     if (personal.name && !isInitialized) {
       form.reset(personal);
-      setIsInitialized(true);
+      setIsInitialized(true); 
     }
   }, [personal, form, isInitialized]);
+
+  useEffect(() => {
+    if (personal.name !== "") {
+      form.reset(personal);
+    }
+  }, [personal, form]);
 
   const onSubmit = async (values: z.infer<typeof Personal>) => {
     setIsLoading(true);
@@ -72,6 +78,26 @@ export default function MembersRegisterPersonalPage() {
     } finally {
       setIsLoading(false);
     }
+  };
+
+  const formatDateInputValue = (date?: Date | string | null) => {
+    if (!date) return "";
+
+    const d = new Date(date);
+    if (isNaN(d.getTime())) return "";
+
+    const year = d.getFullYear();
+    const month = String(d.getMonth() + 1).padStart(2, "0");
+    const day = String(d.getDate()).padStart(2, "0");
+
+    return `${year}-${month}-${day}`;
+  };
+
+  const parseDateInputValue = (value: string) => {
+    if (!value) return null;
+
+    const [year, month, day] = value.split("-").map(Number);
+    return new Date(year, month - 1, day);
   };
 
   return (
@@ -220,13 +246,10 @@ export default function MembersRegisterPersonalPage() {
                   <Input
                     type="date"
                     {...field}
-                    value={
-                      field.value instanceof Date &&
-                      !Number.isNaN(field.value.getTime())
-                        ? field.value.toISOString().split("T")[0]
-                        : ""
+                    value={formatDateInputValue(field.value)}
+                    onChange={(e) =>
+                      field.onChange(parseDateInputValue(e.target.value))
                     }
-                    onChange={(e) => field.onChange(new Date(e.target.value))}
                   />
                 </FormControl>
                 <FormMessage />
@@ -265,13 +288,10 @@ export default function MembersRegisterPersonalPage() {
                   <Input
                     type="date"
                     {...field}
-                    value={
-                      field.value instanceof Date &&
-                      !isNaN(field.value.getTime())
-                        ? field.value.toISOString().split("T")[0]
-                        : ""
+                    value={formatDateInputValue(field.value)}
+                    onChange={(e) =>
+                      field.onChange(parseDateInputValue(e.target.value))
                     }
-                    onChange={(e) => field.onChange(new Date(e.target.value))}
                   />
                 </FormControl>
                 <FormMessage />

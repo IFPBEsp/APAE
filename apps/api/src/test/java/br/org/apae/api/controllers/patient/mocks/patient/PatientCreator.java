@@ -123,7 +123,7 @@ public class PatientCreator {
                 UUID.randomUUID(), "Pai", "123456", "000.000.000-00",
                 "Autônomo", "PAI", true);
 
-        VaccineResponseDTO vaccine = new VaccineResponseDTO(UUID.randomUUID(), "BCG");
+        VaccineResponseDTO vaccine = new VaccineResponseDTO(UUID.randomUUID(), "BCG", false);
 
         return new PatientResponseDTO(
                 id,
@@ -212,30 +212,29 @@ public class PatientCreator {
     }
 */
     public static UpdatePatientDTO createUpdatePayload() {
-        return new UpdatePatientDTO(
-                "João da Silva Editado",
-                "Brasileira",
-                LocalDate.of(2010, 1, 1),
-                "8399999-EDIT",
-                "123",
-                "Cartório Novo",
-                "1",
-                "A",
-                "RG123",
-                LocalDate.of(2015, 1, 1),
-                "SSP/PB",
-                "000.000.000-00",
-                "123456789",
-                "12345",
-                LocalDate.now(),
-                "Nenhuma",
-                true,
-                createAddress(),
-                createUpdateGuardian(),
-                createUpdateParents(),
-                Set.of(createVaccine())
-        );
-    }
+    return new UpdatePatientDTO(
+            "João da Silva Editado",
+            "Brasileira",
+            LocalDate.of(2010, 1, 1),
+            "8399999-EDIT",
+            "123",
+            "Cartório Novo",
+            "1",
+            "A",
+            "RG123",
+            LocalDate.of(2015, 1, 1),
+            "SSP/PB",
+            "000.000.000-00",
+            "123456789",
+            "12345",
+            "Nenhuma",
+            true,
+            createAddress(),
+            createUpdateGuardian(),
+            createUpdateParents(),
+            Set.of(createVaccine())
+    );
+}
 /*
     public static CreatePatientDTO createInvalidRequest() {
         return new CreatePatientDTO(
@@ -280,7 +279,6 @@ public class PatientCreator {
                 "000",
                 "123",
                 "123",
-                LocalDate.now(),
                 "Nenhuma",
                 true,
                 PatientCreator.createAddress(),

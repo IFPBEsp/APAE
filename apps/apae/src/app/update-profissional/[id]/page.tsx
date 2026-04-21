@@ -83,6 +83,24 @@ export default function AtualizarProfissional(): JSX.Element {
   const [removeModalOpen, setRemoveModalOpen] = useState(false);
   const [docToRemove, setDocToRemove] = useState<DocumentWithUrl | null>(null);
 
+  const allowedTypes = [
+    "application/pdf",
+    "image/png",
+    "image/jpeg",
+    "image/jpg",
+    "image/webp",
+  ];
+
+  function isValidFile(file: File) {
+    const maxSize = 5 * 1024 * 1024;
+
+    return (
+      allowedTypes.includes(file.type) &&
+      file.size > 0 &&
+      file.size <= maxSize
+    );
+  }
+
   const hasAnyUpload = useMemo(() => {
     return !!curriculumFile || !!volunteerFile || attachmentFiles.length > 0;
   }, [curriculumFile, volunteerFile, attachmentFiles]);
@@ -633,10 +651,22 @@ export default function AtualizarProfissional(): JSX.Element {
               <FormControl>
                 <Input
                   type="file"
-                  accept="application/pdf"
-                  onChange={(e) =>
-                    setVolunteerFile(e.target.files?.[0] ?? null)
-                  }
+                  accept="image/*, application/pdf"
+                  onChange={(e) => {
+                    const file = e.target.files?.[0];
+                    if (!file) {
+                      setVolunteerFile(null);
+                      return;
+                    }
+                    if (!isValidFile(file)) {
+                      alert("Apenas imagens ou PDF são permitidos");
+                      e.target.value = "";
+                      setVolunteerFile(null);
+                      return;
+                    }
+
+                    setVolunteerFile(file);
+                  }}
                 />
               </FormControl>
               {volunteerFile && (
@@ -651,10 +681,24 @@ export default function AtualizarProfissional(): JSX.Element {
               <FormControl>
                 <Input
                   type="file"
-                  accept="application/pdf"
-                  onChange={(e) =>
-                    setCurriculumFile(e.target.files?.[0] ?? null)
-                  }
+                  accept="image/*, application/pdf"
+                  onChange={(e) => {
+                    const file = e.target.files?.[0];
+
+                    if (!file) {
+                      setCurriculumFile(null);
+                      return;
+                    }
+
+                    if (!isValidFile(file)) {
+                      alert("Apenas imagens ou PDF são permitidos");
+                      e.target.value = "";
+                      setCurriculumFile(null);
+                      return;
+                    }
+
+                    setCurriculumFile(file);
+                  }}
                 />
               </FormControl>
               {curriculumFile && (
@@ -669,11 +713,18 @@ export default function AtualizarProfissional(): JSX.Element {
               <FormControl>
                 <Input
                   type="file"
-                  accept="application/pdf"
+                  accept="image/*, application/pdf"
                   multiple
                   onChange={(e) => {
-                    const list = Array.from(e.target.files ?? []);
-                    setAttachmentFiles(list);
+                    const files = Array.from(e.target.files ?? []);
+
+                    const validFiles = files.filter(isValidFile);
+
+                    if (validFiles.length !== files.length) {
+                      alert("Alguns arquivos foram ignorados. Apenas imagens ou PDF são permitidos.");
+                    }
+
+                    setAttachmentFiles(validFiles);
                   }}
                 />
               </FormControl>

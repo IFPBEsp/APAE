@@ -4,6 +4,7 @@ import "./globals.css";
 
 import ToastProvider from "@/components/shared/ToastProvider";
 import { SidebarWrapper } from "@/components/sidebar/SidebarWrapper";
+import { NuqsAdapter } from "nuqs/adapters/next/app";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -33,9 +34,11 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased bg-white`}
       >
-        <SidebarWrapper>
-          <ToastProvider>{children}</ToastProvider>
-        </SidebarWrapper>
+        <NuqsAdapter>
+          <SidebarWrapper>
+            <ToastProvider>{children}</ToastProvider>
+          </SidebarWrapper>
+        </NuqsAdapter>
       </body>
     </html>
   );

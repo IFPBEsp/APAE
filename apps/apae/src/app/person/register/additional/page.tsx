@@ -16,7 +16,7 @@ import {
 import { Additionals, AdditionalsData } from "@/schemas/member-schemas";
 import { EditAdditionals } from "@/schemas/edit-member-schemas";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { handleBackendValidationErrors } from "@/utils/form-errors";
 import { usePathname } from "next/navigation";
@@ -50,7 +50,7 @@ import { CreateCare } from "@/schemas/care-schemas";
 type DialogProps = Readonly<{
   open: boolean;
   onOpenChange: (value: boolean) => void;
-  onSuccess?: (name: string) => void;
+  onSuccess?: (name: string) => void; 
 }>;
 
 function CreateVaccineDialog({ open, onOpenChange, onSuccess }: DialogProps) {
@@ -63,7 +63,7 @@ function CreateVaccineDialog({ open, onOpenChange, onSuccess }: DialogProps) {
   const onSubmit = async (data: z.infer<typeof CreateVaccine>) => {
     await createVaccine(data);
     onOpenChange(false);
-    onSuccess?.(data.name);
+    onSuccess?.(data.name); 
     form.reset();
   };
 
@@ -177,7 +177,7 @@ function CreateDisorderDialog({ open, onOpenChange, onSuccess }: DialogProps) {
   const onSubmit = async (data: z.infer<typeof CreateDisorder>) => {
     await createDisorder(data);
     onOpenChange(false);
-    onSuccess?.(data.name);
+    onSuccess?.(data.name); 
     form.reset();
   };
 
@@ -258,20 +258,31 @@ export default function MembersRegisterAdditionalsPage() {
     ) {
       form.reset(additionals);
       setIsInitialized(true);
-      setRefreshKey((prev) => prev + 1);
+      setRefreshKey(prev => prev + 1);
     }
   }, [additionals, form, isEditing, isInitialized]);
+
+  useEffect(() => {
+    const hasData =
+      additionals.diseases !== "" ||
+      additionals.vaccines.length > 0 ||
+      additionals.disability.report instanceof File ||
+      additionals.care.referral instanceof File;
+
+    if (hasData) {
+      form.reset(additionals);
+    }
+  }, [additionals, form]);
 
   const onSubmit = async (values: z.infer<typeof Additionals>) => {
     setIsLoading(true);
     try {
-      setAdditionalsData(values as AdditionalsData);
-      setStep(MembersRegisterStep.GUARDIAN);
+      setAdditionalsData(values);
+      setStep(MembersRegisterStep.PROFILE);
     } catch (error: unknown) {
-      const err = error as { response?: { data?: Record<string, string[]> } };
-      if (err.response?.data) {
-        handleBackendValidationErrors(err.response.data, form.setError);
-      }
+        const err = error as { response?: { data?: Record<string, string[]> } };
+        if (err.response?.data) {
+            handleBackendValidationErrors(err.response.data, form.setError);
     } finally {
       setIsLoading(false);
     }

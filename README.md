@@ -63,7 +63,7 @@ O projeto foi automatizado para rodar com o mínimo de comandos utilizando **pnp
 - `pnpm docker:up`: Sobe apenas o banco de dados e MinIO.
 - `pnpm docker:down`: Para os containers e os remove da memória.
 - `pnpm docker:drop`: Para os containers, os remove e apaga os volumes associados.
-- `pnpm db:seed`: Cria um usuário admin no banco de dados para fins de testes.
+- `pnpm db:seed`: Cria um usuário admin e views em mock no banco de dados para fins de testes.
 
 #### Credenciais do usuário para testes:
 - Email: `admin@teste.com`
@@ -239,7 +239,7 @@ MAIL_HOST=smtp.gmail.com
 MAIL_PORT=587
 MAIL_USERNAME=seu-email@gmail.com
 MAIL_PASSWORD=sua_senha_de_app
-APP_FRONTEND_RESET_PASSWORD_URL=http://localhost:3000/reset-password
+APP_FRONTEND_RESET_PASSWORD_URL=http://localhost:3000/auth/reset-password
 ```
 
 3. Agora pode seguir com a execução normal do projeto, indo para seção **Como Executar**

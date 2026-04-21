@@ -9,21 +9,22 @@ import {
 } from "react";
 
 type Vaccine = Readonly<{
-  id: string;
-  name: string;
+    id: string;
+    name: string;
+    hasPatient: boolean;
 }>;
 
 type FetchVaccineParams = Readonly<{
-  id: string;
+    id: string;
 }>;
 
 type CreateVaccineParams = Readonly<{
-  name: string;
+    name: string;
 }>;
 
 type UpdateVaccineParams = Readonly<{
-  id: string;
-  name: string;
+    id: string;
+    name: string;
 }>;
 
 type DeleteVaccineParams = Readonly<{
@@ -37,28 +38,28 @@ type Feedback = Readonly<{
 }>;
 
 interface VaccinesContextData {
-  loading: boolean;
-  feedback: Feedback;
-  vaccines: Vaccine[];
-  fetchVaccine: (params: FetchVaccineParams) => Promise<Vaccine>;
-  createVaccine: (params: CreateVaccineParams) => Promise<void>;
-  updateVaccine: (params: UpdateVaccineParams) => Promise<void>;
-  deleteVaccine: (params: DeleteVaccineParams) => Promise<void>;
+    loading: boolean;
+    feedback: Feedback;
+    vaccines: Vaccine[];
+    fetchVaccine: (params: FetchVaccineParams) => Promise<Vaccine>;
+    createVaccine: (params: CreateVaccineParams) => Promise<void>;
+    updateVaccine: (params: UpdateVaccineParams) => Promise<void>;
+    deleteVaccine: (params: DeleteVaccineParams) => Promise<void>;
 }
 
 const VaccinesContext = createContext<VaccinesContextData | undefined>(
-  undefined,
+    undefined,
 );
 
 type WithFeedbackMessages = {
-  success?: string;
+    success?: string;
 };
 
 function withFeedback<TArgs extends readonly unknown[], TReturn>(
-  fn: (...args: TArgs) => Promise<TReturn>,
-  setLoading: (loading: boolean) => void,
-  setFeedback: (feedback: Feedback) => void,
-  messages?: WithFeedbackMessages,
+    fn: (...args: TArgs) => Promise<TReturn>,
+    setLoading: (loading: boolean) => void,
+    setFeedback: (feedback: Feedback) => void,
+    messages?: WithFeedbackMessages,
 ) {
   return async (...args: TArgs): Promise<TReturn> => {
     setLoading(true);

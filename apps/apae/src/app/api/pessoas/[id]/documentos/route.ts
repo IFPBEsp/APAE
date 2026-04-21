@@ -26,6 +26,7 @@ export async function GET(
   const { id: patientId } = await params;
   const searchParams = request.nextUrl.searchParams;
   const categoryRaw = searchParams.get("category");
+  const year = searchParams.get("year");
 
 
   if (!patientId || !categoryRaw) {
@@ -43,7 +44,11 @@ export async function GET(
 
   try {
     const api = await createBaseApi();
-    const { data } = await api.get(`/patients/${patientId}/documents/${endpointSuffix}`);
+    const config: any = {};
+    if (year) {
+      config.params = { year: parseInt(year) };
+    }
+    const { data } = await api.get(`/patients/${patientId}/documents/${endpointSuffix}`, config);
    
     return NextResponse.json(data);
 
@@ -80,6 +85,7 @@ export async function POST(
     const file = incomingFormData.get("file");
     const category = incomingFormData.get("category");
     const type = incomingFormData.get("type");
+    const year = incomingFormData.get("year");
 
 
     if (!file || !category || !type) {
@@ -93,7 +99,8 @@ export async function POST(
         {
             params: {
                 category: category.toString(),
-                type: type.toString()
+                type: type.toString(),
+                year: year ? parseInt(year.toString()) : undefined
             },
             headers: {
                 'Content-Type': 'multipart/form-data'

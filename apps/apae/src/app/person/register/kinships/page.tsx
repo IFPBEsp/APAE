@@ -3,12 +3,14 @@
 import {
   Form,
   FormControl,
+  FormDescription,
   FormField,
   FormItem,
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import { Checkbox } from "@/components/ui/checkbox";
 import {
   MembersRegisterStep,
   useMembersRegisterContext,
@@ -16,7 +18,7 @@ import {
 import { formatCPF, formatRG } from "@/lib/formats";
 import { Kinships } from "@/schemas/member-schemas";
 import { zodResolver } from "@hookform/resolvers/zod";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useFieldArray, useForm } from "react-hook-form";
 import { handleBackendValidationErrors } from "@/utils/form-errors";
 
@@ -28,14 +30,114 @@ import {
   MembersRegisterForm,
 } from "../form";
 import { Button } from "@/components/ui/button";
+import { usePathname } from "next/navigation";
+import { UseFormReturn } from "react-hook-form";
+
+interface LegalGuardianCheckboxProps {
+  form: UseFormReturn<z.infer<typeof Kinships>>;
+  index: number;
+  setGuardianData: (data: { name: string; kinship: string }) => void;
+}
+
+function LegalGuardianCheckbox({
+  form,
+  index,
+  setGuardianData,
+}: LegalGuardianCheckboxProps) {
+  const isAlive = form.watch(`kinships.${index}.alive`);
+  const isLegalGuardian = form.watch(`kinships.${index}.isLegalGuardian`);
+
+  const fieldOnChange = (value: boolean) => {
+    form.setValue(`kinships.${index}.isLegalGuardian`, value);
+  };
+
+  // Se marcou como não vivo, desmarca o responsável automaticamente
+  useEffect(() => {
+    if (!isAlive && isLegalGuardian) {
+      fieldOnChange(false);
+      setGuardianData({
+        name: "",
+        kinship: "",
+        contact: "",
+        address: {
+          cep: "",
+          state: "",
+          city: "",
+          neighborhood: "",
+          street: "",
+          number: "",
+          complement: "",
+          noNumber: false,
+        },
+      });
+    }
+  }, [isAlive, isLegalGuardian, setGuardianData]);
+
+  return (
+    <FormItem
+      className={`flex flex-row items-center space-x-3 space-y-0 rounded-md border p-4 shadow-sm ${
+        !isAlive ? "border-gray-200/40 opacity-50" : "border-gray-300/60"
+      }`}
+    >
+      <FormControl>
+        <Checkbox
+          className="border-zinc-300"
+          checked={isLegalGuardian}
+          disabled={!isAlive}
+          onCheckedChange={(checked) => {
+            if (checked) {
+              const currentKinships = form.getValues("kinships");
+              currentKinships.forEach((_, i) => {
+                if (i !== index) {
+                  form.setValue(`kinships.${i}.isLegalGuardian`, false);
+                }
+              });
+              fieldOnChange(checked);
+            } else {
+              fieldOnChange(checked);
+              setGuardianData({
+                name: "",
+                kinship: "",
+                contact: "",
+                address: {
+                  cep: "",
+                  state: "",
+                  city: "",
+                  neighborhood: "",
+                  street: "",
+                  number: "",
+                  complement: "",
+                  noNumber: false,
+                },
+              });
+            }
+          }}
+        />
+      </FormControl>
+      <div className="space-y-1 leading-none">
+        <FormLabel className={!isAlive ? "text-gray-400" : ""}>
+          Este parente é o Responsável Legal do paciente?
+        </FormLabel>
+        <FormDescription>
+          {!isAlive
+            ? "Não é possível definir um parente falecido como responsável legal."
+            : "Apenas uma pessoa pode ser marcada como o contato principal e responsável legal."}
+        </FormDescription>
+      </div>
+    </FormItem>
+  );
+}
 
 export default function MembersRegisterKinshipsPage() {
   const {
     state: { kinships },
-    setters: { setKinshipsData, setStep },
+    setters: { setKinshipsData, setStep, setGuardianData },
   } = useMembersRegisterContext();
 
   const [isLoading, setIsLoading] = useState(false);
+
+  const pathname = usePathname();
+  const isEditing = pathname.includes("/edit");
 
   const form = useForm<z.infer<typeof Kinships>>({
     mode: "onBlur",
@@ -45,16 +147,80 @@ export default function MembersRegisterKinshipsPage() {
     },
   });
 
+  useEffect(() => {
+    if (kinships.length > 0) {
+      form.reset({ kinships });
+    }
+  }, [kinships, form]);
+
   const { fields, append, remove } = useFieldArray({
     control: form.control,
     name: "kinships",
   });
 
+  // Sincroniza alterações do parente-responsável com os dados do responsável (em edição)
+  useEffect(() => {
+    if (!isEditing) return;
+
+    const subscription = form.watch((value) => {
+      const kinships = value.kinships || [];
+      const legalGuardianKinship = kinships.find((k: any) => k?.isLegalGuardian);
+
+      if (legalGuardianKinship) {
+        const currentGuardian = form.getValues();
+        setGuardianData({
+          name: legalGuardianKinship.name || "",
+          kinship: legalGuardianKinship.type || "",
+          contact: "",
+          address: {
+            cep: "",
+            state: "",
+            city: "",
+            neighborhood: "",
+            street: "",
+            number: "",
+            complement: "",
+            noNumber: false,
+          },
+        });
+      }
+    });
+
+    return () => subscription.unsubscribe();
+  }, [form, isEditing, setGuardianData]);
+
   const onSubmit = async (values: z.infer<typeof Kinships>) => {
     setIsLoading(true);
     try {
       setKinshipsData(values.kinships);
-      setStep(MembersRegisterStep.ADDRESS);
+
+      const legalGuardianKinship = values.kinships.find((k) => k.isLegalGuardian);
+
+      if (legalGuardianKinship) {
+        // Em edição, mantém os dados existentes do responsável e atualiza apenas nome/parentesco
+        if (isEditing) {
+          setGuardianData({
+            name: legalGuardianKinship.name,
+            kinship: legalGuardianKinship.type,
+          });
+        } else {
+          // Em cadastro, preenche com dados limpos
+          setGuardianData({
+            name: legalGuardianKinship.name,
+            kinship: legalGuardianKinship.type,
+            contact: "",
+            address: {
+              cep: "",
+              state: "",
+              city: "",
+              district: "",
+              street: "",
+            },
+          });
+        }
+      }
+
+      setStep(MembersRegisterStep.GUARDIAN);
     } catch (error: unknown) {
       const err = error as { response?: { data?: Record<string, string[]> } };
       if (err.response?.data) {
@@ -87,7 +253,7 @@ export default function MembersRegisterKinshipsPage() {
         }
       >
         {fields.map((item, index) => (
-          <DoubleColumn key={item.id}>
+          <DoubleColumn key={item.id} className="relative pb-6 border-b mb-6">
             <FormField
               control={form.control}
               name={`kinships.${index}.name`}
@@ -101,7 +267,7 @@ export default function MembersRegisterKinshipsPage() {
                     />
                   </FormControl>
                   <FormMessage />
-                </FormItem>
+           </FormItem>
               )}
             />
 
@@ -199,6 +365,17 @@ export default function MembersRegisterKinshipsPage() {
                 }}
               />
             </div>
+
+            {/* CHECKBOX DO RESPONSÁVEL LEGAL (ÚNICO) - Não exibe na edição */}
+            {!isEditing && (
+              <div className="md:col-span-2 mt-1">
+                <LegalGuardianCheckbox
+                  form={form}
+                  index={index}
+                  setGuardianData={setGuardianData}
+                />
+              </div>
+            )}
           </DoubleColumn>
         ))}
 
@@ -212,6 +389,7 @@ export default function MembersRegisterKinshipsPage() {
               alive: true,
               occupation: "",
               type: "",
+              isLegalGuardian: false,
             })
           }
           disabled={isLoading}

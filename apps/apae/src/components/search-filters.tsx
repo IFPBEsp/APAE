@@ -1,4 +1,3 @@
-
 "use client";
 
 import { Input } from "@/components/ui/input";
@@ -42,18 +41,17 @@ export function SearchFilters({
   setCidade,
   tipoAtendimento,
   setTipoAtendimento,
-  transtornoOptions = [], 
+  transtornoOptions = [],
   anoOptions = [],
   cidadeOptions = [],
-  tipoAtendimentoOptions = []
+  tipoAtendimentoOptions = [],
 }: SearchFiltersProps) {
-  
   const dropdownTriggerStyle = cn(
-    "bg-white border border-gray-300 rounded-[5px] h-[36px]", 
-    "justify-between text-gray-600", 
-    "hover:bg-slate-50 hover:text-gray-700", 
+    "bg-white border border-gray-300 rounded-[5px] h-[36px]",
+    "justify-between text-gray-600",
+    "hover:bg-slate-50 hover:text-gray-700",
     "data-[state=open]:bg-slate-50",
-    "flex"
+    "flex",
   );
 
   const showTranstornoFilter = setTranstorno !== undefined;
@@ -62,33 +60,36 @@ export function SearchFilters({
   const showTipoAtendimentoFilter = setTipoAtendimento !== undefined;
 
   return (
-    <div className="flex items-center gap-2">
-      <div className="relative flex-1">
+    <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2">
+      <div className="relative w-full sm:flex-1">
         <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-500" />
         <Input
           placeholder="Busque por nome"
           className="pl-10 h-[36px] border-2 border-[#0D4F97] rounded-[5px] placeholder-[#0D4F97]"
-          value={searchName} 
+          value={searchName}
           onChange={(e) => setSearchName?.(e.target.value)}
         />
       </div>
 
-      {(showTranstornoFilter || showAnoFilter || showCidadeFilter || showTipoAtendimentoFilter) && (
-        <div className="flex flex-shrink-0 items-center gap-2">
-
+      {(showTranstornoFilter ||
+        showAnoFilter ||
+        showCidadeFilter ||
+        showTipoAtendimentoFilter) && (
+        <div className="flex flex-wrap sm:flex-nowrap items-center gap-2 w-full sm:w-auto">
           {showTipoAtendimentoFilter && (
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button
-                  className={cn(dropdownTriggerStyle, "w-[150px]")}
-                >
+                <Button className={cn(dropdownTriggerStyle, "w-full sm:w-[150px]")}>
                   <span className="flex-1 w-0 truncate text-left">
                     {tipoAtendimento || "Tipo de Atendimento"}
                   </span>
                   <ChevronDown className="h-4 w-4" />
                 </Button>
               </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="w-[--radix-dropdown-menu-trigger-width]">
+              <DropdownMenuContent
+                align="end"
+                className="w-[--radix-dropdown-menu-trigger-width]"
+              >
                 <DropdownMenuItem onClick={() => setTipoAtendimento?.("")}>
                   Qualquer
                 </DropdownMenuItem>
@@ -96,7 +97,9 @@ export function SearchFilters({
                   <DropdownMenuItem
                     key={option}
                     onClick={() => setTipoAtendimento?.(option)}
-                    className={cn({ "bg-slate-100": tipoAtendimento === option })}
+                    className={cn({
+                      "bg-slate-100": tipoAtendimento === option,
+                    })}
                   >
                     {option}
                   </DropdownMenuItem>
@@ -104,20 +107,21 @@ export function SearchFilters({
               </DropdownMenuContent>
             </DropdownMenu>
           )}
-          
+
           {showTranstornoFilter && (
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button
-                  className={cn(dropdownTriggerStyle, "w-[150px]")}
-                >
+                <Button className={cn(dropdownTriggerStyle, "w-full sm:w-[150px]")}>
                   <span className="flex-1 w-0 truncate text-left">
                     {transtorno || "Transtorno"}
                   </span>
                   <ChevronDown className="h-4 w-4" />
                 </Button>
               </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="w-[--radix-dropdown-menu-trigger-width]">
+              <DropdownMenuContent
+                align="end"
+                className="w-[--radix-dropdown-menu-trigger-width]"
+              >
                 <DropdownMenuItem onClick={() => setTranstorno?.("")}>
                   Qualquer
                 </DropdownMenuItem>
@@ -137,9 +141,7 @@ export function SearchFilters({
           {showAnoFilter && (
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button
-                  className={cn(dropdownTriggerStyle, "w-[90px]")}
-                >
+                <Button className={cn(dropdownTriggerStyle, "w-full sm:w-[90px]")}>
                   <span className="flex-1 w-0 truncate text-left">
                     {ano || "Ano"}
                   </span>
@@ -162,20 +164,21 @@ export function SearchFilters({
               </DropdownMenuContent>
             </DropdownMenu>
           )}
-          
+
           {showCidadeFilter && (
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button
-                  className={cn(dropdownTriggerStyle, "w-[150px]")}
-                >
+                <Button className={cn(dropdownTriggerStyle, "w-full sm:w-[150px]")}>
                   <span className="flex-1 w-0 truncate text-left">
                     {cidade || "Cidade"}
                   </span>
                   <ChevronDown className="h-4 w-4" />
                 </Button>
               </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="w-[--radix-dropdown-menu-trigger-width]">
+              <DropdownMenuContent
+                align="end"
+                className="w-[--radix-dropdown-menu-trigger-width]"
+              >
                 <DropdownMenuItem onClick={() => setCidade?.("")}>
                   Qualquer
                 </DropdownMenuItem>
@@ -191,7 +194,6 @@ export function SearchFilters({
               </DropdownMenuContent>
             </DropdownMenu>
           )}
-
         </div>
       )}
     </div>

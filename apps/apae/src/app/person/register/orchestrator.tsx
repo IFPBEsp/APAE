@@ -4,7 +4,7 @@ import {
   MembersRegisterStep,
   useMembersRegisterContext,
 } from "@/hooks/use-members-register-context";
-import { useRouter } from "next/navigation";
+import { useRouter, usePathname } from "next/navigation"; 
 import { useEffect } from "react";
 
 export function PageOrchestrator({
@@ -13,32 +13,28 @@ export function PageOrchestrator({
   readonly children: React.ReactNode;
 }) {
   const router = useRouter();
+  const pathname = usePathname(); 
   const {
     state: { step },
   } = useMembersRegisterContext();
 
   useEffect(() => {
-    switch (step) {
-      case MembersRegisterStep.PERSONAL:
-        router.push("/person/register/personal");
-        break;
-      case MembersRegisterStep.KINSHIPS:
-        router.push("/person/register/kinships");
-        break;
-      case MembersRegisterStep.ADDRESS:
-        router.push("/person/register/address");
-        break;
-      case MembersRegisterStep.ADDITIONALS:
-        router.push("/person/register/additional");
-        break;
-      case MembersRegisterStep.GUARDIAN:
-        router.push("/person/register/responsible");
-        break;
-      case MembersRegisterStep.PROFILE:
-        router.push("/person/register/profile");
-        break;
+    const stepPaths: Record<string, string> = {
+      [MembersRegisterStep.PERSONAL]: "personal",
+      [MembersRegisterStep.KINSHIPS]: "kinships",
+      [MembersRegisterStep.GUARDIAN]: "responsible",
+      [MembersRegisterStep.ADDRESS]: "address",
+      [MembersRegisterStep.ADDITIONALS]: "additional",
+      [MembersRegisterStep.PROFILE]: "profile",
+    };
+
+    const targetSlug = stepPaths[step];
+    const targetPath = `/person/register/${targetSlug}`;
+
+    if (pathname === "/person/register" || (targetSlug && !pathname.includes(targetSlug))) {
+      router.push(targetPath);
     }
-  }, [step, router]);
+  }, [step, router, pathname]);
 
   return children;
 }

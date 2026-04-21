@@ -199,7 +199,9 @@ export const GenericDatabaseSelect = <T extends { id?: string | number }>({
       }
       createOptionPosition="first"
       menuPlacement={menuPlacement}
-      menuPortalTarget={typeof document !== "undefined" ? document.body : null}
+      captureMenuScroll={false} // Evita bugs de scroll no modal
+      closeMenuOnSelect={false} // Bom para MultiSelect
+      tabSelectsValue={false}   // Melhora a acessibilidade no teclado
     />
   );
 };

@@ -1,12 +1,13 @@
-package br.org.apae.api.appointment.interfaces.controllers.impl;
+package br.org.apae.api.controllers.absence;
 
 import br.org.apae.api.appointment.application.interfaces.AbsenceApplicationService;
 import br.org.apae.api.appointment.interfaces.controllers.AbsenceController;
 import br.org.apae.api.common.dto.appointment.request.absence.CreateAbsenceDTO;
 import br.org.apae.api.common.dto.appointment.response.absence.AbsenceResponseDTO;
+import br.org.apae.api.common.dto.appointment.response.absence.JustifyAbsenceDTO;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.RestController;
@@ -44,6 +45,12 @@ public class AbsenceControllerImpl implements AbsenceController {
         Page<AbsenceResponseDTO> response = service.findAllByFilters(
                 generatedId, patientId, professionalId, pageable);
 
+        return ResponseEntity.ok(response);
+    }
+
+    @Override
+    public ResponseEntity<AbsenceResponseDTO> justifyAbsence(UUID id, JustifyAbsenceDTO dto) {
+        AbsenceResponseDTO response = service.justify(id, dto);
         return ResponseEntity.ok(response);
     }
 }
