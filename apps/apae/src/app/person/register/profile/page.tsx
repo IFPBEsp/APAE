@@ -15,7 +15,7 @@ import {
 import { Profile } from "@/schemas/member-schemas";
 import { EditProfile } from "@/schemas/edit-member-schemas"; 
 import { zodResolver } from "@hookform/resolvers/zod";
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { handleBackendValidationErrors } from "@/utils/form-errors";
 
@@ -51,7 +51,7 @@ export default function MembersRegisterProfilePage() {
 
   const [isInitialized, setIsInitialized] = useState(false);
 
-  const getErrorMessage = (data: any) => {
+  const getErrorMessage = (data: any) => {  
     if (!data) return "Erro inesperado no servidor.";
 
     if (typeof data === "string") return data;
@@ -80,7 +80,7 @@ export default function MembersRegisterProfilePage() {
     }
   }, [profile, form]);
 
-  useEffect(() => {
+   useEffect(() => {
     if (submitted && profile) {
       (async () => {
         setIsLoading(true);
@@ -93,6 +93,12 @@ export default function MembersRegisterProfilePage() {
                 ? "Paciente atualizado com sucesso!"
                 : "Membro cadastrado com sucesso!",
             );
+
+            router.push(
+              isEditing ? `/person/${id}` : "/visualization-patients",
+            );
+            return;
+          }
 
           if (res.status === 409) {
             const msg = getErrorMessage(res.data);
@@ -115,7 +121,7 @@ export default function MembersRegisterProfilePage() {
             toast.error(displayMsg);
             setStep(MembersRegisterStep.PERSONAL);
 
-            form.setError("root", {
+            form.setError(targetField as any, {
               type: "manual",
               message: displayMsg,
             });
@@ -125,7 +131,8 @@ export default function MembersRegisterProfilePage() {
           }
 
           if (res.status === 400) {
-            const firstError = res.data?.fields?.[0];
+            const resData = res.data as { fields?: Array<{ field?: string; message?: string }> } | undefined;
+            const firstError = resData?.fields?.[0];
             const backendField = firstError?.field || "";
             const fieldLower = backendField.toLowerCase();
             const errorMessage =

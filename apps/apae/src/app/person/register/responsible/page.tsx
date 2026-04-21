@@ -82,7 +82,8 @@ export default function MembersRegisterGuardianPage() {
         ...values,
         address: {
           ...values.address,
-          number: values.address.noNumber ? "SN" : values.address.number
+          number: values.address.noNumber ? "SN" : values.address.number,
+          district: (values.address as any).district || ""
         }
       };
 
@@ -109,12 +110,17 @@ export default function MembersRegisterGuardianPage() {
               type="button"
               onClick={() => {
                 const currentValues = form.getValues();
-                setGuardianData(currentValues);
+                const dataToSave = {
+                  ...currentValues,
+                  address: currentValues.address ? {
+                    ...currentValues.address,
+                    district: (currentValues.address as any).district || ""
+                  } : undefined
+                };
+                setGuardianData(dataToSave as any);
                 setStep(MembersRegisterStep.KINSHIPS);
               }}
               disabled={isLoading}
-            >
-              Voltar
               className="bg-[#FCD511] text-[#0D4F97] hover:bg-[#0D4F97] hover:text-white font-baloo font-medium h-10 px-8 border-none shadow-sm transition-colors"
             >
               {" "}

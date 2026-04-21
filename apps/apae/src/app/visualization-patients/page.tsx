@@ -14,7 +14,9 @@ import { useDebounce } from "@/hooks/use-debounce";
 import { usePatientFilters } from "@/hooks/use-patients-filters";
 import type { Page } from "@/types/pagination";
 
-export default function PatientsAndStudentsScreen() {
+import { Suspense } from "react";
+
+function PatientsAndStudentsScreenContent() {
   const [patients, setPatients] = useState<PatientCardData[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -244,5 +246,13 @@ export default function PatientsAndStudentsScreen() {
         </Link>
       </Button>
     </div>
+  );
+}
+
+export default function PatientsAndStudentsScreen() {
+  return (
+    <Suspense fallback={<div className="min-h-screen bg-slate-100 flex items-center justify-center">Carregando...</div>}>
+      <PatientsAndStudentsScreenContent />
+    </Suspense>
   );
 }

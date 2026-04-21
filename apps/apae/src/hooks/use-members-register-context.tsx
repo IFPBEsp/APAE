@@ -40,6 +40,7 @@ interface AddressData {
   noNumber?: boolean;
   number: string;
   complement?: string;
+  district: string;
 }
 
 interface AdditionalsData {
@@ -214,6 +215,7 @@ const initialState: MembersRegisterState = {
     number: "",
     complement: "",
     noNumber: false,
+    district: "",
   },
   additionals: {
     id: undefined,
@@ -236,6 +238,7 @@ const initialState: MembersRegisterState = {
       number: "",
       complement: "",
       noNumber: false,
+      district: "",
     },
     contact: "",
     kinship: "",
@@ -456,7 +459,7 @@ export function MembersRegisterProvider({
         cpf: string;
         cns: string;
         nis: string;
-        registrationDate: string | null;
+        registrationDate: Date | null;
         allergies: string;
         isStudent: boolean;
         address: {
@@ -516,6 +519,7 @@ export function MembersRegisterProvider({
         cpf: personal.cpf,
         cns: personal.cns || "000 0000 0000 0000",
         nis: personal.nis || "0",
+        registrationDate: personal.rg.issuing.date,
         allergies: additionals.allergies || "Nenhuma",
         isStudent: profile.role === "student",
         address: {
@@ -525,7 +529,6 @@ export function MembersRegisterProvider({
           neighborhood: address.neighborhood || "Não informado",
           street: address.street || "Não informado",
           number: address.number || "S/N",
-          noNumber: address.noNumber || false,
           complement: address.complement || "",
         },
         guardian: {
@@ -539,7 +542,6 @@ export function MembersRegisterProvider({
             neighborhood: guardian.address.neighborhood || "Não informado",
             street: guardian.address.street || "Não informado",
             number: guardian.address.number || "SN",
-            noNumber: guardian.address.noNumber || false,
             complement: guardian.address.complement || "",
           },
         },
@@ -578,7 +580,7 @@ export function MembersRegisterProvider({
         const data = await res.json().catch(() => ({}));
         return { status: res.status, data };
       } else {
-        patient.registrationDate = formatDate(new Date());
+        patient.registrationDate = new Date();
         patient.annualRegistry = {
           bpc: additionals.bpc,
           diseases: additionals.diseases,

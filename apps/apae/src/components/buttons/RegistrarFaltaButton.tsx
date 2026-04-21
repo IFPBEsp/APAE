@@ -32,53 +32,6 @@ export function RegistrarFaltaButton({
 }: RegistrarFaltaButtonProps) {
   const [open, setOpen] = useState(false);
 
-  const handleConfirm = async () => {
-    if (!motivo.trim()) {
-      return;
-    }
-
-    setIsLoading(true);
-
-    try {
-      const dto = {
-        generatedAppointmentId,
-        absenceDate,
-        justification: motivo.trim(),
-      };
-
-      const response = await fetch("/api/absence", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(dto),
-      });
-
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.message);
-      }
-
-      setMotivo("");
-      setOpen(false);
-      onSuccess?.();
-      toast.success("Salvo com sucesso!");
-    } catch (error) {
-      console.error("Erro ao registrar falta:", error);
-
-      const errorMessage = error instanceof Error ? error.message : String(error);
-      const message =
-        errorMessage.includes("Já existe uma falta")
-          ? "Esta consulta já possui uma falta registrada."
-          : errorMessage || "Erro ao registrar a falta. Tente novamente.";
-
-          toast.error(message);
-          setOpen(false);
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>

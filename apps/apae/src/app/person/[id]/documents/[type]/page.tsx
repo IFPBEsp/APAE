@@ -2,12 +2,11 @@
 
 import * as React from "react";
 import { useRouter, useParams } from "next/navigation";
-import { ArrowLeft, FileText } from "lucide-react";
+import { ArrowLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import FileCard from "@/components/fileCard";
 import { toast } from "react-toastify";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { file } from "zod";
 
 const documentTypeTranslations: Record<string, string> = {
   MEDICAL_REPORT: "Laudo Médico",
@@ -45,22 +44,11 @@ const documentCategory = {
   escolares: "Documentos escolares", 
 };
 
-interface FileCardProps {
-  file: {
-    fileName: string;
-    link: string;
-    originalName?: string; 
-  };
-}
 
 export default function DocumentTypePage() {
   const router = useRouter();
   const params = useParams();
   const patientId = params?.id as string;
-
-  const isPdf = 
-    file.link?.toLowerCase().includes(".pdf") || 
-    file.originalName?.toLowerCase().includes(".pdf");
 
   const category = params?.type as keyof typeof documentCategory;
 
@@ -131,7 +119,7 @@ export default function DocumentTypePage() {
             <ArrowLeft size={20} />
           </Button>
           <h1 className="text-xl font-bold">{pageTitle}</h1>
-          <Select value={yearFilter} onValueChange={setYearFilter}>
+          <Select value={yearFilter} onValueChange={_setYearFilter}>
             <SelectTrigger className="w-20 bg-white border-gray-300 text-sm">
               <SelectValue />
             </SelectTrigger>
@@ -152,7 +140,7 @@ export default function DocumentTypePage() {
         <h1 className="text-xl font-bold whitespace-nowrap">{pageTitle}</h1>
         <div className="flex items-center gap-2">
           <span className="text-sm font-medium text-gray-600">Ano:</span>
-          <Select value={yearFilter} onValueChange={setYearFilter}>
+          <Select value={yearFilter} onValueChange={_setYearFilter}>
             <SelectTrigger className="w-24 bg-white border-gray-300">
               <SelectValue />
             </SelectTrigger>

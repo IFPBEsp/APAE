@@ -14,7 +14,7 @@ import {
   useMembersRegisterContext,
 } from "@/hooks/use-members-register-context";
 import { formatCEP } from "@/lib/formats";
-import { Address, AddressData } from "@/schemas/member-schemas";
+import { Address } from "@/schemas/member-schemas";
 import { EditAddress } from "@/schemas/edit-member-schemas";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";

@@ -18,7 +18,7 @@ import {
 import { formatCPF, formatRG } from "@/lib/formats";
 import { Kinships } from "@/schemas/member-schemas";
 import { zodResolver } from "@hookform/resolvers/zod";
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { useFieldArray, useForm } from "react-hook-form";
 import { handleBackendValidationErrors } from "@/utils/form-errors";
 
@@ -36,7 +36,21 @@ import { UseFormReturn } from "react-hook-form";
 interface LegalGuardianCheckboxProps {
   form: UseFormReturn<z.infer<typeof Kinships>>;
   index: number;
-  setGuardianData: (data: { name: string; kinship: string }) => void;
+  setGuardianData: (data: { 
+      name: string; 
+      kinship: string;
+      contact: string,
+      address: {
+          cep: string,
+          state: string,
+          city: string,
+          neighborhood: string,
+          district: string,
+          street: string,
+          number: string,
+          complement: string,
+          noNumber: boolean,
+    }}) => void;
 }
 
 function LegalGuardianCheckbox({
@@ -64,6 +78,7 @@ function LegalGuardianCheckbox({
           state: "",
           city: "",
           neighborhood: "",
+          district: "",
           street: "",
           number: "",
           complement: "",
@@ -92,7 +107,7 @@ function LegalGuardianCheckbox({
                   form.setValue(`kinships.${i}.isLegalGuardian`, false);
                 }
               });
-              fieldOnChange(checked);
+              fieldOnChange(checked as boolean);
             } else {
               fieldOnChange(checked);
               setGuardianData({
@@ -104,6 +119,7 @@ function LegalGuardianCheckbox({
                   state: "",
                   city: "",
                   neighborhood: "",
+                  district: "",
                   street: "",
                   number: "",
                   complement: "",
@@ -181,6 +197,7 @@ export default function MembersRegisterKinshipsPage() {
             number: "",
             complement: "",
             noNumber: false,
+            district: "",
           },
         });
       }
@@ -213,8 +230,12 @@ export default function MembersRegisterKinshipsPage() {
               cep: "",
               state: "",
               city: "",
+              neighborhood: "",
+              noNumber: false,
+              number: "",
               district: "",
               street: "",
+              complement: ""
             },
           });
         }

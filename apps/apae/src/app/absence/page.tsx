@@ -1,6 +1,5 @@
 "use client";
 
-import AbsenceService from "@/app/services/absenceService";
 import { InfoCard } from "@/components/shared/InfoCard";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
