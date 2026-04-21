@@ -1,8 +1,7 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
-import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
-import { AppSidebar } from "@/components/sidebar/sidebar";
 import "./globals.css";
+
 import ToastProvider from "@/components/shared/ToastProvider";
 import { SidebarWrapper } from "@/components/sidebar/SidebarWrapper";
 import { NuqsAdapter } from "nuqs/adapters/next/app";

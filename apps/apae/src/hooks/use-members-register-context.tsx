@@ -40,6 +40,7 @@ interface AddressData {
   noNumber?: boolean;
   number: string;
   complement?: string;
+  district: string;
 }
 
 interface AdditionalsData {
@@ -75,7 +76,7 @@ export enum MembersRegisterStep {
   PROFILE = "profile",
 }
 
-interface MembersRegisterState {
+export interface MembersRegisterState {
   personal: PersonalData;
   kinships: KinshipData[];
   address: AddressData;
@@ -97,7 +98,7 @@ interface MembersRegisterContextData {
     setStep: (step: MembersRegisterStep) => void;
     loadAllData: (data: MembersRegisterState) => void;
   };
-  register: (id?: string) => Promise<{ status: number; data: any }>;
+  register: (id?: string) => Promise<{ status: number; data: Record<string, unknown> }>;
 }
 
 // --- UTILS: FILE CONVERSION ---
@@ -214,6 +215,7 @@ const initialState: MembersRegisterState = {
     number: "",
     complement: "",
     noNumber: false,
+    district: "",
   },
   additionals: {
     id: undefined,
@@ -236,6 +238,7 @@ const initialState: MembersRegisterState = {
       number: "",
       complement: "",
       noNumber: false,
+      district: "",
     },
     contact: "",
     kinship: "",
@@ -422,7 +425,7 @@ export function MembersRegisterProvider({
       const { personal, address, additionals, guardian, kinships, profile } =
         state;
 
-      const formatDate = (date: any) => {
+      const formatDate = (date: Date | string | number | null | undefined) => {
         if (!date) return null;
 
         const d = new Date(date);
@@ -441,7 +444,67 @@ export function MembersRegisterProvider({
         return isNaN(num) ? 0.0 : num;
       };
 
-      const patient: any = {
+      interface PatientPayload {
+        fullName: string;
+        nationality: string;
+        birthDate: string | null;
+        contact: string;
+        birthCertificateNumber: string;
+        registryOffice: string;
+        fls: string;
+        book: string;
+        rg: string;
+        issueDate: string | null;
+        issuingAgency: string;
+        cpf: string;
+        cns: string;
+        nis: string;
+        registrationDate: Date | null;
+        allergies: string;
+        isStudent: boolean;
+        address: {
+          city: string;
+          cep: string;
+          state: string;
+          neighborhood: string;
+          street: string;
+          number: string;
+          complement: string;
+        };
+        guardian: {
+          name: string;
+          contact: string;
+          kinship: string;
+          address: {
+            city: string;
+            cep: string;
+            state: string;
+            neighborhood: string;
+            street: string;
+            number: string;
+            complement: string;
+          };
+        };
+        parents: {
+          name: string;
+          rg: string;
+          cpf: string;
+          profession: string;
+          isAlive: boolean;
+          kinship: string;
+        }[];
+        vaccineNames: { name: string }[];
+        annualRegistry?: {
+          bpc: boolean;
+          diseases: string;
+          serviceArea: { area: string }[];
+          familyIncome: number;
+          year: number;
+          disorders: { name: string }[];
+        };
+      }
+
+      const patient: PatientPayload = {
         fullName: personal.name || "Não informado",
         nationality: personal.birth.place || "Brasileiro",
         birthDate: formatDate(personal.birth.date),
@@ -456,6 +519,7 @@ export function MembersRegisterProvider({
         cpf: personal.cpf,
         cns: personal.cns || "000 0000 0000 0000",
         nis: personal.nis || "0",
+        registrationDate: personal.rg.issuing.date,
         allergies: additionals.allergies || "Nenhuma",
         isStudent: profile.role === "student",
         address: {
@@ -465,7 +529,6 @@ export function MembersRegisterProvider({
           neighborhood: address.neighborhood || "Não informado",
           street: address.street || "Não informado",
           number: address.number || "S/N",
-          noNumber: address.noNumber || false,
           complement: address.complement || "",
         },
         guardian: {
@@ -479,7 +542,6 @@ export function MembersRegisterProvider({
             neighborhood: guardian.address.neighborhood || "Não informado",
             street: guardian.address.street || "Não informado",
             number: guardian.address.number || "SN",
-            noNumber: guardian.address.noNumber || false,
             complement: guardian.address.complement || "",
           },
         },
@@ -518,7 +580,7 @@ export function MembersRegisterProvider({
         const data = await res.json().catch(() => ({}));
         return { status: res.status, data };
       } else {
-        patient.registrationDate = formatDate(new Date());
+        patient.registrationDate = new Date();
         patient.annualRegistry = {
           bpc: additionals.bpc,
           diseases: additionals.diseases,

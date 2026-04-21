@@ -1,8 +1,4 @@
 import axios from "axios";
-import { getApiBaseUrl } from "@/lib/client-service";
-import { DocumentWithUrl } from "@/types/document";
-
-const API_URL = getApiBaseUrl();
 
 export async function getAllProfissionais(ativo?: boolean) {
   const url = 
@@ -44,7 +40,7 @@ export async function createProfissional(formData: FormData) {
   return response;
 }
 
-export async function updateProfissional(id: string, data: any) {
+export async function updateProfissional(id: string, data: unknown) {
   const response = await fetch(`/api/professionals/${id}`, {
     method: "PUT",
     headers: {

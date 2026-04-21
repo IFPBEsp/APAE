@@ -110,6 +110,7 @@ export default function DashboardPage() {
 
     fetchTodayAppointments();
     fetchAllAppointments();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedDate]);
 
   useEffect(() => {

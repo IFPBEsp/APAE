@@ -175,8 +175,8 @@ export interface Disorder {
   name: string;
 }
 
-function ensurePageFormat<T>(data: any): Page<T> {
-  if (data && Array.isArray(data.content)) {
+function ensurePageFormat<T>(data: unknown): Page<T> {
+  if (data && Array.isArray((data as Page<T>).content)) {
     return data as Page<T>;
   }
   if (Array.isArray(data)) {
@@ -193,7 +193,7 @@ function ensurePageFormat<T>(data: any): Page<T> {
     } as Page<T>;
   }
   return {
-    content: data ? [data] : [],
+    content: data ? [data as T] : [],
     totalElements: data ? 1 : 0,
     totalPages: 1,
     size: 1,

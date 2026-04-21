@@ -15,7 +15,7 @@ import {
 } from "@/hooks/use-members-register-context";
 import { formatCEP } from "@/lib/formats";
 import { Address } from "@/schemas/member-schemas";
-import { EditAddress } from "@/schemas/edit-member-schemas";  
+import { EditAddress } from "@/schemas/edit-member-schemas";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { useState, useEffect } from "react";
@@ -24,6 +24,7 @@ import { handleBackendValidationErrors } from "@/utils/form-errors";
 import { Checkbox } from "@/components/ui/checkbox";
 
 import { DoubleColumn, FormButton, MembersRegisterForm } from "../form";
+import z from "zod";
 
 export default function MembersRegisterAddressPage() {
   const {
@@ -33,17 +34,16 @@ export default function MembersRegisterAddressPage() {
 
   const [isLoading, setIsLoading] = useState(false);
 
-
   const pathname = usePathname();
   const isEditing = pathname.includes("/edit");
   const currentSchema = isEditing ? EditAddress : Address;
 
-  const form = useForm<any>({
+  const form = useForm<z.infer<typeof Address>>({
     mode: "onBlur",
     resolver: zodResolver(currentSchema),
     defaultValues: {
       ...address,
-      noNumber: address.number === "SN" || false 
+      noNumber: address.number === "SN" || false
     },
   });
 
@@ -69,7 +69,7 @@ export default function MembersRegisterAddressPage() {
     }
   }, [address, form]);
 
-  const onSubmit = async (values: any) => {
+  const onSubmit = async (values: z.infer<typeof Address>) => {
     setIsLoading(true);
     try {
       const dataToSave = {
@@ -83,9 +83,10 @@ export default function MembersRegisterAddressPage() {
       } else {
         setStep(MembersRegisterStep.ADDITIONALS);
       }
-    } catch (error: any) {
-      if (error.response?.data) {
-        handleBackendValidationErrors(error.response.data, form.setError);
+    } catch (error: unknown) {
+      const err = error as { response?: { data?: Record<string, string[]> } };
+      if (err.response?.data) {
+        handleBackendValidationErrors(err.response.data, form.setError);
       }
     } finally {
       setIsLoading(false);
@@ -93,7 +94,7 @@ export default function MembersRegisterAddressPage() {
   };
 
   useEffect(() => {
-    if (address.cep !== "") { 
+    if (address.cep !== "") {
        form.reset(address);
     }
   }, [address, form]);
@@ -146,7 +147,7 @@ export default function MembersRegisterAddressPage() {
                 name="noNumber"
                 render={({ field }) => (
                   <div className="flex items-center space-x-2">
-                    <Checkbox 
+                    <Checkbox
                       id="noNumber"
                       checked={field.value}
                       onCheckedChange={(checked) => {
@@ -162,11 +163,11 @@ export default function MembersRegisterAddressPage() {
                     <label htmlFor="noNumber" className="text-sm text-gray-600">Sem número? </label>
                     </div>
                   )}
-                />  
+                />
               </div>
               <FormField
                 control={form.control}
-                name="number"  
+                name="number"
                 render={({ field }) => (
                   <FormItem>
                     <FormControl>
@@ -182,7 +183,7 @@ export default function MembersRegisterAddressPage() {
                   </FormItem>
                 )}
               />
-          </div>      
+          </div>
           <FormField
             control={form.control}
             name="complement"

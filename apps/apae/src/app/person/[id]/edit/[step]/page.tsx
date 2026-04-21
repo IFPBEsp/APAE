@@ -11,7 +11,7 @@ import ProfileForm from "../../../register/profile/page";
 import AdditionalsForm from "../../../register/additional/page"; 
 
 export default function EditPatientPage() {
-  const { state: { step }, setters } = useMembersRegisterContext();
+  const { state: { step } } = useMembersRegisterContext();
   const router = useRouter(); 
   const { id, step: stepFromUrl } = useParams();
 

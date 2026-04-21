@@ -1,10 +1,14 @@
 "use client";
 
+import Image from "next/image";
+import { useState } from "react";
+
 import * as React from "react";
 import { FileText, ExternalLink } from "lucide-react";
 import {
   Dialog,
   DialogContent,
+  DialogFooter,
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
@@ -21,10 +25,10 @@ interface Props {
 
 export default function FileCard({ file }: Props) {
   const [open, setOpen] = React.useState(false);
-  
+
   // Estado para o Modal (Preview grande)
   const [modalViewType, setModalViewType] = React.useState<'img' | 'iframe'>('img');
-  
+
   // NOVO: Estado para a Miniatura (Card pequeno)
   const [thumbnailView, setThumbnailView] = React.useState<'img' | 'icon'>('img');
 
@@ -36,22 +40,21 @@ export default function FileCard({ file }: Props) {
 
   return (
     <>
-      {/* Card */}
       <div
         className="cursor-pointer p-3 border rounded hover:bg-gray-100 overflow-hidden flex flex-col"
         onClick={() => setOpen(true)}
       >
         <p className="truncate mb-2 text-sm font-medium">{file.fileName}</p>
-        
+
         {/* ÁREA DA MINIATURA */}
         <div className="flex flex-col items-center justify-center bg-blue-50 text-blue-900 rounded-md w-full h-32 border border-blue-100 overflow-hidden relative">
-          
+
           {thumbnailView === 'img' ? (
              <img
                src={file.link}
                alt={file.fileName}
                // object-cover faz a imagem preencher o quadradinho todo de forma elegante
-               className="w-full h-full object-cover" 
+               className="w-full h-full object-cover"
                // Se falhar (for PDF), troca para o ícone
                onError={() => setThumbnailView('icon')}
              />

@@ -4,13 +4,14 @@ import { AxiosError } from "axios";
 
 export async function PATCH(
   req: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await params;
     const body = await req.json();
     
     const api = await createBaseApi();
-    const response = await api.patch(`/absences/${params.id}/justify`, body);
+    const response = await api.patch(`/absences/${id}/justify`, body);
 
     return NextResponse.json(response.data, { status: 200 });
   } catch (error) {

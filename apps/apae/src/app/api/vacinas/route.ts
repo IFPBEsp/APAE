@@ -9,15 +9,17 @@ export async function POST(request: Request) {
         const { data } = await api.post("/vaccines", body);
         
         return NextResponse.json(data, { status: 201 });
-    } catch (error: any) {
-        const err = error as AxiosError;
-        if (err.response?.status === 409) {
-             return NextResponse.json({ message: "Vacina já existe" }, { status: 200 });
+    } catch (error) {
+        if(error instanceof AxiosError) {
+            if (error.response?.status === 409) {
+             return new NextResponse(JSON.stringify({ message: "Vacina já existe" }), { status: 200 });
+            }
+            return new NextResponse(
+                JSON.stringify(error.response?.data || { message: error.message }), { status: error.response?.status || 500 }
+            );
         }
-        return new NextResponse(
-            JSON.stringify(err.response?.data || { message: err.message }),
-            { status: err.response?.status || 500 },
-        );
+        
+        return new NextResponse(JSON.stringify({ message: "Erro inesperado ao criar vacina" }), { status: 500 });
     }
 }
 
@@ -26,8 +28,10 @@ export async function GET() {
         const api = await createBaseApi();
         const { data } = await api.get("/vaccines");
         return NextResponse.json(data);
-    } catch (error: any) {
-        console.error("Erro ao buscar vacinas:", error.message);
-        return NextResponse.json([], { status: 200 });
+    } catch (error) {
+        const message = error instanceof Error ? error.message : "Erro desconhecido";
+        console.error("Erro ao buscar vacinas:", message);
+        return NextResponse.json({ message: "Erro ao buscar a lista de vacinas." }, { status: 500 }
+        );
     }
 }

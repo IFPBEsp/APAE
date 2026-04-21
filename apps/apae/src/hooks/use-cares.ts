@@ -1,23 +1,29 @@
-import { useState } from "react";
-import { useEffect } from "react";
+"use client";
 
-function fetchCares() {
-    const [cares, setCares] = useState([]);
+import { useEffect, useState } from "react";
 
-    useEffect(() => {
-        const fetching = async () => {
-                const caresTypes = await fetch(`/api/tipo-atendimento`, {
-                    method: "GET",
-                });
+type Care = {
+  id: string;
+  name: string;
+};
 
-            const data = await caresTypes.json();
-            
-            setCares(data);
-        }
-        fetching()
-    }, [])
+function useCares() {
+  const [cares, setCares] = useState<Care[]>([]);
 
-    return cares;
+  useEffect(() => {
+    const fetching = async () => {
+      const caresTypes = await fetch("/api/tipo-atendimento", {
+        method: "GET",
+      });
+
+      const data = await caresTypes.json();
+      setCares(data);
+    };
+
+    fetching();
+  }, []);
+
+  return cares;
 }
 
-export default fetchCares;
+export default useCares;

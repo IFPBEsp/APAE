@@ -21,7 +21,7 @@ export const EditPersonal = z.object({
     number: z.string().min(1, "RG é obrigatório"),
     issuing: z.object({
       body: z.string().min(1, "Órgão emissor é obrigatório"),
-      date: z.coerce.date() as any, 
+      date: z.coerce.date(), 
     }),
   }),
   cns: z.string().optional().or(z.literal("")),
@@ -32,7 +32,7 @@ export const EditPersonal = z.object({
     .regex(/^\d+$/, "O NIS deve conter apenas números"),
   birth: z.object({
     certificate: z.string().min(1, "Obrigatório"),
-    date: z.coerce.date() as any,
+    date: z.coerce.date(),
     place: z.string().min(1, "Obrigatório"),
   }),
 });
@@ -45,8 +45,8 @@ export const EditAdditionals = z.object({
   allergies: z.string().optional(),
   bpc: z.boolean().optional(),
   householdIncome: z.string().optional(),
-  disability: z.object({ types: z.array(z.string()).optional(), report: z.any().optional() }).optional(),
-  care: z.object({ types: z.array(z.string()).optional(), referral: z.any().optional() }).optional(),
+  disability: z.object({ types: z.array(z.string()).optional(), report: z.union([z.instanceof(File), z.string()]).optional() }).optional(),
+  care: z.object({ types: z.array(z.string()).optional(), referral: z.union([z.instanceof(File), z.string()]).optional() }).optional(),
 });
 
 // 4. RESPONSÁVEL 
@@ -60,5 +60,11 @@ export const EditGuardian = z.object({
 // 5. Perfil relaxado
 export const EditProfile = z.object({
   role: z.enum(["student", "patient"]),
-  photo: z.any().optional(),
+  photo: z.union([z.instanceof(File), z.string()]).optional(),
 });
+
+export type EditAddressData = z.infer<typeof EditAddress>;
+export type EditPersonalData = z.infer<typeof EditPersonal>;
+export type EditAdditionalsData = z.infer<typeof EditAdditionals>;
+export type EditGuardianData = z.infer<typeof EditGuardian>;
+export type EditProfileData = z.infer<typeof EditProfile>;

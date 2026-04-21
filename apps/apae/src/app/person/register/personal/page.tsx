@@ -21,7 +21,7 @@ import {
   formatPhone,
   formatRG,
 } from "@/lib/formats";
-import { Personal } from "@/schemas/member-schemas";
+import { Personal, PersonalData } from "@/schemas/member-schemas";
 import { EditPersonal } from "@/schemas/edit-member-schemas";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
@@ -30,6 +30,7 @@ import { usePathname } from "next/navigation";
 import { handleBackendValidationErrors } from "@/utils/form-errors";
 
 import { DoubleColumn, FormButton, MembersRegisterForm } from "../form";
+import z from "zod";
 
 export default function MembersRegisterPersonalPage() {
   const {
@@ -38,14 +39,14 @@ export default function MembersRegisterPersonalPage() {
   } = useMembersRegisterContext();
 
   const [isLoading, setIsLoading] = useState(false);
-
+  
   const pathname = usePathname();
   const isEditing = pathname.includes("/edit");
   const currentSchema = isEditing ? EditPersonal : Personal;
 
-  const form = useForm<any>({
+  const form = useForm<z.infer<typeof Personal>>({
     mode: "onBlur",
-    resolver: zodResolver(currentSchema),
+    resolver: zodResolver(Personal),
     defaultValues: personal,
   });
 
@@ -54,7 +55,7 @@ export default function MembersRegisterPersonalPage() {
   useEffect(() => {
     if (personal.name && !isInitialized) {
       form.reset(personal);
-      setIsInitialized(true);
+      setIsInitialized(true); 
     }
   }, [personal, form, isInitialized]);
 
@@ -64,15 +65,15 @@ export default function MembersRegisterPersonalPage() {
     }
   }, [personal, form]);
 
-  const onSubmit = async (values: any) => {
+  const onSubmit = async (values: z.infer<typeof Personal>) => {
     setIsLoading(true);
     try {
-      setPersonalData(values);
-
+      setPersonalData(values as PersonalData);
       setStep(MembersRegisterStep.KINSHIPS);
-    } catch (error: any) {
-      if (error.response?.data) {
-        handleBackendValidationErrors(error.response.data, form.setError);
+    } catch (error: unknown) {
+      const err = error as { response?: { data?: Record<string, string[]> } };
+      if (err.response?.data) {
+        handleBackendValidationErrors(err.response.data, form.setError);
       }
     } finally {
       setIsLoading(false);

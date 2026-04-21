@@ -1,36 +1,67 @@
 "use client";
 
-import { MembersRegisterProvider, useMembersRegisterContext, MembersRegisterStep } from "@/hooks/use-members-register-context";
+import {
+  MembersRegisterProvider,
+  useMembersRegisterContext,
+  MembersRegisterState,
+  MembersRegisterStep,
+} from "@/hooks/use-members-register-context";
 import { VaccinesProvider } from "@/hooks/use-vaccines";
 import { DisordersProvider } from "@/hooks/use-disorders";
-import { useParams, useRouter, usePathname } from "next/navigation";
+import { useParams, usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import { Loader2, CheckCircle2, Circle } from "lucide-react";
 import Image from "@/assets/background_image.jpg";
 import { SidebarSteps } from "@/components/shared/SidebarSteps";
+
+interface AddressData {
+  street?: string;
+  number?: string;
+}
+
+interface VaccineName {
+  name: string;
+}
+
+interface ParentData {
+  name?: string;
+  cpf?: string;
+  rg?: string;
+  profession?: string;
+  isAlive?: boolean;
+  kinship?: string;
+}
 
 function EditPatientDataLoader({ children }: { children: React.ReactNode }) {
   const { setters, state } = useMembersRegisterContext();
   const { id } = useParams();
   const pathname = usePathname();
   const [loaded, setLoaded] = useState(false);
-
+  
   useEffect(() => {
     if (loaded || state.personal.name !== "") {
       setLoaded(true);
       return;
     }
-
+    
     async function load() {
       try {
-        const res = await fetch(`/api/pessoas/${id}`, { cache: 'no-store' });
+        const res = await fetch(`/api/pessoas/${id}`, { cache: "no-store" });
         if (!res.ok) throw new Error("Erro ao buscar dados do paciente");
         const data = await res.json();
+        
+        const formatStreet = (addr: AddressData | null | undefined) => {
+          if (!addr?.street) return "";
+          const street = addr.street.trim();
+          const number = addr.number ? addr.number.trim() : "";
 
-        const mappedData: any = {
-           personal: { 
-             name: data.fullName || "", 
-             cpf: data.cpf || "", 
+          if (street.includes(",")) return street;
+          return number ? `${street}, ${number}` : street;
+        };
+        const mappedData: MembersRegisterState = {
+          personal: { 
+            name: data.fullName || "", 
+            cpf: data.cpf || "", 
              phone: data.contact || "", 
              rg: { 
                number: data.rg || "", 
@@ -48,7 +79,8 @@ function EditPatientDataLoader({ children }: { children: React.ReactNode }) {
              street: data.address?.street || "",
               number: data.address?.number || "",
               noNumber: data.address?.number === "SN" || false,
-              complement: data.address?.complement || ""
+              complement: data.address?.complement || "",
+              district: data.address?.district || "",
            },
            additionals: { 
              diseases: data.annualRegistry?.diseases || "", 
@@ -72,7 +104,8 @@ function EditPatientDataLoader({ children }: { children: React.ReactNode }) {
                street: data.guardian?.address?.street || "",
                number: data.guardian?.address?.number || "",
                noNumber: data.guardian?.address?.number === "SN" || false,
-               complement: data.guardian?.address?.complement || ""
+               complement: data.guardian?.address?.complement || "",
+               district: data.address?.district || "",
              } 
            },
            kinships: data.parents?.map((p: any) => ({
@@ -87,8 +120,8 @@ function EditPatientDataLoader({ children }: { children: React.ReactNode }) {
            profile: { 
              role: data.isStudent ? "student" : "patient", 
              photo: undefined 
-           },
-           step: pathname.split('/').pop() as any 
+            },
+            step: pathname.split("/").pop() as MembersRegisterStep,
         };
 
         setters.loadAllData(mappedData);
@@ -104,7 +137,9 @@ function EditPatientDataLoader({ children }: { children: React.ReactNode }) {
     return (
       <div className="flex h-screen items-center justify-center flex-col gap-4">
         <Loader2 className="animate-spin text-[#0D4F97] h-10 w-10" />
-        <p className="text-gray-500 font-medium">Carregando dados para edição...</p>
+        <p className="text-gray-500 font-medium">
+          Carregando dados para edição...
+        </p>
       </div>
     );
   }

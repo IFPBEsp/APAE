@@ -32,7 +32,7 @@ export async function GET(
     }
 
     const headers = new Headers();
-    headers.set("Content-Type", response.headers["content-type"] || "application/octet-stream");
+    headers.set("Content-Type", String(response.headers["content-type"] || "application/octet-stream"));
     headers.set("Content-Disposition", `attachment; filename="${filename}"`);
 
     return new NextResponse(response.data, { headers });

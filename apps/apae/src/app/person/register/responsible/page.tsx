@@ -14,13 +14,13 @@ import {
   useMembersRegisterContext,
 } from "@/hooks/use-members-register-context";
 import { formatCEP } from "@/lib/formats";
-import { Guardian } from "@/schemas/member-schemas";
+import { Guardian, GuardianData } from "@/schemas/member-schemas";
 import { EditGuardian } from "@/schemas/edit-member-schemas";
 import { zodResolver } from "@hookform/resolvers/zod";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react"; 
 import { useForm } from "react-hook-form";
 import { handleBackendValidationErrors } from "@/utils/form-errors";
-import { usePathname } from "next/navigation";
+import { usePathname } from "next/navigation"; 
 import { formatPhone } from "@/lib/formats";
 import { Checkbox } from "@/components/ui/checkbox";
 import z from "zod";
@@ -36,9 +36,9 @@ export default function MembersRegisterGuardianPage() {
 
   const pathname = usePathname();
   const isEditing = pathname.includes("/edit");
-  const currentSchema = isEditing ? EditGuardian : Guardian;
+  const currentSchema = isEditing ? EditGuardian : Guardian; 
 
-  const form = useForm<any>({
+  const form = useForm<z.infer<typeof Guardian>>({
     mode: "onBlur",
     resolver: zodResolver(currentSchema),
     defaultValues: {
@@ -75,23 +75,25 @@ export default function MembersRegisterGuardianPage() {
     }
   }, [guardian, form]);
 
-  const onSubmit = async (values: any) => {
+  const onSubmit = async (values: z.infer<typeof Guardian>) => {
     setIsLoading(true);
     try {
       const dataToSave = {
         ...values,
         address: {
           ...values.address,
-          number: values.address.noNumber ? "SN" : values.address.number
+          number: values.address.noNumber ? "SN" : values.address.number,
+          district: (values.address as any).district || ""
         }
       };
 
       setGuardianData(dataToSave);
       setStep(MembersRegisterStep.ADDRESS);
-    } catch (error: any) {
-      if (error.response?.data) {
-        handleBackendValidationErrors(error.response.data, form.setError);
-      } 
+    } catch (error: unknown) {
+        const err = error as { response?: { data?: Record<string, string[]> } };
+        if (err.response?.data) {
+            handleBackendValidationErrors(err.response.data, form.setError);
+        }
     } finally {
       setIsLoading(false);
     }
@@ -108,11 +110,20 @@ export default function MembersRegisterGuardianPage() {
               type="button"
               onClick={() => {
                 const currentValues = form.getValues();
-                setGuardianData(currentValues);
+                const dataToSave = {
+                  ...currentValues,
+                  address: currentValues.address ? {
+                    ...currentValues.address,
+                    district: (currentValues.address as any).district || ""
+                  } : undefined
+                };
+                setGuardianData(dataToSave as any);
                 setStep(MembersRegisterStep.KINSHIPS);
               }}
               disabled={isLoading}
+              className="bg-[#FCD511] text-[#0D4F97] hover:bg-[#0D4F97] hover:text-white font-baloo font-medium h-10 px-8 border-none shadow-sm transition-colors"
             >
+              {" "}
               Voltar
             </FormButton>
             <FormButton type="submit" disabled={isLoading}>
@@ -212,8 +223,8 @@ export default function MembersRegisterGuardianPage() {
                             disabled={isLoading}
                           />
                         </FormControl>
-                        <label 
-                          htmlFor="noNumber" 
+                        <label
+                          htmlFor="noNumber"
                           className="text-[10px] font-bold uppercase text-slate-500 cursor-pointer select-none">
                             Sem número?
                         </label>
@@ -227,8 +238,8 @@ export default function MembersRegisterGuardianPage() {
                     disabled={isNoNumber}
                     className={isNoNumber ? "bg-slate-50 italic text-slate-400" : ""}
                   />
-                </FormControl>   
-                <FormMessage /> 
+                </FormControl>
+                <FormMessage />
               </FormItem>
             )}
           />

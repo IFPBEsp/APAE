@@ -1,13 +1,13 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { createBaseApi } from "@/lib/axios";
 import { AxiosError } from "axios";
 
 export async function GET(
-  req: Request,
-  { params }: { params: { id: string } }
+  req: NextRequest,
+  context: { params: Promise<{ id: string }> },
 ) {
   try {
-    const { id } = params;
+    const { id } = await context.params;
 
     const api = await createBaseApi();
     const response = await api.get(`/professionals/${id}`);
@@ -18,33 +18,33 @@ export async function GET(
       if (error.response?.status === 404) {
         return NextResponse.json(
           { message: "Profissional não encontrado" },
-          { status: 404 }
+          { status: 404 },
         );
       }
 
       return NextResponse.json(
         {
           message:
-            error.response?.data?.message ||
-            "Erro ao buscar profissional",
+            error.response?.data?.message || "Erro ao buscar profissional",
         },
-        { status: error.response?.status || 500 }
+        { status: error.response?.status || 500 },
       );
     }
 
     return NextResponse.json(
       { message: "Erro interno do servidor" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
 
 export async function PUT(
-  req: Request,
-  { params }: { params: { id: string } }
+  req: NextRequest,
+  context: { params: Promise<{ id: string }> },
 ) {
   try {
-    const { id } = params;
+    const { id } = await context.params;
+
     const body = await req.json();
 
     const api = await createBaseApi();
@@ -56,56 +56,54 @@ export async function PUT(
       return NextResponse.json(
         {
           message:
-            error.response?.data?.message ||
-            "Erro ao atualizar profissional"
+            error.response?.data?.message || "Erro ao atualizar profissional",
         },
-        { status: error.response?.status || 500 }
+        { status: error.response?.status || 500 },
       );
     }
 
     return NextResponse.json(
       { message: "Erro interno do servidor" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
 
 export async function DELETE(
-  req: Request,
-  { params }: { params: { id: string } }
+  req: NextRequest,
+  context: { params: Promise<{ id: string }> },
 ) {
   try {
-    const { id } = params;
+    const { id } = await context.params;
 
     const api = await createBaseApi();
     await api.delete(`/professionals/${id}`);
 
     return NextResponse.json(
       { message: "Profissional excluído com sucesso" },
-      { status: 200 }
+      { status: 200 },
     );
   } catch (error) {
     if (error instanceof AxiosError) {
       if (error.response?.status === 404) {
         return NextResponse.json(
           { message: "Profissional não encontrado" },
-          { status: 404 }
+          { status: 404 },
         );
       }
 
       return NextResponse.json(
         {
           message:
-            error.response?.data?.message ||
-            "Erro ao excluir profissional",
+            error.response?.data?.message || "Erro ao excluir profissional",
         },
-        { status: error.response?.status || 500 }
+        { status: error.response?.status || 500 },
       );
     }
 
     return NextResponse.json(
       { message: "Erro interno do servidor" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

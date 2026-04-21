@@ -1,4 +1,18 @@
 "use client";
+
+import {
+  BriefcaseMedical,
+  LogOut,
+  ShieldUser,
+  SquareActivity,
+  Stethoscope,
+  Syringe,
+  UserRoundPlus,
+} from "lucide-react";
+import Image from "next/image";
+import Link from "next/link";
+import { usePathname, useRouter } from "next/navigation";
+
 import {
   Sidebar,
   SidebarContent,
@@ -9,48 +23,38 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
+  useSidebar,
 } from "@/components/ui/sidebar";
+import { removeSessionCookie } from "@/lib/cookies";
+import { cn } from "@/lib/utils";
 import {
+  AlertIcon,
+  ArrowLeftIcon,
   ChecklistIcon,
   ChevronDownIcon,
   ClockIcon,
-  AlertIcon,
   IdBadgeIcon,
-  TasklistIcon,
-  ArrowLeftIcon,
-  PersonIcon,
   PeopleIcon,
+  PersonIcon,
+  TasklistIcon,
 } from "@primer/octicons-react";
-import Image from "next/image";
-import Link from "next/link";
+import logo from "../../assets/logo.png";
 import {
   Collapsible,
   CollapsibleContent,
   CollapsibleTrigger,
 } from "../ui/collapsible";
 import styles from "./sidebar.module.css";
-import { useSidebar } from "@/components/ui/sidebar";
-import { usePathname, useRouter } from "next/navigation";
-import { cn } from "@/lib/utils";
-import logo from "../../assets/logo.png";
-import {
-  SquareActivity,
-  BriefcaseMedical,
-  Syringe,
-  Stethoscope,
-  LogOut,
-  ShieldUser,
-  UserRoundPlus,
-} from "lucide-react";
-import { removeSessionCookie } from "@/lib/cookies";
 
 export function AppSidebar() {
-  const { open, setOpen, isMobile, setOpenMobile } = useSidebar();
+  const { setOpen, isMobile, setOpenMobile } = useSidebar();
+
   const pathname = usePathname();
   const router = useRouter();
 
   const handleLogout = () => {
     removeSessionCookie();
+
     router.refresh();
   };
 
@@ -103,8 +107,8 @@ export function AppSidebar() {
                       className={`${styles.menuButton} font-base gap-2 ${cn(
                         "h-10 transition-colors",
                         pathname == "/"
-                          ? "bg-[#FFFFFF] !text-[#000000]"
-                          : "text-[#0D4F97] hover:bg-[#0D4F97] hover:!text-white",
+                          ? "bg-[#FFFFFF] text-[#000000]!"
+                          : "text-[#0D4F97] hover:bg-[#0D4F97] hover:text-white!",
                       )}`}
                     >
                       <ChecklistIcon size={16} />
@@ -118,8 +122,8 @@ export function AppSidebar() {
                       className={`${styles.menuButton} font-base gap-2 ${cn(
                         "h-10 transition-colors",
                         pathname == "/all-appointments"
-                          ? "bg-[#FFFFFF] !text-[#000000]"
-                          : "text-[#0D4F97] hover:bg-[#0D4F97] hover:!text-white",
+                          ? "bg-[#FFFFFF] text-[#000000]!"
+                          : "text-[#0D4F97] hover:bg-[#0D4F97] hover:text-white!",
                       )}`}
                     >
                       <TasklistIcon size={16} />
@@ -133,8 +137,8 @@ export function AppSidebar() {
                       className={`${styles.menuButton} font-base gap-2 ${cn(
                         "h-10 transition-colors",
                         pathname == "/absence"
-                          ? "bg-[#FFFFFF] !text-[#000000]"
-                          : "text-[#0D4F97] hover:bg-[#0D4F97] hover:!text-white",
+                          ? "bg-[#FFFFFF] text-[#000000]!"
+                          : "text-[#0D4F97] hover:bg-[#0D4F97] hover:text-white!",
                       )}`}
                     >
                       <AlertIcon size={16} />
@@ -169,8 +173,8 @@ export function AppSidebar() {
                       className={`${styles.menuButton} font-base gap-2 ${cn(
                         "h-10 transition-colors",
                         pathname == "/visualization-professional"
-                          ? "bg-[#FFFFFF] !text-[#000000]"
-                          : "text-[#0D4F97] hover:bg-[#0D4F97] hover:!text-white",
+                          ? "bg-[#FFFFFF] text-[#000000]!"
+                          : "text-[#0D4F97] hover:bg-[#0D4F97] hover:text-white!",
                       )}`}
                     >
                       <Stethoscope size={20} />
@@ -184,8 +188,8 @@ export function AppSidebar() {
                       className={`${styles.menuButton} font-base gap-2 ${cn(
                         "h-10 transition-colors",
                         pathname == "/tipo-atendimento"
-                          ? "bg-[#FFFFFF] !text-[#000000]"
-                          : "text-[#0D4F97] hover:bg-[#0D4F97] hover:!text-white",
+                          ? "bg-[#FFFFFF] text-[#000000]!"
+                          : "text-[#0D4F97] hover:bg-[#0D4F97] hover:text-white!",
                       )}`}
                     >
                       <BriefcaseMedical size={16} />
@@ -220,8 +224,8 @@ export function AppSidebar() {
                       className={`${styles.menuButton} font-base gap-2 ${cn(
                         "h-10 transition-colors",
                         pathname == "/visualization-patients"
-                          ? "bg-[#FFFFFF] !text-[#000000]"
-                          : "text-[#0D4F97] hover:bg-[#0D4F97] hover:!text-white",
+                          ? "bg-[#FFFFFF] text-[#000000]!"
+                          : "text-[#0D4F97] hover:bg-[#0D4F97] hover:text-white!",
                       )}`}
                     >
                       <PeopleIcon size={16} />
@@ -235,8 +239,8 @@ export function AppSidebar() {
                       className={`${styles.menuButton} font-base gap-2 ${cn(
                         "h-10 transition-colors",
                         pathname == "/disorders"
-                          ? "bg-[#FFFFFF] !text-[#000000]"
-                          : "text-[#0D4F97] hover:bg-[#0D4F97] hover:!text-white",
+                          ? "bg-[#FFFFFF] text-[#000000]!"
+                          : "text-[#0D4F97] hover:bg-[#0D4F97] hover:text-white!",
                       )}`}
                     >
                       <SquareActivity size={16} />
@@ -250,8 +254,8 @@ export function AppSidebar() {
                       className={`${styles.menuButton} font-base gap-2 ${cn(
                         "h-10 transition-colors",
                         pathname == "/vaccines"
-                          ? "bg-[#FFFFFF] !text-[#000000]"
-                          : "text-[#0D4F97] hover:bg-[#0D4F97] hover:!text-white",
+                          ? "bg-[#FFFFFF] text-[#000000]!"
+                          : "text-[#0D4F97] hover:bg-[#0D4F97] hover:text-white!",
                       )}`}
                     >
                       <Syringe size={16} />
@@ -263,7 +267,7 @@ export function AppSidebar() {
             </CollapsibleContent>
           </SidebarGroup>
         </Collapsible>
-        
+
         <Collapsible defaultOpen={false} className="group/collapsible">
           <SidebarGroup>
             <SidebarGroupLabel asChild>
@@ -286,8 +290,8 @@ export function AppSidebar() {
                       className={`${styles.menuButton} font-base gap-2 ${cn(
                         "h-10 transition-colors",
                         pathname == ""
-                          ? "bg-[#FFFFFF] !text-[#000000]"
-                          : "text-[#0D4F97] hover:bg-[#0D4F97] hover:!text-white"
+                          ? "bg-[#FFFFFF] text-[#000000]!"
+                          : "text-[#0D4F97] hover:bg-[#0D4F97] hover:text-white!",
                       )}`}
                     >
                       <UserRoundPlus size={16} />
@@ -308,7 +312,7 @@ export function AppSidebar() {
           flex w-full items-center rounded-3xl bg-transparent text-[#0D4F97] transition-all hover:bg-white/40 justify-center gap-3 px-4 py-3 cursor-pointer`}
           title="Sair"
         >
-          <LogOut className="h-5 w-5 flex-shrink-0" strokeWidth={1.75} />
+          <LogOut className="h-5 w-5 shrink-0" strokeWidth={1.75} />
           {<span className="font-medium">Sair</span>}
         </button>
       </SidebarFooter>

@@ -13,16 +13,16 @@ import {
   useMembersRegisterContext,
 } from "@/hooks/use-members-register-context";
 import { Profile } from "@/schemas/member-schemas";
-import { EditProfile } from "@/schemas/edit-member-schemas";
+import { EditProfile } from "@/schemas/edit-member-schemas"; 
 import { zodResolver } from "@hookform/resolvers/zod";
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { handleBackendValidationErrors } from "@/utils/form-errors";
 
 import z from "zod";
 import { FileInputButton, FormButton, MembersRegisterForm } from "../form";
 import { Checkbox } from "@/components/ui/checkbox";
-import { useRouter, useParams, usePathname } from "next/navigation";
+import { useRouter, useParams, usePathname } from "next/navigation"; 
 import { toast } from "react-toastify";
 
 export default function MembersRegisterProfilePage() {
@@ -31,7 +31,7 @@ export default function MembersRegisterProfilePage() {
     setters: { setProfileData, setStep },
     register,
   } = useMembersRegisterContext();
-
+  
   const [submitted, setSubmitted] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
@@ -43,7 +43,7 @@ export default function MembersRegisterProfilePage() {
 
   const currentSchema = isEditing ? EditProfile : Profile;
 
-  const form = useForm<any>({
+  const form = useForm<z.infer<typeof currentSchema>>({
     mode: "onBlur",
     resolver: zodResolver(currentSchema),
     defaultValues: profile,
@@ -51,7 +51,7 @@ export default function MembersRegisterProfilePage() {
 
   const [isInitialized, setIsInitialized] = useState(false);
 
-  const getErrorMessage = (data: any) => {
+  const getErrorMessage = (data: any) => {  
     if (!data) return "Erro inesperado no servidor.";
 
     if (typeof data === "string") return data;
@@ -79,7 +79,8 @@ export default function MembersRegisterProfilePage() {
       form.reset(profile);
     }
   }, [profile, form]);
-  useEffect(() => {
+
+   useEffect(() => {
     if (submitted && profile) {
       (async () => {
         setIsLoading(true);
@@ -130,7 +131,8 @@ export default function MembersRegisterProfilePage() {
           }
 
           if (res.status === 400) {
-            const firstError = res.data?.fields?.[0];
+            const resData = res.data as { fields?: Array<{ field?: string; message?: string }> } | undefined;
+            const firstError = resData?.fields?.[0];
             const backendField = firstError?.field || "";
             const fieldLower = backendField.toLowerCase();
             const errorMessage =
@@ -196,7 +198,7 @@ export default function MembersRegisterProfilePage() {
     }
   }, [submitted, profile, register, router, form, setStep, id, isEditing]);
 
-  const onSubmit = async (values: z.infer<typeof Profile>) => {
+  const onSubmit = async (values: z.infer<typeof currentSchema>) => {
     setProfileData(values);
     setSubmitted(true);
   };

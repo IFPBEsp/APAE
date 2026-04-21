@@ -42,7 +42,7 @@ export default function AbsenceDetails() {
 
   const handleJustifyAbsence = async () => {
     if (!justifyingAbsence || !justificationText.trim()) return;
-  
+
     try {
       setIsSubmittingJustification(true);
       let documentId: string | null = null;
@@ -65,12 +65,12 @@ export default function AbsenceDetails() {
         }
 
         const document = await docResponse.json();
-        documentId = document.name; 
+        documentId = document.name;
       }
 
       await AbsenceService.justifyAbsence(justifyingAbsence.id, justificationText, documentId);
-      
-      window.location.reload(); 
+
+      window.location.reload();
     } catch (error: any) {
       console.error("Erro ao justificar falta:", error);
       alert(error.message || "Erro ao justificar falta.");
@@ -264,7 +264,7 @@ export default function AbsenceDetails() {
                             </Button>
                           </td>
                         </tr>
-                        
+
                         {expandedPatient === p.patient.id && (
                           <tr className="bg-gray-50">
                             <td colSpan={3} className="py-4 px-4">
@@ -284,7 +284,7 @@ export default function AbsenceDetails() {
                                       </span>
                                     </div>
                                     <div className="flex items-center gap-2 flex-wrap">
-                                      
+
                                       {abs.isJustified ? (
                                         <div className="text-sm text-gray-600 max-w-md break-words whitespace-pre-wrap">
                                           <span className="font-medium text-green-600">Falta Justificada: </span>
@@ -298,7 +298,7 @@ export default function AbsenceDetails() {
                                               {abs.justification}
                                             </div>
                                           )}
-                                          
+
                                           <Button
                                             size="sm"
                                             variant="outline"
@@ -378,14 +378,14 @@ export default function AbsenceDetails() {
         {justifyingAbsence && (
           <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
             <div className="bg-white rounded-xl p-6 max-w-md w-full shadow-2xl border border-gray-100">
-              
+
               <div className="mb-6">
                 <h3 className="text-xl font-bold text-[#0D4F97] mb-2">Justificar Falta</h3>
                 <p className="text-sm text-gray-500">
                   Esta falta deixará de contar para a lista vermelha do paciente.
                 </p>
               </div>
-              
+
               <div className="space-y-4">
                 <div className="space-y-2">
                   <label className="text-sm font-medium text-gray-700">
@@ -435,10 +435,10 @@ export default function AbsenceDetails() {
                   )}
                 </div>
               </div>
-              
+
               <div className="flex justify-end gap-3 mt-8 pt-4 border-t border-gray-100">
-                <Button 
-                  variant="outline" 
+                <Button
+                  variant="outline"
                   className="w-full sm:w-auto"
                   onClick={() => {
                     setJustifyingAbsence(null);
@@ -449,7 +449,7 @@ export default function AbsenceDetails() {
                 >
                   Cancelar
                 </Button>
-                <Button 
+                <Button
                   className="w-full sm:w-auto bg-[#0D4F97] hover:bg-blue-900 text-white"
                   onClick={handleJustifyAbsence}
                   disabled={isSubmittingJustification || !justificationText.trim()}

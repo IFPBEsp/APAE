@@ -214,3 +214,11 @@ export const Profile = z.object({
   }),
   photo: z.instanceof(File, { message: "A foto é obrigatória." }),
 });
+
+export type PersonalData = z.infer<typeof Personal>;
+export type AddressData = z.infer<typeof Address>;
+export type AdditionalsData = z.infer<typeof Additionals>;
+export type KinshipData = z.infer<typeof Kinship>;
+export type GuardianData = z.infer<typeof Guardian>;
+export type ProfileData = z.infer<typeof Profile>;
+export type KinshipsData = z.infer<typeof Kinships>;

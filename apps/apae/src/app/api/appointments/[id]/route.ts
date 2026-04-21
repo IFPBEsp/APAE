@@ -1,13 +1,13 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { createBaseApi } from "@/lib/axios";
 import { AxiosError } from "axios";
 
 export async function GET(
-  req: Request,
-  { params }: { params: Promise<{ id: string }> },
+  req: NextRequest,
+  context: { params: Promise<{ id: string }> },
 ) {
   try {
-    const { id } = await params;
+    const { id } = await context.params;
 
     const api = await createBaseApi();
     const response = await api.get(`/appointments/${id}`);
@@ -21,11 +21,13 @@ export async function GET(
           { status: 404 },
         );
       }
+
       return NextResponse.json(
         { message: "Erro ao buscar agendamento" },
         { status: error.response?.status || 500 },
       );
     }
+
     return NextResponse.json(
       { message: "Erro interno do servidor" },
       { status: 500 },
@@ -34,12 +36,12 @@ export async function GET(
 }
 
 export async function PATCH(
-  request: Request,
-  { params }: { params: { id: string } },
+  req: NextRequest,
+  context: { params: Promise<{ id: string }> },
 ) {
   try {
-    const { id } = params;
-    const body = await request.json();
+    const { id } = await context.params;
+    const body = await req.json();
 
     const api = await createBaseApi();
 
@@ -69,11 +71,11 @@ export async function PATCH(
 }
 
 export async function PUT(
-  req: Request,
-  { params }: { params: { id: string } },
+  req: NextRequest,
+  context: { params: Promise<{ id: string }> },
 ) {
   try {
-    const { id } = params;
+    const { id } = await context.params;
     const body = await req.json();
 
     const api = await createBaseApi();
@@ -98,11 +100,11 @@ export async function PUT(
 }
 
 export async function DELETE(
-  req: Request,
-  { params }: { params: { id: string } },
+  req: NextRequest,
+  context: { params: Promise<{ id: string }> },
 ) {
   try {
-    const { id } = params;
+    const { id } = await context.params;
     const api = await createBaseApi();
     await api.delete(`/appointments/${id}`);
 

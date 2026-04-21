@@ -19,8 +19,12 @@ export function useCreateServiceArea() {
       }
 
       return data;
-    } catch (err: any) {
-      setError(err.message || "Erro inesperado");
+    } catch (err: unknown) {
+      if (err instanceof Error) {
+        setError(err.message);
+      } else {
+        setError("Erro inesperado");
+      }
       throw err;
     } finally {
       setLoading(false);

@@ -8,31 +8,30 @@ interface Option {
   label: string;
   value: string;
   id?: string | number;
-  [key: string]: any;
 }
 
-interface GenericDatabaseSelectProps {
-  value: any[]; 
-  onChange: (value: any[]) => void;
-  endpoint: string; 
+interface GenericDatabaseSelectProps<T> {
+  value: T[];
+  onChange: (value: T[]) => void;
+  endpoint: string;
   placeholder?: string;
-  labelSingular: string; 
-  labelKey?: string; 
+  labelSingular: string;
+  labelKey: keyof T;
   menuPlacement?: "auto" | "bottom" | "top";
 }
 
-const capitalize = (s: string) => s.charAt(0).toUpperCase() + s.slice(1).toLowerCase();
+const capitalize = (s: string) =>
+  s.charAt(0).toUpperCase() + s.slice(1).toLowerCase();
 
-export const GenericDatabaseSelect = ({ 
-    value, 
-    onChange, 
-    endpoint, 
-    placeholder, 
-    labelSingular,
-    labelKey = "name",
-    menuPlacement = "auto"
-}: GenericDatabaseSelectProps) => {
-  
+export const GenericDatabaseSelect = <T extends { id?: string | number }>({
+  value,
+  onChange,
+  endpoint,
+  placeholder,
+  labelSingular,
+  labelKey,
+  menuPlacement = "auto",
+}: GenericDatabaseSelectProps<T>) => {
   const [options, setOptions] = useState<Option[]>([]);
   const [isLoading, setIsLoading] = useState(false);
 
@@ -40,88 +39,108 @@ export const GenericDatabaseSelect = ({
     const fetchData = async () => {
       try {
         const res = await fetch(endpoint);
+
         if (res.ok) {
-            const data = await res.json();
-            const safeData = Array.isArray(data) ? data :[];
-            setOptions(safeData.map((d: any) => ({ 
-                label: d[labelKey] || d.name || "Sem nome", 
-                value: d[labelKey] || d.name || "Sem nome", 
-                id: d.id
-            })));
+          const data = (await res.json()) as T[];
+          const safeData = Array.isArray(data) ? data : [];
+
+          setOptions(
+            safeData.map((d) => ({
+              label: String(d[labelKey] ?? "Sem nome"),
+              value: String(d[labelKey] ?? "Sem nome"),
+              id: d.id,
+            })),
+          );
         }
-      } catch (error) { console.error(error); }
+      } catch (error) {
+        console.error(error);
+      }
     };
+
     fetchData();
   }, [endpoint, labelKey]);
 
   const getCurrentValue = (): Option[] => {
-    if (!value || !Array.isArray(value)) return[];
-    return value.map((v) => {
-        const text = v[labelKey] || v.name || v.label || v.value;
+    if (!value || !Array.isArray(value)) return [];
+
+    return value
+      .map((v) => {
+        const text = String(v[labelKey] ?? "");
+
         return { label: text, value: text, id: v.id };
-    }).filter(v => v.label); 
+      })
+      .filter((v) => v.label);
   };
 
   const handleChange = (newValue: MultiValue<Option>) => {
-    const formatted = newValue.map(v => ({ 
-        [labelKey]: v.value, 
-        name: v.value,       
-        id: v.id
-    }));
+    const formatted = newValue.map(
+      (v) =>
+        ({
+          [labelKey]: v.value,
+          id: v.id,
+        }) as unknown as T,
+    );
     onChange(formatted);
   };
 
   const handleCreate = async (inputValue: string) => {
     const normalizedName = capitalize(inputValue.trim());
-    const existingOption = options.find(opt => opt.label.toLowerCase() === normalizedName.toLowerCase());
-    
+    const existingOption = options.find(
+      (opt) => opt.label.toLowerCase() === normalizedName.toLowerCase(),
+    );
+
+    const currentSelected = Array.isArray(value) ? value : [];
+
     if (existingOption) {
-        const currentSelected = Array.isArray(value) ? value :[];
-        if (!currentSelected.some(s => s.id === existingOption.id || s[labelKey] === existingOption.value)) {
-            onChange([...currentSelected, {
-                [labelKey]: existingOption.value,
-                name: existingOption.value,
-                id: existingOption.id
-            }]);
-        }
-        return;
+      const isAlreadySelected = currentSelected.some(
+        (s) =>
+          s.id === existingOption.id ||
+          String(s[labelKey] ?? "") === existingOption.value,
+      );
+
+      if (!isAlreadySelected) {
+        onChange([
+          ...currentSelected,
+          {
+            [labelKey]: existingOption.value,
+            id: existingOption.id,
+          } as unknown as T,
+        ]);
+      }
+
+      return;
     }
 
     setIsLoading(true);
     try {
-        const payload = { [labelKey]: normalizedName };
-        
-        const res = await fetch(endpoint, { 
-          method: "POST", 
-          headers: { "Content-Type": "application/json" }, // CORREÇÃO 1: Faltava o header
-          body: JSON.stringify(payload) 
-        });
-        
-        let newOption: Option = { label: normalizedName, value: normalizedName };
-        
-        if (res.ok || res.status === 201 || res.status === 409) {
-            const created = await res.json().catch(() => ({}));
-            if (created && created.id) newOption.id = created.id;
-        }
+      const res = await fetch(endpoint, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ [labelKey]: normalizedName }),
+      });
 
-        // CORREÇÃO 2: ID temporário caso a API não devolva o ID imediatamente
-        if (!newOption.id) newOption.id = `temp-${Date.now()}`;
+      const newOption: Option = {
+        label: normalizedName,
+        value: normalizedName,
+      };
 
-        // 1. Atualiza as opções do menu
-        setOptions((prev) => [...prev, newOption]);
-        
-        // CORREÇÃO 3: 2. Injeta direto no formulário com o onChange!
-        const currentSelected = Array.isArray(value) ? value : [];
-        onChange([...currentSelected, { 
-            [labelKey]: newOption.value, 
-            name: newOption.value,
-            id: newOption.id
-        }]);
+      if (res.ok || res.status === 201 || res.status === 409) {
+        const created = (await res.json().catch(() => ({}))) as T;
+        if (created && created.id) newOption.id = created.id;
+      }
 
-    } catch (error) { 
-        console.error(error); 
-    } finally { 
-        setIsLoading(false); 
+      if (!newOption.id) newOption.id = `temp-${Date.now()}`;
+
+      setOptions((prev) => [...prev, newOption]);
+
+      onChange([
+        ...currentSelected,
+        { [labelKey]: newOption.value, id: newOption.id } as unknown as T,
+      ]);
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -132,22 +151,33 @@ export const GenericDatabaseSelect = ({
       borderRadius: "0.375rem",
       fontSize: "0.875rem",
       minHeight: "2.5rem",
-      boxShadow: "none",
       backgroundColor: "white",
+      boxShadow: "none",
       "&:hover": { borderColor: "#cbd5e1" },
-      ...(state.isFocused && { borderColor: "black", borderWidth: "1px", outline: "1px solid black" })
+      ...(state.isFocused && {
+        borderColor: "black",
+        borderWidth: "1px",
+        outline: "1px solid black",
+      }),
     }),
-    multiValue: (base) => ({ ...base, backgroundColor: "#eff6ff", borderRadius: "0.25rem" }),
-    multiValueLabel: (base) => ({ ...base, color: "#0D4F97", fontWeight: 600, fontSize: "0.75rem" }),
-    multiValueRemove: (base) => ({ ...base, color: "#0D4F97", ":hover": { backgroundColor: "#dbeafe", color: "#1e3a8a" } }),
+    multiValue: (base) => ({
+      ...base,
+      backgroundColor: "#eff6ff",
+      borderRadius: "0.25rem",
+    }),
+    multiValueLabel: (base) => ({
+      ...base,
+      color: "#0D4F97",
+      fontWeight: 600,
+      fontSize: "0.75rem",
+    }),
+    multiValueRemove: (base) => ({
+      ...base,
+      color: "#0D4F97",
+      ":hover": { backgroundColor: "#dbeafe", color: "#1e3a8a" },
+    }),
     menu: (base) => ({ ...base, zIndex: 9999 }),
-    menuPortal: (base) => ({ ...base, zIndex: 9999 }), // CORREÇÃO 4: Garante que o menu fique na frente do modal Shadcn
-    menuList: (base) => ({
-        ...base,
-        paddingRight: "4px",
-        "::-webkit-scrollbar": { width: "6px", height: "6px" },
-        "::-webkit-scrollbar-thumb": { background: "#cbd5e1", borderRadius: "3px" }
-    })
+    menuPortal: (base) => ({ ...base, zIndex: 9999 }),
   };
 
   return (
@@ -161,15 +191,17 @@ export const GenericDatabaseSelect = ({
       value={getCurrentValue()}
       styles={customStyles}
       placeholder={placeholder}
-      formatCreateLabel={(inputValue) => `Criar ${labelSingular} "${capitalize(inputValue)}"`}
-      noOptionsMessage={() => `Nenhum(a) ${labelSingular.toLowerCase()} encontrado(a)`}
+      formatCreateLabel={(inputValue) =>
+        `Criar ${labelSingular} "${capitalize(inputValue)}"`
+      }
+      noOptionsMessage={() =>
+        `Nenhum(a) ${labelSingular.toLowerCase()} encontrado(a)`
+      }
       createOptionPosition="first"
-      blurInputOnSelect={false}
-      maxMenuHeight={250}
       menuPlacement={menuPlacement}
       captureMenuScroll={false} // Evita bugs de scroll no modal
       closeMenuOnSelect={false} // Bom para MultiSelect
-      tabSelectsValue={false}   // Melhora a acessibilidade no teclado 
+      tabSelectsValue={false}   // Melhora a acessibilidade no teclado
     />
   );
 };
