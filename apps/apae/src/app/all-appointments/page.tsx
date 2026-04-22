@@ -59,6 +59,7 @@ type Area = {
 export default function AllApointments() {
   const [selectedDate, setSelectedDate] = useState<Date | undefined>(undefined);
   const [selectedArea, setSelectedArea] = useState('');
+  const [selectedStatus, setSelectedStatus] = useState('');
   const [searchName, setSearchName] = useState('');
   const [areas, setAreas] = useState<Area[]>([]);
   const [appointments, setAppointments] = useState<Appointment[]>([]);
@@ -225,7 +226,20 @@ useEffect(() => {
               </SelectGroup>
             </SelectContent>
           </Select>
-          {(selectedArea || selectedDate || searchName) && (
+
+          <Select value={selectedStatus} onValueChange={setSelectedStatus}>
+            <SelectTrigger className="data-[placeholder]:text-[#0D4F97] border-[#0D4F97] hover:bg-accent">
+              <SelectValue placeholder="Status" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectGroup>
+                <SelectLabel>Status</SelectLabel>
+                <SelectItem value="ativo">Ativo</SelectItem>
+                <SelectItem value="inativo">Inativo</SelectItem>
+              </SelectGroup>
+            </SelectContent>
+          </Select>
+          {(selectedArea || selectedDate || searchName || selectedStatus) && (
             <Button
               variant="outline"
               onClick={clearFilter}
