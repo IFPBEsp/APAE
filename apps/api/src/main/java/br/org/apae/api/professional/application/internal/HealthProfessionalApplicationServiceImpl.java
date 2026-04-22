@@ -52,7 +52,8 @@ public class HealthProfessionalApplicationServiceImpl implements HealthProfessio
     @Transactional
     public HealthProfessionalResponseDTO createProfessional(CreateHealthProfessionalDTO dto,
             CreateProfessionalDocumentsDTO documentsDTO) {
-        if (repository.existsByProfessionalDocument(dto.professionalDocument())) {
+        if (dto.professionalDocument() != null && repository.existsByProfessionalDocument(dto.professionalDocument())) {
+            System.out.println("------- " + dto.professionalDocument());
             throw new ProfessionalDocumentConflictException();
         }
         if (repository.existsByEmail(dto.email())) {
@@ -81,8 +82,10 @@ public class HealthProfessionalApplicationServiceImpl implements HealthProfessio
             throw new ProfessionalDocumentConflictException();
         }
 
-        if (!entityToUpdate.getProfessionalDocument().equalsIgnoreCase(dto.professionalDocument())
-                && repository.existsByProfessionalDocument(dto.professionalDocument())) {
+        if (dto.professionalDocument() != null
+             && !entityToUpdate.getProfessionalDocument().equalsIgnoreCase(dto.professionalDocument())
+                && repository.existsByProfessionalDocument(dto.professionalDocument())
+                ) {
             throw new ProfessionalDocumentConflictException();
         }
 

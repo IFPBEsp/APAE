@@ -15,7 +15,6 @@ public record UpdateHealthProfessionalDTO(
     @NotBlank(message = "O número de telefone é obrigatório.")
     String phoneNumber,
 
-    @NotBlank(message = "O documento profissional é obrigatório.")
     @Size(min = 3, max = 50)
     String professionalDocument,
 

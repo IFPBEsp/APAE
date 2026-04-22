@@ -36,7 +36,7 @@ public class HealthProfessional {
     @Column(name = "contato", nullable = false)
     private String phoneNumber;
 
-    @Column(name = "documento_profissional", nullable = false, unique = true)
+    @Column(name = "documento_profissional", unique = true)
     private String professionalDocument;
 
     @Column(name = "rg", unique = true)
