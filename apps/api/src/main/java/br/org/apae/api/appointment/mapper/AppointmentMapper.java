@@ -96,7 +96,7 @@ public class AppointmentMapper {
         appointment.getEndDate(),
         appointment.getHour(),
         appointment.isActive(),
-        appointment.getCreationDate()
+        appointment.getCreationDate(), appointment.getReplacedBy() != null ? appointment.getReplacedBy().getInitialDate() : null, appointment.getUpdatedFrom() != null ? appointment.getUpdatedFrom().getInitialDate() : null
     );
   }
 

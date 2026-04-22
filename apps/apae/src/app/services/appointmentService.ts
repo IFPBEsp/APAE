@@ -25,6 +25,8 @@ export interface Appointment {
   endDate: string;
   isActive: boolean;
   creationDate: string;
+  replacedByDate?: string;
+  updatedFromDate?: string;
 }
 
 export interface CreateAppointmentDTO {
