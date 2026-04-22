@@ -84,15 +84,26 @@ export default function DashboardPage() {
   };
 
   const fetchAbsences = async () => {
-    try {
-      // Busca quem tem 3 ou mais faltas e guarda os IDs em um Set para acesso rápido na tabela
-      const absencesData = await AbsenceService.getPatientsWithAbsences(3);
-      const idsSet = new Set(absencesData.map((data: any) => data.patient.id));
-      setAlertPatientIds(idsSet);
-    } catch (error) {
-      console.error("Erro ao buscar faltas:", error);
-    }
-  };
+      try {
+        // Fazemos o fetch direto para a API, filtrando por 3 faltas
+        const response = await fetch('/api/patients/with-absences?minAbsences=3');
+        
+        if (!response.ok) {
+          throw new Error('Erro ao buscar pacientes com faltas');
+        }
+
+        const data = await response.json();
+        
+        // Mapeamos os IDs dos pacientes que vêm dentro da lista "content" (padrão de paginação)
+        // Se sua API retornar direto um array, use: data.map(...)
+        const absencesList = data.content || [];
+        const idsSet = new Set<string>(absencesList.map((item: any) => item.patient.id));
+        
+        setAlertPatientIds(idsSet);
+      } catch (error) {
+        console.error("Erro ao buscar faltas:", error);
+      }
+    };
 
   const fetchTodayAppointmentsByStatus = async () => {
     if (!todayAppointments.length || !allAppointments.length) return;
