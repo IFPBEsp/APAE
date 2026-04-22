@@ -1,7 +1,5 @@
 package br.org.apae.api.patient.application.exceptions;
 
-import org.springframework.core.Ordered;
-import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -25,7 +23,6 @@ import br.org.apae.api.patient.domain.exceptions.VaccineNotFoundException;
 import jakarta.servlet.http.HttpServletRequest;
 
 @ControllerAdvice
-@Order(Ordered.HIGHEST_PRECEDENCE)
 public class PatientExceptionHandler {
   @ExceptionHandler(InvalidDataException.class)
   public ResponseEntity<ErrorResponse> handleInvalidData(InvalidDataException ex, HttpServletRequest request) {

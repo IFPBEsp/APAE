@@ -25,6 +25,8 @@ export interface Appointment {
   endDate: string;
   isActive: boolean;
   creationDate: string;
+  replacedByDate?: string;
+  updatedFromDate?: string;
 }
 
 export interface CreateAppointmentDTO {
@@ -291,10 +293,10 @@ export async function updateAppointment(
   });
 
   if (!response.ok) {
-    const errorText = await response.text();
-    throw new Error(
-      `Erro ao atualizar regra do agendamento: ${response.status} - ${errorText}`,
-    );
+    const error = await response.json();
+
+    const message = error?.message || "Erro ao atualizar regra do agendamento";
+    throw new Error(`Erro: ${message}`);
   }
 
   return await response.json();
