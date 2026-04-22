@@ -13,7 +13,19 @@ const numeroRegex = /^[0-9]{1,6}$/;
 
 const fileSchema = z
   .instanceof(File, { message: "Selecione um arquivo" })
-  .refine((file) => file.size > 0, "Arquivo não pode estar vazio");
+  .refine((file) => file.size > 0, "Arquivo não pode estar vazio")
+  .refine(
+    (file) =>
+      [
+        "application/pdf",
+        "image/png",
+        "image/jpeg",
+        "image/jpg",
+        "image/webp",
+      ].includes(file.type),
+    "Apenas imagens ou PDF são permitidos"
+  )
+  .refine((file) => file.size <= 5 * 1024 * 1024, "Arquivo deve ser menor que 5MB");
 
 const baseSchema = z.object({
   nomeCompleto: z
