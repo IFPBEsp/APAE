@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import CreatableSelect from "react-select/creatable";
 import { MultiValue, StylesConfig } from "react-select";
 

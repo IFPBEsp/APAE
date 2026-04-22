@@ -59,6 +59,7 @@ public interface AbsenceRepository extends JpaRepository<Absence, UUID> {
         FROM (
             SELECT a.generatedAppointment.patientId AS patientId
             FROM Absence a
+            WHERE a.isJustified = false  
             GROUP BY a.generatedAppointment.patientId
             HAVING COUNT(a) >= :minAbsences
         ) sub

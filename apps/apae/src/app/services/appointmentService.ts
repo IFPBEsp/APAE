@@ -25,6 +25,8 @@ export interface Appointment {
   endDate: string;
   isActive: boolean;
   creationDate: string;
+  replacedByDate?: string;
+  updatedFromDate?: string;
 }
 
 export interface CreateAppointmentDTO {
@@ -175,8 +177,8 @@ export interface Disorder {
   name: string;
 }
 
-function ensurePageFormat<T>(data: any): Page<T> {
-  if (data && Array.isArray(data.content)) {
+function ensurePageFormat<T>(data: unknown): Page<T> {
+  if (data && Array.isArray((data as Page<T>).content)) {
     return data as Page<T>;
   }
   if (Array.isArray(data)) {
@@ -193,7 +195,7 @@ function ensurePageFormat<T>(data: any): Page<T> {
     } as Page<T>;
   }
   return {
-    content: data ? [data] : [],
+    content: data ? [data as T] : [],
     totalElements: data ? 1 : 0,
     totalPages: 1,
     size: 1,
@@ -291,10 +293,10 @@ export async function updateAppointment(
   });
 
   if (!response.ok) {
-    const errorText = await response.text();
-    throw new Error(
-      `Erro ao atualizar regra do agendamento: ${response.status} - ${errorText}`,
-    );
+    const error = await response.json();
+
+    const message = error?.message || "Erro ao atualizar regra do agendamento";
+    throw new Error(`Erro: ${message}`);
   }
 
   return await response.json();

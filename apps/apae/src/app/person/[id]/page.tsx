@@ -9,9 +9,10 @@ import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
 import { useEffect, useState, useCallback } from "react";
 import { toast } from "react-toastify";
-import { Loader2, ArrowLeft, SquarePen, Plus } from "lucide-react"; 
+import { Loader2, ArrowLeft, SquarePen, Plus } from "lucide-react";
 import AnnualRegistryEditModal from "@/components/AnnualRegistryEditModal";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import { PatientResponse } from "@/types/patient";
 
 interface InfoRowProps {
   label: string;
@@ -52,8 +53,18 @@ export default function PersonDetailsPage() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [modalMode, setModalMode] = useState<"create" | "edit">("edit");
 
-  const [pessoa, setPessoa] = useState<any>(null);
-  const [registroAnual, setRegistroAnual] = useState<any>(null);
+  interface RegistroAnual {
+    id?: string;
+    bpc: boolean;
+    familyIncome: number;
+    diseases: string;
+    continuousMedication: string;
+    disorders?: { id?: string; name: string }[];
+    serviceAreas?: { id?: string; area: string }[];
+  }
+
+  const [pessoa, setPessoa] = useState<PatientResponse | null>(null);
+  const [registroAnual, setRegistroAnual] = useState<RegistroAnual | null>(null);
   
   const [existingYears, setExistingYears] = useState<string[]>([]);
   const [selectedYear, setSelectedYear] = useState<string>(new Date().getFullYear().toString());
@@ -66,14 +77,15 @@ export default function PersonDetailsPage() {
       if (!silent) setLoadingPessoa(true); 
       const response = await fetch(`/api/pessoas/${id}`);
       if (!response.ok) throw new Error("Falha ao buscar dados do paciente.");
-      const data = await response.json();
+      const data: PatientResponse = await response.json();
       setPessoa(data);
-    } catch (err: any) {
+    } catch (err: unknown) {
+      const errorMessage = err instanceof Error ? err.message : "Erro ao buscar dados do paciente.";
       console.error(err);
-      toast.error(err.message);
+      toast.error(errorMessage);
       router.push("/visualization-patients");
     } finally {
-      if (!silent) setLoadingPessoa(false); 
+      if (!silent) setLoadingPessoa(false);
     }
   }, [id, router]);
 
@@ -249,10 +261,16 @@ export default function PersonDetailsPage() {
                 <InfoRow label="Nome" value={pessoa.guardian.name} />
                 <InfoRow label="Parentesco" value={pessoa.guardian.kinship} />
                 <InfoRow label="Contato" value={pessoa.guardian.contact} />
-                <InfoRow label="Endereço" value={`${pessoa.guardian.address?.street ?? ""}, ${pessoa.guardian.address?.number ?? ""}`} />
+                <InfoRow label="Rua" value={pessoa.guardian.address?.street} />
+                <InfoRow label="Número" value={pessoa.guardian.address?.number} />
+                <InfoRow label="Bairro" value={pessoa.guardian.address?.neighborhood} />
+                <InfoRow label="Cidade" value={pessoa.guardian.address?.city} />
+                <InfoRow label="Estado" value={pessoa.guardian.address?.state} />
+                <InfoRow label="CEP" value={pessoa.guardian.address?.cep} />
+                <InfoRow label="Complemento" value={pessoa.guardian.address?.complement} />
               </div>
             )}
-            {pessoa.parents?.map((parent: any) => (
+            {pessoa.parents?.map((parent) => (
               <div key={parent.id} className="mb-2 p-2 border-t border-gray-200">
                 <p className="font-bold text-base">Parentes</p>
                 <InfoRow label="Nome" value={parent.name} />
@@ -267,9 +285,9 @@ export default function PersonDetailsPage() {
 
         {/* --- CARD DE SAÚDE DINÂMICO --- */}
         <Card className="w-full relative font-nunito">
-          <CardHeader className="flex flex-row items-center justify-between">
+          <CardHeader className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
             <CardTitle className="text-[#0D4F97]">Informações de Saúde</CardTitle>
-            <div className="flex items-center gap-2">
+            <div className="flex flex-wrap items-center gap-2">
               <TooltipProvider>
                 <Tooltip>
                     <TooltipTrigger asChild>
@@ -283,10 +301,10 @@ export default function PersonDetailsPage() {
               <TooltipProvider>
                 <Tooltip>
                     <TooltipTrigger asChild>
-                         <span tabIndex={0}> 
-                            <Button 
-                                size="sm" 
-                                onClick={handleEditClick} 
+                         <span tabIndex={0}>
+                            <Button
+                                size="sm"
+                                onClick={handleEditClick}
                                 disabled={!hasRegistro || loadingRegistro}
                                 className="gap-1 hover:!bg-gray-100 text-[#0D4F97] border-0 disabled:opacity-50 disabled:cursor-not-allowed h-8"
                                 variant="outline"
@@ -318,7 +336,7 @@ export default function PersonDetailsPage() {
           
           <CardContent>
             <InfoRow label="Alergias" value={pessoa.allergies} />
-            <InfoRow label="Vacinas" value={pessoa.vaccineNames?.map((v: any) => v.name).join(", ")} />
+            <InfoRow label="Vacinas" value={pessoa.vaccineNames?.map((v) => v.name).join(", ")} />
             
             <h3 className="font-bold text-base mt-4 pt-4 border-t text-[#0D4F97]">Registro Anual ({selectedYear})</h3>
 
@@ -328,10 +346,10 @@ export default function PersonDetailsPage() {
               <div className="mt-2 animate-in fade-in slide-in-from-bottom-2">
                 <InfoRow label="Recebe BPC?" value={registroAnual.bpc} />
                 <InfoRow label="Renda Familiar" value={registroAnual.familyIncome} />
-                <InfoRow label="Tipo de Atendimento" value={registroAnual.serviceAreas?.map((atendimento: any) => atendimento.area).join(", ")} />
+                <InfoRow label="Tipo de Atendimento" value={registroAnual.serviceAreas?.map((atendimento) => atendimento.area).join(", ")} />
                 <InfoRow label="Doenças" value={registroAnual.diseases} />
                 <InfoRow label="Medicamentos Contínuos" value={registroAnual.continuousMedication} />
-                <InfoRow label="Transtornos" value={registroAnual.disorders?.map((d: any) => d.name).join(", ")} />
+                <InfoRow label="Transtornos" value={registroAnual.disorders?.map((d) => d.name).join(", ")} />
               </div>
             ) : (
               <div className="text-center py-6 bg-slate-50 rounded-lg mt-2 border border-dashed border-slate-200">

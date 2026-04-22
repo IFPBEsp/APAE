@@ -2,6 +2,8 @@ package br.org.apae.api.appointment.application.interfaces;
 
 import br.org.apae.api.common.dto.appointment.request.absence.CreateAbsenceDTO;
 import br.org.apae.api.common.dto.appointment.response.absence.AbsenceResponseDTO;
+import br.org.apae.api.common.dto.appointment.response.absence.JustifyAbsenceDTO;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
@@ -29,4 +31,6 @@ public interface AbsenceApplicationService {
             UUID professionalId,
             Pageable pageable
     );
+    
+    AbsenceResponseDTO justify(UUID absenceId, JustifyAbsenceDTO dto);
 }

@@ -110,6 +110,7 @@ export default function DashboardPage() {
 
     fetchTodayAppointments();
     fetchAllAppointments();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedDate]);
 
   useEffect(() => {
@@ -184,13 +185,6 @@ export default function DashboardPage() {
             icon={Users}
             value={todayAppointments.length}
             subtitle={`${todayAppointments.filter(a => a.performed).length} realizados`}
-            titleClassName="text-[#0D4F97]"
-            valueClassName="text-[#0D4F97]"
-          />
-          <InfoCard
-            title="Todos os agendamentos"
-            icon={Users}
-            value={allAppointments.length}
             titleClassName="text-[#0D4F97]"
             valueClassName="text-[#0D4F97]"
           />

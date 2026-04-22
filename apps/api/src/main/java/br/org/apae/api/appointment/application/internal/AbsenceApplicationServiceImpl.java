@@ -7,6 +7,8 @@ import br.org.apae.api.appointment.domain.repository.*;
 import br.org.apae.api.appointment.mapper.AbsenceMapper;
 import br.org.apae.api.common.dto.appointment.request.absence.CreateAbsenceDTO;
 import br.org.apae.api.common.dto.appointment.response.absence.AbsenceResponseDTO;
+import br.org.apae.api.common.dto.appointment.response.absence.JustifyAbsenceDTO;
+import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import org.springframework.context.annotation.Primary;
 import org.springframework.data.domain.Page;
@@ -64,6 +66,18 @@ public class AbsenceApplicationServiceImpl implements AbsenceApplicationService 
 
         return absenceRepo.findByFilters(generatedId, patientId, professionalId, pageable)
                 .map(absenceMapper::toAbsenceResponse);
+    }
+
+    @Override
+    public AbsenceResponseDTO justify(UUID absenceId, JustifyAbsenceDTO dto) {
+        Absence absence = absenceRepo.findById(absenceId).orElseThrow(() -> new EntityNotFoundException("Falta não encontrada"));
+
+        absence.setIsJustified(true);
+        absence.setJustification(dto.justification());
+        absence.setJustificationDocumentId(dto.justificationDocumentId());
+    
+        absence = absenceRepo.save(absence);
+        return absenceMapper.toAbsenceResponse(absence);
     }
 
 }

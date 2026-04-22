@@ -1,7 +1,10 @@
 .sidebar {
-    background-color: #B2D7EC;
+    background-color: rgba(178, 215, 236, 0.75) !important; 
     color: #0D4F97;
     border-radius: 24px !important;
+    
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
 }
 
 .header {

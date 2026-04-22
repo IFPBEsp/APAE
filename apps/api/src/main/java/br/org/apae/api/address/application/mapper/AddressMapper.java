@@ -42,7 +42,8 @@ public class AddressMapper {
                 dto.neighborhood(),
                 dto.street(),
                 dto.number(),
-                (dto.complement() != null && !dto.complement().isBlank()) ? dto.complement() : null);
+                dto.complement()
+            );
     }
 
     public AddressResponseDTO toResponseDTO(Address address) {

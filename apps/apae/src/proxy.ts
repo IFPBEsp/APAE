@@ -1,8 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 
-const PUBLIC_PATHS = ["/auth/login", "/auth/recovery", "/auth/new-password"];
+const PUBLIC_PATHS = ["/auth/login", "/auth/recovery", "/auth/reset-password"];
 
-export function middleware(req: NextRequest) {
+export function proxy(req: NextRequest) {
   const session = req.cookies.get("session")?.value;
   const isPublic = PUBLIC_PATHS.includes(req.nextUrl.pathname);
 

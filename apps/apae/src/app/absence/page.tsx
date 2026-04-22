@@ -6,7 +6,8 @@ import { Input } from "@/components/ui/input";
 import { PatientWithAbsences } from "@/types/absence";
 import { DashboardOverview } from "@/types/dashboard/dashboard-overview";
 import { Calendar, SearchIcon, Users } from "lucide-react";
-import React, { useEffect, useState, useCallback } from "react";
+import React, { useEffect, useState, useCallback, useRef } from "react";
+import AbsenceService from "../services/absenceService";
 
 interface PaginationInfo {
   currentPage: number;
@@ -30,9 +31,56 @@ export default function AbsenceDetails() {
   });
   const [statistics, setStatistics] = useState<DashboardOverview>({
     totalPatients: 0,
-    totalAppointments: 0,
     totalPatientsWithAbsences: 0,
   });
+
+  const [justifyingAbsence, setJustifyingAbsence] = useState<{ id: string, patientId: string } | null>(null);
+  const [justificationText, setJustificationText] = useState("");
+  const [isSubmittingJustification, setIsSubmittingJustification] = useState(false);
+  const [file, setFile] = useState<File | null>(null);
+  const fileInputRef = useRef<HTMLInputElement | null>(null);
+
+  const handleJustifyAbsence = async () => {
+    if (!justifyingAbsence || !justificationText.trim()) return;
+
+    try {
+      setIsSubmittingJustification(true);
+      let documentId: string | null = null;
+
+      if (file) {
+        const docFormData = new FormData();
+        docFormData.append("file", file);
+        docFormData.append("category", "ABSENCE");
+        docFormData.append("type", "ATTACHMENTANY");
+        docFormData.append("year", String(new Date().getFullYear()));
+
+        const docResponse = await fetch(`/api/pessoas/${justifyingAbsence.patientId}/documentos`, {
+          method: "POST",
+          body: docFormData,
+        });
+
+        if (!docResponse.ok) {
+          const errorData = await docResponse.json();
+          throw new Error(errorData.message || "Erro ao fazer upload do documento.");
+        }
+
+        const document = await docResponse.json();
+        documentId = document.name;
+      }
+
+      await AbsenceService.justifyAbsence(justifyingAbsence.id, justificationText, documentId);
+
+      window.location.reload();
+    } catch (error: any) {
+      console.error("Erro ao justificar falta:", error);
+      alert(error.message || "Erro ao justificar falta.");
+    } finally {
+      setIsSubmittingJustification(false);
+      setJustifyingAbsence(null);
+      setJustificationText("");
+      setFile(null);
+    }
+  };
 
   const fetchData = useCallback(
     async (page: number, name: string) => {
@@ -60,7 +108,6 @@ export default function AbsenceDetails() {
         setPatientsWithAbsences(patientsData.content);
         setStatistics({
           totalPatients: statsData.totalPatients,
-          totalAppointments: statsData.totalAppointments,
           totalPatientsWithAbsences: statsData.totalPatientsWithAbsences,
         });
         setPagination((prev) => ({
@@ -118,13 +165,6 @@ export default function AbsenceDetails() {
             title="Total de Pacientes"
             icon={Users}
             value={statistics.totalPatients}
-            titleClassName="text-[#0D4F97]"
-            valueClassName="text-[#0D4F97]"
-          />
-          <InfoCard
-            title="Agendamentos Ativos"
-            icon={Calendar}
-            value={statistics.totalAppointments}
             titleClassName="text-[#0D4F97]"
             valueClassName="text-[#0D4F97]"
           />
@@ -224,6 +264,7 @@ export default function AbsenceDetails() {
                             </Button>
                           </td>
                         </tr>
+
                         {expandedPatient === p.patient.id && (
                           <tr className="bg-gray-50">
                             <td colSpan={3} className="py-4 px-4">
@@ -243,14 +284,32 @@ export default function AbsenceDetails() {
                                       </span>
                                     </div>
                                     <div className="flex items-center gap-2 flex-wrap">
-                                      {abs.justification && (
-                                        <div className="text-sm text-gray-600 max-w-md">
-                                          <span className="font-medium">
-                                            Justificativa:{" "}
-                                          </span>
+
+                                      {abs.isJustified ? (
+                                        <div className="text-sm text-gray-600 max-w-md break-words whitespace-pre-wrap">
+                                          <span className="font-medium text-green-600">Falta Justificada: </span>
                                           {abs.justification}
                                         </div>
+                                      ) : (
+                                        <div className="flex items-center gap-3">
+                                          {abs.justification && (
+                                            <div className="text-sm text-gray-500 max-w-xs truncate" title={abs.justification}>
+                                              <span className="font-medium text-gray-700">Motivo original: </span>
+                                              {abs.justification}
+                                            </div>
+                                          )}
+
+                                          <Button
+                                            size="sm"
+                                            variant="outline"
+                                            className="text-orange-600 border-orange-600 hover:bg-orange-600 hover:text-white"
+                                            onClick={() => setJustifyingAbsence({ id: abs.id, patientId: p.patient.id! })}
+                                          >
+                                            Justificar Falta
+                                          </Button>
+                                        </div>
                                       )}
+
                                       {abs.justificationDocumentId && (
                                         <Button
                                           size="sm"
@@ -265,6 +324,7 @@ export default function AbsenceDetails() {
                                           Baixar documento
                                         </Button>
                                       )}
+
                                     </div>
                                   </div>
                                 ))}
@@ -314,6 +374,93 @@ export default function AbsenceDetails() {
             </>
           )}
         </div>
+
+        {justifyingAbsence && (
+          <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+            <div className="bg-white rounded-xl p-6 max-w-md w-full shadow-2xl border border-gray-100">
+
+              <div className="mb-6">
+                <h3 className="text-xl font-bold text-[#0D4F97] mb-2">Justificar Falta</h3>
+                <p className="text-sm text-gray-500">
+                  Esta falta deixará de contar para a lista vermelha do paciente.
+                </p>
+              </div>
+
+              <div className="space-y-4">
+                <div className="space-y-2">
+                  <label className="text-sm font-medium text-gray-700">
+                    Descrição da justificativa <span className="text-red-500">*</span>
+                  </label>
+                  <textarea
+                    className="w-full border border-gray-300 rounded-md p-3 min-h-[100px] outline-none focus:ring-2 focus:ring-[#0D4F97] focus:border-transparent text-sm"
+                    placeholder="Descreva o motivo da justificativa..."
+                    value={justificationText}
+                    onChange={(e) => setJustificationText(e.target.value)}
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <label className="text-sm font-medium text-gray-700">Anexar documento (Opcional)</label>
+                  <Input
+                    ref={fileInputRef}
+                    type="file"
+                    className="cursor-pointer"
+                    onChange={(e) => {
+                      if (e.target.files?.[0]) {
+                        setFile(e.target.files[0]);
+                      }
+                    }}
+                  />
+
+                  {file && (
+                    <div className="flex items-center justify-between text-sm bg-gray-50 p-2 rounded border mt-2">
+                      <span className="text-muted-foreground truncate max-w-[200px]">
+                        {file.name}
+                      </span>
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="sm"
+                        className="text-red-500 hover:text-red-700 hover:bg-red-50 h-8"
+                        onClick={() => {
+                          setFile(null);
+                          if (fileInputRef.current) {
+                            fileInputRef.current.value = "";
+                          }
+                        }}
+                      >
+                        Remover
+                      </Button>
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              <div className="flex justify-end gap-3 mt-8 pt-4 border-t border-gray-100">
+                <Button
+                  variant="outline"
+                  className="w-full sm:w-auto"
+                  onClick={() => {
+                    setJustifyingAbsence(null);
+                    setJustificationText("");
+                    setFile(null);
+                  }}
+                  disabled={isSubmittingJustification}
+                >
+                  Cancelar
+                </Button>
+                <Button
+                  className="w-full sm:w-auto bg-[#0D4F97] hover:bg-blue-900 text-white"
+                  onClick={handleJustifyAbsence}
+                  disabled={isSubmittingJustification || !justificationText.trim()}
+                >
+                  {isSubmittingJustification ? "Salvando..." : "Registrar Justificativa"}
+                </Button>
+              </div>
+
+            </div>
+          </div>
+        )}
       </main>
     </div>
   );

@@ -1,51 +1,51 @@
 import { createBaseApi } from "@/lib/axios";
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { AxiosError } from "axios";
 
 export async function GET(
-  req: Request,
-  { params }: { params: { id: string } }
+  req: NextRequest,
+  context: { params: Promise<{ id: string }> },
 ) {
   try {
     const api = await createBaseApi();
-
-    const response = await api.get(`/professionals/${params.id}/documents`);
+    const { id } = await context.params;
+    const response = await api.get(`/professionals/${id}/documents`);
 
     return NextResponse.json(response.data);
   } catch (error) {
     if (error instanceof AxiosError) {
       return NextResponse.json(
         {
-          message:
-            error.response?.data?.message || "Erro ao buscar documentos",
+          message: error.response?.data?.message || "Erro ao buscar documentos",
         },
-        { status: error.response?.status || 500 }
+        { status: error.response?.status || 500 },
       );
     }
 
     return NextResponse.json(
       { message: "Erro interno do servidor" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
 
 export async function PATCH(
-  req: Request,
-  { params }: { params: { id: string } }
+  req: NextRequest,
+  context: { params: Promise<{ id: string }> },
 ) {
   try {
     const api = await createBaseApi();
     const formData = await req.formData();
+    const { id } = await context.params;
 
     const response = await api.patch(
-      `/professionals/${params.id}/documents`,
+      `/professionals/${id}/documents`,
       formData,
       {
         headers: {
           "Content-Type": "multipart/form-data",
         },
-      }
+      },
     );
 
     return NextResponse.json(response.data, { status: 200 });
@@ -53,16 +53,15 @@ export async function PATCH(
     if (error instanceof AxiosError) {
       return NextResponse.json(
         {
-          message:
-            error.response?.data?.message || "Erro ao enviar documentos",
+          message: error.response?.data?.message || "Erro ao enviar documentos",
         },
-        { status: error.response?.status || 500 }
+        { status: error.response?.status || 500 },
       );
     }
 
     return NextResponse.json(
       { message: "Erro interno do servidor" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

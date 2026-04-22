@@ -32,8 +32,46 @@ interface AnnualRegistryEditModalProps {
     onClose: (str?: string) => void;
     patientId: string;
     currentYear: string;
-    initialData: any;
+    initialData: RegistroAnual | null;
     mode?: "create" | "edit";
+}
+
+interface DisorderItem {
+  id?: string | number;
+  name?: string;
+  label?: string;
+  value?: string;
+}
+
+interface ServiceAreaItem {
+  id?: string | number;
+  area?: string;
+  name?: string;
+  label?: string;
+  value?: string;
+}
+
+interface RegistroAnual {
+  id?: string;
+  bpc: boolean | string;
+  familyIncome: number | string;
+  diseases: string;
+  continuousMedication: string;
+  disorders?: DisorderItem[];
+  serviceAreas?: ServiceAreaItem[];
+  serviceArea?: ServiceAreaItem[];
+  serviceTypes?: ServiceAreaItem[];
+}
+
+interface FullPatientData {
+  vaccineNames?: { name: string }[] | string[];
+  allergies?: string;
+  address?: Record<string, string | null | undefined>;
+  guardian?: Record<string, string | Record<string, string> | null | undefined>;
+  parents?: Array<Record<string, string | boolean>>;
+  nationality?: string;
+  birthplace?: string;
+  [key: string]: unknown;
 }
 
 
@@ -66,7 +104,7 @@ export default function AnnualRegistryEditModal({
     const [isUploading, setIsUploading] = useState(false);
     const [docType, setDocType] = useState("MEDICAL_REPORT");
 
-    const [fullPatientData, setFullPatientData] = useState<any>(null);
+    const [fullPatientData, setFullPatientData] = useState<FullPatientData | null>(null);
     const fileInputRef = useRef<HTMLInputElement>(null);
 
 
@@ -112,12 +150,12 @@ export default function AnnualRegistryEditModal({
 
 
                 const vaccineList = Array.isArray(fullPatientData?.vaccineNames)
-                    ? fullPatientData.vaccineNames.map((v: any) => (typeof v === 'string' ? { name: v } : v))
+                    ? fullPatientData.vaccineNames.map((v: { name?: string } | string) => (typeof v === 'string' ? { name: v } : v))
                     : [];
 
 
                 const sourceServiceAreas = initialData.serviceArea || initialData.serviceAreas || initialData.serviceTypes || [];
-                const serviceTypeList = Array.isArray(sourceServiceAreas) ? sourceServiceAreas.map((s: any) => ({
+                const serviceTypeList = Array.isArray(sourceServiceAreas) ? sourceServiceAreas.map((s: { id?: string | number; area?: string; name?: string }) => ({
                     id: s.id,
                     area: s.area || s.name,
                     name: s.name || s.area
@@ -125,7 +163,6 @@ export default function AnnualRegistryEditModal({
 
 
                 const disorderList = Array.isArray(initialData.disorders) ? initialData.disorders : [];
-
 
                 form.reset({
                     year: currentYear,
@@ -142,7 +179,7 @@ export default function AnnualRegistryEditModal({
 
             } else if (mode === "create") {
                 const vaccineList = Array.isArray(fullPatientData?.vaccineNames)
-                    ? fullPatientData.vaccineNames.map((v: any) => (typeof v === 'string' ? { name: v } : v))
+                    ? fullPatientData.vaccineNames.map((v: string | { name: string }) => (typeof v === 'string' ? { name: v } : v))
                     : [];
 
 
@@ -200,7 +237,7 @@ export default function AnnualRegistryEditModal({
             toast.success("Documento anexado!");
             fetchDocuments();
             if (fileInputRef.current) fileInputRef.current.value = "";
-        } catch (error) { toast.error("Erro ao enviar documento."); }
+        } catch { toast.error("Erro ao enviar documento."); }
         finally { setIsUploading(false); }
     };
 
@@ -209,16 +246,28 @@ export default function AnnualRegistryEditModal({
     const formatCurrencyForDisplay = (value: number | string) => (!value ? "" : Number(value).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }));
 
     const handleMoneyChange = (e: React.ChangeEvent<HTMLInputElement>, onChange: (value: string) => void) => {
-        let value = e.target.value.replace(/\D/g, "");
+        const value = e.target.value.replace(/\D/g, "");
         if (value === "") { onChange(""); return; }
         onChange((parseFloat(value) / 100).toLocaleString("pt-BR", { style: "currency", currency: "BRL" }));
     };
 
 
-    const cleanPatientData = (data: any) => {
-        if (!data) return {};
-        const { documents, annualRegistry, createdAt, updatedAt, deleted, isDeleted, age, ...rest } = data;
-        return rest;
+    interface PatientDataToClean {
+      documents?: unknown;
+      annualRegistry?: unknown;
+      createdAt?: unknown;
+      updatedAt?: unknown;
+      deleted?: unknown;
+      isDeleted?: unknown;
+      age?: unknown;
+      [key: string]: unknown;
+    }
+
+    const cleanPatientData = (data: PatientDataToClean | null | undefined) => {
+    if (!data) return {};
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const { documents, annualRegistry, createdAt, updatedAt, deleted, isDeleted, age, ...rest } = data;
+    return rest;
     };
 
 
@@ -234,19 +283,30 @@ export default function AnnualRegistryEditModal({
             const bpcToSend = data.bpc === "true";
 
 
-            const formattedDisorders = (data.disorders || []).map((d: any) => ({
+            const formattedDisorders = (data.disorders || []).map((d: DisorderItem) => ({
                 name: d.name || d.label || d.value,
                 id: d.id
             }));
 
 
-            const formattedServiceAreas = (data.serviceTypes || []).map((s: any) => ({
+            const formattedServiceAreas = (data.serviceTypes || []).map((s: ServiceAreaItem) => ({
                 id: s.id,
                 area: s.area || s.name || s.label || s.value
             }));
 
 
-            const regPayload: any = {
+            interface RegistryPayload {
+              bpc: boolean;
+              familyIncome: number;
+              diseases: string;
+              continuousMedication: string;
+              disorders: Array<{ name: string | undefined; id: string | number | undefined }>;
+              serviceArea: Array<{ id: string | number | undefined; area: string | undefined }>;
+              serviceAreas: Array<{ id: string | number | undefined; area: string | undefined }>;
+              year?: number;
+            }
+
+            const regPayload: RegistryPayload = {
                 bpc: bpcToSend,
                 familyIncome: income,
                 diseases: finalDiseases,
@@ -291,7 +351,7 @@ export default function AnnualRegistryEditModal({
 
 
             if (fullPatientData) {
-                const vaccineList = (data.vaccines || []).map((v: any) => ({ name: v.name || v.label || v.value, id: v.id }));
+                const vaccineList = (data.vaccines || []).map((v: { name?: string; label?: string; value?: string; id?: string | number }) => ({ name: v.name || v.label || v.value, id: v.id }));
                 const baseData = cleanPatientData(fullPatientData);
                 const safeNationality = baseData.nationality || baseData.birthplace || "Brasileira";
 
@@ -303,8 +363,8 @@ export default function AnnualRegistryEditModal({
                     vaccineNames: vaccineList,
                     address: fullPatientData.address ? { ...fullPatientData.address } : null,
                     guardian: fullPatientData.guardian ? { ...fullPatientData.guardian } : null,
-                    parents: fullPatientData.parents?.map((p: any) => ({
-                        id: p.id, name: p.name, rg: p.rg, cpf: p.cpf, profession: p.profession, isAlive: p.isAlive, kinship: p.kinship
+                    parents: fullPatientData.parents?.map((p: Record<string, string | boolean>) => ({
+                        id: p.id as string, name: p.name as string, rg: p.rg as string, cpf: p.cpf as string, profession: p.profession as string, isAlive: p.isAlive as boolean, kinship: p.kinship as string
                     })) ?? []
                 };
 
@@ -321,9 +381,10 @@ export default function AnnualRegistryEditModal({
             toast.success(mode === "create" ? "Registro criado com sucesso!" : "Alterações salvas!");
 
 
-        } catch (error: any) {
+        } catch (error: unknown) {
             console.error(error);
-            toast.error(error.message || "Erro ao salvar.");
+            const errorMessage = error instanceof Error ? error.message : "Erro ao salvar.";
+            toast.error(errorMessage);
         }
     };
 
@@ -405,6 +466,7 @@ export default function AnnualRegistryEditModal({
                                                         onChange={field.onChange}
                                                         endpoint="/api/vacinas"
                                                         labelSingular="Vacina"
+                                                        labelKey="name"
                                                         placeholder="Selecione ou crie vacinas..."
                                                     />
                                                 </FormControl><FormMessage /></FormItem>)}
@@ -420,6 +482,7 @@ export default function AnnualRegistryEditModal({
                                                         onChange={field.onChange}
                                                         endpoint="/api/transtornos"
                                                         labelSingular="Transtorno"
+                                                        labelKey="name"
                                                         placeholder="Selecione ou crie transtornos..."
                                                     />
                                                 </FormControl><FormMessage /></FormItem>)}

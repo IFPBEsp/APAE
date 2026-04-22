@@ -7,6 +7,7 @@ import * as z from "zod";
 import { InputMask } from "@react-input/mask";
 import { useRouter } from "next/navigation";
 import { Trash2 } from "lucide-react";
+import { UpdateProfissionalDto } from "@/hooks/profissional/use-update-profissional";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -82,6 +83,24 @@ export default function AtualizarProfissional(): JSX.Element {
   const [removeModalOpen, setRemoveModalOpen] = useState(false);
   const [docToRemove, setDocToRemove] = useState<DocumentWithUrl | null>(null);
 
+  const allowedTypes = [
+    "application/pdf",
+    "image/png",
+    "image/jpeg",
+    "image/jpg",
+    "image/webp",
+  ];
+
+  function isValidFile(file: File) {
+    const maxSize = 5 * 1024 * 1024;
+
+    return (
+      allowedTypes.includes(file.type) &&
+      file.size > 0 &&
+      file.size <= maxSize
+    );
+  }
+
   const hasAnyUpload = useMemo(() => {
     return !!curriculumFile || !!volunteerFile || attachmentFiles.length > 0;
   }, [curriculumFile, volunteerFile, attachmentFiles]);
@@ -145,8 +164,9 @@ export default function AtualizarProfissional(): JSX.Element {
     try {
       const data = await getProfessionalDocuments(professionalId);
       setDocs(data);
-    } catch (e: any) {
-      setDocsError(e?.message ?? "Erro ao carregar documentos");
+    } catch (e) {
+      const error = e as Error;
+      setDocsError(error?.message ?? "Erro ao carregar documentos");
     } finally {
       setDocsLoading(false);
     }
@@ -155,7 +175,6 @@ export default function AtualizarProfissional(): JSX.Element {
   useEffect(() => {
     if (!profissional?.id) return;
     refreshDocuments(profissional.id);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [profissional?.id]);
 
   const groupedDocs = useMemo(() => {
@@ -186,9 +205,10 @@ export default function AtualizarProfissional(): JSX.Element {
       await refreshDocuments(profissional.id);
       setRemoveModalOpen(false);
       setDocToRemove(null);
-    } catch (e: any) {
-      console.error(e);
-      alert(e?.message ?? "Erro ao remover documento");
+    } catch (e) {
+      const error = e as Error;
+      console.error(error);
+      alert(error?.message ?? "Erro ao remover documento");
     } finally {
       setRemovingIds((prev) => {
         const next = new Set(prev);
@@ -208,7 +228,7 @@ export default function AtualizarProfissional(): JSX.Element {
         shift: d?.turno,
       }));
 
-    const payload = {
+    const payload: UpdateProfissionalDto = {
       serviceArea: { area: values.areaAtendimento },
       phoneNumber: values.telefone,
       professionalDocument: values.documentoProfissional.trim(),
@@ -220,8 +240,8 @@ export default function AtualizarProfissional(): JSX.Element {
         city: values.cidade.trim(),
         neighborhood: values.bairro.trim(),
         street: values.rua.trim(),
-        number: values.numero?.trim(),
-        complement: values.complemento?.trim(),
+        number: values.numero?.trim() ?? "",
+        complement: values.complemento?.trim() ?? "",
         cep: values.cep,
       },
       availabilities,
@@ -404,11 +424,10 @@ export default function AtualizarProfissional(): JSX.Element {
                   <FormControl>
                     <Select onValueChange={field.onChange} value={field.value}>
                       <SelectTrigger
-                        className={`w-full ${
-                          fieldState.invalid
+                        className={`w-full ${fieldState.invalid
                             ? "border-red-500"
                             : "border-gray-300"
-                        }`}
+                          }`}
                       >
                         <SelectValue placeholder="Selecione um estado" />
                       </SelectTrigger>
@@ -632,10 +651,22 @@ export default function AtualizarProfissional(): JSX.Element {
               <FormControl>
                 <Input
                   type="file"
-                  accept="application/pdf"
-                  onChange={(e) =>
-                    setVolunteerFile(e.target.files?.[0] ?? null)
-                  }
+                  accept="image/*, application/pdf"
+                  onChange={(e) => {
+                    const file = e.target.files?.[0];
+                    if (!file) {
+                      setVolunteerFile(null);
+                      return;
+                    }
+                    if (!isValidFile(file)) {
+                      alert("Apenas imagens ou PDF são permitidos");
+                      e.target.value = "";
+                      setVolunteerFile(null);
+                      return;
+                    }
+
+                    setVolunteerFile(file);
+                  }}
                 />
               </FormControl>
               {volunteerFile && (
@@ -650,10 +681,24 @@ export default function AtualizarProfissional(): JSX.Element {
               <FormControl>
                 <Input
                   type="file"
-                  accept="application/pdf"
-                  onChange={(e) =>
-                    setCurriculumFile(e.target.files?.[0] ?? null)
-                  }
+                  accept="image/*, application/pdf"
+                  onChange={(e) => {
+                    const file = e.target.files?.[0];
+
+                    if (!file) {
+                      setCurriculumFile(null);
+                      return;
+                    }
+
+                    if (!isValidFile(file)) {
+                      alert("Apenas imagens ou PDF são permitidos");
+                      e.target.value = "";
+                      setCurriculumFile(null);
+                      return;
+                    }
+
+                    setCurriculumFile(file);
+                  }}
                 />
               </FormControl>
               {curriculumFile && (
@@ -668,11 +713,18 @@ export default function AtualizarProfissional(): JSX.Element {
               <FormControl>
                 <Input
                   type="file"
-                  accept="application/pdf"
+                  accept="image/*, application/pdf"
                   multiple
                   onChange={(e) => {
-                    const list = Array.from(e.target.files ?? []);
-                    setAttachmentFiles(list);
+                    const files = Array.from(e.target.files ?? []);
+
+                    const validFiles = files.filter(isValidFile);
+
+                    if (validFiles.length !== files.length) {
+                      alert("Alguns arquivos foram ignorados. Apenas imagens ou PDF são permitidos.");
+                    }
+
+                    setAttachmentFiles(validFiles);
                   }}
                 />
               </FormControl>

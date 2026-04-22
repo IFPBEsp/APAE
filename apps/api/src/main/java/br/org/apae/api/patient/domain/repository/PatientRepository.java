@@ -26,7 +26,7 @@ public interface PatientRepository extends JpaRepository<Patient, UUID>, JpaSpec
              MAX(COALESCE(a.generatedAppointment.overriddenDateTime, a.generatedAppointment.scheduledDateTime)) as lastAbsenceDate
       FROM Patient p
       LEFT JOIN Absence a
-          ON a.generatedAppointment.patientId = p.id
+          ON a.generatedAppointment.patientId = p.id AND a.isJustified = false
       WHERE LOWER(p.fullName) LIKE CONCAT('%', :name, '%')
       GROUP BY p.id
       HAVING COUNT(a) >= COALESCE(:minAbsences, 0)
