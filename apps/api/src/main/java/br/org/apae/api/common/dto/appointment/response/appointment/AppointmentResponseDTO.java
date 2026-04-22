@@ -16,5 +16,7 @@ public record AppointmentResponseDTO(
   LocalDate endDate,
   LocalTime hour,
   boolean isActive,
-  LocalDateTime creationDate
+  LocalDateTime creationDate,
+  LocalDate replacedByDate,
+  LocalDate updatedFromDate
 ) {}

@@ -49,6 +49,7 @@ import {
   getAppointments,
   getAreasDaSaude,
 } from "../services/appointmentService";
+import {Tooltip, TooltipContent, TooltipProvider, TooltipTrigger} from "@radix-ui/react-tooltip";
 
 type Area = {
   id: number;
@@ -63,6 +64,7 @@ export default function AllApointments() {
   const [appointments, setAppointments] = useState<Appointment[]>([]);
   const initialized = useRef(false);
   const [isCreateOpen, setIsCreateOpen] = useState(false);
+  const [selectedStatus, setSelectedStatus] = useState('');
 
 useEffect(() => {
   if (appointments.length > 0) return;
@@ -74,11 +76,8 @@ useEffect(() => {
       initialized.current = true;
 
       const response = await getAppointments(undefined, undefined, 0, 100);
-      
-      const activeAppointments = (response.content as Appointment[]).filter(
-        appointment => appointment.isActive
-      );
-      setAppointments(activeAppointments);
+
+      setAppointments(response.content as Appointment[])
 
       const areasData = await getAreasDaSaude();
       const areasExistentes: Area[] = areasData.map(
@@ -114,13 +113,30 @@ useEffect(() => {
       ? appointment.professional.healthSector === selectedArea
         : true;
 
-    return matchesDate && matchesSearch && matchesArea;
+    const matchesStatus = selectedStatus
+        ? selectedStatus === 'ativo'
+            ? appointment.isActive === true
+            : appointment.isActive === false
+        : true;
+
+    return matchesDate && matchesSearch && matchesArea && matchesStatus;
   });
 
   const clearFilter = () => {
     setSelectedArea('');
     setSearchName('');
     setSelectedDate(undefined);
+    setSelectedStatus('');
+  };
+
+  const getTooltip = (item: Appointment) => {
+    if (!item.isActive && item.replacedByDate) {
+      return `Substituído por agendamento de ${formatDatePTBR(item.replacedByDate)}`;
+    }
+    if (item.isActive && item.updatedFromDate) {
+      return `Atualizado a partir do agendamento de ${formatDatePTBR(item.updatedFromDate)}`;
+    }
+    return 'Agendamento ativo';
   };
 
   return (
@@ -235,6 +251,9 @@ useEffect(() => {
                     Profissional
                   </TableHead>
                   <TableHead className="px-3 py-2 text-xs sm:px-4 sm:py-3 sm:text-sm text-[#0D4F97]">
+                    Status
+                  </TableHead>
+                  <TableHead className="px-3 py-2 text-xs sm:px-4 sm:py-3 sm:text-sm text-[#0D4F97]">
                     Ações
                   </TableHead>
                 </TableRow>
@@ -242,15 +261,41 @@ useEffect(() => {
               <TableBody>
                 {filteredAppointments.map((item, index) => {
                   return (
-                    <TableRow key={index}>
+                    <TableRow key={index} className={!item.isActive ? 'text-gray-400' : ''}>
                       <TableCell className="px-3 py-2 text-xs sm:px-4 sm:py-3 sm:text-sm">
                         {item.annualRegistration.patient.fullName}
                       </TableCell>
-                      <TableCell className="px-3 py-2 text-xs sm:px-4 sm:py-3 sm:text-sm text-gray-800">
+                      <TableCell className={`px-3 py-2 text-xs sm:px-4 sm:py-3 sm:text-sm ${!item.isActive ? 'text-gray-400' : 'text-gray-800'}`}>
                         {formatDatePTBR(item.initialDate)}
                       </TableCell>
                       <TableCell className="px-3 py-2 text-xs sm:px-4 sm:py-3 sm:text-sm">
                         {item.professional.name}
+                      </TableCell>
+                      <TableCell>
+                        <div className="flex items-center gap-1">
+                            <span className={item.isActive ? 'text-green-600 font-medium' : 'text-red-400 font-medium'}>
+                              {item.isActive ? 'Ativo' : 'Inativo'}
+                            </span>
+                          <TooltipProvider>
+                            <Tooltip>
+                              <TooltipTrigger asChild>
+                                <span className="cursor-help text-gray-400 text-xs">ⓘ</span>
+                              </TooltipTrigger>
+                              <TooltipContent className="bg-white text-gray-800 shadow-lg border border-gray-200 rounded-lg p-3 max-w-[280px] break-words">
+                                <div className="flex items-center gap-2 mb-2">
+                                  <div className="h-7 w-7 rounded-full bg-[#0D4F97] flex items-center justify-center text-white text-xs font-bold">
+                                    {item.professional.name.charAt(0)}
+                                  </div>
+                                  <div className="flex flex-col">
+                                    <span className="text-xs font-semibold text-gray-800">{item.professional.name}</span>
+                                    <span className="text-[10px] text-gray-400">{formatDatePTBR(item.initialDate)}</span>
+                                  </div>
+                                </div>
+                                <p className="text-xs text-gray-600 break-words whitespace-normal">{getTooltip(item)}</p>
+                              </TooltipContent>
+                            </Tooltip>
+                          </TooltipProvider>
+                        </div>
                       </TableCell>
                       <TableCell className="px-3 py-2">
                         <Link

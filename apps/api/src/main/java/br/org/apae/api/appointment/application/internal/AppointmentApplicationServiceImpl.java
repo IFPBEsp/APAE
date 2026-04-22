@@ -420,6 +420,11 @@ public class AppointmentApplicationServiceImpl implements AppointmentApplication
                 null);
         newRule = appointmentRepo.save(newRule);
 
+        current.setReplacedBy(newRule);
+        newRule.setUpdatedFrom(current);
+        appointmentRepo.save(current);
+        appointmentRepo.save(newRule);
+
         generateAppointments(newRule.getId(), startDate, end);
 
         Patient patient = patientRepo.findById(newRule.getAnnualRegistration().getPatientId()).orElseThrow();

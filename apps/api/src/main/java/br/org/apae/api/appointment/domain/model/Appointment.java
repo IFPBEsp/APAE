@@ -53,6 +53,14 @@ public class Appointment {
   @Column(name = "data_criacao")
   private LocalDateTime creationDate;
 
+  @ManyToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "substituido_por_id")
+  private Appointment replacedBy; // aponta para o novo agendamento que substituiu este
+
+  @ManyToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "atualizado_de_id")
+  private Appointment updatedFrom; // aponta para o agendamento original do qual este foi gerado
+
   public Appointment() {
   }
 
@@ -137,4 +145,10 @@ public class Appointment {
   public void setGeneratedAppointments(Set<GeneratedAppointment> generatedAppointments) {
     this.generatedAppointments = generatedAppointments;
   }
+
+  public Appointment getReplacedBy() { return replacedBy; }
+  public void setReplacedBy(Appointment replacedBy) { this.replacedBy = replacedBy; }
+
+  public Appointment getUpdatedFrom() { return updatedFrom; }
+  public void setUpdatedFrom(Appointment updatedFrom) { this.updatedFrom = updatedFrom; }
 }
