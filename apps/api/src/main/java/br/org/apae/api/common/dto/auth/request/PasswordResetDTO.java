@@ -8,7 +8,7 @@ public record PasswordResetDTO(
     String token,
 
     @NotBlank(message = "Nova senha é obrigatória.")
-    @Size(min = 8, message = "A senha deve ter no mínimo 8 caracteres.")
+    @Size(min = 6, message = "A senha deve ter no mínimo 6 caracteres.")
     String newPassword,
 
     @NotBlank(message = "Confirmação de senha é obrigatória.")
