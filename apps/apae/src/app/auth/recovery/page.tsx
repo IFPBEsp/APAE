@@ -40,14 +40,16 @@ export default function RecoveryPage() {
     mode: "all",
   });
 
+  const API_URL = process.env.NEXT_PUBLIC_API || "http://localhost:8090/api";
+
   const handleSendCode = async (data: FormRecovery) => {
     try {
-      await axios.post(`/api/auth/recovery`, {
+
+      await axios.post(`${API_URL}/auth/password-recovery/request`, {
         email: data.email,
       });
 
       toast.success("Se o e-mail existir, um link de recuperação foi enviado.");
-      form.reset();
     } catch {
       toast.error("Erro ao solicitar recuperação de senha.");
     }
@@ -80,7 +82,7 @@ export default function RecoveryPage() {
                 name="email"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Email</FormLabel>
+                    <FormLabel>Usuário</FormLabel>
                     <FormControl>
                       <Input
                         {...field}

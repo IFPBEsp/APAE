@@ -11,12 +11,10 @@ import { PrimaryButton } from "@/components/buttons/ButtonPrimary";
 import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card";
 import { toast } from "react-toastify";
 import { newPasswordSchema, FormNewPasswordSchema } from "@/schemas/authSchema";
-import { useSearchParams } from "next/navigation";
 
 export default function NewPasswordPage() {
   const router = useRouter();
-  const searchParams = useSearchParams();
-  const token = searchParams.get("token");
+  const [sessionData, setSessionData] = React.useState({ email: "", code: "" });
 
   const form = useForm<FormNewPasswordSchema>({
     resolver: zodResolver(newPasswordSchema),
@@ -28,41 +26,49 @@ export default function NewPasswordPage() {
   });
 
   React.useEffect(() => {
-    if (!token) {
-      toast.error("Link inválido ou expirado.");
-      router.push("/auth/recovery");
+    // Conexão com a tela de validação vencida, atualize para o link enviado por email
+    const email = sessionStorage.getItem("reset_email");
+    const code = sessionStorage.getItem("reset_code");
+
+    if (!email || !code) {
+      toast.error("Sessão expirada. Identifique-se novamente.");
+      router.push("/auth/reset-password");
+      return;
     }
-  }, [token, router]);
+
+    setSessionData({ email, code });
+  }, [router]);
 
   const onSubmit = async (data: FormNewPasswordSchema) => {
     try {
-      if (!token) {
-        toast.error("Token inválido.");
-        return;
-      }
+      const payload = {
+        email: sessionData.email, 
+        code: sessionData.code,   
+        password: data.senha,     
+      };
 
+      // Chamada para o backend 
+      // Exemplo de rota /api/auth/reset-password
       const response = await fetch("/api/auth/reset-password", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({
-          token,
-          newPassword: data.senha,
-          confirmPassword: data.confirmarSenha,
-        }),
+        body: JSON.stringify(payload),
       });
 
-      const result = await response.json();
-
       if (!response.ok) {
-        throw new Error(result.message);
+        const errorData = await response.json();
+        throw new Error(errorData.message || "Erro ao redefinir a senha.");
       }
 
       toast.success("Senha alterada com sucesso.");
+      sessionStorage.clear(); 
       router.push("/auth/login");
+
     } catch (err: any) {
-      toast.error(err.message || "Erro inesperado.");
+      toast.error(err.message || "Ocorreu um erro inesperado. Tente novamente.");
+      console.error("Erro no Reset Password:", err);
     }
   };
 
@@ -77,7 +83,7 @@ export default function NewPasswordPage() {
             <CardHeader className="flex-shrink-0 pt-10 pb-4">
                 <div className="w-full flex justify-center">
                     <span className="font-baloo2 font-semibold text-[2.25rem] leading-normal mt-10 text-center text-blue-900">
-                        Redefinir Senha
+                        Recuperar Senha
                     </span>
                 </div>
             </CardHeader>
