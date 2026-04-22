@@ -95,9 +95,17 @@ useEffect(() => {
       );
       setAreas(areasExistentes);
 
-      // Busca quem tem 3 ou mais faltas e guarda os IDs em um Set para acesso rápido
-      const absencesData = await AbsenceService.getPatientsWithAbsences(3);
-      const idsSet = new Set(absencesData.map((data: any) => data.patient.id));
+      // Busca direta na API (lógica que está funcionando)
+      const absencesResponse = await fetch('/api/patients/with-absences?minAbsences=3');
+      
+      if (!absencesResponse.ok) {
+        throw new Error('Erro ao buscar pacientes com faltas');
+      }
+
+      const absencesData = await absencesResponse.json();
+      const absencesList = absencesData.content || [];
+      const idsSet = new Set<string>(absencesList.map((item: any) => item.patient.id));
+      
       setAlertPatientIds(idsSet);
 
     } catch (error) {
