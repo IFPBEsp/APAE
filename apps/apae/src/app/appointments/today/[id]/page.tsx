@@ -3,7 +3,7 @@
 import { format } from 'date-fns';
 import { useParams } from 'next/navigation';
 import { useEffect, useState, useRef } from 'react';
-import { AlertTriangle } from 'lucide-react'; // Ícone adicionado
+import { AlertTriangle } from 'lucide-react';
 
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
@@ -18,10 +18,9 @@ import {
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
-} from '@/components/ui/tooltip'; // Tooltip adicionado
+} from '@/components/ui/tooltip';
 
 import { getTodayAppointmentById } from '@/app/services/appointmentService';
-import AbsenceService from '@/app/services/absenceService'; // Novo Import
 import { TodayAppointment } from '@/types/appointment';
 
 export default function ViewTodayAppointment() {
@@ -29,27 +28,30 @@ export default function ViewTodayAppointment() {
   const [appointment, setAppointment] = useState<TodayAppointment | null>(null);
   const [loading, setLoading] = useState(true);
   const initialized = useRef(false);
-  const [hasAbsenceAlert, setHasAbsenceAlert] = useState(false); // Novo estado
+  
+  const [alertPatientIds, setAlertPatientIds] = useState<Set<string>>(new Set());
 
   useEffect(() => {
     if (!id) return;
-
     if (initialized.current) return;
 
-    async function loadTodayAppointment() {
+    async function loadData() {
       try {
         initialized.current = true;
         setLoading(true);
         
+        // 1. Busca o agendamento de hoje
         const data = await getTodayAppointmentById(id as string);
         setAppointment(data);
 
-        // Verifica as faltas deste paciente específico
-        const patientIdToCheck = data.patient?.id;
-        if (patientIdToCheck) {
-          const absencesData = await AbsenceService.getPatientsWithAbsences(3);
-          const isDefaulter = absencesData.some((d: any) => d.patient.id === patientIdToCheck);
-          setHasAbsenceAlert(isDefaulter);
+        // 2. Busca pacientes com faltas via fetch direto
+        const response = await fetch('/api/patients/with-absences?minAbsences=3');
+        
+        if (response.ok) {
+          const result = await response.json();
+          const absencesList = result.content || [];
+          const idsSet = new Set<string>(absencesList.map((item: any) => item.patient.id));
+          setAlertPatientIds(idsSet);
         }
 
       } catch (error) {
@@ -60,7 +62,7 @@ export default function ViewTodayAppointment() {
       }
     }
 
-    loadTodayAppointment();
+    loadData();
   }, [id]);
 
   if (loading) {
@@ -70,6 +72,8 @@ export default function ViewTodayAppointment() {
   if (!appointment) {
     return <p className="mt-20 text-center">Agendamento não encontrado</p>;
   }
+
+  const hasAbsenceAlert = alertPatientIds.has(appointment.patient?.id);
 
   return (
     <div className="mt-20 max-w-6xl mx-auto px-6 space-y-8">
@@ -113,7 +117,6 @@ export default function ViewTodayAppointment() {
         </Badge>
       </header>
 
-      {/* AGENDAMENTO GERADO */}
       <Card className="border border-blue-100">
         <CardHeader>
           <CardTitle className="text-center text-[#0D4F97]">
