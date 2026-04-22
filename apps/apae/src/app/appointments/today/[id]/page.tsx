@@ -3,6 +3,7 @@
 import { format } from 'date-fns';
 import { useParams } from 'next/navigation';
 import { useEffect, useState, useRef } from 'react';
+import { AlertTriangle } from 'lucide-react'; // Ícone adicionado
 
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
@@ -12,8 +13,15 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from '@/components/ui/tooltip'; // Tooltip adicionado
 
 import { getTodayAppointmentById } from '@/app/services/appointmentService';
+import AbsenceService from '@/app/services/absenceService'; // Novo Import
 import { TodayAppointment } from '@/types/appointment';
 
 export default function ViewTodayAppointment() {
@@ -21,6 +29,7 @@ export default function ViewTodayAppointment() {
   const [appointment, setAppointment] = useState<TodayAppointment | null>(null);
   const [loading, setLoading] = useState(true);
   const initialized = useRef(false);
+  const [hasAbsenceAlert, setHasAbsenceAlert] = useState(false); // Novo estado
 
   useEffect(() => {
     if (!id) return;
@@ -34,6 +43,15 @@ export default function ViewTodayAppointment() {
         
         const data = await getTodayAppointmentById(id as string);
         setAppointment(data);
+
+        // Verifica as faltas deste paciente específico
+        const patientIdToCheck = data.patient?.id;
+        if (patientIdToCheck) {
+          const absencesData = await AbsenceService.getPatientsWithAbsences(3);
+          const isDefaulter = absencesData.some((d: any) => d.patient.id === patientIdToCheck);
+          setHasAbsenceAlert(isDefaulter);
+        }
+
       } catch (error) {
         console.error('[ViewTodayAppointment]', error);
         setAppointment(null);
@@ -65,9 +83,24 @@ export default function ViewTodayAppointment() {
             </AvatarFallback>
           </Avatar>
 
-          <h1 className="text-xl font-bold text-[#0D4F97]">
-            {appointment.patient.fullName}
-          </h1>
+          <div className="flex items-center gap-2">
+            <h1 className="text-xl font-bold text-[#0D4F97]">
+              {appointment.patient.fullName}
+            </h1>
+
+            {hasAbsenceAlert && (
+              <TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <AlertTriangle className="h-6 w-6 text-amber-500 cursor-help" />
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    <p>Paciente com 3+ faltas não justificadas</p>
+                  </TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
+            )}
+          </div>
         </div>
 
         <Badge

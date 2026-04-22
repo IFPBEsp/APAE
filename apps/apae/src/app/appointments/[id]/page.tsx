@@ -20,15 +20,22 @@ import {
   DialogTrigger,
   DialogDescription,
 } from '@/components/ui/dialog';
-import { Pencil } from 'lucide-react';
+import { Pencil, AlertTriangle } from 'lucide-react'; // Ícone adicionado
 import { Button } from '@/components/ui/button';
 import {
   getAppointmentById,
   Appointment,
 } from '@/app/services/appointmentService';
+import AbsenceService from '@/app/services/absenceService'; // Novo Import
 import { AppointmentForm } from '@/components/forms/AppointmentForm';
 import TrashButton from '@/components/buttons/trashButton';
 import { formatDatePTBR, separaETransformaEmNumero } from '@/lib/utils';
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from '@/components/ui/tooltip'; // Tooltip adicionado
 
 export default function ViewAppointment() {
   const { id } = useParams<{ id: string }>();
@@ -36,6 +43,7 @@ export default function ViewAppointment() {
   const [loading, setLoading] = useState(true);
   const initialized = useRef(false);
   const [isEditOpen, setIsEditOpen] = useState(false);
+  const [hasAbsenceAlert, setHasAbsenceAlert] = useState(false); // Novo estado
 
   useEffect(() => {
     if (!id) return;
@@ -47,6 +55,15 @@ export default function ViewAppointment() {
         initialized.current = true;
         const data = await getAppointmentById(id);
         setAppointment(data);
+
+        // Verifica as faltas deste paciente específico
+        const patientIdToCheck = data.annualRegistration?.patient?.id;
+        if (patientIdToCheck) {
+          const absencesData = await AbsenceService.getPatientsWithAbsences(3);
+          const isDefaulter = absencesData.some((d: any) => d.patient.id === patientIdToCheck);
+          setHasAbsenceAlert(isDefaulter);
+        }
+
       }catch (error){
         console.error(error);
         initialized.current = false;
@@ -104,9 +121,24 @@ export default function ViewAppointment() {
               </AvatarFallback>
             </Avatar>
           </div>
-          <h1 className="ml-10 text-[#0D4F97] text-xl md:text-2xl font-bold mr-5">
-            {appointment.annualRegistration.patient.fullName}
-          </h1>
+          <div className="flex items-center ml-10 gap-2">
+            <h1 className="text-[#0D4F97] text-xl md:text-2xl font-bold mr-5">
+              {appointment.annualRegistration.patient.fullName}
+            </h1>
+            
+            {hasAbsenceAlert && (
+              <TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <AlertTriangle className="h-6 w-6 text-amber-500 cursor-help" />
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    <p>Paciente com 3+ faltas não justificadas</p>
+                  </TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
+            )}
+          </div>
         </div>
 
         {/* Borda do status do agendamento */}
