@@ -58,7 +58,7 @@ export async function PATCH(
       }
 
       return NextResponse.json(
-        { message: "Erro ao editar agendamento" },
+        { message: error.response?.data.message },
         { status: error.response?.status ?? 500 },
       );
     }
