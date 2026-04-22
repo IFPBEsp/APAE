@@ -2,8 +2,7 @@ import * as z from "zod";
 
 const nomeRegex = /^[A-Za-zÀ-ÖØ-öø-ÿ ]{3,100}$/;
 const telefoneRegex = /^\(\d{2}\) \d{5}-\d{4}$/;
-const docProfissionalRegex =
-  /^(CRM|COREN|CREFITO|CRFa|CRP|CRESS)([-/][A-Z0-9]{1,2}|\s\d{2})?\s?\d{1,6}$/;
+
 const rgRegex =
   /^(\d{7,8}[\dXx]?|\d\.\d{3}\.\d{3}|\d{2}\.\d{3}\.\d{3}-[\dXx])$/;
 const estadoRegex = /^[A-Z]{2}$/;
@@ -14,19 +13,7 @@ const numeroRegex = /^[0-9]{1,6}$/;
 
 const fileSchema = z
   .instanceof(File, { message: "Selecione um arquivo" })
-  .refine((file) => file.size > 0, "Arquivo não pode estar vazio")
-  .refine(
-    (file) =>
-      [
-        "application/pdf",
-        "image/png",
-        "image/jpeg",
-        "image/jpg",
-        "image/webp",
-      ].includes(file.type),
-    "Apenas imagens ou PDF são permitidos"
-  )
-  .refine((file) => file.size <= 5 * 1024 * 1024, "Arquivo deve ser menor que 5MB");
+  .refine((file) => file.size > 0, "Arquivo não pode estar vazio");
 
 const baseSchema = z.object({
   nomeCompleto: z
@@ -38,9 +25,7 @@ const baseSchema = z.object({
 
   email: z.email("Email inválido"),
 
-  documentoProfissional: z
-    .string()
-    .regex(docProfissionalRegex, "Documento profissional inválido"),
+  documentoProfissional: z.string().optional().nullable(),
 
   areaAtendimento: z.string().min(1, "Selecione uma área"),
 

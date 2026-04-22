@@ -76,7 +76,7 @@ export default function CadastroProfissional(): JSX.Element {
     const payload = {
       serviceArea: { area: values.areaAtendimento },
       phoneNumber: values.telefone,
-      professionalDocument: values.documentoProfissional.trim(),
+      professionalDocument: values.documentoProfissional?.trim() || null,
       email: values.email.trim(),
       name: values.nomeCompleto.trim(),
       identityDocument: values.rg.trim(),
@@ -86,7 +86,7 @@ export default function CadastroProfissional(): JSX.Element {
         neighborhood: values.bairro.trim(),
         street: values.rua.trim(),
         number: values.numero?.trim(),
-        complement: values.complemento?.trim(),
+        complement: values.complemento?.trim() ?? "",
         cep: values.cep,
       },
       availabilities,
@@ -148,9 +148,9 @@ export default function CadastroProfissional(): JSX.Element {
               name="documentoProfissional"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Documento profissional *</FormLabel>
+                  <FormLabel>Documento profissional</FormLabel>
                   <FormControl>
-                    <Input placeholder="Ex: CRM/SP 123456" {...field} />
+                    <Input placeholder="Ex: CRM/SP 123456" {...field} value={field.value || ""} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
