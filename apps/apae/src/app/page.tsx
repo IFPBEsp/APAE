@@ -16,6 +16,12 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from '@/components/ui/tooltip';
 import { Page } from '@/types/pagination';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
@@ -23,8 +29,9 @@ import {
   CalendarDays,
   Users,
   UserRoundCheck,
-  UserRoundX
-} from 'lucide-react';
+  UserRoundX,
+  AlertTriangle
+  } from 'lucide-react';
 import { useEffect, useState, useRef } from 'react';
 
 import {
@@ -43,6 +50,7 @@ import {
   UUID,
   type AppointmentResponseDTO,
 } from './services/appointmentService';
+import AbsenceService from './services/absenceService'; // Serviço adicionado
 
 import { AppointmentForm } from '@/components/forms/AppointmentForm';
 import { InfoCard } from '@/components/shared/InfoCard';
@@ -57,6 +65,7 @@ export default function DashboardPage() {
   const [activeAppointments, setActiveAppointments] = useState<TodayAppointment[]>([]);
   const [inactiveAppointments, setInactiveAppointments] = useState<TodayAppointment[]>([]);
   const [isCreateOpen, setIsCreateOpen] = useState(false);
+  const [alertPatientIds, setAlertPatientIds] = useState<Set<string>>(new Set());
   const lastFetchedDate = useRef<string | null>(null);
 
 
@@ -73,6 +82,28 @@ export default function DashboardPage() {
       await getAppointments();
     setAllAppointments(allAppointmentsPage.content || []);
   };
+
+  const fetchAbsences = async () => {
+      try {
+        // Fazemos o fetch direto para a API, filtrando por 3 faltas
+        const response = await fetch('/api/patients/with-absences?minAbsences=3');
+        
+        if (!response.ok) {
+          throw new Error('Erro ao buscar pacientes com faltas');
+        }
+
+        const data = await response.json();
+        
+        // Mapeamos os IDs dos pacientes que vêm dentro da lista "content" (padrão de paginação)
+        // Se sua API retornar direto um array, use: data.map(...)
+        const absencesList = data.content || [];
+        const idsSet = new Set<string>(absencesList.map((item: any) => item.patient.id));
+        
+        setAlertPatientIds(idsSet);
+      } catch (error) {
+        console.error("Erro ao buscar faltas:", error);
+      }
+    };
 
   const fetchTodayAppointmentsByStatus = async () => {
     if (!todayAppointments.length || !allAppointments.length) return;
@@ -110,7 +141,7 @@ export default function DashboardPage() {
 
     fetchTodayAppointments();
     fetchAllAppointments();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    fetchAbsences(); // Chamada do novo serviço de faltas
   }, [selectedDate]);
 
   useEffect(() => {
@@ -189,6 +220,14 @@ export default function DashboardPage() {
             valueClassName="text-[#0D4F97]"
           />
           <InfoCard
+          
+            title="Todos os agendamentos"
+            icon={Users}
+            value={allAppointments.length}
+            titleClassName="text-[#0D4F97]"
+            valueClassName="text-[#0D4F97]"
+          />
+          <InfoCard
             title="Ativos"
             icon={UserRoundCheck}
             value={activeAppointments.length}
@@ -236,7 +275,24 @@ export default function DashboardPage() {
                       {item.effectiveDateTime ? format(new Date(item.effectiveDateTime), 'HH:mm') : '—'}
                     </TableCell>
                     <TableCell className="px-3 py-2 text-xs sm:px-4 sm:py-3 sm:text-sm">
-                      {item.patient.fullName}
+                      
+                      {/* CRUZA O ID DO PACIENTE DA TABELA COM O SET DE FALTOSOS */}
+                      <div className="flex items-center gap-2">
+                        <span className="truncate">{item.patient.fullName}</span>
+                        {alertPatientIds.has(item.patient.id) && (
+                          <TooltipProvider>
+                            <Tooltip>
+                              <TooltipTrigger asChild>
+                                <AlertTriangle className="h-4 w-4 text-amber-500 shrink-0 cursor-help" />
+                              </TooltipTrigger>
+                              <TooltipContent>
+                                <p>Paciente com 3+ faltas não justificadas</p>
+                              </TooltipContent>
+                            </Tooltip>
+                          </TooltipProvider>
+                        )}
+                      </div>
+
                     </TableCell>
                     <TableCell className="px-3 py-2 text-xs sm:px-4 sm:py-3 sm:text-sm">
                       {item.professional.name}

@@ -95,7 +95,7 @@ export function AbsenceForm({
         justificationDocumentId: documentId,
       };
 
-      const response = await fetch("/api/absence", {
+      const response = await fetch("/api/absences", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

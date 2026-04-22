@@ -3,7 +3,8 @@
 import {
   CalendarDays,
   SearchIcon,
-  Users
+  Users,
+  AlertTriangle // Import do Ícone
 } from 'lucide-react';
 import { useEffect, useState, useRef } from 'react';
 
@@ -23,7 +24,6 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
-
 import { AppointmentForm } from '@/components/forms/AppointmentForm';
 import { InfoCard } from '@/components/shared/InfoCard';
 import {
@@ -63,9 +63,9 @@ export default function AllApointments() {
   const [searchName, setSearchName] = useState('');
   const [areas, setAreas] = useState<Area[]>([]);
   const [appointments, setAppointments] = useState<Appointment[]>([]);
+  const [alertPatientIds, setAlertPatientIds] = useState<Set<string>>(new Set()); // ESTADO DO ALERTA
   const initialized = useRef(false);
   const [isCreateOpen, setIsCreateOpen] = useState(false);
-  const [selectedStatus, setSelectedStatus] = useState('');
 
 useEffect(() => {
   if (appointments.length > 0) return;
@@ -85,6 +85,20 @@ useEffect(() => {
         (area, index) => ({ id: index, name: area })
       );
       setAreas(areasExistentes);
+
+      // Busca direta na API (lógica que está funcionando)
+      const absencesResponse = await fetch('/api/patients/with-absences?minAbsences=3');
+      
+      if (!absencesResponse.ok) {
+        throw new Error('Erro ao buscar pacientes com faltas');
+      }
+
+      const absencesData = await absencesResponse.json();
+      const absencesList = absencesData.content || [];
+      const idsSet = new Set<string>(absencesList.map((item: any) => item.patient.id));
+      
+      setAlertPatientIds(idsSet);
+
     } catch (error) {
       console.error(error);
       initialized.current = false;
@@ -277,7 +291,23 @@ useEffect(() => {
                   return (
                     <TableRow key={index} className={!item.isActive ? 'text-gray-400' : ''}>
                       <TableCell className="px-3 py-2 text-xs sm:px-4 sm:py-3 sm:text-sm">
-                        {item.annualRegistration.patient.fullName}
+                        <div className="flex items-center gap-2">
+                          <span className="truncate">{item.annualRegistration.patient.fullName}</span>
+                          
+                          {/* CRUZA O ID DO PACIENTE DA TABELA COM O SET DE FALTOSOS */}
+                          {alertPatientIds.has(item.annualRegistration.patient.id) && (
+                            <TooltipProvider>
+                              <Tooltip>
+                                <TooltipTrigger asChild>
+                                  <AlertTriangle className="h-4 w-4 text-amber-500 shrink-0 cursor-help" />
+                                </TooltipTrigger>
+                                <TooltipContent>
+                                  <p>Paciente com 3+ faltas não justificadas</p>
+                                </TooltipContent>
+                              </Tooltip>
+                            </TooltipProvider>
+                          )}
+                        </div>
                       </TableCell>
                       <TableCell className={`px-3 py-2 text-xs sm:px-4 sm:py-3 sm:text-sm ${!item.isActive ? 'text-gray-400' : 'text-gray-800'}`}>
                         {formatDatePTBR(item.initialDate)}
@@ -330,4 +360,3 @@ useEffect(() => {
     </div>
   );
 }
-//////
