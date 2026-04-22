@@ -1,0 +1,38 @@
+name: CI Front-end
+
+on:
+  pull_request:
+    branches:
+      - dev
+      - main
+    paths:
+      - "apps/apae/**"
+
+jobs:
+  build:
+    name: Build do projeto Front-end
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Baixar repositório
+        uses: actions/checkout@v4
+
+      - name: Instalar PNPM
+        uses: pnpm/action-setup@v3
+        with:
+          version: latest
+          cache: true
+
+      - name: Instalar dependências
+        working-directory: ./apps/apae
+        run: pnpm install --frozen-lockfile
+
+      - name: Construir aplicação
+        working-directory: ./apps/apae
+        run: pnpm run build
+
+      - name: Salvar artefato de build
+        uses: actions/upload-artifact@v4
+        with:
+          name: frontend-build
+          path: apps/apae/.next
