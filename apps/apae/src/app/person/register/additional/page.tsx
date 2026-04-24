@@ -203,13 +203,14 @@ export default function MembersRegisterAdditionalsPage() {
     mode: "onBlur",
     resolver: zodResolver(currentSchema),
     defaultValues: {
-      ...Additionals,
       continuousMedication: additionals.continuousMedication || "",
       diseases: additionals.diseases || "",
       allergies: additionals.allergies || "",
       vaccines: additionals.vaccines || [],
       bpc: additionals.bpc ?? false,
       householdIncome: additionals.householdIncome || "",
+      disability: additionals.disability || { types: [], report: undefined },
+      care: additionals.care || { types: [], referral: undefined },
     },
   });
 
@@ -238,7 +239,6 @@ export default function MembersRegisterAdditionalsPage() {
   }, [additionals, form]);
 
   const onSubmit = async (values: any) => {
-    console.log("Form values on submit:", values);
     setIsLoading(true);
     try {
       setAdditionalsData(values);
