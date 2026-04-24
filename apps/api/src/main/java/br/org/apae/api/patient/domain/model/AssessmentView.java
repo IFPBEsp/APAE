@@ -11,14 +11,14 @@ import jakarta.persistence.Table;
 
 @Entity
 @Immutable
-@Table(name = "AvaliacoesView")
+@Table(name = "view_avaliacoes_escolares")
 public class AssessmentView {
 
     @Id
     private Long id;
 
-    @Column(name = "descricao_avaliacao")
-    private String descricaoAvaliacao;
+    @Column(name = "descricao")
+    private String descricao;
 
     @Column(name = "data_avaliacao")
     private LocalDateTime dataAvaliacao;
@@ -26,8 +26,8 @@ public class AssessmentView {
     @Column(name = "aluno_id")
     private Long pacienteId;
 
-    @Column(name = "nome_professor")
-    private String nomeProfessor;
+    @Column(name = "professor_nome")
+    private String professorNome;
 
     public AssessmentView(){
 
@@ -37,8 +37,8 @@ public class AssessmentView {
         return id;
     }
 
-    public String getDescricaoAvaliacao() {
-        return descricaoAvaliacao;
+    public String getDescricao() {
+        return descricao;
     }
 
     public LocalDateTime getDataAvaliacao() {
@@ -49,8 +49,8 @@ public class AssessmentView {
         return pacienteId;
     }
 
-    public String getNomeProfessor() {
-        return nomeProfessor;
+    public String getProfessorNome() {
+        return professorNome;
     }
 
 

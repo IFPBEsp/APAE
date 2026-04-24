@@ -2,7 +2,7 @@ package br.org.apae.api.patient.domain.model;
 
 import java.time.LocalDateTime;
 
-import com.google.errorprone.annotations.Immutable;
+import org.hibernate.annotations.Immutable;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -11,7 +11,7 @@ import jakarta.persistence.Table;
 
 @Entity
 @Immutable
-@Table(name = "RelatoriosView")
+@Table(name = "view_relatorios_escolares")
 public class ReportView {
      @Id
      private Long id;
@@ -27,7 +27,7 @@ public class ReportView {
     private Long pacienteId;
 
     @Column(name = "professor_nome")
-    private String nomeProfessor;
+    private String professorNome;
 
     @Column(name = "turma_descricao")
     private String turmaDescricao;
@@ -60,8 +60,8 @@ public class ReportView {
         return pacienteId;
     }
 
-    public String getNomeProfessor(){
-        return nomeProfessor;
+    public String getProfessorNome(){
+        return professorNome;
     }
 
     public String getTurmaDescricao(){

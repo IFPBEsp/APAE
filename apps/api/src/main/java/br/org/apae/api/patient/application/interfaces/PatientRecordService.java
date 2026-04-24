@@ -28,7 +28,7 @@ public class PatientRecordService {
             view.getHabilidades(),
             view.getEstrategias(),
             view.getRecursos(),
-            view.getNomeProfessor(),
+            view.getProfessorNome(),
             view.getTurmaDescricao()
         ))
         .collect(Collectors.toList());
@@ -38,10 +38,10 @@ public class PatientRecordService {
         return assessmentViewRepository.findByPacienteId(patientId).stream()
          .map(view -> new AssessmentResponseDTO(
             view.getId(),
-            view.getDescricaoAvaliacao(),
+            view.getDescricao(),
             view.getDataAvaliacao(),
             view.getPacienteId(),
-            view.getNomeProfessor()
+            view.getProfessorNome()
         ))
         .collect(Collectors.toList());
     }

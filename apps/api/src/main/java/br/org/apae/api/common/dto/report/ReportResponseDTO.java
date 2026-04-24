@@ -8,6 +8,6 @@ public record ReportResponseDTO(
     String habilidades,
     String estrategias,
     String recursos,
-    String nomeProfessor,
+    String professorNome,
     String turmaDescricao
 ) {}

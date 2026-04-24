@@ -7,5 +7,5 @@ public record AssessmentResponseDTO(
     String descricaoAvaliacao,
     LocalDateTime dataAvaliacao,
     Long pacienteId,
-    String nomeProfessor
+    String professorNome
 ){}
