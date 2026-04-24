@@ -159,10 +159,10 @@ export const Additionals = z.object({
   householdIncome: z
     .string()
     .min(1, "A renda familiar é obrigatória.")
-    .refine(
-      (value) => Number(value.replace(/\D/g, "")) >= 20000,
-      "A renda familiar deve ser pelo menos R$ 200,00.",
-    ),
+    .refine((val) => {
+      const num = parseFloat(val.replace(/[^\d]/g, ""));
+      return !isNaN(num) && num >= 20000; 
+    }, "A renda familiar deve ser pelo menos R$ 200,00"),
 });
 
 export const Kinship = z.object({

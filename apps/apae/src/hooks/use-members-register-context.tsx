@@ -262,13 +262,11 @@ export function MembersRegisterProvider({
   const params = useParams();
   const hasHydrated = useRef(false);
 
-  // 1. CHAVE DE CACHE
   const STORAGE_KEY = useMemo(() => {
     const patientId = params?.id as string;
     return patientId ? `apae_edit_cache_${patientId}` : "apae_register_cache";
   }, [params?.id]);
 
-  // 2. FUNÇÃO DE RECONSTRUÇÃO
   const reconstructFiles = useCallback((obj: any) => {
     if (obj.additionals?.disability?.report?.base64) {
       obj.additionals.disability.report = base64ToFile(
@@ -300,7 +298,6 @@ export function MembersRegisterProvider({
     return obj;
   }, []);
 
-  // 3. SETTERS
   const setters = {
     setPersonalData: useCallback(
       (data: Partial<PersonalData>) =>
@@ -345,9 +342,7 @@ export function MembersRegisterProvider({
     ),
   };
 
-  // 4. EFEITO DE HIDRATAÇÃO (executa apenas uma vez)
   useEffect(() => {
-    // Evita hidratação duplicada
     if (hasHydrated.current) return;
     if (typeof window === "undefined") return;
 
@@ -370,14 +365,11 @@ export function MembersRegisterProvider({
     hasHydrated.current = true;
   }, [STORAGE_KEY, reconstructFiles]);
 
-  // 5. EFEITO DE SALVAMENTO AUTOMÁTICO
   useEffect(() => {
     if (typeof window === "undefined") return;
-    // Não salva se ainda não foi hidratado
     if (!hasHydrated.current) return;
 
     const saveDraft = async () => {
-      // Não salva se está em modo de edição e state está vazio
       if (params?.id && state.personal.name === "") return;
 
       try {
@@ -419,7 +411,6 @@ export function MembersRegisterProvider({
     return () => clearTimeout(timer);
   }, [state, STORAGE_KEY, params?.id]);
 
-  // 6. FUNÇÃO REGISTER
   const register = useCallback(
     async (id?: string) => {
       const { personal, address, additionals, guardian, kinships, profile } =
@@ -427,14 +418,11 @@ export function MembersRegisterProvider({
 
       const formatDate = (date: Date | string | number | null | undefined) => {
         if (!date) return null;
-
         const d = new Date(date);
         if (isNaN(d.getTime())) return null;
-
         const year = d.getFullYear();
         const month = String(d.getMonth() + 1).padStart(2, "0");
         const day = String(d.getDate()).padStart(2, "0");
-
         return `${year}-${month}-${day}`;
       };
 
@@ -459,8 +447,9 @@ export function MembersRegisterProvider({
         cpf: string;
         cns: string;
         nis: string;
-        registrationDate: Date | null;
+        registrationDate: Date | string | null;
         allergies: string;
+        continuousMedication: string; 
         isStudent: boolean;
         address: {
           city: string;
@@ -494,15 +483,28 @@ export function MembersRegisterProvider({
           kinship: string;
         }[];
         vaccineNames: { name: string }[];
-        annualRegistry?: {
+        annualRegistry: {
           bpc: boolean;
           diseases: string;
+          continuousMedication: string; 
           serviceArea: { area: string }[];
           familyIncome: number;
           year: number;
           disorders: { name: string }[];
         };
       }
+
+      const annualRegistryData = {
+        bpc: additionals.bpc,
+        diseases: additionals.diseases || "Nenhuma",
+        continuousMedication: additionals.medications || "Nenhum", 
+        serviceArea: additionals.care.types.map((area: string) => ({ area })),
+        familyIncome: parseIncome(additionals.householdIncome),
+        year: new Date().getFullYear(),
+        disorders: additionals.disability.types.map((name: string) => ({
+          name,
+        })),
+      };
 
       const patient: PatientPayload = {
         fullName: personal.name || "Não informado",
@@ -519,8 +521,10 @@ export function MembersRegisterProvider({
         cpf: personal.cpf,
         cns: personal.cns || "000 0000 0000 0000",
         nis: personal.nis || "0",
-        registrationDate: personal.rg.issuing.date,
+        registrationDate: formatDate(personal.rg.issuing.date),
         allergies: additionals.allergies || "Nenhuma",
+        continuousMedication: additionals.medications || "Nenhum", 
+
         isStudent: profile.role === "student",
         address: {
           city: address.city || "Não informado",
@@ -554,6 +558,7 @@ export function MembersRegisterProvider({
           kinship: k.type || "Pai/Mãe",
         })),
         vaccineNames: additionals.vaccines.map((v) => ({ name: v })),
+        annualRegistry: annualRegistryData, 
       };
 
       if (id) {
@@ -570,7 +575,6 @@ export function MembersRegisterProvider({
         if (profile.photo instanceof File && res.ok) {
           const photoFormData = new FormData();
           photoFormData.append("photo", profile.photo);
-
           await fetch(`/api/pessoas/${id}/photo`, {
             method: "PUT",
             body: photoFormData,
@@ -580,18 +584,8 @@ export function MembersRegisterProvider({
         const data = await res.json().catch(() => ({}));
         return { status: res.status, data };
       } else {
-        patient.registrationDate = new Date();
-        patient.annualRegistry = {
-          bpc: additionals.bpc,
-          diseases: additionals.diseases,
-          serviceArea: additionals.care.types.map((area: string) => ({ area })),
-          familyIncome: parseIncome(additionals.householdIncome),
-          year: new Date().getFullYear(),
-          disorders: additionals.disability.types.map((name: string) => ({
-            name,
-          })),
-        };
-
+        patient.registrationDate = new Date().toISOString();
+        
         const formData = new FormData();
         formData.append(
           "patient",
