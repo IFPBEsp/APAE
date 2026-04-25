@@ -19,17 +19,23 @@ public class AssessmentView {
     @Column(name = "avaliacao_id")
     private UUID id;
 
+    @Column(name = "aluno_id")
+    private UUID alunoId;
+
+    @Column(name = "aluno_nome")
+    private String alunoNome;
+
+    @Column(name = "professor_id")
+    private UUID professorId;
+
+    @Column(name = "professor_nome")
+    private String professorNome;
+
     @Column(name = "descricao")
     private String descricao;
 
     @Column(name = "data_avaliacao")
     private LocalDateTime dataAvaliacao;
-
-    @Column(name = "aluno_id")
-    private UUID pacienteId;
-
-    @Column(name = "professor_nome")
-    private String professorNome;
 
     public AssessmentView(){
 
@@ -39,6 +45,22 @@ public class AssessmentView {
         return id;
     }
 
+    public UUID getAlunoId(){
+        return alunoId;
+    }
+
+    public String getAlunoNome() {
+        return alunoNome;
+    }
+
+    public UUID getProfessorId() {
+        return professorId;
+    }
+
+    public String getProfessorNome() {
+        return professorNome;
+    }
+
     public String getDescricao() {
         return descricao;
     }
@@ -46,14 +68,5 @@ public class AssessmentView {
     public LocalDateTime getDataAvaliacao() {
         return dataAvaliacao;
     }
-
-    public UUID getPacienteId(){
-        return pacienteId;
-    }
-
-    public String getProfessorNome() {
-        return professorNome;
-    }
-
 
 }

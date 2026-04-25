@@ -9,8 +9,8 @@ import org.springframework.stereotype.Repository;
 import br.org.apae.api.patient.domain.model.AssessmentView;
 
 @Repository
-public interface AssessmentViewRepository extends JpaRepository<AssessmentView, Long> {
+public interface AssessmentViewRepository extends JpaRepository<AssessmentView, UUID> {
 
-    List<AssessmentView> findByPacienteId(UUID pacienteId);
+    List<AssessmentView> findByAlunoId(UUID alunoId);
     
 }

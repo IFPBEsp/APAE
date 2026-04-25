@@ -25,12 +25,17 @@ public class PatientRecordService {
         return reportViewRepository.findByPacienteId(patientId).stream()
         .map(view -> new ReportResponseDTO(
             view.getId(),
-            view.getCreatedAt(),
+            view.getAlunoId(),
+            view.getAlunoNome(),
+            view.getProfessorId(),
+            view.getProfessorNome(),
+            view.getTurmaId(),
+            view.getTurmaNome(),
+            view.getAtividades(),
             view.getHabilidades(),
             view.getEstrategias(),
             view.getRecursos(),
-            view.getProfessorNome(),
-            view.getTurmaDescricao()
+            view.getCreatedAt()
         ))
         .collect(Collectors.toList());
     }
@@ -39,10 +44,12 @@ public class PatientRecordService {
         return assessmentViewRepository.findByPacienteId(patientId).stream()
          .map(view -> new AssessmentResponseDTO(
             view.getId(),
+            view.getAlunoId(),
+            view.getAlunoNome(),
+            view.getProfessorId(),
+            view.getProfessorNome(),
             view.getDescricao(),
-            view.getDataAvaliacao(),
-            view.getPacienteId(),
-            view.getProfessorNome()
+            view.getDataAvaliacao()
         ))
         .collect(Collectors.toList());
     }

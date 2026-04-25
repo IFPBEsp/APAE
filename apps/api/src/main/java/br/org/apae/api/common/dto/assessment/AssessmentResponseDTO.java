@@ -5,8 +5,10 @@ import java.util.UUID;
 
 public record AssessmentResponseDTO(
     UUID id,
-    String descricaoAvaliacao,
-    LocalDateTime dataAvaliacao,
-    UUID pacienteId,
-    String professorNome
+    UUID alunoId,
+    String alunoNome,
+    UUID professorId,
+    String professorNome,
+    String descricao,
+    LocalDateTime dataAvaliacao
 ){}

@@ -14,25 +14,43 @@ import jakarta.persistence.Table;
 @Immutable
 @Table(name = "view_relatorios_escolares")
 public class ReportView {
-     @Id
-     @Column(name = "relatorio_id")
-     private UUID id;
 
-     private String habilidades;
-     private String estrategias;
-     private String recursos;
-
-     @Column(name = "created_at")
-     private LocalDateTime createdAt;
+    @Id
+    @Column(name = "relatorio_id")
+    private UUID id;
 
     @Column(name = "aluno_id")
-    private UUID pacienteId;
+    private UUID alunoId;
+
+    @Column(name = "aluno_nome")
+    private String alunoNome;
+
+    @Column(name = "professor_id")
+    private UUID professorId;
 
     @Column(name = "professor_nome")
     private String professorNome;
 
-    @Column(name = "turma_descricao")
-    private String turmaDescricao;
+    @Column(name = "turma_id")
+    private UUID turmaId;
+
+    @Column(name = "turma_nome")
+    private String turmaNome;
+
+    @Column(name = "atividades")
+    private String atividades;
+
+    @Column(name = "habilidades")
+    private String habilidades;
+
+    @Column(name = "estrategias")
+    private String estrategias;
+
+    @Column(name = "recursos")
+    private String recursos;
+
+     @Column(name = "created_at")
+     private LocalDateTime createdAt;
 
     public ReportView(){
         
@@ -40,6 +58,34 @@ public class ReportView {
 
     public UUID getId(){
         return id;
+    }
+
+    public UUID getAlunoId() {
+        return alunoId;
+    }
+
+    public String getAlunoNome(){
+        return alunoNome;
+    }
+
+    public UUID getProfessorId() {
+        return professorId;
+    }
+
+    public String getProfessorNome(){
+        return professorNome;
+    }
+
+     public UUID getTurmaId() {
+        return turmaId;
+    }
+
+    public String getTurmaNome(){
+        return turmaNome;
+    }
+
+    public String getAtividades() {
+        return atividades;
     }
 
     public String getHabilidades(){
@@ -56,17 +102,5 @@ public class ReportView {
 
     public LocalDateTime getCreatedAt(){
         return createdAt;
-    }
-
-    public UUID getPacienteId() {
-        return pacienteId;
-    }
-
-    public String getProfessorNome(){
-        return professorNome;
-    }
-
-    public String getTurmaDescricao(){
-        return turmaDescricao;
     }
 }
