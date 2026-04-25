@@ -21,20 +21,30 @@ interface Props {
     type?: string;
     originalName?: string;
   };
+  canReplace?: boolean;
+  onReplace?: () => void;
 }
 
-export default function FileCard({ file }: Props) {
+export default function FileCard({
+  file,
+  canReplace = false,
+  onReplace,
+}: Props) {
   const [open, setOpen] = React.useState(false);
 
   // Estado para o Modal (Preview grande)
-  const [modalViewType, setModalViewType] = React.useState<'img' | 'iframe'>('img');
+  const [modalViewType, setModalViewType] = React.useState<"img" | "iframe">(
+    "img",
+  );
 
   // NOVO: Estado para a Miniatura (Card pequeno)
-  const [thumbnailView, setThumbnailView] = React.useState<'img' | 'icon'>('img');
+  const [thumbnailView, setThumbnailView] = React.useState<"img" | "icon">(
+    "img",
+  );
 
   React.useEffect(() => {
     if (open) {
-      setModalViewType('img');
+      setModalViewType("img");
     }
   }, [open]);
 
@@ -48,26 +58,42 @@ export default function FileCard({ file }: Props) {
 
         {/* ÁREA DA MINIATURA */}
         <div className="flex flex-col items-center justify-center bg-blue-50 text-blue-900 rounded-md w-full h-32 border border-blue-100 overflow-hidden relative">
-
-          {thumbnailView === 'img' ? (
-             <img
-               src={file.link}
-               alt={file.fileName}
-               // object-cover faz a imagem preencher o quadradinho todo de forma elegante
-               className="w-full h-full object-cover"
-               // Se falhar (for PDF), troca para o ícone
-               onError={() => setThumbnailView('icon')}
-             />
+          {thumbnailView === "img" ? (
+            <img
+              src={file.link}
+              alt={file.fileName}
+              // object-cover faz a imagem preencher o quadradinho todo de forma elegante
+              className="w-full h-full object-cover"
+              // Se falhar (for PDF), troca para o ícone
+              onError={() => setThumbnailView("icon")}
+            />
           ) : (
             <>
-              <FileText size={40} strokeWidth={1.5} className="mb-1 text-blue-800" />
+              <FileText
+                size={40}
+                strokeWidth={1.5}
+                className="mb-1 text-blue-800"
+              />
               <span className="text-[10px] font-bold uppercase tracking-wider text-blue-800">
                 Documento
               </span>
             </>
           )}
-
         </div>
+
+        {canReplace && onReplace && (
+          <Button
+            type="button"
+            variant="secondary"
+            className="mt-3 w-full border border-blue-100 bg-blue-50 text-blue-900 hover:bg-blue-100"
+            onClick={(event) => {
+              event.stopPropagation();
+              onReplace();
+            }}
+          >
+            Substituir
+          </Button>
+        )}
       </div>
 
       {/* Preview Modal (MANTIDO IGUAL AO QUE FUNCIONOU) */}
@@ -79,16 +105,16 @@ export default function FileCard({ file }: Props) {
 
           {/* Área de Preview grande */}
           <div className="flex justify-center items-center w-full h-[60vh] bg-gray-50 rounded-lg overflow-hidden relative">
-            {modalViewType === 'img' && (
+            {modalViewType === "img" && (
               <img
                 src={file.link}
                 alt={file.fileName}
                 className="w-full h-full object-contain"
-                onError={() => setModalViewType('iframe')}
+                onError={() => setModalViewType("iframe")}
               />
             )}
 
-            {modalViewType === 'iframe' && (
+            {modalViewType === "iframe" && (
               <iframe
                 src={file.link}
                 title={file.fileName}

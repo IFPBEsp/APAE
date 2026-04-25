@@ -5,8 +5,15 @@ import { useRouter, useParams } from "next/navigation";
 import { ArrowLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import FileCard from "@/components/fileCard";
+import ReplaceDocumentModal from "@/components/documents/ReplaceDocumentModal";
 import { toast } from "react-toastify";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 const documentTypeTranslations: Record<string, string> = {
   MEDICAL_REPORT: "Laudo Médico",
@@ -17,7 +24,7 @@ const documentTypeTranslations: Record<string, string> = {
   PERSONAL_DOCUMENT: "Documento Pessoal",
   SCHOOL_DOCUMENT: "Documento Escolar",
   PHOTO: "Foto",
-  EXAMINATION: "Exame", 
+  EXAMINATION: "Exame",
   OTHER: "Outro",
 };
 
@@ -41,9 +48,8 @@ const documentCategory = {
   medico: "Documentos médicos",
   medicos: "Documentos médicos",
   escolar: "Documentos escolares",
-  escolares: "Documentos escolares", 
+  escolares: "Documentos escolares",
 };
-
 
 export default function DocumentTypePage() {
   const router = useRouter();
@@ -53,10 +59,16 @@ export default function DocumentTypePage() {
   const category = params?.type as keyof typeof documentCategory;
 
   const [yearFilter, _setYearFilter] = React.useState<string>(
-    new Date().getFullYear().toString()
+    new Date().getFullYear().toString(),
   );
   const [typeFilter, _setTypeFilter] = React.useState<string>("");
   const [files, setFiles] = React.useState<FileItem[]>([]);
+  const [replaceOpen, setReplaceOpen] = React.useState(false);
+  const [replaceTarget, setReplaceTarget] = React.useState<FileItem | null>(
+    null,
+  );
+  const [replaceFile, setReplaceFile] = React.useState<File | null>(null);
+  const [replaceLoading, setReplaceLoading] = React.useState(false);
 
   // Gerar lista de anos (últimos 5 anos + ano atual + próximo ano)
   const availableYears = React.useMemo(() => {
@@ -68,41 +80,97 @@ export default function DocumentTypePage() {
     return years;
   }, []);
 
-  React.useEffect(() => {
-    async function fetchDocuments() {
-      try {
-        if (!patientId || !category || !yearFilter) return;
+  const fetchDocuments = React.useCallback(async () => {
+    try {
+      if (!patientId || !category || !yearFilter) return;
 
-        const params = new URLSearchParams({
-          category: category,
-          year: yearFilter,
-          ...(typeFilter && { type: typeFilter }),
-        });
+      const params = new URLSearchParams({
+        category: category,
+        year: yearFilter,
+        ...(typeFilter && { type: typeFilter }),
+      });
 
-        const response = await fetch(
-          `/api/pessoas/${patientId}/documentos?${params.toString()}`
-        );
+      const response = await fetch(
+        `/api/pessoas/${patientId}/documentos?${params.toString()}`,
+      );
 
-        if (!response.ok) {
-          const errorData = await response.json();
-          throw new Error(errorData.message || "Erro ao buscar os documentos");
-        }
-
-        const data = await response.json();
-
-        setFiles(data);
-      } catch (err: unknown) {
-        console.error("Erro ao buscar documentos:", err);
-        const errorMessage = err instanceof Error ? err.message : "Erro ao processar resposta da API";
-        toast.error(errorMessage);
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || "Erro ao buscar os documentos");
       }
-    }
 
-    fetchDocuments();
+      const data = await response.json();
+
+      setFiles(data);
+    } catch (err: unknown) {
+      console.error("Erro ao buscar documentos:", err);
+      const errorMessage =
+        err instanceof Error
+          ? err.message
+          : "Erro ao processar resposta da API";
+      toast.error(errorMessage);
+    }
   }, [patientId, category, yearFilter, typeFilter]);
+
+  React.useEffect(() => {
+    fetchDocuments();
+  }, [fetchDocuments]);
 
   const brandColor = "text-[#0d4f97]";
   const pageTitle = documentCategory[category] || "Documentos";
+  const isReplaceableDocument = (file: FileItem) =>
+    file.category === "MEDICAL" &&
+    ["MEDICAL_REPORT", "REFERRAL"].includes(file.type);
+
+  const openReplaceModal = (file: FileItem) => {
+    setReplaceTarget(file);
+    setReplaceFile(null);
+    setReplaceOpen(true);
+  };
+
+  const closeReplaceModal = () => {
+    setReplaceOpen(false);
+    setReplaceTarget(null);
+    setReplaceFile(null);
+  };
+
+  const confirmReplace = async () => {
+    if (!patientId || !replaceTarget || !replaceFile) {
+      toast.error("Selecione um arquivo para substituir.");
+      return;
+    }
+
+    try {
+      setReplaceLoading(true);
+      const formData = new FormData();
+      formData.append("file", replaceFile);
+
+      const response = await fetch(
+        `/api/pessoas/${patientId}/documentos/${replaceTarget.id}`,
+        {
+          method: "PATCH",
+          body: formData,
+        },
+      );
+
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.message || "Erro ao substituir o documento");
+      }
+
+      toast.success("Documento substituído com sucesso.");
+      closeReplaceModal();
+      await fetchDocuments();
+    } catch (error: unknown) {
+      const message =
+        error instanceof Error
+          ? error.message
+          : "Erro ao substituir o documento";
+      toast.error(message);
+    } finally {
+      setReplaceLoading(false);
+    }
+  };
 
   return (
     <main className="pt-6 md:pt-12 px-4 py-6 max-w-7xl mx-auto font-baloo">
@@ -125,7 +193,9 @@ export default function DocumentTypePage() {
             </SelectTrigger>
             <SelectContent>
               {availableYears.map((year) => (
-                <SelectItem key={year} value={year}>{year}</SelectItem>
+                <SelectItem key={year} value={year}>
+                  {year}
+                </SelectItem>
               ))}
             </SelectContent>
           </Select>
@@ -146,14 +216,16 @@ export default function DocumentTypePage() {
             </SelectTrigger>
             <SelectContent>
               {availableYears.map((year) => (
-                <SelectItem key={year} value={year}>{year}</SelectItem>
+                <SelectItem key={year} value={year}>
+                  {year}
+                </SelectItem>
               ))}
             </SelectContent>
           </Select>
         </div>
       </div>
 
-     {/* --- Lista de Arquivos --- */}
+      {/* --- Lista de Arquivos --- */}
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-4 mt-4">
         {files.length === 0 ? (
           <p className="col-span-full text-center text-gray-500">
@@ -166,14 +238,37 @@ export default function DocumentTypePage() {
               file={{
                 fileName: translateDocumentType(file.type || file.name),
                 link: file.url,
-                // ADICIONE ESTAS DUAS LINHAS ABAIXO:
                 originalName: file.name,
-                type: file.type
+                type: file.type,
               }}
+              canReplace={isReplaceableDocument(file)}
+              onReplace={
+                isReplaceableDocument(file)
+                  ? () => openReplaceModal(file)
+                  : undefined
+              }
             />
           ))
         )}
       </div>
+
+      <ReplaceDocumentModal
+        open={replaceOpen}
+        loading={replaceLoading}
+        documentLabel={
+          replaceTarget
+            ? translateDocumentType(replaceTarget.type || replaceTarget.name)
+            : "Documento"
+        }
+        documentName={replaceTarget?.name}
+        selectedFile={replaceFile}
+        onOpenChange={(open) => {
+          if (open) setReplaceOpen(true);
+          else closeReplaceModal();
+        }}
+        onSelectedFileChange={setReplaceFile}
+        onConfirm={confirmReplace}
+      />
     </main>
   );
 }
