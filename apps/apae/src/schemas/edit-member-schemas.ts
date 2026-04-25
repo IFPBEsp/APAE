@@ -1,5 +1,6 @@
 import * as z from "zod";
 import { Personal, Address, Additionals, Guardian, Profile } from "./member-schemas";
+
 export const EditAdditionals = Additionals.extend({
   disability: z.object({
     types: z.array(z.string().min(1)).min(1, "O tipo de atendimento é obrigatório."),
@@ -14,7 +15,6 @@ export const EditAdditionals = Additionals.extend({
 export const EditProfile = Profile.extend({
   photo: z.union([z.instanceof(File), z.string()]).optional(), 
 });
-
 
 export const EditPersonal = Personal;
 export const EditAddress = Address;

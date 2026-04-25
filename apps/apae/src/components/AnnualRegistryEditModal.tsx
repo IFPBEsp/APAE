@@ -156,8 +156,6 @@ export default function AnnualRegistryEditModal({
                     name: s.name || s.area
                 })) : [];
 
-                const disorderList = Array.isArray(initialData.disorders) ? initialData.disorders : [];
-
                 const medicationValue = initialData.continuousMedication || 
                                         initialData.medications || 
                                         initialData.medicamentos || 
@@ -170,7 +168,7 @@ export default function AnnualRegistryEditModal({
                     diseases: initialData.diseases ?? "",
                     continuousMedication: medicationValue,
                     allergies: fullPatientData?.allergies ?? "",
-                    disorders: disorderList,
+                    disorders: initialData.disorders || [],
                     vaccines: vaccineList,
                     serviceTypes: serviceTypeList
                 });
@@ -259,6 +257,7 @@ export default function AnnualRegistryEditModal({
     };
 
     const onSubmit = async (data: AnnualRegistryFormValues) => {
+        toast.dismiss();
         try {
             const registryId = initialData?.id;
             const income = parseFloat(cleanCurrency(data.familyIncome));
@@ -286,7 +285,7 @@ export default function AnnualRegistryEditModal({
                     body: JSON.stringify(regPayload),
                 });
             } else {
-                if (!registryId) throw new Error();
+                if (!registryId) throw new Error("ID do registro não encontrado.");
                 regRes = await fetch(`/api/pessoas/${patientId}/registro-anual/${registryId}`, {
                     method: 'PUT',
                     headers: { 'Content-Type': 'application/json' },
@@ -294,7 +293,17 @@ export default function AnnualRegistryEditModal({
                 });
             }
 
-            if (!regRes.ok) throw new Error();
+            if (!regRes.ok) {
+                const errorData = await regRes.json().catch(() => ({}));
+                const details = errorData.details || "";
+                const message = errorData.message || "";
+
+                if (regRes.status === 409 || details.includes("Conflito") || details.includes("já existe") || message.includes("já existe")) {
+                    form.setError("year", { type: "manual", message: "Este ano já possui um registro cadastrado." });
+                    throw new Error(`O ano ${data.year} já possui um registro. Escolha outro ano.`);
+                }
+                throw new Error("Erro ao salvar registro no servidor.");
+            }
 
             if (fullPatientData) {
                 const vaccineList = (data.vaccines || []).map((v: any) => ({ name: v.name || v.label || v.value, id: v.id }));
@@ -303,6 +312,7 @@ export default function AnnualRegistryEditModal({
                     ...baseData,
                     allergies: data.allergies || "Nenhuma",
                     vaccineNames: vaccineList,
+                    continuousMedication: data.continuousMedication || "Nenhum"
                 };
                 await fetch(`/api/pessoas/${patientId}`, {
                     method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(patientPayload)
@@ -312,7 +322,7 @@ export default function AnnualRegistryEditModal({
             onClose(mode === "create" ? data.year : undefined);
             toast.success(mode === "create" ? "Registro criado com sucesso!" : "Alterações salvas!");
         } catch (error: any) {
-            toast.error("Erro ao salvar.");
+            toast.error(error.message || "Erro ao salvar.");
         }
     };
 
@@ -343,16 +353,20 @@ export default function AnnualRegistryEditModal({
                                     {isCreateMode && (
                                         <FormField control={form.control} name="year" render={({ field }) => (
                                             <FormItem>
-                                                <FormLabel className="text-slate-700 font-bold text-xs">Ano de Referência</FormLabel>
+                                                <FormLabel className={`font-bold text-xs ${errors.year ? "text-red-500" : "text-slate-700"}`}>Ano de Referência</FormLabel>
                                                 <Select onValueChange={field.onChange} defaultValue={field.value}>
-                                                    <FormControl><SelectTrigger className="bg-slate-50 border-slate-200 h-10 text-sm"><SelectValue placeholder="Selecione o ano" /></SelectTrigger></FormControl>
+                                                    <FormControl>
+                                                        <SelectTrigger className={`bg-slate-50 h-10 text-sm ${errors.year ? "border-red-500 ring-red-500" : "border-slate-200"}`}>
+                                                            <SelectValue placeholder="Selecione o ano" />
+                                                        </SelectTrigger>
+                                                    </FormControl>
                                                     <SelectContent className="max-h-60">
                                                         {availableYears.map(year => (
                                                             <SelectItem key={year} value={year}>{year}</SelectItem>
                                                         ))}
                                                     </SelectContent>
                                                 </Select>
-                                                <FormMessage />
+                                                <FormMessage className="text-red-500 text-[10px]" />
                                             </FormItem>
                                         )} />
                                     )}

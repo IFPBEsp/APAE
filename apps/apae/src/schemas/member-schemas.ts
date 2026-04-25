@@ -121,7 +121,10 @@ export const Address = z.object({
     .string()
     .min(3, "Estado deve ser o nome completo (ex: Paraíba)")
     .regex(/^[a-zA-ZÀ-ÿ\s]+$/, "O estado deve conter apenas letras"),
-  city: z.string().min(2, "Cidade inválida"),
+  city: z
+    .string()
+    .min(2, "Cidade inválida")
+    .regex(/^[a-zA-ZÀ-ÿ\s]+$/, "A cidade deve conter apenas letras"),
   neighborhood: z.string().min(2, "Bairro inválido"),
   street: z
     .string()
@@ -176,6 +179,7 @@ export const Kinship = z.object({
       z
         .string()
         .min(2, "Nome muito curto")
+        .regex(/^[a-zA-ZÀ-ÿ\s]+$/, "O nome não pode conter números ou símbolos")
         .refine((val) => val.split(/\s+/).length >= 2, {
           message: "Digite o nome completo do parente",
         }),
@@ -203,7 +207,14 @@ export const Guardian = z.object({
           message: "Digite o nome completo do responsável (nome e sobrenome)",
         }),
     ),
-  contact: z.string().min(1, "Contato de emergência é obrigatório."),
+  contact: z
+    .string()
+    .min(1, "Contato de emergência é obrigatório.")
+    .refine((val) => {
+      const apenasNumeros = val.replace(/\D/g, ""); 
+      return apenasNumeros.length >= 10; 
+    }, "O telefone deve ter no mínimo 10 dígitos (DDD + número)"),
+
   kinship: z.string().min(1, "Informar o parentesco é obrigatório."),
   address: Address,
 });
