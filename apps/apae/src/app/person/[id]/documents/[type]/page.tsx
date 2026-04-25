@@ -4,9 +4,24 @@ import * as React from "react";
 import { useRouter, useParams } from "next/navigation";
 import { ArrowLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import FileCard from "@/components/fileCard";
 import { toast } from "react-toastify";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 
 const documentTypeTranslations: Record<string, string> = {
   MEDICAL_REPORT: "Laudo Médico",
@@ -17,7 +32,7 @@ const documentTypeTranslations: Record<string, string> = {
   PERSONAL_DOCUMENT: "Documento Pessoal",
   SCHOOL_DOCUMENT: "Documento Escolar",
   PHOTO: "Foto",
-  EXAMINATION: "Exame", 
+  EXAMINATION: "Exame",
   OTHER: "Outro",
 };
 
@@ -41,9 +56,8 @@ const documentCategory = {
   medico: "Documentos médicos",
   medicos: "Documentos médicos",
   escolar: "Documentos escolares",
-  escolares: "Documentos escolares", 
+  escolares: "Documentos escolares",
 };
-
 
 export default function DocumentTypePage() {
   const router = useRouter();
@@ -53,10 +67,16 @@ export default function DocumentTypePage() {
   const category = params?.type as keyof typeof documentCategory;
 
   const [yearFilter, _setYearFilter] = React.useState<string>(
-    new Date().getFullYear().toString()
+    new Date().getFullYear().toString(),
   );
   const [typeFilter, _setTypeFilter] = React.useState<string>("");
   const [files, setFiles] = React.useState<FileItem[]>([]);
+  const [replaceOpen, setReplaceOpen] = React.useState(false);
+  const [replaceTarget, setReplaceTarget] = React.useState<FileItem | null>(
+    null,
+  );
+  const [replaceFile, setReplaceFile] = React.useState<File | null>(null);
+  const [replaceLoading, setReplaceLoading] = React.useState(false);
 
   // Gerar lista de anos (últimos 5 anos + ano atual + próximo ano)
   const availableYears = React.useMemo(() => {
@@ -68,41 +88,101 @@ export default function DocumentTypePage() {
     return years;
   }, []);
 
-  React.useEffect(() => {
-    async function fetchDocuments() {
-      try {
-        if (!patientId || !category || !yearFilter) return;
+  const fetchDocuments = React.useCallback(async () => {
+    try {
+      if (!patientId || !category || !yearFilter) return;
 
-        const params = new URLSearchParams({
-          category: category,
-          year: yearFilter,
-          ...(typeFilter && { type: typeFilter }),
-        });
+      const params = new URLSearchParams({
+        category: category,
+        year: yearFilter,
+        ...(typeFilter && { type: typeFilter }),
+      });
 
-        const response = await fetch(
-          `/api/pessoas/${patientId}/documentos?${params.toString()}`
-        );
+      const response = await fetch(
+        `/api/pessoas/${patientId}/documentos?${params.toString()}`,
+      );
 
-        if (!response.ok) {
-          const errorData = await response.json();
-          throw new Error(errorData.message || "Erro ao buscar os documentos");
-        }
-
-        const data = await response.json();
-
-        setFiles(data);
-      } catch (err: unknown) {
-        console.error("Erro ao buscar documentos:", err);
-        const errorMessage = err instanceof Error ? err.message : "Erro ao processar resposta da API";
-        toast.error(errorMessage);
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || "Erro ao buscar os documentos");
       }
-    }
 
-    fetchDocuments();
+      const data = await response.json();
+
+      setFiles(data);
+    } catch (err: unknown) {
+      console.error("Erro ao buscar documentos:", err);
+      const errorMessage =
+        err instanceof Error
+          ? err.message
+          : "Erro ao processar resposta da API";
+      toast.error(errorMessage);
+    }
   }, [patientId, category, yearFilter, typeFilter]);
+
+  React.useEffect(() => {
+    fetchDocuments();
+  }, [fetchDocuments]);
 
   const brandColor = "text-[#0d4f97]";
   const pageTitle = documentCategory[category] || "Documentos";
+  const isReplaceableDocument = (file: FileItem) =>
+    file.category === "MEDICAL" &&
+    ["MEDICAL_REPORT", "REFERRAL"].includes(file.type);
+  const replaceTargetLabel = replaceTarget
+    ? translateDocumentType(replaceTarget.type || replaceTarget.name)
+    : "Documento";
+  const selectedFileName = replaceFile?.name ?? "Nenhum arquivo selecionado";
+
+  const openReplaceModal = (file: FileItem) => {
+    setReplaceTarget(file);
+    setReplaceFile(null);
+    setReplaceOpen(true);
+  };
+
+  const closeReplaceModal = () => {
+    setReplaceOpen(false);
+    setReplaceTarget(null);
+    setReplaceFile(null);
+  };
+
+  const confirmReplace = async () => {
+    if (!patientId || !replaceTarget || !replaceFile) {
+      toast.error("Selecione um arquivo para substituir.");
+      return;
+    }
+
+    try {
+      setReplaceLoading(true);
+      const formData = new FormData();
+      formData.append("file", replaceFile);
+
+      const response = await fetch(
+        `/api/pessoas/${patientId}/documentos/${replaceTarget.id}`,
+        {
+          method: "PATCH",
+          body: formData,
+        },
+      );
+
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.message || "Erro ao substituir o documento");
+      }
+
+      toast.success("Documento substituído com sucesso.");
+      closeReplaceModal();
+      await fetchDocuments();
+    } catch (error: unknown) {
+      const message =
+        error instanceof Error
+          ? error.message
+          : "Erro ao substituir o documento";
+      toast.error(message);
+    } finally {
+      setReplaceLoading(false);
+    }
+  };
 
   return (
     <main className="pt-6 md:pt-12 px-4 py-6 max-w-7xl mx-auto font-baloo">
@@ -125,7 +205,9 @@ export default function DocumentTypePage() {
             </SelectTrigger>
             <SelectContent>
               {availableYears.map((year) => (
-                <SelectItem key={year} value={year}>{year}</SelectItem>
+                <SelectItem key={year} value={year}>
+                  {year}
+                </SelectItem>
               ))}
             </SelectContent>
           </Select>
@@ -146,14 +228,16 @@ export default function DocumentTypePage() {
             </SelectTrigger>
             <SelectContent>
               {availableYears.map((year) => (
-                <SelectItem key={year} value={year}>{year}</SelectItem>
+                <SelectItem key={year} value={year}>
+                  {year}
+                </SelectItem>
               ))}
             </SelectContent>
           </Select>
         </div>
       </div>
 
-     {/* --- Lista de Arquivos --- */}
+      {/* --- Lista de Arquivos --- */}
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-4 mt-4">
         {files.length === 0 ? (
           <p className="col-span-full text-center text-gray-500">
@@ -166,14 +250,103 @@ export default function DocumentTypePage() {
               file={{
                 fileName: translateDocumentType(file.type || file.name),
                 link: file.url,
-                // ADICIONE ESTAS DUAS LINHAS ABAIXO:
                 originalName: file.name,
-                type: file.type
+                type: file.type,
               }}
+              canReplace={isReplaceableDocument(file)}
+              onReplace={
+                isReplaceableDocument(file)
+                  ? () => openReplaceModal(file)
+                  : undefined
+              }
             />
           ))
         )}
       </div>
+
+      <Dialog
+        open={replaceOpen}
+        onOpenChange={(open) => {
+          if (replaceLoading) return;
+          if (open) setReplaceOpen(true);
+          else closeReplaceModal();
+        }}
+      >
+        <DialogContent className="sm:max-w-[680px]">
+          <DialogHeader>
+            <DialogTitle>Substituir documento</DialogTitle>
+            <DialogDescription>
+              Selecione um novo arquivo para substituir {replaceTargetLabel}. A
+              troca só será concluída se o novo upload e a remoção do anterior
+              ocorrerem com sucesso.
+            </DialogDescription>
+          </DialogHeader>
+
+          <div className="grid gap-4 md:grid-cols-[1.15fr_0.85fr]">
+            <div className="space-y-3 rounded-2xl border bg-slate-50 p-4">
+              <p className="text-sm font-semibold text-slate-700">
+                Documento alvo
+              </p>
+              <div className="rounded-xl border bg-white p-3 shadow-sm">
+                <p className="text-base font-semibold text-slate-900">
+                  {replaceTargetLabel}
+                </p>
+                <p className="text-xs text-slate-500 break-all">
+                  {replaceTarget?.name ?? "Documento atual"}
+                </p>
+              </div>
+
+              <div>
+                <p className="text-sm font-medium text-gray-700 mb-2">
+                  Arquivo novo
+                </p>
+                <Input
+                  type="file"
+                  accept="application/pdf,image/*"
+                  onChange={(event) =>
+                    setReplaceFile(event.target.files?.[0] ?? null)
+                  }
+                />
+                <p className="mt-2 text-xs text-slate-500">
+                  Arquivos PDF e imagens são aceitos.
+                </p>
+              </div>
+            </div>
+
+            <div className="rounded-2xl border border-dashed border-slate-200 bg-white p-4">
+              <p className="text-sm font-semibold text-slate-700">
+                Arquivo selecionado
+              </p>
+              <div className="mt-3 rounded-xl bg-slate-50 p-3">
+                <p className="text-sm font-medium text-slate-900 break-all">
+                  {selectedFileName}
+                </p>
+                <p className="mt-1 text-xs text-slate-500">
+                  Confirme apenas depois de revisar o arquivo escolhido.
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <DialogFooter>
+            <Button
+              type="button"
+              variant="outline"
+              onClick={closeReplaceModal}
+              disabled={replaceLoading}
+            >
+              Cancelar
+            </Button>
+            <Button
+              type="button"
+              onClick={confirmReplace}
+              disabled={replaceLoading || !replaceFile}
+            >
+              {replaceLoading ? "Substituindo..." : "Confirmar substituição"}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </main>
   );
 }

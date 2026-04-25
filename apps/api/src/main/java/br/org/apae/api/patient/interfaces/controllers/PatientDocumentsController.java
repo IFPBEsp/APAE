@@ -44,6 +44,14 @@ public interface PatientDocumentsController {
             @RequestParam(required = false) Integer year
     );
 
+    @Operation(summary = "Substituir um documento pelo seu identificador")
+    @PatchMapping(value = "/{documentId}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    ResponseEntity<DocumentWithUrlResponseDTO> replaceDocument(
+            @PathVariable UUID id,
+            @PathVariable UUID documentId,
+            @RequestPart("file") MultipartFile file
+    );
+
     @Operation(summary = "Retorna um documento pelo nome")
     @GetMapping("/download")
     ResponseEntity<DocumentWithUrlResponseDTO> findDocumentByName(
