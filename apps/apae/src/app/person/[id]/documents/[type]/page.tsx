@@ -4,8 +4,8 @@ import * as React from "react";
 import { useRouter, useParams } from "next/navigation";
 import { ArrowLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import FileCard from "@/components/fileCard";
+import ReplaceDocumentModal from "@/components/documents/ReplaceDocumentModal";
 import { toast } from "react-toastify";
 import {
   Select,
@@ -14,14 +14,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
 
 const documentTypeTranslations: Record<string, string> = {
   MEDICAL_REPORT: "Laudo Médico",
@@ -129,10 +121,6 @@ export default function DocumentTypePage() {
   const isReplaceableDocument = (file: FileItem) =>
     file.category === "MEDICAL" &&
     ["MEDICAL_REPORT", "REFERRAL"].includes(file.type);
-  const replaceTargetLabel = replaceTarget
-    ? translateDocumentType(replaceTarget.type || replaceTarget.name)
-    : "Documento";
-  const selectedFileName = replaceFile?.name ?? "Nenhum arquivo selecionado";
 
   const openReplaceModal = (file: FileItem) => {
     setReplaceTarget(file);
@@ -264,89 +252,23 @@ export default function DocumentTypePage() {
         )}
       </div>
 
-      <Dialog
+      <ReplaceDocumentModal
         open={replaceOpen}
+        loading={replaceLoading}
+        documentLabel={
+          replaceTarget
+            ? translateDocumentType(replaceTarget.type || replaceTarget.name)
+            : "Documento"
+        }
+        documentName={replaceTarget?.name}
+        selectedFile={replaceFile}
         onOpenChange={(open) => {
-          if (replaceLoading) return;
           if (open) setReplaceOpen(true);
           else closeReplaceModal();
         }}
-      >
-        <DialogContent className="sm:max-w-[680px]">
-          <DialogHeader>
-            <DialogTitle>Substituir documento</DialogTitle>
-            <DialogDescription>
-              Selecione um novo arquivo para substituir {replaceTargetLabel}. A
-              troca só será concluída se o novo upload e a remoção do anterior
-              ocorrerem com sucesso.
-            </DialogDescription>
-          </DialogHeader>
-
-          <div className="grid gap-4 md:grid-cols-[1.15fr_0.85fr]">
-            <div className="space-y-3 rounded-2xl border bg-slate-50 p-4">
-              <p className="text-sm font-semibold text-slate-700">
-                Documento alvo
-              </p>
-              <div className="rounded-xl border bg-white p-3 shadow-sm">
-                <p className="text-base font-semibold text-slate-900">
-                  {replaceTargetLabel}
-                </p>
-                <p className="text-xs text-slate-500 break-all">
-                  {replaceTarget?.name ?? "Documento atual"}
-                </p>
-              </div>
-
-              <div>
-                <p className="text-sm font-medium text-gray-700 mb-2">
-                  Arquivo novo
-                </p>
-                <Input
-                  type="file"
-                  accept="application/pdf,image/*"
-                  onChange={(event) =>
-                    setReplaceFile(event.target.files?.[0] ?? null)
-                  }
-                />
-                <p className="mt-2 text-xs text-slate-500">
-                  Arquivos PDF e imagens são aceitos.
-                </p>
-              </div>
-            </div>
-
-            <div className="rounded-2xl border border-dashed border-slate-200 bg-white p-4">
-              <p className="text-sm font-semibold text-slate-700">
-                Arquivo selecionado
-              </p>
-              <div className="mt-3 rounded-xl bg-slate-50 p-3">
-                <p className="text-sm font-medium text-slate-900 break-all">
-                  {selectedFileName}
-                </p>
-                <p className="mt-1 text-xs text-slate-500">
-                  Confirme apenas depois de revisar o arquivo escolhido.
-                </p>
-              </div>
-            </div>
-          </div>
-
-          <DialogFooter>
-            <Button
-              type="button"
-              variant="outline"
-              onClick={closeReplaceModal}
-              disabled={replaceLoading}
-            >
-              Cancelar
-            </Button>
-            <Button
-              type="button"
-              onClick={confirmReplace}
-              disabled={replaceLoading || !replaceFile}
-            >
-              {replaceLoading ? "Substituindo..." : "Confirmar substituição"}
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+        onSelectedFileChange={setReplaceFile}
+        onConfirm={confirmReplace}
+      />
     </main>
   );
 }
