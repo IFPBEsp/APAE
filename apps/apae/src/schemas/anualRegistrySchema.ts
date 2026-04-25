@@ -1,31 +1,22 @@
-import { z } from "zod";
-
-export interface AnnualRegistryFormValues {
-  year: string;
-  bpc: string;
-  familyIncome: string;
-  diseases: string;
-  allergies: string;
-  continuousMedication: string;
-  vaccines: { id?: string | number; name?: string; area?: string }[];
-  disorders: { id?: string | number; name?: string; area?: string }[];
-  serviceTypes: { id?: string | number; name?: string; area?: string }[];
-}
-
-const GenericItemSchema = z.object({
-  id: z.union([z.string(), z.number()]).optional(),
-  name: z.string().optional(),
-  area: z.string().optional(),
-});
+import * as z from "zod";
 
 export const AnnualRegistryFormSchema = z.object({
-  year: z.string().min(4, "Selecione um ano"),
-  bpc: z.string(),
-  familyIncome: z.string(),
-  diseases: z.string(),
-  allergies: z.string(),
-  continuousMedication: z.string(),
-  vaccines: z.array(GenericItemSchema),
-  disorders: z.array(GenericItemSchema),
-  serviceTypes: z.array(GenericItemSchema),
+  year: z.string().min(4, "Ano inválido"),
+  bpc: z.enum(["true", "false"]),
+  
+  familyIncome: z.string().min(1, "A renda é obrigatória")
+    .refine(val => {
+        const num = parseFloat(val.replace(/[^\d]/g, ""));
+        return num >= 20000;
+    }, "Mínimo R$ 200,00"),
+
+  diseases: z.string().min(1, "Informe as doenças ou 'Nenhuma'"),
+  continuousMedication: z.string().min(1, "Informe os medicamentos ou 'Nenhum'"),
+  allergies: z.string().min(1, "Informe as alergias ou 'Nenhuma'"),
+
+  vaccines: z.array(z.any()).min(1, "Selecione ao menos uma vacina"),
+  disorders: z.array(z.any()).min(1, "Selecione ao menos um transtorno"),
+  serviceTypes: z.array(z.any()).min(1, "Selecione ao menos um atendimento"),
 });
+
+export type AnnualRegistryFormValues = z.infer<typeof AnnualRegistryFormSchema>;

@@ -64,7 +64,8 @@ export default function MembersRegisterGuardianPage() {
   }, [isNoNumber, form]);
 
   useEffect(() => {
-    if (guardian && Object.keys(guardian).length > 0) {
+      if (guardian && guardian.name !== "") { 
+
       form.reset({
         ...guardian,
         address: {

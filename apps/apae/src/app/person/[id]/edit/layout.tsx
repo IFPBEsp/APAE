@@ -105,7 +105,7 @@ function EditPatientDataLoader({ children }: { children: React.ReactNode }) {
                number: data.guardian?.address?.number || "",
                noNumber: data.guardian?.address?.number === "SN" || false,
                complement: data.guardian?.address?.complement || "",
-               district: data.address?.district || "",
+               district: data.guardian?.address?.district || "",
              } 
            },
            kinships: data.parents?.map((p: any) => ({
