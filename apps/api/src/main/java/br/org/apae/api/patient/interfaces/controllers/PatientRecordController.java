@@ -1,6 +1,7 @@
 package br.org.apae.api.patient.interfaces.controllers;
 
 import java.util.List;
+import java.util.UUID;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -23,12 +24,12 @@ public class PatientRecordController {
     }
 
     @GetMapping("/{id}/reports")
-    public ResponseEntity<List<ReportResponseDTO>> getReports(@PathVariable Long id){
+    public ResponseEntity<List<ReportResponseDTO>> getReports(@PathVariable UUID id){
         return ResponseEntity.ok(patientRecordService.getReportsByPatientId(id));
     }
     
     @GetMapping("/{id}/assessments")
-    public ResponseEntity<List<AssessmentResponseDTO>> getAssessment(@PathVariable Long id){
+    public ResponseEntity<List<AssessmentResponseDTO>> getAssessment(@PathVariable UUID id){
         return ResponseEntity.ok(patientRecordService.getAssessmentByPatientId(id));
     }
 }

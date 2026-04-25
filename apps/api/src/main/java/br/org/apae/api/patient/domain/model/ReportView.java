@@ -1,6 +1,7 @@
 package br.org.apae.api.patient.domain.model;
 
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 import org.hibernate.annotations.Immutable;
 
@@ -14,7 +15,8 @@ import jakarta.persistence.Table;
 @Table(name = "view_relatorios_escolares")
 public class ReportView {
      @Id
-     private Long id;
+     @Column(name = "relatorio_id")
+     private UUID id;
 
      private String habilidades;
      private String estrategias;
@@ -24,7 +26,7 @@ public class ReportView {
      private LocalDateTime createdAt;
 
     @Column(name = "aluno_id")
-    private Long pacienteId;
+    private UUID pacienteId;
 
     @Column(name = "professor_nome")
     private String professorNome;
@@ -36,7 +38,7 @@ public class ReportView {
         
     }
 
-    public Long getId(){
+    public UUID getId(){
         return id;
     }
 
@@ -56,7 +58,7 @@ public class ReportView {
         return createdAt;
     }
 
-    public Long getPacienteId() {
+    public UUID getPacienteId() {
         return pacienteId;
     }
 

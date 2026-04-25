@@ -1,9 +1,10 @@
 package br.org.apae.api.common.dto.report;
 
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 public record ReportResponseDTO(
-    Long id,
+    UUID id,
     LocalDateTime createdAt,
     String habilidades,
     String estrategias,

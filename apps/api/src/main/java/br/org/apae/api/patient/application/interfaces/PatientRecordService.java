@@ -1,6 +1,7 @@
 package br.org.apae.api.patient.application.interfaces;
 
 import java.util.List;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
@@ -20,7 +21,7 @@ public class PatientRecordService {
         this.reportViewRepository = reportViewRepository;
         this.assessmentViewRepository = assessmentViewRepository;
     }
-    public List<ReportResponseDTO> getReportsByPatientId(Long patientId) {
+    public List<ReportResponseDTO> getReportsByPatientId(UUID patientId) {
         return reportViewRepository.findByPacienteId(patientId).stream()
         .map(view -> new ReportResponseDTO(
             view.getId(),
@@ -34,7 +35,7 @@ public class PatientRecordService {
         .collect(Collectors.toList());
     }
 
-    public List<AssessmentResponseDTO> getAssessmentByPatientId(Long patientId) {
+    public List<AssessmentResponseDTO> getAssessmentByPatientId(UUID patientId) {
         return assessmentViewRepository.findByPacienteId(patientId).stream()
          .map(view -> new AssessmentResponseDTO(
             view.getId(),
@@ -45,4 +46,5 @@ public class PatientRecordService {
         ))
         .collect(Collectors.toList());
     }
+
 }
