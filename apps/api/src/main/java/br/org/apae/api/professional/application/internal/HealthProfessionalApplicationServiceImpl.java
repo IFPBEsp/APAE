@@ -53,13 +53,12 @@ public class HealthProfessionalApplicationServiceImpl implements HealthProfessio
     public HealthProfessionalResponseDTO createProfessional(CreateHealthProfessionalDTO dto,
             CreateProfessionalDocumentsDTO documentsDTO) {
         if (dto.professionalDocument() != null && repository.existsByProfessionalDocument(dto.professionalDocument())) {
-            System.out.println("------- " + dto.professionalDocument());
             throw new ProfessionalDocumentConflictException();
         }
         if (repository.existsByEmail(dto.email())) {
             throw new EmailConflictException();
         }
-        if (repository.existsByIdentityDocument(dto.identityDocument())) {
+        if (dto.professionalDocument() != null && repository.existsByIdentityDocument(dto.identityDocument())) {
             throw new IdentityDocumentConflictException();
         }
 
@@ -82,10 +81,7 @@ public class HealthProfessionalApplicationServiceImpl implements HealthProfessio
             throw new ProfessionalDocumentConflictException();
         }
 
-        if (dto.professionalDocument() != null
-             && !entityToUpdate.getProfessionalDocument().equalsIgnoreCase(dto.professionalDocument())
-                && repository.existsByProfessionalDocument(dto.professionalDocument())
-                ) {
+        if (dto.professionalDocument() != null && existsByProfessionalDocumentAndIdNot(dto.professionalDocument(), id)){
             throw new ProfessionalDocumentConflictException();
         }
 
@@ -200,5 +196,10 @@ public class HealthProfessionalApplicationServiceImpl implements HealthProfessio
         return allSlots.stream()
                 .filter(slot -> !occupied.contains(slot))
                 .toList();
+    }
+
+    @Override
+    public boolean existsByProfessionalDocumentAndIdNot(String document, UUID professionalId) {
+        return repository.existsByProfessionalDocumentAndIdNot(document, professionalId);
     }
 }
