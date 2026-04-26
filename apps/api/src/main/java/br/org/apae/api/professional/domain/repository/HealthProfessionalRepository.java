@@ -31,4 +31,6 @@ public interface HealthProfessionalRepository extends JpaRepository<HealthProfes
               AND a.isActive = true
         """)
         List<LocalTime> findOccupiedHours(UUID professionalId, LocalDate date);
+
+    boolean existsByProfessionalDocumentAndIdNot(String document, UUID professionalId);
 }

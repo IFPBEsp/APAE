@@ -8,11 +8,13 @@ import br.org.apae.api.documents.interfaces.dto.DocumentDTO;
 import br.org.apae.api.documents.interfaces.dto.GetPresignedDocumentUrlArgsDTO;
 import br.org.apae.api.documents.interfaces.dto.ListDocumentsArgsDTO;
 import br.org.apae.api.documents.interfaces.dto.PutDocumentArgsDTO;
+import br.org.apae.api.documents.interfaces.dto.RemoveDocumentArgsDTO;
 import br.org.apae.api.patient.interfaces.controllers.PatientDocumentsController;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.time.Year;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -55,6 +57,75 @@ public class PatientDocumentsControllerImpl implements PatientDocumentsControlle
             throw new RuntimeException("Categoria ou Tipo de documento inválido: " + category + " / " + type, e);
         } catch (Exception e) {
             throw new RuntimeException("Erro ao fazer upload do documento", e);
+        }
+    }
+
+    @Override
+    public ResponseEntity<DocumentWithUrlResponseDTO> replaceDocument(UUID id, UUID documentId, MultipartFile file) {
+        try {
+            Iterable<DocumentDTO> documents = this.documentService.listDocuments(
+                    ListDocumentsArgsDTO.builder()
+                            .owner(id.toString())
+                            .category(DocumentCategory.MEDICAL)
+                            .build()
+            );
+
+            DocumentDTO target = null;
+            for (DocumentDTO document : documents) {
+                if (document != null && Objects.equals(document.id(), documentId)) {
+                    target = document;
+                    break;
+                }
+            }
+
+            if (target == null) {
+                throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Documento não encontrado");
+            }
+
+            DocumentDTO uploadedDocument = this.documentService.putDocument(
+                    PutDocumentArgsDTO.builder()
+                            .owner(id.toString())
+                            .category(target.category())
+                            .type(target.type())
+                            .year(target.year())
+                            .contentType(file.getContentType())
+                            .stream(file.getInputStream())
+                            .build()
+            );
+
+            try {
+                this.documentService.removeDocument(
+                        RemoveDocumentArgsDTO.builder()
+                                .id(target.id())
+                                .owner(target.owner())
+                                .category(target.category())
+                                .type(target.type())
+                                .year(target.year())
+                                .build()
+                );
+            } catch (Exception removalError) {
+                try {
+                    this.documentService.removeDocument(
+                            RemoveDocumentArgsDTO.builder()
+                                    .id(uploadedDocument.id())
+                                    .owner(uploadedDocument.owner())
+                                    .category(uploadedDocument.category())
+                                    .type(uploadedDocument.type())
+                                    .year(uploadedDocument.year())
+                                    .build()
+                    );
+                } catch (Exception rollbackError) {
+                    System.err.println("Falha ao desfazer upload após erro de remoção: " + rollbackError.getMessage());
+                }
+
+                throw new RuntimeException("Erro ao substituir o documento", removalError);
+            }
+
+            return ResponseEntity.ok(generatePresignedUrl(uploadedDocument));
+        } catch (ResponseStatusException e) {
+            throw e;
+        } catch (Exception e) {
+            throw new RuntimeException("Erro ao substituir o documento", e);
         }
     }
 

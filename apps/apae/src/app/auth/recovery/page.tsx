@@ -50,6 +50,7 @@ export default function RecoveryPage() {
       });
 
       toast.success("Se o e-mail existir, um link de recuperação foi enviado.");
+      form.reset();
     } catch {
       toast.error("Erro ao solicitar recuperação de senha.");
     }
