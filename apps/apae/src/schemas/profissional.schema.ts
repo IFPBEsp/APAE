@@ -2,8 +2,7 @@ import * as z from "zod";
 
 const nomeRegex = /^[A-Za-zÀ-ÖØ-öø-ÿ ]{3,100}$/;
 const telefoneRegex = /^\(\d{2}\) \d{5}-\d{4}$/;
-const docProfissionalRegex =
-  /^(CRM|COREN|CREFITO|CRFa|CRP|CRESS)([-/][A-Z0-9]{1,2}|\s\d{2})?\s?\d{1,6}$/;
+
 const rgRegex =
   /^(\d{7,8}[\dXx]?|\d\.\d{3}\.\d{3}|\d{2}\.\d{3}\.\d{3}-[\dXx])$/;
 const estadoRegex = /^[A-Z]{2}$/;
@@ -38,9 +37,7 @@ const baseSchema = z.object({
 
   email: z.email("Email inválido"),
 
-  documentoProfissional: z
-    .string()
-    .regex(docProfissionalRegex, "Documento profissional inválido"),
+  documentoProfissional: z.string().optional().nullable(),
 
   areaAtendimento: z.string().min(1, "Selecione uma área"),
 

@@ -37,4 +37,5 @@ public interface HealthProfessionalApplicationService {
 
     List<LocalTime> getAvailableTimes(UUID professionalId, LocalDate date);
 
+    boolean existsByProfessionalDocumentAndIdNot(String document, UUID professionalId);
 }
