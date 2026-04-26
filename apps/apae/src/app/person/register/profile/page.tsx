@@ -15,12 +15,14 @@ import {
 import { Profile } from "@/schemas/member-schemas";
 import { EditProfile } from "@/schemas/edit-member-schemas"; 
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
+import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
+import { User } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { handleBackendValidationErrors } from "@/utils/form-errors";
 
 import z from "zod";
-import { FileInputButton, FormButton, MembersRegisterForm } from "../form";
+import { FormButton, MembersRegisterForm } from "../form";
 import { Checkbox } from "@/components/ui/checkbox";
 import { useRouter, useParams, usePathname } from "next/navigation"; 
 import { toast } from "react-toastify";
@@ -34,6 +36,8 @@ export default function MembersRegisterProfilePage() {
   
   const [submitted, setSubmitted] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
   const router = useRouter();
 
   const params = useParams();
@@ -53,17 +57,12 @@ export default function MembersRegisterProfilePage() {
 
   const getErrorMessage = (data: any) => {  
     if (!data) return "Erro inesperado no servidor.";
-
     if (typeof data === "string") return data;
-
     if (typeof data.message === "string") return data.message;
-
     if (data.message && typeof data.message.message === "string") {
       return data.message.message;
     }
-
     if (typeof data.error === "string") return data.error;
-
     return "Erro inesperado no servidor.";
   };
 
@@ -80,7 +79,45 @@ export default function MembersRegisterProfilePage() {
     }
   }, [profile, form]);
 
-   useEffect(() => {
+  useEffect(() => {
+    if (profile.photo instanceof File) {
+      const url = URL.createObjectURL(profile.photo);
+      setPreviewUrl(url);
+    } else if (typeof profile.photo === 'string' && profile.photo) {
+      setPreviewUrl(profile.photo);
+    } else {
+      setPreviewUrl(null);
+    }
+  }, [profile.photo]);
+
+  useEffect(() => {
+    return () => {
+      if (previewUrl && previewUrl.startsWith('blob:')) {
+        URL.revokeObjectURL(previewUrl);
+      }
+    };
+  }, [previewUrl]);
+
+  // Busca a foto atual do paciente ao entrar na edição
+  useEffect(() => {
+    if (!isEditing || !id) return;
+    if (profile.photo) return;
+
+    (async () => {
+      try {
+        const res = await fetch(`/api/pessoas/${id}`);
+        const data = await res.json();
+        if (data?.photoUrl) {
+          setPreviewUrl(data.photoUrl);
+          setProfileData({ photo: data.photoUrl });
+        }
+      } catch (e) {
+        console.error("Erro ao buscar foto do paciente:", e);
+      }
+    })();
+  }, [isEditing, id]);
+
+  useEffect(() => {
     if (submitted && profile) {
       (async () => {
         setIsLoading(true);
@@ -93,7 +130,6 @@ export default function MembersRegisterProfilePage() {
                 ? "Paciente atualizado com sucesso!"
                 : "Membro cadastrado com sucesso!",
             );
-
             router.push(
               isEditing ? `/person/${id}` : "/visualization-patients",
             );
@@ -120,12 +156,10 @@ export default function MembersRegisterProfilePage() {
 
             toast.error(displayMsg);
             setStep(MembersRegisterStep.PERSONAL);
-
             form.setError(targetField as any, {
               type: "manual",
               message: displayMsg,
             });
-
             setSubmitted(false);
             return;
           }
@@ -140,39 +174,17 @@ export default function MembersRegisterProfilePage() {
 
             if (backendField) {
               if (
-                [
-                  "fullName",
-                  "cpf",
-                  "rg",
-                  "contact",
-                  "birth",
-                  "nationality",
-                  "cns",
-                  "nis",
-                  "phone",
-                  "name",
-                ].some((f) => fieldLower.includes(f.toLowerCase()))
+                ["fullName","cpf","rg","contact","birth","nationality","cns","nis","phone","name"]
+                .some((f) => fieldLower.includes(f.toLowerCase()))
               ) {
                 setStep(MembersRegisterStep.PERSONAL);
-              } else if (
-                fieldLower.includes("parents") ||
-                fieldLower.includes("kinships")
-              ) {
+              } else if (fieldLower.includes("parents") || fieldLower.includes("kinships")) {
                 setStep(MembersRegisterStep.KINSHIPS);
-              } else if (
-                fieldLower.includes("address") &&
-                !fieldLower.includes("guardian")
-              ) {
+              } else if (fieldLower.includes("address") && !fieldLower.includes("guardian")) {
                 setStep(MembersRegisterStep.ADDRESS);
               } else if (
-                [
-                  "annualRegistry",
-                  "vaccine",
-                  "allergies",
-                  "diseases",
-                  "familyIncome",
-                  "householdIncome",
-                ].some((f) => fieldLower.includes(f.toLowerCase()))
+                ["annualRegistry","vaccine","allergies","diseases","familyIncome","householdIncome"]
+                .some((f) => fieldLower.includes(f.toLowerCase()))
               ) {
                 setStep(MembersRegisterStep.ADDITIONALS);
               } else if (fieldLower.includes("guardian")) {
@@ -239,35 +251,45 @@ export default function MembersRegisterProfilePage() {
             name="photo"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>
-                  Foto {isEditing ? "(Opcional na edição)" : "*"}
+                <FormLabel className="text-sm">
+                  Selecione uma foto {isEditing ? "(Opcional na edição)" : "*"}
                 </FormLabel>
                 <FormControl>
-                  <FileInputButton
-                    id={field.name}
-                    className="min-w-3xs !cursor-pointer bg-gradient-to-b hover:bg-zinc-300/55"
-                    disabled={isLoading}
-                    onChange={(e) => {
-                      if (e.target.files && e.target.files[0]) {
-                        field.onChange(e.target.files[0]);
-                      }
-                    }}
-                  >
-                    {field.value instanceof File ? (
-                      <span
-                        className="truncate text-left"
-                        title={field.value.name}
-                      >
-                        Arquivo selecionado: {field.value.name}
-                      </span>
-                    ) : typeof field.value === "string" && field.value ? (
-                      <span className="truncate text-left" title="Foto atual">
-                        Clique para alterar
-                      </span>
-                    ) : (
-                      "Selecionar Foto"
-                    )}
-                  </FileInputButton>
+                  <div className="flex flex-col items-start gap-4 w-full">
+                    <input
+                      ref={fileInputRef}
+                      type="file"
+                      id={`${field.name}-upload`}
+                      className="hidden"
+                      accept="image/*"
+                      onChange={(e) => {
+                        if (e.target.files && e.target.files[0]) {
+                          const file = e.target.files[0];
+                          field.onChange(file);
+                          setProfileData({ photo: file });
+                        }
+                      }}
+                    />
+
+                    <button
+                      type="button"
+                      onClick={() => fileInputRef.current?.click()}
+                      className="relative group mr-auto"
+                    >
+                      <Avatar className="w-32 h-32 border-2 border-gray-300/70 cursor-pointer transition-all group-hover:opacity-80">
+                        <AvatarImage src={previewUrl || undefined} alt="Foto do paciente" />
+                        <AvatarFallback className="bg-gray-100">
+                          <User className="w-16 h-16 text-gray-400" />
+                        </AvatarFallback>
+                      </Avatar>
+
+                      <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                        <div className="bg-black bg-opacity-50 text-white text-xs px-2 py-1 rounded">
+                          Escolher foto
+                        </div>
+                      </div>
+                    </button>
+                  </div>
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -285,9 +307,7 @@ export default function MembersRegisterProfilePage() {
                 <FormItem className="flex flex-row items-center gap-2">
                   <FormControl>
                     <Checkbox
-                      checked={
-                        field.value === "patient" || field.value === "student"
-                      }
+                      checked={field.value === "patient" || field.value === "student"}
                       disabled={isLoading}
                       onCheckedChange={() => field.onChange("patient")}
                     />
