@@ -1,33 +1,30 @@
 package br.org.apae.api.controllers.patient;
 
-import br.org.apae.api.common.dto.patient.request.documents.CreateDocumentsDTO;
-import br.org.apae.api.common.dto.patient.request.patient.CreatePatientDTO;
-import br.org.apae.api.common.dto.patient.request.patient.UpdatePatientDTO;
-import br.org.apae.api.common.dto.patient.response.patient.PatientResponseDTO;
-import br.org.apae.api.common.dto.patient.response.patient.PatientSummaryResponseDTO;
-import br.org.apae.api.common.dto.patient.response.patient.PatientWithAbsencesResponseDTO;
-import br.org.apae.api.common.dto.servicearea.response.ServiceAreaResponseDTO;
-import br.org.apae.api.patient.application.interfaces.PatientApplicationService;
-import br.org.apae.api.patient.interfaces.controllers.PatientController;
-
-import br.org.apae.api.common.dto.patient.response.disorder.DisorderResponseDTO;
-import br.org.apae.api.patient.application.interfaces.AnnualRegistryApplicationService;
-import br.org.apae.api.patient.application.interfaces.DisorderApplicationService;
-
-
-import br.org.apae.api.servicearea.application.interfaces.ServiceAreaApplicationService;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import java.util.stream.Collectors;
+
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+
+import br.org.apae.api.common.dto.patient.request.documents.CreateDocumentsDTO;
+import br.org.apae.api.common.dto.patient.request.patient.CreatePatientDTO;
+import br.org.apae.api.common.dto.patient.request.patient.UpdatePatientDTO;
+import br.org.apae.api.common.dto.patient.response.disorder.DisorderResponseDTO;
+import br.org.apae.api.common.dto.patient.response.patient.PatientResponseDTO;
+import br.org.apae.api.common.dto.patient.response.patient.PatientSummaryResponseDTO;
+import br.org.apae.api.common.dto.patient.response.patient.PatientWithAbsencesResponseDTO;
+import br.org.apae.api.common.dto.servicearea.response.ServiceAreaResponseDTO;
+import br.org.apae.api.patient.application.interfaces.AnnualRegistryApplicationService;
+import br.org.apae.api.patient.application.interfaces.DisorderApplicationService;
+import br.org.apae.api.patient.application.interfaces.PatientApplicationService;
+import br.org.apae.api.patient.interfaces.controllers.PatientController;
+import br.org.apae.api.servicearea.application.interfaces.ServiceAreaApplicationService;
 
 @RestController
 public class PatientControllerImpl implements PatientController {
