@@ -21,8 +21,8 @@ public class PatientRecordService {
         this.reportViewRepository = reportViewRepository;
         this.assessmentViewRepository = assessmentViewRepository;
     }
-    public List<ReportResponseDTO> getReportsByPatientId(UUID patientId) {
-        return reportViewRepository.findByPacienteId(patientId).stream()
+    public List<ReportResponseDTO> getReportsByPatientId(UUID alunoId) {
+        return reportViewRepository.findByAlunoId(alunoId).stream()
         .map(view -> new ReportResponseDTO(
             view.getId(),
             view.getAlunoId(),
@@ -40,8 +40,8 @@ public class PatientRecordService {
         .collect(Collectors.toList());
     }
 
-    public List<AssessmentResponseDTO> getAssessmentByPatientId(UUID patientId) {
-        return assessmentViewRepository.findByPacienteId(patientId).stream()
+    public List<AssessmentResponseDTO> getAssessmentByPatientId(UUID alunoId) {
+        return assessmentViewRepository.findByAlunoId(alunoId).stream()
          .map(view -> new AssessmentResponseDTO(
             view.getId(),
             view.getAlunoId(),
