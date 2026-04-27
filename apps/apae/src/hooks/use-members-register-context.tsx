@@ -365,6 +365,8 @@ export function MembersRegisterProvider({
     hasHydrated.current = true;
   }, [STORAGE_KEY, reconstructFiles]);
 
+  
+
   useEffect(() => {
     if (typeof window === "undefined") return;
     if (!hasHydrated.current) return;
@@ -406,6 +408,8 @@ export function MembersRegisterProvider({
         }
       }
     };
+
+    
 
     const timer = setTimeout(saveDraft, 1000);
     return () => clearTimeout(timer);
