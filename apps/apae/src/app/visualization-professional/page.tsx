@@ -84,11 +84,12 @@ export default function VisualizationProfessionalPage() {
   };
 
   const filteredProfissionais = profissionais.filter((prof) => {
+    const name = prof.name?.toLowerCase() || "";
+    const document = prof.professionalDocument?.toLowerCase() || "";
+    const term = searchTerm.toLowerCase();
+
     const matchesSearch =
-      prof.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      prof.professionalDocument
-        .toLowerCase()
-        .includes(searchTerm.toLowerCase());
+      name.includes(term) || document.includes(term);
 
     const matchesArea =
       areaFilter === "all" || prof.serviceArea.area === areaFilter;
