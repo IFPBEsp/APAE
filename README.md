@@ -51,13 +51,15 @@ O projeto foi automatizado para rodar com o mínimo de comandos utilizando **pnp
 
 1. **Terminal na pasta raiz:** `cd APAE`
 
-    1.1. Caso esteja no Windows, acessar terminal via **GitBash**
+   1.1. Caso esteja no Windows, acessar terminal via **GitBash**
+
 2. **Setup Inicial**: `pnpm install`
 3. **Rodar Tudo (Docker + Back + Front)**: `pnpm dev`
 
-> ℹ️ Algumas funcionalidades, como envio de e-mails, utilizam configuração opcional de variáveis de ambiente. Veja a seção **Configuração do Projeto**.
+> ℹ️ Algumas funcionalidades, como envio de e-mails, utilizam configuração opcional de variáveis de ambiente. Veja a seção [**Configuração do Projeto**](#configuração-do-projeto).
 
 #### Outros Comandos:
+
 - `pnpm dev:backend`: Executa apenas o backend (api).
 - `pnpm dev:apae`: Executa apenas o frontend (apae).
 - `pnpm docker:up`: Sobe apenas o banco de dados e MinIO.
@@ -66,9 +68,12 @@ O projeto foi automatizado para rodar com o mínimo de comandos utilizando **pnp
 - `pnpm db:seed`: Cria um usuário admin e views em mock no banco de dados para fins de testes.
 
 #### Credenciais do usuário para testes:
+
 - Email: `admin@teste.com`
 - CPF: `123.456.789-00`
 - Senha: `123456`
+
+> ℹ️ É necessário criar o usuário teste a partir do comando `pnpm db:seed`.
 
 ---
 
@@ -107,6 +112,7 @@ Exemplo:
 #### Dicionário de Escopo
 
 **Backend:**
+
 - **auth**: Relacionado à autenticação.
 - **database**: Mudanças no banco de dados.
 - **api**: Mudanças na API.
@@ -116,6 +122,7 @@ Exemplo:
 - **cache**: Implementação ou alterações no cache.
 
 **Frontend:**
+
 - **ui**: Alterações na interface do usuário.
 - **componentes**: Modificações em componentes reutilizáveis.
 - **layout**: Alterações no layout geral.
@@ -125,6 +132,7 @@ Exemplo:
 - **form**: Alterações em formulários.
 
 **Mobile:**
+
 - **android**: Alterações específicas para Android.
 - **ios**: Alterações específicas para iOS.
 - **navigation**: Ajustes na navegação do app.
@@ -132,12 +140,14 @@ Exemplo:
 - **permissions**: Mudanças no gerenciamento de permissões.
 
 **DevOps:**
+
 - **ci**: Alterações em CI/CD.
 - **docker**: Ajustes em Docker e Docker Compose.
 - **k8s**: Configuração de Kubernetes.
 - **terraform**: Infraestrutura como código com Terraform.
 
 **Testes:**
+
 - **integration**: Testes de integração.
 - **e2e**: Testes de ponta a ponta (End-to-End).
 
@@ -208,18 +218,18 @@ O Kanban é usado para organizar as **issues** no processo de desenvolvimento. A
 
 ### Configuração de Ambiente
 
-Este projeto automatiza a configuração inicial das variáveis de ambiente. 
-Ao rodar `pnpm dev`, o script verifica a existência do arquivo `.env`. 
+Este projeto automatiza a configuração inicial das variáveis de ambiente.
+Ao rodar `pnpm dev`, o script verifica a existência do arquivo `.env`.
 Caso ele não exista, uma cópia será criada automaticamente a partir do `.env.example`.
 
-**Nota:** O script nunca sobrescreverá um arquivo `.env` já existente. 
+**Nota:** O script nunca sobrescreverá um arquivo `.env` já existente.
 Caso precise resetar as configurações, delete o `.env` manualmente, faça as modificações necessárias no .env.example e execute o comando novamente.
 
 ### Variáveis de Ambiente (Opcional)
 
 O projeto utiliza variáveis de ambiente para configurar serviços externos, como envio de e-mails (SMTP), banco de dados e integrações.
 
- **Importante:** A configuração dessas variáveis é opcional durante o desenvolvimento.  
+**Importante:** A configuração dessas variáveis é opcional durante o desenvolvimento.  
 O sistema funciona normalmente sem elas, porém funcionalidades como envio de e-mails não serão executadas.
 
 ---
@@ -242,13 +252,13 @@ MAIL_PASSWORD=sua_senha_de_app
 APP_FRONTEND_RESET_PASSWORD_URL=http://localhost:3000/auth/reset-password
 ```
 
-3. Agora pode seguir com a execução normal do projeto, indo para seção **Como Executar**
+3. Agora pode seguir com a execução normal do projeto, indo para seção [**Como Executar**](#como-executar)
 
 ---
 
 ### Envio de e-mails
 
-- Sem configuração: sistema funciona normalmente, mas não envia e-mails  
+- Sem configuração: sistema funciona normalmente, mas não envia e-mails
 - Com configuração: envio de e-mails ativo
 
 ---
@@ -268,9 +278,6 @@ Adicionar no `.gitignore`:
 - Cada dev pode ter seu próprio `.env`
 - SMTP é opcional
 - Apenas necessário para testar envio de e-mails
-
-Obs. Ainda em desenvolvimento...
-(Incluir as instruções de como configurar o ambiente de desenvolvimento, instalar dependências, rodar o projeto, etc.)
 
 ---
 
