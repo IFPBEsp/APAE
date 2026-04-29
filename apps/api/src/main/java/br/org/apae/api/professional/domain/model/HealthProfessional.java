@@ -83,28 +83,56 @@ public class HealthProfessional {
         return id;
     }
 
+    public void setId(UUID id) {
+        this.id = id;
+    }
+
     public String getName() {
         return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 
     public String getEmail() {
         return email;
     }
 
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
     public ServiceArea getServiceArea() {
         return serviceArea;
+    }
+
+    public void setServiceArea(ServiceArea serviceArea) {
+        this.serviceArea = serviceArea;
     }
 
     public String getPhoneNumber() {
         return phoneNumber;
     }
 
+    public void setPhoneNumber(String phoneNumber) {
+        this.phoneNumber = phoneNumber;
+    }
+
     public String getProfessionalDocument() {
         return professionalDocument;
     }
 
+    public void setProfessionalDocument(String professionalDocument) {
+        this.professionalDocument = professionalDocument;
+    }
+
     public String getIdentityDocument() {
         return identityDocument;
+    }
+
+    public void setIdentityDocument(String identityDocument) {
+        this.identityDocument = identityDocument;
     }
 
     public Address getAddress() {
