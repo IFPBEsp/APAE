@@ -60,25 +60,23 @@ public class HealthProfessionalMapper {
         Address address = addressMapper.toEntity(dto.address());
         ServiceArea serviceArea = serviceAreaMapper.toEntityFromResponse(serviceAreaDto);
 
-        HealthProfessional updatedEntity = new HealthProfessional(
-                professional.getId(),
-                dto.name(),
-                dto.email(),
-                serviceArea,
-                dto.phoneNumber(),
-                dto.identityDocument(),
-                dto.professionalDocument(),
-                address);
+        professional.setName(dto.name());
+        professional.setEmail(dto.email());
+        professional.setServiceArea(serviceArea);
+        professional.setPhoneNumber(dto.phoneNumber());
+        professional.setIdentityDocument(dto.identityDocument());
+        professional.setProfessionalDocument(dto.professionalDocument());
+        professional.setAddress(address);
 
         if (dto.availabilities() != null) {
             List<Availability> newAvailabilities = dto.availabilities().stream()
-                    .map(a -> availabilityMapper.toEntity(a, updatedEntity))
+                    .map(a -> availabilityMapper.toEntity(a, professional))
                     .collect(Collectors.toList());
 
-            updatedEntity.setAvailabilities(newAvailabilities);
+            professional.setAvailabilities(newAvailabilities);
         }
 
-        return updatedEntity;
+        return professional;
     }
 
     public HealthProfessionalResponseDTO toResponseDTO(HealthProfessional professional) {
