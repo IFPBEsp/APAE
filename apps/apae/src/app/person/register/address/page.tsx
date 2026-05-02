@@ -20,7 +20,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { useState, useEffect } from "react";
 import { usePathname } from "next/navigation"; 
-import { handleBackendValidationErrors } from "@/utils/form-errors";
+import { handleBackendValidationErrors } from "@/lib/utils/form-errors";
 import { Checkbox } from "@/components/ui/checkbox";
 
 import { DoubleColumn, FormButton, MembersRegisterForm } from "../form";

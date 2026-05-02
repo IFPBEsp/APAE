@@ -19,7 +19,7 @@ import { useEffect, useState, useRef } from "react";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { User } from "lucide-react";
 import { useForm } from "react-hook-form";
-import { handleBackendValidationErrors } from "@/utils/form-errors";
+import { handleBackendValidationErrors } from "@/lib/utils/form-errors";
 
 import z from "zod";
 import { FormButton, MembersRegisterForm } from "../form";

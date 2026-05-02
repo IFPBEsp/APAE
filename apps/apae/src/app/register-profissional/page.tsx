@@ -29,7 +29,7 @@ import { cadastroSchema } from "@/schemas/profissional.schema";
 import { STATES } from "@/lib/states";
 import { JSX } from "react";
 import HealthAreaSelect from "@/components/shared/HealthAreaSelect";
-import { gerarMatrizDisponibilidade } from "@/utils/disponibilidade.utils";
+import { gerarMatrizDisponibilidade } from "@/domains/professional/shared/disponibilidade.utils";
 
 type CadastroFormValues = z.infer<typeof cadastroSchema>;
 
