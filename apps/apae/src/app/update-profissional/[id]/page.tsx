@@ -46,7 +46,7 @@ import { STATES } from "@/lib/states";
 
 import HealthAreaSelect from "@/components/shared/HealthAreaSelect";
 import Disponibilidade from "@/components/forms/DisponibilidadeForm";
-import { gerarMatrizDisponibilidade } from "@/utils/disponibilidade.utils";
+import { gerarMatrizDisponibilidade } from "@/domains/professional/shared/disponibilidade.utils";
 
 import {
   getProfessionalDocuments,

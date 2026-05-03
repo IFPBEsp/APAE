@@ -18,6 +18,6 @@ export function gerarMatrizDisponibilidade(lista: DisponibilidadeType[]) {
           checked: false,
         }
       );
-    })
+    }),
   );
 }

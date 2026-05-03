@@ -4,7 +4,7 @@ import { InfoCard } from "@/components/shared/InfoCard";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { PatientWithAbsences } from "@/types/absence";
-import { DashboardOverview } from "@/types/dashboard/dashboard-overview";
+import { DashboardOverview } from "@/domains/dashboard/dashboard.types";
 import { Calendar, SearchIcon, Users } from "lucide-react";
 import React, { useEffect, useState, useCallback, useRef } from "react";
 import AbsenceService from "../services/absenceService";

@@ -1,8 +1,9 @@
-import { UseFormSetError, FieldValues, Path } from "react-hook-form";
+import { FieldValues, Path, UseFormSetError } from "react-hook-form";
 
-/**
+/*
  * Interface que espelha o ValidationErrorResponse do Java.
  */
+
 interface ApiFieldError {
   field: string;
   message: string;

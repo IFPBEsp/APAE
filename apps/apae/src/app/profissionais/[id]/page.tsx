@@ -7,7 +7,7 @@ import { useGetByIdProfissional } from "@/hooks/profissional/use-get-by-id-profi
 import { useProfessionalDocuments } from "@/hooks/profissional/use-professional-documents";
 
 import { Checkbox } from "@/components/ui/checkbox";
-import { gerarMatrizDisponibilidade } from "@/utils/disponibilidade.utils";
+import { gerarMatrizDisponibilidade } from "@/domains/professional/shared/disponibilidade.utils";
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";

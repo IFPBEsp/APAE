@@ -20,7 +20,7 @@ import { Kinships } from "@/schemas/member-schemas";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useState, useEffect } from "react";
 import { useFieldArray, useForm } from "react-hook-form";
-import { handleBackendValidationErrors } from "@/utils/form-errors";
+import { handleBackendValidationErrors } from "@/lib/utils/form-errors";
 
 import z from "zod";
 import {

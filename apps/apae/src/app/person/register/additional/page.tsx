@@ -18,7 +18,7 @@ import { EditAdditionals } from "@/schemas/edit-member-schemas";
 import { zodResolver } from "@hookform/resolvers/zod";
 import React, { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
-import { handleBackendValidationErrors } from "@/utils/form-errors";
+import { handleBackendValidationErrors } from "@/lib/utils/form-errors";
 import { usePathname } from "next/navigation";
 
 import z from "zod";
