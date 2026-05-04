@@ -11,7 +11,6 @@ const nextConfig: NextConfig = {
       { source: "/person/:path*",              destination: "/patients/:path*",        permanent: true },
       { source: "/tipo-atendimento/:path*",    destination: "/service-types/:path*",   permanent: true },
       { source: "/all-appointments",           destination: "/appointments/list",      permanent: true },
-      { source: "/register",                   destination: "/auth/register",          permanent: true },
     ];
   },
 };
