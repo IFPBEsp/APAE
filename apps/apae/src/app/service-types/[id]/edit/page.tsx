@@ -36,7 +36,7 @@ export default function EditServiceTypePage() {
         } catch (error) {
           const err = error as Error;
           toast.error(err.message);
-          router.push("/tipo-atendimento");
+          router.push("/service-types");
         }
       };
       fetchserviceType();
@@ -54,7 +54,7 @@ export default function EditServiceTypePage() {
         throw new Error("Falha ao atualizar o tipo de atendimento.");
       }
       toast.success("Tipo de atendimento atualizado com sucesso!");
-      router.push("/tipo-atendimento");
+      router.push("/service-types");
       router.refresh();
     } catch (error) {
       const err = error as Error;

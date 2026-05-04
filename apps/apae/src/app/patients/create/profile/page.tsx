@@ -131,7 +131,7 @@ export default function MembersRegisterProfilePage() {
                 : "Membro cadastrado com sucesso!",
             );
             router.push(
-              isEditing ? `/person/${id}` : "/visualization-patients",
+              isEditing ? `/patients/${id}` : "/patients",
             );
             return;
           }

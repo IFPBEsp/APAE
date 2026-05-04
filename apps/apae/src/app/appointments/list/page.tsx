@@ -48,7 +48,7 @@ import {
   Appointment,
   getAppointments,
   getAreasDaSaude,
-} from "../services/appointmentService";
+} from "../../services/appointmentService";
 import {Tooltip, TooltipContent, TooltipProvider, TooltipTrigger} from "@radix-ui/react-tooltip";
 
 type Area = {

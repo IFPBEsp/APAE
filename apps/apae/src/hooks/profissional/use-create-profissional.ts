@@ -23,7 +23,7 @@ export function useCreateProfissional() {
       }
 
       setSuccess(true);
-      router.push("/visualization-professional");
+      router.push("/professionals");
     } catch (err: unknown) {
       if(err instanceof Error) {
         setError(err.message || "Erro inesperado");

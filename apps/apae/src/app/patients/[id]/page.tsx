@@ -83,7 +83,7 @@ export default function PersonDetailsPage() {
       const errorMessage = err instanceof Error ? err.message : "Erro ao buscar dados do paciente.";
       console.error(err);
       toast.error(errorMessage);
-      router.push("/visualization-patients");
+      router.push("/patients");
     } finally {
       if (!silent) setLoadingPessoa(false);
     }
@@ -179,7 +179,7 @@ export default function PersonDetailsPage() {
 
   if (!pessoa) {
     return (
-      <div className="text-center mt-10"><p>Paciente não encontrado.</p><Button asChild variant="link"><Link href="/visualization-patients">Voltar</Link></Button></div>
+      <div className="text-center mt-10"><p>Paciente não encontrado.</p><Button asChild variant="link"><Link href="/patients">Voltar</Link></Button></div>
     );
   }
 
@@ -188,7 +188,7 @@ export default function PersonDetailsPage() {
   return (
     <main className="container mx-auto p-4 md:p-6">
       <div className="mb-4">
-        <Button variant="outline" onClick={() => router.push("/visualization-patients")} className="gap-2">
+        <Button variant="outline" onClick={() => router.push("/patients")} className="gap-2">
           <ArrowLeft className="h-4 w-4" /> Voltar para listagem
         </Button>
       </div>
@@ -201,7 +201,7 @@ export default function PersonDetailsPage() {
         <h3 className="font-baloo font-bold text-[#0D4F97] text-[24px]">{pessoa?.fullName}</h3>
       </div>
 
-      <DocumentCategoriesCard onClickCategoria={(tipo: string) => { router.push(`/person/${id}/documents/${tipo}`); }} />
+      <DocumentCategoriesCard onClickCategoria={(tipo: string) => { router.push(`/patients/${id}/documents/${tipo}`); }} />
       
       
 

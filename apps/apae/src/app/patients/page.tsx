@@ -228,7 +228,7 @@ function PatientsAndStudentsScreenContent() {
               asChild
               className="!bg-[#0D4F97] text-white !hover:bg-[#0b427d]"
             >
-              <Link href="/person/register">Adicionar</Link>
+              <Link href="/patients/create">Adicionar</Link>
             </Button>
           </div>
 
@@ -240,7 +240,7 @@ function PatientsAndStudentsScreenContent() {
         asChild
         className="fixed bottom-6 right-6 h-[53px] w-[53px] rounded-full bg-[#0D4F97] shadow-lg !hover:bg-[#0b427d] md:hidden"
       >
-        <Link href="/person/register">
+        <Link href="/patients/create">
           <Plus className="h-7 w-7" />
           <span className="sr-only">Adicionar Pessoa</span>
         </Link>
