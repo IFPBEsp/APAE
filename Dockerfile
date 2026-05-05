@@ -2,13 +2,13 @@
 FROM node:20-alpine AS frontend-builder
 WORKDIR /frontend
 
-COPY apps/apae/package*.json ./
-RUN npm ci --frozen-lockfile
+COPY apps/apae/package.json ./
+
+RUN npm install
 
 COPY apps/apae/ ./
 
-# Variáveis de ambiente de build
-ARG NEXT_PUBLIC_API_URL
+ARG NEXT_PUBLIC_API_URL=/api
 ENV NEXT_PUBLIC_API_URL=$NEXT_PUBLIC_API_URL
 
 RUN npm run build
@@ -21,7 +21,8 @@ COPY apps/api/pom.xml .
 RUN mvn dependency:go-offline -B -q
 
 COPY apps/api/src ./src
-RUN mvn clean package -DskipTests -B -q
+# -Dmaven.test.skip=true  ignora os testes para acelerar o processo de build.
+RUN mvn clean package -Dmaven.test.skip=true -B -q
 
 # Imagem de Produção
 FROM eclipse-temurin:21-jre-alpine
