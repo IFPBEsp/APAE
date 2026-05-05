@@ -58,7 +58,7 @@ export default function EscolaresPage() {
     <main className="container mx-auto p-4 md:p-6 font-nunito space-y-6">
       
       <div className="flex flex-col gap-4">
-        <Button variant="outline" onClick={() => router.push(`/person/${id}`)} className="w-fit gap-2">
+        <Button variant="outline" onClick={() => router.push(`/patients/${id}`)} className="w-fit gap-2">
           <ArrowLeft className="h-4 w-4" /> Voltar para Perfil
         </Button>
         <div>

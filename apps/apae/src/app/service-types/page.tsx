@@ -62,7 +62,7 @@ export default function ServiceTypesPage() {
           <ServiceTypeListItemItem
             key={service.id}
             service={service}
-            onEdit={() => router.push(`/tipo-atendimento/${service.id}/edit`)}
+            onEdit={() => router.push(`/service-types/${service.id}/edit`)}
           />
         ))}
       </div>

@@ -66,8 +66,8 @@ export default function VisualizationProfessionalPage() {
   const { inactivate } = useInactivateProfissional();
   const { activate } = useActivateProfissional();
 
-  const handleAddNew = () => router.push("/register-profissional");
-  const handleEdit = (id: string) => router.push(`/update-profissional/${id}`);
+  const handleAddNew = () => router.push("/professionals/create");
+  const handleEdit = (id: string) => router.push(`/professionals/edit/${id}`);
 
   const handleConfirm = async (id: string) => {
     try {
@@ -210,7 +210,7 @@ export default function VisualizationProfessionalPage() {
                             </DropdownMenuTrigger>
                             <DropdownMenuContent align="end">
                               <DropdownMenuLabel>Ações</DropdownMenuLabel>
-                              <Link href={`/profissionais/${prof.id}`}>
+                              <Link href={`/professionals/view/${prof.id}`}>
                                 <DropdownMenuItem>
                                   <Eye className="mr-2 h-4 w-4" />
                                   Visualizar Perfil

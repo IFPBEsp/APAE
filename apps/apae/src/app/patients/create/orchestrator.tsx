@@ -29,9 +29,8 @@ export function PageOrchestrator({
     };
 
     const targetSlug = stepPaths[step];
-    const targetPath = `/person/register/${targetSlug}`;
-
-    if (pathname === "/person/register" || (targetSlug && !pathname.includes(targetSlug))) {
+    const targetPath = `/patients/create/${targetSlug}`;
+    if (pathname === "/patients/create" || (targetSlug && !pathname.includes(targetSlug))) {
       router.push(targetPath);
     }
   }, [step, router, pathname]);

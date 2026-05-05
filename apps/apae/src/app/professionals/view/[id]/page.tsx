@@ -56,7 +56,7 @@ export default function VisualizarProfissional() {
     },
   };
 
-  const handleEdit = () => router.push(`/update-profissional/${id}`);
+  const handleEdit = () => router.push(`/professionals/edit/${id}`);
 
   const DAYS = ["segunda", "terca", "quarta", "quinta", "sexta"] as const;
   const SHIFTS = ["manha", "tarde"] as const;

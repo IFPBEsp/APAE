@@ -263,11 +263,11 @@ export default function AtualizarProfissional(): JSX.Element {
       await refreshDocuments(profissional.id);
     }
 
-    router.push("/visualization-professional");
+    router.push("/professionals");
   };
 
   const onCancel = () => {
-    router.push("/visualization-professional");
+    router.push("/professionals");
   };
 
   if (loadingProf) return <p>Carregando dados...</p>;

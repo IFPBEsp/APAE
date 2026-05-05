@@ -60,7 +60,7 @@ export default function CadastroProfissional(): JSX.Element {
   });
 
   const onCancel = () => {
-    router.push("/visualization-professional");
+    router.push("/professionals");
   };
 
   const onSubmit: SubmitHandler<CadastroFormValues> = async (values) => {

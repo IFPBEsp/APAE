@@ -1,14 +1,13 @@
 "use client";
-
 import { useParams, useRouter } from "next/navigation"; 
 import { useEffect } from "react";
 import { useMembersRegisterContext, MembersRegisterStep } from "../../../../../hooks/use-members-register-context";
-import PersonalForm from "../../../register/personal/page";
-import KinshipsForm from "../../../register/kinships/page";
-import AddressForm from "../../../register/address/page";
-import ResponsibleForm from "../../../register/responsible/page";
-import ProfileForm from "../../../register/profile/page";
-import AdditionalsForm from "../../../register/additional/page"; 
+import PersonalForm from "../../../create/personal/page";
+import KinshipsForm from "../../../create/kinships/page";
+import AddressForm from "../../../create/address/page";
+import ResponsibleForm from "../../../create/responsible/page";
+import ProfileForm from "../../../create/profile/page";
+import AdditionalsForm from "../../../create/additional/page"; 
 
 export default function EditPatientPage() {
   const { state: { step } } = useMembersRegisterContext();
@@ -17,13 +16,12 @@ export default function EditPatientPage() {
 
   useEffect(() => {
     if (step && step !== stepFromUrl) {
-      router.push(`/person/${id}/edit/${step}`);
+      router.push(`/patients/${id}/edit/${step}`);
     }
   }, [step, id, router, stepFromUrl]);
 
   return (
     <div className="w-full h-full max-w-7xl mx-auto py-2">
-      
       <>
         {step === MembersRegisterStep.PERSONAL && <PersonalForm />}
         {step === MembersRegisterStep.KINSHIPS && <KinshipsForm />}

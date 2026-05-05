@@ -117,11 +117,11 @@ export function AppSidebar() {
                   </Link>
                 </SidebarMenuItem>
                 <SidebarMenuItem>
-                  <Link href="/all-appointments" prefetch={false} passHref>
+                  <Link href="/appointments/list" prefetch={false} passHref>
                     <SidebarMenuButton
                       className={`${styles.menuButton} font-base gap-2 ${cn(
                         "h-10 transition-colors",
-                        pathname == "/all-appointments"
+                        pathname == "/appointments/list"
                           ? "bg-[#FFFFFF] text-[#000000]!"
                           : "text-[#0D4F97] hover:bg-[#0D4F97] hover:text-white!",
                       )}`}
@@ -168,11 +168,11 @@ export function AppSidebar() {
             <CollapsibleContent>
               <SidebarMenu>
                 <SidebarMenuItem>
-                  <Link href="/visualization-professional" passHref>
+                  <Link href="/professionals" passHref>
                     <SidebarMenuButton
                       className={`${styles.menuButton} font-base gap-2 ${cn(
                         "h-10 transition-colors",
-                        pathname == "/visualization-professional"
+                        pathname == "/professionals"
                           ? "bg-[#FFFFFF] text-[#000000]!"
                           : "text-[#0D4F97] hover:bg-[#0D4F97] hover:text-white!",
                       )}`}
@@ -183,11 +183,11 @@ export function AppSidebar() {
                   </Link>
                 </SidebarMenuItem>
                 <SidebarMenuItem>
-                  <Link href="/tipo-atendimento" passHref>
+                  <Link href="/service-types" passHref>
                     <SidebarMenuButton
                       className={`${styles.menuButton} font-base gap-2 ${cn(
                         "h-10 transition-colors",
-                        pathname == "/tipo-atendimento"
+                        pathname == "/service-types"
                           ? "bg-[#FFFFFF] text-[#000000]!"
                           : "text-[#0D4F97] hover:bg-[#0D4F97] hover:text-white!",
                       )}`}
@@ -219,11 +219,11 @@ export function AppSidebar() {
             <CollapsibleContent>
               <SidebarMenu>
                 <SidebarMenuItem>
-                  <Link href="/visualization-patients" passHref>
+                  <Link href="/patients" passHref>
                     <SidebarMenuButton
                       className={`${styles.menuButton} font-base gap-2 ${cn(
                         "h-10 transition-colors",
-                        pathname == "/visualization-patients"
+                        pathname == "/patients"
                           ? "bg-[#FFFFFF] text-[#000000]!"
                           : "text-[#0D4F97] hover:bg-[#0D4F97] hover:text-white!",
                       )}`}
