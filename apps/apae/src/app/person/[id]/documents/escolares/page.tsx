@@ -7,16 +7,30 @@ import { ArrowLeft, Loader2, FileText, GraduationCap, Search, ChevronLeft, Chevr
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input"; 
 
-const mockRelatorios = [
-  { id: "1", titulo: "Relatório Comportamental Semestral", data: "15/05/2026", autor: "Psicóloga Ana", status: "Concluído" },
-  { id: "2", titulo: "Acompanhamento Fonoaudiológico", data: "10/06/2026", autor: "Fono. Carlos", status: "Em andamento" },
-  { id: "3", titulo: "Avaliação Motora", data: "01/04/2026", autor: "Fisio. Roberta", status: "Concluído" }
-];
+interface Report {
+  id: string;
+  alunoId: string;
+  alunoNome: string;
+  professorId: string;
+  professorNome: string;
+  turmaId: string;
+  turmaNome: string;
+  atividades: string;
+  habilidades: string;
+  estrategias: string;
+  recursos: string;
+  createdAt: Date;
+}
 
-const mockAvaliacoes = [
-  { id: "1", disciplina: "Desenvolvimento Cognitivo", data: "20/05/2026", nota: "B", observacao: "Apresentou boa evolução." },
-  { id: "2", disciplina: "Linguagem e Comunicação", data: "12/06/2026", nota: "A", observacao: "Excelente progresso na fala." }
-];
+interface Assessment {
+  id: string;
+  alunoId: string;
+  alunoNome: string;
+  professorId: string;
+  professorNome: string;
+  descricao: string;
+  dataAvaliacao: Date;
+}
 
 export default function EscolaresPage() {
   const params = useParams();
@@ -24,22 +38,35 @@ export default function EscolaresPage() {
   const id = params?.id as string;
 
   const [status, setStatus] = useState<"loading" | "success" | "error" | "empty">("loading");
-  const [relatorios, setRelatorios] = useState<typeof mockRelatorios>([]);
-  const [avaliacoes, setAvaliacoes] = useState<typeof mockAvaliacoes>([]);
+  const [relatorios, setRelatorios] = useState<Report[]>([]);
+  const [avaliacoes, setAvaliacoes] = useState<Assessment[]>([]);
   
-  const [searchTerm, setSearchTerm] = useState("");
+  const [searchReports, setSearchReports] = useState("");
+  const [searchAssessments, setSearchAssessments] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
 
   useEffect(() => {
     const fetchDadosEscolares = async () => {
+      if(!id || id === "undefined") {
+        return
+      };
+
       try {
         setStatus("loading");
-        await new Promise((resolve) => setTimeout(resolve, 800)); 
-        
-        setRelatorios(mockRelatorios);
-        setAvaliacoes(mockAvaliacoes);
-        
-        if (mockRelatorios.length === 0 && mockAvaliacoes.length === 0) {
+
+        const responseReports = await fetch(`/api/pessoas/${id}/reports`);
+        const responseAssessments = await fetch(`/api/pessoas/${id}/assessments`);
+
+        if (!responseReports.ok || !responseAssessments.ok) {
+          setStatus("error");
+          return;
+        }
+        const reportData = await responseReports.json();
+        const assessmentData = await responseAssessments.json();
+        setRelatorios(reportData);
+        setAvaliacoes(assessmentData);
+
+        if (reportData.length === 0 && assessmentData.length === 0) {
           setStatus("empty");
         } else {
           setStatus("success");
@@ -52,7 +79,16 @@ export default function EscolaresPage() {
     if (id) fetchDadosEscolares();
   }, [id]);
 
-  const relatoriosFiltrados = relatorios.filter(r => r.titulo.toLowerCase().includes(searchTerm.toLowerCase()));
+  const relatoriosFiltrados = (lista: any[], termo: string) => {
+    return lista.filter(item =>
+      Object.values(item).some(value =>
+        typeof value === "string" && value.toLowerCase().includes(termo.toLowerCase())
+      )
+    );
+  };
+
+  const relatoriosFiltradosList = relatoriosFiltrados(relatorios, searchReports);
+  const avaliacoesFiltradasList = relatoriosFiltrados(avaliacoes, searchAssessments);
 
   return (
     <main className="container mx-auto p-4 md:p-6 font-nunito space-y-6">
@@ -98,8 +134,8 @@ export default function EscolaresPage() {
               <Input 
                 placeholder="Buscar por título..." 
                 className="pl-9"
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
+                value={searchReports}
+                onChange={(e) => setSearchReports(e.target.value)}
               />
             </div>
           </div>
@@ -111,29 +147,38 @@ export default function EscolaresPage() {
                 <CardTitle className="text-[#0D4F97] flex items-center gap-2 text-lg">
                   <FileText className="h-5 w-5" /> Relatórios
                 </CardTitle>
+                <div className="relative w-full md:w-80">
+                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
+                    <Input 
+                      placeholder="Pesquisar em todos os relatórios..." 
+                      className="pl-9"
+                      value={searchReports}
+                      onChange={(e) => setSearchReports(e.target.value)}
+                    />
+                </div>
               </CardHeader>
               <CardContent className="p-0">
                 <div className="overflow-x-auto">
                   <table className="w-full text-sm text-left">
                     <thead className="text-xs text-gray-500 uppercase bg-gray-50 border-b">
                       <tr>
-                        <th className="px-6 py-4 font-semibold">Título</th>
-                        <th className="px-6 py-4 font-semibold">Data</th>
-                        <th className="px-6 py-4 font-semibold">Autor</th>
-                        <th className="px-6 py-4 font-semibold text-center">Status</th>
+                        <th className="px-6 py-4 font-semibold">Professor</th>
+                        <th className="px-6 py-4 font-semibold">Turma</th>
+                        <th className="px-6 py-4 font-semibold">Atividades</th>
+                        <th className="px-6 py-4 font-semibold text-center">Habilidades</th>
+                        <th className="px-6 py-4 font-semibold text-center">Data</th>
                       </tr>
                     </thead>
                     <tbody>
-                      {relatoriosFiltrados.length > 0 ? (
-                        relatoriosFiltrados.map((relatorio) => (
+                      {relatoriosFiltradosList.length > 0 ? (
+                        relatoriosFiltradosList.map((relatorio) => (
                           <tr key={relatorio.id} className="border-b hover:bg-slate-50 transition-colors">
-                            <td className="px-6 py-4 font-medium text-gray-900">{relatorio.titulo}</td>
-                            <td className="px-6 py-4 text-gray-600">{relatorio.data}</td>
-                            <td className="px-6 py-4 text-gray-600">{relatorio.autor}</td>
+                            <td className="px-6 py-4 font-medium text-gray-900">{relatorio.professorNome}</td>
+                            <td className="px-6 py-4 text-gray-600">{relatorio.turmaNome}</td>
+                            <td className="px-6 py-4 text-gray-600">{relatorio.atividades}</td>
+                            <td className="px-6 py-4 text-gray-600">{relatorio.habilidades}</td>
+                            <td className="px-6 py-4 text-gray-600">{new Date(relatorio.createdAt).toLocaleDateString()}</td>
                             <td className="px-6 py-4 text-center">
-                              <span className={`px-3 py-1 rounded-full text-xs font-semibold ${relatorio.status === 'Concluído' ? 'bg-green-100 text-green-700' : 'bg-amber-100 text-amber-700'}`}>
-                                {relatorio.status}
-                              </span>
                             </td>
                           </tr>
                         ))
@@ -161,25 +206,32 @@ export default function EscolaresPage() {
                 <CardTitle className="text-[#0D4F97] flex items-center gap-2 text-lg">
                   <GraduationCap className="h-5 w-5" /> Avaliações
                 </CardTitle>
+                <div className="relative w-full md:w-80">
+                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
+                    <Input 
+                      placeholder="Pesquisar em todas as avaliações..." 
+                      className="pl-9"
+                      value={searchAssessments}
+                      onChange={(e) => setSearchAssessments(e.target.value)}
+                    />
+                </div>
               </CardHeader>
               <CardContent className="p-0">
                 <div className="overflow-x-auto">
                   <table className="w-full text-sm text-left">
                     <thead className="text-xs text-gray-500 uppercase bg-gray-50 border-b">
                       <tr>
-                        <th className="px-6 py-4 font-semibold">Disciplina / Área</th>
-                        <th className="px-6 py-4 font-semibold">Data</th>
-                        <th className="px-6 py-4 font-semibold text-center">Nota</th>
-                        <th className="px-6 py-4 font-semibold">Observações</th>
+                        <th className="px-6 py-4 font-semibold">Professor</th>
+                        <th className="px-6 py-4 font-semibold">Descrição</th>
+                        <th className="px-6 py-4 font-semibold text-center">Data</th>
                       </tr>
                     </thead>
                     <tbody>
-                      {avaliacoes.map((av) => (
+                      {avaliacoesFiltradasList.map((av) => (
                         <tr key={av.id} className="border-b hover:bg-slate-50 transition-colors">
-                          <td className="px-6 py-4 font-medium text-gray-900">{av.disciplina}</td>
-                          <td className="px-6 py-4 text-gray-600">{av.data}</td>
-                          <td className="px-6 py-4 font-bold text-[#0D4F97] text-center">{av.nota}</td>
-                          <td className="px-6 py-4 text-gray-600 truncate max-w-md">{av.observacao}</td>
+                          <td className="px-6 py-4 font-medium text-gray-900">{av.professorNome}</td>
+                          <td className="px-6 py-4 text-gray-600">{av.descricao}</td>
+                          <td className="px-6 py-4 font-bold text-[#0D4F97] text-center">{new Date(av.dataAvaliacao).toLocaleDateString()}</td>
                         </tr>
                       ))}
                     </tbody>
