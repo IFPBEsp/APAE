@@ -354,7 +354,7 @@ export default function AnnualRegistryEditModal({
                                                     <GenericDatabaseSelect 
                                                         value={field.value || []} 
                                                         onChange={field.onChange}
-                                                        endpoint="/api/vacinas"
+                                                        endpoint="/api/vaccines"
                                                         labelSingular="Vacina"
                                                         placeholder="Selecione ou crie vacinas..."
                                                     />
