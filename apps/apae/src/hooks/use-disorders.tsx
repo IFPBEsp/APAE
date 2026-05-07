@@ -102,7 +102,7 @@ function DisordersProvider({
   const fetchDisorders = useCallback(async () => {
     return withFeedback(
       async () => {
-        const response = await fetch("/api/transtornos");
+        const response = await fetch("/api/disorders");
 
         if (!response.ok) {
           throw Error("Ocorreu um erro ao carregar as transtornos.");
@@ -122,7 +122,7 @@ function DisordersProvider({
   const fetchDisorder = useCallback(async (params: FetchDisorderParams) => {
     return withFeedback(
       async (currentParams: FetchDisorderParams) => {
-        const response = await fetch(`/api/transtornos/${currentParams.id}`);
+        const response = await fetch(`/api/disorders/${currentParams.id}`);
 
         if (!response.ok) {
           throw Error("Ocorreu um erro ao carregar transtorno.");
@@ -142,7 +142,7 @@ function DisordersProvider({
     async (params: CreateDisorderParams) => {
       return withFeedback(
         async (currentParams: CreateDisorderParams): Promise<void> => {
-          const response = await fetch("/api/transtornos", {
+          const response = await fetch("/api/disorders", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify(currentParams),
@@ -166,7 +166,7 @@ function DisordersProvider({
     async (params: UpdateDisorderParams) => {
       return withFeedback(
         async ({ id, ...data }: UpdateDisorderParams) => {
-          const response = await fetch(`/api/transtornos/${id}`, {
+          const response = await fetch(`/api/disorders/${id}`, {
             method: "PUT",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify(data),
@@ -192,7 +192,7 @@ function DisordersProvider({
     async (params: DeleteDisorderParams) => {
       return withFeedback(
         async (currentParams: DeleteDisorderParams) => {
-          const response = await fetch(`/api/transtornos/${currentParams.id}`, {
+          const response = await fetch(`/api/disorders/${currentParams.id}`, {
             method: "DELETE",
           });
 

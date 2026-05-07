@@ -269,7 +269,7 @@ public class PatientRetrievalTests {
 
         when(disorderApplicationService.findAllDisorders()).thenReturn(listaDoService);
 
-        mockMvc.perform(get("/patients/filtros/transtornos")
+        mockMvc.perform(get("/patients/filtros/disorders")
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$", hasSize(2)))

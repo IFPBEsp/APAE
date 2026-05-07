@@ -29,7 +29,7 @@ export default function EditTranstornoPage() {
     if (id) {
       const fetchTranstorno = async () => {
         try {
-          const response = await fetch(`/api/transtornos/${id}`);
+          const response = await fetch(`/api/disorders/${id}`);
           if (!response.ok) throw new Error("Transtorno não encontrado.");
           const data = await response.json();
           setValue("name", data.name);
@@ -45,7 +45,7 @@ export default function EditTranstornoPage() {
 
   const onSubmit = async (data: UpdateTranstornoDTO) => {
     try {
-      const response = await fetch(`/api/transtornos/${id}`, {
+      const response = await fetch(`/api/disorders/${id}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(data),

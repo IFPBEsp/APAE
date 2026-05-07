@@ -369,7 +369,7 @@ export default function AnnualRegistryEditModal({
                                                     <GenericDatabaseSelect 
                                                         value={field.value || []} 
                                                         onChange={field.onChange}
-                                                        endpoint="/api/transtornos"
+                                                        endpoint="/api/disorders"
                                                         labelSingular="Transtorno"
                                                         placeholder="Selecione ou crie transtornos..."
                                                     />

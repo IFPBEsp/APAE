@@ -101,7 +101,7 @@ function DisordersProvider({
   const fetchDisorders = useCallback(
     withFeedback(
       async () => {
-        const response = await fetch("/api/transtornos");
+        const response = await fetch("/api/disorders");
 
         if (!response.ok) {
           throw Error("Ocorreu um erro ao carregar as transtornos.");
@@ -122,7 +122,7 @@ function DisordersProvider({
   const fetchDisorder = useCallback(
     withFeedback(
       async (params: FetchDisorderParams) => {
-        const response = await fetch(`/api/transtornos/${params.id}`);
+        const response = await fetch(`/api/disorders/${params.id}`);
 
         if (!response.ok) {
           throw Error("Ocorreu um erro ao carregar transtorno.");
@@ -142,7 +142,7 @@ function DisordersProvider({
   const createDisorder = useCallback(
     withFeedback(
       async (params: CreateDisorderParams): Promise<void> => {
-        const response = await fetch("/api/transtornos", {
+        const response = await fetch("/api/disorders", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(params),
@@ -164,7 +164,7 @@ function DisordersProvider({
   const updateDisorder = useCallback(
     withFeedback(
       async ({ id, ...data }: UpdateDisorderParams) => {
-        const response = await fetch(`/api/transtornos/${id}`, {
+        const response = await fetch(`/api/disorders/${id}`, {
           method: "PUT",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(data),
@@ -188,7 +188,7 @@ function DisordersProvider({
   const deleteDisorder = useCallback(
     withFeedback(
       async (params: DeleteDisorderParams) => {
-        const response = await fetch(`/api/transtornos/${params.id}`, {
+        const response = await fetch(`/api/disorders/${params.id}`, {
           method: "DELETE",
         });
 

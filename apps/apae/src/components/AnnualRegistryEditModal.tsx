@@ -457,7 +457,7 @@ export default function AnnualRegistryEditModal({
                                             <FormItem>
                                                 <FormLabel className={`font-bold text-xs ${errors.disorders ? "text-red-500" : "text-slate-700"} mb-1.5 block`}>Transtornos</FormLabel>
                                                 <FormControl>
-                                                    <GenericDatabaseSelect value={field.value || []} onChange={field.onChange} endpoint="/api/transtornos" labelSingular="Transtorno" labelKey="name" placeholder="Selecione transtornos..." />
+                                                    <GenericDatabaseSelect value={field.value || []} onChange={field.onChange} endpoint="/api/disorders" labelSingular="Transtorno" labelKey="name" placeholder="Selecione transtornos..." />
                                                 </FormControl>
                                                 <FormMessage />
                                             </FormItem>

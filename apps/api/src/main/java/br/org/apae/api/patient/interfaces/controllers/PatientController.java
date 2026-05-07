@@ -125,7 +125,7 @@ public interface PatientController {
         @ApiResponses(value = {
                 @ApiResponse(responseCode = "200", description = "Lista de transtornos retornada com sucesso")
         })
-        @GetMapping("/filtros/transtornos")
+        @GetMapping("/filtros/disorders")
         ResponseEntity<List<String>> getTranstornos();
 
         @Operation(summary = "Lista os anos para o filtro",
