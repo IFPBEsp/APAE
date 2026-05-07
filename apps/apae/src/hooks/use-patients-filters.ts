@@ -25,7 +25,7 @@ export function usePatientFilters(): PatientFilterOptions {
       try {
         setIsLoading(true);
         setError(null);
-        const transtornosPromise = fetch('/api/patients/filtros/disorders');
+        const transtornosPromise = fetch('/api/patients/filtros/transtornos');
         const anosPromise = fetch('/api/patients/filtros/anos');
         const cidadesPromise = fetch('/api/patients/filtros/cidades');
         const tipoAtendimentosPromise = fetch('/api/patients/filtros/tipos-atendimento');
