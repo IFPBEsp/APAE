@@ -383,7 +383,7 @@ export default function AnnualRegistryEditModal({
                                                     <GenericDatabaseSelect 
                                                         value={field.value || []} 
                                                         onChange={field.onChange}
-                                                        endpoint="/api/tipo-atendimento" 
+                                                        endpoint="/api/service-types" 
                                                         labelSingular="Tipo de Atendimento"
                                                         placeholder="Selecione ou crie tipos..."
                                                         labelKey="area" 

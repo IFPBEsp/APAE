@@ -12,7 +12,7 @@ function useCares() {
 
   useEffect(() => {
     const fetching = async () => {
-      const caresTypes = await fetch("/api/tipo-atendimento", {
+      const caresTypes = await fetch("/api/service-types", {
         method: "GET",
       });
 
