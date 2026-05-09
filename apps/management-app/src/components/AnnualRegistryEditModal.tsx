@@ -139,7 +139,7 @@ export default function AnnualRegistryEditModal({
     const fetchDocuments = async () => {
         setIsLoadingDocs(true);
         try {
-            const response = await fetch(`/api/pessoas/${patientId}/documentos?category=medicos`);
+            const response = await fetch(`/api/pessoas/${patientId}/documents?category=medicos`);
             if (response.ok) {
                 const data = await response.json().catch(() => []);
                 setDocuments(Array.isArray(data) ? data : []);
@@ -164,7 +164,7 @@ export default function AnnualRegistryEditModal({
         formData.append("category", "MEDICAL");
         formData.append("type", docType);
         try {
-            const res = await fetch(`/api/pessoas/${patientId}/documentos`, { method: "POST", body: formData });
+            const res = await fetch(`/api/pessoas/${patientId}/documents`, { method: "POST", body: formData });
             if (!res.ok) throw new Error("Falha no upload");
             toast.success("Documento anexado!");
             fetchDocuments();

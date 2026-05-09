@@ -203,7 +203,7 @@ export default function AnnualRegistryEditModal({
     const fetchDocuments = async () => {
         setIsLoadingDocs(true);
         try {
-            const response = await fetch(`/api/pessoas/${patientId}/documentos?category=MEDICAL&year=${currentYear}`);
+            const response = await fetch(`/api/pessoas/${patientId}/documents?category=MEDICAL&year=${currentYear}`);
             if (response.ok) {
                 const data = await response.json().catch(() => []);
                 setDocuments(Array.isArray(data) ? data : []);
@@ -229,7 +229,7 @@ export default function AnnualRegistryEditModal({
         formData.append("type", docType);
         formData.append("year", currentYear);
         try {
-            const res = await fetch(`/api/pessoas/${patientId}/documentos`, {
+            const res = await fetch(`/api/pessoas/${patientId}/documents`, {
                 method: "POST",
                 body: formData,
             });
