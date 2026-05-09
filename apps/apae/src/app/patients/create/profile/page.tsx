@@ -105,7 +105,7 @@ export default function MembersRegisterProfilePage() {
 
     (async () => {
       try {
-        const res = await fetch(`/api/pessoas/${id}`);
+        const res = await fetch(`/api/patients/${id}`);
         const data = await res.json();
         if (data?.photoUrl) {
           setPreviewUrl(data.photoUrl);

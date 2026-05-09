@@ -433,7 +433,7 @@ export async function registerAbsence(
 }
 
 export async function getPacientes(): Promise<Patient[]> {
-  const response = await fetch(`/api/pessoas?page=0&size=100`);
+  const response = await fetch(`/api/patients?page=0&size=100`);
 
   if (!response.ok) {
     throw new Error("Erro ao buscar pacientes");

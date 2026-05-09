@@ -75,7 +75,7 @@ export default function PersonDetailsPage() {
   const fetchPessoa = useCallback(async (silent = false) => {
     try {
       if (!silent) setLoadingPessoa(true); 
-      const response = await fetch(`/api/pessoas/${id}`);
+      const response = await fetch(`/api/patients/${id}`);
       if (!response.ok) throw new Error("Falha ao buscar dados do paciente.");
       const data: PatientResponse = await response.json();
       setPessoa(data);
@@ -91,7 +91,7 @@ export default function PersonDetailsPage() {
 
   const fetchYears = useCallback(async () => {
     try {
-        const res = await fetch(`/api/pessoas/${id}/registro-anual/years-list`);
+        const res = await fetch(`/api/patients/${id}/registro-anual/years-list`);
         let yearsData: number[] = [];
         
         if (res.ok) {
@@ -120,7 +120,7 @@ export default function PersonDetailsPage() {
     try {
       setLoadingRegistro(true);
       setRegistroAnual(null);
-      const response = await fetch(`/api/pessoas/${id}/registro-anual/${selectedYear}`);
+      const response = await fetch(`/api/patients/${id}/registro-anual/${selectedYear}`);
       if (response.ok) {
         const data = await response.json();
         setRegistroAnual(data);

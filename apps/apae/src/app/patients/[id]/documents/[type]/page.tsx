@@ -91,7 +91,7 @@ export default function DocumentTypePage() {
       });
 
       const response = await fetch(
-        `/api/pessoas/${patientId}/documents?${params.toString()}`,
+        `/api/patients/${patientId}/documents?${params.toString()}`,
       );
 
       if (!response.ok) {
@@ -146,7 +146,7 @@ export default function DocumentTypePage() {
       formData.append("file", replaceFile);
 
       const response = await fetch(
-        `/api/pessoas/${patientId}/documents/${replaceTarget.id}`,
+        `/api/patients/${patientId}/documents/${replaceTarget.id}`,
         {
           method: "PATCH",
           body: formData,

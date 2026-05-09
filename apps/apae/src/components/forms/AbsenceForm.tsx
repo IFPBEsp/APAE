@@ -70,7 +70,7 @@ export function AbsenceForm({
         docFormData.append("type", "ATTACHMENTANY");
         docFormData.append("year", String(new Date().getFullYear()));
 
-        const docResponse = await fetch(`/api/pessoas/${patientId}/documents`, {
+        const docResponse = await fetch(`/api/patients/${patientId}/documents`, {
           method: "POST",
           body: docFormData,
         });
