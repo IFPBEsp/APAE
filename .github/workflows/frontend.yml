@@ -19,8 +19,6 @@ jobs:
 
       - name: Instalar PNPM
         uses: pnpm/action-setup@v4
-        with:
-          version: 10
 
       - name: Instalar Node.js
         uses: actions/setup-node@v4
