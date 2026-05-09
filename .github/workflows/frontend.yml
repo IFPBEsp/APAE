@@ -18,10 +18,15 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Instalar PNPM
-        uses: pnpm/action-setup@v3
+        uses: pnpm/action-setup@v4
         with:
-          version: latest
-          cache: true
+          version: 10
+
+      - name: Instalar Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: pnpm
 
       - name: Instalar dependências
         working-directory: ./apps/apae
