@@ -30,6 +30,15 @@ if ! docker exec "$DB_CONTAINER" pg_isready -U "$DB_USERNAME" > /dev/null 2>&1; 
 fi
 
 if docker exec -i "$DB_CONTAINER" psql -U "$DB_USERNAME" -d "$DB_NAME" <<EOF
+CREATE TABLE IF NOT EXISTS usuarios (
+    id UUID PRIMARY KEY,
+    email VARCHAR(255) UNIQUE NOT NULL,
+    cpf VARCHAR(255) UNIQUE NOT NULL,
+    senha VARCHAR(255) NOT NULL,
+    nome_completo VARCHAR(255),
+    cargo VARCHAR(50) NOT NULL
+);
+
 INSERT INTO usuarios (id, email, cpf, senha, nome_completo, cargo)
 VALUES (
   '11111111-1111-4111-8111-111111111111',
