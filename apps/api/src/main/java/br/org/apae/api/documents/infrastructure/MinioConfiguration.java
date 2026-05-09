@@ -1,11 +1,9 @@
 package br.org.apae.api.documents.infrastructure;
 
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Primary;
 
 import io.minio.MinioClient;
 
@@ -14,6 +12,9 @@ public class MinioConfiguration {
     @Value("${minio.url}")
     private String url;
 
+    @Value("${minio.public.url}")
+    private String publicUrl;
+
     @Value("${minio.access.key}")
     private String accessKey;
 
@@ -21,10 +22,21 @@ public class MinioConfiguration {
     private String accessSecret;
 
     @Bean
+    @Primary
     public MinioClient minioClient() {
         return MinioClient.builder()
                 .endpoint(url)
                 .credentials(accessKey, accessSecret)
+                .region("us-east-1")
+                .build();
+    }
+
+    @Bean(name = "minioPublicClient")
+    public MinioClient minioPublicClient() {
+        return MinioClient.builder()
+                .endpoint(publicUrl)
+                .credentials(accessKey, accessSecret)
+                .region("us-east-1")
                 .build();
     }
 }
