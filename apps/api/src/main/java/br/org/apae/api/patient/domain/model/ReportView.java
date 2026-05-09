@@ -8,11 +8,11 @@ import org.hibernate.annotations.Immutable;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import org.hibernate.annotations.Subselect;
 
 @Entity
 @Immutable
-@Table(name = "view_relatorios_escolares")
+@Subselect("SELECT * FROM view_relatorios_escolares")
 public class ReportView {
 
     @Id
