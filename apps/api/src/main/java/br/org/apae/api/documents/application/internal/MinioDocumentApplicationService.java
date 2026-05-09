@@ -10,6 +10,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
 import br.org.apae.api.documents.application.interfaces.DocumentApplicationService;
@@ -43,9 +44,13 @@ import io.minio.messages.Item;
 @Service
 public class MinioDocumentApplicationService implements DocumentApplicationService {
     private final MinioClient client;
+    private final MinioClient publicClient;
 
-    public MinioDocumentApplicationService(MinioClient client) {
+    public MinioDocumentApplicationService(
+            MinioClient client,
+            @Qualifier("minioPublicClient") MinioClient publicClient) {
         this.client = client;
+        this.publicClient = publicClient;
     }
 
     private static RuntimeException translateMinioException(MinioException exception) {
@@ -190,17 +195,16 @@ public class MinioDocumentApplicationService implements DocumentApplicationServi
     public String getPresignedDocumentUrl(GetPresignedDocumentUrlArgsDTO dto)
             throws InsufficientDataException, IOException,
             InvalidKeyException, InvalidResponseException, NoSuchAlgorithmException {
-
         try {
-            return client.getPresignedObjectUrl(GetPresignedObjectUrlArgs.builder()
-                    .method(Method.GET)
-                    .bucket(dto.owner())
-                    .object(dto.name())
-                    .expiry(dto.expiry())
-                    .build());
+            return publicClient.getPresignedObjectUrl(
+                    GetPresignedObjectUrlArgs.builder()
+                            .method(Method.GET)
+                            .bucket(dto.owner())
+                            .object(dto.name())
+                            .expiry(dto.expiry())
+                            .build());
         } catch (MinioException e) {
             throw translateMinioException(e);
-
         }
     }
 }

@@ -19,13 +19,12 @@ jobs:
 
       - name: Instalar PNPM
         uses: pnpm/action-setup@v4
-        with:
-          run_install: false
 
-      - name: Configurar Node.js
+      - name: Instalar Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 22
+          node-version: 20
+          cache: pnpm
 
       - name: Instalar dependências
         working-directory: ./apps/apae
