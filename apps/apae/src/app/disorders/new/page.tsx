@@ -3,7 +3,7 @@
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { createTranstornoSchema, CreateTranstornoDTO } from "@/schemas/transtornosSchema";
+import { createDisorderSchema, CreateDisorderDTO } from "@/schemas/transtornosSchema";
 import { toast } from "react-toastify";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -16,11 +16,11 @@ export default function NewTranstornoPage() {
     register,
     handleSubmit,
     formState: { errors, isSubmitting },
-  } = useForm<CreateTranstornoDTO>({
-    resolver: zodResolver(createTranstornoSchema),
+  } = useForm<CreateDisorderDTO>({
+    resolver: zodResolver(createDisorderSchema),
   });
 
-  const onSubmit = async (data: CreateTranstornoDTO) => {
+  const onSubmit = async (data: CreateDisorderDTO) => {
     try {
       const response = await fetch("/api/disorders", {
         method: "POST",

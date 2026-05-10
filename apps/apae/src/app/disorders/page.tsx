@@ -7,13 +7,13 @@ import { toast } from "react-toastify";
 import { Button } from "@/components/ui/button";
 import { Plus } from "lucide-react";
 import { TranstornoListItem } from "./TranstornosListItem";
-import { Transtorno } from "@/schemas/transtornosSchema";
+import { Disorder } from "@/schemas/transtornosSchema";
 import { Loader2 } from "lucide-react";
 import { SearchFilters } from "@/components/search-filters";
 
 export default function TranstornosPage() {
   const router = useRouter();
-  const [transtornos, setTranstornos] = useState<Transtorno[]>([]);
+  const [transtornos, setTranstornos] = useState<Disorder[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   
