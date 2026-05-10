@@ -22,7 +22,7 @@ export default function NewTranstornoPage() {
 
   const onSubmit = async (data: CreateTranstornoDTO) => {
     try {
-      const response = await fetch("/api/transtornos", {
+      const response = await fetch("/api/disorders", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(data),

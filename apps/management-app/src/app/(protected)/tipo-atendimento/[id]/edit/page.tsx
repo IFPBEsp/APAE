@@ -29,7 +29,7 @@ export default function EditServiceTypePage() {
     if (id) {
       const fetchserviceType = async () => {
         try {
-          const response = await fetch(`/api/tipo-atendimento/${id}`);
+          const response = await fetch(`/api/service-types/${id}`);
           if (!response.ok) throw new Error("Tipo de atendimento não encontrado.");
           const data = await response.json();
           setValue("area", data.area);
@@ -44,7 +44,7 @@ export default function EditServiceTypePage() {
 
   const onSubmit = async (data: UpdateserviceTypeDTO) => {
     try {
-      const response = await fetch(`/api/tipo-atendimento/${id}`, {
+      const response = await fetch(`/api/service-types/${id}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(data),

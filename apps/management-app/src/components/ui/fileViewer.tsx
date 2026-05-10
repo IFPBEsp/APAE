@@ -45,7 +45,7 @@ export default function FileViewer() {
         });
 
         const response = await fetch(
-          `/api/pessoa/${patientId}/documentos?${params.toString()}`
+          `/api/pessoa/${patientId}/documents?${params.toString()}`
         );
         
         if (!response.ok) {

@@ -46,7 +46,7 @@ function EditPatientDataLoader({ children }: { children: React.ReactNode }) {
     
     async function load() {
       try {
-        const res = await fetch(`/api/pessoas/${id}`, { cache: "no-store" });
+        const res = await fetch(`/api/patients/${id}`, { cache: "no-store" });
         if (!res.ok) throw new Error("Erro ao buscar dados do paciente");
         const data = await res.json();
         

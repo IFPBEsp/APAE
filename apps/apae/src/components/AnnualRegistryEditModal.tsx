@@ -203,7 +203,7 @@ export default function AnnualRegistryEditModal({
     const fetchDocuments = async () => {
         setIsLoadingDocs(true);
         try {
-            const response = await fetch(`/api/pessoas/${patientId}/documentos?category=MEDICAL&year=${currentYear}`);
+            const response = await fetch(`/api/patients/${patientId}/documents?category=MEDICAL&year=${currentYear}`);
             if (response.ok) {
                 const data = await response.json().catch(() => []);
                 setDocuments(Array.isArray(data) ? data : []);
@@ -214,7 +214,7 @@ export default function AnnualRegistryEditModal({
 
     const fetchPatientData = async () => {
         try {
-            const response = await fetch(`/api/pessoas/${patientId}`);
+            const response = await fetch(`/api/patients/${patientId}`);
             if (response.ok) setFullPatientData(await response.json());
         } catch (error) { console.error(error); }
     };
@@ -229,7 +229,7 @@ export default function AnnualRegistryEditModal({
         formData.append("type", docType);
         formData.append("year", currentYear);
         try {
-            const res = await fetch(`/api/pessoas/${patientId}/documentos`, {
+            const res = await fetch(`/api/patients/${patientId}/documents`, {
                 method: "POST",
                 body: formData,
             });
@@ -279,14 +279,14 @@ export default function AnnualRegistryEditModal({
 
             let regRes;
             if (mode === "create") {
-                regRes = await fetch(`/api/pessoas/${patientId}/registro-anual`, {
+                regRes = await fetch(`/api/patients/${patientId}/registro-anual`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(regPayload),
                 });
             } else {
                 if (!registryId) throw new Error("ID do registro não encontrado.");
-                regRes = await fetch(`/api/pessoas/${patientId}/registro-anual/${registryId}`, {
+                regRes = await fetch(`/api/patients/${patientId}/registro-anual/${registryId}`, {
                     method: 'PUT',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(regPayload),
@@ -314,7 +314,7 @@ export default function AnnualRegistryEditModal({
                     vaccineNames: vaccineList,
                     continuousMedication: data.continuousMedication || "Nenhum"
                 };
-                await fetch(`/api/pessoas/${patientId}`, {
+                await fetch(`/api/patients/${patientId}`, {
                     method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(patientPayload)
                 });
             }
@@ -446,7 +446,7 @@ export default function AnnualRegistryEditModal({
                                             <FormItem>
                                                 <FormLabel className={`font-bold text-xs ${errors.vaccines ? "text-red-500" : "text-slate-700"}`}>Vacinas</FormLabel>
                                                 <FormControl>
-                                                    <GenericDatabaseSelect value={field.value || []} onChange={field.onChange} endpoint="/api/vacinas" labelSingular="Vacina" labelKey="name" placeholder="Selecione vacinas..." />
+                                                    <GenericDatabaseSelect value={field.value || []} onChange={field.onChange} endpoint="/api/vaccines" labelSingular="Vacina" labelKey="name" placeholder="Selecione vacinas..." />
                                                 </FormControl>
                                                 <FormMessage />
                                             </FormItem>
@@ -457,7 +457,7 @@ export default function AnnualRegistryEditModal({
                                             <FormItem>
                                                 <FormLabel className={`font-bold text-xs ${errors.disorders ? "text-red-500" : "text-slate-700"} mb-1.5 block`}>Transtornos</FormLabel>
                                                 <FormControl>
-                                                    <GenericDatabaseSelect value={field.value || []} onChange={field.onChange} endpoint="/api/transtornos" labelSingular="Transtorno" labelKey="name" placeholder="Selecione transtornos..." />
+                                                    <GenericDatabaseSelect value={field.value || []} onChange={field.onChange} endpoint="/api/disorders" labelSingular="Transtorno" labelKey="name" placeholder="Selecione transtornos..." />
                                                 </FormControl>
                                                 <FormMessage />
                                             </FormItem>
@@ -466,7 +466,7 @@ export default function AnnualRegistryEditModal({
                                             <FormItem>
                                                 <FormLabel className={`font-bold text-xs ${errors.serviceTypes ? "text-red-500" : "text-slate-700"} mb-1.5 block`}>Tipos de Atendimento</FormLabel>
                                                 <FormControl>
-                                                    <GenericDatabaseSelect value={field.value || []} onChange={field.onChange} endpoint="/api/tipo-atendimento" labelSingular="Tipo" placeholder="Selecione tipos..." labelKey="area" menuPlacement="top" />
+                                                    <GenericDatabaseSelect value={field.value || []} onChange={field.onChange} endpoint="/api/service-types" labelSingular="Tipo" placeholder="Selecione tipos..." labelKey="area" menuPlacement="top" />
                                                 </FormControl>
                                                 <FormMessage />
                                             </FormItem>

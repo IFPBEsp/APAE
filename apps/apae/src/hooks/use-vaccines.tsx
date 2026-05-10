@@ -108,7 +108,7 @@ function VaccinesProvider({
   const fetchVaccines = useCallback(async () => {
     return withFeedback(
       async () => {
-        const response = await fetch("/api/vacinas");
+        const response = await fetch("/api/vaccines");
 
         if (!response.ok) {
           throw Error("Ocorreu um erro ao carregar as vacinas.");
@@ -125,7 +125,7 @@ function VaccinesProvider({
   const fetchVaccine = useCallback(async (params: FetchVaccineParams) => {
     return withFeedback(
       async (currentParams: FetchVaccineParams) => {
-        const response = await fetch(`/api/vacinas/${currentParams.id}`);
+        const response = await fetch(`/api/vaccines/${currentParams.id}`);
 
         if (!response.ok) {
           throw Error("Ocorreu um erro ao carregar vacina.");
@@ -142,7 +142,7 @@ function VaccinesProvider({
     async (params: CreateVaccineParams) => {
       return withFeedback(
         async (currentParams: CreateVaccineParams): Promise<void> => {
-          const response = await fetch("/api/vacinas", {
+          const response = await fetch("/api/vaccines", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify(currentParams),
@@ -166,7 +166,7 @@ function VaccinesProvider({
     async (params: UpdateVaccineParams) => {
       return withFeedback(
         async ({ id, ...data }: UpdateVaccineParams) => {
-          const response = await fetch(`/api/vacinas/${id}`, {
+          const response = await fetch(`/api/vaccines/${id}`, {
             method: "PUT",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify(data),
@@ -192,7 +192,7 @@ function VaccinesProvider({
     async (params: DeleteVaccineParams) => {
       return withFeedback(
         async (currentParams: DeleteVaccineParams) => {
-          const response = await fetch(`/api/vacinas/${currentParams.id}`, {
+          const response = await fetch(`/api/vaccines/${currentParams.id}`, {
             method: "DELETE",
           });
 
