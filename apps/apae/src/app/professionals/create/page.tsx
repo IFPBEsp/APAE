@@ -4,7 +4,7 @@ import { useForm, Controller, type SubmitHandler } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { InputMask } from "@react-input/mask";
-
+import { User } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -27,14 +27,17 @@ import { useCreateProfissional } from "@/hooks/profissional/use-create-profissio
 import Disponibilidade from "@/components/forms/DisponibilidadeForm";
 import { cadastroSchema } from "@/schemas/profissional.schema";
 import { STATES } from "@/lib/states";
-import { JSX } from "react";
+import { useRef, useState, useEffect, JSX } from "react";
 import HealthAreaSelect from "@/components/shared/HealthAreaSelect";
 import { gerarMatrizDisponibilidade } from "@/domains/professional/shared/disponibilidade.utils";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 type CadastroFormValues = z.infer<typeof cadastroSchema>;
 
 export default function CadastroProfissional(): JSX.Element {
   const router = useRouter();
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const { create, loading, error, success } = useCreateProfissional();
 
   const defaultValues: Partial<CadastroFormValues> = {
@@ -58,6 +61,16 @@ export default function CadastroProfissional(): JSX.Element {
     resolver: zodResolver(cadastroSchema),
     defaultValues,
   });
+
+  const photoFile = form.watch("photo");
+
+  useEffect(() => {
+    if (photoFile instanceof File) {
+      const url = URL.createObjectURL(photoFile);
+      setPreviewUrl(url);
+      return () => URL.revokeObjectURL(url);
+    }
+  }, [photoFile]);
 
   const onCancel = () => {
     router.push("/professionals");
@@ -96,6 +109,11 @@ export default function CadastroProfissional(): JSX.Element {
       "professional",
       new Blob([JSON.stringify(payload)], { type: "application/json" })
     );
+    
+    // profilePhoto faz referência ao componente do back, deve estar alinhado quando for fazer a integração
+    if (values.photo) {
+      formData.append("profilePhoto", values.photo);
+    }
 
     formData.append("volunteerAgreement", values.termoVoluntariado);
     formData.append("curriculum", values.curriculo);
@@ -337,6 +355,55 @@ export default function CadastroProfissional(): JSX.Element {
               )}
             />
           </div>
+
+          <FormField
+            control={form.control}
+            name="photo"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel className="text-sm font-medium">
+                  Selecione uma foto*
+                </FormLabel>
+                <FormControl>
+                  <div className="flex flex-col items-start gap-4 w-full">
+                    <input
+                      ref={fileInputRef}
+                      type="file"
+                      id={`${field.name}-upload`}
+                      className="hidden"
+                      accept="image/png, image/jpeg"
+                      onChange={(e) => {
+                        const file = e.target.files?.[0];
+                        if (file) {
+                          field.onChange(file);
+                        }
+                      }}
+                    />
+
+                    <button
+                      type="button"
+                      onClick={() => fileInputRef.current?.click()}
+                      className="relative group mr-auto rounded-full transition-transform hover:scale-105"
+                    >
+                      <Avatar className="w-32 h-32 border-2 border-dashed border-gray-300 bg-gray-50 cursor-pointer flex items-center justify-center">
+                        <AvatarImage src={previewUrl || ""} alt="Foto do profissional" />
+                        <AvatarFallback className="bg-transparent">
+                          <User className="w-12 h-12 text-gray-400" />
+                        </AvatarFallback>
+                      </Avatar>
+
+                      <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity bg-black/20 rounded-full">
+                        <span className="bg-white text-black text-[10px] font-bold px-2 py-1 rounded shadow-sm">
+                          Escolher foto
+                        </span>
+                      </div>
+                    </button>
+                  </div>
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
 
           <FormField
             control={form.control}
