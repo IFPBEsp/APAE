@@ -3,7 +3,7 @@
 import { useRouter, useParams } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { updateTranstornoSchema, UpdateTranstornoDTO } from "@/schemas/transtornosSchema";
+import { updateDisorderSchema, UpdateDisorderDTO } from "@/schemas/transtornosSchema";
 import { toast } from "react-toastify";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -21,8 +21,8 @@ export default function EditTranstornoPage() {
     handleSubmit,
     setValue,
     formState: { errors, isSubmitting },
-  } = useForm<UpdateTranstornoDTO>({
-    resolver: zodResolver(updateTranstornoSchema),
+  } = useForm<UpdateDisorderDTO>({
+    resolver: zodResolver(updateDisorderSchema),
   });
 
   useEffect(() => {
@@ -43,7 +43,7 @@ export default function EditTranstornoPage() {
     }
   }, [id, setValue, router]);
 
-  const onSubmit = async (data: UpdateTranstornoDTO) => {
+  const onSubmit = async (data: UpdateDisorderDTO) => {
     try {
       const response = await fetch(`/api/disorders/${id}`, {
         method: "PUT",
