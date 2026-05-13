@@ -588,7 +588,7 @@ export function MembersRegisterProvider({
         const data = await res.json().catch(() => ({}));
         return { status: res.status, data };
       } else {
-        patient.registrationDate = new Date().toISOString();
+        patient.registrationDate = formatDate(new Date());
         
         const formData = new FormData();
         formData.append(

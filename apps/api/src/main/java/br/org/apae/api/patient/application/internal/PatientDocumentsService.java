@@ -34,6 +34,9 @@ class PatientDocumentsService {
             DocumentCategory category,
             DocumentType type,
             MultipartFile file) {
+        if (file == null || file.isEmpty()) {
+            return;
+        }
         try {
             this.documentService.putDocument(
                     PutDocumentArgsDTO.builder()
@@ -45,7 +48,11 @@ class PatientDocumentsService {
                             .build());
 
         } catch (Exception error) {
-            Logger.getGlobal().log(Level.SEVERE, error.toString());
+            Logger.getGlobal().log(Level.SEVERE,
+                    "Falha ao salvar documento [" + category + "/" + type + "] do paciente "
+                            + patient.getId() + ": " + error);
+            throw new RuntimeException(
+                    "Falha ao salvar documento " + type + " no armazenamento", error);
         }
     }
 
@@ -60,12 +67,16 @@ class PatientDocumentsService {
     }
 
     private void storeMedicalDocuments(Patient patient, CreateDocumentsDTO documents) {
-        for (MultipartFile report : documents.reports()) {
-            this.storePatientDocument(patient, DocumentCategory.MEDICAL, DocumentType.MEDICAL_REPORT, report);
+        if (documents.reports() != null) {
+            for (MultipartFile report : documents.reports()) {
+                this.storePatientDocument(patient, DocumentCategory.MEDICAL, DocumentType.MEDICAL_REPORT, report);
+            }
         }
 
-        for (MultipartFile referral : documents.referrals()) {
-            this.storePatientDocument(patient, DocumentCategory.MEDICAL, DocumentType.REFERRAL, referral);
+        if (documents.referrals() != null) {
+            for (MultipartFile referral : documents.referrals()) {
+                this.storePatientDocument(patient, DocumentCategory.MEDICAL, DocumentType.REFERRAL, referral);
+            }
         }
     }
 

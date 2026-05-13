@@ -15,7 +15,7 @@ RUN if [ -f package-lock.json ]; then \
       npm install --no-audit --no-fund; \
     fi
 
-# ---------- Stage 2: build ----------
+# build
 FROM node:20-alpine AS builder
 WORKDIR /app
 

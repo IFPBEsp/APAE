@@ -60,6 +60,7 @@ services:
       - MAIL_PASSWORD=${MAIL_PASSWORD}
       - CORS_ALLOWED_ORIGINS=${CORS_ALLOWED_ORIGINS}
       - APP_FRONTEND_RESET_PASSWORD_URL=${APP_FRONTEND_RESET_PASSWORD_URL}
+      - MANAGEMENT_HEALTH_MAIL_ENABLED=false
     depends_on:
       db:
         condition: service_healthy
