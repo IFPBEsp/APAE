@@ -12,7 +12,7 @@ function useCares() {
 
   useEffect(() => {
     const fetching = async () => {
-      const caresTypes = await fetch("/api/service-types", {
+      const caresTypes = await fetch("/apae-geral/api/service-types", {
         method: "GET",
       });
 

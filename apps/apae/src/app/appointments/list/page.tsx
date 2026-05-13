@@ -87,7 +87,7 @@ useEffect(() => {
       setAreas(areasExistentes);
 
       // Busca direta na API (lógica que está funcionando)
-      const absencesResponse = await fetch('/api/patients/with-absences?minAbsences=3');
+      const absencesResponse = await fetch('/apae-geral/api/patients/with-absences?minAbsences=3');
       
       if (!absencesResponse.ok) {
         throw new Error('Erro ao buscar pacientes com faltas');

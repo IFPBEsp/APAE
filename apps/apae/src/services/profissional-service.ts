@@ -18,21 +18,21 @@ export async function getAllProfissionais(ativo?: boolean) {
 }*/
 
 export async function inactivateProfissional(id: string) {
-  const response = await fetch(`/api/professionals/${id}/inactivate`, {
+  const response = await fetch(`/apae-geral/api/professionals/${id}/inactivate`, {
     method: "PUT",
   });
   return response;
 }
 
 export async function activateProfissional(id: string) {
-  const response = await fetch(`/api/professionals/${id}/activate`, {
+  const response = await fetch(`/apae-geral/api/professionals/${id}/activate`, {
     method: "PUT",
   });
   return response;
 }
 
 export async function createProfissional(formData: FormData) {
-  const response = await fetch("/api/professionals", {
+  const response = await fetch("/apae-geral/api/professionals", {
     method: "POST",
     body: formData,
   });
@@ -41,7 +41,7 @@ export async function createProfissional(formData: FormData) {
 }
 
 export async function updateProfissional(id: string, data: unknown) {
-  const response = await fetch(`/api/professionals/${id}`, {
+  const response = await fetch(`/apae-geral/api/professionals/${id}`, {
     method: "PUT",
     headers: {
       "Content-Type": "application/json",
@@ -54,7 +54,7 @@ export async function updateProfissional(id: string, data: unknown) {
 
 export async function getProfissionalById(id: string) {
   try {
-    const response = await axios.get(`/api/professionals/${id}`);
+    const response = await axios.get(`/apae-geral/api/professionals/${id}`);
     return response.data;
   } catch (error) {
     if (axios.isAxiosError(error)) {
@@ -66,7 +66,7 @@ export async function getProfissionalById(id: string) {
 
 export async function getProfessionalDocuments(id: string) {
   try {
-    const response = await axios.get(`/api/professionals/${id}/documents`);
+    const response = await axios.get(`/apae-geral/api/professionals/${id}/documents`);
     return response.data || [];
   } catch (error) {
     if (axios.isAxiosError(error)) {
@@ -78,7 +78,7 @@ export async function getProfessionalDocuments(id: string) {
 
 
 export async function updateProfessionalDocuments(id: string, formData: FormData) {
-  return fetch(`/api/professionals/${id}/documents`, {
+  return fetch(`/apae-geral/api/professionals/${id}/documents`, {
     method: "PATCH",
     body: formData,
   });

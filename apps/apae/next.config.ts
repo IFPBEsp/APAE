@@ -2,6 +2,7 @@ import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
   output: "standalone",
+  basePath: "/apae-geral",
   async redirects() {
     return [
       { source: "/visualization-patients",     destination: "/patients",               permanent: true },

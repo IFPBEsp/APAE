@@ -133,7 +133,7 @@ export function AppointmentForm({ editAppointment }: AppointmentFormProps) {
     const loadProfessionalData = async () => {
       if (professional.value) {
         try {
-          const res = await fetch(`/api/professionals/${professional.value}`);
+          const res = await fetch(`/apae-geral/api/professionals/${professional.value}`);
           const data = await res.json();
           setAvailabilities(data.availabilities || []);
         } catch {

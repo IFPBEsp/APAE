@@ -1,7 +1,7 @@
 import { AbsenceResponseDTO, CreateAbsenceDTO } from '@/types/absence';
 
 export class AbsenceService {
-  private static readonly API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || '/api';
+  private static readonly API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || '/apae-geral/api';
   private static readonly API_PATH = '/absences'; 
 
   private static getAuthHeaders(): HeadersInit {
@@ -36,7 +36,7 @@ export class AbsenceService {
     justificationDocumentId?: string | null
   ): Promise<AbsenceResponseDTO> {
     
-    const response = await fetch(`/api/absences/${absenceId}/justify`, {
+    const response = await fetch(`/apae-geral/api/absences/${absenceId}/justify`, {
       method: 'PATCH',
       headers: this.getAuthHeaders(),
       body: JSON.stringify({ 

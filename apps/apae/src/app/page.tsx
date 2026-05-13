@@ -86,7 +86,7 @@ export default function DashboardPage() {
   const fetchAbsences = async () => {
       try {
         // Fazemos o fetch direto para a API, filtrando por 3 faltas
-        const response = await fetch('/api/patients/with-absences?minAbsences=3');
+        const response = await fetch('/apae-geral/api/patients/with-absences?minAbsences=3');
         
         if (!response.ok) {
           throw new Error('Erro ao buscar pacientes com faltas');

@@ -40,7 +40,7 @@ export default function RecoveryPage() {
     mode: "all",
   });
 
-  const API_URL = process.env.NEXT_PUBLIC_API || "http://localhost:8090/api";
+  const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8090/apae-geral/api";
 
   const handleSendCode = async (data: FormRecovery) => {
     try {

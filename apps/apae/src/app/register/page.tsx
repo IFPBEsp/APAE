@@ -49,7 +49,7 @@ function Page() {
 
   const onSubmit = async (data: FormSignUp) => {
     try {
-      const res = await fetch("/api/auth/register", {
+      const res = await fetch("/apae-geral/api/auth/register", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(data),

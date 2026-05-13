@@ -54,7 +54,7 @@ export default function AbsenceDetails() {
         docFormData.append("type", "ATTACHMENTANY");
         docFormData.append("year", String(new Date().getFullYear()));
 
-        const docResponse = await fetch(`/api/patients/${justifyingAbsence.patientId}/documents`, {
+        const docResponse = await fetch(`/apae-geral/api/patients/${justifyingAbsence.patientId}/documents`, {
           method: "POST",
           body: docFormData,
         });
@@ -94,8 +94,8 @@ export default function AbsenceDetails() {
         });
 
         const [patientsRes, statsRes] = await Promise.all([
-          fetch(`/api/patients/with-absences?${queryParams}`),
-          fetch("/api/dashboard/overview?minAbsences=3"),
+          fetch(`/apae-geral/api/patients/with-absences?${queryParams}`),
+          fetch("/apae-geral/api/dashboard/overview?minAbsences=3"),
         ]);
 
         if (!patientsRes.ok || !statsRes.ok) {
