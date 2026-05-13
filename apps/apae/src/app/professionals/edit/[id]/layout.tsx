@@ -44,7 +44,7 @@ export default function Layout({
         style={{ backgroundColor: "#F5F5F5" }}
       >
         <h1 className="text-2xl font-bold text-blue-900 mb-4">
-          Atualização de Profissional asdaiduajs
+          Atualização de Profissional
         </h1>
         {children}
       </div>
