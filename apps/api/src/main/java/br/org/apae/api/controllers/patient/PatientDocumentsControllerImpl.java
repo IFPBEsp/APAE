@@ -164,7 +164,6 @@ public class PatientDocumentsControllerImpl implements PatientDocumentsControlle
                     .filter(Objects::nonNull)
                     .toList();
         } catch (Exception e) {
-            e.printStackTrace();
             throw new RuntimeException("Erro ao buscar documentos: " + e.getClass().getSimpleName() + " - " + e.getMessage(), e);
         }
     }
