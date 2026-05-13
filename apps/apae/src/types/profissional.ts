@@ -45,4 +45,5 @@ export interface Profissional {
   address: Endereco;
   availabilities: Disponibilidade[];
   ativo: boolean;
+  profilePhotoUrl?: string;
 }

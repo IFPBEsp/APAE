@@ -52,6 +52,9 @@ public class HealthProfessional {
     @OneToMany(mappedBy = "professional", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Availability> availabilities = new ArrayList<>();
 
+    @Column(name = "foto_perfil")
+    private String profilePhoto;
+
     protected HealthProfessional() {
     }
 
@@ -163,5 +166,13 @@ public class HealthProfessional {
 
     public void setAtivo(Boolean ativo) {
         this.ativo = ativo;
+    }
+
+    public String getProfilePhoto() {
+        return profilePhoto;
+    }
+
+    public void setProfilePhoto(String profilePhoto) {
+        this.profilePhoto = profilePhoto;
     }
 }

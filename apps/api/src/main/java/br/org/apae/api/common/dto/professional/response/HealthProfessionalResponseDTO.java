@@ -19,7 +19,8 @@ public record HealthProfessionalResponseDTO(
         Boolean ativo,
         AddressResponseDTO address,
         ServiceAreaResponseDTO serviceArea,
-        List<AvailabilityResponseDTO> availabilities
+        List<AvailabilityResponseDTO> availabilities,
+        String profilePhoto
 ) {
 
     public HealthProfessionalResponseDTO(HealthProfessional entity,
@@ -37,7 +38,8 @@ public record HealthProfessionalResponseDTO(
                 entity.getAtivo(),
                 address,
                 serviceArea,
-                availabilities
+                availabilities,
+                entity.getProfilePhoto()
         );
     }
 }
