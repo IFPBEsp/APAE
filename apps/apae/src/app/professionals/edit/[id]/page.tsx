@@ -35,8 +35,6 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-
-// FIX 1: importando do wrapper correto, não do @radix-ui/react-avatar diretamente
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 import { useGetByIdProfissional } from "@/hooks/profissional/use-get-by-id-profissional";
@@ -95,11 +93,9 @@ export default function AtualizarProfissional(): JSX.Element {
   const [removeModalOpen, setRemoveModalOpen] = useState(false);
   const [docToRemove, setDocToRemove] = useState<DocumentWithUrl | null>(null);
 
-  // FIX 5: estado para erro/sucesso do upload da foto
   const [photoError, setPhotoError] = useState<string | null>(null);
   const [photoSuccess, setPhotoSuccess] = useState(false);
 
-  // FIX 6: gera o object URL uma única vez quando selectedPhoto muda e revoga o anterior
   const [photoPreviewUrl, setPhotoPreviewUrl] = useState<string | null>(null);
 
   useEffect(() => {
@@ -112,7 +108,6 @@ export default function AtualizarProfissional(): JSX.Element {
     return () => URL.revokeObjectURL(url);
   }, [selectedPhoto]);
 
-  // FIX 3: hasAnyUpload agora considera selectedPhoto também
   const hasAnyUpload = useMemo(() => {
     return (
       !!curriculumFile ||
@@ -279,7 +274,6 @@ export default function AtualizarProfissional(): JSX.Element {
       await refreshDocuments(profissional.id);
     }
 
-    // FIX 4 e 5: endpoint corrigido com prefixo /api e tratamento de erro/sucesso
     if (selectedPhoto) {
       setPhotoError(null);
       setPhotoSuccess(false);
@@ -578,7 +572,6 @@ export default function AtualizarProfissional(): JSX.Element {
           <Disponibilidade control={form.control} watch={form.watch} />
 
           <div className="space-y-4">
-            {/* Bloco de documentos já anexados (somente leitura) */}
             <div className="rounded-md border p-4 space-y-2">
               <p className="text-base font-semibold">Documentos já anexados</p>
 
@@ -674,7 +667,6 @@ export default function AtualizarProfissional(): JSX.Element {
               )}
             </div>
 
-            {/* Campos de upload */}
             <FormItem>
               <FormLabel>Termo do Voluntário</FormLabel>
               <FormControl>
@@ -701,21 +693,9 @@ export default function AtualizarProfissional(): JSX.Element {
               )}
             </FormItem>
 
-            {/* FIX 2: foto de perfil aparece somente aqui, uma única vez */}
             <FormItem>
               <FormLabel>Foto de perfil</FormLabel>
               <div className="flex items-center gap-4">
-                {/* FIX 6: usa photoPreviewUrl gerado via useEffect, sem criar URL a cada render */}
-                <Avatar className="h-20 w-20 border border-gray-300">
-                  <AvatarImage
-                    src={photoPreviewUrl ?? profissional?.profilePhotoUrl ?? ""}
-                    alt={profissional?.name}
-                  />
-                  <AvatarFallback className="bg-[#B2D7EC] text-[#0D4F97] font-bold">
-                    {profissional?.name?.charAt(0) || "P"}
-                  </AvatarFallback>
-                </Avatar>
-
                 <div className="flex-1 space-y-2">
                   <FormControl>
                     <Input
@@ -817,7 +797,6 @@ export default function AtualizarProfissional(): JSX.Element {
               )}
             </FormItem>
 
-            {/* FIX 5: feedback de erro/sucesso do upload da foto */}
             {photoError && <p className="text-sm text-red-500">{photoError}</p>}
             {photoSuccess && (
               <p className="text-sm text-green-600">Foto enviada com sucesso!</p>
