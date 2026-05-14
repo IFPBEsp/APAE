@@ -1,12 +1,12 @@
 "use client";
 
-import { JSX, useCallback, useEffect, useMemo, useState } from "react";
+import { JSX, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useForm, Controller, type SubmitHandler } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { InputMask } from "@react-input/mask";
 import { useRouter } from "next/navigation";
-import { Trash2 } from "lucide-react";
+import { Trash2, User } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -70,7 +70,9 @@ function isValidFile(file: File): boolean {
 
 export default function AtualizarProfissional(): JSX.Element {
   const router = useRouter();
-
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+  
   const {
     profissional,
     loading: loadingProf,
@@ -571,6 +573,89 @@ export default function AtualizarProfissional(): JSX.Element {
 
           <Disponibilidade control={form.control} watch={form.watch} />
 
+          <FormField
+            control={form.control}
+            name="photo"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel className="text-sm font-medium">
+                  Selecione uma foto*
+                </FormLabel>
+
+                <FormControl>
+                  <div className="flex flex-col items-start gap-4 w-full">
+                    <input
+                      ref={fileInputRef}
+                      type="file"
+                      id={`${field.name}-upload`}
+                      className="hidden"
+                      accept="image/png,image/jpeg,image/jpg,image/webp"
+                      onChange={(e) => {
+                        const file = e.target.files?.[0];
+
+                        field.onChange(file ?? null);
+                        setSelectedPhoto(file ?? null);
+                      }}
+                    />
+
+                    <button
+                      type="button"
+                      onClick={() => fileInputRef.current?.click()}
+                      className="relative group mr-auto rounded-full transition-transform hover:scale-105"
+                    >
+                      <Avatar className="w-32 h-32 border-2 border-dashed border-gray-300 bg-gray-50 cursor-pointer flex items-center justify-center">
+                        <AvatarImage
+                          src={photoPreviewUrl || undefined}
+                          alt="Foto do profissional"
+                        />
+
+                        <AvatarFallback className="bg-transparent">
+                          <User className="w-12 h-12 text-gray-400" />
+                        </AvatarFallback>
+                      </Avatar>
+
+                      <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity bg-black/20 rounded-full">
+                        <span className="bg-white text-black text-[10px] font-bold px-2 py-1 rounded shadow-sm">
+                          Escolher foto
+                        </span>
+                      </div>
+                    </button>
+
+                    <p className="text-xs text-gray-500">
+                      PNG, JPG ou WEBP até 5MB
+                    </p>
+
+                    {field.value && (
+                      <div className="flex items-center gap-2">
+                        <p className="text-xs text-gray-600">
+                          Selecionado: {field.value.name}
+                        </p>
+
+                        <Button
+                          type="button"
+                          variant="outline"
+                          size="sm"
+                          onClick={() => {
+                            field.onChange(null);
+                            setSelectedPhoto(null);
+
+                            if (fileInputRef.current) {
+                              fileInputRef.current.value = "";
+                            }
+                          }}
+                        >
+                          Remover
+                        </Button>
+                      </div>
+                    )}
+                  </div>
+                </FormControl>
+
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
           <div className="space-y-4">
             <div className="rounded-md border p-4 space-y-2">
               <p className="text-base font-semibold">Documentos já anexados</p>
@@ -691,58 +776,6 @@ export default function AtualizarProfissional(): JSX.Element {
                   Selecionado: {volunteerFile.name}
                 </p>
               )}
-            </FormItem>
-
-            <FormItem>
-              <FormLabel>Foto de perfil</FormLabel>
-              <div className="flex items-center gap-4">
-                <div className="flex-1 space-y-2">
-                  <FormControl>
-                    <Input
-                      type="file"
-                      accept="image/png,image/jpeg,image/jpg,image/webp"
-                      onChange={(e) => {
-                        const file = e.target.files?.[0];
-                        if (!file) { setSelectedPhoto(null); return; }
-                        const allowedImageTypes = [
-                          "image/png",
-                          "image/jpeg",
-                          "image/jpg",
-                          "image/webp",
-                        ];
-                        const maxSize = 5 * 1024 * 1024;
-                        if (
-                          !allowedImageTypes.includes(file.type) ||
-                          file.size <= 0 ||
-                          file.size > maxSize
-                        ) {
-                          alert("Apenas imagens PNG, JPG ou WEBP até 5MB são permitidas");
-                          e.target.value = "";
-                          setSelectedPhoto(null);
-                          return;
-                        }
-                        setSelectedPhoto(file);
-                      }}
-                    />
-                  </FormControl>
-                  <p className="text-xs text-gray-500">PNG, JPG ou WEBP até 5MB</p>
-                  {selectedPhoto && (
-                    <div className="flex items-center gap-2">
-                      <p className="text-xs text-gray-600">
-                        Selecionado: {selectedPhoto.name}
-                      </p>
-                      <Button
-                        type="button"
-                        variant="outline"
-                        size="sm"
-                        onClick={() => setSelectedPhoto(null)}
-                      >
-                        Remover
-                      </Button>
-                    </div>
-                  )}
-                </div>
-              </div>
             </FormItem>
 
             <FormItem>
