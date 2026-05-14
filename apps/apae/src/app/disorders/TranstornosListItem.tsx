@@ -2,13 +2,13 @@
 
 import { Button } from "@/components/ui/button";
 import { Edit, Trash2 } from "lucide-react";
-import { Transtorno } from "@/schemas/transtornosSchema";
+import { Disorder } from "@/schemas/transtornosSchema";
 import { ConfirmModal } from "@/components/ui/confirm-modal";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@radix-ui/react-tooltip";
 
 
-interface TranstornoListItemProps {
-  transtorno: Transtorno; 
+interface DisorderListItemProps {
+  transtorno: Disorder;
   onEdit: () => void;
   onDelete: () => void;
 }
@@ -17,7 +17,7 @@ export function TranstornoListItem({
   transtorno,
   onEdit,
   onDelete,
-}: TranstornoListItemProps) {
+}: DisorderListItemProps) {
   return (
     <div className="flex items-center justify-between p-4 border-b hover:bg-gray-50 transition-colors">
       <div className="flex-1">

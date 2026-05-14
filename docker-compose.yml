@@ -15,6 +15,11 @@ services:
     networks:
       - apae-network
     restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
   minio:
     image: quay.io/minio/minio
@@ -33,22 +38,18 @@ services:
       - apae-network
     restart: unless-stopped
 
-  apae-sistema-geral:
-    build:
-      context: .
-      dockerfile: Dockerfile
-      args:
-        NEXT_PUBLIC_API_URL: ${NEXT_PUBLIC_API_URL}
-    container_name: apae-sistema-geral
+  apae-geral-backend:
+    image: ${BACKEND_IMAGE:-ghcr.io/ifpbesp/apae-geral-backend}:${IMAGE_TAG:-dev}
+    container_name: apae-geral-backend
     ports:
-      - "3000:3000"
-      - "${API_PORT}:8090"
+      - "${API_PORT:-8080}:8080"
     environment:
+      - API_PORT=8080
       - DB_URL=jdbc:postgresql://db:5432/${POSTGRES_DB}
       - DB_USERNAME=${DB_USERNAME}
       - DB_PASSWORD=${DB_PASSWORD}
       - MINIO_URL=http://minio:9000
-      - MINIO_PUBLIC_URL=http://localhost:9000
+      - MINIO_PUBLIC_URL=${MINIO_PUBLIC_URL:-http://localhost:9000}
       - MINIO_ACCESS_KEY=${MINIO_ACCESS_KEY}
       - MINIO_SECRET_KEY=${MINIO_SECRET_KEY}
       - JWT_SECRET=${JWT_SECRET}
@@ -59,9 +60,26 @@ services:
       - MAIL_PASSWORD=${MAIL_PASSWORD}
       - CORS_ALLOWED_ORIGINS=${CORS_ALLOWED_ORIGINS}
       - APP_FRONTEND_RESET_PASSWORD_URL=${APP_FRONTEND_RESET_PASSWORD_URL}
+      - MANAGEMENT_HEALTH_MAIL_ENABLED=false
     depends_on:
-      - db
-      - minio
+      db:
+        condition: service_healthy
+      minio:
+        condition: service_started
+    networks:
+      - apae-network
+    restart: unless-stopped
+
+  apae-geral-frontend:
+    image: ${FRONTEND_IMAGE:-ghcr.io/ifpbesp/apae-geral-frontend}:${IMAGE_TAG:-dev}
+    container_name: apae-geral-frontend
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=production
+      - NEXT_PUBLIC_API_URL=${NEXT_PUBLIC_API_URL:-/api}
+    depends_on:
+      - apae-geral-backend
     networks:
       - apae-network
     restart: unless-stopped

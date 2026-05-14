@@ -8,8 +8,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 
-type Estado = { id: number; nome: string; sigla: string };
-type Cidade = { id: number; nome: string };
+type State = { id: number; nome: string; sigla: string };
+type City = { id: number; nome: string };
 
 export type FormValues = {
   nomeCompleto: string;
@@ -27,8 +27,8 @@ export type FormValues = {
 };
 
 type Props = {
-  estados: Estado[];
-  cidades: Cidade[];
+  estados: State[];
+  cidades: City[];
   loading?: boolean;
   error?: string | null;
   success?: boolean;

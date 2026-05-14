@@ -13,28 +13,18 @@ export const turnos = [
   { id: "tarde", label: "Tarde" },
 ];
 
-export type DisponibilidadeType = {
+export type AvailabilityType = {
   dia: string;
   turno: string;
   checked: boolean;
 };
 
-export interface Disponibilidade {
+export interface Availability {
   day: string;
   shift: string;
 }
 
-export interface Endereco {
-  cep: string;
-  city: string;
-  state: string;
-  neighborhood: string;
-  street: string;
-  number?: string;
-  complement?: string;
-}
-
-export interface Profissional {
+export interface Professional {
   id: string;
   serviceArea: ServiceArea;
   phoneNumber: string;
@@ -42,8 +32,18 @@ export interface Profissional {
   email: string;
   name: string;
   identityDocument: string;
-  address: Endereco;
-  availabilities: Disponibilidade[];
+  address: Address;
+  availabilities: Availability[];
   ativo: boolean;
   profilePhotoUrl?: string;
+}
+
+export interface Address {
+  cep: string;
+  city: string;
+  state: string;
+  neighborhood: string;
+  street: string;
+  number?: string;
+  complement?: string;
 }

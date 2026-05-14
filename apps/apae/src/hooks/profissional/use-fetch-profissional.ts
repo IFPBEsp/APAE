@@ -1,5 +1,5 @@
 import { getAllProfissionais } from "@/services/profissional-service";
-import { Profissional } from "@/types/profissional";
+import { Professional } from "@/types/profissional";
 import { useEffect, useState } from "react";
 import axios from "axios";
 
@@ -10,7 +10,7 @@ interface PaginatedResponse<T> {
 }
 
 export function useFetchProfessionals(ativo: boolean) {
-  const [profissionais, setProfissionais] = useState<Profissional[]>([]);
+  const [profissionais, setProfissionais] = useState<Professional[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -24,7 +24,7 @@ export function useFetchProfessionals(ativo: boolean) {
         
         const response = await getAllProfissionais(ativo);
 
-        const data: PaginatedResponse<Profissional> = response.data;
+        const data: PaginatedResponse<Professional> = response.data;
         setProfissionais(data.content);
       } catch (err) {
         if (axios.isAxiosError(err)) {

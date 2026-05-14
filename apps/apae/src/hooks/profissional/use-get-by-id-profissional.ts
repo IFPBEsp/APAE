@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useParams } from "next/navigation";
 import { getProfissionalById } from "@/services/profissional-service";
-import { Profissional } from "@/types/profissional";
+import { Professional } from "@/types/profissional";
 
 export function useGetByIdProfissional() {
   const params = useParams();
@@ -13,7 +13,7 @@ export function useGetByIdProfissional() {
     id = "";
   }
 
-  const [profissional, setProfissional] = useState<Profissional | null>(null);
+  const [profissional, setProfissional] = useState<Professional | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -24,7 +24,7 @@ export function useGetByIdProfissional() {
     setError(null);
 
     getProfissionalById(id)
-      .then((data: Profissional) => {
+      .then((data: Professional) => {
         setProfissional(data);
       })
       .catch((err) => {

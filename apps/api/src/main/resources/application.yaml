@@ -2,6 +2,10 @@ spring:
   application:
     name: api
 
+  autoconfigure:
+    exclude:
+      - org.springframework.boot.actuate.autoconfigure.mail.MailHealthContributorAutoConfiguration
+
   datasource:
     url: ${DB_URL}
     username: ${DB_USERNAME}
@@ -68,3 +72,15 @@ cors:
 
 server:
   port: ${API_PORT:8090}
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
+  endpoint:
+    health:
+      show-details: never
+  health:
+    mail:
+      enabled: ${MAIL_HEALTH_ENABLED:false}
