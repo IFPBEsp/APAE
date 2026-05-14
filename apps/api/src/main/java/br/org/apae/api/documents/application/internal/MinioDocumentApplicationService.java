@@ -174,6 +174,18 @@ public class MinioDocumentApplicationService implements DocumentApplicationServi
     public Iterable<DocumentDTO> listDocuments(ListDocumentsArgsDTO dto)
             throws InsufficientDataException, IOException,
             InvalidKeyException, InvalidResponseException, NoSuchAlgorithmException {
+        try {
+            boolean bucketExists = client.bucketExists(
+                    BucketExistsArgs.builder()
+                            .bucket(dto.owner())
+                            .build());
+            if (!bucketExists) {
+                return List.of();
+            }
+        } catch (MinioException e) {
+            throw translateMinioException(e);
+        }
+
         ListObjectsArgs.Builder builder = ListObjectsArgs.builder()
                 .bucket(dto.owner())
                 .includeUserMetadata(true)
