@@ -82,19 +82,24 @@ apae-geral-frontend   Up
 > apae-geral-backend` — espere ver `Started ApiApplication in X.X seconds`.
 
 ### 6. Valide os endpoints
+
+> ℹ️ Tanto o backend (Spring `server.servlet.context-path`) quanto o frontend
+> (Next.js `basePath`) rodam sob o prefixo `/apae-geral`. A raiz `/` retorna
+> 404 — isso é esperado.
+
 ```bash
 # Backend deve responder UP
-curl -s http://localhost:8080/api/actuator/health
+curl -s http://localhost:8080/apae-geral/actuator/health
 # {"status":"UP"}
 
-# Frontend deve devolver 200
-curl -sI http://localhost:3000/ | head -1
+# Frontend deve devolver 200 no caminho com prefixo
+curl -sI http://localhost:3000/apae-geral/ | head -1
 # HTTP/1.1 200 OK
 ```
 
 E no navegador:
-- Frontend: <http://localhost:3000>
-- Swagger backend: <http://localhost:8080/api/swagger-ui.html>
+- Frontend: <http://localhost:3000/apae-geral>
+- Swagger backend: <http://localhost:8080/apae-geral/api/swagger-ui/index.html>
 - MinIO console: <http://localhost:9001> (login com `MINIO_ROOT_USER` /
   `MINIO_ROOT_PASSWORD` do `.env`)
 
@@ -137,11 +142,12 @@ você precisa buildar a imagem de novo.
 
 Por isso o Dockerfile do frontend define:
 ```dockerfile
-ARG NEXT_PUBLIC_API_URL=/api
+ARG NEXT_PUBLIC_API_URL=/apae-geral/api
 ```
-e o workflow do GHCR builda com `/api`. A premissa é que em produção haverá um
-reverse proxy (Nginx/Traefik no Portal dos 30 anos) que faz `/api/*` →
-`apae-geral-backend:8080`. Assim **uma única imagem serve todos os ambientes**.
+e o workflow do GHCR builda com `/apae-geral/api`. A premissa é que em
+produção haverá um reverse proxy (Nginx/Traefik no Portal dos 30 anos) que faz
+`/apae-geral/*` → containers do APAE (backend e frontend, conforme a rota).
+Assim **uma única imagem serve todos os ambientes**.
 
 Se quiser rodar local **sem proxy**, builde o frontend passando a URL absoluta
 (veja seção 4.1).
@@ -172,13 +178,15 @@ IMAGE_TAG=sha-abc1234 docker compose up -d
 ### 4.1 Frontend isolado (sem proxy na frente)
 ```bash
 docker build \
-  --build-arg NEXT_PUBLIC_API_URL=http://localhost:8080/api \
+  --build-arg NEXT_PUBLIC_API_URL=http://localhost:8080/apae-geral/api \
   -t apae-geral-frontend:local \
   ./apps/apae
 
 docker run --rm -p 3000:3000 apae-geral-frontend:local
 ```
 > Note o `NEXT_PUBLIC_API_URL` absoluto — no modo isolado não há proxy.
+> O frontend continuará servindo sob `/apae-geral` (basePath do Next.js), então
+> acesse em <http://localhost:3000/apae-geral>.
 
 ### 4.2 Backend isolado
 **Pré-requisito:** Postgres precisa estar rodando antes (`docker compose up -d
@@ -228,10 +236,10 @@ Status esperado depois de ~30–60s: `"Status": "healthy"`.
 
 ### Probes manuais
 ```bash
-curl -s http://localhost:8080/api/actuator/health    # backend
+curl -s http://localhost:8080/apae-geral/actuator/health    # backend
 # {"status":"UP"}
 
-curl -sI http://localhost:3000/ | head -1            # frontend
+curl -sI http://localhost:3000/apae-geral/ | head -1        # frontend
 # HTTP/1.1 200 OK
 ```
 
@@ -251,7 +259,8 @@ docker exec apae-geral-frontend id
 |---|---|---|
 | `Connection to host.docker.internal:5200 refused` ao subir o backend isolado | Postgres não está rodando | `docker compose up -d db` antes (seção 4.2) |
 | Backend reinicia em loop, logs mostram `Hibernate: Unable to determine Dialect` | Backend subiu antes do Postgres terminar de iniciar | Use `docker compose up -d` (o `depends_on: condition: service_healthy` resolve), ou `docker compose restart apae-geral-backend` |
-| Frontend abre mas chamadas pra API caem em 404 | Buildou com `NEXT_PUBLIC_API_URL=/api` mas não tem proxy | Rebuilde com URL absoluto (seção 4.1) ou ponha um Nginx |
+| Frontend abre mas chamadas pra API caem em 404 | Buildou com `NEXT_PUBLIC_API_URL=/apae-geral/api` mas não tem proxy | Rebuilde com URL absoluto (seção 4.1) ou ponha um Nginx |
+| Abriu `http://localhost:3000/` e veio 404 | Esperado — o frontend está sob `basePath: /apae-geral` | Acesse `http://localhost:3000/apae-geral` |
 | `mvn ... COMPILATION ERROR` em `*Test.java` durante `docker build` | Dockerfile usou `-DskipTests` (só pula execução) em vez de `-Dmaven.test.skip=true` (pula compilação+execução) | Já corrigido no `apps/api/Dockerfile` |
 | `denied: denied` no `docker compose pull` | Pacote no GHCR está privado | `docker login ghcr.io` (seção 1) ou torne o pacote público |
 | `HEALTHCHECK` do backend fica `starting` para sempre | Spring Actuator faltando ou `/actuator/health` bloqueado | Confira `pom.xml` (tem `spring-boot-starter-actuator`) e `SecurityConfiguration.java` (libera `/actuator/health`) |
@@ -290,7 +299,11 @@ imagens publicadas no GHCR:
 
 Pontos a alinhar com o time do Portal:
 1. **`JWT_SECRET` precisa ser idêntico** entre os produtos (SSO).
-2. O Portal deve resolver `/api` no frontend do APAE para o backend
-   correspondente via reverse proxy.
+2. Todo o tráfego do APAE (frontend e API) vive sob o prefixo **`/apae-geral`**.
+   O Nginx do Portal deve fazer proxy preservando esse prefixo:
+   - `/apae-geral/api/*` → `apae-geral-backend:8080`
+   - `/apae-geral/*`     → `apae-geral-frontend:3000`
+   Isso elimina o conflito de paths com os demais produtos (gestão-escolar,
+   apae-30-anos, etc.) que dividem o mesmo domínio.
 3. As tags publicadas são `dev`, `latest` e `sha-<short>` — o Portal pode
    pinar numa tag de SHA para releases controladas.

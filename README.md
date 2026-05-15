@@ -249,7 +249,7 @@ MAIL_HOST=smtp.gmail.com
 MAIL_PORT=587
 MAIL_USERNAME=seu-email@gmail.com
 MAIL_PASSWORD=sua_senha_de_app
-APP_FRONTEND_RESET_PASSWORD_URL=http://localhost:3000/auth/reset-password
+APP_FRONTEND_RESET_PASSWORD_URL=http://localhost:3000/apae-geral/auth/reset-password
 ```
 
 3. Agora pode seguir com a execução normal do projeto, indo para seção [**Como Executar**](#como-executar)

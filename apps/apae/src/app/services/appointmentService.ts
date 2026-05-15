@@ -391,7 +391,7 @@ export async function listByPatient(
   if (end) query.append("end", end);
 
   const response = await fetch(
-    `/api/appointments/patient/${patientId}?${query}`,
+    `/apae-geral/api/appointments/patient/${patientId}?${query}`,
   );
 
   if (!response.ok) {
