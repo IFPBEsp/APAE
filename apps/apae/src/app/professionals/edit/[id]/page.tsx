@@ -1,12 +1,12 @@
 "use client";
 
-import { JSX, useEffect, useMemo, useState } from "react";
+import { JSX, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useForm, Controller, type SubmitHandler } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { InputMask } from "@react-input/mask";
 import { useRouter } from "next/navigation";
-import { Trash2 } from "lucide-react";
+import { Trash2, User } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -25,7 +25,6 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-
 import {
   AlertDialog,
   AlertDialogAction,
@@ -36,6 +35,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 import { useGetByIdProfissional } from "@/hooks/profissional/use-get-by-id-profissional";
 import { useUpdateProfissional } from "@/hooks/profissional/use-update-profissional";
@@ -56,32 +56,7 @@ import { DocumentWithUrl } from "@/types/document";
 
 type UpdateFormValues = z.infer<typeof updateProfessionalSchema>;
 
-export default function AtualizarProfissional(): JSX.Element {
-  const router = useRouter();
-
-  const {
-    profissional,
-    loading: loadingProf,
-    error: errorProf,
-  } = useGetByIdProfissional();
-
-  const { updateProfissional, loading, error, success } =
-    useUpdateProfissional();
-
-  const { upload, loadingDocs, errorDocs, successDocs } =
-    useUpdateProfessionalDocuments();
-
-  const [docs, setDocs] = useState<DocumentWithUrl[]>([]);
-  const [docsLoading, setDocsLoading] = useState(false);
-  const [docsError, setDocsError] = useState<string | null>(null);
-
-  const [curriculumFile, setCurriculumFile] = useState<File | null>(null);
-  const [volunteerFile, setVolunteerFile] = useState<File | null>(null);
-  const [attachmentFiles, setAttachmentFiles] = useState<File[]>([]);
-  const [removingIds, setRemovingIds] = useState<Set<string>>(new Set());
-  const [removeModalOpen, setRemoveModalOpen] = useState(false);
-  const [docToRemove, setDocToRemove] = useState<DocumentWithUrl | null>(null);
-
+function isValidFile(file: File): boolean {
   const allowedTypes = [
     "application/pdf",
     "image/png",
@@ -89,20 +64,60 @@ export default function AtualizarProfissional(): JSX.Element {
     "image/jpg",
     "image/webp",
   ];
+  const maxSize = 5 * 1024 * 1024;
+  return allowedTypes.includes(file.type) && file.size > 0 && file.size <= maxSize;
+}
 
-  function isValidFile(file: File) {
-    const maxSize = 5 * 1024 * 1024;
+export default function AtualizarProfissional(): JSX.Element {
+  const router = useRouter();
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+  
+  const {
+    profissional,
+    loading: loadingProf,
+    error: errorProf,
+  } = useGetByIdProfissional();
 
-    return (
-      allowedTypes.includes(file.type) &&
-      file.size > 0 &&
-      file.size <= maxSize
-    );
-  }
+  const { updateProfissional, loading, error, success } = useUpdateProfissional();
+  const { upload, loadingDocs, errorDocs, successDocs } = useUpdateProfessionalDocuments();
+
+  const [docs, setDocs] = useState<DocumentWithUrl[]>([]);
+  const [docsLoading, setDocsLoading] = useState(false);
+  const [docsError, setDocsError] = useState<string | null>(null);
+
+  const [curriculumFile, setCurriculumFile] = useState<File | null>(null);
+  const [volunteerFile, setVolunteerFile] = useState<File | null>(null);
+  const [selectedPhoto, setSelectedPhoto] = useState<File | null>(null);
+  const [attachmentFiles, setAttachmentFiles] = useState<File[]>([]);
+
+  const [removingIds, setRemovingIds] = useState<Set<string>>(new Set());
+  const [removeModalOpen, setRemoveModalOpen] = useState(false);
+  const [docToRemove, setDocToRemove] = useState<DocumentWithUrl | null>(null);
+
+  const [photoError, setPhotoError] = useState<string | null>(null);
+  const [photoSuccess, setPhotoSuccess] = useState(false);
+
+  const [photoPreviewUrl, setPhotoPreviewUrl] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (!selectedPhoto) {
+      setPhotoPreviewUrl(null);
+      return;
+    }
+    const url = URL.createObjectURL(selectedPhoto);
+    setPhotoPreviewUrl(url);
+    return () => URL.revokeObjectURL(url);
+  }, [selectedPhoto]);
 
   const hasAnyUpload = useMemo(() => {
-    return !!curriculumFile || !!volunteerFile || attachmentFiles.length > 0;
-  }, [curriculumFile, volunteerFile, attachmentFiles]);
+    return (
+      !!curriculumFile ||
+      !!volunteerFile ||
+      !!selectedPhoto ||
+      attachmentFiles.length > 0
+    );
+  }, [curriculumFile, volunteerFile, selectedPhoto, attachmentFiles]);
 
   const defaultValues: Partial<UpdateFormValues> = {
     nomeCompleto: "",
@@ -157,24 +172,23 @@ export default function AtualizarProfissional(): JSX.Element {
     });
   }, [profissional, form]);
 
-  async function refreshDocuments(professionalId: string) {
+  const refreshDocuments = useCallback(async (professionalId: string) => {
     setDocsLoading(true);
     setDocsError(null);
     try {
       const data = await getProfessionalDocuments(professionalId);
       setDocs(data);
-    } catch (e: any) {
-      setDocsError(e?.message ?? "Erro ao carregar documentos");
+    } catch (e: unknown) {
+      setDocsError((e as Error)?.message ?? "Erro ao carregar documentos");
     } finally {
       setDocsLoading(false);
     }
-  }
+  }, []);
 
   useEffect(() => {
     if (!profissional?.id) return;
     refreshDocuments(profissional.id);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [profissional?.id]);
+  }, [profissional?.id, refreshDocuments]);
 
   const groupedDocs = useMemo(() => {
     const curriculum = docs.find((d) => d.type === "CURRICULUM");
@@ -204,9 +218,9 @@ export default function AtualizarProfissional(): JSX.Element {
       await refreshDocuments(profissional.id);
       setRemoveModalOpen(false);
       setDocToRemove(null);
-    } catch (e: any) {
+    } catch (e: unknown) {
       console.error(e);
-      alert(e?.message ?? "Erro ao remover documento");
+      alert((e as Error)?.message ?? "Erro ao remover documento");
     } finally {
       setRemovingIds((prev) => {
         const next = new Set(prev);
@@ -248,9 +262,8 @@ export default function AtualizarProfissional(): JSX.Element {
     const ok = await updateProfissional(profissional.id, payload);
     if (!ok) return;
 
-    if (hasAnyUpload) {
+    if (curriculumFile || volunteerFile || attachmentFiles.length > 0) {
       const fd = new FormData();
-
       if (volunteerFile) fd.append("volunteerAgreement", volunteerFile);
       if (curriculumFile) fd.append("curriculum", curriculumFile);
       for (const f of attachmentFiles) fd.append("attachmentAny", f);
@@ -263,6 +276,31 @@ export default function AtualizarProfissional(): JSX.Element {
       await refreshDocuments(profissional.id);
     }
 
+    if (selectedPhoto) {
+      setPhotoError(null);
+      setPhotoSuccess(false);
+      try {
+        const photoData = new FormData();
+        photoData.append("file", selectedPhoto);
+
+        const response = await fetch(`/api/professionals/${profissional.id}/photo`, {
+          method: "PATCH",
+          body: photoData,
+        });
+
+        if (!response.ok) {
+          const body = await response.json().catch(() => ({}));
+          throw new Error(body?.message ?? "Erro ao enviar foto");
+        }
+
+        setPhotoSuccess(true);
+        setSelectedPhoto(null);
+      } catch (e: unknown) {
+        setPhotoError((e as Error)?.message ?? "Erro ao enviar foto");
+        return;
+      }
+    }
+
     router.push("/professionals");
   };
 
@@ -273,8 +311,7 @@ export default function AtualizarProfissional(): JSX.Element {
   if (loadingProf) return <p>Carregando dados...</p>;
   if (errorProf) return <p className="text-red-500">Erro: {errorProf}</p>;
 
-  const isConfirmBusy =
-    !!docToRemove && removingIds.has(String(docToRemove.id));
+  const isConfirmBusy = !!docToRemove && removingIds.has(String(docToRemove.id));
 
   return (
     <div className="p-0">
@@ -290,9 +327,7 @@ export default function AtualizarProfissional(): JSX.Element {
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel disabled={isConfirmBusy}>
-              Cancelar
-            </AlertDialogCancel>
+            <AlertDialogCancel disabled={isConfirmBusy}>Cancelar</AlertDialogCancel>
             <AlertDialogAction
               className="border border-input bg-background text-foreground hover:bg-accent hover:text-accent-foreground"
               onClick={confirmRemove}
@@ -330,11 +365,7 @@ export default function AtualizarProfissional(): JSX.Element {
               <FormItem>
                 <FormLabel>Email *</FormLabel>
                 <FormControl>
-                  <Input
-                    type="email"
-                    placeholder="profissional@exemplo.com"
-                    {...field}
-                  />
+                  <Input type="email" placeholder="profissional@exemplo.com" {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -349,7 +380,11 @@ export default function AtualizarProfissional(): JSX.Element {
                 <FormItem>
                   <FormLabel>Documento profissional</FormLabel>
                   <FormControl>
-                    <Input placeholder="Ex: CRM/SP 123456" {...field} value={field.value || ""} />
+                    <Input
+                      placeholder="Ex: CRM/SP 123456"
+                      {...field}
+                      value={field.value || ""}
+                    />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -363,10 +398,7 @@ export default function AtualizarProfissional(): JSX.Element {
                 <FormItem>
                   <FormLabel>Área de atendimento *</FormLabel>
                   <FormControl>
-                    <HealthAreaSelect
-                      value={field.value}
-                      onChange={field.onChange}
-                    />
+                    <HealthAreaSelect value={field.value} onChange={field.onChange} />
                   </FormControl>
                   <FormMessage>{fieldState.error?.message}</FormMessage>
                 </FormItem>
@@ -423,9 +455,7 @@ export default function AtualizarProfissional(): JSX.Element {
                     <Select onValueChange={field.onChange} value={field.value}>
                       <SelectTrigger
                         className={`w-full ${
-                          fieldState.invalid
-                            ? "border-red-500"
-                            : "border-gray-300"
+                          fieldState.invalid ? "border-red-500" : "border-gray-300"
                         }`}
                       >
                         <SelectValue placeholder="Selecione um estado" />
@@ -543,14 +573,95 @@ export default function AtualizarProfissional(): JSX.Element {
 
           <Disponibilidade control={form.control} watch={form.watch} />
 
+          <FormField
+            control={form.control}
+            name="photo"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel className="text-sm font-medium">
+                  Selecione uma foto*
+                </FormLabel>
+
+                <FormControl>
+                  <div className="flex flex-col items-start gap-4 w-full">
+                    <input
+                      ref={fileInputRef}
+                      type="file"
+                      id={`${field.name}-upload`}
+                      className="hidden"
+                      accept="image/png,image/jpeg,image/jpg,image/webp"
+                      onChange={(e) => {
+                        const file = e.target.files?.[0];
+
+                        field.onChange(file ?? null);
+                        setSelectedPhoto(file ?? null);
+                      }}
+                    />
+
+                    <button
+                      type="button"
+                      onClick={() => fileInputRef.current?.click()}
+                      className="relative group mr-auto rounded-full transition-transform hover:scale-105"
+                    >
+                      <Avatar className="w-32 h-32 border-2 border-dashed border-gray-300 bg-gray-50 cursor-pointer flex items-center justify-center">
+                        <AvatarImage
+                          src={photoPreviewUrl || undefined}
+                          alt="Foto do profissional"
+                        />
+
+                        <AvatarFallback className="bg-transparent">
+                          <User className="w-12 h-12 text-gray-400" />
+                        </AvatarFallback>
+                      </Avatar>
+
+                      <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity bg-black/20 rounded-full">
+                        <span className="bg-white text-black text-[10px] font-bold px-2 py-1 rounded shadow-sm">
+                          Escolher foto
+                        </span>
+                      </div>
+                    </button>
+
+                    <p className="text-xs text-gray-500">
+                      PNG, JPG ou WEBP até 5MB
+                    </p>
+
+                    {field.value && (
+                      <div className="flex items-center gap-2">
+                        <p className="text-xs text-gray-600">
+                          Selecionado: {field.value.name}
+                        </p>
+
+                        <Button
+                          type="button"
+                          variant="outline"
+                          size="sm"
+                          onClick={() => {
+                            field.onChange(null);
+                            setSelectedPhoto(null);
+
+                            if (fileInputRef.current) {
+                              fileInputRef.current.value = "";
+                            }
+                          }}
+                        >
+                          Remover
+                        </Button>
+                      </div>
+                    )}
+                  </div>
+                </FormControl>
+
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
           <div className="space-y-4">
             <div className="rounded-md border p-4 space-y-2">
               <p className="text-base font-semibold">Documentos já anexados</p>
 
               {docsLoading ? (
-                <p className="text-sm text-gray-600">
-                  Carregando documentos...
-                </p>
+                <p className="text-sm text-gray-600">Carregando documentos...</p>
               ) : docsError ? (
                 <p className="text-sm text-red-500">{docsError}</p>
               ) : (
@@ -601,18 +712,14 @@ export default function AtualizarProfissional(): JSX.Element {
                       <ul className="mt-2 space-y-2">
                         {groupedDocs.attachments.map((a) => {
                           const busy = removingIds.has(String(a.id));
-
                           return (
                             <li
                               key={a.id}
                               className="flex items-center justify-between rounded-md border px-3 py-2"
                             >
                               <div className="min-w-0">
-                                <p className="truncate text-sm text-gray-700">
-                                  {a.name}
-                                </p>
+                                <p className="truncate text-sm text-gray-700">{a.name}</p>
                               </div>
-
                               <div className="flex items-center gap-2">
                                 <a
                                   className="text-[#0D4F97] hover:underline text-sm"
@@ -653,17 +760,13 @@ export default function AtualizarProfissional(): JSX.Element {
                   accept="image/*, application/pdf"
                   onChange={(e) => {
                     const file = e.target.files?.[0];
-                    if (!file) {
-                      setVolunteerFile(null);
-                      return;
-                    }
+                    if (!file) { setVolunteerFile(null); return; }
                     if (!isValidFile(file)) {
                       alert("Apenas imagens ou PDF são permitidos");
                       e.target.value = "";
                       setVolunteerFile(null);
                       return;
                     }
-
                     setVolunteerFile(file);
                   }}
                 />
@@ -683,19 +786,13 @@ export default function AtualizarProfissional(): JSX.Element {
                   accept="image/*, application/pdf"
                   onChange={(e) => {
                     const file = e.target.files?.[0];
-
-                    if (!file) {
-                      setCurriculumFile(null);
-                      return;
-                    }
-
+                    if (!file) { setCurriculumFile(null); return; }
                     if (!isValidFile(file)) {
                       alert("Apenas imagens ou PDF são permitidos");
                       e.target.value = "";
                       setCurriculumFile(null);
                       return;
                     }
-
                     setCurriculumFile(file);
                   }}
                 />
@@ -716,13 +813,12 @@ export default function AtualizarProfissional(): JSX.Element {
                   multiple
                   onChange={(e) => {
                     const files = Array.from(e.target.files ?? []);
-
                     const validFiles = files.filter(isValidFile);
-
                     if (validFiles.length !== files.length) {
-                      alert("Alguns arquivos foram ignorados. Apenas imagens ou PDF são permitidos.");
+                      alert(
+                        "Alguns arquivos foram ignorados. Apenas imagens ou PDF são permitidos.",
+                      );
                     }
-
                     setAttachmentFiles(validFiles);
                   }}
                 />
@@ -734,13 +830,16 @@ export default function AtualizarProfissional(): JSX.Element {
               )}
             </FormItem>
 
+            {photoError && <p className="text-sm text-red-500">{photoError}</p>}
+            {photoSuccess && (
+              <p className="text-sm text-green-600">Foto enviada com sucesso!</p>
+            )}
+
             {(errorDocs || successDocs) && (
               <div className="text-sm">
                 {errorDocs && <p className="text-red-500">{errorDocs}</p>}
                 {successDocs && (
-                  <p className="text-green-600">
-                    Documentos enviados com sucesso!
-                  </p>
+                  <p className="text-green-600">Documentos enviados com sucesso!</p>
                 )}
               </div>
             )}
@@ -759,16 +858,13 @@ export default function AtualizarProfissional(): JSX.Element {
           )}
           {error && <p className="text-red-500">{error}</p>}
           {success && (
-            <p className="text-green-600">
-              Profissional atualizado com sucesso!
-            </p>
+            <p className="text-green-600">Profissional atualizado com sucesso!</p>
           )}
 
           <div className="flex justify-end gap-4">
             <Button type="button" variant="outline" onClick={onCancel}>
               Cancelar
             </Button>
-
             <Button
               type="submit"
               className="bg-[#0D4F97] hover:bg-blue-900"

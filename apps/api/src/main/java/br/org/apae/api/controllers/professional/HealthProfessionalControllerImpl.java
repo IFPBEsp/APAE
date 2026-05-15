@@ -19,6 +19,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -148,6 +149,16 @@ public class HealthProfessionalControllerImpl implements HealthProfessionalContr
     @Override
     public ResponseEntity<Void> removeProfessionalDocument(UUID id, UUID documentId) {
         service.removeProfessionalDocument(id, documentId);
+        return ResponseEntity.noContent().build();
+    }
+
+    @Override
+    public ResponseEntity<Void> uploadProfessionalPhoto(
+            UUID id,
+            MultipartFile file
+    ) {
+        service.uploadProfessionalPhoto(id, file);
+
         return ResponseEntity.noContent().build();
     }
 

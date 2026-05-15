@@ -22,7 +22,9 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -30,6 +32,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
 @Service
 public class HealthProfessionalApplicationServiceImpl implements HealthProfessionalApplicationService {
@@ -146,6 +151,70 @@ public class HealthProfessionalApplicationServiceImpl implements HealthProfessio
         HealthProfessional professional = repository.findById(professionalId)
                 .orElseThrow(HealthProfessionalNotFoundException::new);
         documentsService.removeProfessionalDocument(professional, documentId);
+    }
+
+    @Override
+    @Transactional
+    public void uploadProfessionalPhoto(UUID id, MultipartFile file) {
+
+        HealthProfessional professional = repository.findById(id)
+            .orElseThrow(HealthProfessionalNotFoundException::new);
+
+        if (file.isEmpty()) {
+            throw new RuntimeException("Arquivo vazio");
+        }
+
+        String contentType = file.getContentType();
+
+        List<String> allowedTypes = List.of(
+            "image/png",
+            "image/jpeg",
+            "image/jpg",
+            "image/webp"
+        );
+
+        if (!allowedTypes.contains(contentType)) {
+            throw new RuntimeException("Tipo de arquivo inválido");
+        }
+
+        long maxSize = 5 * 1024 * 1024;
+
+        if (file.getSize() > maxSize) {
+            throw new RuntimeException("Arquivo excede 5MB");
+        }
+
+        String fileName = UUID.randomUUID()
+            + "-"
+            + file.getOriginalFilename();
+
+        Path uploadPath = Paths.get("uploads");
+
+        try {
+
+            Files.createDirectories(uploadPath);
+
+            if (professional.getProfilePhoto() != null) {
+
+                String oldFile = professional
+                    .getProfilePhoto()
+                    .replace("/uploads/", "");
+
+                Path oldFilePath = uploadPath.resolve(oldFile);
+
+                Files.deleteIfExists(oldFilePath);
+            }
+
+            Path filePath = uploadPath.resolve(fileName);
+
+            Files.copy(file.getInputStream(), filePath);
+
+            professional.setProfilePhoto("/uploads/" + fileName);
+
+            repository.save(professional);
+
+        } catch (IOException e) {
+            throw new RuntimeException("Erro ao salvar foto");
+        }
     }
 
     private List<LocalTime> generateSlots(LocalTime start, LocalTime end) {

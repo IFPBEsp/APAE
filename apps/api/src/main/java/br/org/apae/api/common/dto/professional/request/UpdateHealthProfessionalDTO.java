@@ -31,5 +31,9 @@ public record UpdateHealthProfessionalDTO(
 
     @NotNull(message = "O endereço é obrigatório.") @Valid CreateAddressDTO address,
 
-    @Valid List<CreateAvailabilityDTO> availabilities) {
+    @Valid List<CreateAvailabilityDTO> availabilities,
+
+    String profilePhoto
+)    
+    {
 }

@@ -7,6 +7,7 @@ import br.org.apae.api.common.dto.professional.request.documents.UpdateProfessio
 import br.org.apae.api.common.dto.professional.response.HealthProfessionalResponseDTO;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -34,6 +35,8 @@ public interface HealthProfessionalApplicationService {
     void updateProfessionalDocuments(UUID id, UpdateProfessionalDocumentsDTO dto);
 
     void removeProfessionalDocument(UUID professionalId, UUID documentId);
+
+    void uploadProfessionalPhoto(UUID id, MultipartFile file);
 
     List<LocalTime> getAvailableTimes(UUID professionalId, LocalDate date);
 

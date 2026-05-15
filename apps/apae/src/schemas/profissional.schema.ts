@@ -31,8 +31,8 @@ const fileSchema = z
   .instanceof(File)
   .refine((file) => file.size <= 2 * 1024 * 1024, "A foto deve ser menor que 2MB")
   .refine(
-    (file) => ["image/jpeg", "image/png"].includes(file.type),
-    "Apenas formatos JPG ou PNG são aceitos"
+    (file) => ["image/jpeg", "image/png", "image/jpg", "image/webp"].includes(file.type),
+    "Apenas formatos JPG, PNG ou WEBP são aceitos"
   );
 
 const baseSchema = z.object({
@@ -84,7 +84,7 @@ const baseSchema = z.object({
     )
     .min(0),
 
-  photo: imageSchema,
+  photo: imageSchema.optional().nullable(),
 });
 
 export const cadastroSchema = baseSchema.extend({

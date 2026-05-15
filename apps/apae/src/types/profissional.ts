@@ -35,6 +35,7 @@ export interface Professional {
   address: Address;
   availabilities: Availability[];
   ativo: boolean;
+  profilePhotoUrl?: string;
 }
 
 export interface Address {
