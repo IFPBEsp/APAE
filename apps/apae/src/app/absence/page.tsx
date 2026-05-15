@@ -141,7 +141,7 @@ export default function AbsenceDetails() {
   const handleDownload = async (patientId: string, documentName: string) => {
     try {
       const res = await fetch(
-        `/api/patients/${patientId}/documents/download?name=${encodeURIComponent(documentName)}`,
+        `/apae-geral/api/patients/${patientId}/documents/download?name=${encodeURIComponent(documentName)}`,
       );
       if (!res.ok) throw new Error("Erro ao buscar URL");
       const data = await res.json();

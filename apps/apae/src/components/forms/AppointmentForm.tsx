@@ -166,7 +166,7 @@ export function AppointmentForm({ editAppointment }: AppointmentFormProps) {
         const formattedDate = format(date, "yyyy-MM-dd");
 
         const res = await fetch(
-          `/api/professionals/${professional.value}/available-times?date=${formattedDate}`,
+          `/apae-geral/api/professionals/${professional.value}/available-times?date=${formattedDate}`,
         );
 
         const data = await res.json();

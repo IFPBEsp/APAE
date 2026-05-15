@@ -1,10 +1,10 @@
 import axios from "axios";
 
 export async function getAllProfissionais(ativo?: boolean) {
-  const url = 
+  const url =
     ativo === undefined
-      ? `/api/professionals`
-      : `/api/professionals?ativo=${ativo}`;
+      ? `/apae-geral/api/professionals`
+      : `/apae-geral/api/professionals?ativo=${ativo}`;
 
   console.log("[getAllProfissionais] ativo:", ativo, "| url:", url);
   return axios.get(url);
@@ -89,7 +89,7 @@ export async function removeProfessionalDocument(
   documentId: string,
 ) {
   const response = await fetch(
-    `/api/professionals/${professionalId}/documents/${documentId}`,
+    `/apae-geral/api/professionals/${professionalId}/documents/${documentId}`,
     { method: "DELETE" },
   );
 

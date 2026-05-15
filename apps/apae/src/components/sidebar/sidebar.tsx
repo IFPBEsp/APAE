@@ -52,10 +52,9 @@ export function AppSidebar() {
   const pathname = usePathname();
   const router = useRouter();
 
-  const handleLogout = () => {
-    removeSessionCookie();
-
-    router.refresh();
+  const handleLogout = async () => {
+    await removeSessionCookie();
+    router.replace("/auth/login");
   };
 
   return (

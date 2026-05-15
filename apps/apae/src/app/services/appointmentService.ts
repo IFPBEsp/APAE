@@ -518,7 +518,7 @@ export async function listTodayAppointment(
     query.append("date", date);
   }
 
-  const url = `/api/appointments/today?${query.toString()}`;
+  const url = `/apae-geral/api/appointments/today?${query.toString()}`;
 
   const res = await fetch(url, {
     method: "GET",
