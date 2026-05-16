@@ -3,6 +3,7 @@ import br.org.apae.api.appointment.application.interfaces.AppointmentApplication
 import br.org.apae.api.appointment.application.internal.AppointmentApplicationServiceImpl;
 import br.org.apae.api.appointment.domain.exceptions.AppointmentAlreadyCancelledException;
 import br.org.apae.api.appointment.domain.exceptions.AppointmentNotFoundException;
+import br.org.apae.api.appointment.domain.model.GeneratedAppointment;
 import br.org.apae.api.auth.application.internal.UserService;
 import br.org.apae.api.auth.infrastructure.security.JwtProvider;
 import br.org.apae.api.common.dto.appointment.request.appointment.CancelGeneratedAppointmentDTO;
@@ -78,6 +79,20 @@ class AppointmentControllerImplTest {
     );
   }
 
+  private GeneratedAppointmentResponseDTO createGeneratedAppointmentDTO(UUID id, LocalDateTime scheduledDateTime, LocalDateTime effectiveDateTime) {
+    return new GeneratedAppointmentResponseDTO(
+            id,
+            UUID.randomUUID(),
+            scheduledDateTime,
+            null,
+            false,
+            false,
+            null,
+            UUID.randomUUID(),
+            effectiveDateTime
+    );
+  }
+
   @Test
   @WithMockUser(username = "admin", roles = {"ADMIN"})
   void shouldCreateAppointmentSuccessfully() throws Exception {
@@ -118,85 +133,70 @@ class AppointmentControllerImplTest {
       .andExpect(jsonPath("$.creationDate").value(response.creationDate().toString()));
   }
 
-//  @Test
-//  @WithMockUser(username = "admin", roles = {"ADMIN"})
-//  void shouldDeleteAppointmentSuccessfully() throws Exception {
-//    UUID id = UUID.randomUUID();
-//
-//    mockMvc.perform(delete(URI_WITH_ID, id)
-//            .with(csrf()))
-//        .andExpect(status().isNoContent());
-//
-//    verify(service, times(1)).delete(id);
-//  }
-//
-//  @Test
-//  @WithMockUser(username = "admin", roles = {"ADMIN"})
-//  void shouldRescheduleAppointmentSuccessfully() throws Exception {
-//    UUID id = UUID.randomUUID();
-//    var payload = new RescheduleGeneratedAppointmentDTO(LocalDateTime.now().withNano(0));
-//
-//    GeneratedAppointmentResponseDTO response = new GeneratedAppointmentResponseDTO(
-//        id,
-//        UUID.randomUUID(),
-//        payload.newDateTime(),
-//        null,
-//        false,
-//        false,
-//        null,
-//        UUID.randomUUID(),
-//        LocalDateTime.now().withNano(0)
-//    );
-//    when(service.reschedule(id, payload.newDateTime())).thenReturn(response);
-//
-//    mockMvc.perform(patch(GENERATED_URI_WITH_ID + "/reschedule", id)
-//        .contentType(MediaType.APPLICATION_JSON)
-//        .content(objectMapper.writeValueAsString(payload))
-//        .with(csrf()))
-//      .andExpect(status().isOk())
-//      .andExpect(jsonPath("$.id").value(response.id().toString()))
-//      .andExpect(jsonPath("$.appointmentId").value(response.appointmentId().toString()))
-//      .andExpect(jsonPath("$.scheduledDateTime").value(response.scheduledDateTime().toString()))
-//      .andExpect(jsonPath("$.overriddenDateTime").isEmpty())
-//      .andExpect(jsonPath("$.performed").isBoolean())
-//      .andExpect(jsonPath("$.cancelled").isBoolean())
-//      .andExpect(jsonPath("$.cancellationReason").isEmpty())
-//      .andExpect(jsonPath("$.patientId").value(response.patientId().toString()))
-//      .andExpect(jsonPath("$.effectiveDateTime").value(response.effectiveDateTime().toString()));
-//  }
-//
-//  @Test
-//  @WithMockUser(username = "admin", roles = {"ADMIN"})
-//  void shouldPerformedAppointmentSuccessfully() throws Exception {
-//    UUID id = UUID.randomUUID();
-//    var response = new GeneratedAppointmentResponseDTO(
-//        id,
-//        UUID.randomUUID(),
-//        null,
-//        null,
-//        true,
-//        false,
-//        null,
-//        UUID.randomUUID(),
-//        LocalDateTime.now().withNano(0)
-//    );
-//
-//    when(service.markAsPerformed(id)).thenReturn(response);
-//
-//    mockMvc.perform(patch(GENERATED_URI_WITH_ID + "/performed", id)
-//            .with(csrf()))
-//        .andExpect(status().isOk())
-//        .andExpect(jsonPath("$.id").value(response.id().toString()))
-//        .andExpect(jsonPath("$.appointmentId").value(response.appointmentId().toString()))
-//        .andExpect(jsonPath("$.scheduledDateTime").isEmpty())
-//        .andExpect(jsonPath("$.overriddenDateTime").isEmpty())
-//        .andExpect(jsonPath("$.performed").value(response.performed()))
-//        .andExpect(jsonPath("$.cancelled").value(response.cancelled()))
-//        .andExpect(jsonPath("$.cancellationReason").isEmpty())
-//        .andExpect(jsonPath("$.patientId").value(response.patientId().toString()))
-//        .andExpect(jsonPath("$.effectiveDateTime").value(response.effectiveDateTime().toString()));
-//  }
-//
+  @Test
+  @WithMockUser(username = "admin", roles = {"ADMIN"})
+  void shouldDeleteAppointmentSuccessfully() throws Exception {
+    UUID id = UUID.randomUUID();
+
+    mockMvc.perform(delete(URI_WITH_ID, id)
+            .with(csrf()))
+        .andExpect(status().isNoContent());
+
+    verify(service, times(1)).delete(id);
+  }
+
+  @Test
+  @WithMockUser(username = "admin", roles = {"ADMIN"})
+  void shouldRescheduleAppointmentSuccessfully() throws Exception {
+    UUID id = UUID.randomUUID();
+    LocalDateTime scheduledDateTime = LocalDateTime.now().withNano(0);
+    LocalDateTime effectiveDateTime = LocalDateTime.now().withNano(0);
+    GeneratedAppointmentResponseDTO response = createGeneratedAppointmentDTO(id, scheduledDateTime, effectiveDateTime);
+
+    LocalDateTime localDateTime = LocalDateTime.now().withNano(0);
+    var payload = new RescheduleGeneratedAppointmentDTO(localDateTime);
+
+    when(service.reschedule(id, payload.newDateTime())).thenReturn(response);
+
+    mockMvc.perform(patch(GENERATED_URI_WITH_ID + "/reschedule", id)
+        .contentType(MediaType.APPLICATION_JSON)
+        .content(objectMapper.writeValueAsString(payload))
+        .with(csrf()))
+      .andExpect(status().isOk())
+      .andExpect(jsonPath("$.id").value(response.id().toString()))
+      .andExpect(jsonPath("$.appointmentId").value(response.appointmentId().toString()))
+      .andExpect(jsonPath("$.scheduledDateTime").value(response.scheduledDateTime().toString()))
+      .andExpect(jsonPath("$.overriddenDateTime").isEmpty())
+      .andExpect(jsonPath("$.performed").isBoolean())
+      .andExpect(jsonPath("$.cancelled").isBoolean())
+      .andExpect(jsonPath("$.cancellationReason").isEmpty())
+      .andExpect(jsonPath("$.patientId").value(response.patientId().toString()))
+      .andExpect(jsonPath("$.effectiveDateTime").value(response.effectiveDateTime().toString()));
+  }
+
+  @Test
+  @WithMockUser(username = "admin", roles = {"ADMIN"})
+  void shouldPerformedAppointmentSuccessfully() throws Exception {
+    UUID id = UUID.randomUUID();
+    LocalDateTime effectiveDateTime = LocalDateTime.now().withNano(0);
+    var response = createGeneratedAppointmentDTO(id, null, effectiveDateTime);
+
+    when(service.markAsPerformed(id)).thenReturn(response);
+
+    mockMvc.perform(patch(GENERATED_URI_WITH_ID + "/performed", id)
+            .with(csrf()))
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.id").value(response.id().toString()))
+        .andExpect(jsonPath("$.appointmentId").value(response.appointmentId().toString()))
+        .andExpect(jsonPath("$.scheduledDateTime").isEmpty())
+        .andExpect(jsonPath("$.overriddenDateTime").isEmpty())
+        .andExpect(jsonPath("$.performed").value(response.performed()))
+        .andExpect(jsonPath("$.cancelled").value(response.cancelled()))
+        .andExpect(jsonPath("$.cancellationReason").isEmpty())
+        .andExpect(jsonPath("$.patientId").value(response.patientId().toString()))
+        .andExpect(jsonPath("$.effectiveDateTime").value(response.effectiveDateTime().toString()));
+  }
+
 //  @Test
 //  @WithMockUser(username = "admin", roles = {"ADMIN"})
 //  void shouldCancelAppointmentSuccessfully() throws Exception {
