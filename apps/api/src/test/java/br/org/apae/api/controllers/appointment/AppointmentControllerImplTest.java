@@ -363,43 +363,40 @@ class AppointmentControllerImplTest {
         .andExpect(jsonPath("$.content[0].ruleId").value(response.ruleId().toString()));
   }
 
-//  @Test
-//  @WithMockUser(username = "admin", roles = {"ADMIN"})
-//  void shouldGetAllAppointmentsSuccessfully() throws Exception {
-//    LocalDate date = LocalDate.of(2026, 1, 21);
-//    LocalTime time = LocalTime.of(10, 30);
-//
-//    AppointmentResponseDTO response1 = createAppointmentDTO(UUID.randomUUID()) ;
-//
-//    AppointmentResponseDTO response2 = createAppointmentDTO(UUID.randomUUID());
-//    Page<AppointmentResponseDTO> page =
-//        new PageImpl<>(List.of(response1, response2), PageRequest.of(0, 10), 2);
-//
-//    when(service.findAll(eq(date), eq(time), any(Pageable.class)))
-//        .thenReturn(page);
-//
-//    mockMvc.perform(get(URI)
-//            .param("date", date.toString())
-//            .param("time", time.format(DateTimeFormatter.ISO_LOCAL_TIME))
-//            .param("page", "0")
-//            .param("size", "10")
-//            .with(csrf()))
-//        .andExpect(status().isOk())
-//        .andExpect(jsonPath("$.content").isArray())
-//        .andExpect(jsonPath("$.content.length()").value(2))
-//        .andExpect(jsonPath("$.content[0].id").value(response1.id().toString()))
-//        .andExpect(jsonPath("$.content[0].frequencyDays").value(response1.frequencyDays()))
-//        .andExpect(jsonPath("$.content[0].hour").value(
-//            response1.hour().format(DateTimeFormatter.ISO_LOCAL_TIME)))
-//        .andExpect(jsonPath("$.content[1].id").value(response2.id().toString()))
-//        .andExpect(jsonPath("$.content[1].frequencyDays").value(response2.frequencyDays()))
-//        .andExpect(jsonPath("$.content[1].hour").value(
-//            response2.hour().format(DateTimeFormatter.ISO_LOCAL_TIME)));
-//  }
-//
-//
-//
-//
+  @Test
+  @WithMockUser(username = "admin", roles = {"ADMIN"})
+  void shouldGetAllAppointmentsSuccessfully() throws Exception {
+    LocalDate date = LocalDate.of(2026, 1, 21);
+    LocalTime time = LocalTime.of(10, 30);
+
+    AppointmentResponseDTO response1 = createAppointmentDTO(UUID.randomUUID()) ;
+
+    AppointmentResponseDTO response2 = createAppointmentDTO(UUID.randomUUID());
+    Page<AppointmentResponseDTO> page =
+        new PageImpl<>(List.of(response1, response2), PageRequest.of(0, 10), 2);
+
+    when(service.findAll(eq(date), eq(time), any(Pageable.class)))
+        .thenReturn(page);
+
+    mockMvc.perform(get(URI)
+            .param("date", date.toString())
+            .param("time", time.format(DateTimeFormatter.ISO_LOCAL_TIME))
+            .param("page", "0")
+            .param("size", "10")
+            .with(csrf()))
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.content").isArray())
+        .andExpect(jsonPath("$.content.length()").value(2))
+        .andExpect(jsonPath("$.content[0].id").value(response1.id().toString()))
+        .andExpect(jsonPath("$.content[0].frequencyDays").value(response1.frequencyDays()))
+        .andExpect(jsonPath("$.content[0].hour").value(
+            response1.hour().format(DateTimeFormatter.ISO_LOCAL_TIME)))
+        .andExpect(jsonPath("$.content[1].id").value(response2.id().toString()))
+        .andExpect(jsonPath("$.content[1].frequencyDays").value(response2.frequencyDays()))
+        .andExpect(jsonPath("$.content[1].hour").value(
+            response2.hour().format(DateTimeFormatter.ISO_LOCAL_TIME)));
+  }
+
 //  @Test
 //  @WithMockUser(username = "admin", roles = {"ADMIN"})
 //  void shouldReturnNotFoundWhenGetNonExistentAppointment() throws Exception {
