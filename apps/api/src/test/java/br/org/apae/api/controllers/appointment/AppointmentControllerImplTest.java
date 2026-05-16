@@ -646,7 +646,8 @@ class AppointmentControllerImplTest {
                     .param("page", "0")
                     .param("size", "10")
                     .with(csrf()))
-            .andExpect(status().isNotFound());
+            .andExpect(status().isNotFound())
+            .andExpect(jsonPath("$.message").value("Agendamento não encontrado."));
   }
 
   @Test
