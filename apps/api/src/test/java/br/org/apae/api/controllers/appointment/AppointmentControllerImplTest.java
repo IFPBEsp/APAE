@@ -439,82 +439,78 @@ class AppointmentControllerImplTest {
             .andExpect(status().isBadRequest());
   }
 
-//  @Test
-//  @WithMockUser(username = "admin", roles = {"ADMIN"})
-//  void shouldReturnBadRequestWhenProfessionalIdIsNull() throws Exception {
-//    var payload = new CreateAppointmentDTO(
-//        null,
-//        UUID.randomUUID(),
-//        UUID.randomUUID(),
-//        7,
-//        LocalDate.now().plusDays(1),
-//        LocalTime.now()
-//    );
-//
-//    mockMvc.perform(post(URI)
-//            .content(objectMapper.writeValueAsString(payload))
-//            .contentType(MediaType.APPLICATION_JSON)
-//            .with(csrf()))
-//        .andExpect(status().isBadRequest());
-//  }
-//
-//  @Test
-//  @WithMockUser(username = "admin", roles = {"ADMIN"})
-//  void shouldReturnBadRequestWhenServiceIdIsNull() throws Exception {
-//    var payload = new CreateAppointmentDTO(
-//        UUID.randomUUID(),
-//        null,
-//        UUID.randomUUID(),
-//        7,
-//        LocalDate.now().plusDays(1),
-//        LocalTime.now()
-//    );
-//
-//    mockMvc.perform(post(URI)
-//            .content(objectMapper.writeValueAsString(payload))
-//            .contentType(MediaType.APPLICATION_JSON)
-//            .with(csrf()))
-//        .andExpect(status().isBadRequest());
-//  }
-//
-//  @Test
-//  @WithMockUser(username = "admin", roles = {"ADMIN"})
-//  void shouldReturnBadRequestWhenPatientIdIsNull() throws Exception {
-//    var payload = new CreateAppointmentDTO(
-//        UUID.randomUUID(),
-//        UUID.randomUUID(),
-//        null,
-//        7,
-//        LocalDate.now().plusDays(1),
-//        LocalTime.now()
-//    );
-//
-//    mockMvc.perform(post(URI)
-//            .content(objectMapper.writeValueAsString(payload))
-//            .contentType(MediaType.APPLICATION_JSON)
-//            .with(csrf()))
-//        .andExpect(status().isBadRequest());
-//  }
-//
-//  @Test
-//  @WithMockUser(username = "admin", roles = {"ADMIN"})
-//  void shouldReturnBadRequestWhenFrequencyDaysIsNull() throws Exception {
-//    var payload = new CreateAppointmentDTO(
-//        UUID.randomUUID(),
-//        UUID.randomUUID(),
-//        UUID.randomUUID(),
-//        null,
-//        LocalDate.now().plusDays(1),
-//        LocalTime.now()
-//    );
-//
-//    mockMvc.perform(post(URI)
-//            .content(objectMapper.writeValueAsString(payload))
-//            .contentType(MediaType.APPLICATION_JSON)
-//            .with(csrf()))
-//        .andExpect(status().isBadRequest());
-//  }
-//
+  @Test
+  @WithMockUser(username = "admin", roles = {"ADMIN"})
+  void shouldReturnBadRequestWhenProfessionalIdIsNull() throws Exception {
+    var payload = new CreateAppointmentDTO(
+        UUID.randomUUID(),
+        null,
+        7,
+        LocalDate.now().plusDays(1),
+        LocalTime.now()
+    );
+
+    mockMvc.perform(post(URI)
+            .content(objectMapper.writeValueAsString(payload))
+            .contentType(MediaType.APPLICATION_JSON)
+            .with(csrf()))
+        .andExpect(status().isBadRequest());
+  }
+
+  @Test
+  @WithMockUser(username = "admin", roles = {"ADMIN"})
+  void shouldReturnBadRequestWhenServiceIdIsNull() throws Exception {
+    var payload = new CreateAppointmentDTO(
+            UUID.randomUUID(),
+            null,
+            7,
+            LocalDate.now().plusDays(1),
+            LocalTime.now()
+    );
+
+    mockMvc.perform(post(URI)
+            .content(objectMapper.writeValueAsString(payload))
+            .contentType(MediaType.APPLICATION_JSON)
+            .with(csrf()))
+        .andExpect(status().isBadRequest());
+  }
+
+  @Test
+  @WithMockUser(username = "admin", roles = {"ADMIN"})
+  void shouldReturnBadRequestWhenPatientIdIsNull() throws Exception {
+    var payload = new CreateAppointmentDTO(
+            UUID.randomUUID(),
+            null,
+            7,
+            LocalDate.now().plusDays(1),
+            LocalTime.now()
+    );
+
+    mockMvc.perform(post(URI)
+            .content(objectMapper.writeValueAsString(payload))
+            .contentType(MediaType.APPLICATION_JSON)
+            .with(csrf()))
+        .andExpect(status().isBadRequest());
+  }
+
+  @Test
+  @WithMockUser(username = "admin", roles = {"ADMIN"})
+  void shouldReturnBadRequestWhenFrequencyDaysIsNull() throws Exception {
+    var payload = new CreateAppointmentDTO(
+            UUID.randomUUID(),
+            UUID.randomUUID(),
+            null,
+            LocalDate.now().plusDays(1),
+            LocalTime.now()
+    );
+
+    mockMvc.perform(post(URI)
+            .content(objectMapper.writeValueAsString(payload))
+            .contentType(MediaType.APPLICATION_JSON)
+            .with(csrf()))
+        .andExpect(status().isBadRequest());
+  }
+
 //  @Test
 //  @WithMockUser(username = "admin", roles = {"ADMIN"})
 //  void shouldReturnBadRequestWhenFrequencyDaysIsZeroOrNegative() throws Exception {
