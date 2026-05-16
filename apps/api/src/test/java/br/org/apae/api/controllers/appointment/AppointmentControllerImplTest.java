@@ -6,10 +6,7 @@ import br.org.apae.api.appointment.domain.exceptions.AppointmentNotFoundExceptio
 import br.org.apae.api.appointment.domain.model.GeneratedAppointment;
 import br.org.apae.api.auth.application.internal.UserService;
 import br.org.apae.api.auth.infrastructure.security.JwtProvider;
-import br.org.apae.api.common.dto.appointment.request.appointment.CancelGeneratedAppointmentDTO;
-import br.org.apae.api.common.dto.appointment.request.appointment.CreateAppointmentDTO;
-import br.org.apae.api.common.dto.appointment.request.appointment.RescheduleGeneratedAppointmentDTO;
-import br.org.apae.api.common.dto.appointment.request.appointment.UpdateAppointmentRuleDTO;
+import br.org.apae.api.common.dto.appointment.request.appointment.*;
 import br.org.apae.api.common.dto.appointment.response.appointment.AnnualRegistryResponseDTO;
 import br.org.apae.api.common.dto.appointment.response.appointment.AppointmentResponseDTO;
 import br.org.apae.api.common.dto.appointment.response.appointment.GeneratedAppointmentResponseDTO;
@@ -236,49 +233,51 @@ class AppointmentControllerImplTest {
         .andExpect(jsonPath("$.effectiveDateTime").value(response.effectiveDateTime().toString()));
   }
 
-//  @Test
-//  @WithMockUser(username = "admin", roles = {"ADMIN"})
-//  void shouldUpdateAppointmentRuleSuccessfully() throws Exception {
-//    UUID id = UUID.randomUUID();
-//
-//    var payload = new UpdateAppointmentRuleDTO(
-//        14,
-//        LocalTime.of(10, 30, 0)
-//    );
-//
-//    var response = new AppointmentResponseDTO(
-//        id,
-//        mock(HealthProfessionalResponseDTO.class),
-//        mock(AnnualRegistryResponseDTO.class),
-//        payload.newFrequency(),
-//        LocalDate.now(),
-//        LocalDate.of(2026, 12, 31),
-//        payload.newTime(),
-//        true,
-//        LocalDateTime.now().withNano(0),
-//        null,
-//        null
-//    );
-//
-//
-//
-//    when(service.updateAppointment(id, payload.newFrequency(), payload.newTime())).thenReturn(response);
-//
-//    mockMvc.perform(patch(URI_WITH_ID + "/rule", id)
-//            .contentType(MediaType.APPLICATION_JSON)
-//            .content(objectMapper.writeValueAsString(payload))
-//            .with(csrf()))
-//        .andExpect(status().isOk())
-//        .andExpect(jsonPath("$.id").value(response.id().toString()))
-//        .andExpect(jsonPath("$.serviceId").value(response.serviceId().toString()))
-//        .andExpect(jsonPath("$.frequencyDays").value(response.frequencyDays()))
-//        .andExpect(jsonPath("$.hour").value(response.hour().format(DateTimeFormatter.ISO_LOCAL_TIME)))
-//        .andExpect(jsonPath("$.isActive").value(response.isActive()))
-//        .andExpect(jsonPath("$.creationDate").value(response.creationDate().toString()));
-//
-//    verify(service, times(1)).updateAppointment(id, payload.newFrequency(), payload.newTime());
-//  }
-//
+  @Test
+  @WithMockUser(username = "admin", roles = {"ADMIN"})
+  void shouldUpdateAppointmentRuleSuccessfully() throws Exception {
+    UUID id = UUID.randomUUID();
+
+    var payload = new UpdateAppointmentDTO(
+            UUID.randomUUID(),
+            UUID.randomUUID(),
+            UUID.randomUUID(),
+            14,
+            LocalDate.now().plusDays(1),
+            LocalTime.of(10, 30, 0),
+            LocalDate.now().plusDays(30)
+    );
+
+    var response = new AppointmentResponseDTO(
+            id,
+            mock(HealthProfessionalResponseDTO.class),
+            mock(AnnualRegistryResponseDTO.class),
+            payload.frequencyDays(),
+            payload.initialDate(),
+            payload.endDate(),
+            payload.hour(),
+            true,
+            LocalDateTime.now().withNano(0),
+            null,
+            null
+    );
+
+    when(service.update(id, payload)).thenReturn(response);
+
+    mockMvc.perform(patch(URI_WITH_ID, id)
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(objectMapper.writeValueAsString(payload))
+            .with(csrf()))
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.id").value(response.id().toString()))
+        .andExpect(jsonPath("$.frequencyDays").value(response.frequencyDays()))
+        .andExpect(jsonPath("$.hour").value(response.hour().format(DateTimeFormatter.ISO_LOCAL_TIME)))
+        .andExpect(jsonPath("$.isActive").value(response.isActive()))
+        .andExpect(jsonPath("$.creationDate").value(response.creationDate().toString()));
+
+    verify(service, times(1)).update(eq(id), any(UpdateAppointmentDTO.class));
+  }
+
 //  @Test
 //  @WithMockUser(username = "admin", roles = {"ADMIN"})
 //  void shouldListGeneratedAppointmentsByPatientSuccessfully() throws Exception {
