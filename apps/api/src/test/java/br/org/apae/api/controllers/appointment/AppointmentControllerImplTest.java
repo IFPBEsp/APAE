@@ -324,41 +324,45 @@ class AppointmentControllerImplTest {
         .listByPatient(eq(patientId), eq(start), eq(end), any(Pageable.class));
   }
 
-//  @Test
-//  @WithMockUser(username = "admin", roles = {"ADMIN"})
-//  void shouldListTodayAppointmentsSuccessfully() throws Exception {
-//    var response = new TodayAppointmentsResponseDTO(
-//        UUID.randomUUID(),
-//        mock(PatientResponseDTO.class),
-//        mock(HealthProfessionalResponseDTO.class),
-//        LocalDateTime.now().withNano(0),
-//        null,
-//        false,
-//        false,
-//        null,
-//        null,
-//        UUID.randomUUID()
-//    );
-//
-//    Page<TodayAppointmentsResponseDTO> page =
-//        new PageImpl<>(List.of(response), PageRequest.of(0, 10), 1);
-//
-//    when(service.listAppointmentForToday(any(Pageable.class)))
-//        .thenReturn(page);
-//
-//    mockMvc.perform(get(URI + "/today")
-//            .param("page", "0")
-//            .param("size", "10")
-//            .with(csrf()))
-//        .andExpect(status().isOk())
-//        .andExpect(jsonPath("$.content").isArray())
-//        .andExpect(jsonPath("$.content.length()").value(1))
-//        .andExpect(jsonPath("$.content[0].id").value(response.id().toString()))
-//        .andExpect(jsonPath("$.content[0].performed").value(response.performed()))
-//        .andExpect(jsonPath("$.content[0].cancelled").value(response.cancelled()))
-//        .andExpect(jsonPath("$.content[0].ruleId").value(response.ruleId().toString()));
-//  }
-//
+  @Test
+  @WithMockUser(username = "admin", roles = {"ADMIN"})
+  void shouldListTodayAppointmentsSuccessfully() throws Exception {
+    LocalDate date = LocalDate.now();
+
+    var response = new TodayAppointmentsResponseDTO(
+        UUID.randomUUID(),
+        mock(PatientResponseDTO.class),
+        mock(HealthProfessionalResponseDTO.class),
+        LocalDateTime.now().withNano(0),
+        null,
+        false,
+        false,
+        null,
+        null,
+        UUID.randomUUID(),
+        false
+    );
+
+    Page<TodayAppointmentsResponseDTO> page =
+        new PageImpl<>(List.of(response), PageRequest.of(0, 10), 1);
+
+    when(service.listAppointmentForToday(eq(date), any(Pageable.class)))
+        .thenReturn(page);
+
+    mockMvc.perform(get(URI + "/today")
+            .param("date", date.toString())
+            .param("page", "0")
+            .param("size", "10")
+            .with(csrf()))
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.content").isArray())
+        .andExpect(jsonPath("$.content.length()").value(1))
+        .andExpect(jsonPath("$.content[0].id").value(response.id().toString()))
+        .andExpect(jsonPath("$.content[0].performed").value(response.performed()))
+        .andExpect(jsonPath("$.content[0].cancelled").value(response.cancelled()))
+        .andExpect(jsonPath("$.content[0].ruleId").value(response.ruleId().toString()));
+  }
+
 //  @Test
 //  @WithMockUser(username = "admin", roles = {"ADMIN"})
 //  void shouldGetAllAppointmentsSuccessfully() throws Exception {
