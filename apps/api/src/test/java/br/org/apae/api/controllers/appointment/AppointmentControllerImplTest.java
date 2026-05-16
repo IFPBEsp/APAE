@@ -278,52 +278,52 @@ class AppointmentControllerImplTest {
     verify(service, times(1)).update(eq(id), any(UpdateAppointmentDTO.class));
   }
 
-//  @Test
-//  @WithMockUser(username = "admin", roles = {"ADMIN"})
-//  void shouldListGeneratedAppointmentsByPatientSuccessfully() throws Exception {
-//    UUID patientId = UUID.randomUUID();
-//
-//    LocalDate start = LocalDate.of(2026, 1, 1);
-//    LocalDate end = LocalDate.of(2026, 1, 31);
-//
-//    var response = new GeneratedAppointmentResponseDTO(
-//        UUID.randomUUID(),
-//        UUID.randomUUID(),
-//        LocalDateTime.now().withNano(0),
-//        null,
-//        false,
-//        false,
-//        null,
-//        patientId,
-//        null
-//    );
-//
-//    Page<GeneratedAppointmentResponseDTO> page =
-//        new PageImpl<>(List.of(response), PageRequest.of(0, 10), 1);
-//
-//    when(service.listByPatient(eq(patientId), eq(start), eq(end), any(Pageable.class)))
-//        .thenReturn(page);
-//
-//    mockMvc.perform(get(URI + "/patient/{patientId}", patientId)
-//            .param("start", start.toString())
-//            .param("end", end.toString())
-//            .param("page", "0")
-//            .param("size", "10")
-//            .with(csrf()))
-//        .andExpect(status().isOk())
-//        .andExpect(jsonPath("$.content").isArray())
-//        .andExpect(jsonPath("$.content.length()").value(1))
-//        .andExpect(jsonPath("$.content[0].id").value(response.id().toString()))
-//        .andExpect(jsonPath("$.content[0].appointmentId").value(response.appointmentId().toString()))
-//        .andExpect(jsonPath("$.content[0].scheduledDateTime").value(response.scheduledDateTime().toString()))
-//        .andExpect(jsonPath("$.content[0].performed").value(response.performed()))
-//        .andExpect(jsonPath("$.content[0].cancelled").value(response.cancelled()))
-//        .andExpect(jsonPath("$.content[0].patientId").value(response.patientId().toString()));
-//
-//    verify(service, times(1))
-//        .listByPatient(eq(patientId), eq(start), eq(end), any(Pageable.class));
-//  }
-//
+  @Test
+  @WithMockUser(username = "admin", roles = {"ADMIN"})
+  void shouldListGeneratedAppointmentsByPatientSuccessfully() throws Exception {
+    UUID patientId = UUID.randomUUID();
+
+    LocalDate start = LocalDate.of(2026, 1, 1);
+    LocalDate end = LocalDate.of(2026, 1, 31);
+
+    var response = new GeneratedAppointmentResponseDTO(
+        UUID.randomUUID(),
+        UUID.randomUUID(),
+        LocalDateTime.now().withNano(0),
+        null,
+        false,
+        false,
+        null,
+        patientId,
+        null
+    );
+
+    Page<GeneratedAppointmentResponseDTO> page =
+        new PageImpl<>(List.of(response), PageRequest.of(0, 10), 1);
+
+    when(service.listByPatient(eq(patientId), eq(start), eq(end), any(Pageable.class)))
+        .thenReturn(page);
+
+    mockMvc.perform(get(URI + "/patient/{patientId}", patientId)
+            .param("start", start.toString())
+            .param("end", end.toString())
+            .param("page", "0")
+            .param("size", "10")
+            .with(csrf()))
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.content").isArray())
+        .andExpect(jsonPath("$.content.length()").value(1))
+        .andExpect(jsonPath("$.content[0].id").value(response.id().toString()))
+        .andExpect(jsonPath("$.content[0].appointmentId").value(response.appointmentId().toString()))
+        .andExpect(jsonPath("$.content[0].scheduledDateTime").value(response.scheduledDateTime().toString()))
+        .andExpect(jsonPath("$.content[0].performed").value(response.performed()))
+        .andExpect(jsonPath("$.content[0].cancelled").value(response.cancelled()))
+        .andExpect(jsonPath("$.content[0].patientId").value(response.patientId().toString()));
+
+    verify(service, times(1))
+        .listByPatient(eq(patientId), eq(start), eq(end), any(Pageable.class));
+  }
+
 //  @Test
 //  @WithMockUser(username = "admin", roles = {"ADMIN"})
 //  void shouldListTodayAppointmentsSuccessfully() throws Exception {
