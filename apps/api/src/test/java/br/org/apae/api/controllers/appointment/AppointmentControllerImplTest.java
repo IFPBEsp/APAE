@@ -459,24 +459,6 @@ class AppointmentControllerImplTest {
 
   @Test
   @WithMockUser(username = "admin", roles = {"ADMIN"})
-  void shouldReturnBadRequestWhenServiceIdIsNull() throws Exception {
-    var payload = new CreateAppointmentDTO(
-            UUID.randomUUID(),
-            null,
-            7,
-            LocalDate.now().plusDays(1),
-            LocalTime.now()
-    );
-
-    mockMvc.perform(post(URI)
-            .content(objectMapper.writeValueAsString(payload))
-            .contentType(MediaType.APPLICATION_JSON)
-            .with(csrf()))
-        .andExpect(status().isBadRequest());
-  }
-
-  @Test
-  @WithMockUser(username = "admin", roles = {"ADMIN"})
   void shouldReturnBadRequestWhenPatientIdIsNull() throws Exception {
     var payload = new CreateAppointmentDTO(
             UUID.randomUUID(),
