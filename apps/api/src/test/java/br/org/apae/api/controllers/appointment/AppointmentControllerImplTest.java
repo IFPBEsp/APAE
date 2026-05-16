@@ -399,6 +399,44 @@ class AppointmentControllerImplTest {
 
   @Test
   @WithMockUser(username = "admin", roles = {"ADMIN"})
+  void shouldGetTodayAppointmentByIdSuccessfully() throws Exception {
+    UUID id = UUID.randomUUID();
+
+    var response = new TodayAppointmentsResponseDTO(
+            id,
+            mock(PatientResponseDTO.class),
+            mock(HealthProfessionalResponseDTO.class),
+            LocalDateTime.now().withNano(0),
+            null,
+            false,
+            false,
+            null,
+            LocalDateTime.now().withNano(0),
+            UUID.randomUUID(),
+            false
+    );
+
+    when(service.findGeneratedAppointmentById(id)).thenReturn(response);
+
+    mockMvc.perform(get(URI + "/today/{id}", id)
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .with(csrf()))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.id").value(response.id().toString()))
+            .andExpect(jsonPath("$.scheduledDateTime").value(response.scheduledDateTime().toString()))
+            .andExpect(jsonPath("$.overriddenDateTime").isEmpty())
+            .andExpect(jsonPath("$.performed").value(response.performed()))
+            .andExpect(jsonPath("$.cancelled").value(response.cancelled()))
+            .andExpect(jsonPath("$.cancellationReason").isEmpty())
+            .andExpect(jsonPath("$.effectiveDateTime").value(response.effectiveDateTime().toString()))
+            .andExpect(jsonPath("$.ruleId").value(response.ruleId().toString()))
+            .andExpect(jsonPath("$.hasAbsence").value(response.hasAbsence()));
+
+    verify(service, times(1)).findGeneratedAppointmentById(id);
+  }
+
+  @Test
+  @WithMockUser(username = "admin", roles = {"ADMIN"})
   void shouldReturnNotFoundWhenGetNonExistentAppointment() throws Exception {
     UUID id = UUID.randomUUID();
 
@@ -590,5 +628,37 @@ class AppointmentControllerImplTest {
             .contentType(MediaType.APPLICATION_JSON)
             .with(csrf()))
         .andExpect(status().isBadRequest());
+  }
+
+  @Test
+  @WithMockUser(username = "admin", roles = {"ADMIN"})
+  void shouldReturnNotFoundWhenListingAppointmentsByNonExistentPatient() throws Exception {
+    UUID patientId = UUID.randomUUID();
+    LocalDate start = LocalDate.of(2026, 1, 1);
+    LocalDate end = LocalDate.of(2026, 1, 31);
+
+    when(service.listByPatient(eq(patientId), eq(start), eq(end), any(Pageable.class)))
+            .thenThrow(new AppointmentNotFoundException());
+
+    mockMvc.perform(get(URI + "/patient/{patientId}", patientId)
+                    .param("start", start.toString())
+                    .param("end", end.toString())
+                    .param("page", "0")
+                    .param("size", "10")
+                    .with(csrf()))
+            .andExpect(status().isNotFound());
+  }
+
+  @Test
+  @WithMockUser(username = "admin", roles = {"ADMIN"})
+  void shouldReturnNotFoundWhenGetTodayAppointmentByIdNonExistent() throws Exception {
+    UUID id = UUID.randomUUID();
+
+    when(service.findGeneratedAppointmentById(id))
+            .thenThrow(new AppointmentNotFoundException());
+
+    mockMvc.perform(get(URI + "/today/{id}", id)
+                    .with(csrf()))
+            .andExpect(status().isNotFound());
   }
 }
