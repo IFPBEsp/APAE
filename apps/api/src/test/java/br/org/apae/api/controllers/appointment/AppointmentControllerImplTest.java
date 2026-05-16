@@ -397,48 +397,48 @@ class AppointmentControllerImplTest {
             response2.hour().format(DateTimeFormatter.ISO_LOCAL_TIME)));
   }
 
-//  @Test
-//  @WithMockUser(username = "admin", roles = {"ADMIN"})
-//  void shouldReturnNotFoundWhenGetNonExistentAppointment() throws Exception {
-//    UUID id = UUID.randomUUID();
-//
-//    when(service.findById(id)).thenThrow(new AppointmentNotFoundException());
-//
-//    mockMvc.perform(get(URI_WITH_ID, id)
-//                    .with(csrf()))
-//            .andExpect(status().isNotFound());
-//  }
-//
-//  @Test
-//  @WithMockUser(username = "admin", roles = {"ADMIN"})
-//  void shouldReturnNotFoundWhenReschedulingNonExistentAppointment() throws Exception {
-//    UUID id = UUID.randomUUID();
-//    var payload = new RescheduleGeneratedAppointmentDTO(LocalDateTime.now().plusDays(1));
-//
-//    when(service.reschedule(any(), any())).thenThrow(new AppointmentNotFoundException());
-//
-//    mockMvc.perform(patch(GENERATED_URI_WITH_ID + "/reschedule", id)
-//                    .contentType(MediaType.APPLICATION_JSON)
-//                    .content(objectMapper.writeValueAsString(payload))
-//                    .with(csrf()))
-//            .andExpect(status().isNotFound());
-//  }
-//
-//  @Test
-//  @WithMockUser(username = "admin", roles = {"ADMIN"})
-//  void shouldReturnBadRequestWhenCancellingAlreadyCancelledAppointment() throws Exception {
-//    UUID id = UUID.randomUUID();
-//    var payload = new CancelGeneratedAppointmentDTO("Motivo qualquer");
-//
-//    when(service.cancel(eq(id), anyString())).thenThrow(new AppointmentAlreadyCancelledException());
-//
-//    mockMvc.perform(patch(GENERATED_URI_WITH_ID + "/cancel", id)
-//                    .contentType(MediaType.APPLICATION_JSON)
-//                    .content(objectMapper.writeValueAsString(payload))
-//                    .with(csrf()))
-//            .andExpect(status().isBadRequest());
-//  }
-//
+  @Test
+  @WithMockUser(username = "admin", roles = {"ADMIN"})
+  void shouldReturnNotFoundWhenGetNonExistentAppointment() throws Exception {
+    UUID id = UUID.randomUUID();
+
+    when(service.findById(id)).thenThrow(new AppointmentNotFoundException());
+
+    mockMvc.perform(get(URI_WITH_ID, id)
+                    .with(csrf()))
+            .andExpect(status().isNotFound());
+  }
+
+  @Test
+  @WithMockUser(username = "admin", roles = {"ADMIN"})
+  void shouldReturnNotFoundWhenReschedulingNonExistentAppointment() throws Exception {
+    UUID id = UUID.randomUUID();
+    var payload = new RescheduleGeneratedAppointmentDTO(LocalDateTime.now().plusDays(1));
+
+    when(service.reschedule(any(), any())).thenThrow(new AppointmentNotFoundException());
+
+    mockMvc.perform(patch(GENERATED_URI_WITH_ID + "/reschedule", id)
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(objectMapper.writeValueAsString(payload))
+                    .with(csrf()))
+            .andExpect(status().isNotFound());
+  }
+
+  @Test
+  @WithMockUser(username = "admin", roles = {"ADMIN"})
+  void shouldReturnBadRequestWhenCancellingAlreadyCancelledAppointment() throws Exception {
+    UUID id = UUID.randomUUID();
+    var payload = new CancelGeneratedAppointmentDTO("Motivo qualquer");
+
+    when(service.cancel(eq(id), anyString())).thenThrow(new AppointmentAlreadyCancelledException());
+
+    mockMvc.perform(patch(GENERATED_URI_WITH_ID + "/cancel", id)
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(objectMapper.writeValueAsString(payload))
+                    .with(csrf()))
+            .andExpect(status().isBadRequest());
+  }
+
 //  @Test
 //  @WithMockUser(username = "admin", roles = {"ADMIN"})
 //  void shouldReturnBadRequestWhenProfessionalIdIsNull() throws Exception {
