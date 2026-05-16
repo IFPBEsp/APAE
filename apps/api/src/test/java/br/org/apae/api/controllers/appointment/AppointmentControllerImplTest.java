@@ -496,7 +496,6 @@ class AppointmentControllerImplTest {
   @Test
   @WithMockUser(username = "admin", roles = {"ADMIN"})
   void shouldReturnBadRequestWhenFrequencyDaysIsZero() throws Exception {
-
     var payload = new CreateAppointmentDTO(
             UUID.randomUUID(),
             UUID.randomUUID(),
