@@ -548,25 +548,24 @@ class AppointmentControllerImplTest {
         .andExpect(status().isBadRequest());
   }
 
-//  @Test
-//  @WithMockUser(username = "admin", roles = {"ADMIN"})
-//  void shouldReturnBadRequestWhenInitialDateIsInThePast() throws Exception {
-//    var payload = new CreateAppointmentDTO(
-//        UUID.randomUUID(),
-//        UUID.randomUUID(),
-//        UUID.randomUUID(),
-//        7,
-//        LocalDate.now().minusDays(1),
-//        LocalTime.now()
-//    );
-//
-//    mockMvc.perform(post(URI)
-//            .content(objectMapper.writeValueAsString(payload))
-//            .contentType(MediaType.APPLICATION_JSON)
-//            .with(csrf()))
-//        .andExpect(status().isBadRequest());
-//  }
-//
+  @Test
+  @WithMockUser(username = "admin", roles = {"ADMIN"})
+  void shouldReturnBadRequestWhenInitialDateIsInThePast() throws Exception {
+    var payload = new CreateAppointmentDTO(
+            UUID.randomUUID(),
+            UUID.randomUUID(),
+            7,
+            LocalDate.now().minusDays(1),
+            LocalTime.now()
+    );
+
+    mockMvc.perform(post(URI)
+            .content(objectMapper.writeValueAsString(payload))
+            .contentType(MediaType.APPLICATION_JSON)
+            .with(csrf()))
+        .andExpect(status().isBadRequest());
+  }
+
 //  @Test
 //  @WithMockUser(username = "admin", roles = {"ADMIN"})
 //  void shouldReturnBadRequestWhenHourIsNull() throws Exception {
