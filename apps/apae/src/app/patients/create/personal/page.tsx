@@ -20,6 +20,7 @@ import {
   formatIssuingBody,
   formatPhone,
   formatRG,
+  capitalizeFirst,
 } from "@/lib/formats";
 import { Personal, PersonalData } from "@/schemas/member-schemas";
 import { EditPersonal } from "@/schemas/edit-member-schemas";
@@ -28,7 +29,6 @@ import { useForm } from "react-hook-form";
 import { useState, useEffect } from "react";
 import { usePathname } from "next/navigation";
 import { handleBackendValidationErrors } from "@/lib/utils/form-errors";
-
 import { DoubleColumn, FormButton, MembersRegisterForm } from "../form";
 import z from "zod";
 
@@ -119,7 +119,11 @@ export default function MembersRegisterPersonalPage() {
               <FormItem className="md:col-span-2">
                 <FormLabel>Nome Completo *</FormLabel>
                 <FormControl>
-                  <Input placeholder="Digite o nome completo" {...field} />
+                  <Input
+                    placeholder="Digite o nome completo"
+                    {...field}
+                    onChange={(e) => field.onChange(capitalizeFirst(e.target.value))}
+                  />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -306,7 +310,11 @@ export default function MembersRegisterPersonalPage() {
               <FormItem>
                 <FormLabel>Naturalidade *</FormLabel>
                 <FormControl>
-                  <Input placeholder="Brasil" {...field} />
+                  <Input
+                    placeholder="Brasil"
+                    {...field}
+                    onChange={(e) => field.onChange(capitalizeFirst(e.target.value))}
+                  />
                 </FormControl>
                 <FormMessage />
               </FormItem>

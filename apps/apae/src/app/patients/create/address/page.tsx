@@ -13,7 +13,7 @@ import {
   MembersRegisterStep,
   useMembersRegisterContext,
 } from "@/hooks/use-members-register-context";
-import { formatCEP } from "@/lib/formats";
+import { formatCEP, capitalizeFirst } from "@/lib/formats";
 import { Address } from "@/schemas/member-schemas";
 import { EditAddress } from "@/schemas/edit-member-schemas";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -133,7 +133,11 @@ export default function MembersRegisterAddressPage() {
               <FormItem className="md:col-span-2">
                 <FormLabel>Rua *</FormLabel>
                 <FormControl>
-                  <Input placeholder="Adielson Assis Alves" {...field} />
+                  <Input
+                    placeholder="Adielson Assis Alves"
+                    {...field}
+                    onChange={(e) => field.onChange(capitalizeFirst(e.target.value))}
+                  />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -191,7 +195,11 @@ export default function MembersRegisterAddressPage() {
               <FormItem>
                 <FormLabel>Complemento</FormLabel>
                 <FormControl>
-                  <Input placeholder="Apartamento 101" {...field} />
+                  <Input
+                    placeholder="Apartamento 101"
+                    {...field}
+                    onChange={(e) => field.onChange(capitalizeFirst(e.target.value))}
+                  />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -226,7 +234,11 @@ export default function MembersRegisterAddressPage() {
               <FormItem>
                 <FormLabel>Estado *</FormLabel>
                 <FormControl>
-                  <Input placeholder="Paraiba" {...field} />
+                  <Input
+                    placeholder="Paraiba"
+                    {...field}
+                    onChange={(e) => field.onChange(capitalizeFirst(e.target.value))}
+                  />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -240,7 +252,11 @@ export default function MembersRegisterAddressPage() {
               <FormItem>
                 <FormLabel>Cidade *</FormLabel>
                 <FormControl>
-                  <Input placeholder="Esperança" {...field} />
+                  <Input
+                    placeholder="Esperança"
+                    {...field}
+                    onChange={(e) => field.onChange(capitalizeFirst(e.target.value))}
+                  />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -254,7 +270,11 @@ export default function MembersRegisterAddressPage() {
               <FormItem>
                 <FormLabel>Bairro *</FormLabel>
                 <FormControl>
-                  <Input placeholder="Centro" {...field} />
+                  <Input
+                    placeholder="Centro"
+                    {...field}
+                    onChange={(e) => field.onChange(capitalizeFirst(e.target.value))}
+                  />
                 </FormControl>
                 <FormMessage />
               </FormItem>
