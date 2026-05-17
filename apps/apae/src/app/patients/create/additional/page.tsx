@@ -42,8 +42,7 @@ import { CreateVaccine } from "@/schemas/vaccine-schemas";
 import { Button } from "@/components/ui/button";
 import { useDisordersContext } from "@/hooks/use-disorders";
 import { CreateDisorder } from "@/schemas/disorder-schemas";
-import { formatCurrency } from "@/lib/formats";
-import { useCreateServiceArea } from "@/hooks/service-area/use-create-service-area";
+import { formatCurrency, capitalizeFirst } from "@/lib/formats";import { useCreateServiceArea } from "@/hooks/service-area/use-create-service-area";
 import { useFetchServiceAreas } from "@/hooks/service-area/use-fetch-service-areas";
 import { CreateCare } from "@/schemas/care-schemas";
 
@@ -82,7 +81,11 @@ function CreateVaccineDialog({ open, onOpenChange, onSuccess }: DialogProps) {
                 <FormItem>
                   <FormLabel>Nome da Vacina</FormLabel>
                   <FormControl>
-                    <Input placeholder="Ex: Hepatite B" {...field} />
+                    <Input
+                      placeholder="Ex: Hepatite B"
+                      {...field}
+                      onChange={(e) => field.onChange(capitalizeFirst(e.target.value))}
+                    />
                   </FormControl>
                   <FormMessage />
                 </FormItem>

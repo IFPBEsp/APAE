@@ -9,6 +9,7 @@ import { ArrowLeft } from "lucide-react";
 import { useVaccinesContext } from "@/hooks/use-vaccines";
 import { CreateVaccine } from "@/schemas/vaccine-schemas";
 import { z } from "zod";
+import { capitalizeFirst } from "@/lib/formats";
 import {
     Form,
     FormControl,
@@ -68,6 +69,7 @@ export default function NewVaccinePage() {
                                             <Input
                                                 placeholder="Ex: Hepatite B"
                                                 {...field}
+                                                onChange={(e) => field.onChange(capitalizeFirst(e.target.value))}
                                             />
                                         </FormControl>
                                         <FormMessage />
