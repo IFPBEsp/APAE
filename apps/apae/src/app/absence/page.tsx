@@ -54,7 +54,7 @@ export default function AbsenceDetails() {
         docFormData.append("type", "ATTACHMENTANY");
         docFormData.append("year", String(new Date().getFullYear()));
 
-        const docResponse = await fetch(`/api/patients/${justifyingAbsence.patientId}/documents`, {
+        const docResponse = await fetch(`/apae-geral/api/patients/${justifyingAbsence.patientId}/documents`, {
           method: "POST",
           body: docFormData,
         });
@@ -94,8 +94,8 @@ export default function AbsenceDetails() {
         });
 
         const [patientsRes, statsRes] = await Promise.all([
-          fetch(`/api/patients/with-absences?${queryParams}`),
-          fetch("/api/dashboard/overview?minAbsences=3"),
+          fetch(`/apae-geral/api/patients/with-absences?${queryParams}`),
+          fetch("/apae-geral/api/dashboard/overview?minAbsences=3"),
         ]);
 
         if (!patientsRes.ok || !statsRes.ok) {
@@ -141,7 +141,7 @@ export default function AbsenceDetails() {
   const handleDownload = async (patientId: string, documentName: string) => {
     try {
       const res = await fetch(
-        `/api/patients/${patientId}/documents/download?name=${encodeURIComponent(documentName)}`,
+        `/apae-geral/api/patients/${patientId}/documents/download?name=${encodeURIComponent(documentName)}`,
       );
       if (!res.ok) throw new Error("Erro ao buscar URL");
       const data = await res.json();

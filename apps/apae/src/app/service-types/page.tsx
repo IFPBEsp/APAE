@@ -21,7 +21,7 @@ export default function ServiceTypesPage() {
       try {
         setIsLoading(true);
         setError(null);
-        const response = await fetch("/api/service-types");
+        const response = await fetch("/apae-geral/api/service-types");
         if (!response.ok) {
           throw new Error("Falha ao buscar os tipos de atendimentos.");
         }

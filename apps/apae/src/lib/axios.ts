@@ -44,7 +44,7 @@ const makeInterceptors = (api: AxiosInstance) => {
 
         await removeSessionCookie();
         if (typeof window === "undefined") {
-          redirect("/auth/login");
+          redirect("/apae-geral/auth/login");
         }
       }
 
@@ -56,13 +56,16 @@ const makeInterceptors = (api: AxiosInstance) => {
 };
 
 export const createDocumentsAPI = async () => {
-  const api = createAxiosInstance("http://localhost:8092/api/documents");
+  const api = createAxiosInstance(
+    process.env.NEXT_PUBLIC_DOCUMENTS_API_URL ||
+      "http://localhost:8092/apae-geral/api/documents"
+  );
   return makeInterceptors(api);
 };
 
 export const createBaseApi = async () => {
   const api = createAxiosInstance(
-    process.env.NEXT_PUBLIC_API || "http://localhost:8090/api"
+    process.env.NEXT_PUBLIC_API_URL || "http://localhost:8090/apae-geral/api"
   );
 
   return makeInterceptors(api);

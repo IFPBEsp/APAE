@@ -67,7 +67,7 @@ function PatientsAndStudentsScreenContent() {
         const requestKey = params.toString();
         latestRequestKeyRef.current = requestKey;
 
-        const response = await fetch(`/api/patients?${requestKey}`, {
+        const response = await fetch(`/apae-geral/api/patients?${requestKey}`, {
           signal: controller.signal,
         });
 

@@ -566,7 +566,7 @@ export function MembersRegisterProvider({
       };
 
       if (id) {
-        const res = await fetch(`/api/patients/${id}`, {
+        const res = await fetch(`/apae-geral/api/patients/${id}`, {
           method: "PUT",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(patient),
@@ -579,7 +579,7 @@ export function MembersRegisterProvider({
         if (profile.photo instanceof File && res.ok) {
           const photoFormData = new FormData();
           photoFormData.append("photo", profile.photo);
-          await fetch(`/api/patients/${id}/photo`, {
+          await fetch(`/apae-geral/api/patients/${id}/photo`, {
             method: "PUT",
             body: photoFormData,
           });
@@ -608,7 +608,7 @@ export function MembersRegisterProvider({
           formData.append("referrals", additionals.care.referral);
         }
 
-        const res = await fetch("/api/patients", {
+        const res = await fetch("/apae-geral/api/patients", {
           method: "POST",
           body: formData,
         });

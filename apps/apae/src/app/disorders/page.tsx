@@ -24,7 +24,7 @@ export default function TranstornosPage() {
       try {
         setIsLoading(true);
         setError(null);
-        const response = await fetch("/api/disorders");
+        const response = await fetch("/apae-geral/api/disorders");
         if (!response.ok) {
           throw new Error("Falha ao buscar transtornos.");
         }
@@ -44,7 +44,7 @@ export default function TranstornosPage() {
   const handleDelete = async (id: string) => {
     
     try {
-      const response = await fetch(`/api/disorders/${id}`, {
+      const response = await fetch(`/apae-geral/api/disorders/${id}`, {
         method: "DELETE",
       });
       

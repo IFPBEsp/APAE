@@ -30,6 +30,11 @@ pnpm dev:apae
 
 Você pode começar a editar a página modificando o arquivo `app/page.tsx`. A página é atualizada automaticamente conforme você edita o arquivo.
 
+> ⚠️ Este frontend roda sob o `basePath` `/apae-geral` (configurado em `next.config.ts`).
+> Acesse no navegador em **`http://localhost:3000/apae-geral`** — a raiz `http://localhost:3000/`
+> retorna 404, isso é esperado. Esse prefixo existe para que o Nginx do Portal dos 30 anos
+> consiga fazer proxy do projeto sem conflitar com os outros (gestão-escolar, apae-30-anos, etc.).
+
 Este projeto utiliza [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) para otimizar e carregar automaticamente a fonte [Geist](https://vercel.com/font), uma nova família de fontes para Vercel.
 
 ## Saiba Mais

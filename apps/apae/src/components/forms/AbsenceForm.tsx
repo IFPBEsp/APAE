@@ -70,7 +70,7 @@ export function AbsenceForm({
         docFormData.append("type", "ATTACHMENTANY");
         docFormData.append("year", String(new Date().getFullYear()));
 
-        const docResponse = await fetch(`/api/patients/${patientId}/documents`, {
+        const docResponse = await fetch(`/apae-geral/api/patients/${patientId}/documents`, {
           method: "POST",
           body: docFormData,
         });
@@ -95,7 +95,7 @@ export function AbsenceForm({
         justificationDocumentId: documentId,
       };
 
-      const response = await fetch("/api/absences", {
+      const response = await fetch("/apae-geral/api/absences", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

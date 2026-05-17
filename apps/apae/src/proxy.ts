@@ -7,16 +7,23 @@ export function proxy(req: NextRequest) {
   const isPublic = PUBLIC_PATHS.includes(req.nextUrl.pathname);
 
   if (!session && !isPublic) {
-    return NextResponse.redirect(new URL("/auth/login", req.url));
+    const url = req.nextUrl.clone();
+    url.pathname = "/auth/login";
+    return NextResponse.redirect(url);
   }
 
   if (session && isPublic) {
-    return NextResponse.redirect(new URL("/", req.url));
+    const url = req.nextUrl.clone();
+    url.pathname = "/";
+    return NextResponse.redirect(url);
   }
 
   return NextResponse.next();
 }
 
 export const config = {
-  matcher: ["/((?!api|_next/static|_next/image|.*\\.png$).*)"],
+  matcher: [
+    "/",
+    "/((?!api|_next/static|_next/image|.*\\.png$).*)",
+  ],
 };

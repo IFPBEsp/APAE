@@ -58,7 +58,7 @@ export default function ViewAppointment() {
         setAppointment(appointmentData);
 
         // 2. Busca a lista de pacientes com faltas (fetch direto)
-        const response = await fetch('/api/patients/with-absences?minAbsences=3');
+        const response = await fetch('/apae-geral/api/patients/with-absences?minAbsences=3');
         if (response.ok) {
           const data = await response.json();
           const absencesList = data.content || [];

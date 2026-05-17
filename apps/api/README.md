@@ -92,7 +92,10 @@ Após a aplicação iniciar, a forma mais fácil de verificar se os endpoints es
 
 Abra seu navegador e acesse:
 
-[http://localhost:8090/api/swagger-ui/index.html](http://localhost:8090/api/swagger-ui/index.html)
+[http://localhost:8090/apae-geral/api/swagger-ui/index.html](http://localhost:8090/apae-geral/api/swagger-ui/index.html)
+
+> ℹ️ O backend roda sob o context-path `/apae-geral`. Portanto, todas as rotas
+> (controllers, Swagger e Actuator) ficam abaixo desse prefixo.
 
 Você deverá ver a interface do Swagger listando todos os "Controllers" (como Patient, Auth, Appointment, etc.) e seus respectivos endpoints.
 

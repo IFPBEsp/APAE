@@ -13,3 +13,4 @@ docker/db_data
 
 # Arquivos de build e cache do Next.js
 **/.next/
+.claude/

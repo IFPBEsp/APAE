@@ -45,7 +45,7 @@ export default function ViewTodayAppointment() {
         setAppointment(data);
 
         // 2. Busca pacientes com faltas via fetch direto
-        const response = await fetch('/api/patients/with-absences?minAbsences=3');
+        const response = await fetch('/apae-geral/api/patients/with-absences?minAbsences=3');
         
         if (response.ok) {
           const result = await response.json();

@@ -221,7 +221,7 @@ export const parseTimeFromBackend = (timeString: string): string => {
 export async function saveAppointment(
   dto: CreateAppointmentDTO,
 ): Promise<void> {
-  const res = await fetch(`/api/appointments`, {
+  const res = await fetch(`/apae-geral/api/appointments`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -260,7 +260,7 @@ export async function getAppointments(
   if (date) query.append("date", date);
   if (time) query.append("time", time);
 
-  const response = await fetch(`/api/appointments?${query}`);
+  const response = await fetch(`/apae-geral/api/appointments?${query}`);
 
   if (!response.ok) {
     throw new Error("Erro ao buscar agendamentos");
@@ -273,7 +273,7 @@ export async function getAppointments(
 export async function getAppointmentById(
   id: UUID,
 ): Promise<AppointmentResponseDTO> {
-  const response = await fetch(`/api/appointments/${id}`);
+  const response = await fetch(`/apae-geral/api/appointments/${id}`);
 
   if (!response.ok) {
     throw new Error("Erro ao buscar detalhes do agendamento");
@@ -286,7 +286,7 @@ export async function updateAppointment(
   id: UUID,
   dto: UpdateAppointmentDTO,
 ): Promise<AppointmentResponseDTO> {
-  const response = await fetch(`/api/appointments/${id}`, {
+  const response = await fetch(`/apae-geral/api/appointments/${id}`, {
     method: "PATCH",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(dto),
@@ -303,7 +303,7 @@ export async function updateAppointment(
 }
 
 export async function deleteAppointment(id: UUID): Promise<void> {
-  const response = await fetch(`/api/appointments/${id}`, {
+  const response = await fetch(`/apae-geral/api/appointments/${id}`, {
     method: "DELETE",
   });
 
@@ -331,7 +331,7 @@ export async function rescheduleGeneratedAppointment(
     newDateTime: localDateTimeString,
   };
 
-  const response = await fetch(`/api/appointments/generated/${id}/reschedule`, {
+  const response = await fetch(`/apae-geral/api/appointments/generated/${id}/reschedule`, {
     method: "PATCH",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(backendDto),
@@ -347,7 +347,7 @@ export async function rescheduleGeneratedAppointment(
 export async function markAsPerformed(
   id: UUID,
 ): Promise<GeneratedAppointmentResponseDTO> {
-  const response = await fetch(`/api/appointments/generated/${id}/performed`, {
+  const response = await fetch(`/apae-geral/api/appointments/generated/${id}/performed`, {
     method: "PATCH",
   });
 
@@ -362,7 +362,7 @@ export async function cancelGeneratedAppointment(
   id: UUID,
   dto: CancelGeneratedAppointmentDTO,
 ): Promise<GeneratedAppointmentResponseDTO> {
-  const response = await fetch(`/api/appointments/generated/${id}/cancel`, {
+  const response = await fetch(`/apae-geral/api/appointments/generated/${id}/cancel`, {
     method: "PATCH",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(dto),
@@ -391,7 +391,7 @@ export async function listByPatient(
   if (end) query.append("end", end);
 
   const response = await fetch(
-    `/api/appointments/patient/${patientId}?${query}`,
+    `/apae-geral/api/appointments/patient/${patientId}?${query}`,
   );
 
   if (!response.ok) {
@@ -419,7 +419,7 @@ export async function registerAbsence(
     notified: false,
   };
 
-  const res = await fetch(`/api/absences`, {
+  const res = await fetch(`/apae-geral/api/absences`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(body),
@@ -433,7 +433,7 @@ export async function registerAbsence(
 }
 
 export async function getPacientes(): Promise<Patient[]> {
-  const response = await fetch(`/api/patients?page=0&size=100`);
+  const response = await fetch(`/apae-geral/api/patients?page=0&size=100`);
 
   if (!response.ok) {
     throw new Error("Erro ao buscar pacientes");
@@ -444,7 +444,7 @@ export async function getPacientes(): Promise<Patient[]> {
 }
 
 export async function getProfissionaisDaSaude(): Promise<Professional[]> {
-  const response = await fetch(`/api/professionals?page=0&size=100`);
+  const response = await fetch(`/apae-geral/api/professionals?page=0&size=100`);
 
   if (!response.ok) {
     throw new Error("Erro ao buscar profissionais");
@@ -457,7 +457,7 @@ export async function getProfissionaisDaSaude(): Promise<Professional[]> {
 export async function getProfissionalDaSaude(
   id: string,
 ): Promise<Professional> {
-  const response = await fetch(`/api/professionals/${id}`);
+  const response = await fetch(`/apae-geral/api/professionals/${id}`);
 
   if (!response.ok) {
     throw new Error(`Profissional nÃ£o encontrado (ID: ${id})`);
@@ -494,7 +494,7 @@ export const toggleConfirmacao = async (id: UUID): Promise<void> => {
 export async function getTodayAppointmentById(
   id: string,
 ): Promise<TodayAppointment> {
-  const res = await fetch(`/api/appointments/today/${id}`);
+  const res = await fetch(`/apae-geral/api/appointments/today/${id}`);
 
   if (!res.ok) {
     throw new Error(`Erro ao buscar agendamento do dia: ${res.status}`);
@@ -518,7 +518,7 @@ export async function listTodayAppointment(
     query.append("date", date);
   }
 
-  const url = `/api/appointments/today?${query.toString()}`;
+  const url = `/apae-geral/api/appointments/today?${query.toString()}`;
 
   const res = await fetch(url, {
     method: "GET",

@@ -57,7 +57,7 @@ app:
   token:
     secret: ${JWT_SECRET}
   frontend:
-    reset-password-url: ${APP_FRONTEND_RESET_PASSWORD_URL:http://localhost:3000/auth/reset-password}
+    reset-password-url: ${APP_FRONTEND_RESET_PASSWORD_URL:http://localhost:3000/apae-geral/auth/reset-password}
 
 minio:
   access:
@@ -72,6 +72,8 @@ cors:
 
 server:
   port: ${API_PORT:8090}
+  servlet:
+    context-path: /apae-geral
 
 management:
   endpoints:

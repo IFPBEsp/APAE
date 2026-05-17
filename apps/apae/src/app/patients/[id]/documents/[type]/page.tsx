@@ -91,7 +91,7 @@ export default function DocumentTypePage() {
       });
 
       const response = await fetch(
-        `/api/patients/${patientId}/documents?${params.toString()}`,
+        `/apae-geral/api/patients/${patientId}/documents?${params.toString()}`,
       );
 
       if (!response.ok) {
@@ -146,7 +146,7 @@ export default function DocumentTypePage() {
       formData.append("file", replaceFile);
 
       const response = await fetch(
-        `/api/patients/${patientId}/documents/${replaceTarget.id}`,
+        `/apae-geral/api/patients/${patientId}/documents/${replaceTarget.id}`,
         {
           method: "PATCH",
           body: formData,
