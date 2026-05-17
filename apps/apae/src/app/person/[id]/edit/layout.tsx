@@ -15,15 +15,6 @@ import Image from "@/assets/background_image.jpg";
 import { SidebarSteps } from "@/components/shared/SidebarSteps";
 import { parseCivilDate } from "@/lib/date";
 
-interface AddressData {
-  street?: string;
-  number?: string;
-}
-
-interface VaccineName {
-  name: string;
-}
-
 interface ParentData {
   name?: string;
   cpf?: string;
@@ -34,16 +25,13 @@ interface ParentData {
 }
 
 function EditPatientDataLoader({ children }: { children: React.ReactNode }) {
-  const { setters, state } = useMembersRegisterContext();
+  const { setters } = useMembersRegisterContext();
   const { id } = useParams();
   const pathname = usePathname();
   const [loaded, setLoaded] = useState(false);
 
   useEffect(() => {
-    if (loaded || state.personal.name !== "") {
-      setLoaded(true);
-      return;
-    }
+    if (loaded) return;
 
     async function load() {
       try {
@@ -51,14 +39,6 @@ function EditPatientDataLoader({ children }: { children: React.ReactNode }) {
         if (!res.ok) throw new Error("Erro ao buscar dados do paciente");
         const data = await res.json();
 
-        const formatStreet = (addr: AddressData | null | undefined) => {
-          if (!addr?.street) return "";
-          const street = addr.street.trim();
-          const number = addr.number ? addr.number.trim() : "";
-
-          if (street.includes(",")) return street;
-          return number ? `${street}, ${number}` : street;
-        };
         const mappedData: MembersRegisterState = {
           personal: {
             name: data.fullName || "",
@@ -121,7 +101,7 @@ function EditPatientDataLoader({ children }: { children: React.ReactNode }) {
             },
           },
           kinships:
-            data.parents?.map((p: any) => ({
+            data.parents?.map((p: ParentData) => ({
               name: p.name || "",
               cpf: p.cpf || "",
               rg: p.rg || "",
@@ -146,7 +126,7 @@ function EditPatientDataLoader({ children }: { children: React.ReactNode }) {
       }
     }
     load();
-  }, [id, setters, loaded, state.personal.name, pathname]);
+  }, [id, setters, loaded, pathname]);
 
   if (!loaded) {
     return (
@@ -248,7 +228,6 @@ export default function EditPatientLayout({
 }) {
   return (
     <VaccinesProvider>
-      {/* @ts-ignore */}
       <DisordersProvider>
         <MembersRegisterProvider>
           <EditPatientDataLoader>
