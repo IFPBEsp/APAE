@@ -53,10 +53,13 @@ public class HealthProfessionalApplicationServiceImpl implements HealthProfessio
         this.serviceAreaApplicationService = serviceAreaApplicationService;
     }
 
-    @Override
-    @Transactional
-    public HealthProfessionalResponseDTO createProfessional(CreateHealthProfessionalDTO dto,
-            CreateProfessionalDocumentsDTO documentsDTO) {
+        @Override
+        @Transactional
+        public HealthProfessionalResponseDTO createProfessional(
+                CreateHealthProfessionalDTO dto,
+                CreateProfessionalDocumentsDTO documentsDTO,
+                MultipartFile profilePhoto
+        ) {
         if (dto.professionalDocument() != null && repository.existsByProfessionalDocument(dto.professionalDocument())) {
             throw new ProfessionalDocumentConflictException();
         }
@@ -73,9 +76,13 @@ public class HealthProfessionalApplicationServiceImpl implements HealthProfessio
         HealthProfessional professionalToSave = mapper.toEntity(dto, serviceAreaDto);
         HealthProfessional savedProfessional = repository.save(professionalToSave);
         documentsService.storeProfessionalDocuments(professionalToSave, documentsDTO);
-        return mapper.toResponseDTO(savedProfessional);
-    }
 
+        if (profilePhoto != null && !profilePhoto.isEmpty()) {
+            uploadProfessionalPhoto(savedProfessional.getId(), profilePhoto);
+        }
+
+        return mapper.toResponseDTO(savedProfessional);
+        }
     @Override
     @Transactional
     public HealthProfessionalResponseDTO updateProfessional(UUID id, UpdateHealthProfessionalDTO dto) {
