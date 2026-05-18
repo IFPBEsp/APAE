@@ -129,7 +129,7 @@ export default function VisualizationProfessionalPage() {
             Profissionais da Saúde
           </h1>
           <Button
-            className="bg-[#0D4F97] hover:bg-blue-900"
+            className="bg-[#0D4F97] hover:bg-blue-900 cursor-pointer"
             onClick={handleAddNew}
           >
             Cadastrar Profissional
@@ -204,7 +204,7 @@ export default function VisualizationProfessionalPage() {
                         <AlertDialog>
                           <DropdownMenu>
                             <DropdownMenuTrigger asChild>
-                              <Button variant="ghost" className="h-8 w-8 p-0">
+                              <Button variant="ghost" className="h-8 w-8 p-0 cursor-pointer">
                                 <MoreHorizontal className="h-4 w-4" />
                               </Button>
                             </DropdownMenuTrigger>

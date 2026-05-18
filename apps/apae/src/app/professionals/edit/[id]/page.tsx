@@ -593,8 +593,39 @@ export default function AtualizarProfissional(): JSX.Element {
                       onChange={(e) => {
                         const file = e.target.files?.[0];
 
-                        field.onChange(file ?? null);
-                        setSelectedPhoto(file ?? null);
+                        if (!file) {
+                          field.onChange(null);
+                          setSelectedPhoto(null);
+                          return;
+                        }
+
+                        const allowedTypes = [
+                          "image/png",
+                          "image/jpeg",
+                          "image/jpg",
+                          "image/webp",
+                        ];
+
+                        const maxSize = 5 * 1024 * 1024;
+
+                        if (
+                          !allowedTypes.includes(file.type) ||
+                          file.size <= 0 ||
+                          file.size > maxSize
+                        ) {
+                          alert("Apenas imagens PNG, JPG ou WEBP até 5MB são permitidas");
+
+                          if (fileInputRef.current) {
+                            fileInputRef.current.value = "";
+                          }
+
+                          field.onChange(null);
+                          setSelectedPhoto(null);
+                          return;
+                        }
+
+                        field.onChange(file);
+                        setSelectedPhoto(file);
                       }}
                     />
 
@@ -605,7 +636,7 @@ export default function AtualizarProfissional(): JSX.Element {
                     >
                       <Avatar className="w-32 h-32 border-2 border-dashed border-gray-300 bg-gray-50 cursor-pointer flex items-center justify-center">
                         <AvatarImage
-                          src={photoPreviewUrl || undefined}
+                          src={photoPreviewUrl ?? profissional?.profilePhotoUrl ?? undefined}
                           alt="Foto do profissional"
                         />
 
@@ -615,7 +646,7 @@ export default function AtualizarProfissional(): JSX.Element {
                       </Avatar>
 
                       <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity bg-black/20 rounded-full">
-                        <span className="bg-white text-black text-[10px] font-bold px-2 py-1 rounded shadow-sm">
+                        <span className="bg-white text-black text-[10px] font-bold px-2 py-1 rounded shadow-sm cursor-pointer">
                           Escolher foto
                         </span>
                       </div>
@@ -862,12 +893,12 @@ export default function AtualizarProfissional(): JSX.Element {
           )}
 
           <div className="flex justify-end gap-4">
-            <Button type="button" variant="outline" onClick={onCancel}>
+            <Button className="cursor-pointer" type="button" variant="outline" onClick={onCancel}>
               Cancelar
             </Button>
             <Button
               type="submit"
-              className="bg-[#0D4F97] hover:bg-blue-900"
+              className="bg-[#0D4F97] hover:bg-blue-900 cursor-pointer"
               disabled={form.formState.isSubmitting || loading || loadingDocs}
             >
               Salvar
