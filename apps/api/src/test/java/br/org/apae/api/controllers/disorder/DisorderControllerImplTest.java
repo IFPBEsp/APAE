@@ -188,7 +188,7 @@ class DisorderControllerImplTest {
         mockMvc.perform(get(BASE_URL + "/{id}", id)
                         .header("Authorization", AuthTestHelper.bearerToken())
                         .accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isConflict());
+                .andExpect(status().isNotFound());
     }
 
     @Test
@@ -204,7 +204,7 @@ class DisorderControllerImplTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(updateDto))
                         .accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isConflict());
+                .andExpect(status().isNotFound());
     }
 
     @Test
@@ -230,6 +230,6 @@ class DisorderControllerImplTest {
         doThrow(new DisorderNotFoundException()).when(disorderService).deleteDisorder(id);
 
         mockMvc.perform(delete(BASE_URL + "/{id}", id).header("Authorization", AuthTestHelper.bearerToken()))
-                .andExpect(status().isConflict());
+                .andExpect(status().isNotFound());
     }
 }
