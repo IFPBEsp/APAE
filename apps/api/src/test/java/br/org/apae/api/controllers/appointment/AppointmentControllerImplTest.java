@@ -1,13 +1,12 @@
-/*package br.org.apae.api.controllers.appointment;
+package br.org.apae.api.controllers.appointment;
+import br.org.apae.api.appointment.application.interfaces.AppointmentApplicationService;
 import br.org.apae.api.appointment.application.internal.AppointmentApplicationServiceImpl;
 import br.org.apae.api.appointment.domain.exceptions.AppointmentAlreadyCancelledException;
 import br.org.apae.api.appointment.domain.exceptions.AppointmentNotFoundException;
+import br.org.apae.api.appointment.domain.model.GeneratedAppointment;
 import br.org.apae.api.auth.application.internal.UserService;
 import br.org.apae.api.auth.infrastructure.security.JwtProvider;
-import br.org.apae.api.common.dto.appointment.request.appointment.CancelGeneratedAppointmentDTO;
-import br.org.apae.api.common.dto.appointment.request.appointment.CreateAppointmentDTO;
-import br.org.apae.api.common.dto.appointment.request.appointment.RescheduleGeneratedAppointmentDTO;
-import br.org.apae.api.common.dto.appointment.request.appointment.UpdateAppointmentRuleDTO;
+import br.org.apae.api.common.dto.appointment.request.appointment.*;
 import br.org.apae.api.common.dto.appointment.response.appointment.AnnualRegistryResponseDTO;
 import br.org.apae.api.common.dto.appointment.response.appointment.AppointmentResponseDTO;
 import br.org.apae.api.common.dto.appointment.response.appointment.GeneratedAppointmentResponseDTO;
@@ -50,7 +49,7 @@ class AppointmentControllerImplTest {
   @Autowired
   private MockMvc mockMvc;
   @MockitoBean
-  private AppointmentApplicationServiceImpl service;
+  private AppointmentApplicationService service;
   @Autowired
   private ObjectMapper objectMapper;
   @MockitoBean
@@ -61,14 +60,29 @@ class AppointmentControllerImplTest {
   private static final String URI_WITH_ID = URI + "/{id}";
   private static final String GENERATED_URI_WITH_ID = URI + "/generated/{id}";
 
+  private AppointmentResponseDTO createAppointmentDTO(UUID id) {
+    return new AppointmentResponseDTO(
+            id,
+            mock(HealthProfessionalResponseDTO.class),
+            mock(AnnualRegistryResponseDTO.class),
+            7,
+            LocalDate.now(),
+            LocalDate.of(2026, 12, 31),
+            LocalTime.now().withNano(0),
+            true,
+            LocalDateTime.now().withNano(0),
+            null,
+            null
+    );
+  }
+
   @Test
   @WithMockUser(username = "admin", roles = {"ADMIN"})
   void shouldCreateAppointmentSuccessfully() throws Exception {
     var payload = new CreateAppointmentDTO(
         UUID.randomUUID(),
         UUID.randomUUID(),
-        UUID.randomUUID(),
-        7,
+        2,
         LocalDate.now(),
         LocalTime.now()
     );
@@ -94,7 +108,6 @@ class AppointmentControllerImplTest {
         .with(csrf()))
       .andExpect(status().isOk())
       .andExpect(jsonPath("$.id").value(response.id().toString()))
-      .andExpect(jsonPath("$.serviceId").value(response.serviceId().toString()))
       .andExpect(jsonPath("$.frequencyDays").value(response.frequencyDays()))
       .andExpect(jsonPath("$.initialDate").value(response.initialDate().toString()))
       .andExpect(jsonPath("$.endDate").value(response.endDate().toString()))
@@ -119,19 +132,21 @@ class AppointmentControllerImplTest {
   @WithMockUser(username = "admin", roles = {"ADMIN"})
   void shouldRescheduleAppointmentSuccessfully() throws Exception {
     UUID id = UUID.randomUUID();
-    var payload = new RescheduleGeneratedAppointmentDTO(LocalDateTime.now().withNano(0));
-
-    GeneratedAppointmentResponseDTO response = new GeneratedAppointmentResponseDTO(
-        id,
-        UUID.randomUUID(),
-        payload.newDateTime(),
-        null,
-        false,
-        false,
-        null,
-        UUID.randomUUID(),
-        LocalDateTime.now().withNano(0)
+    var response = new GeneratedAppointmentResponseDTO(
+            id,
+            UUID.randomUUID(),
+            LocalDateTime.now().withNano(0),
+            null,
+            false,
+            false,
+            null,
+            UUID.randomUUID(),
+            LocalDateTime.now().withNano(0)
     );
+
+    LocalDateTime localDateTime = LocalDateTime.now().withNano(0);
+    var payload = new RescheduleGeneratedAppointmentDTO(localDateTime);
+
     when(service.reschedule(id, payload.newDateTime())).thenReturn(response);
 
     mockMvc.perform(patch(GENERATED_URI_WITH_ID + "/reschedule", id)
@@ -155,15 +170,15 @@ class AppointmentControllerImplTest {
   void shouldPerformedAppointmentSuccessfully() throws Exception {
     UUID id = UUID.randomUUID();
     var response = new GeneratedAppointmentResponseDTO(
-        id,
-        UUID.randomUUID(),
-        null,
-        null,
-        true,
-        false,
-        null,
-        UUID.randomUUID(),
-        LocalDateTime.now().withNano(0)
+            id,
+            UUID.randomUUID(),
+            null,
+            null,
+            false,
+            false,
+            null,
+            UUID.randomUUID(),
+            LocalDateTime.now().withNano(0)
     );
 
     when(service.markAsPerformed(id)).thenReturn(response);
@@ -187,6 +202,7 @@ class AppointmentControllerImplTest {
   void shouldCancelAppointmentSuccessfully() throws Exception {
     UUID id = UUID.randomUUID();
     var payload = new CancelGeneratedAppointmentDTO("cancel reason");
+
     var response = new GeneratedAppointmentResponseDTO(
         id,
         UUID.randomUUID(),
@@ -222,39 +238,44 @@ class AppointmentControllerImplTest {
   void shouldUpdateAppointmentRuleSuccessfully() throws Exception {
     UUID id = UUID.randomUUID();
 
-    var payload = new UpdateAppointmentRuleDTO(
-        14,
-        LocalTime.of(10, 30, 0)
+    var payload = new UpdateAppointmentDTO(
+            UUID.randomUUID(),
+            UUID.randomUUID(),
+            UUID.randomUUID(),
+            14,
+            LocalDate.now().plusDays(1),
+            LocalTime.of(10, 30, 0),
+            LocalDate.now().plusDays(30)
     );
 
-    AppointmentResponseDTO response = new AppointmentResponseDTO(
-        id,
-        mock(HealthProfessionalResponseDTO.class),
-        UUID.randomUUID(),
-        mock(AnnualRegistryResponseDTO.class),
-        payload.newFrequency(),
-        LocalDate.now(),
-        LocalDate.of(2026, 12, 31),
-        payload.newTime(),
-        true,
-        LocalDateTime.now().withNano(0)
+    var response = new AppointmentResponseDTO(
+            id,
+            mock(HealthProfessionalResponseDTO.class),
+            mock(AnnualRegistryResponseDTO.class),
+            payload.frequencyDays(),
+            payload.initialDate(),
+            payload.endDate(),
+            payload.hour(),
+            true,
+            LocalDateTime.now().withNano(0),
+            null,
+            null
     );
 
-    when(service.updateAppointment(id, payload.newFrequency(), payload.newTime())).thenReturn(response);
+    when(service.update(id, payload)).thenReturn(response);
 
-    mockMvc.perform(patch(URI_WITH_ID + "/rule", id)
+    mockMvc.perform(patch(URI_WITH_ID, id)
             .contentType(MediaType.APPLICATION_JSON)
             .content(objectMapper.writeValueAsString(payload))
             .with(csrf()))
         .andExpect(status().isOk())
         .andExpect(jsonPath("$.id").value(response.id().toString()))
-        .andExpect(jsonPath("$.serviceId").value(response.serviceId().toString()))
         .andExpect(jsonPath("$.frequencyDays").value(response.frequencyDays()))
         .andExpect(jsonPath("$.hour").value(response.hour().format(DateTimeFormatter.ISO_LOCAL_TIME)))
         .andExpect(jsonPath("$.isActive").value(response.isActive()))
         .andExpect(jsonPath("$.creationDate").value(response.creationDate().toString()));
 
-    verify(service, times(1)).updateAppointment(id, payload.newFrequency(), payload.newTime());
+    verify(service, times(1)).update(eq(id), any(UpdateAppointmentDTO.class));
   }
 
   @Test
@@ -306,6 +327,8 @@ class AppointmentControllerImplTest {
   @Test
   @WithMockUser(username = "admin", roles = {"ADMIN"})
   void shouldListTodayAppointmentsSuccessfully() throws Exception {
+    LocalDate date = LocalDate.now();
+
     var response = new TodayAppointmentsResponseDTO(
         UUID.randomUUID(),
         mock(PatientResponseDTO.class),
@@ -316,16 +339,18 @@ class AppointmentControllerImplTest {
         false,
         null,
         null,
-        UUID.randomUUID()
+        UUID.randomUUID(),
+        false
     );
 
     Page<TodayAppointmentsResponseDTO> page =
         new PageImpl<>(List.of(response), PageRequest.of(0, 10), 1);
 
-    when(service.listAppointmentForToday(any(Pageable.class)))
+    when(service.listAppointmentForToday(eq(date), any(Pageable.class)))
         .thenReturn(page);
 
     mockMvc.perform(get(URI + "/today")
+            .param("date", date.toString())
             .param("page", "0")
             .param("size", "10")
             .with(csrf()))
@@ -372,22 +397,43 @@ class AppointmentControllerImplTest {
             response2.hour().format(DateTimeFormatter.ISO_LOCAL_TIME)));
   }
 
+  @Test
+  @WithMockUser(username = "admin", roles = {"ADMIN"})
+  void shouldGetTodayAppointmentByIdSuccessfully() throws Exception {
+    UUID id = UUID.randomUUID();
 
-  private AppointmentResponseDTO createAppointmentDTO(UUID id) {
-    return new AppointmentResponseDTO(
-        id,
-        mock(HealthProfessionalResponseDTO.class),
-        UUID.randomUUID(),
-        mock(AnnualRegistryResponseDTO.class),
-        7,
-        LocalDate.now(),
-        LocalDate.of(2026, 12, 31),
-        LocalTime.now().withNano(0),
-        true,
-        LocalDateTime.now().withNano(0)
+    var response = new TodayAppointmentsResponseDTO(
+            id,
+            mock(PatientResponseDTO.class),
+            mock(HealthProfessionalResponseDTO.class),
+            LocalDateTime.now().withNano(0),
+            null,
+            false,
+            false,
+            null,
+            LocalDateTime.now().withNano(0),
+            UUID.randomUUID(),
+            false
     );
-  }
 
+    when(service.findGeneratedAppointmentById(id)).thenReturn(response);
+
+    mockMvc.perform(get(URI + "/today/{id}", id)
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .with(csrf()))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.id").value(response.id().toString()))
+            .andExpect(jsonPath("$.scheduledDateTime").value(response.scheduledDateTime().toString()))
+            .andExpect(jsonPath("$.overriddenDateTime").isEmpty())
+            .andExpect(jsonPath("$.performed").value(response.performed()))
+            .andExpect(jsonPath("$.cancelled").value(response.cancelled()))
+            .andExpect(jsonPath("$.cancellationReason").isEmpty())
+            .andExpect(jsonPath("$.effectiveDateTime").value(response.effectiveDateTime().toString()))
+            .andExpect(jsonPath("$.ruleId").value(response.ruleId().toString()))
+            .andExpect(jsonPath("$.hasAbsence").value(response.hasAbsence()));
+
+    verify(service, times(1)).findGeneratedAppointmentById(id);
+  }
 
   @Test
   @WithMockUser(username = "admin", roles = {"ADMIN"})
@@ -430,33 +476,13 @@ class AppointmentControllerImplTest {
                     .with(csrf()))
             .andExpect(status().isBadRequest());
   }
-  
+
   @Test
   @WithMockUser(username = "admin", roles = {"ADMIN"})
   void shouldReturnBadRequestWhenProfessionalIdIsNull() throws Exception {
     var payload = new CreateAppointmentDTO(
-        null,
-        UUID.randomUUID(),
-        UUID.randomUUID(),
-        7,
-        LocalDate.now().plusDays(1),
-        LocalTime.now()
-    );
-
-    mockMvc.perform(post(URI)
-            .content(objectMapper.writeValueAsString(payload))
-            .contentType(MediaType.APPLICATION_JSON)
-            .with(csrf()))
-        .andExpect(status().isBadRequest());
-  }
-
-  @Test
-  @WithMockUser(username = "admin", roles = {"ADMIN"})
-  void shouldReturnBadRequestWhenServiceIdIsNull() throws Exception {
-    var payload = new CreateAppointmentDTO(
         UUID.randomUUID(),
         null,
-        UUID.randomUUID(),
         7,
         LocalDate.now().plusDays(1),
         LocalTime.now()
@@ -473,12 +499,11 @@ class AppointmentControllerImplTest {
   @WithMockUser(username = "admin", roles = {"ADMIN"})
   void shouldReturnBadRequestWhenPatientIdIsNull() throws Exception {
     var payload = new CreateAppointmentDTO(
-        UUID.randomUUID(),
-        UUID.randomUUID(),
-        null,
-        7,
-        LocalDate.now().plusDays(1),
-        LocalTime.now()
+            UUID.randomUUID(),
+            null,
+            7,
+            LocalDate.now().plusDays(1),
+            LocalTime.now()
     );
 
     mockMvc.perform(post(URI)
@@ -492,12 +517,11 @@ class AppointmentControllerImplTest {
   @WithMockUser(username = "admin", roles = {"ADMIN"})
   void shouldReturnBadRequestWhenFrequencyDaysIsNull() throws Exception {
     var payload = new CreateAppointmentDTO(
-        UUID.randomUUID(),
-        UUID.randomUUID(),
-        UUID.randomUUID(),
-        null,
-        LocalDate.now().plusDays(1),
-        LocalTime.now()
+            UUID.randomUUID(),
+            UUID.randomUUID(),
+            null,
+            LocalDate.now().plusDays(1),
+            LocalTime.now()
     );
 
     mockMvc.perform(post(URI)
@@ -509,14 +533,13 @@ class AppointmentControllerImplTest {
 
   @Test
   @WithMockUser(username = "admin", roles = {"ADMIN"})
-  void shouldReturnBadRequestWhenFrequencyDaysIsZeroOrNegative() throws Exception {
+  void shouldReturnBadRequestWhenFrequencyDaysIsZero() throws Exception {
     var payload = new CreateAppointmentDTO(
-        UUID.randomUUID(),
-        UUID.randomUUID(),
-        UUID.randomUUID(),
-        0,
-        LocalDate.now().plusDays(1),
-        LocalTime.now()
+            UUID.randomUUID(),
+            UUID.randomUUID(),
+            0,
+            LocalDate.now().plusDays(1),
+            LocalTime.now()
     );
 
     mockMvc.perform(post(URI)
@@ -530,12 +553,11 @@ class AppointmentControllerImplTest {
   @WithMockUser(username = "admin", roles = {"ADMIN"})
   void shouldReturnBadRequestWhenFrequencyDaysIsNegative() throws Exception {
     var payload = new CreateAppointmentDTO(
-        UUID.randomUUID(),
-        UUID.randomUUID(),
-        UUID.randomUUID(),
-        -5,
-        LocalDate.now().plusDays(1),
-        LocalTime.now()
+            UUID.randomUUID(),
+            UUID.randomUUID(),
+            -5,
+            LocalDate.now().plusDays(1),
+            LocalTime.now()
     );
 
     mockMvc.perform(post(URI)
@@ -549,12 +571,11 @@ class AppointmentControllerImplTest {
   @WithMockUser(username = "admin", roles = {"ADMIN"})
   void shouldReturnBadRequestWhenInitialDateIsNull() throws Exception {
     var payload = new CreateAppointmentDTO(
-        UUID.randomUUID(),
-        UUID.randomUUID(),
-        UUID.randomUUID(),
-        7,
-        null,
-        LocalTime.now()
+            UUID.randomUUID(),
+            UUID.randomUUID(),
+            7,
+            null,
+            LocalTime.now()
     );
 
     mockMvc.perform(post(URI)
@@ -568,12 +589,11 @@ class AppointmentControllerImplTest {
   @WithMockUser(username = "admin", roles = {"ADMIN"})
   void shouldReturnBadRequestWhenInitialDateIsInThePast() throws Exception {
     var payload = new CreateAppointmentDTO(
-        UUID.randomUUID(),
-        UUID.randomUUID(),
-        UUID.randomUUID(),
-        7,
-        LocalDate.now().minusDays(1),
-        LocalTime.now()
+            UUID.randomUUID(),
+            UUID.randomUUID(),
+            7,
+            LocalDate.now().minusDays(1),
+            LocalTime.now()
     );
 
     mockMvc.perform(post(URI)
@@ -587,12 +607,11 @@ class AppointmentControllerImplTest {
   @WithMockUser(username = "admin", roles = {"ADMIN"})
   void shouldReturnBadRequestWhenHourIsNull() throws Exception {
     var payload = new CreateAppointmentDTO(
-        UUID.randomUUID(),
-        UUID.randomUUID(),
-        UUID.randomUUID(),
-        7,
-        LocalDate.now().plusDays(1),
-        null
+            UUID.randomUUID(),
+            UUID.randomUUID(),
+            7,
+            LocalDate.now().minusDays(1),
+            null
     );
 
     mockMvc.perform(post(URI)
@@ -610,5 +629,37 @@ class AppointmentControllerImplTest {
             .with(csrf()))
         .andExpect(status().isBadRequest());
   }
+
+  @Test
+  @WithMockUser(username = "admin", roles = {"ADMIN"})
+  void shouldReturnNotFoundWhenListingAppointmentsByNonExistentPatient() throws Exception {
+    UUID patientId = UUID.randomUUID();
+    LocalDate start = LocalDate.of(2026, 1, 1);
+    LocalDate end = LocalDate.of(2026, 1, 31);
+
+    when(service.listByPatient(eq(patientId), eq(start), eq(end), any(Pageable.class)))
+            .thenThrow(new AppointmentNotFoundException());
+
+    mockMvc.perform(get(URI + "/patient/{patientId}", patientId)
+                    .param("start", start.toString())
+                    .param("end", end.toString())
+                    .param("page", "0")
+                    .param("size", "10")
+                    .with(csrf()))
+            .andExpect(status().isNotFound())
+            .andExpect(jsonPath("$.message").value("Agendamento não encontrado."));
+  }
+
+  @Test
+  @WithMockUser(username = "admin", roles = {"ADMIN"})
+  void shouldReturnNotFoundWhenGetTodayAppointmentByIdNonExistent() throws Exception {
+    UUID id = UUID.randomUUID();
+
+    when(service.findGeneratedAppointmentById(id))
+            .thenThrow(new AppointmentNotFoundException());
+
+    mockMvc.perform(get(URI + "/today/{id}", id)
+                    .with(csrf()))
+            .andExpect(status().isNotFound());
+  }
 }
-*/
