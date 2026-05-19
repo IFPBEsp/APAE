@@ -51,17 +51,17 @@ import { useFetchProfessionals } from "@/hooks/profissional/use-fetch-profission
 import { useInactivateProfissional } from "@/hooks/profissional/use-inactivate-profissional";
 import { useActivateProfissional } from "@/hooks/profissional/use-activate-profissional";
 
-type StatusFilter = "ativo" | "inativo";
+type StatusFilter = "activate" | "inactivate";
 
 export default function VisualizationProfessionalPage() {
   const router = useRouter();
 
   const [searchTerm, setSearchTerm] = useState("");
   const [areaFilter, setAreaFilter] = useState("all");
-  const [statusFilter, setStatusFilter] = useState<StatusFilter>("ativo");
+  const [statusFilter, setStatusFilter] = useState<StatusFilter>("activate");
 
   const { professionals, loading, error, setProfessionals } =
-    useFetchProfessionals(statusFilter === "ativo");
+    useFetchProfessionals(statusFilter === "activate");
 
   const { inactivate } = useInactivateProfissional();
   const { activate } = useActivateProfissional();
@@ -71,7 +71,7 @@ export default function VisualizationProfessionalPage() {
 
   const handleConfirm = async (id: string) => {
     try {
-      if (statusFilter === "ativo") {
+      if (statusFilter === "activate") {
         await inactivate(id);
       } else {
         await activate(id);
@@ -102,22 +102,22 @@ export default function VisualizationProfessionalPage() {
     ...Array.from(new Set(professionals.map((p) => p.serviceArea.area))),
   ];
 
-  const actionLabel = statusFilter === "ativo" ? "Inativar" : "Reativar";
+  const actionLabel = statusFilter === "activate" ? "Inativar" : "Reativar";
 
   const actionIcon =
-    statusFilter === "ativo" ? (
+    statusFilter === "activate" ? (
       <UserX className="mr-2 h-4 w-4" />
     ) : (
       <UserCheck className="mr-2 h-4 w-4" />
     );
 
   const actionItemClass =
-    statusFilter === "ativo"
+    statusFilter === "activate"
       ? "text-destructive focus:text-destructive"
       : "text-green-600 focus:text-green-600";
 
   const actionButtonClass =
-    statusFilter === "ativo"
+    statusFilter === "activate"
       ? ""
       : "bg-green-600 hover:bg-green-700 text-white";
 
@@ -152,8 +152,8 @@ export default function VisualizationProfessionalPage() {
               <SelectValue placeholder="Situação" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="ativo">Ativo</SelectItem>
-              <SelectItem value="inativo">Inativo</SelectItem>
+              <SelectItem value="activate">Ativo</SelectItem>
+              <SelectItem value="inactivate">Inativo</SelectItem>
             </SelectContent>
           </Select>
 
@@ -239,7 +239,7 @@ export default function VisualizationProfessionalPage() {
                                 Você tem certeza?
                               </AlertDialogTitle>
                               <AlertDialogDescription>
-                                {statusFilter === "ativo"
+                                {statusFilter === "activate"
                                   ? `Esta ação irá inativar o profissional ${prof.name}.`
                                   : `Esta ação irá reativar o profissional ${prof.name}.`}
                               </AlertDialogDescription>
