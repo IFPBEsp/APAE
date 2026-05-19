@@ -10,7 +10,7 @@ interface PaginatedResponse<T> {
 }
 
 export function useFetchProfessionals(ativo: boolean) {
-  const [profissionais, setProfissionais] = useState<Professional[]>([]);
+  const [professionals, setProfessionals] = useState<Professional[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -25,7 +25,7 @@ export function useFetchProfessionals(ativo: boolean) {
         const response = await getAllProfissionais(ativo);
 
         const data: PaginatedResponse<Professional> = response.data;
-        setProfissionais(data.content);
+        setProfessionals(data.content);
       } catch (err) {
         if (axios.isAxiosError(err)) {
           setError(err.response?.data?.message || err.message);
@@ -40,5 +40,5 @@ export function useFetchProfessionals(ativo: boolean) {
     fetchProfessionals();
   }, [ativo]);
 
-  return { profissionais, loading, error, setProfissionais };
+  return { professionals, loading, error, setProfessionals };
 }

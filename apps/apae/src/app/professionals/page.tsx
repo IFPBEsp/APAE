@@ -60,7 +60,7 @@ export default function VisualizationProfessionalPage() {
   const [areaFilter, setAreaFilter] = useState("all");
   const [statusFilter, setStatusFilter] = useState<StatusFilter>("ativo");
 
-  const { profissionais, loading, error, setProfissionais } =
+  const { professionals, loading, error, setProfessionals } =
     useFetchProfessionals(statusFilter === "ativo");
 
   const { inactivate } = useInactivateProfissional();
@@ -77,13 +77,13 @@ export default function VisualizationProfessionalPage() {
         await activate(id);
       }
 
-      setProfissionais((prev) => prev.filter((p) => p.id !== id));
+      setProfessionals((prev) => prev.filter((p) => p.id !== id));
     } catch (err) {
       console.error(err);
     }
   };
 
-  const filteredProfissionais = profissionais.filter((prof) => {
+  const filteredProfessionals = professionals.filter((prof) => {
     const name = prof.name?.toLowerCase() || "";
     const document = prof.professionalDocument?.toLowerCase() || "";
     const term = searchTerm.toLowerCase();
@@ -99,7 +99,7 @@ export default function VisualizationProfessionalPage() {
 
   const uniqueAreas = [
     "all",
-    ...Array.from(new Set(profissionais.map((p) => p.serviceArea.area))),
+    ...Array.from(new Set(professionals.map((p) => p.serviceArea.area))),
   ];
 
   const actionLabel = statusFilter === "ativo" ? "Inativar" : "Reativar";
@@ -189,8 +189,8 @@ export default function VisualizationProfessionalPage() {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {filteredProfissionais.length > 0 ? (
-                  filteredProfissionais.map((prof) => (
+                {filteredProfessionals.length > 0 ? (
+                  filteredProfessionals.map((prof) => (
                     <TableRow key={prof.id}>
                       <TableCell className="font-medium">
                         {prof.name}
