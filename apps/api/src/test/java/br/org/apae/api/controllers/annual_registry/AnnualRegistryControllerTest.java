@@ -5,6 +5,7 @@ import br.org.apae.api.auth.infrastructure.security.JwtProvider;
 import br.org.apae.api.auth.infrastructure.security.SecurityConfiguration;
 import br.org.apae.api.common.dto.patient.request.annual_registry.CreateAnnualRegistryDTO;
 import br.org.apae.api.common.dto.patient.request.annual_registry.ReplaceAnnualRegistryDTO;
+import br.org.apae.api.common.dto.patient.request.annual_registry.UpdateAnnualRegistryDTO;
 import br.org.apae.api.common.dto.patient.response.annual_registry.AnnualRegistryResponseDTO;
 import br.org.apae.api.common.exceptions.handler.GlobalExceptionHandler;
 import br.org.apae.api.helpers.AuthTestHelper;
@@ -217,7 +218,7 @@ public class AnnualRegistryControllerTest {
 
         mockMvc.perform(get(BASE_URL + "/{year}", patientId, year)
                         .header("Authorization", AuthTestHelper.bearerToken()))
-                .andExpect(status().isInternalServerError());
+                .andExpect(status().isNotFound());
     }
 
     @Test
@@ -233,13 +234,21 @@ public class AnnualRegistryControllerTest {
                         .header("Authorization", AuthTestHelper.bearerToken()))
                 .andExpect(status().isNotFound());
     }
-/*
+
     @Test
     @DisplayName("PATCH - Deve atualizar parcialmente registro com sucesso")
     void shouldUpdateRegistrySuccess() throws Exception {
         UUID patientId = UUID.randomUUID();
         UUID registryId = UUID.randomUUID();
-        UpdateAnnualRegistryDTO updateDto = new UpdateAnnualRegistryDTO(2025);
+
+        UpdateAnnualRegistryDTO updateDto = new UpdateAnnualRegistryDTO(
+                "987654",
+                "Doença Atualizada",
+                BigDecimal.valueOf(2500.00),
+                Year.of(2025),
+                Collections.emptySet()
+        );
+
         AnnualRegistryResponseDTO responseDto = createResponseDTO(patientId, 2025);
 
         when(annualRegistryService.updateRegistry(patientId, registryId, updateDto))
@@ -258,10 +267,17 @@ public class AnnualRegistryControllerTest {
     void shouldReturnConflictOnUpdateWithExistingYear() throws Exception {
         UUID patientId = UUID.randomUUID();
         UUID registryId = UUID.randomUUID();
-        UpdateAnnualRegistryDTO updateDto = new UpdateAnnualRegistryDTO(2025);
+
+        UpdateAnnualRegistryDTO updateDto = new UpdateAnnualRegistryDTO(
+                "987654",
+                "Doença Atualizada",
+                BigDecimal.valueOf(2500.00),
+                Year.of(2025),
+                Collections.emptySet()
+        );
 
         when(annualRegistryService.updateRegistry(patientId, registryId, updateDto))
-                .thenThrow(new AnnualRegistryConflictException(2025));
+                .thenThrow(new AnnualRegistryConflictException(Year.of(2025)));
 
         mockMvc.perform(patch(BASE_URL + "/{registryId}", patientId, registryId)
                         .header("Authorization", AuthTestHelper.bearerToken())
@@ -269,7 +285,31 @@ public class AnnualRegistryControllerTest {
                         .content(objectMapper.writeValueAsString(updateDto)))
                 .andExpect(status().isConflict());
     }
-*/
+
+    @Test
+    @DisplayName("PATCH - Deve retornar NotFound (404) ao tentar atualizar registro inexistente")
+    void shouldReturnNotFoundOnUpdateWhenRegistryDoesNotExist() throws Exception {
+        UUID patientId = UUID.randomUUID();
+        UUID registryId = UUID.randomUUID();
+
+        UpdateAnnualRegistryDTO updateDto = new UpdateAnnualRegistryDTO(
+                "987654",
+                "Doença Atualizada",
+                BigDecimal.valueOf(2500.00),
+                Year.of(2025),
+                Collections.emptySet()
+        );
+
+        when(annualRegistryService.updateRegistry(patientId, registryId, updateDto))
+                .thenThrow(new RegistryNotFoundException(registryId));
+
+        mockMvc.perform(patch(BASE_URL + "/{registryId}", patientId, registryId)
+                        .header("Authorization", AuthTestHelper.bearerToken())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(updateDto)))
+                .andExpect(status().isNotFound());
+    }
+
     @Test
     @DisplayName("PUT - Deve substituir registro totalmente com sucesso")
     void shouldReplaceRegistrySuccess() throws Exception {
@@ -302,7 +342,7 @@ public class AnnualRegistryControllerTest {
                         .header("Authorization", AuthTestHelper.bearerToken())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(replaceDto)))
-                .andExpect(status().isInternalServerError());
+                .andExpect(status().isNotFound());
     }
 
     @Test
@@ -331,7 +371,7 @@ public class AnnualRegistryControllerTest {
 
         mockMvc.perform(delete(BASE_URL + "/{registryId}", patientId, registryId)
                         .header("Authorization", AuthTestHelper.bearerToken()))
-                .andExpect(status().isInternalServerError());
+                .andExpect(status().isNotFound());
     }
 
     @Test
