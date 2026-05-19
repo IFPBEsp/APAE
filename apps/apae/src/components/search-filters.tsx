@@ -15,8 +15,8 @@ interface SearchFiltersProps {
   readonly searchName?: string;
   readonly setSearchName?: (name: string) => void;
 
-  readonly transtorno?: string;
-  readonly setTranstorno?: (status: string) => void;
+  readonly disorder?: string;
+  readonly setDisorder?: (status: string) => void;
   readonly ano?: string;
   readonly setAno?: (status: string) => void;
   readonly cidade?: string;
@@ -24,7 +24,7 @@ interface SearchFiltersProps {
   readonly tipoAtendimento?: string;
   readonly setTipoAtendimento?: (status: string) => void;
 
-  readonly transtornoOptions?: string[];
+  readonly disorderOptions?: string[];
   readonly anoOptions?: string[];
   readonly cidadeOptions?: string[];
   readonly tipoAtendimentoOptions?: string[];
@@ -33,15 +33,15 @@ interface SearchFiltersProps {
 export function SearchFilters({
   searchName,
   setSearchName,
-  transtorno,
-  setTranstorno,
+  disorder,
+  setDisorder,
   ano,
   setAno,
   cidade,
   setCidade,
   tipoAtendimento,
   setTipoAtendimento,
-  transtornoOptions = [],
+  disorderOptions = [],
   anoOptions = [],
   cidadeOptions = [],
   tipoAtendimentoOptions = [],
@@ -54,7 +54,7 @@ export function SearchFilters({
     "flex",
   );
 
-  const showTranstornoFilter = setTranstorno !== undefined;
+  const showDisorderFilter = setDisorder !== undefined;
   const showAnoFilter = setAno !== undefined;
   const showCidadeFilter = setCidade !== undefined;
   const showTipoAtendimentoFilter = setTipoAtendimento !== undefined;
@@ -71,7 +71,7 @@ export function SearchFilters({
         />
       </div>
 
-      {(showTranstornoFilter ||
+      {(showDisorderFilter ||
         showAnoFilter ||
         showCidadeFilter ||
         showTipoAtendimentoFilter) && (
@@ -108,12 +108,12 @@ export function SearchFilters({
             </DropdownMenu>
           )}
 
-          {showTranstornoFilter && (
+          {showDisorderFilter && (
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button className={cn(dropdownTriggerStyle, "w-full sm:w-[150px]")}>
                   <span className="flex-1 w-0 truncate text-left">
-                    {transtorno || "Transtorno"}
+                    {disorder || "Transtorno"}
                   </span>
                   <ChevronDown className="h-4 w-4" />
                 </Button>
@@ -122,14 +122,14 @@ export function SearchFilters({
                 align="end"
                 className="w-[--radix-dropdown-menu-trigger-width]"
               >
-                <DropdownMenuItem onClick={() => setTranstorno?.("")}>
+                <DropdownMenuItem onClick={() => setDisorder?.("")}>
                   Qualquer
                 </DropdownMenuItem>
-                {transtornoOptions.map((option) => (
+                {disorderOptions.map((option) => (
                   <DropdownMenuItem
                     key={option}
-                    onClick={() => setTranstorno?.(option)}
-                    className={cn({ "bg-slate-100": transtorno === option })}
+                    onClick={() => setDisorder?.(option)}
+                    className={cn({ "bg-slate-100": disorder === option })}
                   >
                     {option}
                   </DropdownMenuItem>

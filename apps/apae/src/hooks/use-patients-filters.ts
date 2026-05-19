@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import { toast } from "react-toastify";
 
 interface PatientFilterOptions {
-  transtornoOptions: string[];
+  disorderOptions: string[];
   anoOptions: string[];
   cidadeOptions: string[];
   tipoAtendimentoOptions: string[];
@@ -13,7 +13,7 @@ interface PatientFilterOptions {
 }
 
 export function usePatientFilters(): PatientFilterOptions {
-  const [transtornoOptions, setTranstornoOptions] = useState<string[]>([]);
+  const [disorderOptions, setDisorderOptions] = useState<string[]>([]);
   const [anoOptions, setAnoOptions] = useState<string[]>([]);
   const [cidadeOptions, setCidadeOptions] = useState<string[]>([]);
   const [tipoAtendimentoOptions, setTipoAtendimentoOptions] = useState<string[]>([]);
@@ -25,34 +25,34 @@ export function usePatientFilters(): PatientFilterOptions {
       try {
         setIsLoading(true);
         setError(null);
-        const transtornosPromise = fetch('/apae-geral/api/patients/filtros/transtornos');
+        const disordersPromise = fetch('/apae-geral/api/patients/filtros/transtornos');
         const anosPromise = fetch('/apae-geral/api/patients/filtros/anos');
         const cidadesPromise = fetch('/apae-geral/api/patients/filtros/cidades');
         const tipoAtendimentosPromise = fetch('/apae-geral/api/patients/filtros/tipos-atendimento');
 
         const [
-          transtornosResponse,
+          disordersResponse,
           anosResponse,
           cidadesResponse,
           tipoAtendimentosResponse
         ] = await Promise.all([
-          transtornosPromise,
+          disordersPromise,
           anosPromise,
           cidadesPromise,
           tipoAtendimentosPromise
         ]);
 
-        if (!transtornosResponse.ok) throw new Error('Falha ao buscar transtornos');
+        if (!disordersResponse.ok) throw new Error('Falha ao buscar transtornos');
         if (!anosResponse.ok) throw new Error('Falha ao buscar anos');
         if (!cidadesResponse.ok) throw new Error('Falha ao buscar cidades');
         if (!tipoAtendimentosResponse.ok) throw new Error('Falha ao buscar tipos de atendimentos');
 
-        const transtornosData = await transtornosResponse.json();
+        const disordersData = await disordersResponse.json();
         const anosData = await anosResponse.json();
         const cidadesData = await cidadesResponse.json();
         const tipoAtendimentosData = await tipoAtendimentosResponse.json();
         
-        setTranstornoOptions(transtornosData);
+        setDisorderOptions(disordersData);
         setAnoOptions(anosData);
         setCidadeOptions(cidadesData);
         setTipoAtendimentoOptions(tipoAtendimentosData);
@@ -70,5 +70,5 @@ export function usePatientFilters(): PatientFilterOptions {
     fetchFilterOptions();
   }, []);
 
-  return { transtornoOptions, anoOptions, cidadeOptions, tipoAtendimentoOptions, isLoading, error };
+  return { disorderOptions, anoOptions, cidadeOptions, tipoAtendimentoOptions, isLoading, error };
 }

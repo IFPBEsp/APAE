@@ -38,7 +38,7 @@ function PatientsAndStudentsScreenContent() {
   const debouncedSearchName = useDebounce(query.name, 500);
 
   const {
-    transtornoOptions,
+    disorderOptions,
     anoOptions,
     cidadeOptions,
     tipoAtendimentoOptions,
@@ -183,8 +183,8 @@ function PatientsAndStudentsScreenContent() {
                 page: 0,
               });
             }}
-            transtorno={query.disorder}
-            setTranstorno={(value) => {
+            disorder={query.disorder}
+            setDisorder={(value) => {
               updateQuery({
                 disorder: value || "",
                 page: 0,
@@ -211,7 +211,7 @@ function PatientsAndStudentsScreenContent() {
                 page: 0,
               });
             }}
-            transtornoOptions={transtornoOptions}
+            disorderOptions={disorderOptions}
             anoOptions={anoOptions}
             cidadeOptions={cidadeOptions}
             tipoAtendimentoOptions={tipoAtendimentoOptions}
