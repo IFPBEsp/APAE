@@ -1,0 +1,342 @@
+"use client";
+
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
+import {
+  MembersRegisterStep,
+  useMembersRegisterContext,
+} from "@/hooks/use-members-register-context";
+import {
+  formatBirthCertificate,
+  formatCNS,
+  formatCPF,
+  formatIssuingBody,
+  formatPhone,
+  formatRG,
+} from "@/lib/formats";
+import { Personal, PersonalData } from "@/schemas/member-schemas";
+import { EditPersonal } from "@/schemas/edit-member-schemas";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm } from "react-hook-form";
+import { useState, useEffect } from "react";
+import { usePathname } from "next/navigation";
+import { handleBackendValidationErrors } from "@/lib/utils/form-errors";
+
+import { DoubleColumn, FormButton, MembersRegisterForm } from "../form";
+import z from "zod";
+
+export default function MembersRegisterPersonalPage() {
+  const {
+    state: { personal },
+    setters: { setPersonalData, setStep },
+  } = useMembersRegisterContext();
+
+  const [isLoading, setIsLoading] = useState(false);
+  
+  const pathname = usePathname();
+  const isEditing = pathname.includes("/edit");
+  const currentSchema = isEditing ? EditPersonal : Personal;
+
+  const form = useForm<z.infer<typeof Personal>>({
+    mode: "onBlur",
+    resolver: zodResolver(Personal),
+    defaultValues: personal,
+  });
+
+  const [isInitialized, setIsInitialized] = useState(false);
+
+  useEffect(() => {
+    if (personal.name && !isInitialized) {
+      form.reset(personal);
+      setIsInitialized(true); 
+    }
+  }, [personal, form, isInitialized]);
+
+  useEffect(() => {
+    if (personal.name !== "") {
+      form.reset(personal);
+    }
+  }, [personal, form]);
+
+  const onSubmit = async (values: z.infer<typeof Personal>) => {
+    setIsLoading(true);
+    try {
+      setPersonalData(values as PersonalData);
+      setStep(MembersRegisterStep.KINSHIPS);
+    } catch (error: unknown) {
+      const err = error as { response?: { data?: Record<string, string[]> } };
+      if (err.response?.data) {
+        handleBackendValidationErrors(err.response.data, form.setError);
+      }
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const formatDateInputValue = (date?: Date | string | null) => {
+    if (!date) return "";
+
+    const d = new Date(date);
+    if (isNaN(d.getTime())) return "";
+
+    const year = d.getFullYear();
+    const month = String(d.getMonth() + 1).padStart(2, "0");
+    const day = String(d.getDate()).padStart(2, "0");
+
+    return `${year}-${month}-${day}`;
+  };
+
+  const parseDateInputValue = (value: string) => {
+    if (!value) return null;
+
+    const [year, month, day] = value.split("-").map(Number);
+    return new Date(year, month - 1, day);
+  };
+
+  return (
+    <Form {...form}>
+      <MembersRegisterForm
+        title={isEditing ? "Editar Dados Pessoais" : "Dados Pessoais"}
+        onSubmit={form.handleSubmit(onSubmit)}
+        buttons={
+          <FormButton type="submit" disabled={isLoading}>
+            {isLoading ? "Validando..." : "Próximo"}
+          </FormButton>
+        }
+      >
+        <DoubleColumn>
+          <FormField
+            control={form.control}
+            name="name"
+            render={({ field }) => (
+              <FormItem className="md:col-span-2">
+                <FormLabel>Nome Completo *</FormLabel>
+                <FormControl>
+                  <Input placeholder="Digite o nome completo" {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          <FormField
+            control={form.control}
+            name="cpf"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>CPF *</FormLabel>
+                <FormControl>
+                  <Input
+                    placeholder="000.000.000-00"
+                    maxLength={14}
+                    value={field.value}
+                    onChange={(e) => {
+                      const formatted = formatCPF(e.target.value);
+                      field.onChange(formatted);
+                    }}
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          <FormField
+            control={form.control}
+            name="cns"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>CNS *</FormLabel>
+                <FormControl>
+                  <Input
+                    placeholder="Apenas números"
+                    maxLength={18}
+                    value={field.value}
+                    onChange={(e) => {
+                      const formatted = formatCNS(e.target.value);
+                      field.onChange(formatted);
+                    }}
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          <FormField
+            control={form.control}
+            name="nis"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>NIS *</FormLabel>
+                <FormControl>
+                  <Input
+                    placeholder="Apenas 11 números"
+                    {...field}
+                    maxLength={11}
+                    onChange={(e) => {
+                      const value = e.target.value.replace(/\D/g, "");
+                      field.onChange(value);
+                    }}
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          <FormField
+            control={form.control}
+            name="rg.number"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>RG *</FormLabel>
+                <FormControl>
+                  <Input
+                    placeholder="1.234.567"
+                    maxLength={9}
+                    value={field.value}
+                    onChange={(e) => {
+                      const formatted = formatRG(e.target.value);
+                      field.onChange(formatted);
+                    }}
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          <FormField
+            control={form.control}
+            name="rg.issuing.body"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Órgão Emissor *</FormLabel>
+                <FormControl>
+                  <Input
+                    placeholder="SSP/SP"
+                    maxLength={7}
+                    value={field.value}
+                    onChange={(e) => {
+                      const formatted = formatIssuingBody(e.target.value);
+                      field.onChange(formatted);
+                    }}
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          <FormField
+            control={form.control}
+            name="rg.issuing.date"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Data de Emissão *</FormLabel>
+                <FormControl>
+                  <Input
+                    type="date"
+                    {...field}
+                    value={formatDateInputValue(field.value)}
+                    onChange={(e) =>
+                      field.onChange(parseDateInputValue(e.target.value))
+                    }
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          <FormField
+            control={form.control}
+            name="birth.certificate"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Certidão de Nascimento *</FormLabel>
+                <FormControl>
+                  <Input
+                    placeholder="Apenas números"
+                    value={field.value}
+                    onChange={(e) => {
+                      const formatted = formatBirthCertificate(e.target.value);
+                      field.onChange(formatted);
+                    }}
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          <FormField
+            control={form.control}
+            name="birth.date"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Data de Nascimento *</FormLabel>
+                <FormControl>
+                  <Input
+                    type="date"
+                    {...field}
+                    value={formatDateInputValue(field.value)}
+                    onChange={(e) =>
+                      field.onChange(parseDateInputValue(e.target.value))
+                    }
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          <FormField
+            control={form.control}
+            name="birth.place"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Naturalidade *</FormLabel>
+                <FormControl>
+                  <Input placeholder="Brasil" {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          <FormField
+            control={form.control}
+            name="phone"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Telefone *</FormLabel>
+                <FormControl>
+                  <Input
+                    placeholder="(00) 00000-0000"
+                    type="tel"
+                    maxLength={15}
+                    value={field.value}
+                    onChange={(e) => {
+                      const formatted = formatPhone(e.target.value);
+                      field.onChange(formatted);
+                    }}
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+        </DoubleColumn>
+      </MembersRegisterForm>
+    </Form>
+  );
+}

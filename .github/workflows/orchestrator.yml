@@ -1,0 +1,92 @@
+name: CI Orchestrator
+
+on:
+  push:
+    branches:
+      - "*"
+  pull_request:
+    branches:
+      - "*"
+
+jobs:
+  # DOC detect_changes:
+  # detect_changes é reponsável por identificar em qual módulo houveram alterações no commit,
+  # para que apenas os tests e o build desse módulo específico sejam rodados.
+  #
+  # Para adicionar um novo módulo (ex: "demo2"), siga os passos:
+  #
+  # 1. Crie uma nova variável na seção de outputs do job:
+  #      demo3_changed: ${{ steps.set_output.outputs.demo2_changed }}
+  #
+  # 2. Crie uma nova flag de controle dentro do script detect_changes:
+  #      DEMO2_CHANGED=false
+  #
+  # 3. Adicione uma verificação de alteração usando grep:
+  #      if grep -q '^api/demo2/' changed_files.txt; then
+  #        DEMO2_CHANGED=true
+  #      fi
+  #
+  # 4. Exporte a flag como variável de ambiente:
+  #      echo "demo2_changed=$DEMO2_CHANGED" >> $GITHUB_ENV
+  #
+  # 5. Adicione a nova saída no passo 'Set outputs':
+  # echo "::set-output name=demo2_changed::${{ env.demo2_changed }}"
+  #
+  # 6. Adicione a condição de run ao job de test e build do novo modulo
+  # if: needs.detect_changes.outputs.demo2_changed == 'true'
+  detect_changes:
+    name: Detect Changes
+    runs-on: ubuntu-latest
+    outputs:
+      demo_changed: ${{ steps.set_output.outputs.demo_changed }}
+      documentos_digitalizados_changed: ${{ steps.set_output.outputs.documentos_digitalizados_changed }}
+    steps:
+      - name: Checkout full history
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Get base branch
+        run: echo "BASE_BRANCH=${{ github.event.pull_request.base.ref || 'dev' }}" >> "$GITHUB_ENV"
+
+      - name: Fetch base branch
+        run: git fetch origin ${{ env.BASE_BRANCH }}
+
+      - name: Compare current code with base branch
+        id: detect_changes
+        run: |
+          BASE=$(git merge-base HEAD origin/${{ env.BASE_BRANCH }})
+          echo "Comparing with base commit: \"$BASE\""
+          git diff --name-only "$BASE" HEAD > changed_files.txt
+
+          DEMO_CHANGED=false
+          DOCUMENTOS_DIGITALIZADOS_CHANGED=false
+
+          if grep -q '^api/demo/' changed_files.txt; then
+            DEMO_CHANGED=true
+          fi
+
+          if grep -q '^api/documentos-digitalizados/' changed_files.txt; then
+            DOCUMENTOS_DIGITALIZADOS_CHANGED=true
+          fi
+
+          echo "demo_changed=\"$DEMO_CHANGED\"" >> "$GITHUB_ENV"
+          echo "documentos_digitalizados_changed=\"$DOCUMENTOS_DIGITALIZADOS_CHANGED\"" >> "$GITHUB_ENV"
+
+      - name: Set output
+        id: set_output
+        run: |
+          echo "demo_changed=${{ env.demo_changed }}" >> "$GITHUB_OUTPUT"
+          echo "documentos_digitalizados_changed=${{ env.documentos_digitalizados_changed }}" >> "$GITHUB_OUTPUT"
+
+  call-demo:
+    name: Call Demo Workflow
+    needs: detect_changes
+    if: needs.detect_changes.outputs.demo_changed == 'true'
+    uses: ./.github/workflows/demo.yml
+
+  call-documentos-digitalizados:
+    name: Call Documentos Digitalizados Workflow
+    needs: detect_changes
+    if: needs.detect_changes.outputs.documentos_digitalizados_changed == 'true'
+    uses: ./.github/workflows/documentos-digitalizados.yml

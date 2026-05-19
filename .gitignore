@@ -1,0 +1,16 @@
+node_modules
+.vscode
+.idea
+docker/db_data
+
+.env
+.env.*
+!.env.example
+
+# Arquivos de build e cache do Gradle/Java
+**/build/
+**/.gradle/
+
+# Arquivos de build e cache do Next.js
+**/.next/
+.claude/

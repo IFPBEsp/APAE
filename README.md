@@ -10,19 +10,70 @@ Projeto em desenvolvimento, fruto de uma parceria entre o IFPB (Campus Esperanç
 
 ## Índice
 
-1. [Introdução](#introdução)
-2. [Fluxo de Trabalho](#fluxo-de-trabalho)
-   - [Convenção de Commits](#convenção-de-commits)
-   - [Criação de Branches](#criação-de-branches)
-   - [Labels](#labels)
-   - [Raia do Kanban](#raia-do-kanban)
-3. [Configuração do Projeto](#configuração-do-projeto)
+- [APAE](#apae)
+  - [Índice](#índice)
+  - [Introdução](#introdução)
+  - [Apresentação do Projeto](#apresentação-do-projeto)
+    - [Como Executar](#como-executar)
+      - [Outros Comandos:](#outros-comandos)
+      - [Credenciais do usuário para testes:](#credenciais-do-usuário-para-testes)
+  - [Fluxo de Trabalho](#fluxo-de-trabalho)
+    - [Convenção de Commits](#convenção-de-commits)
+      - [Dicionário de Tipos](#dicionário-de-tipos)
+      - [Dicionário de Escopo](#dicionário-de-escopo)
+    - [Criação de Branches](#criação-de-branches)
+    - [Labels](#labels)
+      - [Tipos de Projeto](#tipos-de-projeto)
+      - [Equipes](#equipes)
+      - [GitFlow](#gitflow)
+      - [Outras Labels Úteis](#outras-labels-úteis)
+    - [Raia do Kanban](#raia-do-kanban)
+  - [Configuração do Projeto](#configuração-do-projeto)
+    - [Variáveis de Ambiente (Opcional)](#variáveis-de-ambiente-opcional)
+    - [Como configurar](#como-configurar)
+    - [Envio de e-mails](#envio-de-e-mails)
+    - [Segurança](#segurança)
+    - [Observações](#observações)
 
 ---
 
 ## Introdução
 
 Este projeto tem como objetivo o desenvolvimento de dois sistemas para a APAE, o primeiro focado no gerenciamento de pacientes e o outros na exibição de informações. O projeto está sendo desenvolvido em colaboração com o IFPB (Campus Esperança).
+
+---
+
+## Apresentação do Projeto
+
+### Como Executar
+
+O projeto foi automatizado para rodar com o mínimo de comandos utilizando **pnpm Workspaces**:
+
+1. **Terminal na pasta raiz:** `cd APAE`
+
+   1.1. Caso esteja no Windows, acessar terminal via **GitBash**
+
+2. **Setup Inicial**: `pnpm install`
+3. **Rodar Tudo (Docker + Back + Front)**: `pnpm dev`
+
+> ℹ️ Algumas funcionalidades, como envio de e-mails, utilizam configuração opcional de variáveis de ambiente. Veja a seção [**Configuração do Projeto**](#configuração-do-projeto).
+
+#### Outros Comandos:
+
+- `pnpm dev:backend`: Executa apenas o backend (api).
+- `pnpm dev:apae`: Executa apenas o frontend (apae).
+- `pnpm docker:up`: Sobe apenas o banco de dados e MinIO.
+- `pnpm docker:down`: Para os containers e os remove da memória.
+- `pnpm docker:drop`: Para os containers, os remove e apaga os volumes associados.
+- `pnpm db:seed`: Cria um usuário admin e views em mock no banco de dados para fins de testes.
+
+#### Credenciais do usuário para testes:
+
+- Email: `admin@teste.com`
+- CPF: `123.456.789-00`
+- Senha: `123456`
+
+> ℹ️ É necessário criar o usuário teste a partir do comando `pnpm db:seed`.
 
 ---
 
@@ -61,6 +112,7 @@ Exemplo:
 #### Dicionário de Escopo
 
 **Backend:**
+
 - **auth**: Relacionado à autenticação.
 - **database**: Mudanças no banco de dados.
 - **api**: Mudanças na API.
@@ -70,6 +122,7 @@ Exemplo:
 - **cache**: Implementação ou alterações no cache.
 
 **Frontend:**
+
 - **ui**: Alterações na interface do usuário.
 - **componentes**: Modificações em componentes reutilizáveis.
 - **layout**: Alterações no layout geral.
@@ -79,6 +132,7 @@ Exemplo:
 - **form**: Alterações em formulários.
 
 **Mobile:**
+
 - **android**: Alterações específicas para Android.
 - **ios**: Alterações específicas para iOS.
 - **navigation**: Ajustes na navegação do app.
@@ -86,12 +140,14 @@ Exemplo:
 - **permissions**: Mudanças no gerenciamento de permissões.
 
 **DevOps:**
+
 - **ci**: Alterações em CI/CD.
 - **docker**: Ajustes em Docker e Docker Compose.
 - **k8s**: Configuração de Kubernetes.
 - **terraform**: Infraestrutura como código com Terraform.
 
 **Testes:**
+
 - **integration**: Testes de integração.
 - **e2e**: Testes de ponta a ponta (End-to-End).
 
@@ -160,7 +216,69 @@ O Kanban é usado para organizar as **issues** no processo de desenvolvimento. A
 
 ## Configuração do Projeto
 
-Obs. Ainda em desenvolvimento...
-(Incluir as instruções de como configurar o ambiente de desenvolvimento, instalar dependências, rodar o projeto, etc.)
+### Configuração de Ambiente
+
+Este projeto automatiza a configuração inicial das variáveis de ambiente.
+Ao rodar `pnpm dev`, o script verifica a existência do arquivo `.env`.
+Caso ele não exista, uma cópia será criada automaticamente a partir do `.env.example`.
+
+**Nota:** O script nunca sobrescreverá um arquivo `.env` já existente.
+Caso precise resetar as configurações, delete o `.env` manualmente, faça as modificações necessárias no .env.example e execute o comando novamente.
+
+### Variáveis de Ambiente (Opcional)
+
+O projeto utiliza variáveis de ambiente para configurar serviços externos, como envio de e-mails (SMTP), banco de dados e integrações.
+
+**Importante:** A configuração dessas variáveis é opcional durante o desenvolvimento.  
+O sistema funciona normalmente sem elas, porém funcionalidades como envio de e-mails não serão executadas.
 
 ---
+
+### Como configurar
+
+1. Copie o arquivo de exemplo:
+
+```bash
+cp .env.example .env
+```
+
+2. Preencha:
+
+```env
+MAIL_HOST=smtp.gmail.com
+MAIL_PORT=587
+MAIL_USERNAME=seu-email@gmail.com
+MAIL_PASSWORD=sua_senha_de_app
+APP_FRONTEND_RESET_PASSWORD_URL=http://localhost:3000/apae-geral/auth/reset-password
+```
+
+3. Agora pode seguir com a execução normal do projeto, indo para seção [**Como Executar**](#como-executar)
+
+---
+
+### Envio de e-mails
+
+- Sem configuração: sistema funciona normalmente, mas não envia e-mails
+- Com configuração: envio de e-mails ativo
+
+---
+
+### Segurança
+
+Adicionar no `.gitignore`:
+
+```gitignore
+.env
+```
+
+---
+
+### Observações
+
+- Cada dev pode ter seu próprio `.env`
+- SMTP é opcional
+- Apenas necessário para testar envio de e-mails
+
+---
+
+![CodeRabbit Pull Request Reviews](https://img.shields.io/coderabbit/prs/github/IFPBEsp/APAE?utm_source=oss&utm_medium=github&utm_campaign=IFPBEsp%2FAPAE&labelColor=171717&color=FF570A&link=https%3A%2F%2Fcoderabbit.ai&label=CodeRabbit+Reviews)
