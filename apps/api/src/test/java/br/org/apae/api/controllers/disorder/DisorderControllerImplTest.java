@@ -21,13 +21,9 @@ import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Import;
 import org.springframework.data.web.config.EnableSpringDataWebSupport;
 import org.springframework.data.web.config.SpringDataWebConfiguration;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import java.util.Arrays;
 import java.util.List;
@@ -45,12 +41,12 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+
 @WebMvcTest(controllers = DisorderControllerImpl.class)
 @AutoConfigureMockMvc(addFilters = true)
 @Import({
         SpringDataWebConfiguration.class,
-        SecurityConfiguration.class,
-        DisorderTestExceptionHandler.class
+        SecurityConfiguration.class
 })
 @Tag("patient")
 @Tag("unit")
@@ -60,6 +56,7 @@ class DisorderControllerImplTest {
     @TestConfiguration
     @EnableSpringDataWebSupport(pageSerializationMode = VIA_DTO)
     static class ContextConfiguration {
+
     }
 
     @Autowired
@@ -234,19 +231,5 @@ class DisorderControllerImplTest {
 
         mockMvc.perform(delete(BASE_URL + "/{id}", id).header("Authorization", AuthTestHelper.bearerToken()))
                 .andExpect(status().isNotFound());
-    }
-}
-
-@RestControllerAdvice
-class DisorderTestExceptionHandler {
-
-    @ExceptionHandler(DisorderNotFoundException.class)
-    public ResponseEntity<Void> handleNotFound() {
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
-    }
-
-    @ExceptionHandler(DisorderConflictException.class)
-    public ResponseEntity<Void> handleConflict() {
-        return ResponseEntity.status(HttpStatus.CONFLICT).build();
     }
 }
