@@ -18,7 +18,7 @@ export type FormValues = {
   areaSaude: string;
   cpf: string;
   rg: string;
-  estado: string;
+  state: string;
   cidade: string;
   endereco: string;
   complemento?: string;
@@ -27,7 +27,7 @@ export type FormValues = {
 };
 
 type Props = {
-  estados: State[];
+  states: State[];
   cidades: City[];
   loading?: boolean;
   error?: string | null;
@@ -38,7 +38,7 @@ type Props = {
 };
 
 export default function FormHealthProfessional({
-  estados,
+  states,
   cidades,
   loading,
   error,
@@ -54,7 +54,7 @@ export default function FormHealthProfessional({
   const [dialogOpen, setDialogOpen] = useState(false);
   const [areaSearch, setAreaSearch] = useState("");
   const [areaSelectOpen, setAreaSelectOpen] = useState(false);
-  const [estadoSelectOpen, setEstadoSelectOpen] = useState(false);
+  const [stateSelectOpen, setStateSelectOpen] = useState(false);
   const [cidadeSelectOpen, setCidadeSelectOpen] = useState(false);
 
   const filteredAreas = areasSaude.filter((area) => area.toLowerCase().includes(areaSearch.toLowerCase()));
@@ -159,15 +159,15 @@ export default function FormHealthProfessional({
         </div>
 
         <div className="grid grid-cols-2 gap-4">
-          <FormField control={form.control} name="estado" render={({ field }) => (
+          <FormField control={form.control} name="state" render={({ field }) => (
             <FormItem>
               <FormLabel>Estado</FormLabel>
               <FormControl>
-                <Select onValueChange={field.onChange} value={field.value} open={estadoSelectOpen} onOpenChange={setEstadoSelectOpen}>
+                <Select onValueChange={field.onChange} value={field.value} open={stateSelectOpen} onOpenChange={setStateSelectOpen}>
                   <SelectTrigger><SelectValue placeholder="Selecione um estado" /></SelectTrigger>
                   <SelectContent>
-                    {estados.map((estado) => (
-                      <SelectItem key={estado.id} value={estado.sigla}>{estado.nome}</SelectItem>
+                    {states.map((state) => (
+                      <SelectItem key={state.id} value={state.sigla}>{state.nome}</SelectItem>
                     ))}
                   </SelectContent>
                 </Select>
