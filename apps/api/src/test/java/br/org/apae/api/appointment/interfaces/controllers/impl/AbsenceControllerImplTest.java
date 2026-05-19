@@ -5,6 +5,8 @@ import br.org.apae.api.auth.application.internal.UserService;
 import br.org.apae.api.auth.infrastructure.security.JwtProvider;
 import br.org.apae.api.common.dto.appointment.request.absence.CreateAbsenceDTO;
 import br.org.apae.api.common.dto.appointment.response.absence.AbsenceResponseDTO;
+import br.org.apae.api.common.dto.appointment.response.absence.JustifyAbsenceDTO;
+import br.org.apae.api.controllers.absence.AbsenceControllerImpl;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,14 +23,13 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.UUID;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.isNull;
 import static org.mockito.Mockito.when;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+
 
 @WebMvcTest(controllers = AbsenceControllerImpl.class)
 @AutoConfigureMockMvc(addFilters = false)
@@ -58,38 +59,98 @@ class AbsenceControllerImplTest {
                 LocalDate date = LocalDate.now();
 
                 CreateAbsenceDTO request = new CreateAbsenceDTO(
-                                generatedId,
-                                date,
-                                "Paciente Faltou");
+                        generatedId,
+                        date,
+                        false,
+                        null,
+                        null);
 
                 AbsenceResponseDTO response = new AbsenceResponseDTO(
-                                id,
-                                generatedId,
-                                patientId,
-                                professionalId,
-                                date,
-                                "Paciente Faltou",
-                                false);
+                        id,
+                        generatedId,
+                        patientId,
+                        professionalId,
+                        date,
+                        null,
+                        false,
+                        false,
+                        null);
 
-                when(service.register(any(CreateAbsenceDTO.class)))
-                                .thenReturn(response);
-                
+                when(service.register(any(CreateAbsenceDTO.class))).thenReturn(response);
+
                 var result = mockMvc.perform(post("/absences")
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(objectMapper.writeValueAsString(request)))
                         .andReturn();
-                
+
                 assertEquals(201, result.getResponse().getStatus());
                 assertNotNull(result.getResponse().getHeader("Location"));
+                assertTrue(result.getResponse().getHeader("Location").contains(id.toString()));
 
-                AbsenceResponseDTO body =
-                        objectMapper.readValue(result.getResponse().getContentAsString(),
-                                AbsenceResponseDTO.class);
+                AbsenceResponseDTO body = objectMapper.readValue(
+                        result.getResponse().getContentAsString(), AbsenceResponseDTO.class);
 
                 assertEquals(id, body.id());
-                assertEquals("Paciente Faltou", body.justification());
+                assertEquals(generatedId, body.generatedAppointmentId());
                 assertFalse(body.notified());
+                assertFalse(body.isJustified());
         }
+
+        @Test
+        void shouldReturnBadRequestWhenRegisterWithNullGeneratedAppointmentId() throws Exception {
+                CreateAbsenceDTO invalidRequest = new CreateAbsenceDTO(
+                        null,
+                        LocalDate.now(),
+                        false,
+                        null,
+                        null);
+
+                var result = mockMvc.perform(post("/absences")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(objectMapper.writeValueAsString(invalidRequest)))
+                        .andReturn();
+
+                assertEquals(400, result.getResponse().getStatus());
+        }
+
+        @Test
+        void shouldReturnBadRequestWhenRegisterWithNullAbsenceDate() throws Exception {
+                CreateAbsenceDTO invalidRequest = new CreateAbsenceDTO(
+                        UUID.randomUUID(),
+                        null,
+                        false,
+                        null,
+                        null);
+
+                var result = mockMvc.perform(post("/absences")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(objectMapper.writeValueAsString(invalidRequest)))
+                        .andReturn();
+
+                assertEquals(400, result.getResponse().getStatus());
+        }
+
+        @Test
+        void shouldReturnBadRequestWhenServiceThrowsExceptionOnRegister() throws Exception {
+                CreateAbsenceDTO request = new CreateAbsenceDTO(
+                        UUID.randomUUID(),
+                        LocalDate.now(),
+                        false,
+                        null,
+                        null);
+
+                when(service.register(any(CreateAbsenceDTO.class)))
+                        .thenThrow(new IllegalArgumentException("Falta já registrada"));
+
+                var result = mockMvc.perform(post("/absences")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(objectMapper.writeValueAsString(request)))
+                        .andReturn();
+
+                assertEquals(400, result.getResponse().getStatus());
+        }
+
+        // ==================== findAll ====================
 
         @Test
         void searchForAbsencesUsingFiltersAndPagination() throws Exception {
@@ -99,21 +160,22 @@ class AbsenceControllerImplTest {
                 LocalDate date = LocalDate.now();
 
                 AbsenceResponseDTO response = new AbsenceResponseDTO(
-                                UUID.randomUUID(),
-                                generatedId,
-                                patientId,
-                                professionalId,
-                                date,
-                                "Falta justificada",
-                                true);
+                        UUID.randomUUID(),
+                        generatedId,
+                        patientId,
+                        professionalId,
+                        date,
+                        "Falta justificada",
+                        true,
+                        true,
+                        null);
 
                 Page<AbsenceResponseDTO> page = new PageImpl<>(
-                                List.of(response),
-                                PageRequest.of(0, 10),
-                                1);
+                        List.of(response),
+                        PageRequest.of(0, 10),
+                        1);
 
-                when(service.findAllByFilters(any(), any(), any(), any()))
-                                .thenReturn(page);
+                when(service.findAllByFilters(any(), any(), any(), any())).thenReturn(page);
 
                 var result = mockMvc.perform(get("/absences")
                                 .param("generatedId", generatedId.toString())
@@ -122,77 +184,149 @@ class AbsenceControllerImplTest {
                                 .param("page", "0")
                                 .param("size", "10"))
                         .andReturn();
-                
+
                 assertEquals(200, result.getResponse().getStatus());
 
                 String json = result.getResponse().getContentAsString();
-
                 assertTrue(json.contains("\"content\""));
                 assertTrue(json.contains("Falta justificada"));
                 assertTrue(json.contains("\"notified\":true"));
+                assertTrue(json.contains("\"isJustified\":true"));
         }
 
         @Test
-        void shouldReturnBadRequestWhenRegisterAbsenceWithInvalidBody() throws Exception {
-                CreateAbsenceDTO invalidRequest = new CreateAbsenceDTO(
-                                null,
-                                null,
-                                "");
+        void shouldSearchAbsencesWithoutFilters() throws Exception {
+                AbsenceResponseDTO response = new AbsenceResponseDTO(
+                        UUID.randomUUID(),
+                        UUID.randomUUID(),
+                        UUID.randomUUID(),
+                        UUID.randomUUID(),
+                        LocalDate.now(),
+                        null,
+                        false,
+                        false,
+                        null);
 
-                var result = mockMvc.perform(post("/absences")
-                                .contentType(MediaType.APPLICATION_JSON)
-                                .content(objectMapper.writeValueAsString(invalidRequest)))
-                                .andReturn();
-                assertEquals(400, result.getResponse().getStatus());
+                Page<AbsenceResponseDTO> page = new PageImpl<>(List.of(response));
+
+                when(service.findAllByFilters(isNull(), isNull(), isNull(), any()))
+                        .thenReturn(page);
+
+                var result = mockMvc.perform(get("/absences")
+                                .param("page", "0")
+                                .param("size", "10"))
+                        .andReturn();
+
+                assertEquals(200, result.getResponse().getStatus());
+
+                String json = result.getResponse().getContentAsString();
+                assertTrue(json.contains("\"content\""));
+                assertTrue(json.contains("\"notified\":false"));
         }
 
         @Test
-        void shouldReturnBadRequestWhenServiceThrowsExceptionOnRegister() throws Exception {
-                CreateAbsenceDTO request = new CreateAbsenceDTO(
-                                UUID.randomUUID(),
-                                LocalDate.now(),
-                                "Teste erro");
+        void shouldReturnEmptyPageWhenNoAbsencesFound() throws Exception {
+                when(service.findAllByFilters(isNull(), isNull(), isNull(), any()))
+                        .thenReturn(Page.empty());
 
-                when(service.register(any(CreateAbsenceDTO.class)))
-                                .thenThrow(new IllegalArgumentException("Falta já registrada"));
+                var result = mockMvc.perform(get("/absences")
+                                .param("page", "0")
+                                .param("size", "10"))
+                        .andReturn();
 
-                var result = mockMvc.perform(post("/absences")
+                assertEquals(200, result.getResponse().getStatus());
+
+                String json = result.getResponse().getContentAsString();
+                assertTrue(json.contains("\"content\":[]"));
+        }
+
+        // ==================== justifyAbsence ====================
+
+        @Test
+        void justifyAbsenceSuccessfully() throws Exception {
+                UUID absenceId = UUID.randomUUID();
+                UUID generatedId = UUID.randomUUID();
+                UUID patientId = UUID.randomUUID();
+                UUID professionalId = UUID.randomUUID();
+                LocalDate date = LocalDate.now();
+                String documentId = "doc-123";
+
+                JustifyAbsenceDTO request = new JustifyAbsenceDTO(
+                        "Motivo de saúde urgente",
+                        documentId);
+
+                AbsenceResponseDTO response = new AbsenceResponseDTO(
+                        absenceId,
+                        generatedId,
+                        patientId,
+                        professionalId,
+                        date,
+                        "Motivo de saúde urgente",
+                        false,
+                        true,
+                        documentId);
+
+                when(service.justify(eq(absenceId), any(JustifyAbsenceDTO.class)))
+                        .thenReturn(response);
+
+                var result = mockMvc.perform(patch("/absences/{id}/justify", absenceId)
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(objectMapper.writeValueAsString(request)))
+                        .andReturn();
+
+                assertEquals(200, result.getResponse().getStatus());
+
+                AbsenceResponseDTO body = objectMapper.readValue(
+                        result.getResponse().getContentAsString(), AbsenceResponseDTO.class);
+
+                assertEquals(absenceId, body.id());
+                assertEquals("Motivo de saúde urgente", body.justification());
+                assertTrue(body.isJustified());
+                assertEquals(documentId, body.justificationDocumentId());
+        }
+
+        @Test
+        void shouldReturnBadRequestWhenJustifyAbsenceWithBlankJustification() throws Exception {
+                UUID absenceId = UUID.randomUUID();
+
+                JustifyAbsenceDTO invalidRequest = new JustifyAbsenceDTO("", null);
+
+                var result = mockMvc.perform(patch("/absences/{id}/justify", absenceId)
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(objectMapper.writeValueAsString(invalidRequest)))
                         .andReturn();
 
                 assertEquals(400, result.getResponse().getStatus());
         }
 
         @Test
-        void shouldSearchAbsencesWithoutFilters() throws Exception {
-                AbsenceResponseDTO response = new AbsenceResponseDTO(
-                                UUID.randomUUID(),
-                                UUID.randomUUID(),
-                                UUID.randomUUID(),
-                                UUID.randomUUID(),
-                                LocalDate.now(),
-                                "Paciente faltou",
-                                false);
+        void shouldReturnBadRequestWhenJustifyAbsenceWithNullJustification() throws Exception {
+                UUID absenceId = UUID.randomUUID();
 
-                Page<AbsenceResponseDTO> page = new PageImpl<>(List.of(response));
+                JustifyAbsenceDTO invalidRequest = new JustifyAbsenceDTO(null, null);
 
-                when(service.findAllByFilters(
-                                org.mockito.ArgumentMatchers.isNull(),
-                                org.mockito.ArgumentMatchers.isNull(),
-                                org.mockito.ArgumentMatchers.isNull(),
-                                any()))
-                                .thenReturn(page);
+                var result = mockMvc.perform(patch("/absences/{id}/justify", absenceId)
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(objectMapper.writeValueAsString(invalidRequest)))
+                        .andReturn();
 
-                var result = mockMvc.perform(get("/absences")
-                                .param("page", "0")
-                                .param("size", "10"))
-                                .andReturn();
-
-                assertEquals(200, result.getResponse().getStatus());
-
-                String json = result.getResponse().getContentAsString();
-                assertTrue(json.contains("Paciente faltou"));
+                assertEquals(400, result.getResponse().getStatus());
         }
 
+        @Test
+        void shouldReturnBadRequestWhenServiceThrowsExceptionOnJustify() throws Exception {
+                UUID absenceId = UUID.randomUUID();
+
+                JustifyAbsenceDTO request = new JustifyAbsenceDTO("Justificativa válida", null);
+
+                when(service.justify(eq(absenceId), any(JustifyAbsenceDTO.class)))
+                        .thenThrow(new IllegalArgumentException("Falta não encontrada"));
+
+                var result = mockMvc.perform(patch("/absences/{id}/justify", absenceId)
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(objectMapper.writeValueAsString(request)))
+                        .andReturn();
+
+                assertEquals(400, result.getResponse().getStatus());
+        }
 }
