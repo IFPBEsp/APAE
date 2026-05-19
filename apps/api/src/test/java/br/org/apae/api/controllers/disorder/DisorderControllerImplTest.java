@@ -6,7 +6,6 @@ import br.org.apae.api.auth.infrastructure.security.SecurityConfiguration;
 import br.org.apae.api.common.dto.patient.request.disorder.CreateDisorderDTO;
 import br.org.apae.api.common.dto.patient.request.disorder.UpdateDisorderDTO;
 import br.org.apae.api.common.dto.patient.response.disorder.DisorderResponseDTO;
-import br.org.apae.api.common.exceptions.handler.GlobalExceptionHandler;
 import br.org.apae.api.helpers.AuthTestHelper;
 import br.org.apae.api.patient.application.interfaces.DisorderApplicationService;
 import br.org.apae.api.patient.domain.exceptions.DisorderConflictException;
@@ -22,9 +21,13 @@ import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Import;
 import org.springframework.data.web.config.EnableSpringDataWebSupport;
 import org.springframework.data.web.config.SpringDataWebConfiguration;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import java.util.Arrays;
 import java.util.List;
@@ -42,13 +45,12 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-
 @WebMvcTest(controllers = DisorderControllerImpl.class)
 @AutoConfigureMockMvc(addFilters = true)
 @Import({
         SpringDataWebConfiguration.class,
         SecurityConfiguration.class,
-        GlobalExceptionHandler.class
+        DisorderTestExceptionHandler.class
 })
 @Tag("patient")
 @Tag("unit")
@@ -58,7 +60,6 @@ class DisorderControllerImplTest {
     @TestConfiguration
     @EnableSpringDataWebSupport(pageSerializationMode = VIA_DTO)
     static class ContextConfiguration {
-
     }
 
     @Autowired
@@ -233,5 +234,19 @@ class DisorderControllerImplTest {
 
         mockMvc.perform(delete(BASE_URL + "/{id}", id).header("Authorization", AuthTestHelper.bearerToken()))
                 .andExpect(status().isNotFound());
+    }
+}
+
+@RestControllerAdvice
+class DisorderTestExceptionHandler {
+
+    @ExceptionHandler(DisorderNotFoundException.class)
+    public ResponseEntity<Void> handleNotFound() {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+    }
+
+    @ExceptionHandler(DisorderConflictException.class)
+    public ResponseEntity<Void> handleConflict() {
+        return ResponseEntity.status(HttpStatus.CONFLICT).build();
     }
 }
