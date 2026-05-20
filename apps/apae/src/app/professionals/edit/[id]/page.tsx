@@ -126,8 +126,8 @@ export default function AtualizarProfissional(): JSX.Element {
     areaAtendimento: "",
     telefone: "",
     rg: "",
-    estado: "",
-    cidade: "",
+    state: "",
+    city: "",
     bairro: "",
     rua: "",
     numero: "",
@@ -161,8 +161,8 @@ export default function AtualizarProfissional(): JSX.Element {
       areaAtendimento: profissional.serviceArea.area,
       telefone: profissional.phoneNumber,
       rg: profissional.identityDocument,
-      estado: profissional.address.state,
-      cidade: profissional.address.city,
+      state: profissional.address.state,
+      city: profissional.address.city,
       bairro: profissional.address.neighborhood,
       rua: profissional.address.street,
       numero: profissional.address.number,
@@ -248,8 +248,8 @@ export default function AtualizarProfissional(): JSX.Element {
       name: values.nomeCompleto.trim(),
       identityDocument: values.rg.trim(),
       address: {
-        state: values.estado,
-        city: values.cidade.trim(),
+        state: values.state,
+        city: values.city.trim(),
         neighborhood: values.bairro.trim(),
         street: values.rua.trim(),
         number: values.numero?.trim(),
@@ -447,7 +447,7 @@ export default function AtualizarProfissional(): JSX.Element {
           <div className="grid grid-cols-2 gap-4">
             <Controller
               control={form.control}
-              name="estado"
+              name="state"
               render={({ field, fieldState }) => (
                 <FormItem>
                   <FormLabel>Estado *</FormLabel>
@@ -476,7 +476,7 @@ export default function AtualizarProfissional(): JSX.Element {
 
             <FormField
               control={form.control}
-              name="cidade"
+              name="city"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Cidade *</FormLabel>

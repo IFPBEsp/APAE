@@ -47,8 +47,8 @@ export default function CadastroProfissional(): JSX.Element {
     areaAtendimento: "",
     telefone: "",
     rg: "",
-    estado: "",
-    cidade: "",
+    state: "",
+    city: "",
     bairro: "",
     rua: "",
     numero: "",
@@ -94,8 +94,8 @@ export default function CadastroProfissional(): JSX.Element {
       name: values.nomeCompleto.trim(),
       identityDocument: values.rg.trim(),
       address: {
-        state: values.estado,
-        city: values.cidade.trim(),
+        state: values.state,
+        city: values.city.trim(),
         neighborhood: values.bairro.trim(),
         street: values.rua.trim(),
         number: values.numero?.trim(),
@@ -233,7 +233,7 @@ export default function CadastroProfissional(): JSX.Element {
           <div className="grid grid-cols-2 gap-4">
             <Controller
               control={form.control}
-              name="estado"
+              name="state"
               render={({ field, fieldState }) => (
                 <FormItem>
                   <FormLabel>Estado *</FormLabel>
@@ -263,7 +263,7 @@ export default function CadastroProfissional(): JSX.Element {
             />
             <FormField
               control={form.control}
-              name="cidade"
+              name="city"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Cidade *</FormLabel>

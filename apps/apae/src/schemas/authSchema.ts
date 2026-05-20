@@ -15,7 +15,7 @@ export const patientSchema = z.object({
   contato: z.object({
     telefone: z.string().min(10, { message: "Telefone inválido" }),
   }),
-  cidade: z.string().optional(),
+  city: z.string().optional(),
 });
 
 export type Patient = z.infer<typeof patientSchema>;

@@ -19,14 +19,14 @@ interface SearchFiltersProps {
   readonly setDisorder?: (status: string) => void;
   readonly ano?: string;
   readonly setAno?: (status: string) => void;
-  readonly cidade?: string;
-  readonly setCidade?: (status: string) => void;
+  readonly city?: string;
+  readonly setCity?: (status: string) => void;
   readonly tipoAtendimento?: string;
   readonly setTipoAtendimento?: (status: string) => void;
 
   readonly disorderOptions?: string[];
   readonly anoOptions?: string[];
-  readonly cidadeOptions?: string[];
+  readonly cityOptions?: string[];
   readonly tipoAtendimentoOptions?: string[];
 }
 
@@ -37,13 +37,13 @@ export function SearchFilters({
   setDisorder,
   ano,
   setAno,
-  cidade,
-  setCidade,
+  city,
+  setCity,
   tipoAtendimento,
   setTipoAtendimento,
   disorderOptions = [],
   anoOptions = [],
-  cidadeOptions = [],
+  cityOptions = [],
   tipoAtendimentoOptions = [],
 }: SearchFiltersProps) {
   const dropdownTriggerStyle = cn(
@@ -56,7 +56,7 @@ export function SearchFilters({
 
   const showDisorderFilter = setDisorder !== undefined;
   const showAnoFilter = setAno !== undefined;
-  const showCidadeFilter = setCidade !== undefined;
+  const showCityFilter = setCity !== undefined;
   const showTipoAtendimentoFilter = setTipoAtendimento !== undefined;
 
   return (
@@ -73,7 +73,7 @@ export function SearchFilters({
 
       {(showDisorderFilter ||
         showAnoFilter ||
-        showCidadeFilter ||
+        showCityFilter ||
         showTipoAtendimentoFilter) && (
         <div className="flex flex-wrap sm:flex-nowrap items-center gap-2 w-full sm:w-auto">
           {showTipoAtendimentoFilter && (
@@ -165,12 +165,12 @@ export function SearchFilters({
             </DropdownMenu>
           )}
 
-          {showCidadeFilter && (
+          {showCityFilter && (
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button className={cn(dropdownTriggerStyle, "w-full sm:w-[150px]")}>
                   <span className="flex-1 w-0 truncate text-left">
-                    {cidade || "Cidade"}
+                    {city || "Cidade"}
                   </span>
                   <ChevronDown className="h-4 w-4" />
                 </Button>
@@ -179,14 +179,14 @@ export function SearchFilters({
                 align="end"
                 className="w-[--radix-dropdown-menu-trigger-width]"
               >
-                <DropdownMenuItem onClick={() => setCidade?.("")}>
+                <DropdownMenuItem onClick={() => setCity?.("")}>
                   Qualquer
                 </DropdownMenuItem>
-                {cidadeOptions.map((option) => (
+                {cityOptions.map((option) => (
                   <DropdownMenuItem
                     key={option}
-                    onClick={() => setCidade?.(option)}
-                    className={cn({ "bg-slate-100": cidade === option })}
+                    onClick={() => setCity?.(option)}
+                    className={cn({ "bg-slate-100": city === option })}
                   >
                     {option}
                   </DropdownMenuItem>

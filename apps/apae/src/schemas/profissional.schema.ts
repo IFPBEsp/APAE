@@ -6,7 +6,7 @@ const telefoneRegex = /^\(\d{2}\) \d{5}-\d{4}$/;
 const rgRegex =
   /^(\d{7,8}[\dXx]?|\d\.\d{3}\.\d{3}|\d{2}\.\d{3}\.\d{3}-[\dXx])$/;
 const stateRegex = /^[A-Z]{2}$/;
-const cidadeRegex = /^[A-Za-zÀ-ÿ\s]+$/;
+const cityRegex = /^[A-Za-zÀ-ÿ\s]+$/;
 const bairroRegex = /^[A-Za-zÀ-ÿ\s]+$/;
 const ruaRegex = /^[A-Za-zÀ-ÿ0-9\s]+$/;
 const numeroRegex = /^[0-9]{1,6}$/;
@@ -55,7 +55,7 @@ const baseSchema = z.object({
     .transform((val) => val.replace(/\W/g, "")),
 
   state: z.string().regex(stateRegex, "Estado inválido"),
-  cidade: z.string().regex(cidadeRegex, "Cidade inválida"),
+  city: z.string().regex(cityRegex, "Cidade inválida"),
   bairro: z.string().regex(bairroRegex, "Bairro inválido"),
   rua: z.string().regex(ruaRegex, "Rua inválida"),
   numero: z.string().regex(numeroRegex, "Número inválido"),

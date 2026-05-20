@@ -19,7 +19,7 @@ export type FormValues = {
   cpf: string;
   rg: string;
   state: string;
-  cidade: string;
+  city: string;
   endereco: string;
   complemento?: string;
   telefone: string;
@@ -28,7 +28,7 @@ export type FormValues = {
 
 type Props = {
   states: State[];
-  cidades: City[];
+  cities: City[];
   loading?: boolean;
   error?: string | null;
   success?: boolean;
@@ -39,7 +39,7 @@ type Props = {
 
 export default function FormHealthProfessional({
   states,
-  cidades,
+  cities,
   loading,
   error,
   success,
@@ -55,7 +55,7 @@ export default function FormHealthProfessional({
   const [areaSearch, setAreaSearch] = useState("");
   const [areaSelectOpen, setAreaSelectOpen] = useState(false);
   const [stateSelectOpen, setStateSelectOpen] = useState(false);
-  const [cidadeSelectOpen, setCidadeSelectOpen] = useState(false);
+  const [citySelectOpen, setCitySelectOpen] = useState(false);
 
   const filteredAreas = areasSaude.filter((area) => area.toLowerCase().includes(areaSearch.toLowerCase()));
 
@@ -176,15 +176,15 @@ export default function FormHealthProfessional({
             </FormItem>
           )} />
 
-          <FormField control={form.control} name="cidade" render={({ field }) => (
+          <FormField control={form.control} name="city" render={({ field }) => (
             <FormItem>
               <FormLabel>Cidade</FormLabel>
               <FormControl>
-                <Select onValueChange={field.onChange} value={field.value} disabled={!cidades.length} open={cidadeSelectOpen} onOpenChange={setCidadeSelectOpen}>
+                <Select onValueChange={field.onChange} value={field.value} disabled={!cities.length} open={citySelectOpen} onOpenChange={setCitySelectOpen}>
                   <SelectTrigger><SelectValue placeholder="Selecione uma cidade" /></SelectTrigger>
                   <SelectContent>
-                    {cidades.map((cidade) => (
-                      <SelectItem key={cidade.id} value={cidade.nome}>{cidade.nome}</SelectItem>
+                    {cities.map((city) => (
+                      <SelectItem key={city.id} value={city.nome}>{city.nome}</SelectItem>
                     ))}
                   </SelectContent>
                 </Select>

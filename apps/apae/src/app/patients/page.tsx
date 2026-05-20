@@ -40,7 +40,7 @@ function PatientsAndStudentsScreenContent() {
   const {
     disorderOptions,
     anoOptions,
-    cidadeOptions,
+    cityOptions,
     tipoAtendimentoOptions,
   } = usePatientFilters();
 
@@ -197,8 +197,8 @@ function PatientsAndStudentsScreenContent() {
                 page: 0,
               });
             }}
-            cidade={query.city}
-            setCidade={(value) => {
+            city={query.city}
+            setCity={(value) => {
               updateQuery({
                 city: value || "",
                 page: 0,
@@ -213,7 +213,7 @@ function PatientsAndStudentsScreenContent() {
             }}
             disorderOptions={disorderOptions}
             anoOptions={anoOptions}
-            cidadeOptions={cidadeOptions}
+            cityOptions={cityOptions}
             tipoAtendimentoOptions={tipoAtendimentoOptions}
           />
         </div>
