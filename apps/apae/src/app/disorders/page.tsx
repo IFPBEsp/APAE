@@ -13,14 +13,14 @@ import { SearchFilters } from "@/components/search-filters";
 
 export default function TranstornosPage() {
   const router = useRouter();
-  const [transtornos, setTranstornos] = useState<Disorder[]>([]);
+  const [disorders, setDisorders] = useState<Disorder[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   
   const [searchName, setSearchName] = useState<string>("");
 
   useEffect(() => {
-    async function fetchTranstornos() {
+    async function fetchDisorders() {
       try {
         setIsLoading(true);
         setError(null);
@@ -29,7 +29,7 @@ export default function TranstornosPage() {
           throw new Error("Falha ao buscar transtornos.");
         }
         const data = await response.json();
-        setTranstornos(data);
+        setDisorders(data);
       } catch (err: unknown) {
         const errorMessage = err instanceof Error ? err.message : "Erro ao buscar transtornos.";
         setError(errorMessage);
@@ -38,7 +38,7 @@ export default function TranstornosPage() {
         setIsLoading(false);
       }
     }
-    fetchTranstornos();
+    fetchDisorders();
   }, []);
 
   const handleDelete = async (id: string) => {
@@ -54,15 +54,15 @@ export default function TranstornosPage() {
         throw new Error(errorMessage || "Falha ao excluir o transtorno.");
       }
       
-      setTranstornos((current) => current.filter((d) => d.id !== id));
+      setDisorders((current) => current.filter((d) => d.id !== id));
       toast.success("Transtorno excluído com sucesso!");
     } catch (err: unknown) {
       const errorMessage = err instanceof Error ? err.message : "Erro ao excluir transtorno.";
       toast.error(errorMessage);
     }
   };
-  const filteredTranstornos = transtornos.filter((transtorno) =>
-    transtorno.name.toLowerCase().includes(searchName.toLowerCase())
+  const filteredDisorders = disorders.filter((disorder) =>
+    disorder.name.toLowerCase().includes(searchName.toLowerCase())
   );
 
   const renderContent = () => {
@@ -76,17 +76,17 @@ export default function TranstornosPage() {
     if (error) {
       return <p className="text-center text-red-500">{error}</p>;
     }
-    if (filteredTranstornos.length === 0) {
+    if (filteredDisorders.length === 0) {
       return <p className="text-center text-gray-500">Nenhum transtorno encontrado.</p>;
     }
     return (
       <div className="space-y-2">
-        {filteredTranstornos.map((transtorno) => (
+        {filteredDisorders.map((disorder) => (
           <TranstornoListItem
-            key={transtorno.id}
-            transtorno={transtorno}
-            onEdit={() => router.push(`/disorders/${transtorno.id}/edit`)}
-            onDelete={() => handleDelete(transtorno.id)}
+            key={disorder.id}
+            disorder={disorder}
+            onEdit={() => router.push(`/disorders/${disorder.id}/edit`)}
+            onDelete={() => handleDelete(disorder.id)}
           />
         ))}
       </div>
@@ -124,7 +124,7 @@ export default function TranstornosPage() {
           </div>
           
           <p className="text-sm text-gray-500 mb-4">
-            {filteredTranstornos.length} transtornos encontrados
+            {filteredDisorders.length} transtornos encontrados
           </p>
           {renderContent()}
         </section>
