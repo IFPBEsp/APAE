@@ -177,44 +177,39 @@ function PatientsAndStudentsScreenContent() {
         <div className="mb-4 rounded-xl border-2 bg-white p-6 shadow-md">
           <SearchFilters
             searchName={query.name}
-            setSearchName={(value) => {
+            onSearchName={(value) => {
               updateQuery({
                 name: value || "",
                 page: 0,
               });
             }}
-            transtorno={query.disorder}
-            setTranstorno={(value) => {
-              updateQuery({
-                disorder: value || "",
-                page: 0,
-              });
-            }}
-            ano={query.year}
-            setAno={(value) => {
-              updateQuery({
-                year: value || "",
-                page: 0,
-              });
-            }}
-            cidade={query.city}
-            setCidade={(value) => {
-              updateQuery({
-                city: value || "",
-                page: 0,
-              });
-            }}
-            tipoAtendimento={query.treatmentType}
-            setTipoAtendimento={(value) => {
-              updateQuery({
-                treatmentType: value || "",
-                page: 0,
-              });
-            }}
-            transtornoOptions={transtornoOptions}
-            anoOptions={anoOptions}
-            cidadeOptions={cidadeOptions}
-            tipoAtendimentoOptions={tipoAtendimentoOptions}
+            filters={[
+              {
+                placeholder: "Tipo de Atendimento",
+                value: query.treatmentType,
+                onChange: (value) => updateQuery({ treatmentType: value || "", page: 0 }),
+                options: tipoAtendimentoOptions,
+              },
+              {
+                placeholder: "Transtorno",
+                value: query.disorder,
+                onChange: (value) => updateQuery({ disorder: value || "", page: 0 }),
+                options: transtornoOptions,
+              },
+              {
+                placeholder: "Ano",
+                value: query.year,
+                onChange: (value) => updateQuery({ year: value || "", page: 0 }),
+                options: anoOptions,
+                width: "w-[90px]",
+              },
+              {
+                placeholder: "Cidade",
+                value: query.city,
+                onChange: (value) => updateQuery({ city: value || "", page: 0 }),
+                options: cidadeOptions,
+              },
+            ]}
           />
         </div>
 

@@ -132,7 +132,7 @@ export default function VaccinesPage() {
         <div className="bg-white rounded-xl shadow-md border-2 p-6 mb-4">
           <SearchFilters
             searchName={searchName}
-            setSearchName={setSearchName}
+            onSearchName={setSearchName}
           />
         </div>
 
