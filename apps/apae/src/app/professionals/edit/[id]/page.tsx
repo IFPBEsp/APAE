@@ -123,7 +123,7 @@ export default function AtualizarProfissional(): JSX.Element {
     nomeCompleto: "",
     email: "",
     documentoProfissional: "",
-    areaAtendimento: "",
+    serviceArea: "",
     telefone: "",
     rg: "",
     state: "",
@@ -158,7 +158,7 @@ export default function AtualizarProfissional(): JSX.Element {
       nomeCompleto: profissional.name,
       email: profissional.email,
       documentoProfissional: profissional.professionalDocument ?? "",
-      areaAtendimento: profissional.serviceArea.area,
+      serviceArea: profissional.serviceArea.area,
       telefone: profissional.phoneNumber,
       rg: profissional.identityDocument,
       state: profissional.address.state,
@@ -241,7 +241,7 @@ export default function AtualizarProfissional(): JSX.Element {
       }));
 
     const payload = {
-      serviceArea: { area: values.areaAtendimento },
+      serviceArea: { area: values.serviceArea },
       phoneNumber: values.telefone,
       professionalDocument: values.documentoProfissional?.trim() || null,
       email: values.email.trim(),
@@ -393,7 +393,7 @@ export default function AtualizarProfissional(): JSX.Element {
 
             <Controller
               control={form.control}
-              name="areaAtendimento"
+              name="serviceArea"
               render={({ field, fieldState }) => (
                 <FormItem>
                   <FormLabel>Área de atendimento *</FormLabel>

@@ -23,13 +23,13 @@ interface SearchFiltersProps {
   readonly setAno?: (status: string) => void;
   readonly city?: string;
   readonly setCity?: (status: string) => void;
-  readonly tipoAtendimento?: string;
-  readonly setTipoAtendimento?: (status: string) => void;
+  readonly serviceArea?: string;
+  readonly setServiceArea?: (status: string) => void;
 
   readonly transtornoOptions?: string[];
   readonly anoOptions?: string[];
   readonly cityOptions?: string[];
-  readonly tipoAtendimentoOptions?: string[];
+  readonly serviceAreaOptions?: string[];
 }
 
 export function SearchFilters({
@@ -41,12 +41,12 @@ export function SearchFilters({
   setAno,
   city,
   setCity,
-  tipoAtendimento,
-  setTipoAtendimento,
+  serviceArea,
+  setServiceArea,
   transtornoOptions = [], 
   anoOptions = [],
   cityOptions = [],
-  tipoAtendimentoOptions = []
+  serviceAreaOptions = []
 }: SearchFiltersProps) {
   
   const dropdownTriggerStyle = cn(
@@ -60,7 +60,7 @@ export function SearchFilters({
   const showTranstornoFilter = setTranstorno !== undefined;
   const showAnoFilter = setAno !== undefined;
   const showCityFilter = setCity !== undefined;
-  const showTipoAtendimentoFilter = setTipoAtendimento !== undefined;
+  const showServiceAreaFilter = setServiceArea !== undefined;
 
   return (
     <div className="flex items-center gap-2">
@@ -74,30 +74,30 @@ export function SearchFilters({
         />
       </div>
 
-      {(showTranstornoFilter || showAnoFilter || showCityFilter || showTipoAtendimentoFilter) && (
+      {(showTranstornoFilter || showAnoFilter || showCityFilter || showServiceAreaFilter) && (
         <div className="flex flex-shrink-0 items-center gap-2">
 
-          {showTipoAtendimentoFilter && (
+          {showServiceAreaFilter && (
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button
                   className={cn(dropdownTriggerStyle, "w-[150px]")}
                 >
                   <span className="flex-1 w-0 truncate text-left">
-                    {tipoAtendimento || "Tipo de Atendimento"}
+                    {serviceArea || "Tipo de Atendimento"}
                   </span>
                   <ChevronDown className="h-4 w-4" />
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end" className="w-[--radix-dropdown-menu-trigger-width]">
-                <DropdownMenuItem onClick={() => setTipoAtendimento?.("")}>
+                <DropdownMenuItem onClick={() => setServiceArea?.("")}>
                   Qualquer
                 </DropdownMenuItem>
-                {tipoAtendimentoOptions.map((option) => (
+                {serviceAreaOptions.map((option) => (
                   <DropdownMenuItem
                     key={option}
-                    onClick={() => setTipoAtendimento?.(option)}
-                    className={cn({ "bg-slate-100": tipoAtendimento === option })}
+                    onClick={() => setServiceArea?.(option)}
+                    className={cn({ "bg-slate-100": serviceArea === option })}
                   >
                     {option}
                   </DropdownMenuItem>

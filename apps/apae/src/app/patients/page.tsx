@@ -41,7 +41,7 @@ function PatientsAndStudentsScreenContent() {
     disorderOptions,
     anoOptions,
     cityOptions,
-    tipoAtendimentoOptions,
+    serviceAreaOptions,
   } = usePatientFilters();
 
   useEffect(() => {
@@ -204,8 +204,8 @@ function PatientsAndStudentsScreenContent() {
                 page: 0,
               });
             }}
-            tipoAtendimento={query.treatmentType}
-            setTipoAtendimento={(value) => {
+            serviceArea={query.treatmentType}
+            setServiceArea={(value) => {
               updateQuery({
                 treatmentType: value || "",
                 page: 0,
@@ -214,7 +214,7 @@ function PatientsAndStudentsScreenContent() {
             disorderOptions={disorderOptions}
             anoOptions={anoOptions}
             cityOptions={cityOptions}
-            tipoAtendimentoOptions={tipoAtendimentoOptions}
+            serviceAreaOptions={serviceAreaOptions}
           />
         </div>
 

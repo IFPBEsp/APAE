@@ -44,7 +44,7 @@ export default function CadastroProfissional(): JSX.Element {
     nomeCompleto: "",
     email: "",
     documentoProfissional: "",
-    areaAtendimento: "",
+    serviceArea: "",
     telefone: "",
     rg: "",
     state: "",
@@ -87,7 +87,7 @@ export default function CadastroProfissional(): JSX.Element {
       }));
 
     const payload = {
-      serviceArea: { area: values.areaAtendimento },
+      serviceArea: { area: values.serviceArea },
       phoneNumber: values.telefone,
       professionalDocument: values.documentoProfissional?.trim() || null,
       email: values.email.trim(),
@@ -177,7 +177,7 @@ export default function CadastroProfissional(): JSX.Element {
 
             <Controller
               control={form.control}
-              name="areaAtendimento"
+              name="serviceArea"
               render={({ field, fieldState }) => (
                 <FormItem>
                   <FormLabel>Área de atendimento *</FormLabel>

@@ -47,7 +47,7 @@ const baseSchema = z.object({
 
   documentoProfissional: z.string().optional().nullable(),
 
-  areaAtendimento: z.string().min(1, "Selecione uma área"),
+  serviceArea: z.string().min(1, "Selecione uma área"),
 
   rg: z
     .string()

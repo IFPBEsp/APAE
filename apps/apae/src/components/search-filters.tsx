@@ -21,13 +21,13 @@ interface SearchFiltersProps {
   readonly setAno?: (status: string) => void;
   readonly city?: string;
   readonly setCity?: (status: string) => void;
-  readonly tipoAtendimento?: string;
-  readonly setTipoAtendimento?: (status: string) => void;
+  readonly serviceArea?: string;
+  readonly setServiceArea?: (status: string) => void;
 
   readonly disorderOptions?: string[];
   readonly anoOptions?: string[];
   readonly cityOptions?: string[];
-  readonly tipoAtendimentoOptions?: string[];
+  readonly serviceAreaOptions?: string[];
 }
 
 export function SearchFilters({
@@ -39,12 +39,12 @@ export function SearchFilters({
   setAno,
   city,
   setCity,
-  tipoAtendimento,
-  setTipoAtendimento,
+  serviceArea,
+  setServiceArea,
   disorderOptions = [],
   anoOptions = [],
   cityOptions = [],
-  tipoAtendimentoOptions = [],
+  serviceAreaOptions = [],
 }: SearchFiltersProps) {
   const dropdownTriggerStyle = cn(
     "bg-white border border-gray-300 rounded-[5px] h-[36px]",
@@ -57,7 +57,7 @@ export function SearchFilters({
   const showDisorderFilter = setDisorder !== undefined;
   const showAnoFilter = setAno !== undefined;
   const showCityFilter = setCity !== undefined;
-  const showTipoAtendimentoFilter = setTipoAtendimento !== undefined;
+  const showServiceAreaFilter = setServiceArea !== undefined;
 
   return (
     <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2">
@@ -74,14 +74,14 @@ export function SearchFilters({
       {(showDisorderFilter ||
         showAnoFilter ||
         showCityFilter ||
-        showTipoAtendimentoFilter) && (
+        showServiceAreaFilter) && (
         <div className="flex flex-wrap sm:flex-nowrap items-center gap-2 w-full sm:w-auto">
-          {showTipoAtendimentoFilter && (
+          {showServiceAreaFilter && (
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button className={cn(dropdownTriggerStyle, "w-full sm:w-[150px]")}>
                   <span className="flex-1 w-0 truncate text-left">
-                    {tipoAtendimento || "Tipo de Atendimento"}
+                    {serviceArea || "Tipo de Atendimento"}
                   </span>
                   <ChevronDown className="h-4 w-4" />
                 </Button>
@@ -90,15 +90,15 @@ export function SearchFilters({
                 align="end"
                 className="w-[--radix-dropdown-menu-trigger-width]"
               >
-                <DropdownMenuItem onClick={() => setTipoAtendimento?.("")}>
+                <DropdownMenuItem onClick={() => setServiceArea?.("")}>
                   Qualquer
                 </DropdownMenuItem>
-                {tipoAtendimentoOptions.map((option) => (
+                {serviceAreaOptions.map((option) => (
                   <DropdownMenuItem
                     key={option}
-                    onClick={() => setTipoAtendimento?.(option)}
+                    onClick={() => setServiceArea?.(option)}
                     className={cn({
-                      "bg-slate-100": tipoAtendimento === option,
+                      "bg-slate-100": serviceArea === option,
                     })}
                   >
                     {option}
