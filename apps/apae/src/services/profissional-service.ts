@@ -1,12 +1,12 @@
 import axios from "axios";
 
-export async function getAllProfissionais(ativo?: boolean) {
+export async function getAllProfissionais(active?: boolean) {
   const url =
-    ativo === undefined
+    active === undefined
       ? `/apae-geral/api/professionals`
-      : `/apae-geral/api/professionals?ativo=${ativo}`;
+      : `/apae-geral/api/professionals?ativo=${active}`;
 
-  console.log("[getAllProfissionais] ativo:", ativo, "| url:", url);
+  console.log("[getAllProfissionais] ativo:", active, "| url:", url);
   return axios.get(url);
 }
 

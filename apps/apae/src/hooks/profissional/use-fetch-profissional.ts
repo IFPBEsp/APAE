@@ -9,7 +9,7 @@ interface PaginatedResponse<T> {
   totalElements: number;
 }
 
-export function useFetchProfessionals(ativo: boolean) {
+export function useFetchProfessionals(active: boolean) {
   const [professionals, setProfessionals] = useState<Professional[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -20,9 +20,9 @@ export function useFetchProfessionals(ativo: boolean) {
         setLoading(true);
         setError(null);
 
-        console.log("[useFetchProfessionals] disparou fetch com ativo =", ativo);
+        console.log("[useFetchProfessionals] disparou fetch com ativo =", active);
         
-        const response = await getAllProfissionais(ativo);
+        const response = await getAllProfissionais(active);
 
         const data: PaginatedResponse<Professional> = response.data;
         setProfessionals(data.content);
@@ -38,7 +38,7 @@ export function useFetchProfessionals(ativo: boolean) {
     }
 
     fetchProfessionals();
-  }, [ativo]);
+  }, [active]);
 
   return { professionals, loading, error, setProfessionals };
 }

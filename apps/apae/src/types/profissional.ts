@@ -34,7 +34,7 @@ export interface Professional {
   identityDocument: string;
   address: Address;
   availabilities: Availability[];
-  ativo: boolean;
+  active: boolean;
   profilePhotoUrl?: string;
 }
 
