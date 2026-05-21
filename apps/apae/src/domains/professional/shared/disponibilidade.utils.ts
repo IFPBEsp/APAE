@@ -4,7 +4,7 @@ import {
   turnos,
 } from "@/types/profissional";
 
-export function gerarMatrizDisponibilidade(lista: AvailabilityType[]) {
+export function generateAvailabilityMatrix(lista: AvailabilityType[]) {
   return diasDaSemana.flatMap((dia) =>
     turnos.map((turno) => {
       const existente = lista.find((d) => {

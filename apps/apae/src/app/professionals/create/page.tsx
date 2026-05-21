@@ -29,7 +29,7 @@ import { cadastroSchema } from "@/schemas/profissional.schema";
 import { STATES } from "@/lib/states";
 import { useRef, useState, useEffect, JSX } from "react";
 import HealthAreaSelect from "@/components/shared/HealthAreaSelect";
-import { gerarMatrizDisponibilidade } from "@/domains/professional/shared/disponibilidade.utils";
+import { generateAvailabilityMatrix } from "@/domains/professional/shared/disponibilidade.utils";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 type CadastroFormValues = z.infer<typeof cadastroSchema>;
@@ -54,7 +54,7 @@ export default function CadastroProfessional(): JSX.Element {
     numero: "",
     complemento: "",
     cep: "",
-    disponibilidade: gerarMatrizDisponibilidade([]),
+    disponibilidade: generateAvailabilityMatrix([]),
   };
 
   const form = useForm<CadastroFormValues>({

@@ -46,7 +46,7 @@ import { STATES } from "@/lib/states";
 
 import HealthAreaSelect from "@/components/shared/HealthAreaSelect";
 import Disponibilidade from "@/components/forms/DisponibilidadeForm";
-import { gerarMatrizDisponibilidade } from "@/domains/professional/shared/disponibilidade.utils";
+import { generateAvailabilityMatrix } from "@/domains/professional/shared/disponibilidade.utils";
 
 import {
   getProfessionalDocuments,
@@ -133,7 +133,7 @@ export default function AtualizarProfessional(): JSX.Element {
     numero: "",
     complemento: "",
     cep: "",
-    disponibilidade: gerarMatrizDisponibilidade([]),
+    disponibilidade: generateAvailabilityMatrix([]),
   };
 
   const form = useForm<UpdateFormValues>({
@@ -146,7 +146,7 @@ export default function AtualizarProfessional(): JSX.Element {
 
     const disponibilidadesBackend = professional.availabilities || [];
 
-    const matrizCompleta = gerarMatrizDisponibilidade(
+    const fullMatrix = generateAvailabilityMatrix(
       disponibilidadesBackend.map((a) => ({
         dia: a.day.toLowerCase(),
         turno: a.shift.toLowerCase(),
@@ -168,7 +168,7 @@ export default function AtualizarProfessional(): JSX.Element {
       numero: professional.address.number,
       complemento: professional.address.complement ?? "",
       cep: professional.address.cep,
-      disponibilidade: matrizCompleta,
+      disponibilidade: fullMatrix,
     });
   }, [professional, form]);
 

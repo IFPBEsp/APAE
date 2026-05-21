@@ -21,7 +21,7 @@ const pacientes = [
   { value: 'pedro-almeida', label: 'Pedro Almeida' },
 ];
 
-const areasDeAtendimento = [
+const serviceAreas = [
   { value: 'nutricao', label: 'Nutrição' },
   { value: 'psicologia', label: 'Psicologia' },
   { value: 'fisioterapia', label: 'Fisioterapia' },
@@ -105,7 +105,7 @@ export function EditAppointmentForm({
               Área de Atendimento <span className="text-red-500">*</span>
             </Label>
             <Combobox
-              options={areasDeAtendimento}
+              options={serviceAreas}
               value={area}
               onChange={setArea}
               placeholder="Pesquisar área de atendimento"
