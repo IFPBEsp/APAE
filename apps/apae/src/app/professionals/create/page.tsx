@@ -23,7 +23,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { useRouter } from "next/navigation";
-import { useCreateProfissional } from "@/hooks/profissional/use-create-profissional";
+import { useCreateProfessional } from "@/hooks/profissional/use-create-profissional";
 import Disponibilidade from "@/components/forms/DisponibilidadeForm";
 import { cadastroSchema } from "@/schemas/profissional.schema";
 import { STATES } from "@/lib/states";
@@ -34,16 +34,16 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 type CadastroFormValues = z.infer<typeof cadastroSchema>;
 
-export default function CadastroProfissional(): JSX.Element {
+export default function CadastroProfessional(): JSX.Element {
   const router = useRouter();
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
-  const { create, loading, error, success } = useCreateProfissional();
+  const { create, loading, error, success } = useCreateProfessional();
 
   const defaultValues: Partial<CadastroFormValues> = {
     nomeCompleto: "",
     email: "",
-    documentoProfissional: "",
+    professionalDocument: "",
     serviceArea: "",
     telefone: "",
     rg: "",
@@ -89,7 +89,7 @@ export default function CadastroProfissional(): JSX.Element {
     const payload = {
       serviceArea: { area: values.serviceArea },
       phoneNumber: values.telefone,
-      professionalDocument: values.documentoProfissional?.trim() || null,
+      professionalDocument: values.professionalDocument?.trim() || null,
       email: values.email.trim(),
       name: values.nomeCompleto.trim(),
       identityDocument: values.rg.trim(),
@@ -163,7 +163,7 @@ export default function CadastroProfissional(): JSX.Element {
           <div className="grid grid-cols-2 gap-4">
             <FormField
               control={form.control}
-              name="documentoProfissional"
+              name="professionalDocument"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Documento profissional</FormLabel>

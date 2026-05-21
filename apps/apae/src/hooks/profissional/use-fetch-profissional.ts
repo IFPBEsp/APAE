@@ -1,4 +1,4 @@
-import { getAllProfissionais } from "@/services/profissional-service";
+import { getAllProfessionals } from "@/services/profissional-service";
 import { Professional } from "@/types/profissional";
 import { useEffect, useState } from "react";
 import axios from "axios";
@@ -22,7 +22,7 @@ export function useFetchProfessionals(active: boolean) {
 
         console.log("[useFetchProfessionals] disparou fetch com ativo =", active);
         
-        const response = await getAllProfissionais(active);
+        const response = await getAllProfessionals(active);
 
         const data: PaginatedResponse<Professional> = response.data;
         setProfessionals(data.content);

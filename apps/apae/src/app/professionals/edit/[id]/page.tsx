@@ -37,8 +37,8 @@ import {
 } from "@/components/ui/alert-dialog";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
-import { useGetByIdProfissional } from "@/hooks/profissional/use-get-by-id-profissional";
-import { useUpdateProfissional } from "@/hooks/profissional/use-update-profissional";
+import { useGetByIdProfessional } from "@/hooks/profissional/use-get-by-id-profissional";
+import { useUpdateProfessional } from "@/hooks/profissional/use-update-profissional";
 import { useUpdateProfessionalDocuments } from "@/hooks/profissional/use-update-professional-documents";
 
 import { updateProfessionalSchema } from "@/schemas/profissional.schema";
@@ -68,18 +68,18 @@ function isValidFile(file: File): boolean {
   return allowedTypes.includes(file.type) && file.size > 0 && file.size <= maxSize;
 }
 
-export default function AtualizarProfissional(): JSX.Element {
+export default function AtualizarProfessional(): JSX.Element {
   const router = useRouter();
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   
   const {
-    profissional,
+    professional,
     loading: loadingProf,
     error: errorProf,
-  } = useGetByIdProfissional();
+  } = useGetByIdProfessional();
 
-  const { updateProfissional, loading, error, success } = useUpdateProfissional();
+  const { updateProfessional, loading, error, success } = useUpdateProfessional();
   const { upload, loadingDocs, errorDocs, successDocs } = useUpdateProfessionalDocuments();
 
   const [docs, setDocs] = useState<DocumentWithUrl[]>([]);
@@ -122,7 +122,7 @@ export default function AtualizarProfissional(): JSX.Element {
   const defaultValues: Partial<UpdateFormValues> = {
     nomeCompleto: "",
     email: "",
-    documentoProfissional: "",
+    professionalDocument: "",
     serviceArea: "",
     telefone: "",
     rg: "",
@@ -142,9 +142,9 @@ export default function AtualizarProfissional(): JSX.Element {
   });
 
   useEffect(() => {
-    if (!profissional) return;
+    if (!professional) return;
 
-    const disponibilidadesBackend = profissional.availabilities || [];
+    const disponibilidadesBackend = professional.availabilities || [];
 
     const matrizCompleta = gerarMatrizDisponibilidade(
       disponibilidadesBackend.map((a) => ({
@@ -155,22 +155,22 @@ export default function AtualizarProfissional(): JSX.Element {
     );
 
     form.reset({
-      nomeCompleto: profissional.name,
-      email: profissional.email,
-      documentoProfissional: profissional.professionalDocument ?? "",
-      serviceArea: profissional.serviceArea.area,
-      telefone: profissional.phoneNumber,
-      rg: profissional.identityDocument,
-      state: profissional.address.state,
-      city: profissional.address.city,
-      bairro: profissional.address.neighborhood,
-      rua: profissional.address.street,
-      numero: profissional.address.number,
-      complemento: profissional.address.complement ?? "",
-      cep: profissional.address.cep,
+      nomeCompleto: professional.name,
+      email: professional.email,
+      professionalDocument: professional.professionalDocument ?? "",
+      serviceArea: professional.serviceArea.area,
+      telefone: professional.phoneNumber,
+      rg: professional.identityDocument,
+      state: professional.address.state,
+      city: professional.address.city,
+      bairro: professional.address.neighborhood,
+      rua: professional.address.street,
+      numero: professional.address.number,
+      complemento: professional.address.complement ?? "",
+      cep: professional.address.cep,
       disponibilidade: matrizCompleta,
     });
-  }, [profissional, form]);
+  }, [professional, form]);
 
   const refreshDocuments = useCallback(async (professionalId: string) => {
     setDocsLoading(true);
@@ -186,9 +186,9 @@ export default function AtualizarProfissional(): JSX.Element {
   }, []);
 
   useEffect(() => {
-    if (!profissional?.id) return;
-    refreshDocuments(profissional.id);
-  }, [profissional?.id, refreshDocuments]);
+    if (!professional?.id) return;
+    refreshDocuments(professional.id);
+  }, [professional?.id, refreshDocuments]);
 
   const groupedDocs = useMemo(() => {
     const curriculum = docs.find((d) => d.type === "CURRICULUM");
@@ -203,7 +203,7 @@ export default function AtualizarProfissional(): JSX.Element {
   }
 
   async function confirmRemove() {
-    if (!profissional?.id || !docToRemove) return;
+    if (!professional?.id || !docToRemove) return;
 
     const idStr = String(docToRemove.id);
 
@@ -214,8 +214,8 @@ export default function AtualizarProfissional(): JSX.Element {
     });
 
     try {
-      await removeProfessionalDocument(profissional.id, docToRemove.id);
-      await refreshDocuments(profissional.id);
+      await removeProfessionalDocument(professional.id, docToRemove.id);
+      await refreshDocuments(professional.id);
       setRemoveModalOpen(false);
       setDocToRemove(null);
     } catch (e: unknown) {
@@ -231,7 +231,7 @@ export default function AtualizarProfissional(): JSX.Element {
   }
 
   const onSubmit: SubmitHandler<UpdateFormValues> = async (values) => {
-    if (!profissional?.id) return;
+    if (!professional?.id) return;
 
     const availabilities = values.disponibilidade
       .filter((d) => d?.checked)
@@ -243,7 +243,7 @@ export default function AtualizarProfissional(): JSX.Element {
     const payload = {
       serviceArea: { area: values.serviceArea },
       phoneNumber: values.telefone,
-      professionalDocument: values.documentoProfissional?.trim() || null,
+      professionalDocument: values.professionalDocument?.trim() || null,
       email: values.email.trim(),
       name: values.nomeCompleto.trim(),
       identityDocument: values.rg.trim(),
@@ -259,7 +259,7 @@ export default function AtualizarProfissional(): JSX.Element {
       availabilities,
     };
 
-    const ok = await updateProfissional(profissional.id, payload);
+    const ok = await updateProfessional(professional.id, payload);
     if (!ok) return;
 
     if (curriculumFile || volunteerFile || attachmentFiles.length > 0) {
@@ -268,12 +268,12 @@ export default function AtualizarProfissional(): JSX.Element {
       if (curriculumFile) fd.append("curriculum", curriculumFile);
       for (const f of attachmentFiles) fd.append("attachmentAny", f);
 
-      await upload(profissional.id, fd);
+      await upload(professional.id, fd);
 
       setCurriculumFile(null);
       setVolunteerFile(null);
       setAttachmentFiles([]);
-      await refreshDocuments(profissional.id);
+      await refreshDocuments(professional.id);
     }
 
     if (selectedPhoto) {
@@ -283,7 +283,7 @@ export default function AtualizarProfissional(): JSX.Element {
         const photoData = new FormData();
         photoData.append("file", selectedPhoto);
 
-        const response = await fetch(`/api/professionals/${profissional.id}/photo`, {
+        const response = await fetch(`/api/professionals/${professional.id}/photo`, {
           method: "PATCH",
           body: photoData,
         });
@@ -375,7 +375,7 @@ export default function AtualizarProfissional(): JSX.Element {
           <div className="grid grid-cols-2 gap-4">
             <FormField
               control={form.control}
-              name="documentoProfissional"
+              name="professionalDocument"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Documento profissional</FormLabel>

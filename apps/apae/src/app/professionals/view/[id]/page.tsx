@@ -3,7 +3,7 @@
 import { useMemo } from "react";
 import { useParams, useRouter } from "next/navigation";
 
-import { useGetByIdProfissional } from "@/hooks/profissional/use-get-by-id-profissional";
+import { useGetByIdProfessional } from "@/hooks/profissional/use-get-by-id-profissional";
 import { useProfessionalDocuments } from "@/hooks/profissional/use-professional-documents";
 
 import { Checkbox } from "@/components/ui/checkbox";
@@ -14,18 +14,18 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Pencil } from "lucide-react";
 
-export default function VisualizarProfissional() {
+export default function VisualizarProfessional() {
   const router = useRouter();
   const params = useParams<{ id: string }>();
   const id = params?.id;
 
-  const { profissional, loading, error } = useGetByIdProfissional();
+  const { professional, loading, error } = useGetByIdProfessional();
 
   const { documents, loading: loadingDocs, error: errorDocs } =
     useProfessionalDocuments(id);
 
   const disponibilidadeMatrix = useMemo(() => {
-    const avs = profissional?.availabilities ?? [];
+    const avs = professional?.availabilities ?? [];
 
     return gerarMatrizDisponibilidade(
       avs.map((a) => ({
@@ -34,18 +34,18 @@ export default function VisualizarProfissional() {
         checked: true,
       })),
     );
-  }, [profissional?.availabilities]);
+  }, [professional?.availabilities]);
 
   if (!id) return <p className="p-6">ID inválido.</p>;
   if (loading)
     return <p className="p-6">Carregando detalhes do profissional...</p>;
   if (error)
     return <p className="p-6 text-red-500">Erro ao carregar os dados.</p>;
-  if (!profissional) return <p className="p-6">Profissional não encontrado.</p>;
+  if (!professional) return <p className="p-6">Profissional não encontrado.</p>;
 
   const dados = {
-    ...profissional,
-    address: profissional.address || {
+    ...professional,
+    address: professional.address || {
       street: "—",
       number: "—",
       neighborhood: "—",

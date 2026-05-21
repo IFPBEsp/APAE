@@ -14,7 +14,7 @@ type City = { id: number; nome: string };
 export type FormValues = {
   nomeCompleto: string;
   email: string;
-  documentoProfissional: string;
+  professionalDocument: string;
   areaSaude: string;
   cpf: string;
   rg: string;
@@ -88,7 +88,7 @@ export default function FormHealthProfessional({
         )} />
 
         <div className="grid grid-cols-2 gap-4">
-          <FormField control={form.control} name="documentoProfissional" render={({ field }) => (
+          <FormField control={form.control} name="professionalDocument" render={({ field }) => (
             <FormItem>
               <FormLabel>Documento profissional</FormLabel>
               <FormControl><Input placeholder="Ex: CRM/SP 123456" {...field} /></FormControl>

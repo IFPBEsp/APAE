@@ -1,8 +1,8 @@
-import { activateProfissional } from "@/services/profissional-service";
+import { activateProfessional } from "@/services/profissional-service";
 
-export function useActivateProfissional() {
+export function useActivateProfessional() {
   async function activate(id: string) {
-    const response = await activateProfissional(id);
+    const response = await activateProfessional(id);
 
     if (!response.ok) {
       const data = await response.json().catch(() => ({}));

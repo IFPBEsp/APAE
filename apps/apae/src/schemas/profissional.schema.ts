@@ -45,7 +45,7 @@ const baseSchema = z.object({
 
   email: z.email("Email inválido"),
 
-  documentoProfissional: z.string().optional().nullable(),
+  professionalDocument: z.string().optional().nullable(),
 
   serviceArea: z.string().min(1, "Selecione uma área"),
 

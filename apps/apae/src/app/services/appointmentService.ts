@@ -443,7 +443,7 @@ export async function getPacientes(): Promise<Patient[]> {
   return data.content || data || [];
 }
 
-export async function getProfissionaisDaSaude(): Promise<Professional[]> {
+export async function getHealthProfessionals(): Promise<Professional[]> {
   const response = await fetch(`/apae-geral/api/professionals?page=0&size=100`);
 
   if (!response.ok) {
@@ -454,7 +454,7 @@ export async function getProfissionaisDaSaude(): Promise<Professional[]> {
   return data.content || data || [];
 }
 
-export async function getProfissionalDaSaude(
+export async function getHealthProfessional(
   id: string,
 ): Promise<Professional> {
   const response = await fetch(`/apae-geral/api/professionals/${id}`);
@@ -467,8 +467,8 @@ export async function getProfissionalDaSaude(
 }
 
 export async function getAreasDaSaude(): Promise<string[]> {
-  const profissionais = await getProfissionaisDaSaude();
-  const areas = profissionais.map((p) => p.healthSector);
+  const professionals = await getHealthProfessionals();
+  const areas = professionals.map((p) => p.healthSector);
   return [...new Set(areas)].filter(Boolean) as string[];
 }
 

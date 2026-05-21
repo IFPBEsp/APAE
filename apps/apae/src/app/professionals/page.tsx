@@ -48,8 +48,8 @@ import {
 } from "@/components/ui/alert-dialog";
 
 import { useFetchProfessionals } from "@/hooks/profissional/use-fetch-profissional";
-import { useInactivateProfissional } from "@/hooks/profissional/use-inactivate-profissional";
-import { useActivateProfissional } from "@/hooks/profissional/use-activate-profissional";
+import { useInactivateProfessional } from "@/hooks/profissional/use-inactivate-profissional";
+import { useActivateProfessional } from "@/hooks/profissional/use-activate-profissional";
 
 type StatusFilter = "activate" | "inactivate";
 
@@ -63,8 +63,8 @@ export default function VisualizationProfessionalPage() {
   const { professionals, loading, error, setProfessionals } =
     useFetchProfessionals(statusFilter === "activate");
 
-  const { inactivate } = useInactivateProfissional();
-  const { activate } = useActivateProfissional();
+  const { inactivate } = useInactivateProfessional();
+  const { activate } = useActivateProfessional();
 
   const handleAddNew = () => router.push("/professionals/create");
   const handleEdit = (id: string) => router.push(`/professionals/edit/${id}`);
