@@ -10,6 +10,7 @@ import {
   useRef,
 } from "react";
 import { useParams } from "next/navigation";
+import { parseCivilDate, serializeCivilDate } from "@/lib/date";
 
 // --- INTERFACES ---
 interface PersonalData {
@@ -67,6 +68,37 @@ interface ProfileData {
   role: "student" | "patient";
 }
 
+type DraftAttachment = {
+  base64: string;
+  name: string;
+  type: string;
+};
+
+type DraftCache = {
+  additionals?: {
+    disability?: { report?: DraftAttachment | File };
+    care?: { referral?: DraftAttachment | File };
+  };
+  profile?: { photo?: DraftAttachment | File };
+  personal?: {
+    rg?: { issuing?: { date?: string | Date } };
+    birth?: { date?: string | Date };
+  };
+};
+
+function isDraftAttachment(value: unknown): value is DraftAttachment {
+  return (
+    typeof value === "object" &&
+    value !== null &&
+    "base64" in value &&
+    typeof (value as { base64?: unknown }).base64 === "string" &&
+    "name" in value &&
+    typeof (value as { name?: unknown }).name === "string" &&
+    "type" in value &&
+    typeof (value as { type?: unknown }).type === "string"
+  );
+}
+
 export enum MembersRegisterStep {
   PERSONAL = "personal",
   KINSHIPS = "kinships",
@@ -98,7 +130,9 @@ interface MembersRegisterContextData {
     setStep: (step: MembersRegisterStep) => void;
     loadAllData: (data: MembersRegisterState) => void;
   };
-  register: (id?: string) => Promise<{ status: number; data: Record<string, unknown> }>;
+  register: (
+    id?: string,
+  ) => Promise<{ status: number; data: Record<string, unknown> }>;
 }
 
 // --- UTILS: FILE CONVERSION ---
@@ -267,22 +301,22 @@ export function MembersRegisterProvider({
     return patientId ? `apae_edit_cache_${patientId}` : "apae_register_cache";
   }, [params?.id]);
 
-  const reconstructFiles = useCallback((obj: any) => {
-    if (obj.additionals?.disability?.report?.base64) {
+  const reconstructFiles = useCallback((obj: DraftCache) => {
+    if (isDraftAttachment(obj.additionals?.disability?.report)) {
       obj.additionals.disability.report = base64ToFile(
         obj.additionals.disability.report.base64,
         obj.additionals.disability.report.name,
         obj.additionals.disability.report.type,
       );
     }
-    if (obj.additionals?.care?.referral?.base64) {
+    if (isDraftAttachment(obj.additionals?.care?.referral)) {
       obj.additionals.care.referral = base64ToFile(
         obj.additionals.care.referral.base64,
         obj.additionals.care.referral.name,
         obj.additionals.care.referral.type,
       );
     }
-    if (obj.profile?.photo?.base64) {
+    if (isDraftAttachment(obj.profile?.photo)) {
       obj.profile.photo = base64ToFile(
         obj.profile.photo.base64,
         obj.profile.photo.name,
@@ -290,10 +324,12 @@ export function MembersRegisterProvider({
       );
     }
     if (obj.personal?.rg?.issuing?.date) {
-      obj.personal.rg.issuing.date = new Date(obj.personal.rg.issuing.date);
+      obj.personal.rg.issuing.date =
+        parseCivilDate(obj.personal.rg.issuing.date) || new Date();
     }
     if (obj.personal?.birth?.date) {
-      obj.personal.birth.date = new Date(obj.personal.birth.date);
+      obj.personal.birth.date =
+        parseCivilDate(obj.personal.birth.date) || new Date();
     }
     return obj;
   }, []);
@@ -334,12 +370,9 @@ export function MembersRegisterProvider({
         dispatch({ type: "SET_STEP", payload: step }),
       [],
     ),
-    loadAllData: useCallback(
-      (apiData: MembersRegisterState) => {
-        dispatch({ type: "LOAD_ALL_DATA", payload: apiData });
-      },
-      [],
-    ),
+    loadAllData: useCallback((apiData: MembersRegisterState) => {
+      dispatch({ type: "LOAD_ALL_DATA", payload: apiData });
+    }, []),
   };
 
   useEffect(() => {
@@ -350,10 +383,10 @@ export function MembersRegisterProvider({
     if (saved) {
       try {
         const parsed = JSON.parse(saved);
-        const draftWithFiles = reconstructFiles(parsed);
+        const draftWithFiles = reconstructFiles(parsed as DraftCache);
         dispatch({
           type: "LOAD_ALL_DATA",
-          payload: draftWithFiles,
+          payload: draftWithFiles as MembersRegisterState,
         });
         hasHydrated.current = true;
         return;
@@ -364,8 +397,6 @@ export function MembersRegisterProvider({
 
     hasHydrated.current = true;
   }, [STORAGE_KEY, reconstructFiles]);
-
-  
 
   useEffect(() => {
     if (typeof window === "undefined") return;
@@ -400,16 +431,17 @@ export function MembersRegisterProvider({
         }
 
         localStorage.setItem(STORAGE_KEY, JSON.stringify(draft));
-      } catch (error: any) {
-        if (error.name === "QuotaExceededError") {
+      } catch (error: unknown) {
+        if (
+          error instanceof DOMException &&
+          error.name === "QuotaExceededError"
+        ) {
           console.warn("Aviso: Limite do LocalStorage excedido.");
         } else {
           console.error("Erro ao salvar rascunho:", error);
         }
       }
     };
-
-    
 
     const timer = setTimeout(saveDraft, 1000);
     return () => clearTimeout(timer);
@@ -419,16 +451,6 @@ export function MembersRegisterProvider({
     async (id?: string) => {
       const { personal, address, additionals, guardian, kinships, profile } =
         state;
-
-      const formatDate = (date: Date | string | number | null | undefined) => {
-        if (!date) return null;
-        const d = new Date(date);
-        if (isNaN(d.getTime())) return null;
-        const year = d.getFullYear();
-        const month = String(d.getMonth() + 1).padStart(2, "0");
-        const day = String(d.getDate()).padStart(2, "0");
-        return `${year}-${month}-${day}`;
-      };
 
       const parseIncome = (val: string) => {
         const clean = String(val).replace(/[^\d]/g, "");
@@ -453,7 +475,7 @@ export function MembersRegisterProvider({
         nis: string;
         registrationDate: Date | string | null;
         allergies: string;
-        continuousMedication: string; 
+        continuousMedication: string;
         isStudent: boolean;
         address: {
           city: string;
@@ -490,7 +512,7 @@ export function MembersRegisterProvider({
         annualRegistry: {
           bpc: boolean;
           diseases: string;
-          continuousMedication: string; 
+          continuousMedication: string;
           serviceArea: { area: string }[];
           familyIncome: number;
           year: number;
@@ -501,7 +523,7 @@ export function MembersRegisterProvider({
       const annualRegistryData = {
         bpc: additionals.bpc,
         diseases: additionals.diseases || "Nenhuma",
-        continuousMedication: additionals.medications || "Nenhum", 
+        continuousMedication: additionals.medications || "Nenhum",
         serviceArea: additionals.care.types.map((area: string) => ({ area })),
         familyIncome: parseIncome(additionals.householdIncome),
         year: new Date().getFullYear(),
@@ -513,21 +535,21 @@ export function MembersRegisterProvider({
       const patient: PatientPayload = {
         fullName: personal.name || "Não informado",
         nationality: personal.birth.place || "Brasileiro",
-        birthDate: formatDate(personal.birth.date),
+        birthDate: serializeCivilDate(personal.birth.date),
         contact: personal.phone || "Não informado",
         birthCertificateNumber: personal.birth.certificate || "0",
         registryOffice: "Cartorio",
         fls: "0",
         book: "0",
         rg: personal.rg.number || "0",
-        issueDate: formatDate(personal.rg.issuing.date),
+        issueDate: serializeCivilDate(personal.rg.issuing.date),
         issuingAgency: personal.rg.issuing.body || "SSP/SP",
         cpf: personal.cpf,
         cns: personal.cns || "000 0000 0000 0000",
         nis: personal.nis || "0",
-        registrationDate: formatDate(personal.rg.issuing.date),
+        registrationDate: serializeCivilDate(personal.rg.issuing.date),
         allergies: additionals.allergies || "Nenhuma",
-        continuousMedication: additionals.medications || "Nenhum", 
+        continuousMedication: additionals.medications || "Nenhum",
 
         isStudent: profile.role === "student",
         address: {
@@ -562,7 +584,7 @@ export function MembersRegisterProvider({
           kinship: k.type || "Pai/Mãe",
         })),
         vaccineNames: additionals.vaccines.map((v) => ({ name: v })),
-        annualRegistry: annualRegistryData, 
+        annualRegistry: annualRegistryData,
       };
 
       if (id) {
@@ -588,10 +610,10 @@ export function MembersRegisterProvider({
         const data = await res.json().catch(() => ({}));
         return { status: res.status, data };
       } else {
-        patient.registrationDate = formatDate(new Date());
-        
+        patient.registrationDate = serializeCivilDate(new Date());
         const formData = new FormData();
         formData.append(
+
           "patient",
           new Blob([JSON.stringify(patient)], { type: "application/json" }),
         );
