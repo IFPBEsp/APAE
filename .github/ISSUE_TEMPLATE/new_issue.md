@@ -12,7 +12,7 @@ Descreva o problema ou necessidade que essa issue está abordando.
 
 ## Tarefas Relacionadas
 
-* MR relacionado: {mr_link}
+* PR relacionado: {pr_link}
 * Outras issues: {issue_link}
 
 ## Objetivo da Solução
