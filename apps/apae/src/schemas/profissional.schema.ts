@@ -88,9 +88,9 @@ const baseSchema = z.object({
 });
 
 export const registerSchema = baseSchema.extend({
-  termoVoluntariado: fileSchema,
-  curriculo: fileSchema,
-  anexoQualquer: fileSchema.optional(),
+  volunteerAgreement: fileSchema,
+  curriculum: fileSchema,
+  attachmentAny: fileSchema.optional(),
 });
 
 export const updateProfessionalSchema = baseSchema;

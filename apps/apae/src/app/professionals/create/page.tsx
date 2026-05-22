@@ -115,10 +115,10 @@ export default function CadastroProfessional(): JSX.Element {
       formData.append("profilePhoto", values.photo);
     }
 
-    formData.append("volunteerAgreement", values.termoVoluntariado);
-    formData.append("curriculum", values.curriculo);
-    if (values.anexoQualquer) {
-      formData.append("attachmentAny", values.anexoQualquer);
+    formData.append("volunteerAgreement", values.volunteerAgreement);
+    formData.append("curriculum", values.curriculum);
+    if (values.attachmentAny) {
+      formData.append("attachmentAny", values.attachmentAny);
     }
     await create(formData);
   };
@@ -407,7 +407,7 @@ export default function CadastroProfessional(): JSX.Element {
 
           <FormField
             control={form.control}
-            name="termoVoluntariado"
+            name="volunteerAgreement"
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Termo do Voluntário *</FormLabel>
@@ -427,7 +427,7 @@ export default function CadastroProfessional(): JSX.Element {
 
           <FormField
             control={form.control}
-            name="curriculo"
+            name="curriculum"
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Currículo *</FormLabel>
@@ -447,7 +447,7 @@ export default function CadastroProfessional(): JSX.Element {
           
           <FormField
             control={form.control}
-            name="anexoQualquer"
+            name="attachmentAny"
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Anexo qualquer</FormLabel>
