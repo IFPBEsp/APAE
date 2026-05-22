@@ -190,8 +190,8 @@ function PatientsAndStudentsScreenContent() {
                 page: 0,
               });
             }}
-            ano={query.year}
-            setAno={(value) => {
+            year={query.year}
+            setYear={(value) => {
               updateQuery({
                 year: value || "",
                 page: 0,
