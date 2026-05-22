@@ -1,15 +1,15 @@
 import * as z from "zod";
 
-const nomeRegex = /^[A-Za-zÀ-ÖØ-öø-ÿ ]{3,100}$/;
-const telefoneRegex = /^\(\d{2}\) \d{5}-\d{4}$/;
+const nameRegex = /^[A-Za-zÀ-ÖØ-öø-ÿ ]{3,100}$/;
+const phoneRegex = /^\(\d{2}\) \d{5}-\d{4}$/;
 
 const rgRegex =
   /^(\d{7,8}[\dXx]?|\d\.\d{3}\.\d{3}|\d{2}\.\d{3}\.\d{3}-[\dXx])$/;
 const stateRegex = /^[A-Z]{2}$/;
 const cityRegex = /^[A-Za-zÀ-ÿ\s]+$/;
-const bairroRegex = /^[A-Za-zÀ-ÿ\s]+$/;
-const ruaRegex = /^[A-Za-zÀ-ÿ0-9\s]+$/;
-const numeroRegex = /^[0-9]{1,6}$/;
+const neighborhoodRegex = /^[A-Za-zÀ-ÿ\s]+$/;
+const streetRegex = /^[A-Za-zÀ-ÿ0-9\s]+$/;
+const numberRegex = /^[0-9]{1,6}$/;
 
 const fileSchema = z
   .instanceof(File, { message: "Selecione um arquivo" })
@@ -36,10 +36,10 @@ const fileSchema = z
   );
 
 const baseSchema = z.object({
-  nomeCompleto: z
+  fullName: z
     .string()
     .regex(
-      nomeRegex,
+      nameRegex,
       "Nome inválido. Use apenas letras e espaços, 3-100 caracteres"
     ),
 
@@ -56,29 +56,29 @@ const baseSchema = z.object({
 
   state: z.string().regex(stateRegex, "Estado inválido"),
   city: z.string().regex(cityRegex, "Cidade inválida"),
-  bairro: z.string().regex(bairroRegex, "Bairro inválido"),
-  rua: z.string().regex(ruaRegex, "Rua inválida"),
-  numero: z.string().regex(numeroRegex, "Número inválido"),
+  neighborhood: z.string().regex(neighborhoodRegex, "Bairro inválido"),
+  street: z.string().regex(streetRegex, "Rua inválida"),
+  number: z.string().regex(numberRegex, "Número inválido"),
 
-  complemento: z.string().optional(),
+  complement: z.string().optional(),
 
   cep: z
     .string()
     .regex(/^\d{5}-\d{3}$/, "CEP inválido. Formato esperado: XXXXX-XXX"),
 
-  telefone: z
+  phone: z
     .string()
     .regex(
-      telefoneRegex,
+      phoneRegex,
       "Telefone inválido. Formato esperado: (xx) xxxxx-xxxx"
     )
     .transform((val) => val.trim()),
 
-  disponibilidade: z
+  availability: z
     .array(
       z.object({
-        dia: z.string(),
-        turno: z.string(),
+        day: z.string(),
+        shift: z.string(),
         checked: z.boolean(),
       })
     )
@@ -87,7 +87,7 @@ const baseSchema = z.object({
   photo: imageSchema.optional().nullable(),
 });
 
-export const cadastroSchema = baseSchema.extend({
+export const registerSchema = baseSchema.extend({
   termoVoluntariado: fileSchema,
   curriculo: fileSchema,
   anexoQualquer: fileSchema.optional(),

@@ -1,20 +1,20 @@
 import {
   diasDaSemana,
   AvailabilityType,
-  turnos,
+  shifts,
 } from "@/types/profissional";
 
-export function generateAvailabilityMatrix(lista: AvailabilityType[]) {
-  return diasDaSemana.flatMap((dia) =>
-    turnos.map((turno) => {
-      const existente = lista.find((d) => {
-        return d.dia == dia.id && d.turno == turno.id;
+export function generateAvailabilityMatrix(list: AvailabilityType[]) {
+  return diasDaSemana.flatMap((day) =>
+    shifts.map((shift) => {
+      const existente = list.find((d) => {
+        return d.day == day.id && d.shift == shift.id;
       });
 
       return (
         existente ?? {
-          dia: dia.id,
-          turno: turno.id,
+          day: day.id,
+          shift: shift.id,
           checked: false,
         }
       );

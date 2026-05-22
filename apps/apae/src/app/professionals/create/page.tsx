@@ -25,14 +25,14 @@ import {
 import { useRouter } from "next/navigation";
 import { useCreateProfessional } from "@/hooks/profissional/use-create-profissional";
 import Disponibilidade from "@/components/forms/DisponibilidadeForm";
-import { cadastroSchema } from "@/schemas/profissional.schema";
+import { registerSchema } from "@/schemas/profissional.schema";
 import { STATES } from "@/lib/states";
 import { useRef, useState, useEffect, JSX } from "react";
 import HealthAreaSelect from "@/components/shared/HealthAreaSelect";
 import { generateAvailabilityMatrix } from "@/domains/professional/shared/disponibilidade.utils";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
-type CadastroFormValues = z.infer<typeof cadastroSchema>;
+type RegisterFormValues = z.infer<typeof registerSchema>;
 
 export default function CadastroProfessional(): JSX.Element {
   const router = useRouter();
@@ -40,25 +40,25 @@ export default function CadastroProfessional(): JSX.Element {
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const { create, loading, error, success } = useCreateProfessional();
 
-  const defaultValues: Partial<CadastroFormValues> = {
-    nomeCompleto: "",
+  const defaultValues: Partial<RegisterFormValues> = {
+    fullName: "",
     email: "",
     professionalDocument: "",
     serviceArea: "",
-    telefone: "",
+    phone: "",
     rg: "",
     state: "",
     city: "",
-    bairro: "",
-    rua: "",
-    numero: "",
-    complemento: "",
+    neighborhood: "",
+    street: "",
+    number: "",
+    complement: "",
     cep: "",
-    disponibilidade: generateAvailabilityMatrix([]),
+    availability: generateAvailabilityMatrix([]),
   };
 
-  const form = useForm<CadastroFormValues>({
-    resolver: zodResolver(cadastroSchema),
+  const form = useForm<RegisterFormValues>({
+    resolver: zodResolver(registerSchema),
     defaultValues,
   });
 
@@ -76,30 +76,30 @@ export default function CadastroProfessional(): JSX.Element {
     router.push("/professionals");
   };
 
-  const onSubmit: SubmitHandler<CadastroFormValues> = async (values) => {
+  const onSubmit: SubmitHandler<RegisterFormValues> = async (values) => {
     const formData = new FormData();
 
-    const availabilities = values.disponibilidade
+    const availabilities = values.availability
       .filter((d) => d?.checked)
       .map((d) => ({
-        day: d?.dia,
-        shift: d?.turno,
+        day: d?.day,
+        shift: d?.shift,
       }));
 
     const payload = {
       serviceArea: { area: values.serviceArea },
-      phoneNumber: values.telefone,
+      phoneNumber: values.phone,
       professionalDocument: values.professionalDocument?.trim() || null,
       email: values.email.trim(),
-      name: values.nomeCompleto.trim(),
+      name: values.fullName.trim(),
       identityDocument: values.rg.trim(),
       address: {
         state: values.state,
         city: values.city.trim(),
-        neighborhood: values.bairro.trim(),
-        street: values.rua.trim(),
-        number: values.numero?.trim(),
-        complement: values.complemento?.trim() ?? "",
+        neighborhood: values.neighborhood.trim(),
+        street: values.street.trim(),
+        number: values.number?.trim(),
+        complement: values.complement?.trim() ?? "",
         cep: values.cep,
       },
       availabilities,
@@ -132,7 +132,7 @@ export default function CadastroProfessional(): JSX.Element {
         >
           <FormField
             control={form.control}
-            name="nomeCompleto"
+            name="fullName"
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Nome completo *</FormLabel>
@@ -209,7 +209,7 @@ export default function CadastroProfessional(): JSX.Element {
             />
             <Controller
               control={form.control}
-              name="telefone"
+              name="phone"
               render={({ field, fieldState }) => (
                 <FormItem>
                   <FormLabel>Telefone *</FormLabel>
@@ -278,7 +278,7 @@ export default function CadastroProfessional(): JSX.Element {
 
           <FormField
             control={form.control}
-            name="rua"
+            name="street"
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Endereço *</FormLabel>
@@ -293,7 +293,7 @@ export default function CadastroProfessional(): JSX.Element {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <FormField
               control={form.control}
-              name="bairro"
+              name="neighborhood"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Bairro *</FormLabel>
@@ -330,7 +330,7 @@ export default function CadastroProfessional(): JSX.Element {
           <div className="grid grid-cols-2 gap-4">
             <FormField
               control={form.control}
-              name="numero"
+              name="number"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Número *</FormLabel>
@@ -343,7 +343,7 @@ export default function CadastroProfessional(): JSX.Element {
             />
             <FormField
               control={form.control}
-              name="complemento"
+              name="complement"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Complemento</FormLabel>

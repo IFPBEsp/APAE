@@ -8,14 +8,14 @@ export const diasDaSemana = [
   { id: "sexta", label: "Sexta" },
 ];
 
-export const turnos = [
+export const shifts = [
   { id: "manha", label: "Manhã" },
   { id: "tarde", label: "Tarde" },
 ];
 
 export type AvailabilityType = {
-  dia: string;
-  turno: string;
+  day: string;
+  shift: string;
   checked: boolean;
 };
 
