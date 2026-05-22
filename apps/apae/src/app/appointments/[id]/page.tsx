@@ -170,7 +170,7 @@ export default function ViewAppointment() {
                 </DialogContent>
               </Dialog>
               <div className="rounded-full overflow-hidden border-1 border-[#0D4F97]">
-                <TrashButton id={id} realizado={false} />
+                <TrashButton id={id} realized={false} />
               </div>
             </CardAction>
           </CardHeader>

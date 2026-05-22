@@ -17,13 +17,13 @@ interface SearchFiltersProps {
 
   readonly disorder?: string;
   readonly setDisorder?: (status: string) => void;
-  readonly ano?: string;
-  readonly setAno?: (status: string) => void;
+  readonly year?: string;
+  readonly setYear?: (status: string) => void;
   readonly city?: string;
   readonly setCity?: (status: string) => void;
 
   readonly disorderOptions?: string[];
-  readonly anoOptions?: string[];
+  readonly yearOptions?: string[];
   readonly cityOptions?: string[];
 }
 
@@ -32,12 +32,12 @@ export function SearchFilters({
   setSearchName,
   disorder,
   setDisorder,
-  ano,
-  setAno,
+  year,
+  setYear,
   city,
   setCity,
   disorderOptions = [], 
-  anoOptions = [],
+  yearOptions = [],
   cityOptions = [],
 }: SearchFiltersProps) {
   
@@ -50,7 +50,7 @@ export function SearchFilters({
   );
 
   const showDisorderFilter = setDisorder !== undefined;
-  const showAnoFilter = setAno !== undefined;
+  const showAnoFilter = setYear !== undefined;
   const showCityFilter = setCity !== undefined;
 
   return (
@@ -104,20 +104,20 @@ export function SearchFilters({
                   className={cn(dropdownTriggerStyle, "w-[90px]")}
                 >
                   <span className="flex-1 w-0 truncate text-left">
-                    {ano || "Ano"}
+                    {year || "Ano"}
                   </span>
                   <ChevronDown className="h-4 w-4" />
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end" className="w-[100px]">
-                <DropdownMenuItem onClick={() => setAno?.("")}>
+                <DropdownMenuItem onClick={() => setYear?.("")}>
                   Qualquer
                 </DropdownMenuItem>
-                {anoOptions.map((option) => (
+                {yearOptions.map((option) => (
                   <DropdownMenuItem
                     key={option}
-                    onClick={() => setAno?.(option)}
-                    className={cn({ "bg-slate-100": ano === option })}
+                    onClick={() => setYear?.(option)}
+                    className={cn({ "bg-slate-100": year === option })}
                   >
                     {option}
                   </DropdownMenuItem>

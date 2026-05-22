@@ -11,11 +11,11 @@ import { cn } from "@/lib/utils";
 
 export interface Appointment {
   dataHora?: Date;
-  paciente: string;
+  patient: string;
   area: string;
 }
 
-const pacientes = [
+const patients = [
   { value: 'joao-oliveira', label: 'João Oliveira' },
   { value: 'maria-silva', label: 'Maria Silva' },
   { value: 'pedro-almeida', label: 'Pedro Almeida' },
@@ -32,17 +32,17 @@ export function EditAppointmentForm({
 }: {
   appointment?: Appointment;
 }) {
-  const [dataHora, setDataHora] = useState<Date | undefined>(
+  const [dateTime, setDateTime] = useState<Date | undefined>(
     appointment?.dataHora
   );
-  const [paciente, setPaciente] = useState<string>(appointment?.paciente || '');
+  const [patient, setPatient] = useState<string>(appointment?.patient || '');
   const [area, setArea] = useState<string>(appointment?.area || '');
 
   const [frequencyDays, setFrequencyDays] = useState<string | number>('');
 
   const [validationErrors, setValidationErrors] = useState({
-    dataHora: false,
-    paciente: false,
+    dateTime: false,
+    patient: false,
     area: false,
     frequencyDays: false,
   });
@@ -51,8 +51,8 @@ export function EditAppointmentForm({
     e.preventDefault();
 
     const errors = {
-      dataHora: !dataHora,
-      paciente: !paciente,
+      dateTime: !dateTime,
+      patient: !patient,
       area: !area,
       frequencyDays:
         !frequencyDays ||
@@ -75,8 +75,8 @@ export function EditAppointmentForm({
             <Label htmlFor="data-hora">
               Escolher Data e Horário <span className="text-red-500">*</span>
             </Label>
-            <DateTimePicker value={dataHora} onChange={setDataHora} />
-            {validationErrors.dataHora && (
+            <DateTimePicker value={dateTime} onChange={setDateTime} />
+            {validationErrors.dateTime && (
               <p className="text-sm text-red-500">Este campo é obrigatório.</p>
             )}
           </div>
@@ -86,16 +86,16 @@ export function EditAppointmentForm({
               Paciente <span className="text-red-500">*</span>
             </Label>
             <Combobox
-              options={pacientes}
-              value={paciente}
-              onChange={setPaciente}
+              options={patients}
+              value={patient}
+              onChange={setPatient}
               placeholder="Pesquisar paciente"
               className={cn(
-                validationErrors.paciente && 'border-red-500',
+                validationErrors.patient && 'border-red-500',
                 'font-normal text-gray-400'
               )}
             />
-            {validationErrors.paciente && (
+            {validationErrors.patient && (
               <p className="text-sm text-red-500">Este campo é obrigatório.</p>
             )}
           </div>
