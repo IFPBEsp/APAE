@@ -29,8 +29,8 @@ export default function VisualizarProfessional() {
 
     return generateAvailabilityMatrix(
       avs.map((a) => ({
-        dia: a.day?.toLowerCase(),
-        turno: a.shift?.toLowerCase(),
+        day: a.day?.toLowerCase(),
+        shift: a.shift?.toLowerCase(),
         checked: true,
       })),
     );
@@ -216,7 +216,7 @@ export default function VisualizarProfessional() {
 
                         {DAYS.map((day) => {
                           const cell = disponibilidadeMatrix.find(
-                            (d) => d?.dia === day && d?.turno === shift,
+                            (d) => d?.day === day && d?.shift === shift,
                           );
 
                           return (

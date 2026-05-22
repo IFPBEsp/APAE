@@ -120,20 +120,20 @@ export default function AtualizarProfessional(): JSX.Element {
   }, [curriculumFile, volunteerFile, selectedPhoto, attachmentFiles]);
 
   const defaultValues: Partial<UpdateFormValues> = {
-    nomeCompleto: "",
+    fullName: "",
     email: "",
     professionalDocument: "",
     serviceArea: "",
-    telefone: "",
+    phone: "",
     rg: "",
     state: "",
     city: "",
-    bairro: "",
-    rua: "",
-    numero: "",
-    complemento: "",
+    neighborhood: "",
+    street: "",
+    number: "",
+    complement: "",
     cep: "",
-    disponibilidade: generateAvailabilityMatrix([]),
+    availability: generateAvailabilityMatrix([]),
   };
 
   const form = useForm<UpdateFormValues>({
@@ -148,27 +148,27 @@ export default function AtualizarProfessional(): JSX.Element {
 
     const fullMatrix = generateAvailabilityMatrix(
       disponibilidadesBackend.map((a) => ({
-        dia: a.day.toLowerCase(),
-        turno: a.shift.toLowerCase(),
+        day: a.day.toLowerCase(),
+        shift: a.shift.toLowerCase(),
         checked: true,
       })),
     );
 
     form.reset({
-      nomeCompleto: professional.name,
+      fullName: professional.name,
       email: professional.email,
       professionalDocument: professional.professionalDocument ?? "",
       serviceArea: professional.serviceArea.area,
-      telefone: professional.phoneNumber,
+      phone: professional.phoneNumber,
       rg: professional.identityDocument,
       state: professional.address.state,
       city: professional.address.city,
-      bairro: professional.address.neighborhood,
-      rua: professional.address.street,
-      numero: professional.address.number,
-      complemento: professional.address.complement ?? "",
+      neighborhood: professional.address.neighborhood,
+      street: professional.address.street,
+      number: professional.address.number,
+      complement: professional.address.complement ?? "",
       cep: professional.address.cep,
-      disponibilidade: fullMatrix,
+      availability: fullMatrix,
     });
   }, [professional, form]);
 
@@ -233,27 +233,27 @@ export default function AtualizarProfessional(): JSX.Element {
   const onSubmit: SubmitHandler<UpdateFormValues> = async (values) => {
     if (!professional?.id) return;
 
-    const availabilities = values.disponibilidade
+    const availabilities = values.availability
       .filter((d) => d?.checked)
       .map((d) => ({
-        day: d?.dia,
-        shift: d?.turno,
+        day: d?.day,
+        shift: d?.shift,
       }));
 
     const payload = {
       serviceArea: { area: values.serviceArea },
-      phoneNumber: values.telefone,
+      phoneNumber: values.phone,
       professionalDocument: values.professionalDocument?.trim() || null,
       email: values.email.trim(),
-      name: values.nomeCompleto.trim(),
+      name: values.fullName.trim(),
       identityDocument: values.rg.trim(),
       address: {
         state: values.state,
         city: values.city.trim(),
-        neighborhood: values.bairro.trim(),
-        street: values.rua.trim(),
-        number: values.numero?.trim(),
-        complement: values.complemento?.trim() ?? "",
+        neighborhood: values.neighborhood.trim(),
+        street: values.street.trim(),
+        number: values.number?.trim(),
+        complement: values.complement?.trim() ?? "",
         cep: values.cep,
       },
       availabilities,
@@ -346,7 +346,7 @@ export default function AtualizarProfessional(): JSX.Element {
         >
           <FormField
             control={form.control}
-            name="nomeCompleto"
+            name="fullName"
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Nome completo *</FormLabel>
@@ -423,7 +423,7 @@ export default function AtualizarProfessional(): JSX.Element {
 
             <Controller
               control={form.control}
-              name="telefone"
+              name="phone"
               render={({ field, fieldState }) => (
                 <FormItem>
                   <FormLabel>Telefone *</FormLabel>
@@ -491,7 +491,7 @@ export default function AtualizarProfessional(): JSX.Element {
 
           <FormField
             control={form.control}
-            name="rua"
+            name="street"
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Endereço *</FormLabel>
@@ -506,7 +506,7 @@ export default function AtualizarProfessional(): JSX.Element {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <FormField
               control={form.control}
-              name="bairro"
+              name="neighborhood"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Bairro *</FormLabel>
@@ -544,7 +544,7 @@ export default function AtualizarProfessional(): JSX.Element {
           <div className="grid grid-cols-2 gap-4">
             <FormField
               control={form.control}
-              name="numero"
+              name="number"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Número *</FormLabel>
@@ -558,7 +558,7 @@ export default function AtualizarProfessional(): JSX.Element {
 
             <FormField
               control={form.control}
-              name="complemento"
+              name="complement"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Complemento</FormLabel>

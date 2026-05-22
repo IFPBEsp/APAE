@@ -1,11 +1,11 @@
 import {
-  diasDaSemana,
+  daysOfWeek,
   AvailabilityType,
   shifts,
 } from "@/types/profissional";
 
 export function generateAvailabilityMatrix(list: AvailabilityType[]) {
-  return diasDaSemana.flatMap((day) =>
+  return daysOfWeek.flatMap((day) =>
     shifts.map((shift) => {
       const existente = list.find((d) => {
         return d.day == day.id && d.shift == shift.id;

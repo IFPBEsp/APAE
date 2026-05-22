@@ -1,6 +1,6 @@
 import { ServiceArea } from "./service-area";
 
-export const diasDaSemana = [
+export const daysOfWeek = [
   { id: "segunda", label: "Segunda" },
   { id: "terca", label: "Terça" },
   { id: "quarta", label: "Quarta" },
