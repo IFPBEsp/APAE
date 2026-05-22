@@ -47,7 +47,7 @@ import Link from "next/link";
 import {
   Appointment,
   getAppointments,
-  getAreasDaSaude,
+  getServiceAreas,
 } from "../../services/appointmentService";
 import {Tooltip, TooltipContent, TooltipProvider, TooltipTrigger} from "@radix-ui/react-tooltip";
 
@@ -80,11 +80,11 @@ useEffect(() => {
 
       setAppointments(response.content as Appointment[])
 
-      const areasData = await getAreasDaSaude();
-      const areasExistentes: Area[] = areasData.map(
+      const areasData = await getServiceAreas();
+      const existingAreas: Area[] = areasData.map(
         (area, index) => ({ id: index, name: area })
       );
-      setAreas(areasExistentes);
+      setAreas(existingAreas);
 
       // Busca direta na API (lógica que está funcionando)
       const absencesResponse = await fetch('/apae-geral/api/patients/with-absences?minAbsences=3');

@@ -466,13 +466,13 @@ export async function getHealthProfessional(
   return await response.json();
 }
 
-export async function getAreasDaSaude(): Promise<string[]> {
+export async function getServiceAreas(): Promise<string[]> {
   const professionals = await getHealthProfessionals();
   const areas = professionals.map((p) => p.healthSector);
   return [...new Set(areas)].filter(Boolean) as string[];
 }
 
-export const toggleConfirmacao = async (id: UUID): Promise<void> => {
+export const toggleConfirmation = async (id: UUID): Promise<void> => {
   const appointment = await getAppointmentById(id);
 
   if (!appointment.professional || !appointment.annualRegistration?.id) {

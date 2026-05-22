@@ -201,7 +201,7 @@ export default function PersonDetailsPage() {
         <h3 className="font-baloo font-bold text-[#0D4F97] text-[24px]">{pessoa?.fullName}</h3>
       </div>
 
-      <DocumentCategoriesCard onClickCategoria={(tipo: string) => { router.push(`/patients/${id}/documents/${tipo}`); }} />
+      <DocumentCategoriesCard onClickCategory={(tipo: string) => { router.push(`/patients/${id}/documents/${tipo}`); }} />
       
       
 
