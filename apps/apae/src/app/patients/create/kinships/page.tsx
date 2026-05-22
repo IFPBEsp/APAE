@@ -65,7 +65,7 @@ function LegalGuardianCheckbox({
     form.setValue(`kinships.${index}.isLegalGuardian`, value);
   };
 
-  // Se marcou como não vivo, desmarca o responsável automaticamente
+  // If marked as not alive, unchecks the legal guardian automatically
   useEffect(() => {
     if (!isAlive && isLegalGuardian) {
       fieldOnChange(false);
@@ -174,7 +174,7 @@ export default function MembersRegisterKinshipsPage() {
     name: "kinships",
   });
 
-  // Sincroniza alterações do parente-responsável com os dados do responsável (em edição)
+  // Synchronizes changes from the responsible relative with the guardian's data (in edit mode)
   useEffect(() => {
     if (!isEditing) return;
 
@@ -214,14 +214,14 @@ export default function MembersRegisterKinshipsPage() {
       const legalGuardianKinship = values.kinships.find((k) => k.isLegalGuardian);
 
       if (legalGuardianKinship) {
-        // Em edição, mantém os dados existentes do responsável e atualiza apenas nome/parentesco
+        // In edit mode, keeps the existing guardian data and only updates name/kinship
         if (isEditing) {
           setGuardianData({
             name: legalGuardianKinship.name,
             kinship: legalGuardianKinship.type,
           });
         } else {
-          // Em cadastro, preenche com dados limpos
+          // In creation mode, fills with clean data
           setGuardianData({
             name: legalGuardianKinship.name,
             kinship: legalGuardianKinship.type,
@@ -387,7 +387,7 @@ export default function MembersRegisterKinshipsPage() {
               />
             </div>
 
-            {/* CHECKBOX DO RESPONSÁVEL LEGAL (ÚNICO) - Não exibe na edição */}
+            {/* LEGAL GUARDIAN CHECKBOX (UNIQUE) - Not shown in edit mode */}
             {!isEditing && (
               <div className="md:col-span-2 mt-1">
                 <LegalGuardianCheckbox

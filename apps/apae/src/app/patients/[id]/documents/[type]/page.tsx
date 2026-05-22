@@ -70,7 +70,7 @@ export default function DocumentTypePage() {
   const [replaceFile, setReplaceFile] = React.useState<File | null>(null);
   const [replaceLoading, setReplaceLoading] = React.useState(false);
 
-  // Gerar lista de anos (últimos 5 anos + ano atual + próximo ano)
+  // Generate a list of years (last 5 years + current year + next year)
   const availableYears = React.useMemo(() => {
     const currentYear = new Date().getFullYear();
     const years = [];

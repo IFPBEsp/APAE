@@ -116,7 +116,7 @@ export default function TranstornosPage() {
             </Button>
           </div>
 
-          {/* para mobile */}
+          {/* for mobile */}
           <div className="mb-4 md:hidden">
             <h2 className="text-xl font-bold text-[#003B93]">
               Transtornos Cadastrados

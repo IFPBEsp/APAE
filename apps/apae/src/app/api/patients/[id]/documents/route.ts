@@ -6,7 +6,7 @@ import { NextRequest, NextResponse } from "next/server";
 export const dynamic = 'force-dynamic';
 
 
-const categoryMap: { [key: string]: string } = { // ????
+const categoryMap: { [key: string]: string } = {
   personals: "personals",
   pessoais: "personals",
   medico: "medicals",

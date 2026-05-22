@@ -53,11 +53,11 @@ export default function ViewAppointment() {
       try {
         initialized.current = true;
         
-        // 1. Busca os dados do agendamento
+        // 1. Retrieve scheduling data
         const appointmentData = await getAppointmentById(id);
         setAppointment(appointmentData);
 
-        // 2. Busca a lista de pacientes com faltas (fetch direto)
+        // 2. Search the list of patients with missed appointments (direct fetch).
         const response = await fetch('/apae-geral/api/patients/with-absences?minAbsences=3');
         if (response.ok) {
           const data = await response.json();

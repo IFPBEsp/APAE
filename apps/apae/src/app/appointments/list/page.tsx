@@ -4,7 +4,7 @@ import {
   CalendarDays,
   SearchIcon,
   Users,
-  AlertTriangle // Import do Ícone
+  AlertTriangle // Icon Import
 } from 'lucide-react';
 import { useEffect, useState, useRef } from 'react';
 
@@ -63,7 +63,7 @@ export default function AllApointments() {
   const [searchName, setSearchName] = useState('');
   const [areas, setAreas] = useState<Area[]>([]);
   const [appointments, setAppointments] = useState<Appointment[]>([]);
-  const [alertPatientIds, setAlertPatientIds] = useState<Set<string>>(new Set()); // ESTADO DO ALERTA
+  const [alertPatientIds, setAlertPatientIds] = useState<Set<string>>(new Set()); // ALERT STATE
   const initialized = useRef(false);
   const [isCreateOpen, setIsCreateOpen] = useState(false);
 
@@ -86,7 +86,7 @@ useEffect(() => {
       );
       setAreas(existingAreas);
 
-      // Busca direta na API (lógica que está funcionando)
+      // Direct fetch to API (working logic)
       const absencesResponse = await fetch('/apae-geral/api/patients/with-absences?minAbsences=3');
       
       if (!absencesResponse.ok) {
@@ -294,7 +294,7 @@ useEffect(() => {
                         <div className="flex items-center gap-2">
                           <span className="truncate">{item.annualRegistration.patient.fullName}</span>
                           
-                          {/* CRUZA O ID DO PACIENTE DA TABELA COM O SET DE FALTOSOS */}
+                          {/* CROSS-REFERENCES TABLE PATIENT ID WITH ABSENCE SET */}
                           {alertPatientIds.has(item.annualRegistration.patient.id) && (
                             <TooltipProvider>
                               <Tooltip>
