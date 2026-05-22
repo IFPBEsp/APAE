@@ -28,7 +28,7 @@ import {
 } from '@/app/services/appointmentService';
 import { AppointmentForm } from '@/components/forms/AppointmentForm';
 import TrashButton from '@/components/buttons/trashButton';
-import { formatDatePTBR, separaETransformaEmNumero } from '@/lib/utils';
+import { formatDatePTBR, separateAndTransformIntoNumber } from '@/lib/utils';
 import {
   Tooltip,
   TooltipContent,
@@ -89,8 +89,8 @@ export default function ViewAppointment() {
   
   const hasAbsenceAlert = alertPatientIds.has(patient.id);
 
-  const [year, month, day] = separaETransformaEmNumero(appointment.initialDate, '-');
-  const [hour, minute, second] = separaETransformaEmNumero(appointment.hour, ':');
+  const [year, month, day] = separateAndTransformIntoNumber(appointment.initialDate, '-');
+  const [hour, minute, second] = separateAndTransformIntoNumber(appointment.hour, ':');
 
   const dataHoraDate =
     !isNaN(year) && !isNaN(month) && !isNaN(day) && !isNaN(hour) && !isNaN(minute) && !isNaN(second)
