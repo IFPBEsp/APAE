@@ -12,6 +12,7 @@ import br.org.apae.api.patient.domain.exceptions.DisorderConflictException;
 import br.org.apae.api.patient.domain.exceptions.DisorderNotFoundException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -82,6 +83,7 @@ class DisorderControllerImplTest {
     }
 
     @Test
+    @DisplayName("Deve criar transtorno com sucesso (201)")
     void shouldCreateDisordSucess() throws Exception {
         CreateDisorderDTO requestDto = new CreateDisorderDTO("Transtorno Ansioso");
         UUID idGerado = UUID.randomUUID();
@@ -102,6 +104,7 @@ class DisorderControllerImplTest {
     }
 
     @Test
+    @DisplayName("Deve buscar todos os transtornos com sucesso (200)")
     void shouldGetAllDisordersSucess() throws Exception {
         DisorderResponseDTO d1 = new DisorderResponseDTO(UUID.randomUUID(), "Transtorno A", false);
         DisorderResponseDTO d2 = new DisorderResponseDTO(UUID.randomUUID(), "Transtorno B", false);
@@ -120,6 +123,7 @@ class DisorderControllerImplTest {
     }
 
     @Test
+    @DisplayName("Deve buscar transtorno por ID com sucesso (200)")
     void shouldSearchDisordsByIdSucess() throws Exception {
         UUID id = UUID.randomUUID();
         DisorderResponseDTO responseDto = new DisorderResponseDTO(id, "Transtorno Específico", false);
@@ -136,6 +140,7 @@ class DisorderControllerImplTest {
     }
 
     @Test
+    @DisplayName("Deve atualizar transtorno com sucesso (200)")
     void SouldUpdateDisorderSucess() throws Exception {
         UUID id = UUID.randomUUID();
         UpdateDisorderDTO updateDto = new UpdateDisorderDTO("Transtorno Atualizado");
@@ -154,6 +159,7 @@ class DisorderControllerImplTest {
     }
 
     @Test
+    @DisplayName("Deve deletar transtorno com sucesso (204)")
     void shouldRemoveDisorderSucess() throws Exception {
         UUID id = UUID.randomUUID();
 
@@ -164,6 +170,7 @@ class DisorderControllerImplTest {
     }
 
     @Test
+    @DisplayName("Deve retornar Conflict (409) ao tentar criar transtorno com nome duplicado")
     void shouldReturnConflictWhenCreateDisorderWithDuplicateName() throws Exception {
         CreateDisorderDTO requestDto = new CreateDisorderDTO("Transtorno Duplicado");
 
@@ -179,6 +186,7 @@ class DisorderControllerImplTest {
     }
 
     @Test
+    @DisplayName("Deve retornar NotFound (404) ao buscar transtorno inexistente")
     void shouldReturnNotFoundWhenSearchDisorderByIdNonExistent() throws Exception {
         UUID id = UUID.randomUUID();
 
@@ -192,6 +200,7 @@ class DisorderControllerImplTest {
     }
 
     @Test
+    @DisplayName("Deve retornar NotFound (404) ao tentar atualizar transtorno inexistente")
     void shouldReturnNotFoundWhenUpdateDisorderNonExistent() throws Exception {
         UUID id = UUID.randomUUID();
         UpdateDisorderDTO updateDto = new UpdateDisorderDTO("Nome qualquer");
@@ -208,6 +217,7 @@ class DisorderControllerImplTest {
     }
 
     @Test
+    @DisplayName("Deve retornar Conflict (409) ao tentar atualizar transtorno gerando nome duplicado")
     void shouldReturnConflictWhenUpdateDisorderWithDuplicateName() throws Exception {
         UUID id = UUID.randomUUID();
         UpdateDisorderDTO updateDto = new UpdateDisorderDTO("Nome Já Existe");
@@ -224,6 +234,7 @@ class DisorderControllerImplTest {
     }
 
     @Test
+    @DisplayName("Deve retornar NotFound (404) ao tentar deletar transtorno inexistente")
     void shouldReturnNotFoundWhenDeleteDisorderNonExistent() throws Exception {
         UUID id = UUID.randomUUID();
 
