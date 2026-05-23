@@ -45,7 +45,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest({ AppointmentControllerImpl.class })
-class AppointmentControllerImplTest {
+class AppointmentControllerTest {
 
     @Autowired
     private MockMvc mockMvc;

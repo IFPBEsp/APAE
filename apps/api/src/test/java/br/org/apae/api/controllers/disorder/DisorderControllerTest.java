@@ -52,7 +52,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @Tag("patient")
 @Tag("unit")
 @Tag("controller")
-class DisorderControllerImplTest {
+class DisorderControllerTest {
 
     @TestConfiguration
     @EnableSpringDataWebSupport(pageSerializationMode = VIA_DTO)

@@ -34,7 +34,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 
 @WebMvcTest(controllers = AbsenceControllerImpl.class)
 @AutoConfigureMockMvc(addFilters = false)
-class AbsenceControllerImplTest {
+class AbsenceControllerTest {
 
     @Autowired
     private MockMvc mockMvc;
