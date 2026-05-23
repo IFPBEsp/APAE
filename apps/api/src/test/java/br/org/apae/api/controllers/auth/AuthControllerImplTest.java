@@ -1,5 +1,6 @@
 package br.org.apae.api.controllers.auth;
 
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
@@ -28,12 +29,9 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.web.server.ResponseStatusException;
 
 @WebMvcTest(controllers = AuthControllerImpl.class)
 @AutoConfigureMockMvc(addFilters = false)
@@ -118,7 +116,7 @@ class AuthControllerImplTest {
                             .content(malformedJson))
                     .andExpect(status().isBadRequest());
 
-            verify(authService, never()).signUp(org.mockito.ArgumentMatchers.any(SignUpDTO.class));
+            verify(authService, never()).signUp(any(SignUpDTO.class));
         }
 
         @Test
@@ -137,7 +135,7 @@ class AuthControllerImplTest {
                     .andExpect(status().isBadRequest());
 
             verify(authService, never())
-                    .signUp(org.mockito.ArgumentMatchers.any(SignUpDTO.class));
+                    .signUp(any(SignUpDTO.class));
         }
     }
 
@@ -237,7 +235,7 @@ class AuthControllerImplTest {
                     .andExpect(status().isBadRequest());
 
             verify(authService, never())
-                    .requestPasswordRecovery(org.mockito.ArgumentMatchers.any(PasswordRecoveryRequestDTO.class));
+                    .requestPasswordRecovery(any(PasswordRecoveryRequestDTO.class));
         }
 
         @Test
@@ -252,7 +250,7 @@ class AuthControllerImplTest {
                     .andExpect(status().isBadRequest());
 
             verify(authService, never())
-                    .requestPasswordRecovery(org.mockito.ArgumentMatchers.any(PasswordRecoveryRequestDTO.class));
+                    .requestPasswordRecovery(any(PasswordRecoveryRequestDTO.class));
         }
     }
 
@@ -315,7 +313,7 @@ class AuthControllerImplTest {
                     .andExpect(status().isBadRequest());
 
             verify(authService, never())
-                    .resetPassword(org.mockito.ArgumentMatchers.any(PasswordResetDTO.class));
+                    .resetPassword(any(PasswordResetDTO.class));
         }
 
         @Test
@@ -333,7 +331,7 @@ class AuthControllerImplTest {
                     .andExpect(status().isBadRequest());
 
             verify(authService, never())
-                    .resetPassword(org.mockito.ArgumentMatchers.any(PasswordResetDTO.class));
+                    .resetPassword(any(PasswordResetDTO.class));
         }
 
         @Test
@@ -351,7 +349,7 @@ class AuthControllerImplTest {
                     .andExpect(status().isBadRequest());
 
             verify(authService, never())
-                    .resetPassword(org.mockito.ArgumentMatchers.any(PasswordResetDTO.class));
+                    .resetPassword(any(PasswordResetDTO.class));
         }
 
         @Test
@@ -369,7 +367,7 @@ class AuthControllerImplTest {
                     .andExpect(status().isBadRequest());
 
             verify(authService, never())
-                    .resetPassword(org.mockito.ArgumentMatchers.any(PasswordResetDTO.class));
+                    .resetPassword(any(PasswordResetDTO.class));
         }
     }
 }
