@@ -1,4 +1,4 @@
-package br.org.apae.api.appointment.interfaces.controllers.impl;
+package br.org.apae.api.controllers.absence;
 
 import br.org.apae.api.appointment.application.interfaces.AbsenceApplicationService;
 import br.org.apae.api.auth.application.internal.UserService;
@@ -6,7 +6,6 @@ import br.org.apae.api.auth.infrastructure.security.JwtProvider;
 import br.org.apae.api.common.dto.appointment.request.absence.CreateAbsenceDTO;
 import br.org.apae.api.common.dto.appointment.response.absence.AbsenceResponseDTO;
 import br.org.apae.api.common.dto.appointment.response.absence.JustifyAbsenceDTO;
-import br.org.apae.api.controllers.absence.AbsenceControllerImpl;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
