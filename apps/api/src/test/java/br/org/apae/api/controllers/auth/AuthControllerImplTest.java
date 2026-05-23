@@ -10,6 +10,10 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import br.org.apae.api.auth.application.interfaces.AuthApplicationService;
 import br.org.apae.api.auth.application.internal.UserService;
+import br.org.apae.api.auth.domain.exceptions.AuthenticationException;
+import br.org.apae.api.auth.domain.exceptions.InvalidPasswordException;
+import br.org.apae.api.auth.domain.exceptions.UserConflictException;
+import br.org.apae.api.auth.domain.exceptions.UserNotFoundException;
 import br.org.apae.api.auth.infrastructure.security.JwtProvider;
 import br.org.apae.api.common.dto.auth.request.PasswordRecoveryRequestDTO;
 import br.org.apae.api.common.dto.auth.request.PasswordResetDTO;
@@ -87,7 +91,7 @@ class AuthControllerImplTest {
                     "João Silva"
             );
 
-            doThrow(new ResponseStatusException(HttpStatus.CONFLICT, "E-mail já cadastrado."))
+            doThrow(new UserConflictException())
                     .when(authService)
                     .signUp(requestDto);
 
@@ -171,7 +175,26 @@ class AuthControllerImplTest {
             );
 
             when(authService.signIn(requestDto))
-                    .thenThrow(new BadCredentialsException("Credenciais inválidas."));
+                    .thenThrow(new InvalidPasswordException());
+
+            mockMvc.perform(post(BASE_URL + "/signin")
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .content(objectMapper.writeValueAsString(requestDto)))
+                    .andExpect(status().isUnauthorized());
+
+            verify(authService).signIn(requestDto);
+        }
+
+        @Test
+        @DisplayName("Deve retornar Unauthorized (401) quando usuário não existir")
+        void shouldReturnUnauthorizedWhenUserDoesNotExist() throws Exception {
+            SignInDTO requestDto = new SignInDTO(
+                    "inexistente@email.com",
+                    "Senha123"
+            );
+
+            when(authService.signIn(requestDto))
+                    .thenThrow(new UserNotFoundException());
 
             mockMvc.perform(post(BASE_URL + "/signin")
                             .contentType(MediaType.APPLICATION_JSON)
@@ -264,14 +287,15 @@ class AuthControllerImplTest {
                     "NovaSenha123"
             );
 
-            doThrow(new ResponseStatusException(HttpStatus.BAD_REQUEST, "Token inválido."))
+            doThrow(new AuthenticationException("Token inválido."))
                     .when(authService)
                     .resetPassword(requestDto);
 
             mockMvc.perform(post(BASE_URL + "/password-recovery/reset")
                             .contentType(MediaType.APPLICATION_JSON)
                             .content(objectMapper.writeValueAsString(requestDto)))
-                    .andExpect(status().isBadRequest());
+                    .andExpect(status().isBadRequest())
+                    .andExpect(jsonPath("$.message").value("Token inválido."));
 
             verify(authService).resetPassword(requestDto);
         }
