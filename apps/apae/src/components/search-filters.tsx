@@ -25,7 +25,7 @@ interface SearchFiltersProps {
   readonly setServiceArea?: (status: string) => void;
 
   readonly disorderOptions?: string[];
-  readonly anoOptions?: string[];
+  readonly yearOptions?: string[];
   readonly cityOptions?: string[];
   readonly serviceAreaOptions?: string[];
 }
@@ -42,7 +42,7 @@ export function SearchFilters({
   serviceArea,
   setServiceArea,
   disorderOptions = [],
-  anoOptions = [],
+  yearOptions = [],
   cityOptions = [],
   serviceAreaOptions = [],
 }: SearchFiltersProps) {
@@ -55,7 +55,7 @@ export function SearchFilters({
   );
 
   const showDisorderFilter = setDisorder !== undefined;
-  const showAnoFilter = setYear !== undefined;
+  const showYearFilter = setYear !== undefined;
   const showCityFilter = setCity !== undefined;
   const showServiceAreaFilter = setServiceArea !== undefined;
 
@@ -72,7 +72,7 @@ export function SearchFilters({
       </div>
 
       {(showDisorderFilter ||
-        showAnoFilter ||
+        showYearFilter ||
         showCityFilter ||
         showServiceAreaFilter) && (
         <div className="flex flex-wrap sm:flex-nowrap items-center gap-2 w-full sm:w-auto">
@@ -138,7 +138,7 @@ export function SearchFilters({
             </DropdownMenu>
           )}
 
-          {showAnoFilter && (
+          {showYearFilter && (
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button className={cn(dropdownTriggerStyle, "w-full sm:w-[90px]")}>
@@ -152,7 +152,7 @@ export function SearchFilters({
                 <DropdownMenuItem onClick={() => setYear?.("")}>
                   Qualquer
                 </DropdownMenuItem>
-                {anoOptions.map((option) => (
+                {yearOptions.map((option) => (
                   <DropdownMenuItem
                     key={option}
                     onClick={() => setYear?.(option)}

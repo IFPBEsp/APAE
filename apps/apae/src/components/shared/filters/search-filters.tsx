@@ -50,7 +50,7 @@ export function SearchFilters({
   );
 
   const showDisorderFilter = setDisorder !== undefined;
-  const showAnoFilter = setYear !== undefined;
+  const showYearFilter = setYear !== undefined;
   const showCityFilter = setCity !== undefined;
 
   return (
@@ -65,7 +65,7 @@ export function SearchFilters({
         />
       </div>
 
-      {(showDisorderFilter || showAnoFilter || showCityFilter) && (
+      {(showDisorderFilter || showYearFilter || showCityFilter) && (
         <div className="flex flex-shrink-0 items-center gap-2">
           
           {showDisorderFilter && (
@@ -97,7 +97,7 @@ export function SearchFilters({
             </DropdownMenu>
           )}
 
-          {showAnoFilter && (
+          {showYearFilter && (
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button

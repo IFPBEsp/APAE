@@ -39,7 +39,7 @@ function PatientsAndStudentsScreenContent() {
 
   const {
     disorderOptions,
-    anoOptions,
+    yearOptions,
     cityOptions,
     serviceAreaOptions,
   } = usePatientFilters();
@@ -212,7 +212,7 @@ function PatientsAndStudentsScreenContent() {
               });
             }}
             disorderOptions={disorderOptions}
-            anoOptions={anoOptions}
+            yearOptions={yearOptions}
             cityOptions={cityOptions}
             serviceAreaOptions={serviceAreaOptions}
           />

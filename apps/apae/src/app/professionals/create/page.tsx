@@ -34,7 +34,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 type RegisterFormValues = z.infer<typeof registerSchema>;
 
-export default function CadastroProfessional(): JSX.Element {
+export default function ProfessionalRegister(): JSX.Element {
   const router = useRouter();
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);

@@ -68,7 +68,7 @@ function isValidFile(file: File): boolean {
   return allowedTypes.includes(file.type) && file.size > 0 && file.size <= maxSize;
 }
 
-export default function AtualizarProfessional(): JSX.Element {
+export default function ProfessionalUpdate(): JSX.Element {
   const router = useRouter();
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
@@ -144,10 +144,10 @@ export default function AtualizarProfessional(): JSX.Element {
   useEffect(() => {
     if (!professional) return;
 
-    const disponibilidadesBackend = professional.availabilities || [];
+    const backendAvailabilities = professional.availabilities || [];
 
     const fullMatrix = generateAvailabilityMatrix(
-      disponibilidadesBackend.map((a) => ({
+      backendAvailabilities.map((a) => ({
         day: a.day.toLowerCase(),
         shift: a.shift.toLowerCase(),
         checked: true,

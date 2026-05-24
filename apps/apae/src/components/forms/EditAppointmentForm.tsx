@@ -10,7 +10,7 @@ import { Combobox } from "@/components/ui/combobox";
 import { cn } from "@/lib/utils";
 
 export interface Appointment {
-  dataHora?: Date;
+  dateTime?: Date;
   patient: string;
   area: string;
 }
@@ -33,7 +33,7 @@ export function EditAppointmentForm({
   appointment?: Appointment;
 }) {
   const [dateTime, setDateTime] = useState<Date | undefined>(
-    appointment?.dataHora
+    appointment?.dateTime
   );
   const [patient, setPatient] = useState<string>(appointment?.patient || '');
   const [area, setArea] = useState<string>(appointment?.area || '');

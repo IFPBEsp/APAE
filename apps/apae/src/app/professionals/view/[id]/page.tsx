@@ -14,7 +14,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Pencil } from "lucide-react";
 
-export default function VisualizarProfessional() {
+export default function ViewProfessional() {
   const router = useRouter();
   const params = useParams<{ id: string }>();
   const id = params?.id;
