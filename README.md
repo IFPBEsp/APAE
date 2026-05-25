@@ -93,32 +93,29 @@ pnpm db:seed
 Inicie todos os serviços (Docker + Backend + Frontend):
 
 ```bash
-pnpm dev
+pnpm run dev
 ```
 
-Aguarde até que todos os serviços estejam prontos. O frontend estará acessível em `http://localhost:3000`.
+Aguarde até que todos os serviços estejam prontos. O frontend estará acessível em `http://localhost:3000/apae-geral`.
 
 ---
 
 #### Outros Comandos Úteis:
 
-- `pnpm dev:backend`: Executa apenas o backend (API).
-- `pnpm dev:apae`: Executa apenas o frontend (Next.js).
+- `pnpm dev:backend`: Executa apenas o backend (api).
+- `pnpm dev:apae`: Executa apenas o frontend (apae).
 - `pnpm docker:up`: Sobe apenas o banco de dados e MinIO.
 - `pnpm docker:down`: Para os containers e os remove da memória.
 - `pnpm docker:drop`: Para os containers, os remove e apaga os volumes associados.
+- `pnpm db:seed`: Cria um usuário admin e views em mock no banco de dados para fins de testes.
 
 #### Credenciais do usuário para testes:
 
-Após executar `pnpm db:seed`, utilize as seguintes credenciais para acessar o sistema:
+- Email: `admin@teste.com`
+- CPF: `123.456.789-00`
+- Senha: `123456`
 
-```bash
-Email: admin@teste.com
-CPF: 123.456.789-00
-Senha: 123456
-```
-
-> ⚠️ **Importante:** É necessário criar o usuário teste a partir do comando `pnpm db:seed` (Passo 4).
+> ℹ️ É necessário criar o usuário teste a partir do comando `pnpm db:seed`.
 
 ---
 
@@ -264,7 +261,7 @@ O Kanban é usado para organizar as **issues** no processo de desenvolvimento. A
 ### Configuração de Ambiente
 
 Este projeto automatiza a configuração inicial das variáveis de ambiente.
-Ao rodar `pnpm dev`, o script verifica a existência do arquivo `.env`.
+Ao rodar `pnpm run dev`, o script verifica a existência do arquivo `.env`.
 Caso ele não exista, uma cópia será criada automaticamente a partir do `.env.example`.
 
 **Nota:** O script nunca sobrescreverá um arquivo `.env` já existente.
