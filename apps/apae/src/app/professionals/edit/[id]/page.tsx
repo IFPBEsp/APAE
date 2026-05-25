@@ -283,7 +283,7 @@ export default function AtualizarProfissional(): JSX.Element {
         const photoData = new FormData();
         photoData.append("file", selectedPhoto);
 
-        const response = await fetch(`/api/professionals/${profissional.id}/photo`, {
+        const response = await fetch(`apae-geral/api/professionals/${profissional.id}/photo`, {
           method: "PATCH",
           body: photoData,
         });
