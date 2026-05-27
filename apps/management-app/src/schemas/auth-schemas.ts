@@ -10,12 +10,12 @@ export const patientSchema = z.object({
   id: z.string().uuid(),
   fullName: z.string().optional(),
   isStudent: z.boolean().optional(),
-  nome: z.string().min(1, "Nome é obrigatório").optional(),
+  name: z.string().min(1, "Nome é obrigatório").optional(),
   cpf: cpfSchema,
   status: z.enum(["Ativo", "Inativo", "Em Fila"]),
-  urlFoto: z.string().url({ message: "URL da foto inválida" }).optional(),
-  contato: z.object({
-    telefone: z.string().min(10, { message: "Telefone inválido" }),
+  urlPhoto: z.string().url({ message: "URL da foto inválida" }).optional(),
+  contact: z.object({
+    phone: z.string().min(10, { message: "Telefone inválido" }),
   }),
   city: z.string().optional(),
 });
@@ -24,7 +24,7 @@ export type Patient = z.infer<typeof patientSchema>;
 
 export const signUpSchema = z
   .object({
-    nomeCompleto: z.string().min(1, {
+    fullName: z.string().min(1, {
       message: "Nome completo é obrigatório",
     }),
     email: z
@@ -32,14 +32,14 @@ export const signUpSchema = z
       .email({ message: "Email inválido" })
       .min(1, { message: "Email é obrigatório" }),
     cpf: cpfSchema,
-    senha: z
+    password: z
       .string()
       .min(6, { message: "Senha deve ter pelo menos 6 caracteres" }),
-    confirmarSenha: z
+    confirmPassword: z
       .string()
       .min(6, { message: "Senha deve ter pelo menos 6 caracteres" }),
   })
-  .refine((data) => data.senha === data.confirmarSenha, {
+  .refine((data) => data.password === data.confirmPassword, {
     message: "As senhas não coincidem",
     path: ["confirmarSenha"],
   });
