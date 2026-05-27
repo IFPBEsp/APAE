@@ -38,7 +38,7 @@ import org.springframework.test.web.servlet.MockMvc;
 @Tag("auth")
 @Tag("unit")
 @Tag("controller")
-class AuthControllerImplTest {
+class AuthControllerTest {
 
     private static final String BASE_URL = "/auth";
 
