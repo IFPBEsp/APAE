@@ -33,7 +33,7 @@ import br.org.apae.api.auth.infrastructure.security.SecurityConfiguration;
 import br.org.apae.api.common.dto.professional.request.UpdateHealthProfessionalDTO;
 import br.org.apae.api.common.dto.professional.request.CreateHealthProfessionalDTO;
 import br.org.apae.api.common.dto.professional.request.documents.CreateProfessionalDocumentsDTO;
-import br.org.apae.api.controllers.mocks.professional.HealthProfessionalMockDto;
+import br.org.apae.api.mocks.professional.HealthProfessionalMockDto;
 import br.org.apae.api.helpers.AuthTestHelper;
 import br.org.apae.api.professional.application.interfaces.HealthProfessionalApplicationService;
 import br.org.apae.api.professional.domain.exceptions.HealthProfessionalNotFoundException;
