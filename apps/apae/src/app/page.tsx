@@ -56,7 +56,7 @@ import { AppointmentForm } from '@/components/forms/AppointmentForm';
 import { InfoCard } from '@/components/shared/InfoCard';
 import Link from 'next/link';
 
-import { RegistrarFaltaButton } from '@/components/buttons/RegistrarFaltaButton';
+import { RegisterAbsenceButton} from '@/components/buttons/RegisterAbsenceButton';
 
 export default function DashboardPage() {
   const [selectedDate, setSelectedDate] = useState<Date>(new Date());
@@ -309,7 +309,7 @@ export default function DashboardPage() {
                       {item.hasAbsence ? 'Sim' : 'Não'}
                     </TableCell>
                     <TableCell className="px-3 py-2 text-xs sm:px-4 sm:py-3 sm:text-sm">
-                      <RegistrarFaltaButton
+                      <RegisterAbsenceButton
                         generatedAppointmentId={item.id}
                         patientId={item.patient.id}
                         absenceDate={format(selectedDate, 'yyyy-MM-dd')}

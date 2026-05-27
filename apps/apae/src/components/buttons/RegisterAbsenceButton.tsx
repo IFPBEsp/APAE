@@ -15,7 +15,7 @@ import {
 import { useState } from "react";
 import { AbsenceForm } from "../forms/AbsenceForm";
 
-interface RegistrarFaltaButtonProps {
+interface RegisterAbsenceButtonProps {
   generatedAppointmentId: string;
   patientId: string,
   absenceDate: string;
@@ -23,13 +23,13 @@ interface RegistrarFaltaButtonProps {
   onSuccess?: () => void;
 }
 
-export function RegistrarFaltaButton({
+export function RegisterAbsenceButton({
   generatedAppointmentId,
   patientId,
   absenceDate,
   disabled,
   onSuccess,
-}: RegistrarFaltaButtonProps) {
+}: RegisterAbsenceButtonProps) {
   const [open, setOpen] = useState(false);
 
   return (

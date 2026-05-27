@@ -18,7 +18,7 @@ const mockReviews = [
   { id: "2", discipline: "Linguagem e Comunicação", date: "12/06/2026", grade: "A", observation: "Excelente progresso na fala." }
 ];
 
-export default function EscolaresPage() {
+export default function SchoolPage() {
   const params = useParams();
   const router = useRouter();
   const id = params?.id as string;
@@ -52,7 +52,7 @@ export default function EscolaresPage() {
     if (id) fetchDadosEscolares();
   }, [id]);
 
-  const relatoriosFiltrados = reports.filter(r => r.title.toLowerCase().includes(searchTerm.toLowerCase()));
+  const filteredReports = reports.filter(r => r.title.toLowerCase().includes(searchTerm.toLowerCase()));
 
   return (
     <main className="container mx-auto p-4 md:p-6 font-nunito space-y-6">
@@ -124,8 +124,8 @@ export default function EscolaresPage() {
                       </tr>
                     </thead>
                     <tbody>
-                      {relatoriosFiltrados.length > 0 ? (
-                        relatoriosFiltrados.map((reports) => (
+                      {filteredReports.length > 0 ? (
+                        filteredReports.map((reports) => (
                           <tr key={reports.id} className="border-b hover:bg-slate-50 transition-colors">
                             <td className="px-6 py-4 font-medium text-gray-900">{reports.title}</td>
                             <td className="px-6 py-4 text-gray-600">{reports.date}</td>

@@ -24,7 +24,7 @@ import {
 } from "@/components/ui/form";
 import { useRouter } from "next/navigation";
 import { useCreateProfessional } from "@/hooks/profissional/use-create-profissional";
-import Disponibilidade from "@/components/forms/DisponibilidadeForm";
+import Disponibilidade from "@/components/forms/AvailabilityForm";
 import { registerSchema } from "@/schemas/profissional.schema";
 import { STATES } from "@/lib/states";
 import { useRef, useState, useEffect, JSX } from "react";
@@ -109,7 +109,7 @@ export default function ProfessionalRegister(): JSX.Element {
       "professional",
       new Blob([JSON.stringify(payload)], { type: "application/json" })
     );
-    
+
     // profilePhoto references the backend component, must be aligned when integrating
     if (values.photo) {
       formData.append("profilePhoto", values.photo);
@@ -240,11 +240,10 @@ export default function ProfessionalRegister(): JSX.Element {
                   <FormControl>
                     <Select onValueChange={field.onChange} value={field.value}>
                       <SelectTrigger
-                        className={`w-full ${
-                          fieldState.invalid
+                        className={`w-full ${fieldState.invalid
                             ? "border-red-500"
                             : "border-gray-300"
-                        }`}
+                          }`}
                       >
                         <SelectValue placeholder="Selecione um estado" />
                       </SelectTrigger>
@@ -444,7 +443,7 @@ export default function ProfessionalRegister(): JSX.Element {
               </FormItem>
             )}
           />
-          
+
           <FormField
             control={form.control}
             name="attachmentAny"

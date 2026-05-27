@@ -53,7 +53,7 @@ export default function PersonDetailsPage() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [modalMode, setModalMode] = useState<"create" | "edit">("edit");
 
-  interface RegistroAnual {
+  interface AnnualRegistry {
     id?: string;
     bpc: boolean;
     familyIncome: number;
@@ -64,13 +64,13 @@ export default function PersonDetailsPage() {
   }
 
   const [pessoa, setPessoa] = useState<PatientResponse | null>(null);
-  const [registroAnual, setRegistroAnual] = useState<RegistroAnual | null>(null);
+  const [annualRegistry , setAnnualRegistry] = useState<AnnualRegistry | null>(null);
   
   const [existingYears, setExistingYears] = useState<string[]>([]);
   const [selectedYear, setSelectedYear] = useState<string>(new Date().getFullYear().toString());
   
   const [loadingPessoa, setLoadingPessoa] = useState(true);
-  const [loadingRegistro, setLoadingRegistro] = useState(false);
+  const [loadingRegistry, setLoadingRegistry] = useState(false);
 
   const fetchPessoa = useCallback(async (silent = false) => {
     try {
@@ -118,17 +118,17 @@ export default function PersonDetailsPage() {
 
   const fetchRegistro = useCallback(async () => {
     try {
-      setLoadingRegistro(true);
-      setRegistroAnual(null);
+      setLoadingRegistry(true);
+      setAnnualRegistry(null);
       const response = await fetch(`/apae-geral/api/patients/${id}/registro-anual/${selectedYear}`);
       if (response.ok) {
         const data = await response.json();
-        setRegistroAnual(data);
+        setAnnualRegistry(data);
       }
     } catch (err) {
       console.error("Erro ao buscar registro anual:", err);
     } finally {
-      setLoadingRegistro(false);
+      setLoadingRegistry(false);
     }
   }, [id, selectedYear]);
 
@@ -183,7 +183,7 @@ export default function PersonDetailsPage() {
     );
   }
 
-  const hasRegistro = !!registroAnual;
+  const hasRegistry = !!annualRegistry;
 
   return (
     <main className="container mx-auto p-4 md:p-6">
@@ -305,15 +305,15 @@ export default function PersonDetailsPage() {
                             <Button
                                 size="sm"
                                 onClick={handleEditClick}
-                                disabled={!hasRegistro || loadingRegistro}
+                                disabled={!hasRegistry || loadingRegistry}
                                 className="gap-1 hover:!bg-gray-100 text-[#0D4F97] border-0 disabled:opacity-50 disabled:cursor-not-allowed h-8"
                                 variant="outline"
                             >
-                                <SquarePen className="h-4 w-4" /> {loadingRegistro ? "..." : "Editar"}
+                                <SquarePen className="h-4 w-4" /> {loadingRegistry ? "..." : "Editar"}
                             </Button>
                         </span>
                     </TooltipTrigger>
-                    {!hasRegistro && !loadingRegistro && (<TooltipContent><p>Não existe registro para este ano.</p></TooltipContent>)}
+                    {!hasRegistry && !loadingRegistry && (<TooltipContent><p>Não existe registro para este ano.</p></TooltipContent>)}
                 </Tooltip>
               </TooltipProvider>
               <div className="flex items-center gap-1 border border-gray-300 rounded-md px-2 py-1 h-8">
@@ -340,16 +340,16 @@ export default function PersonDetailsPage() {
             
             <h3 className="font-bold text-base mt-4 pt-4 border-t text-[#0D4F97]">Registro Anual ({selectedYear})</h3>
 
-            {loadingRegistro ? (
+            {loadingRegistry ? (
               <div className="py-4 flex justify-center"><Loader2 className="h-6 w-6 animate-spin text-[#0D4F97]" /></div>
-            ) : registroAnual ? (
+            ) : annualRegistry  ? (
               <div className="mt-2 animate-in fade-in slide-in-from-bottom-2">
-                <InfoRow label="Recebe BPC?" value={registroAnual.bpc} />
-                <InfoRow label="Renda Familiar" value={registroAnual.familyIncome} />
-                <InfoRow label="Tipo de Atendimento" value={registroAnual.serviceAreas?.map((atendimento) => atendimento.area).join(", ")} />
-                <InfoRow label="Doenças" value={registroAnual.diseases} />
-                <InfoRow label="Medicamentos Contínuos" value={registroAnual.continuousMedication} />
-                <InfoRow label="Transtornos" value={registroAnual.disorders?.map((d) => d.name).join(", ")} />
+                <InfoRow label="Recebe BPC?" value={annualRegistry .bpc} />
+                <InfoRow label="Renda Familiar" value={annualRegistry .familyIncome} />
+                <InfoRow label="Tipo de Atendimento" value={annualRegistry .serviceAreas?.map((atendimento) => atendimento.area).join(", ")} />
+                <InfoRow label="Doenças" value={annualRegistry .diseases} />
+                <InfoRow label="Medicamentos Contínuos" value={annualRegistry .continuousMedication} />
+                <InfoRow label="Transtornos" value={annualRegistry.disorders?.map((d) => d.name).join(", ")} />
               </div>
             ) : (
               <div className="text-center py-6 bg-slate-50 rounded-lg mt-2 border border-dashed border-slate-200">
@@ -365,7 +365,7 @@ export default function PersonDetailsPage() {
           onClose={handleModalClose}
           patientId={id} 
           currentYear={selectedYear}
-          initialData={modalMode === "edit" ? registroAnual : null}
+          initialData={modalMode === "edit" ? annualRegistry  : null}
           mode={modalMode} 
         />
       </div>

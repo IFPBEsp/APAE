@@ -7,12 +7,12 @@ import {
 export function generateAvailabilityMatrix(list: AvailabilityType[]) {
   return daysOfWeek.flatMap((day) =>
     shifts.map((shift) => {
-      const existente = list.find((d) => {
+      const existing = list.find((d) => {
         return d.day == day.id && d.shift == shift.id;
       });
 
       return (
-        existente ?? {
+        existing ?? {
           day: day.id,
           shift: shift.id,
           checked: false,

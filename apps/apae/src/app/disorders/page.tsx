@@ -6,7 +6,7 @@ import Link from "next/link";
 import { toast } from "react-toastify";
 import { Button } from "@/components/ui/button";
 import { Plus } from "lucide-react";
-import { TranstornoListItem } from "./TranstornosListItem";
+import { DisorderListItem } from "./TranstornosListItem";
 import { Disorder } from "@/schemas/transtornosSchema";
 import { Loader2 } from "lucide-react";
 import { SearchFilters } from "@/components/search-filters";
@@ -82,7 +82,7 @@ export default function TranstornosPage() {
     return (
       <div className="space-y-2">
         {filteredDisorders.map((disorder) => (
-          <TranstornoListItem
+          <DisorderListItem
             key={disorder.id}
             disorder={disorder}
             onEdit={() => router.push(`/disorders/${disorder.id}/edit`)}

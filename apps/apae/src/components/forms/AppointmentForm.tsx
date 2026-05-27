@@ -7,7 +7,7 @@ import React, { useEffect, useRef, useState } from "react";
 
 import {
   Appointment,
-  getPacientes,
+  getPatients,
   getHealthProfessionals,
   saveAppointment,
   updateAppointment,
@@ -110,7 +110,7 @@ export function AppointmentForm({ editAppointment }: AppointmentFormProps) {
       try {
         dataFetched.current = true;
         const [patients, professionals] = await Promise.all([
-          getPacientes(),
+          getPatients(),
           getHealthProfessionals(),
         ]);
 

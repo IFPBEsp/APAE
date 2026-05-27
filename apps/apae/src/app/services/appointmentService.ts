@@ -432,7 +432,7 @@ export async function registerAbsence(
   return await res.json();
 }
 
-export async function getPacientes(): Promise<Patient[]> {
+export async function getPatients(): Promise<Patient[]> {
   const response = await fetch(`/apae-geral/api/patients?page=0&size=100`);
 
   if (!response.ok) {

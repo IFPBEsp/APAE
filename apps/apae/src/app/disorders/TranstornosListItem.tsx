@@ -13,7 +13,7 @@ interface DisorderListItemProps {
   onDelete: () => void;
 }
 
-export function TranstornoListItem({
+export function DisorderListItem({
   disorder,
   onEdit,
   onDelete,

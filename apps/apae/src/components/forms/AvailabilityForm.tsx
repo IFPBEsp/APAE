@@ -24,8 +24,8 @@ type Props<T extends FieldValues> = {
   watch: UseFormWatch<T>;
 };
 
-export default function Disponibilidade<T extends FieldValues>({ control, watch }: Readonly<Props<T>>) {
-  const disponibilidade = watch("disponibilidade" as Path<T>) || [];
+export default function AvailabilityForm<T extends FieldValues>({ control, watch }: Readonly<Props<T>>) {
+  const availability = watch("disponibilidade" as Path<T>) || [];
 
   return (
     <div className="space-y-4">
@@ -53,7 +53,7 @@ export default function Disponibilidade<T extends FieldValues>({ control, watch 
                 <TableCell className="font-medium">{shift.label}</TableCell>
 
                 {daysOfWeek.map((day) => {
-                  const index = disponibilidade.findIndex(
+                  const index = availability.findIndex(
                     (d: { day: string; shift: string }) => d.day === day.id && d.shift === shift.id
                   );
 

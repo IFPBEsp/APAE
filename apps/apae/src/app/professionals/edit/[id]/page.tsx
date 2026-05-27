@@ -45,7 +45,7 @@ import { updateProfessionalSchema } from "@/schemas/profissional.schema";
 import { STATES } from "@/lib/states";
 
 import HealthAreaSelect from "@/components/shared/HealthAreaSelect";
-import Disponibilidade from "@/components/forms/DisponibilidadeForm";
+import Disponibilidade from "@/components/forms/AvailabilityForm";
 import { generateAvailabilityMatrix } from "@/domains/professional/shared/disponibilidade.utils";
 
 import {
@@ -72,7 +72,7 @@ export default function ProfessionalUpdate(): JSX.Element {
   const router = useRouter();
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
-  
+
   const {
     professional,
     loading: loadingProf,
@@ -454,9 +454,8 @@ export default function ProfessionalUpdate(): JSX.Element {
                   <FormControl>
                     <Select onValueChange={field.onChange} value={field.value}>
                       <SelectTrigger
-                        className={`w-full ${
-                          fieldState.invalid ? "border-red-500" : "border-gray-300"
-                        }`}
+                        className={`w-full ${fieldState.invalid ? "border-red-500" : "border-gray-300"
+                          }`}
                       >
                         <SelectValue placeholder="Selecione um estado" />
                       </SelectTrigger>
