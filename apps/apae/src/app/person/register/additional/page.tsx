@@ -82,7 +82,11 @@ function CreateVaccineDialog({ open, onOpenChange, onSuccess }: DialogProps) {
                 <FormItem>
                   <FormLabel>Nome da Vacina</FormLabel>
                   <FormControl>
-                    <Input placeholder="Ex: Hepatite B" {...field} />
+                    <Input
+                      placeholder="Ex: Hepatite B"
+                      {...field}
+                      onChange={(e) => field.onChange(capitalizeFirst(e.target.value))}
+                    />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
