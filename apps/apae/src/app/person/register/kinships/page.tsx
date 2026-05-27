@@ -15,7 +15,7 @@ import {
   MembersRegisterStep,
   useMembersRegisterContext,
 } from "@/hooks/use-members-register-context";
-import { formatCPF, formatRG } from "@/lib/formats";
+import { formatCPF, formatRG, capitalizeFirst } from "@/lib/formats";
 import { Kinships } from "@/schemas/member-schemas";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useState, useEffect } from "react";
@@ -179,9 +179,7 @@ export default function MembersRegisterKinshipsPage() {
 
     const subscription = form.watch((value) => {
       const kinships = value.kinships || [];
-      const legalGuardianKinship = kinships.find(
-        (k) => k?.isLegalGuardian,
-      );
+      const legalGuardianKinship = kinships.find((k) => k?.isLegalGuardian);
 
       if (legalGuardianKinship) {
         setGuardianData({
@@ -273,6 +271,7 @@ export default function MembersRegisterKinshipsPage() {
                     <Input
                       placeholder="Digite o nome completo do parente"
                       {...field}
+                      onChange={(e) => field.onChange(capitalizeFirst(e.target.value))}
                     />
                   </FormControl>
                   <FormMessage />
@@ -306,7 +305,11 @@ export default function MembersRegisterKinshipsPage() {
                 <FormItem>
                   <FormLabel>Profissão? *</FormLabel>
                   <FormControl>
-                    <Input placeholder="Profissão" {...field} />
+                    <Input
+                      placeholder="Profissão"
+                      {...field}
+                      onChange={(e) => field.onChange(capitalizeFirst(e.target.value))}
+                    />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -341,7 +344,11 @@ export default function MembersRegisterKinshipsPage() {
                 <FormItem>
                   <FormLabel>Parentesco *</FormLabel>
                   <FormControl>
-                    <Input placeholder="Digite o parentesco" {...field} />
+                    <Input
+                      placeholder="Digite o parentesco"
+                      {...field}
+                      onChange={(e) => field.onChange(capitalizeFirst(e.target.value))}
+                    />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -375,7 +382,6 @@ export default function MembersRegisterKinshipsPage() {
               />
             </div>
 
-            {/* CHECKBOX DO RESPONSÁVEL LEGAL (ÚNICO) - Não exibe na edição */}
             {!isEditing && (
               <div className="md:col-span-2 mt-1">
                 <LegalGuardianCheckbox
