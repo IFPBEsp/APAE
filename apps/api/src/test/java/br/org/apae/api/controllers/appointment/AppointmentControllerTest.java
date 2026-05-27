@@ -1,9 +1,7 @@
 package br.org.apae.api.controllers.appointment;
 import br.org.apae.api.appointment.application.interfaces.AppointmentApplicationService;
-import br.org.apae.api.appointment.application.internal.AppointmentApplicationServiceImpl;
 import br.org.apae.api.appointment.domain.exceptions.AppointmentAlreadyCancelledException;
 import br.org.apae.api.appointment.domain.exceptions.AppointmentNotFoundException;
-import br.org.apae.api.appointment.domain.model.GeneratedAppointment;
 import br.org.apae.api.auth.application.internal.UserService;
 import br.org.apae.api.auth.infrastructure.security.JwtProvider;
 import br.org.apae.api.common.dto.appointment.request.appointment.*;
@@ -45,7 +43,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest({ AppointmentControllerImpl.class })
-class AppointmentControllerImplTest {
+class AppointmentControllerTest {
 
     @Autowired
     private MockMvc mockMvc;
