@@ -71,12 +71,26 @@ public class User implements UserDetails {
     this.identityDocument = identityDocument;
   }
 
+  public static User createAuthenticatedUser(String email, String password, String cpf, String fullName,
+      UserRole role) {
+    return new User(email, password, cpf, fullName, role);
+  }
+
+  public static User createProfessionalUser(String email, String fullName, String phoneNumber,
+      String identityDocument) {
+    return new User(email, null, null, fullName, UserRole.APAE_GERAL, phoneNumber, identityDocument);
+  }
+
   public UUID getId() {
     return id;
   }
 
   public String getPassword() {
     return password;
+  }
+
+  public boolean hasConfiguredPassword() {
+    return password != null && !password.isBlank();
   }
 
   @Override

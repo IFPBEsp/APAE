@@ -1,7 +1,6 @@
 package br.org.apae.api.professional.application.internal;
 
 import br.org.apae.api.auth.domain.model.User;
-import br.org.apae.api.auth.domain.model.UserRole;
 import br.org.apae.api.auth.domain.repository.UserRepository;
 import br.org.apae.api.common.dto.professional.request.CreateHealthProfessionalDTO;
 import br.org.apae.api.common.dto.professional.request.UpdateHealthProfessionalDTO;
@@ -76,12 +75,9 @@ public class HealthProfessionalApplicationServiceImpl implements HealthProfessio
         ServiceAreaResponseDTO serviceAreaDto = serviceAreaApplicationService
                 .findServiceAreaByArea(dto.serviceArea().area());
 
-        User user = new User(
+        User user = User.createProfessionalUser(
                 dto.email(),
-                null,
-                null,
                 dto.name(),
-                UserRole.APAE_GERAL,
                 dto.phoneNumber(),
                 dto.identityDocument());
 

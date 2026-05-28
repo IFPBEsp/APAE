@@ -73,7 +73,7 @@ public class AuthApplicationServiceImpl implements AuthApplicationService {
     try {
       User user = userService.findUserByUsername(signInDto.username());
 
-      if (!passwordEncoder.matches(signInDto.password(), user.getPassword())) {
+      if (!user.hasConfiguredPassword() || !passwordEncoder.matches(signInDto.password(), user.getPassword())) {
         throw new InvalidPasswordException();
       }
 
