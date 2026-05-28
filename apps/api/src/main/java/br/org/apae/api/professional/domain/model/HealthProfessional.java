@@ -6,7 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-import br.org.apae.api.address.domain.model.Address;
+import br.org.apae.api.auth.domain.model.User;
 import br.org.apae.api.servicearea.domain.model.ServiceArea;
 
 @Entity
@@ -17,11 +17,9 @@ public class HealthProfessional {
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
-    @Column(name = "nome", nullable = false)
-    private String name;
-
-    @Column(name = "email", nullable = false, unique = true)
-    private String email;
+    @OneToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "usuario_id", nullable = false, unique = true)
+    private User user;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(
@@ -33,21 +31,11 @@ public class HealthProfessional {
     ))
     private ServiceArea serviceArea;
 
-    @Column(name = "contato", nullable = false)
-    private String phoneNumber;
-
     @Column(name = "documento_profissional", unique = true)
     private String professionalDocument;
 
-    @Column(name = "rg", unique = true)
-    private String identityDocument;
-
     @Column(name = "ativo", nullable = false)
     private Boolean ativo = true;
-
-    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    @JoinColumn(name = "endereco_id", referencedColumnName = "id")
-    private Address address;
 
     @OneToMany(mappedBy = "professional", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Availability> availabilities = new ArrayList<>();
@@ -58,28 +46,17 @@ public class HealthProfessional {
     protected HealthProfessional() {
     }
 
-    public HealthProfessional(String name, String email, ServiceArea serviceArea, String phoneNumber,
-            String identityDocument,
-            String professionalDocument, Address address) {
-        this.name = name;
-        this.email = email;
+    public HealthProfessional(User user, ServiceArea serviceArea, String professionalDocument) {
+        this.user = user;
         this.serviceArea = serviceArea;
-        this.phoneNumber = phoneNumber;
-        this.identityDocument = identityDocument;
         this.professionalDocument = professionalDocument;
-        this.address = address;
     }
 
-    public HealthProfessional(UUID id, String name, String email, ServiceArea serviceArea, String phoneNumber,
-            String identityDocument, String professionalDocument, Address address) {
+    public HealthProfessional(UUID id, User user, ServiceArea serviceArea, String professionalDocument) {
         this.id = id;
-        this.name = name;
-        this.email = email;
+        this.user = user;
         this.serviceArea = serviceArea;
-        this.phoneNumber = phoneNumber;
-        this.identityDocument = identityDocument;
         this.professionalDocument = professionalDocument;
-        this.address = address;
     }
 
     public UUID getId() {
@@ -90,20 +67,32 @@ public class HealthProfessional {
         this.id = id;
     }
 
+    public User getUser() {
+        return user;
+    }
+
+    public UUID getUserId() {
+        return user != null ? user.getId() : null;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
+    }
+
     public String getName() {
-        return name;
+        return user != null ? user.getFullName() : null;
     }
 
     public void setName(String name) {
-        this.name = name;
+        updateUserProfile(name, getEmail(), getPhoneNumber(), getIdentityDocument());
     }
 
     public String getEmail() {
-        return email;
+        return user != null ? user.getUsername() : null;
     }
 
     public void setEmail(String email) {
-        this.email = email;
+        updateUserProfile(getName(), email, getPhoneNumber(), getIdentityDocument());
     }
 
     public ServiceArea getServiceArea() {
@@ -115,11 +104,11 @@ public class HealthProfessional {
     }
 
     public String getPhoneNumber() {
-        return phoneNumber;
+        return user != null ? user.getPhoneNumber() : null;
     }
 
     public void setPhoneNumber(String phoneNumber) {
-        this.phoneNumber = phoneNumber;
+        updateUserProfile(getName(), getEmail(), phoneNumber, getIdentityDocument());
     }
 
     public String getProfessionalDocument() {
@@ -131,22 +120,14 @@ public class HealthProfessional {
     }
 
     public String getIdentityDocument() {
-        return identityDocument;
+        return user != null ? user.getIdentityDocument() : null;
     }
 
     public void setIdentityDocument(String identityDocument) {
-        this.identityDocument = identityDocument;
-    }
-
-    public Address getAddress() {
-        return address;
+        updateUserProfile(getName(), getEmail(), getPhoneNumber(), identityDocument);
     }
 
     public List<Availability> getAvailabilities() { return availabilities; }
-
-    public void setAddress(Address address) {
-        this.address = address;
-    }
 
     public void setAvailabilities(List<Availability> newAvailabilities) {
         this.availabilities.clear();
@@ -174,5 +155,11 @@ public class HealthProfessional {
 
     public void setProfilePhoto(String profilePhoto) {
         this.profilePhoto = profilePhoto;
+    }
+
+    private void updateUserProfile(String name, String email, String phoneNumber, String identityDocument) {
+        if (user != null) {
+            user.updateProfile(email, name, phoneNumber, identityDocument);
+        }
     }
 }

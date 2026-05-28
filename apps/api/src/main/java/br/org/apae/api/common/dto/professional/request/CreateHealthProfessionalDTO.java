@@ -1,6 +1,5 @@
 package br.org.apae.api.common.dto.professional.request;
 
-import br.org.apae.api.common.dto.address.CreateAddressDTO;
 import br.org.apae.api.common.dto.availability.request.CreateAvailabilityDTO;
 import br.org.apae.api.common.dto.servicearea.request.CreateServiceAreaDTO;
 import jakarta.validation.Valid;
@@ -21,10 +20,8 @@ public record CreateHealthProfessionalDTO(
 
     @NotBlank(message = "O documento de identidade é obrigatório.") String identityDocument,
 
-    @NotNull(message = "O endereço é obrigatório.") @Valid CreateAddressDTO address,
-
     @Valid List<CreateAvailabilityDTO> availabilities,
-    
+
     String profilePhoto
 ) {
 }

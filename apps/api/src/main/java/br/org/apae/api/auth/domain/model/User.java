@@ -27,14 +27,20 @@ public class User implements UserDetails {
   @Column(nullable = false, unique = true)
   private String email;
 
-  @Column(nullable = false, unique = true)
+  @Column(unique = true)
   private String cpf;
 
-  @Column(name = "senha", nullable = false)
+  @Column(name = "senha")
   private String password;
 
   @Column(name = "nome_completo")
   private String fullName;
+
+  @Column(name = "contato")
+  private String phoneNumber;
+
+  @Column(name = "rg", unique = true)
+  private String identityDocument;
 
   @Enumerated(EnumType.STRING)
   @Column(name = "cargo", nullable = false)
@@ -56,6 +62,13 @@ public class User implements UserDetails {
     this.cpf = cpf;
     this.fullName = fullName;
     this.role = role;
+  }
+
+  public User(String email, String password, String cpf, String fullName, UserRole role,
+      String phoneNumber, String identityDocument) {
+    this(email, password, cpf, fullName, role);
+    this.phoneNumber = phoneNumber;
+    this.identityDocument = identityDocument;
   }
 
   public UUID getId() {
@@ -81,6 +94,21 @@ public class User implements UserDetails {
 
   public String getFullName() {
     return fullName;
+  }
+
+  public String getPhoneNumber() {
+    return phoneNumber;
+  }
+
+  public String getIdentityDocument() {
+    return identityDocument;
+  }
+
+  public void updateProfile(String email, String fullName, String phoneNumber, String identityDocument) {
+    this.email = email;
+    this.fullName = fullName;
+    this.phoneNumber = phoneNumber;
+    this.identityDocument = identityDocument;
   }
 
   public void updatePassword(String password) {

@@ -1,5 +1,8 @@
 package br.org.apae.api.professional.application.internal;
 
+import br.org.apae.api.auth.domain.model.User;
+import br.org.apae.api.auth.domain.model.UserRole;
+import br.org.apae.api.auth.domain.repository.UserRepository;
 import br.org.apae.api.common.dto.professional.request.CreateHealthProfessionalDTO;
 import br.org.apae.api.common.dto.professional.request.UpdateHealthProfessionalDTO;
 import br.org.apae.api.common.dto.professional.request.documents.CreateProfessionalDocumentsDTO;
@@ -43,14 +46,17 @@ public class HealthProfessionalApplicationServiceImpl implements HealthProfessio
     private final HealthProfessionalMapper mapper;
     private final ProfessionalDocumentsService documentsService;
     private final ServiceAreaApplicationService serviceAreaApplicationService;
+    private final UserRepository userRepository;
 
     public HealthProfessionalApplicationServiceImpl(HealthProfessionalRepository repository,
             HealthProfessionalMapper mapper, ProfessionalDocumentsService documentsService,
-            ServiceAreaApplicationService serviceAreaApplicationService) {
+            ServiceAreaApplicationService serviceAreaApplicationService,
+            UserRepository userRepository) {
         this.repository = repository;
         this.mapper = mapper;
         this.documentsService = documentsService;
         this.serviceAreaApplicationService = serviceAreaApplicationService;
+        this.userRepository = userRepository;
     }
 
     @Override
@@ -60,19 +66,29 @@ public class HealthProfessionalApplicationServiceImpl implements HealthProfessio
         if (dto.professionalDocument() != null && repository.existsByProfessionalDocument(dto.professionalDocument())) {
             throw new ProfessionalDocumentConflictException();
         }
-        if (repository.existsByEmail(dto.email())) {
+        if (userRepository.existsByEmail(dto.email())) {
             throw new EmailConflictException();
         }
-        if (dto.professionalDocument() != null && repository.existsByIdentityDocument(dto.identityDocument())) {
+        if (dto.identityDocument() != null && userRepository.existsByIdentityDocument(dto.identityDocument())) {
             throw new IdentityDocumentConflictException();
         }
 
         ServiceAreaResponseDTO serviceAreaDto = serviceAreaApplicationService
                 .findServiceAreaByArea(dto.serviceArea().area());
 
-        HealthProfessional professionalToSave = mapper.toEntity(dto, serviceAreaDto);
+        User user = new User(
+                dto.email(),
+                null,
+                null,
+                dto.name(),
+                UserRole.APAE_GERAL,
+                dto.phoneNumber(),
+                dto.identityDocument());
+
+        User savedUser = userRepository.save(user);
+        HealthProfessional professionalToSave = mapper.toEntity(dto, serviceAreaDto, savedUser);
         HealthProfessional savedProfessional = repository.save(professionalToSave);
-        documentsService.storeProfessionalDocuments(professionalToSave, documentsDTO);
+        documentsService.storeProfessionalDocuments(savedProfessional, documentsDTO);
         return mapper.toResponseDTO(savedProfessional);
     }
 
@@ -82,8 +98,16 @@ public class HealthProfessionalApplicationServiceImpl implements HealthProfessio
         HealthProfessional entityToUpdate = repository.findById(id)
                 .orElseThrow(HealthProfessionalNotFoundException::new);
 
-        if (!entityToUpdate.getEmail().equalsIgnoreCase(dto.email()) && repository.existsByEmail(dto.email())) {
-            throw new ProfessionalDocumentConflictException();
+        UUID userId = entityToUpdate.getUserId();
+
+        if (!entityToUpdate.getEmail().equalsIgnoreCase(dto.email())
+                && userRepository.existsByEmailAndIdNot(dto.email(), userId)) {
+            throw new EmailConflictException();
+        }
+
+        if (dto.identityDocument() != null
+                && userRepository.existsByIdentityDocumentAndIdNot(dto.identityDocument(), userId)) {
+            throw new IdentityDocumentConflictException();
         }
 
         if (dto.professionalDocument() != null && existsByProfessionalDocumentAndIdNot(dto.professionalDocument(), id)){
