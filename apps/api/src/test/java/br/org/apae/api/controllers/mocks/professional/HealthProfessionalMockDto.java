@@ -6,8 +6,6 @@ import java.util.UUID;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockMultipartFile;
 
-import br.org.apae.api.common.dto.address.AddressResponseDTO;
-import br.org.apae.api.common.dto.address.CreateAddressDTO;
 import br.org.apae.api.common.dto.professional.request.CreateHealthProfessionalDTO;
 import br.org.apae.api.common.dto.professional.request.documents.CreateProfessionalDocumentsDTO;
 import br.org.apae.api.common.dto.professional.response.HealthProfessionalResponseDTO;
@@ -27,10 +25,10 @@ public final class HealthProfessionalMockDto {
     public static final UUID PROFESSIONAL_ID_2 =
         UUID.fromString("22222222-2222-2222-2222-222222222222");
 
-    public static final UUID ADDRESS_ID_1 =
+    public static final UUID USER_ID_1 =
         UUID.fromString("aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa");
 
-    public static final UUID ADDRESS_ID_2 =
+    public static final UUID USER_ID_2 =
         UUID.fromString("bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb");
     
     public static MockMultipartFile volunteerAgreementFile() {
@@ -98,18 +96,6 @@ public final class HealthProfessionalMockDto {
         );
     }
 
-    public static CreateAddressDTO createAddressRequest() {
-        return new CreateAddressDTO(
-            "São Paulo",
-            "01000-000",
-            "SP",
-            "Centro",
-            "Rua A",
-            "123",
-            "Apto 10"
-        );
-    }
-
     public static CreateHealthProfessionalDTO createHealthProfessionalRequest() {
         return new CreateHealthProfessionalDTO(
             createServiceAreaRequestPsychology(),
@@ -118,62 +104,38 @@ public final class HealthProfessionalMockDto {
             "teste@apae.org.br",
             "João da Silva",
             "123456789",
-            createAddressRequest(),
             List.of(
                 new CreateAvailabilityDTO("SEGUNDA", "MANHA"),
                 new CreateAvailabilityDTO("TERCA", "TARDE")
-            )
+            ),
+            "profile-photo.png"
         );
     }
 
-    public static AddressResponseDTO createAddressResponse1() {
-        return new AddressResponseDTO(
-            ADDRESS_ID_1,
-            "01000-000",
-            "São Paulo",
-            "SP",
-            "Centro",
-            "Rua A",
-            "123",
-            "Apto 10"
+    public static HealthProfessionalResponseDTO createProfessionalResponse1() {
+        return new HealthProfessionalResponseDTO(
+            PROFESSIONAL_ID_1,
+            USER_ID_1,
+            "João da Silva",
+            "teste@apae.org.br",
+            "CREFITO-12345",
+            "123456789",
+            "11999999999",
+            "Fisioterapia",
+            true,
+            createServiceAreaResponsePhysiotherapy(),
+            List.of(
+                new AvailabilityResponseDTO(UUID.randomUUID(), "SEGUNDA", "MANHA"),
+                new AvailabilityResponseDTO(UUID.randomUUID(), "TERCA", "TARDE")
+            ),
+            "profile-photo.png"
         );
     }
-
-    public static AddressResponseDTO createAddressResponse2() {
-        return new AddressResponseDTO(
-            ADDRESS_ID_2,
-            "02000-000",
-            "São Paulo",
-            "SP",
-            "Santana",
-            "Rua B",
-            "456",
-            null
-        );
-    }
-
-public static HealthProfessionalResponseDTO createProfessionalResponse1() {
-    return new HealthProfessionalResponseDTO(
-        PROFESSIONAL_ID_1,
-        "João da Silva",
-        "teste@apae.org.br",
-        "CREFITO-12345",
-        "123456789",
-        "11999999999",
-        "Fisioterapia",
-        true,
-        createAddressResponse1(),
-        createServiceAreaResponsePhysiotherapy(),
-        List.of(
-            new AvailabilityResponseDTO(UUID.randomUUID(), "SEGUNDA", "MANHA"),
-            new AvailabilityResponseDTO(UUID.randomUUID(), "TERCA", "TARDE")
-        )
-    );
-}
 
     public static HealthProfessionalResponseDTO createProfessionalResponse2() {
         return new HealthProfessionalResponseDTO(
             PROFESSIONAL_ID_2,
+            USER_ID_2,
             "Maria Souza",
             "maria@apae.org.br",
             "CRP-54321",
@@ -181,9 +143,9 @@ public static HealthProfessionalResponseDTO createProfessionalResponse1() {
             "11888888888",
             "Psicologia",
             true,
-            createAddressResponse2(),
             createServiceAreaResponsePsychology(),
-            List.of()
+            List.of(),
+            "maria-profile-photo.png"
         );
     }
 

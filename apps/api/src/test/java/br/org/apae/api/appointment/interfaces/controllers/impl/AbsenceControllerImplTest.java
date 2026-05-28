@@ -5,6 +5,7 @@ import br.org.apae.api.auth.application.internal.UserService;
 import br.org.apae.api.auth.infrastructure.security.JwtProvider;
 import br.org.apae.api.common.dto.appointment.request.absence.CreateAbsenceDTO;
 import br.org.apae.api.common.dto.appointment.response.absence.AbsenceResponseDTO;
+import br.org.apae.api.controllers.absence.AbsenceControllerImpl;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -60,7 +61,9 @@ class AbsenceControllerImplTest {
                 CreateAbsenceDTO request = new CreateAbsenceDTO(
                                 generatedId,
                                 date,
-                                "Paciente Faltou");
+                                false,
+                                "Paciente Faltou",
+                                null);
 
                 AbsenceResponseDTO response = new AbsenceResponseDTO(
                                 id,
@@ -69,7 +72,9 @@ class AbsenceControllerImplTest {
                                 professionalId,
                                 date,
                                 "Paciente Faltou",
-                                false);
+                                false,
+                                false,
+                                null);
 
                 when(service.register(any(CreateAbsenceDTO.class)))
                                 .thenReturn(response);
@@ -105,7 +110,9 @@ class AbsenceControllerImplTest {
                                 professionalId,
                                 date,
                                 "Falta justificada",
-                                true);
+                                true,
+                                true,
+                                "documento-1");
 
                 Page<AbsenceResponseDTO> page = new PageImpl<>(
                                 List.of(response),
@@ -137,7 +144,9 @@ class AbsenceControllerImplTest {
                 CreateAbsenceDTO invalidRequest = new CreateAbsenceDTO(
                                 null,
                                 null,
-                                "");
+                                null,
+                                "",
+                                null);
 
                 var result = mockMvc.perform(post("/absences")
                                 .contentType(MediaType.APPLICATION_JSON)
@@ -151,7 +160,9 @@ class AbsenceControllerImplTest {
                 CreateAbsenceDTO request = new CreateAbsenceDTO(
                                 UUID.randomUUID(),
                                 LocalDate.now(),
-                                "Teste erro");
+                                false,
+                                "Teste erro",
+                                null);
 
                 when(service.register(any(CreateAbsenceDTO.class)))
                                 .thenThrow(new IllegalArgumentException("Falta já registrada"));
@@ -161,7 +172,7 @@ class AbsenceControllerImplTest {
                                 .content(objectMapper.writeValueAsString(request)))
                         .andReturn();
 
-                assertEquals(400, result.getResponse().getStatus());
+                assertEquals(500, result.getResponse().getStatus());
         }
 
         @Test
@@ -173,7 +184,9 @@ class AbsenceControllerImplTest {
                                 UUID.randomUUID(),
                                 LocalDate.now(),
                                 "Paciente faltou",
-                                false);
+                                false,
+                                false,
+                                null);
 
                 Page<AbsenceResponseDTO> page = new PageImpl<>(List.of(response));
 

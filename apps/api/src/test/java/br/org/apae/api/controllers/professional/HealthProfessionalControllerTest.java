@@ -129,16 +129,18 @@ class HealthProfessionalControllerTest {
 
             .andExpect(jsonPath("$.content[0].id")
                 .value("11111111-1111-1111-1111-111111111111"))
+            .andExpect(jsonPath("$.content[0].userId")
+                .value("aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa"))
             .andExpect(jsonPath("$.content[0].healthSector")
                 .value("Fisioterapia"))
-            .andExpect(jsonPath("$.content[0].address.city")
-                .value("São Paulo"))
+            .andExpect(jsonPath("$.content[0].profilePhoto")
+                .value("profile-photo.png"))
 
             .andExpect(jsonPath("$.content[1].id")
                 .value("22222222-2222-2222-2222-222222222222"))
             .andExpect(jsonPath("$.content[1].name")
                 .value("Maria Souza"))
-            .andExpect(jsonPath("$.content[1].address.neighborhood")
-                .value("Santana"));
+            .andExpect(jsonPath("$.content[1].userId")
+                .value("bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb"));
     }
 }
