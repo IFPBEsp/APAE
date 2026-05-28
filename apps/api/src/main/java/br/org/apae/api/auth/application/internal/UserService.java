@@ -31,7 +31,7 @@ public class UserService {
       throw new UserConflictException();
     }
 
-    User user = new User(email, password, cpf, fullName, UserRole.ADMIN);
+    User user = new User(email, password, cpf, fullName, UserRole.APAE_GERAL);
     userRepository.save(user);
   }
 
