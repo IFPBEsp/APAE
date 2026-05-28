@@ -8,6 +8,7 @@ import br.org.apae.api.common.dto.patient.request.annual_registry.ReplaceAnnualR
 import br.org.apae.api.common.dto.patient.response.annual_registry.AnnualRegistryResponseDTO;
 import br.org.apae.api.common.exceptions.handler.GlobalExceptionHandler;
 import br.org.apae.api.helpers.AuthTestHelper;
+import br.org.apae.api.patient.application.exceptions.PatientExceptionHandler;
 import br.org.apae.api.patient.application.interfaces.AnnualRegistryApplicationService;
 import br.org.apae.api.patient.domain.exceptions.AnnualRegistryConflictException;
 import br.org.apae.api.patient.domain.exceptions.RegistryNotFoundException;
@@ -50,6 +51,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @Import({
         SpringDataWebConfiguration.class,
         SecurityConfiguration.class,
+        PatientExceptionHandler.class,
         GlobalExceptionHandler.class
 })
 @Tag("patient")
@@ -99,7 +101,7 @@ public class AnnualRegistryControllerTest {
                         .content(objectMapper.writeValueAsString(requestDto))
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isCreated())
-                .andExpect(jsonPath("$.year").value(requestDto.year()))
+                .andExpect(jsonPath("$.year").value(requestDto.year().getValue()))
                 .andExpect(jsonPath("$.patientId").value(patientId.toString()));
     }
 
@@ -217,7 +219,7 @@ public class AnnualRegistryControllerTest {
 
         mockMvc.perform(get(BASE_URL + "/{year}", patientId, year)
                         .header("Authorization", AuthTestHelper.bearerToken()))
-                .andExpect(status().isInternalServerError());
+                .andExpect(status().isNotFound());
     }
 
     @Test
@@ -302,7 +304,7 @@ public class AnnualRegistryControllerTest {
                         .header("Authorization", AuthTestHelper.bearerToken())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(replaceDto)))
-                .andExpect(status().isInternalServerError());
+                .andExpect(status().isNotFound());
     }
 
     @Test
@@ -331,7 +333,7 @@ public class AnnualRegistryControllerTest {
 
         mockMvc.perform(delete(BASE_URL + "/{registryId}", patientId, registryId)
                         .header("Authorization", AuthTestHelper.bearerToken()))
-                .andExpect(status().isInternalServerError());
+                .andExpect(status().isNotFound());
     }
 
     @Test

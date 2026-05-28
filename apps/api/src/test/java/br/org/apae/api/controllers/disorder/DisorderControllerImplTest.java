@@ -7,6 +7,7 @@ import br.org.apae.api.common.dto.patient.request.disorder.CreateDisorderDTO;
 import br.org.apae.api.common.dto.patient.request.disorder.UpdateDisorderDTO;
 import br.org.apae.api.common.dto.patient.response.disorder.DisorderResponseDTO;
 import br.org.apae.api.helpers.AuthTestHelper;
+import br.org.apae.api.patient.application.exceptions.PatientExceptionHandler;
 import br.org.apae.api.patient.application.interfaces.DisorderApplicationService;
 import br.org.apae.api.patient.domain.exceptions.DisorderConflictException;
 import br.org.apae.api.patient.domain.exceptions.DisorderNotFoundException;
@@ -46,7 +47,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @AutoConfigureMockMvc(addFilters = true)
 @Import({
         SpringDataWebConfiguration.class,
-        SecurityConfiguration.class
+        SecurityConfiguration.class,
+        PatientExceptionHandler.class
 })
 @Tag("patient")
 @Tag("unit")

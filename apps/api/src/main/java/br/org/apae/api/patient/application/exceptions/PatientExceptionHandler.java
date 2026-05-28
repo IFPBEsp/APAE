@@ -1,8 +1,9 @@
 package br.org.apae.api.patient.application.exceptions;
 
+import org.springframework.core.Ordered;
+import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
@@ -17,12 +18,15 @@ import br.org.apae.api.patient.domain.exceptions.ParentMismatchException;
 import br.org.apae.api.patient.domain.exceptions.ParentNotFoundException;
 import br.org.apae.api.patient.domain.exceptions.PatientConflictException;
 import br.org.apae.api.patient.domain.exceptions.PatientNotFoundException;
+import br.org.apae.api.patient.domain.exceptions.RegistryNotFoundException;
+import br.org.apae.api.patient.domain.exceptions.RegistryOwnershipException;
 import br.org.apae.api.patient.domain.exceptions.VaccineConflictException;
 import br.org.apae.api.patient.domain.exceptions.VaccineMismatchException;
 import br.org.apae.api.patient.domain.exceptions.VaccineNotFoundException;
 import jakarta.servlet.http.HttpServletRequest;
 
 @ControllerAdvice
+@Order(Ordered.HIGHEST_PRECEDENCE)
 public class PatientExceptionHandler {
   @ExceptionHandler(InvalidDataException.class)
   public ResponseEntity<ErrorResponse> handleInvalidData(InvalidDataException ex, HttpServletRequest request) {
@@ -159,15 +163,26 @@ public class PatientExceptionHandler {
     return new ResponseEntity<>(error, HttpStatus.CONFLICT);
   }
 
-  @ExceptionHandler(MethodArgumentNotValidException.class)
-  public ResponseEntity<ErrorResponse> handleArgumentNotValidException(MethodArgumentNotValidException ex,
-                                                                       HttpServletRequest request) {
+  @ExceptionHandler(RegistryNotFoundException.class)
+  public ResponseEntity<ErrorResponse> handleRegistryNotFound(RegistryNotFoundException ex,
+      HttpServletRequest request) {
     ErrorResponse error = new ErrorResponse(
-            HttpStatus.BAD_REQUEST.value(),
-            HttpStatus.BAD_REQUEST.getReasonPhrase(),
-            ex.getMessage(),
-            request.getRequestURI()
-    );
-    return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
+        HttpStatus.NOT_FOUND.value(),
+        HttpStatus.NOT_FOUND.getReasonPhrase(),
+        ex.getMessage(),
+        request.getRequestURI());
+    return new ResponseEntity<>(error, HttpStatus.NOT_FOUND);
   }
+
+  @ExceptionHandler(RegistryOwnershipException.class)
+  public ResponseEntity<ErrorResponse> handleRegistryOwnership(RegistryOwnershipException ex,
+      HttpServletRequest request) {
+    ErrorResponse error = new ErrorResponse(
+        HttpStatus.NOT_FOUND.value(),
+        HttpStatus.NOT_FOUND.getReasonPhrase(),
+        ex.getMessage(),
+        request.getRequestURI());
+    return new ResponseEntity<>(error, HttpStatus.NOT_FOUND);
+  }
+
 }

@@ -7,6 +7,7 @@ import br.org.apae.api.common.dto.patient.request.vaccine.CreateVaccineDTO;
 import br.org.apae.api.common.dto.patient.response.vaccine.VaccineResponseDTO;
 import br.org.apae.api.common.exceptions.handler.GlobalExceptionHandler;
 import br.org.apae.api.helpers.AuthTestHelper;
+import br.org.apae.api.patient.application.exceptions.PatientExceptionHandler;
 import br.org.apae.api.patient.application.interfaces.VaccineApplicationService;
 import br.org.apae.api.patient.domain.exceptions.VaccineConflictException;
 import br.org.apae.api.patient.domain.exceptions.VaccineNotFoundException;
@@ -43,6 +44,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @Import({
         SpringDataWebConfiguration.class,
         SecurityConfiguration.class,
+        PatientExceptionHandler.class,
         GlobalExceptionHandler.class
 })
 @Tag("patient")

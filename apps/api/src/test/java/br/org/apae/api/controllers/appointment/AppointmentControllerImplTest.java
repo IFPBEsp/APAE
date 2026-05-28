@@ -60,6 +60,14 @@ class AppointmentControllerImplTest {
   private static final String URI_WITH_ID = URI + "/{id}";
   private static final String GENERATED_URI_WITH_ID = URI + "/generated/{id}";
 
+  private static String format(LocalTime time) {
+    return time.format(DateTimeFormatter.ISO_LOCAL_TIME);
+  }
+
+  private static String format(LocalDateTime dateTime) {
+    return dateTime.format(DateTimeFormatter.ISO_LOCAL_DATE_TIME);
+  }
+
   private AppointmentResponseDTO createAppointmentDTO(UUID id) {
     return new AppointmentResponseDTO(
             id,
@@ -111,9 +119,9 @@ class AppointmentControllerImplTest {
       .andExpect(jsonPath("$.frequencyDays").value(response.frequencyDays()))
       .andExpect(jsonPath("$.initialDate").value(response.initialDate().toString()))
       .andExpect(jsonPath("$.endDate").value(response.endDate().toString()))
-      .andExpect(jsonPath("$.hour").value(response.hour().toString()))
+      .andExpect(jsonPath("$.hour").value(format(response.hour())))
       .andExpect(jsonPath("$.isActive").value(response.isActive()))
-      .andExpect(jsonPath("$.creationDate").value(response.creationDate().toString()));
+      .andExpect(jsonPath("$.creationDate").value(format(response.creationDate())));
   }
 
   @Test
@@ -156,13 +164,13 @@ class AppointmentControllerImplTest {
       .andExpect(status().isOk())
       .andExpect(jsonPath("$.id").value(response.id().toString()))
       .andExpect(jsonPath("$.appointmentId").value(response.appointmentId().toString()))
-      .andExpect(jsonPath("$.scheduledDateTime").value(response.scheduledDateTime().toString()))
+      .andExpect(jsonPath("$.scheduledDateTime").value(format(response.scheduledDateTime())))
       .andExpect(jsonPath("$.overriddenDateTime").isEmpty())
       .andExpect(jsonPath("$.performed").isBoolean())
       .andExpect(jsonPath("$.cancelled").isBoolean())
       .andExpect(jsonPath("$.cancellationReason").isEmpty())
       .andExpect(jsonPath("$.patientId").value(response.patientId().toString()))
-      .andExpect(jsonPath("$.effectiveDateTime").value(response.effectiveDateTime().toString()));
+      .andExpect(jsonPath("$.effectiveDateTime").value(format(response.effectiveDateTime())));
   }
 
   @Test
@@ -194,7 +202,7 @@ class AppointmentControllerImplTest {
         .andExpect(jsonPath("$.cancelled").value(response.cancelled()))
         .andExpect(jsonPath("$.cancellationReason").isEmpty())
         .andExpect(jsonPath("$.patientId").value(response.patientId().toString()))
-        .andExpect(jsonPath("$.effectiveDateTime").value(response.effectiveDateTime().toString()));
+        .andExpect(jsonPath("$.effectiveDateTime").value(format(response.effectiveDateTime())));
   }
 
   @Test
@@ -230,7 +238,7 @@ class AppointmentControllerImplTest {
         .andExpect(jsonPath("$.cancelled").value(response.cancelled()))
         .andExpect(jsonPath("$.cancellationReason").value(response.cancellationReason()))
         .andExpect(jsonPath("$.patientId").value(response.patientId().toString()))
-        .andExpect(jsonPath("$.effectiveDateTime").value(response.effectiveDateTime().toString()));
+        .andExpect(jsonPath("$.effectiveDateTime").value(format(response.effectiveDateTime())));
   }
 
   @Test
@@ -273,7 +281,7 @@ class AppointmentControllerImplTest {
         .andExpect(jsonPath("$.frequencyDays").value(response.frequencyDays()))
         .andExpect(jsonPath("$.hour").value(response.hour().format(DateTimeFormatter.ISO_LOCAL_TIME)))
         .andExpect(jsonPath("$.isActive").value(response.isActive()))
-        .andExpect(jsonPath("$.creationDate").value(response.creationDate().toString()));
+        .andExpect(jsonPath("$.creationDate").value(format(response.creationDate())));
 
     verify(service, times(1)).update(eq(id), any(UpdateAppointmentDTO.class));
   }
@@ -315,7 +323,7 @@ class AppointmentControllerImplTest {
         .andExpect(jsonPath("$.content.length()").value(1))
         .andExpect(jsonPath("$.content[0].id").value(response.id().toString()))
         .andExpect(jsonPath("$.content[0].appointmentId").value(response.appointmentId().toString()))
-        .andExpect(jsonPath("$.content[0].scheduledDateTime").value(response.scheduledDateTime().toString()))
+        .andExpect(jsonPath("$.content[0].scheduledDateTime").value(format(response.scheduledDateTime())))
         .andExpect(jsonPath("$.content[0].performed").value(response.performed()))
         .andExpect(jsonPath("$.content[0].cancelled").value(response.cancelled()))
         .andExpect(jsonPath("$.content[0].patientId").value(response.patientId().toString()));
@@ -423,12 +431,12 @@ class AppointmentControllerImplTest {
                     .with(csrf()))
             .andExpect(status().isOk())
             .andExpect(jsonPath("$.id").value(response.id().toString()))
-            .andExpect(jsonPath("$.scheduledDateTime").value(response.scheduledDateTime().toString()))
+            .andExpect(jsonPath("$.scheduledDateTime").value(format(response.scheduledDateTime())))
             .andExpect(jsonPath("$.overriddenDateTime").isEmpty())
             .andExpect(jsonPath("$.performed").value(response.performed()))
             .andExpect(jsonPath("$.cancelled").value(response.cancelled()))
             .andExpect(jsonPath("$.cancellationReason").isEmpty())
-            .andExpect(jsonPath("$.effectiveDateTime").value(response.effectiveDateTime().toString()))
+            .andExpect(jsonPath("$.effectiveDateTime").value(format(response.effectiveDateTime())))
             .andExpect(jsonPath("$.ruleId").value(response.ruleId().toString()))
             .andExpect(jsonPath("$.hasAbsence").value(response.hasAbsence()));
 
