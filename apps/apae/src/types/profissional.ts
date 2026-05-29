@@ -26,24 +26,15 @@ export interface Availability {
 
 export interface Professional {
   id: string;
+  userId?: string;
   serviceArea: ServiceArea;
   phoneNumber: string;
-  professionalDocument: string;
+  professionalDocument: string | null;
   email: string;
   name: string;
   identityDocument: string;
-  address: Address;
+  healthSector?: string | null;
   availabilities: Availability[];
   ativo: boolean;
-  profilePhotoUrl?: string;
-}
-
-export interface Address {
-  cep: string;
-  city: string;
-  state: string;
-  neighborhood: string;
-  street: string;
-  number?: string;
-  complement?: string;
+  profilePhoto?: string | null;
 }

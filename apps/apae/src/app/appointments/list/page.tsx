@@ -48,6 +48,7 @@ import {
   Appointment,
   getAppointments,
   getAreasDaSaude,
+  getProfessionalAreaName,
 } from "../../services/appointmentService";
 import {Tooltip, TooltipContent, TooltipProvider, TooltipTrigger} from "@radix-ui/react-tooltip";
 
@@ -125,8 +126,8 @@ useEffect(() => {
         .includes(search);
 
     const matchesArea = selectedArea
-      ? appointment.professional.healthSector === selectedArea
-        : true;
+      ? getProfessionalAreaName(appointment.professional) === selectedArea
+      : true;
 
     const matchesStatus = selectedStatus
         ? selectedStatus === 'ativo'

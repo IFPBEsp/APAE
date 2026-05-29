@@ -43,20 +43,9 @@ export default function VisualizarProfissional() {
     return <p className="p-6 text-red-500">Erro ao carregar os dados.</p>;
   if (!profissional) return <p className="p-6">Profissional não encontrado.</p>;
 
-  const dados = {
-    ...profissional,
-    address: profissional.address || {
-      street: "—",
-      number: "—",
-      neighborhood: "—",
-      city: "—",
-      state: "—",
-      cep: "—",
-      complement: "—",
-    },
-  };
-
   const handleEdit = () => router.push(`/professionals/edit/${id}`);
+  const serviceAreaName =
+    profissional.serviceArea?.area ?? profissional.healthSector ?? "—";
 
   const DAYS = ["segunda", "terca", "quarta", "quinta", "sexta"] as const;
   const SHIFTS = ["manha", "tarde"] as const;
@@ -92,14 +81,14 @@ export default function VisualizarProfissional() {
 
       <div className="flex flex-col items-center sm:flex-row sm:items-center gap-4 sm:gap-6 mb-10">
         <Avatar className="h-24 w-24 border-2 border-[#0D4F97]">
-          <AvatarImage src="" alt={dados.name} />
+          <AvatarImage src={profissional.profilePhoto ?? ""} alt={profissional.name} />
           <AvatarFallback className="text-xl font-bold bg-[#B2D7EC] text-[#0D4F97]">
-            {dados.name?.charAt(0) || "P"}
+            {profissional.name?.charAt(0) || "P"}
           </AvatarFallback>
         </Avatar>
         <div className="text-center sm:text-left">
-          <h2 className="text-xl font-bold text-[#0D4F97]">{dados.name}</h2>
-          <p className="text-base text-gray-600">{dados.serviceArea?.area}</p>
+          <h2 className="text-xl font-bold text-[#0D4F97]">{profissional.name}</h2>
+          <p className="text-base text-gray-600">{serviceAreaName}</p>
         </div>
       </div>
 
@@ -115,64 +104,24 @@ export default function VisualizarProfissional() {
               <div className="col-span-1 sm:col-span-2">
                 <p className="font-semibold text-sm">Documento profissional</p>
                 <p className="text-base text-gray-700">
-                  {dados.professionalDocument || "—"}
+                  {profissional.professionalDocument || "—"}
                 </p>
               </div>
               <div>
                 <p className="font-semibold text-sm">Email</p>
-                <p className="text-base text-gray-700">{dados.email || "—"}</p>
+                <p className="text-base text-gray-700">{profissional.email || "—"}</p>
               </div>
               <div>
                 <p className="font-semibold text-sm">Telefone</p>
                 <p className="text-base text-gray-700">
-                  {dados.phoneNumber || "—"}
+                  {profissional.phoneNumber || "—"}
                 </p>
               </div>
               <div>
                 <p className="font-semibold text-sm">RG</p>
                 <p className="text-base text-gray-700">
-                  {dados.identityDocument || "—"}
+                  {profissional.identityDocument || "—"}
                 </p>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card className="shadow-lg border-2 border-[#E0E7FF] text-[#0D4F97]">
-          <CardHeader>
-            <CardTitle className="text-lg font-semibold">
-              Informação de endereço
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-2">
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-4">
-              <div className="col-span-1 sm:col-span-2">
-                <p className="font-semibold text-sm">Endereço</p>
-                <p className="text-base text-gray-700">
-                  {`${dados.address.street}, ${dados.address.number} - ${dados.address.neighborhood}`}
-                </p>
-              </div>
-
-              <div className="col-span-1 sm:col-span-2">
-                <p className="font-semibold text-sm">Complemento</p>
-                <p className="text-base text-gray-700">
-                  {dados.address.complement || "—"}
-                </p>
-              </div>
-
-              <div>
-                <p className="font-semibold text-sm">Cidade</p>
-                <p className="text-base text-gray-700">{dados.address.city}</p>
-              </div>
-
-              <div>
-                <p className="font-semibold text-sm">Estado</p>
-                <p className="text-base text-gray-700">{dados.address.state}</p>
-              </div>
-
-              <div>
-                <p className="font-semibold text-sm">CEP</p>
-                <p className="text-base text-gray-700">{dados.address.cep}</p>
               </div>
             </div>
           </CardContent>

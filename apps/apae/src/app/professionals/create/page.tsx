@@ -8,13 +8,6 @@ import { User } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import {
   Form,
   FormControl,
   FormField,
@@ -26,7 +19,6 @@ import { useRouter } from "next/navigation";
 import { useCreateProfissional } from "@/hooks/profissional/use-create-profissional";
 import Disponibilidade from "@/components/forms/DisponibilidadeForm";
 import { cadastroSchema } from "@/schemas/profissional.schema";
-import { STATES } from "@/lib/states";
 import { useRef, useState, useEffect, JSX } from "react";
 import HealthAreaSelect from "@/components/shared/HealthAreaSelect";
 import { gerarMatrizDisponibilidade } from "@/domains/professional/shared/disponibilidade.utils";
@@ -47,13 +39,6 @@ export default function CadastroProfissional(): JSX.Element {
     areaAtendimento: "",
     telefone: "",
     rg: "",
-    estado: "",
-    cidade: "",
-    bairro: "",
-    rua: "",
-    numero: "",
-    complemento: "",
-    cep: "",
     disponibilidade: gerarMatrizDisponibilidade([]),
   };
 
@@ -93,15 +78,6 @@ export default function CadastroProfissional(): JSX.Element {
       email: values.email.trim(),
       name: values.nomeCompleto.trim(),
       identityDocument: values.rg.trim(),
-      address: {
-        state: values.estado,
-        city: values.cidade.trim(),
-        neighborhood: values.bairro.trim(),
-        street: values.rua.trim(),
-        number: values.numero?.trim(),
-        complement: values.complemento?.trim() ?? "",
-        cep: values.cep,
-      },
       availabilities,
     };
 
@@ -225,132 +201,6 @@ export default function CadastroProfissional(): JSX.Element {
                     />
                   </FormControl>
                   <FormMessage>{fieldState.error?.message}</FormMessage>
-                </FormItem>
-              )}
-            />
-          </div>
-
-          <div className="grid grid-cols-2 gap-4">
-            <Controller
-              control={form.control}
-              name="estado"
-              render={({ field, fieldState }) => (
-                <FormItem>
-                  <FormLabel>Estado *</FormLabel>
-                  <FormControl>
-                    <Select onValueChange={field.onChange} value={field.value}>
-                      <SelectTrigger
-                        className={`w-full ${
-                          fieldState.invalid
-                            ? "border-red-500"
-                            : "border-gray-300"
-                        }`}
-                      >
-                        <SelectValue placeholder="Selecione um estado" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {STATES.map((s) => (
-                          <SelectItem key={s} value={s}>
-                            {s}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </FormControl>
-                  <FormMessage>{fieldState.error?.message}</FormMessage>
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="cidade"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Cidade *</FormLabel>
-                  <FormControl>
-                    <Input placeholder="Ex: João Pessoa" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-          </div>
-
-          <FormField
-            control={form.control}
-            name="rua"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Endereço *</FormLabel>
-                <FormControl>
-                  <Input placeholder="Ex: Rua das Flores" {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <FormField
-              control={form.control}
-              name="bairro"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Bairro *</FormLabel>
-                  <FormControl>
-                    <Input placeholder="Ex: Centro" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <Controller
-              control={form.control}
-              name="cep"
-              render={({ field, fieldState }) => (
-                <FormItem>
-                  <FormLabel>CEP *</FormLabel>
-                  <FormControl>
-                    <InputMask
-                      mask="_____-___"
-                      replacement={{ _: /\d/ }}
-                      value={field.value ?? ""}
-                      onChange={(e) => field.onChange(e.target.value)}
-                      onBlur={field.onBlur}
-                      placeholder="12345-678"
-                      className="w-full rounded-md border px-3 py-2"
-                    />
-                  </FormControl>
-                  <FormMessage>{fieldState.error?.message}</FormMessage>
-                </FormItem>
-              )}
-            />
-          </div>
-
-          <div className="grid grid-cols-2 gap-4">
-            <FormField
-              control={form.control}
-              name="numero"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Número *</FormLabel>
-                  <FormControl>
-                    <Input placeholder="Ex: 123" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="complemento"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Complemento</FormLabel>
-                  <FormControl>
-                    <Input placeholder="Ex: Apt 101" {...field} />
-                  </FormControl>
-                  <FormMessage />
                 </FormItem>
               )}
             />

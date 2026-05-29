@@ -5,15 +5,6 @@ export type UpdateProfissionalDto = {
   name: string;
   email: string;
   phoneNumber: string;
-  address: {
-    state: string;
-    city: string;
-    neighborhood: string;
-    street: string;
-    number: string;
-    complement: string;
-    cep: string;
-  };
   professionalDocument: string | null;
   serviceArea: { area: string };
   identityDocument: string;

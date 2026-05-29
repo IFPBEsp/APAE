@@ -163,18 +163,30 @@ export interface CancelGeneratedAppointmentDTO {
 
 export interface Professional {
   id: string;
-  healthSector: string;
-  phoneNumber: string;
-  professionalDocument: string;
+  userId?: string;
+  serviceArea?: {
+    id?: string | number;
+    area?: string;
+  };
+  healthSector?: string | null;
+  phoneNumber?: string;
+  professionalDocument?: string | null;
   email: string;
   name: string;
   identityDocument: string;
-  address: Address;
+  profilePhoto?: string | null;
+  ativo?: boolean;
 }
 
 export interface Disorder {
   id: UUID;
   name: string;
+}
+
+export function getProfessionalAreaName(
+  professional?: Pick<Professional, "serviceArea" | "healthSector"> | null,
+): string {
+  return professional?.serviceArea?.area ?? professional?.healthSector ?? "";
 }
 
 function ensurePageFormat<T>(data: unknown): Page<T> {
@@ -468,7 +480,7 @@ export async function getProfissionalDaSaude(
 
 export async function getAreasDaSaude(): Promise<string[]> {
   const profissionais = await getProfissionaisDaSaude();
-  const areas = profissionais.map((p) => p.healthSector);
+  const areas = profissionais.map(getProfessionalAreaName);
   return [...new Set(areas)].filter(Boolean) as string[];
 }
 

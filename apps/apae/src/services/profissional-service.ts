@@ -6,7 +6,6 @@ export async function getAllProfissionais(ativo?: boolean) {
       ? `/apae-geral/api/professionals`
       : `/apae-geral/api/professionals?ativo=${ativo}`;
 
-  console.log("[getAllProfissionais] ativo:", ativo, "| url:", url);
   return axios.get(url);
 }
 

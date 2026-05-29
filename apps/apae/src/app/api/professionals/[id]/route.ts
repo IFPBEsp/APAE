@@ -2,6 +2,12 @@ import { NextRequest, NextResponse } from "next/server";
 import { createBaseApi } from "@/lib/axios";
 import { AxiosError } from "axios";
 
+function removeLegacyAddressFromPayload(payload: Record<string, unknown>) {
+  const compatiblePayload = { ...payload };
+  delete compatiblePayload.address;
+  return compatiblePayload;
+}
+
 export async function GET(
   req: NextRequest,
   context: { params: Promise<{ id: string }> },
@@ -45,7 +51,7 @@ export async function PUT(
   try {
     const { id } = await context.params;
 
-    const body = await req.json();
+    const body = removeLegacyAddressFromPayload(await req.json());
 
     const api = await createBaseApi();
     const response = await api.put(`/professionals/${id}`, body);

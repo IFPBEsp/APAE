@@ -53,6 +53,13 @@ import { useActivateProfissional } from "@/hooks/profissional/use-activate-profi
 
 type StatusFilter = "ativo" | "inativo";
 
+function getProfessionalAreaName(professional: {
+  serviceArea?: { area?: string };
+  healthSector?: string | null;
+}) {
+  return professional.serviceArea?.area ?? professional.healthSector ?? "";
+}
+
 export default function VisualizationProfessionalPage() {
   const router = useRouter();
 
@@ -91,15 +98,17 @@ export default function VisualizationProfessionalPage() {
     const matchesSearch =
       name.includes(term) || document.includes(term);
 
-    const matchesArea =
-      areaFilter === "all" || prof.serviceArea.area === areaFilter;
+    const professionalArea = getProfessionalAreaName(prof);
+    const matchesArea = areaFilter === "all" || professionalArea === areaFilter;
 
     return matchesSearch && matchesArea;
   });
 
   const uniqueAreas = [
     "all",
-    ...Array.from(new Set(profissionais.map((p) => p.serviceArea.area))),
+    ...Array.from(
+      new Set(profissionais.map(getProfessionalAreaName).filter(Boolean)),
+    ),
   ];
 
   const actionLabel = statusFilter === "ativo" ? "Inativar" : "Reativar";
@@ -196,7 +205,7 @@ export default function VisualizationProfessionalPage() {
                         {prof.name}
                       </TableCell>
                       <TableCell>{prof.professionalDocument}</TableCell>
-                      <TableCell>{prof.serviceArea.area}</TableCell>
+                      <TableCell>{getProfessionalAreaName(prof) || "—"}</TableCell>
                       <TableCell className="hidden md:table-cell">
                         {prof.phoneNumber}
                       </TableCell>

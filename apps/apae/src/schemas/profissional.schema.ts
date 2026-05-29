@@ -5,11 +5,6 @@ const telefoneRegex = /^\(\d{2}\) \d{5}-\d{4}$/;
 
 const rgRegex =
   /^(\d{7,8}[\dXx]?|\d\.\d{3}\.\d{3}|\d{2}\.\d{3}\.\d{3}-[\dXx])$/;
-const estadoRegex = /^[A-Z]{2}$/;
-const cidadeRegex = /^[A-Za-zÀ-ÿ\s]+$/;
-const bairroRegex = /^[A-Za-zÀ-ÿ\s]+$/;
-const ruaRegex = /^[A-Za-zÀ-ÿ0-9\s]+$/;
-const numeroRegex = /^[0-9]{1,6}$/;
 
 const fileSchema = z
   .instanceof(File, { message: "Selecione um arquivo" })
@@ -53,18 +48,6 @@ const baseSchema = z.object({
     .string()
     .regex(rgRegex, "RG inválido")
     .transform((val) => val.replace(/\W/g, "")),
-
-  estado: z.string().regex(estadoRegex, "Estado inválido"),
-  cidade: z.string().regex(cidadeRegex, "Cidade inválida"),
-  bairro: z.string().regex(bairroRegex, "Bairro inválido"),
-  rua: z.string().regex(ruaRegex, "Rua inválida"),
-  numero: z.string().regex(numeroRegex, "Número inválido"),
-
-  complemento: z.string().optional(),
-
-  cep: z
-    .string()
-    .regex(/^\d{5}-\d{3}$/, "CEP inválido. Formato esperado: XXXXX-XXX"),
 
   telefone: z
     .string()
