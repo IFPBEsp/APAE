@@ -20,6 +20,7 @@ import {
   formatIssuingBody,
   formatPhone,
   formatRG,
+  capitalizeFirst,
 } from "@/lib/formats";
 import { Personal, PersonalData } from "@/schemas/member-schemas";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -43,14 +44,10 @@ export default function MembersRegisterPersonalPage() {
 
   const pathname = usePathname();
   const isEditing = pathname.includes("/edit");
-  const form = useForm<
-    z.input<typeof Personal>,
-    unknown,
-    z.output<typeof Personal>
-  >({
+  const form = useForm<z.infer<typeof Personal>>({
     mode: "onBlur",
     resolver: zodResolver(Personal),
-    defaultValues: personal as z.input<typeof Personal>,
+    defaultValues: personal,
   });
 
   const [isInitialized, setIsInitialized] = useState(false);
@@ -68,7 +65,7 @@ export default function MembersRegisterPersonalPage() {
     }
   }, [personal, form]);
 
-  const onSubmit = async (values: z.output<typeof Personal>) => {
+  const onSubmit = async (values: z.infer<typeof Personal>) => {
     setIsLoading(true);
     try {
       setPersonalData(values as PersonalData);
@@ -102,7 +99,11 @@ export default function MembersRegisterPersonalPage() {
               <FormItem className="md:col-span-2">
                 <FormLabel>Nome Completo *</FormLabel>
                 <FormControl>
-                  <Input placeholder="Digite o nome completo" {...field} />
+                  <Input
+                    placeholder="Digite o nome completo"
+                    {...field}
+                    onChange={(e) => field.onChange(capitalizeFirst(e.target.value))}
+                  />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -301,7 +302,11 @@ export default function MembersRegisterPersonalPage() {
               <FormItem>
                 <FormLabel>Naturalidade *</FormLabel>
                 <FormControl>
-                  <Input placeholder="Brasil" {...field} />
+                  <Input
+                    placeholder="Brasil"
+                    {...field}
+                    onChange={(e) => field.onChange(capitalizeFirst(e.target.value))}
+                  />
                 </FormControl>
                 <FormMessage />
               </FormItem>

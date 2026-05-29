@@ -13,13 +13,13 @@ import {
   MembersRegisterStep,
   useMembersRegisterContext,
 } from "@/hooks/use-members-register-context";
-import { formatCEP } from "@/lib/formats";
+import { formatCEP, capitalizeFirst } from "@/lib/formats";
 import { Address } from "@/schemas/member-schemas";
 import { EditAddress } from "@/schemas/edit-member-schemas";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { useState, useEffect } from "react";
-import { usePathname } from "next/navigation"; 
+import { usePathname } from "next/navigation";
 import { handleBackendValidationErrors } from "@/utils/form-errors";
 import { Checkbox } from "@/components/ui/checkbox";
 
@@ -54,7 +54,7 @@ export default function MembersRegisterAddressPage() {
       form.setValue("number", "SN");
       form.clearErrors("number");
     } else {
-        if (form.getValues("number") === "SN") {
+      if (form.getValues("number") === "SN") {
         form.setValue("number", "");
       }
     }
@@ -95,10 +95,9 @@ export default function MembersRegisterAddressPage() {
 
   useEffect(() => {
     if (address.cep !== "") {
-       form.reset(address);
+      form.reset(address);
     }
   }, [address, form]);
-
 
   return (
     <Form {...form}>
@@ -133,7 +132,11 @@ export default function MembersRegisterAddressPage() {
               <FormItem className="md:col-span-2">
                 <FormLabel>Rua *</FormLabel>
                 <FormControl>
-                  <Input placeholder="Adielson Assis Alves" {...field} />
+                  <Input
+                    placeholder="Adielson Assis Alves"
+                    {...field}
+                    onChange={(e) => field.onChange(capitalizeFirst(e.target.value))}
+                  />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -161,28 +164,28 @@ export default function MembersRegisterAddressPage() {
                       }}
                     />
                     <label htmlFor="noNumber" className="text-sm text-gray-600">Sem número? </label>
-                    </div>
-                  )}
-                />
-              </div>
-              <FormField
-                control={form.control}
-                name="number"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormControl>
-                      <Input
-                        placeholder="Número"
-                        {...field}
-                        disabled={isNoNumber}
-                        aria-placeholder={isNoNumber ? "SN" : "Número"}
-                        className={isNoNumber ? "bg-gray-100 cursor-not-allowed" : ""}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
+                  </div>
                 )}
               />
+            </div>
+            <FormField
+              control={form.control}
+              name="number"
+              render={({ field }) => (
+                <FormItem>
+                  <FormControl>
+                    <Input
+                      placeholder="Número"
+                      {...field}
+                      disabled={isNoNumber}
+                      aria-placeholder={isNoNumber ? "SN" : "Número"}
+                      className={isNoNumber ? "bg-gray-100 cursor-not-allowed" : ""}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
           </div>
           <FormField
             control={form.control}
@@ -191,7 +194,11 @@ export default function MembersRegisterAddressPage() {
               <FormItem>
                 <FormLabel>Complemento</FormLabel>
                 <FormControl>
-                  <Input placeholder="Apartamento 101" {...field} />
+                  <Input
+                    placeholder="Apartamento 101"
+                    {...field}
+                    onChange={(e) => field.onChange(capitalizeFirst(e.target.value))}
+                  />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -226,7 +233,11 @@ export default function MembersRegisterAddressPage() {
               <FormItem>
                 <FormLabel>Estado *</FormLabel>
                 <FormControl>
-                  <Input placeholder="Paraiba" {...field} />
+                  <Input
+                    placeholder="Paraiba"
+                    {...field}
+                    onChange={(e) => field.onChange(capitalizeFirst(e.target.value))}
+                  />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -240,7 +251,11 @@ export default function MembersRegisterAddressPage() {
               <FormItem>
                 <FormLabel>Cidade *</FormLabel>
                 <FormControl>
-                  <Input placeholder="Esperança" {...field} />
+                  <Input
+                    placeholder="Esperança"
+                    {...field}
+                    onChange={(e) => field.onChange(capitalizeFirst(e.target.value))}
+                  />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -254,7 +269,11 @@ export default function MembersRegisterAddressPage() {
               <FormItem>
                 <FormLabel>Bairro *</FormLabel>
                 <FormControl>
-                  <Input placeholder="Centro" {...field} />
+                  <Input
+                    placeholder="Centro"
+                    {...field}
+                    onChange={(e) => field.onChange(capitalizeFirst(e.target.value))}
+                  />
                 </FormControl>
                 <FormMessage />
               </FormItem>
