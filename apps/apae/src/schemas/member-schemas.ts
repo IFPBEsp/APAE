@@ -1,6 +1,5 @@
-import z, { number, ZodCoercedDate } from "zod";
-
-const MAX_FILE_SIZE = 2 * 1024 * 1024; 
+import z, { ZodCoercedDate } from "zod";
+import { parseCivilDate } from "@/lib/date";
 
 const CPF = z
   .string()
@@ -23,10 +22,30 @@ const CNS = z
 const NIS = z
   .string()
   .min(1, "NIS é obrigatório")
-  .length(11, "O NIS deve ter exatamente 11 dígitos") 
+  .length(11, "O NIS deve ter exatamente 11 dígitos")
   .regex(/^\d+$/, "O NIS deve conter apenas números");
 
-  export const Personal = z
+const civilDateSchema = (
+  futureMessage: string,
+  minYearsBack: number,
+  minMessage: string,
+) =>
+  z.preprocess(
+    (value) => parseCivilDate(value as string | Date | null | undefined),
+    z
+      .date({ error: "Data inválida" })
+      .refine((date) => date <= new Date(), { message: futureMessage })
+      .refine(
+        (date) => {
+          const minDate = new Date();
+          minDate.setFullYear(minDate.getFullYear() - minYearsBack);
+          return date >= minDate;
+        },
+        { message: minMessage },
+      ),
+  ) as unknown as ZodCoercedDate<Date>;
+
+export const Personal = z
   .object({
     name: z
       .string()
@@ -58,21 +77,11 @@ const NIS = z
             /^[A-Z]{2,4}\/[A-Z]{2}$/,
             "Formato inválido. Use SSP/UF, PC/UF, etc.",
           ),
-        date: z.coerce
-          .date({ error: "Data de emissão inválida" })
-          .refine((date) => date <= new Date(), {
-            message: "Data de emissão não pode ser futura",
-          })
-          .refine(
-            (date) => {
-              const minDate = new Date();
-              minDate.setFullYear(minDate.getFullYear() - 50);
-              return date >= minDate;
-            },
-            {
-              message: "Data de emissão muito antiga",
-            },
-          ) as ZodCoercedDate<Date>,
+        date: civilDateSchema(
+          "Data de emissão não pode ser futura",
+          50,
+          "Data de emissão muito antiga",
+        ),
       }),
     }),
     cns: CNS,
@@ -82,31 +91,20 @@ const NIS = z
         .string()
         .min(1, "Certidão de nascimento é obrigatória")
         .min(40, "Número da certidão deve ter pelo menos 32 dígitos"),
-      date: z.coerce
-        .date({ error: "Data de nascimento inválida" })
-        .refine((date) => date <= new Date(), {
-          message: "Data de nascimento não pode ser futura",
-        })
-        .refine(
-          (date) => {
-            const minDate = new Date();
-            minDate.setFullYear(minDate.getFullYear() - 150);
-            return date >= minDate;
-          },
-          {
-            message: "Data de nascimento inválida",
-          },
-        )
-        .refine(
-          (date) => {
-            const today = new Date();
-            const age = today.getFullYear() - date.getFullYear();
-            return age >= 0;
-          },
-          {
-            message: "Idade deve ser positiva",
-          },
-        ) as ZodCoercedDate<Date>,
+      date: civilDateSchema(
+        "Data de nascimento não pode ser futura",
+        150,
+        "Data de nascimento inválida",
+      ).refine(
+        (date) => {
+          const today = new Date();
+          const age = today.getFullYear() - date.getFullYear();
+          return age >= 0;
+        },
+        {
+          message: "Idade deve ser positiva",
+        },
+      ) as ZodCoercedDate<Date>,
       place: z.string().min(1, "Naturalidade é obrigatória."),
     }),
   })
@@ -129,12 +127,16 @@ export const Address = z.object({
   street: z
     .string()
     .min(2, "Rua é obrigatória")
-    .regex(/^[a-zA-ZÀ-ÿ\s\.\-,]+$/,
-      "Informe a rua (ex: Rua tal)",
+    .regex(/^[a-zA-ZÀ-ÿ\s\.\-,]+$/, "Informe a rua (ex: Rua tal)"),
+  noNumber: z.boolean().optional(),
+  number: z
+    .string()
+    .min(1, "Número é obrigatório")
+    .regex(
+      /^(\d+|SN|sn|S\/N|s\/n)$/,
+      "Número deve conter apenas dígitos ou SN",
     ),
-    noNumber: z.boolean().optional(),
-    number: z.string().min(1, "Número é obrigatório").regex(/^(\d+|SN|sn|S\/N|s\/n)$/, "Número deve conter apenas dígitos ou SN"),
-    complement: z.string().optional(),
+  complement: z.string().optional(),
 });
 
 export const Additionals = z.object({
@@ -164,7 +166,7 @@ export const Additionals = z.object({
     .min(1, "A renda familiar é obrigatória.")
     .refine((val) => {
       const num = parseFloat(val.replace(/[^\d]/g, ""));
-      return !isNaN(num) && num >= 20000; 
+      return !isNaN(num) && num >= 20000;
     }, "A renda familiar deve ser pelo menos R$ 200,00"),
 });
 
@@ -211,8 +213,8 @@ export const Guardian = z.object({
     .string()
     .min(1, "Contato de emergência é obrigatório.")
     .refine((val) => {
-      const apenasNumeros = val.replace(/\D/g, ""); 
-      return apenasNumeros.length >= 10; 
+      const apenasNumeros = val.replace(/\D/g, "");
+      return apenasNumeros.length >= 10;
     }, "O telefone deve ter no mínimo 10 dígitos (DDD + número)"),
 
   kinship: z.string().min(1, "Informar o parentesco é obrigatório."),
