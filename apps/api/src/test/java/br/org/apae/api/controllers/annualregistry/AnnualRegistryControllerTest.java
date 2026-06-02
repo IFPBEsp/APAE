@@ -8,6 +8,7 @@ import br.org.apae.api.common.dto.patient.request.annualregistry.ReplaceAnnualRe
 import br.org.apae.api.common.dto.patient.request.annualregistry.UpdateAnnualRegistryDTO;
 import br.org.apae.api.common.dto.patient.response.annualregistry.AnnualRegistryResponseDTO;
 import br.org.apae.api.common.exceptions.handler.GlobalExceptionHandler;
+import br.org.apae.api.controllers.annual_registry.AnnualRegistryControllerImpl;
 import br.org.apae.api.helpers.AuthTestHelper;
 import br.org.apae.api.patient.application.interfaces.AnnualRegistryApplicationService;
 import br.org.apae.api.patient.domain.exceptions.AnnualRegistryConflictException;

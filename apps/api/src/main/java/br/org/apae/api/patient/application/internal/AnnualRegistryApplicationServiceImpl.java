@@ -13,10 +13,10 @@ import br.org.apae.api.professional.domain.exceptions.ServiceAreaNotFoundExcepti
 import br.org.apae.api.servicearea.application.interfaces.ServiceAreaApplicationService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import br.org.apae.api.common.dto.patient.request.annual_registry.CreateAnnualRegistryDTO;
-import br.org.apae.api.common.dto.patient.request.annual_registry.UpdateAnnualRegistryDTO;
-import br.org.apae.api.common.dto.patient.request.annual_registry.ReplaceAnnualRegistryDTO;
-import br.org.apae.api.common.dto.patient.response.annual_registry.AnnualRegistryResponseDTO;
+import br.org.apae.api.common.dto.patient.request.annualregistry.CreateAnnualRegistryDTO;
+import br.org.apae.api.common.dto.patient.request.annualregistry.UpdateAnnualRegistryDTO;
+import br.org.apae.api.common.dto.patient.request.annualregistry.ReplaceAnnualRegistryDTO;
+import br.org.apae.api.common.dto.patient.response.annualregistry.AnnualRegistryResponseDTO;
 import br.org.apae.api.common.dto.patient.response.disorder.DisorderResponseDTO;
 import br.org.apae.api.patient.application.interfaces.AnnualRegistryApplicationService;
 import br.org.apae.api.patient.application.interfaces.DisorderApplicationService;
