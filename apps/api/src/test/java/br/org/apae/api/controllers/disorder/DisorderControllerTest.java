@@ -243,4 +243,58 @@ class DisorderControllerTest {
         mockMvc.perform(delete(BASE_URL + "/{id}", id).header("Authorization", AuthTestHelper.bearerToken()))
                 .andExpect(status().isNotFound());
     }
+
+    @Test
+    @DisplayName("Deve retornar BadRequest (400) ao tentar criar transtorno com nome nulo")
+    void shouldReturnBadRequestWhenCreateDisorderWithNullName() throws Exception {
+        CreateDisorderDTO requestDto = new CreateDisorderDTO(null);
+
+        mockMvc.perform(post(BASE_URL)
+                        .header("Authorization", AuthTestHelper.bearerToken())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(requestDto))
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    @DisplayName("Deve retornar BadRequest (400) ao tentar criar transtorno com nome em branco")
+    void shouldReturnBadRequestWhenCreateDisorderWithBlankName() throws Exception {
+        CreateDisorderDTO requestDto = new CreateDisorderDTO("");
+
+        mockMvc.perform(post(BASE_URL)
+                        .header("Authorization", AuthTestHelper.bearerToken())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(requestDto))
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    @DisplayName("Deve retornar BadRequest (400) ao tentar atualizar transtorno com nome nulo")
+    void shouldReturnBadRequestWhenUpdateDisorderWithNullName() throws Exception {
+        UUID id = UUID.randomUUID();
+        UpdateDisorderDTO updateDto = new UpdateDisorderDTO(null);
+
+        mockMvc.perform(put(BASE_URL + "/{id}", id)
+                        .header("Authorization", AuthTestHelper.bearerToken())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(updateDto))
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    @DisplayName("Deve retornar BadRequest (400) ao tentar atualizar transtorno com nome em branco")
+    void shouldReturnBadRequestWhenUpdateDisorderWithBlankName() throws Exception {
+        UUID id = UUID.randomUUID();
+        UpdateDisorderDTO updateDto = new UpdateDisorderDTO("");
+
+        mockMvc.perform(put(BASE_URL + "/{id}", id)
+                        .header("Authorization", AuthTestHelper.bearerToken())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(updateDto))
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest());
+    }
 }
