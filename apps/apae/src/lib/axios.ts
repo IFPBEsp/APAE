@@ -64,8 +64,13 @@ export const createDocumentsAPI = async () => {
 };
 
 export const createBaseApi = async () => {
+  // Esta função roda no servidor ("use server"). Em produção/container o
+  // backend é alcançado por uma URL absoluta (API_URL), pois NEXT_PUBLIC_API_URL
+  // é relativa (/apae-geral/api) e o axios server-side não resolve URL relativa.
   const api = createAxiosInstance(
-    process.env.NEXT_PUBLIC_API_URL || "http://localhost:8090/apae-geral/api"
+    process.env.API_URL ||
+      process.env.NEXT_PUBLIC_API_URL ||
+      "http://localhost:8090/apae-geral/api"
   );
 
   return makeInterceptors(api);
