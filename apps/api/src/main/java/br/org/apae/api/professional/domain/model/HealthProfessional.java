@@ -52,7 +52,7 @@ public class HealthProfessional {
     @OneToMany(mappedBy = "professional", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Availability> availabilities = new ArrayList<>();
 
-    @Column(name = "foto_perfil")
+    @Column(name = "foto_perfil", columnDefinition = "TEXT")
     private String profilePhoto;
 
     protected HealthProfessional() {
