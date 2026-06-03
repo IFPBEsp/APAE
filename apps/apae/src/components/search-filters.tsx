@@ -99,7 +99,7 @@ export function SearchFilters({
       </div>
 
       {activeFilters.length > 0 && (
-        <div className="flex flex-wrap sm:flex-nowrap items-center gap-2 w-full sm:w-auto">
+        <div className="flex flex-wrap items-center gap-2 w-full sm:w-auto">
           {activeFilters.map((filter) => (
             <FilterDropdown
               key={filter.placeholder}
