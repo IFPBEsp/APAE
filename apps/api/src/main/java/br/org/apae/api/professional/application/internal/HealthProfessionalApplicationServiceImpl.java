@@ -21,6 +21,9 @@ import br.org.apae.api.documents.application.interfaces.DocumentApplicationServi
 import br.org.apae.api.documents.domain.enums.DocumentCategory;
 import br.org.apae.api.documents.interfaces.dto.DocumentDTO;
 import br.org.apae.api.documents.interfaces.dto.PutDocumentArgsDTO;
+import br.org.apae.api.documents.interfaces.dto.PutDocumentArgsDTO;
+import br.org.apae.api.documents.domain.enums.DocumentCategory;
+import br.org.apae.api.documents.domain.enums.DocumentType;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -202,27 +205,26 @@ public class HealthProfessionalApplicationServiceImpl implements HealthProfessio
 
         try {
 
-            String fileName = UUID.randomUUID()
-                + "-"
-                + file.getOriginalFilename();
-
-            var document = documentService.putDocument(
-                new br.org.apae.api.documents.interfaces.dto.PutDocumentArgsDTO(
-                    file.getInputStream(),
-                    file.getContentType(),
-                    "professional-profile-photo",
-                    "profile",
-                    professional.getId().toString(),
-                    String.valueOf(LocalDate.now().getYear())
-                )
+            DocumentDTO document = documentService.putDocument(
+                PutDocumentArgsDTO.builder()
+                    .stream(file.getInputStream())
+                    .category(DocumentCategory.PROFESSIONAL)
+                    .type(DocumentType.PHOTO)
+                    .contentType(file.getContentType())
+                    .owner(professional.getId().toString())
+                    .build()
             );
 
             String photoUrl = documentService.getPresignedDocumentUrl(
-                new br.org.apae.api.documents.interfaces.dto.GetPresignedDocumentUrlArgsDTO(
-                    document.owner(),
-                    document.name(),
-                    60 * 60 * 24 * 7
-                )
+                br.org.apae.api.documents.interfaces.dto.GetPresignedDocumentUrlArgsDTO.builder()
+                    .owner(document.owner())
+                    .name(document.name())
+                    .category(document.category())
+                    .type(document.type())
+                    .year(document.year())
+                    .id(document.id())
+                    .expiry(7, java.util.concurrent.TimeUnit.DAYS)
+                    .build()
             );
 
             professional.setProfilePhoto(photoUrl);
@@ -230,7 +232,7 @@ public class HealthProfessionalApplicationServiceImpl implements HealthProfessio
             repository.save(professional);
 
         } catch (Exception e) {
-            throw new RuntimeException("Erro ao salvar foto");
+            throw new RuntimeException("Erro ao salvar foto", e);
         }
     }
     
