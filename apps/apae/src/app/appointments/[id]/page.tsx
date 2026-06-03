@@ -92,7 +92,7 @@ export default function ViewAppointment() {
   const [year, month, day] = separateAndTransformIntoNumber(appointment.initialDate, '-');
   const [hour, minute, second] = separateAndTransformIntoNumber(appointment.hour, ':');
 
-  const dataHoraDate =
+  const dateTime =
     !isNaN(year) && !isNaN(month) && !isNaN(day) && !isNaN(hour) && !isNaN(minute) && !isNaN(second)
       ? new Date(year, month - 1, day, hour, minute, second)
       : null;
@@ -179,11 +179,11 @@ export default function ViewAppointment() {
               <div className="flex flex-col gap-1">
                 <div className="flex">
                   <p className="font-medium mr-2">Data:</p>
-                  <p>{dataHoraDate ? new Intl.DateTimeFormat('pt-BR').format(dataHoraDate) : '—'}</p>
+                  <p>{dateTime ? new Intl.DateTimeFormat('pt-BR').format(dateTime) : '—'}</p>
                 </div>
                 <div className="flex">
                   <p className="font-medium mr-2">Horário:</p>
-                  <p>{dataHoraDate ? dataHoraDate.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' }) : '—'}</p>
+                  <p>{dateTime ? dateTime.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' }) : '—'}</p>
                 </div>
                 <div className="flex">
                   <p className="font-medium mr-2">Área de atendimento:</p>

@@ -44,11 +44,11 @@ export interface FileItem {
 }
 
 const documentCategory = {
-  pessoal: "Documentos pessoais",
-  medico: "Documentos médicos",
-  medicos: "Documentos médicos",
-  escolar: "Documentos escolares",
-  escolares: "Documentos escolares",
+  personal: "Documentos pessoais",
+  medical: "Documentos médicos",
+  medicals: "Documentos médicos",
+  school: "Documentos escolares",
+  schools: "Documentos escolares",
 };
 
 export default function DocumentTypePage() {

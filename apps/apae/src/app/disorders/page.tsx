@@ -11,7 +11,7 @@ import { Disorder } from "@/schemas/transtornosSchema";
 import { Loader2 } from "lucide-react";
 import { SearchFilters } from "@/components/search-filters";
 
-export default function TranstornosPage() {
+export default function DisordersPage() {
   const router = useRouter();
   const [disorders, setDisorders] = useState<Disorder[]>([]);
   const [isLoading, setIsLoading] = useState(true);

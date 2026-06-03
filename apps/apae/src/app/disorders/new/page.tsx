@@ -10,7 +10,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label"; 
 import { ArrowLeft } from "lucide-react";
 
-export default function NewTranstornoPage() {
+export default function NewDisorderPage() {
   const router = useRouter();
   const {
     register,
