@@ -42,7 +42,7 @@ import { CreateVaccine } from "@/schemas/vaccine-schemas";
 import { Button } from "@/components/ui/button";
 import { useDisordersContext } from "@/hooks/use-disorders";
 import { CreateDisorder } from "@/schemas/disorder-schemas";
-import { formatCurrency } from "@/lib/formats";
+import { formatCurrency, capitalizeFirst } from "@/lib/formats";
 import { useCreateServiceArea } from "@/hooks/service-area/use-create-service-area";
 import { useFetchServiceAreas } from "@/hooks/service-area/use-fetch-service-areas";
 import { CreateCare } from "@/schemas/care-schemas";
@@ -82,7 +82,11 @@ function CreateVaccineDialog({ open, onOpenChange, onSuccess }: DialogProps) {
                 <FormItem>
                   <FormLabel>Nome da Vacina</FormLabel>
                   <FormControl>
-                    <Input placeholder="Ex: Hepatite B" {...field} />
+                    <Input
+                      placeholder="Ex: Hepatite B"
+                      {...field}
+                      onChange={(e) => field.onChange(capitalizeFirst(e.target.value))}
+                    />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -370,6 +374,7 @@ export default function MembersRegisterAdditionalsPage() {
                       <Input
                         placeholder="Catapora, Gripe H1N1, Pneumonia"
                         {...field}
+                        onChange={(e) => field.onChange(capitalizeFirst(e.target.value))}
                       />
                     </FormControl>
                     <FormMessage />
@@ -418,7 +423,11 @@ export default function MembersRegisterAdditionalsPage() {
                   <FormItem>
                     <FormLabel>Tipo de medicação que toma *</FormLabel>
                     <FormControl>
-                      <Input placeholder="Losartana, paracetamol" {...field} />
+                      <Input
+                        placeholder="Losartana, paracetamol"
+                        {...field}
+                        onChange={(e) => field.onChange(capitalizeFirst(e.target.value))}
+                      />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -432,7 +441,11 @@ export default function MembersRegisterAdditionalsPage() {
                   <FormItem>
                     <FormLabel>Tem alergias? Quais? *</FormLabel>
                     <FormControl>
-                      <Input placeholder="Alergia a abacaxi" {...field} />
+                      <Input
+                        placeholder="Alergia a abacaxi"
+                        {...field}
+                        onChange={(e) => field.onChange(capitalizeFirst(e.target.value))}
+                      />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
