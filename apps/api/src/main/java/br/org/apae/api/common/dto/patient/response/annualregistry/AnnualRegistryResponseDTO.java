@@ -1,4 +1,4 @@
-package br.org.apae.api.common.dto.patient.response.annual_registry;
+package br.org.apae.api.common.dto.patient.response.annualregistry;
 
 import java.math.BigDecimal;
 import java.util.Set;
