@@ -1,4 +1,4 @@
-package br.org.apae.api.common.dto.patient.request.annual_registry;
+package br.org.apae.api.common.dto.patient.request.annualregistry;
 
 import br.org.apae.api.common.dto.patient.request.disorder.CreateDisorderDTO;
 import br.org.apae.api.common.dto.servicearea.request.CreateServiceAreaDTO;
