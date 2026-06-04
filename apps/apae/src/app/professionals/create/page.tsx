@@ -24,7 +24,7 @@ import {
 } from "@/components/ui/form";
 import { useRouter } from "next/navigation";
 import { useCreateProfessional } from "@/hooks/profissional/use-create-profissional";
-import Disponibilidade from "@/components/forms/AvailabilityForm";
+import Availability from "@/components/forms/AvailabilityForm";
 import { registerSchema } from "@/schemas/profissional.schema";
 import { STATES } from "@/lib/states";
 import { useRef, useState, useEffect, JSX } from "react";
@@ -464,7 +464,7 @@ export default function ProfessionalRegister(): JSX.Element {
             )}
           />
 
-          <Disponibilidade control={form.control} watch={form.watch} />
+          <Availability control={form.control} watch={form.watch} />
 
           {loading && <p className="text-blue-500">Salvando...</p>}
           {error && <p className="text-red-500">{error}</p>}

@@ -25,7 +25,7 @@ type Props<T extends FieldValues> = {
 };
 
 export default function AvailabilityForm<T extends FieldValues>({ control, watch }: Readonly<Props<T>>) {
-  const availability = watch("disponibilidade" as Path<T>) || [];
+  const availability = watch("availability" as Path<T>) || [];
 
   return (
     <div className="space-y-4">
@@ -61,7 +61,7 @@ export default function AvailabilityForm<T extends FieldValues>({ control, watch
                     <TableCell key={day.id} className="text-center">
                       <FormField
                         control={control}
-                        name={`disponibilidade.${index}.checked` as Path<T>}
+                        name={`availability.${index}.checked` as Path<T>}
                         render={({ field }) => (
                           <FormItem className="flex items-center justify-center">
                             <FormControl>

@@ -45,7 +45,7 @@ import { updateProfessionalSchema } from "@/schemas/profissional.schema";
 import { STATES } from "@/lib/states";
 
 import HealthAreaSelect from "@/components/shared/HealthAreaSelect";
-import Disponibilidade from "@/components/forms/AvailabilityForm";
+import Availability from "@/components/forms/AvailabilityForm";
 import { generateAvailabilityMatrix } from "@/domains/professional/shared/disponibilidade.utils";
 
 import {
@@ -570,7 +570,7 @@ export default function ProfessionalUpdate(): JSX.Element {
             />
           </div>
 
-          <Disponibilidade control={form.control} watch={form.watch} />
+          <Availability control={form.control} watch={form.watch} />
 
           <FormField
             control={form.control}
