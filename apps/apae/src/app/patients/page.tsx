@@ -38,10 +38,10 @@ function PatientsAndStudentsScreenContent() {
   const debouncedSearchName = useDebounce(query.name, 500);
 
   const {
-    transtornoOptions,
-    anoOptions,
-    cidadeOptions,
-    tipoAtendimentoOptions,
+    disorderOptions,
+    yearOptions,
+    cityOptions,
+    serviceAreaOptions,
   } = usePatientFilters();
 
   useEffect(() => {
@@ -183,38 +183,38 @@ function PatientsAndStudentsScreenContent() {
                 page: 0,
               });
             }}
-            transtorno={query.disorder}
-            setTranstorno={(value) => {
+            disorder={query.disorder}
+            setDisorder={(value) => {
               updateQuery({
                 disorder: value || "",
                 page: 0,
               });
             }}
-            ano={query.year}
-            setAno={(value) => {
+            year={query.year}
+            setYear={(value) => {
               updateQuery({
                 year: value || "",
                 page: 0,
               });
             }}
-            cidade={query.city}
-            setCidade={(value) => {
+            city={query.city}
+            setCity={(value) => {
               updateQuery({
                 city: value || "",
                 page: 0,
               });
             }}
-            tipoAtendimento={query.treatmentType}
-            setTipoAtendimento={(value) => {
+            serviceArea={query.treatmentType}
+            setServiceArea={(value) => {
               updateQuery({
                 treatmentType: value || "",
                 page: 0,
               });
             }}
-            transtornoOptions={transtornoOptions}
-            anoOptions={anoOptions}
-            cidadeOptions={cidadeOptions}
-            tipoAtendimentoOptions={tipoAtendimentoOptions}
+            disorderOptions={disorderOptions}
+            yearOptions={yearOptions}
+            cityOptions={cityOptions}
+            serviceAreaOptions={serviceAreaOptions}
           />
         </div>
 

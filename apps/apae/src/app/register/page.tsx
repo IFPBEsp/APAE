@@ -23,11 +23,11 @@ function Page() {
   const form = useForm<FormSignUp>({
     resolver: zodResolver(signUpSchema),
     defaultValues: {
-      nomeCompleto: "",
+      fullName: "",
       email: "",
       cpf: "",
-      senha: "",
-      confirmarSenha: "",
+      password: "",
+      confirmPassword: "",
     },
     mode: "all",
   });
@@ -85,7 +85,7 @@ function Page() {
                 
                 <FormField
                   control={form.control}
-                  name="nomeCompleto"
+                  name="fullName"
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel className="text-[#0D4F97] font-semibold">Nome Completo</FormLabel>
@@ -143,7 +143,7 @@ function Page() {
                 <div className="md:col-span-2 grid grid-cols-1 md:grid-cols-2 gap-8">
                   <FormField
                     control={form.control}
-                    name="senha"
+                    name="password"
                     render={({ field }) => (
                       <FormItem>
                         <FormLabel className="text-[#0D4F97] font-semibold">Senha</FormLabel>
@@ -161,7 +161,7 @@ function Page() {
 
                   <FormField
                     control={form.control}
-                    name="confirmarSenha"
+                    name="confirmPassword"
                     render={({ field }) => (
                       <FormItem>
                         <FormLabel className="text-[#0D4F97] font-semibold">Confirmar Senha</FormLabel>

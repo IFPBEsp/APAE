@@ -40,11 +40,11 @@ export default function ViewTodayAppointment() {
         initialized.current = true;
         setLoading(true);
         
-        // 1. Busca o agendamento de hoje
+        // 1. Search for today's appointment
         const data = await getTodayAppointmentById(id as string);
         setAppointment(data);
 
-        // 2. Busca pacientes com faltas via fetch direto
+        // 2. Search for patients with missed appointments via direct fetch.
         const response = await fetch('/apae-geral/api/patients/with-absences?minAbsences=3');
         
         if (response.ok) {
