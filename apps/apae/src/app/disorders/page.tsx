@@ -16,7 +16,7 @@ export default function DisordersPage() {
   const [disorders, setDisorders] = useState<Disorder[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  
+
   const [searchName, setSearchName] = useState<string>("");
 
   useEffect(() => {
@@ -31,7 +31,8 @@ export default function DisordersPage() {
         const data = await response.json();
         setDisorders(data);
       } catch (err: unknown) {
-        const errorMessage = err instanceof Error ? err.message : "Erro ao buscar transtornos.";
+        const errorMessage =
+          err instanceof Error ? err.message : "Erro ao buscar transtornos.";
         setError(errorMessage);
         toast.error(errorMessage);
       } finally {
@@ -42,27 +43,27 @@ export default function DisordersPage() {
   }, []);
 
   const handleDelete = async (id: string) => {
-    
     try {
       const response = await fetch(`/apae-geral/api/disorders/${id}`, {
         method: "DELETE",
       });
-      
+
       if (!response.ok) {
         const errorMessage = await response.text();
-        
+
         throw new Error(errorMessage || "Falha ao excluir o transtorno.");
       }
-      
+
       setDisorders((current) => current.filter((d) => d.id !== id));
       toast.success("Transtorno excluído com sucesso!");
     } catch (err: unknown) {
-      const errorMessage = err instanceof Error ? err.message : "Erro ao excluir transtorno.";
+      const errorMessage =
+        err instanceof Error ? err.message : "Erro ao excluir transtorno.";
       toast.error(errorMessage);
     }
   };
   const filteredDisorders = disorders.filter((disorder) =>
-    disorder.name.toLowerCase().includes(searchName.toLowerCase())
+    disorder.name.toLowerCase().includes(searchName.toLowerCase()),
   );
 
   const renderContent = () => {
@@ -77,7 +78,11 @@ export default function DisordersPage() {
       return <p className="text-center text-red-500">{error}</p>;
     }
     if (filteredDisorders.length === 0) {
-      return <p className="text-center text-gray-500">Nenhum transtorno encontrado.</p>;
+      return (
+        <p className="text-center text-gray-500">
+          Nenhum transtorno encontrado.
+        </p>
+      );
     }
     return (
       <div className="space-y-2">
@@ -103,7 +108,7 @@ export default function DisordersPage() {
           />
         </div>
 
-        <section className="relative md:bg-white md:rounded-xl md:shadow-md md:border-2 md:p-6">  
+        <section className="relative md:bg-white md:rounded-xl md:shadow-md md:border-2 md:p-6">
           <div className="hidden md:flex justify-between items-center mb-4">
             <h2 className="text-xl font-bold text-[#003B93]">
               Transtornos Cadastrados
@@ -122,13 +127,12 @@ export default function DisordersPage() {
               Transtornos Cadastrados
             </h2>
           </div>
-          
+
           <p className="text-sm text-gray-500 mb-4">
             {filteredDisorders.length} transtornos encontrados
           </p>
           {renderContent()}
         </section>
-
       </main>
 
       <Button

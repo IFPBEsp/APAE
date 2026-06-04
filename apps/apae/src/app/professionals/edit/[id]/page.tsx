@@ -65,7 +65,9 @@ function isValidFile(file: File): boolean {
     "image/webp",
   ];
   const maxSize = 5 * 1024 * 1024;
-  return allowedTypes.includes(file.type) && file.size > 0 && file.size <= maxSize;
+  return (
+    allowedTypes.includes(file.type) && file.size > 0 && file.size <= maxSize
+  );
 }
 
 export default function ProfessionalUpdate(): JSX.Element {
@@ -79,8 +81,10 @@ export default function ProfessionalUpdate(): JSX.Element {
     error: errorProf,
   } = useGetByIdProfessional();
 
-  const { updateProfessional, loading, error, success } = useUpdateProfessional();
-  const { upload, loadingDocs, errorDocs, successDocs } = useUpdateProfessionalDocuments();
+  const { updateProfessional, loading, error, success } =
+    useUpdateProfessional();
+  const { upload, loadingDocs, errorDocs, successDocs } =
+    useUpdateProfessionalDocuments();
 
   const [docs, setDocs] = useState<DocumentWithUrl[]>([]);
   const [docsLoading, setDocsLoading] = useState(false);
@@ -283,10 +287,13 @@ export default function ProfessionalUpdate(): JSX.Element {
         const photoData = new FormData();
         photoData.append("file", selectedPhoto);
 
-        const response = await fetch(`/api/professionals/${professional.id}/photo`, {
-          method: "PATCH",
-          body: photoData,
-        });
+        const response = await fetch(
+          `/api/professionals/${professional.id}/photo`,
+          {
+            method: "PATCH",
+            body: photoData,
+          },
+        );
 
         if (!response.ok) {
           const body = await response.json().catch(() => ({}));
@@ -311,7 +318,8 @@ export default function ProfessionalUpdate(): JSX.Element {
   if (loadingProf) return <p>Carregando dados...</p>;
   if (errorProf) return <p className="text-red-500">Erro: {errorProf}</p>;
 
-  const isConfirmBusy = !!docToRemove && removingIds.has(String(docToRemove.id));
+  const isConfirmBusy =
+    !!docToRemove && removingIds.has(String(docToRemove.id));
 
   return (
     <div className="p-0">
@@ -327,7 +335,9 @@ export default function ProfessionalUpdate(): JSX.Element {
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel disabled={isConfirmBusy}>Cancelar</AlertDialogCancel>
+            <AlertDialogCancel disabled={isConfirmBusy}>
+              Cancelar
+            </AlertDialogCancel>
             <AlertDialogAction
               className="border border-input bg-background text-foreground hover:bg-accent hover:text-accent-foreground"
               onClick={confirmRemove}
@@ -365,7 +375,11 @@ export default function ProfessionalUpdate(): JSX.Element {
               <FormItem>
                 <FormLabel>Email *</FormLabel>
                 <FormControl>
-                  <Input type="email" placeholder="profissional@exemplo.com" {...field} />
+                  <Input
+                    type="email"
+                    placeholder="profissional@exemplo.com"
+                    {...field}
+                  />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -398,7 +412,10 @@ export default function ProfessionalUpdate(): JSX.Element {
                 <FormItem>
                   <FormLabel>Área de atendimento *</FormLabel>
                   <FormControl>
-                    <HealthAreaSelect value={field.value} onChange={field.onChange} />
+                    <HealthAreaSelect
+                      value={field.value}
+                      onChange={field.onChange}
+                    />
                   </FormControl>
                   <FormMessage>{fieldState.error?.message}</FormMessage>
                 </FormItem>
@@ -454,8 +471,11 @@ export default function ProfessionalUpdate(): JSX.Element {
                   <FormControl>
                     <Select onValueChange={field.onChange} value={field.value}>
                       <SelectTrigger
-                        className={`w-full ${fieldState.invalid ? "border-red-500" : "border-gray-300"
-                          }`}
+                        className={`w-full ${
+                          fieldState.invalid
+                            ? "border-red-500"
+                            : "border-gray-300"
+                        }`}
                       >
                         <SelectValue placeholder="Selecione um estado" />
                       </SelectTrigger>
@@ -592,8 +612,41 @@ export default function ProfessionalUpdate(): JSX.Element {
                       onChange={(e) => {
                         const file = e.target.files?.[0];
 
-                        field.onChange(file ?? null);
-                        setSelectedPhoto(file ?? null);
+                        if (!file) {
+                          field.onChange(null);
+                          setSelectedPhoto(null);
+                          return;
+                        }
+
+                        const allowedTypes = [
+                          "image/png",
+                          "image/jpeg",
+                          "image/jpg",
+                          "image/webp",
+                        ];
+
+                        const maxSize = 5 * 1024 * 1024;
+
+                        if (
+                          !allowedTypes.includes(file.type) ||
+                          file.size <= 0 ||
+                          file.size > maxSize
+                        ) {
+                          alert(
+                            "Apenas imagens PNG, JPG ou WEBP até 5MB são permitidas",
+                          );
+
+                          if (fileInputRef.current) {
+                            fileInputRef.current.value = "";
+                          }
+
+                          field.onChange(null);
+                          setSelectedPhoto(null);
+                          return;
+                        }
+
+                        field.onChange(file);
+                        setSelectedPhoto(file);
                       }}
                     />
 
@@ -604,7 +657,11 @@ export default function ProfessionalUpdate(): JSX.Element {
                     >
                       <Avatar className="w-32 h-32 border-2 border-dashed border-gray-300 bg-gray-50 cursor-pointer flex items-center justify-center">
                         <AvatarImage
-                          src={photoPreviewUrl || undefined}
+                          src={
+                            photoPreviewUrl ??
+                            professional?.profilePhotoUrl ??
+                            undefined
+                          }
                           alt="Foto do profissional"
                         />
 
@@ -614,7 +671,7 @@ export default function ProfessionalUpdate(): JSX.Element {
                       </Avatar>
 
                       <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity bg-black/20 rounded-full">
-                        <span className="bg-white text-black text-[10px] font-bold px-2 py-1 rounded shadow-sm">
+                        <span className="bg-white text-black text-[10px] font-bold px-2 py-1 rounded shadow-sm cursor-pointer">
                           Escolher foto
                         </span>
                       </div>
@@ -660,7 +717,9 @@ export default function ProfessionalUpdate(): JSX.Element {
               <p className="text-base font-semibold">Documentos já anexados</p>
 
               {docsLoading ? (
-                <p className="text-sm text-gray-600">Carregando documentos...</p>
+                <p className="text-sm text-gray-600">
+                  Carregando documentos...
+                </p>
               ) : docsError ? (
                 <p className="text-sm text-red-500">{docsError}</p>
               ) : (
@@ -717,7 +776,9 @@ export default function ProfessionalUpdate(): JSX.Element {
                               className="flex items-center justify-between rounded-md border px-3 py-2"
                             >
                               <div className="min-w-0">
-                                <p className="truncate text-sm text-gray-700">{a.name}</p>
+                                <p className="truncate text-sm text-gray-700">
+                                  {a.name}
+                                </p>
                               </div>
                               <div className="flex items-center gap-2">
                                 <a
@@ -759,7 +820,10 @@ export default function ProfessionalUpdate(): JSX.Element {
                   accept="image/*, application/pdf"
                   onChange={(e) => {
                     const file = e.target.files?.[0];
-                    if (!file) { setVolunteerFile(null); return; }
+                    if (!file) {
+                      setVolunteerFile(null);
+                      return;
+                    }
                     if (!isValidFile(file)) {
                       alert("Apenas imagens ou PDF são permitidos");
                       e.target.value = "";
@@ -785,7 +849,10 @@ export default function ProfessionalUpdate(): JSX.Element {
                   accept="image/*, application/pdf"
                   onChange={(e) => {
                     const file = e.target.files?.[0];
-                    if (!file) { setCurriculumFile(null); return; }
+                    if (!file) {
+                      setCurriculumFile(null);
+                      return;
+                    }
                     if (!isValidFile(file)) {
                       alert("Apenas imagens ou PDF são permitidos");
                       e.target.value = "";
@@ -831,14 +898,18 @@ export default function ProfessionalUpdate(): JSX.Element {
 
             {photoError && <p className="text-sm text-red-500">{photoError}</p>}
             {photoSuccess && (
-              <p className="text-sm text-green-600">Foto enviada com sucesso!</p>
+              <p className="text-sm text-green-600">
+                Foto enviada com sucesso!
+              </p>
             )}
 
             {(errorDocs || successDocs) && (
               <div className="text-sm">
                 {errorDocs && <p className="text-red-500">{errorDocs}</p>}
                 {successDocs && (
-                  <p className="text-green-600">Documentos enviados com sucesso!</p>
+                  <p className="text-green-600">
+                    Documentos enviados com sucesso!
+                  </p>
                 )}
               </div>
             )}
@@ -857,16 +928,23 @@ export default function ProfessionalUpdate(): JSX.Element {
           )}
           {error && <p className="text-red-500">{error}</p>}
           {success && (
-            <p className="text-green-600">Profissional atualizado com sucesso!</p>
+            <p className="text-green-600">
+              Profissional atualizado com sucesso!
+            </p>
           )}
 
           <div className="flex justify-end gap-4">
-            <Button type="button" variant="outline" onClick={onCancel}>
+            <Button
+              className="cursor-pointer"
+              type="button"
+              variant="outline"
+              onClick={onCancel}
+            >
               Cancelar
             </Button>
             <Button
               type="submit"
-              className="bg-[#0D4F97] hover:bg-blue-900"
+              className="bg-[#0D4F97] hover:bg-blue-900 cursor-pointer"
               disabled={form.formState.isSubmitting || loading || loadingDocs}
             >
               Salvar
