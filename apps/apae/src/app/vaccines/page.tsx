@@ -8,10 +8,15 @@ import { SearchFilters } from "@/components/search-filters";
 import { useVaccinesContext, Vaccine } from "@/hooks/use-vaccines";
 import { useRouter } from "next/navigation";
 import { ConfirmModal } from "@/components/ui/confirm-modal";
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@radix-ui/react-tooltip";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@radix-ui/react-tooltip";
 
 type VaccinesListItemProps = Readonly<{
-    vaccine: Vaccine;
+  vaccine: Vaccine;
 }>;
 
 function VaccinesListItem({ vaccine }: VaccinesListItemProps) {
@@ -42,46 +47,55 @@ function VaccinesListItem({ vaccine }: VaccinesListItemProps) {
           <Edit className="h-4 w-4" />
         </Button>
 
-                {vaccine.hasPatient ? (
-                    <TooltipProvider>
-                        <Tooltip>
-                            <TooltipTrigger asChild>
-                                <span className="cursor-not-allowed">
-                                    <Button
-                                        variant="outline"
-                                        size="icon"
-                                        disabled
-                                        className="opacity-50 pointer-events-none h-8 w-8"
-                                    >
-                                        <Trash2 className="h-4 w-4 text-red-500" />
-                                    </Button>
-                                </span>
-                            </TooltipTrigger>
-                            <TooltipContent side="top" className="bg-slate-800 text-white p-2 rounded shadow-lg">
-                                <p>Não é possível excluir uma vacina associada a um paciente!</p>
-                            </TooltipContent>
-                        </Tooltip>
-                    </TooltipProvider>
-                ) : (
-                    <ConfirmModal
-                        title="Tem certeza?"
-                        description={<>Essa ação não pode ser desfeita. Isso irá excluir permanentemente a vacina <strong>{vaccine.name}</strong>.</>}
-                        onConfirm={onDelete}
-                        trigger={
-                            <Button
-                                variant="outline"
-                                size="icon"
-                                className="h-8 w-8 hover:bg-red-50"
-                            >
-                                <Trash2 className="h-4 w-4 text-red-500" />
-                            </Button>
-                        }
-
-                    />
-                )}
-            </div>
-        </div>
-    );
+        {vaccine.hasPatient ? (
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <span className="cursor-not-allowed">
+                  <Button
+                    variant="outline"
+                    size="icon"
+                    disabled
+                    className="opacity-50 pointer-events-none h-8 w-8"
+                  >
+                    <Trash2 className="h-4 w-4 text-red-500" />
+                  </Button>
+                </span>
+              </TooltipTrigger>
+              <TooltipContent
+                side="top"
+                className="bg-slate-800 text-white p-2 rounded shadow-lg"
+              >
+                <p>
+                  Não é possível excluir uma vacina associada a um paciente!
+                </p>
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
+        ) : (
+          <ConfirmModal
+            title="Tem certeza?"
+            description={
+              <>
+                Essa ação não pode ser desfeita. Isso irá excluir
+                permanentemente a vacina <strong>{vaccine.name}</strong>.
+              </>
+            }
+            onConfirm={onDelete}
+            trigger={
+              <Button
+                variant="outline"
+                size="icon"
+                className="h-8 w-8 hover:bg-red-50"
+              >
+                <Trash2 className="h-4 w-4 text-red-500" />
+              </Button>
+            }
+          />
+        )}
+      </div>
+    </div>
+  );
 }
 
 function VaccinesList({ searchName }: { searchName: string }) {
@@ -132,7 +146,7 @@ export default function VaccinesPage() {
         <div className="bg-white rounded-xl shadow-md border-2 p-6 mb-4">
           <SearchFilters
             searchName={searchName}
-            onSearchName={setSearchName}
+            setSearchName={setSearchName}
           />
         </div>
 
