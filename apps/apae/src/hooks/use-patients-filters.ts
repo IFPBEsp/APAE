@@ -4,19 +4,19 @@ import { useState, useEffect } from "react";
 import { toast } from "react-toastify";
 
 interface PatientFilterOptions {
-  transtornoOptions: string[];
-  anoOptions: string[];
-  cidadeOptions: string[];
-  tipoAtendimentoOptions: string[];
+  disorderOptions: string[];
+  yearOptions: string[];
+  cityOptions: string[];
+  serviceAreaOptions: string[];
   isLoading: boolean;
   error: string | null;
 }
 
 export function usePatientFilters(): PatientFilterOptions {
-  const [transtornoOptions, setTranstornoOptions] = useState<string[]>([]);
-  const [anoOptions, setAnoOptions] = useState<string[]>([]);
-  const [cidadeOptions, setCidadeOptions] = useState<string[]>([]);
-  const [tipoAtendimentoOptions, setTipoAtendimentoOptions] = useState<string[]>([]);
+  const [disorderOptions, setDisorderOptions] = useState<string[]>([]);
+  const [yearOptions, setYearOptions] = useState<string[]>([]);
+  const [cityOptions, setCityOptions] = useState<string[]>([]);
+  const [serviceAreaOptions, setServiceAreaOptions] = useState<string[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -25,37 +25,37 @@ export function usePatientFilters(): PatientFilterOptions {
       try {
         setIsLoading(true);
         setError(null);
-        const transtornosPromise = fetch('/apae-geral/api/patients/filtros/transtornos');
-        const anosPromise = fetch('/apae-geral/api/patients/filtros/anos');
-        const cidadesPromise = fetch('/apae-geral/api/patients/filtros/cidades');
-        const tipoAtendimentosPromise = fetch('/apae-geral/api/patients/filtros/tipos-atendimento');
+        const disordersPromise = fetch('/apae-geral/api/patients/filtros/transtornos');
+        const yearsPromise = fetch('/apae-geral/api/patients/filtros/anos');
+        const citiesPromise = fetch('/apae-geral/api/patients/filtros/cidades');
+        const serviceAreaPromise = fetch('/apae-geral/api/patients/filtros/tipos-atendimento');
 
         const [
-          transtornosResponse,
-          anosResponse,
-          cidadesResponse,
-          tipoAtendimentosResponse
+          disordersResponse,
+          yearsResponse,
+          citiesResponse,
+          serviceAreaResponse
         ] = await Promise.all([
-          transtornosPromise,
-          anosPromise,
-          cidadesPromise,
-          tipoAtendimentosPromise
+          disordersPromise,
+          yearsPromise,
+          citiesPromise,
+          serviceAreaPromise
         ]);
 
-        if (!transtornosResponse.ok) throw new Error('Falha ao buscar transtornos');
-        if (!anosResponse.ok) throw new Error('Falha ao buscar anos');
-        if (!cidadesResponse.ok) throw new Error('Falha ao buscar cidades');
-        if (!tipoAtendimentosResponse.ok) throw new Error('Falha ao buscar tipos de atendimentos');
+        if (!disordersResponse.ok) throw new Error('Falha ao buscar transtornos');
+        if (!yearsResponse.ok) throw new Error('Falha ao buscar anos');
+        if (!citiesResponse.ok) throw new Error('Falha ao buscar cidades');
+        if (!serviceAreaResponse.ok) throw new Error('Falha ao buscar tipos de atendimentos');
 
-        const transtornosData = await transtornosResponse.json();
-        const anosData = await anosResponse.json();
-        const cidadesData = await cidadesResponse.json();
-        const tipoAtendimentosData = await tipoAtendimentosResponse.json();
+        const disordersData = await disordersResponse.json();
+        const yearsData = await yearsResponse.json();
+        const citiesData = await citiesResponse.json();
+        const serviceAreaData = await serviceAreaResponse.json();
         
-        setTranstornoOptions(transtornosData);
-        setAnoOptions(anosData);
-        setCidadeOptions(cidadesData);
-        setTipoAtendimentoOptions(tipoAtendimentosData);
+        setDisorderOptions(disordersData);
+        setYearOptions(yearsData);
+        setCityOptions(citiesData);
+        setServiceAreaOptions(serviceAreaData);
 
       } catch (err) {
         const errorMsg = "Não foi possível carregar os filtros.";
@@ -70,5 +70,5 @@ export function usePatientFilters(): PatientFilterOptions {
     fetchFilterOptions();
   }, []);
 
-  return { transtornoOptions, anoOptions, cidadeOptions, tipoAtendimentoOptions, isLoading, error };
+  return { disorderOptions, yearOptions, cityOptions, serviceAreaOptions, isLoading, error };
 }

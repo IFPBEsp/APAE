@@ -10,23 +10,23 @@ import { toast } from "react-toastify";
 export interface FileItem {
   id: string;
   name: string;
-  category: "pessoal" | "medico" | "escolar";
+  category: "personal" | "medical" | "school";
   type: string;
   url: string;
   year: string;
 }
 
 const documentCategory = {
-  pessoal: "Documentos pessoais",
-  medico: "Documentos médicos",
-  escolar: "Documentos escolares",
+  personal: "Documentos pessoais",
+  medical: "Documentos médicos",
+  school: "Documentos escolares",
 };
 
 export default function FileViewer() {
   const router = useRouter();
   const params = useParams();
   const patientId = params?.id as string;
-  const category = params?.type as "pessoal" | "medico" | "escolar";
+  const category = params?.type as "personal" | "medical" | "school";
   const [yearFilter, setYearFilter] = React.useState<string>(
     new Date().getFullYear().toString()
   );

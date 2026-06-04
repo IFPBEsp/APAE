@@ -16,7 +16,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Checkbox } from "@/components/ui/checkbox";
-import { diasDaSemana, turnos } from "@/types/profissional";
+import { daysOfWeek, shifts } from "@/types/profissional";
 import { Control, UseFormWatch, FieldValues, Path } from "react-hook-form";
 
 type Props<T extends FieldValues> = {
@@ -24,8 +24,8 @@ type Props<T extends FieldValues> = {
   watch: UseFormWatch<T>;
 };
 
-export default function Disponibilidade<T extends FieldValues>({ control, watch }: Readonly<Props<T>>) {
-  const disponibilidade = watch("disponibilidade" as Path<T>) || [];
+export default function AvailabilityForm<T extends FieldValues>({ control, watch }: Readonly<Props<T>>) {
+  const availability = watch("availability" as Path<T>) || [];
 
   return (
     <div className="space-y-4">
@@ -39,29 +39,29 @@ export default function Disponibilidade<T extends FieldValues>({ control, watch 
           <TableHeader>
             <TableRow>
               <TableHead className="w-[100px]">Turno</TableHead>
-              {diasDaSemana.map((dia) => (
-                <TableHead key={dia.id} className="text-center">
-                  {dia.label}
+              {daysOfWeek.map((day) => (
+                <TableHead key={day.id} className="text-center">
+                  {day.label}
                 </TableHead>
               ))}
             </TableRow>
           </TableHeader>
 
           <TableBody>
-            {turnos.map((turno) => (
-              <TableRow key={turno.id}>
-                <TableCell className="font-medium">{turno.label}</TableCell>
+            {shifts.map((shift) => (
+              <TableRow key={shift.id}>
+                <TableCell className="font-medium">{shift.label}</TableCell>
 
-                {diasDaSemana.map((dia) => {
-                  const index = disponibilidade.findIndex(
-                    (d: { dia: string; turno: string }) => d.dia === dia.id && d.turno === turno.id
+                {daysOfWeek.map((day) => {
+                  const index = availability.findIndex(
+                    (d: { day: string; shift: string }) => d.day === day.id && d.shift === shift.id
                   );
 
                   return (
-                    <TableCell key={dia.id} className="text-center">
+                    <TableCell key={day.id} className="text-center">
                       <FormField
                         control={control}
-                        name={`disponibilidade.${index}.checked` as Path<T>}
+                        name={`availability.${index}.checked` as Path<T>}
                         render={({ field }) => (
                           <FormItem className="flex items-center justify-center">
                             <FormControl>

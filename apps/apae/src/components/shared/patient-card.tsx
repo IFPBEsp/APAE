@@ -24,17 +24,17 @@ const getStatus = (patient: PatientStatusData) => {
 };
 
 const statusTextStyles: { [key: string]: string } = {
-  Paciente: "text-[#468f71]",
-  Aluno: "text-[#003B93]",
-  Inativo: "text-[#871d1e]",
-  "Em Fila": "text-[#9f9e9e]",
+  Patient: "text-[#468f71]",
+  Student: "text-[#003B93]",
+  Inactive: "text-[#871d1e]",
+  "In Line": "text-[#9f9e9e]",
 };
 
 const statusBorderStyles: { [key: string]: string } = {
-  Paciente: "border-2 border-[#5db993]",
-  Aluno: "border-2 border-[#0D4F97]",
-  Inativo: "border-2 border-[#ac3637]",
-  "Em Fila": "border border-[#9f9e9e]",
+  Patient: "border-2 border-[#5db993]",
+  Student: "border-2 border-[#0D4F97]",
+  Inactive: "border-2 border-[#ac3637]",
+  "In Line": "border border-[#9f9e9e]",
 };
 
 export function PatientCard({ patient }: PatientCardProps) {
@@ -59,8 +59,8 @@ export function PatientCard({ patient }: PatientCardProps) {
       </Button>
 
       <CardContent className="p-4 flex-1">
-        {/* 3. ALTERADO: 'items-center' para 'items-start' e adicionado 'h-full'. 
-                    Isso alinha o avatar e os textos pelo topo, e permite que o botão vá pro fundo. */}
+        {/* 3. CHANGED: 'items-center' to 'items-start' and added 'h-full'. 
+                    This aligns the avatar and texts to the top, and allows the button to go to the bottom. */}
         <div className="flex items-start gap-4 h-full">
           <div className="flex flex-col items-center gap-2 flex-shrink-0">
             <Avatar className="h-20 w-20 border">
@@ -82,17 +82,17 @@ export function PatientCard({ patient }: PatientCardProps) {
             </p>
           </div>
 
-          {/* 4. ADICIONADO: 'min-w-0' para impedir que textos longos (como silvawww...) quebrem o card */}
+          {/* 4. ADDED: 'min-w-0' to prevent long texts from breaking the card */}
           <div className="flex-1 flex flex-col h-full min-w-0">
             <div>
-              {/* 5. ADICIONADO: 'line-clamp-2 break-all min-h-[3rem]' 
-                                Limita a 2 linhas, quebra a palavra longa e fixa a altura do título, 
-                                alinhando o CPF de todos os cards. */}
+              {/* 5. ADDED: 'line-clamp-2 break-all min-h-[3rem]' 
+                                Limits to 2 lines, breaks long words and fixes title height, 
+                                aligning the CPF of all cards. */}
               <h3 className="text-base font-bold text-[#235d9b] line-clamp-2 break-all min-h-[3rem]">
                 {patient.fullName ?? "Nome não informado"}
               </h3>
               <div className="!text-[12px] text-[#235d9b] font-bold mt-1 space-y-0.5">
-                {/* 6. ADICIONADO: 'truncate' para evitar que as infos de baixo gerem uma 2ª linha */}
+                {/* 6. ADDED: 'truncate' to prevent bottom info from wrapping to a 2nd line */}
                 <p className="truncate">
                   CPF: {patient.cpf ?? "Não informado"}
                 </p>
@@ -105,7 +105,7 @@ export function PatientCard({ patient }: PatientCardProps) {
               </div>
             </div>
 
-            {/* Seu mt-auto aqui agora vai funcionar perfeitamente, empurrando o botão para a base! */}
+            {/* mt-auto here will now work perfectly, pushing the button to the bottom! */}
             <div className="mt-auto pt-2 flex justify-end">
               <Button
                 asChild

@@ -22,8 +22,8 @@ export default function NewPasswordPage() {
   const form = useForm<FormNewPasswordSchema>({
     resolver: zodResolver(newPasswordSchema),
     defaultValues: { 
-      senha: "", 
-      confirmarSenha: ""
+      password: "", 
+      confirmPassword: ""
     },
     mode: "all",
   });
@@ -46,8 +46,8 @@ export default function NewPasswordPage() {
 
       await axios.post(`${API_URL}/auth/password-recovery/reset`, {
         token,
-        newPassword: data.senha,
-        confirmPassword: data.confirmarSenha,
+        newPassword: data.password,
+        confirmPassword: data.confirmPassword,
       });
 
       toast.success("Senha alterada com sucesso.");
@@ -76,7 +76,7 @@ export default function NewPasswordPage() {
             <CardContent className="w-full space-y-6">
               <FormField
                 control={form.control}
-                name="senha"
+                name="password"
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel className="font-bold text-gray-700">Nova senha</FormLabel>
@@ -90,7 +90,7 @@ export default function NewPasswordPage() {
 
               <FormField
                 control={form.control}
-                name="confirmarSenha"
+                name="confirmPassword"
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel className="font-bold text-gray-700">Confirmar senha</FormLabel>
