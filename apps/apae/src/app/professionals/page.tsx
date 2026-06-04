@@ -48,42 +48,42 @@ import {
 } from "@/components/ui/alert-dialog";
 
 import { useFetchProfessionals } from "@/hooks/profissional/use-fetch-profissional";
-import { useInactivateProfissional } from "@/hooks/profissional/use-inactivate-profissional";
-import { useActivateProfissional } from "@/hooks/profissional/use-activate-profissional";
+import { useInactivateProfessional } from "@/hooks/profissional/use-inactivate-profissional";
+import { useActivateProfessional } from "@/hooks/profissional/use-activate-profissional";
 
-type StatusFilter = "ativo" | "inativo";
+type StatusFilter = "activate" | "inactivate";
 
 export default function VisualizationProfessionalPage() {
   const router = useRouter();
 
   const [searchTerm, setSearchTerm] = useState("");
   const [areaFilter, setAreaFilter] = useState("all");
-  const [statusFilter, setStatusFilter] = useState<StatusFilter>("ativo");
+  const [statusFilter, setStatusFilter] = useState<StatusFilter>("activate");
 
-  const { profissionais, loading, error, setProfissionais } =
-    useFetchProfessionals(statusFilter === "ativo");
+  const { professionals, loading, error, setProfessionals } =
+    useFetchProfessionals(statusFilter === "activate");
 
-  const { inactivate } = useInactivateProfissional();
-  const { activate } = useActivateProfissional();
+  const { inactivate } = useInactivateProfessional();
+  const { activate } = useActivateProfessional();
 
   const handleAddNew = () => router.push("/professionals/create");
   const handleEdit = (id: string) => router.push(`/professionals/edit/${id}`);
 
   const handleConfirm = async (id: string) => {
     try {
-      if (statusFilter === "ativo") {
+      if (statusFilter === "activate") {
         await inactivate(id);
       } else {
         await activate(id);
       }
 
-      setProfissionais((prev) => prev.filter((p) => p.id !== id));
+      setProfessionals((prev) => prev.filter((p) => p.id !== id));
     } catch (err) {
       console.error(err);
     }
   };
 
-  const filteredProfissionais = profissionais.filter((prof) => {
+  const filteredProfessionals = professionals.filter((prof) => {
     const name = prof.name?.toLowerCase() || "";
     const document = prof.professionalDocument?.toLowerCase() || "";
     const term = searchTerm.toLowerCase();
@@ -99,25 +99,25 @@ export default function VisualizationProfessionalPage() {
 
   const uniqueAreas = [
     "all",
-    ...Array.from(new Set(profissionais.map((p) => p.serviceArea.area))),
+    ...Array.from(new Set(professionals.map((p) => p.serviceArea.area))),
   ];
 
-  const actionLabel = statusFilter === "ativo" ? "Inativar" : "Reativar";
+  const actionLabel = statusFilter === "activate" ? "Inativar" : "Reativar";
 
   const actionIcon =
-    statusFilter === "ativo" ? (
+    statusFilter === "activate" ? (
       <UserX className="mr-2 h-4 w-4" />
     ) : (
       <UserCheck className="mr-2 h-4 w-4" />
     );
 
   const actionItemClass =
-    statusFilter === "ativo"
+    statusFilter === "activate"
       ? "text-destructive focus:text-destructive"
       : "text-green-600 focus:text-green-600";
 
   const actionButtonClass =
-    statusFilter === "ativo"
+    statusFilter === "activate"
       ? ""
       : "bg-green-600 hover:bg-green-700 text-white";
 
@@ -152,8 +152,8 @@ export default function VisualizationProfessionalPage() {
               <SelectValue placeholder="Situação" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="ativo">Ativo</SelectItem>
-              <SelectItem value="inativo">Inativo</SelectItem>
+              <SelectItem value="activate">Ativo</SelectItem>
+              <SelectItem value="inactivate">Inativo</SelectItem>
             </SelectContent>
           </Select>
 
@@ -189,8 +189,8 @@ export default function VisualizationProfessionalPage() {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {filteredProfissionais.length > 0 ? (
-                  filteredProfissionais.map((prof) => (
+                {filteredProfessionals.length > 0 ? (
+                  filteredProfessionals.map((prof) => (
                     <TableRow key={prof.id}>
                       <TableCell className="font-medium">
                         {prof.name}
@@ -239,7 +239,7 @@ export default function VisualizationProfessionalPage() {
                                 Você tem certeza?
                               </AlertDialogTitle>
                               <AlertDialogDescription>
-                                {statusFilter === "ativo"
+                                {statusFilter === "activate"
                                   ? `Esta ação irá inativar o profissional ${prof.name}.`
                                   : `Esta ação irá reativar o profissional ${prof.name}.`}
                               </AlertDialogDescription>

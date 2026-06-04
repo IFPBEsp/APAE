@@ -28,7 +28,7 @@ interface AnnualRegistryEditModalProps {
     onClose: (str?: string) => void;
     patientId: string;
     currentYear: string;
-    initialData: RegistroAnual | null;
+    initialData: AnnualRegistry | null;
     mode?: "create" | "edit";
 }
 
@@ -47,7 +47,7 @@ interface ServiceAreaItem {
     value?: string;
 }
 
-interface RegistroAnual {
+interface AnnualRegistry {
     id?: string;
     bpc: boolean | string;
     familyIncome: number | string;

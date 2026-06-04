@@ -1,6 +1,6 @@
 import { ServiceArea } from "./service-area";
 
-export const diasDaSemana = [
+export const daysOfWeek = [
   { id: "segunda", label: "Segunda" },
   { id: "terca", label: "Terça" },
   { id: "quarta", label: "Quarta" },
@@ -8,14 +8,14 @@ export const diasDaSemana = [
   { id: "sexta", label: "Sexta" },
 ];
 
-export const turnos = [
+export const shifts = [
   { id: "manha", label: "Manhã" },
   { id: "tarde", label: "Tarde" },
 ];
 
 export type AvailabilityType = {
-  dia: string;
-  turno: string;
+  day: string;
+  shift: string;
   checked: boolean;
 };
 
@@ -34,7 +34,7 @@ export interface Professional {
   identityDocument: string;
   address: Address;
   availabilities: Availability[];
-  ativo: boolean;
+  active: boolean;
   profilePhotoUrl?: string;
 }
 
