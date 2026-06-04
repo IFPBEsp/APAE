@@ -1,4 +1,5 @@
 import { ServiceArea } from "./service-area";
+import { AddressResponse } from "./address";
 
 export const diasDaSemana = [
   { id: "segunda", label: "Segunda" },
@@ -37,4 +38,5 @@ export interface Professional {
   availabilities: Availability[];
   ativo: boolean;
   profilePhoto?: string | null;
+  address?: AddressResponse | null;
 }

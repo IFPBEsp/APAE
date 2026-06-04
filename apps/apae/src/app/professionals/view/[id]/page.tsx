@@ -46,6 +46,7 @@ export default function VisualizarProfissional() {
   const handleEdit = () => router.push(`/professionals/edit/${id}`);
   const serviceAreaName =
     profissional.serviceArea?.area ?? profissional.healthSector ?? "—";
+  const address = profissional.address;
 
   const DAYS = ["segunda", "terca", "quarta", "quinta", "sexta"] as const;
   const SHIFTS = ["manha", "tarde"] as const;
@@ -122,6 +123,46 @@ export default function VisualizarProfissional() {
                 <p className="text-base text-gray-700">
                   {profissional.identityDocument || "—"}
                 </p>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card className="shadow-lg border-2 border-[#E0E7FF] text-[#0D4F97]">
+          <CardHeader>
+            <CardTitle className="text-lg font-semibold">
+              Endereço
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-2">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-4">
+              <div>
+                <p className="font-semibold text-sm">CEP</p>
+                <p className="text-base text-gray-700">{address?.cep || "—"}</p>
+              </div>
+              <div>
+                <p className="font-semibold text-sm">Estado</p>
+                <p className="text-base text-gray-700">{address?.state || "—"}</p>
+              </div>
+              <div>
+                <p className="font-semibold text-sm">Cidade</p>
+                <p className="text-base text-gray-700">{address?.city || "—"}</p>
+              </div>
+              <div>
+                <p className="font-semibold text-sm">Bairro</p>
+                <p className="text-base text-gray-700">{address?.neighborhood || "—"}</p>
+              </div>
+              <div>
+                <p className="font-semibold text-sm">Rua</p>
+                <p className="text-base text-gray-700">{address?.street || "—"}</p>
+              </div>
+              <div>
+                <p className="font-semibold text-sm">Número</p>
+                <p className="text-base text-gray-700">{address?.number || "—"}</p>
+              </div>
+              <div className="col-span-1 sm:col-span-2">
+                <p className="font-semibold text-sm">Complemento</p>
+                <p className="text-base text-gray-700">{address?.complement || "—"}</p>
               </div>
             </div>
           </CardContent>

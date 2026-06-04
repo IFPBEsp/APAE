@@ -2,21 +2,6 @@ import { NextResponse } from "next/server";
 import { createBaseApi } from "@/lib/axios";
 import { AxiosError } from "axios";
 
-async function removeLegacyAddressFromPayload(body: FormData) {
-  const professional = body.get("professional");
-  if (!(professional instanceof Blob)) return;
-
-  const text = await professional.text();
-  const payload = JSON.parse(text) as Record<string, unknown>;
-  const compatiblePayload = { ...payload };
-  delete compatiblePayload.address;
-
-  body.set(
-    "professional",
-    new Blob([JSON.stringify(compatiblePayload)], { type: "application/json" }),
-  );
-}
-
 export async function GET(req: Request) {
   try {
     const { searchParams } = new URL(req.url);
@@ -48,7 +33,6 @@ export async function GET(req: Request) {
 export async function POST(req: Request) {
   try {
     const body = await req.formData();
-    await removeLegacyAddressFromPayload(body);
 
     const api = await createBaseApi();
     const response = await api.post("/professionals", body, {

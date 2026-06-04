@@ -19,6 +19,13 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
   AlertDialog,
   AlertDialogAction,
   AlertDialogCancel,
@@ -45,6 +52,7 @@ import {
   removeProfessionalDocument,
 } from "@/services/profissional-service";
 import { DocumentWithUrl } from "@/types/document";
+import { STATES } from "@/lib/states";
 
 type UpdateFormValues = z.infer<typeof updateProfessionalSchema>;
 
@@ -117,6 +125,15 @@ export default function AtualizarProfissional(): JSX.Element {
     areaAtendimento: "",
     telefone: "",
     rg: "",
+    address: {
+      cep: "",
+      state: "",
+      city: "",
+      neighborhood: "",
+      street: "",
+      number: "",
+      complement: "",
+    },
     disponibilidade: gerarMatrizDisponibilidade([]),
   };
 
@@ -145,6 +162,15 @@ export default function AtualizarProfissional(): JSX.Element {
       areaAtendimento: profissional.serviceArea?.area ?? profissional.healthSector ?? "",
       telefone: profissional.phoneNumber,
       rg: profissional.identityDocument,
+      address: {
+        cep: profissional.address?.cep ?? "",
+        state: profissional.address?.state ?? "",
+        city: profissional.address?.city ?? "",
+        neighborhood: profissional.address?.neighborhood ?? "",
+        street: profissional.address?.street ?? "",
+        number: profissional.address?.number ?? "",
+        complement: profissional.address?.complement ?? "",
+      },
       disponibilidade: matrizCompleta,
     });
   }, [profissional, form]);
@@ -224,6 +250,15 @@ export default function AtualizarProfissional(): JSX.Element {
       email: values.email.trim(),
       name: values.nomeCompleto.trim(),
       identityDocument: values.rg.trim(),
+      address: {
+        cep: values.address.cep.trim(),
+        state: values.address.state,
+        city: values.address.city.trim(),
+        neighborhood: values.address.neighborhood.trim(),
+        street: values.address.street.trim(),
+        number: values.address.number.trim(),
+        complement: values.address.complement?.trim() || null,
+      },
       availabilities,
     };
 
@@ -407,6 +442,133 @@ export default function AtualizarProfissional(): JSX.Element {
                     />
                   </FormControl>
                   <FormMessage>{fieldState.error?.message}</FormMessage>
+                </FormItem>
+              )}
+            />
+          </div>
+
+          <div className="space-y-4">
+            <h2 className="text-base font-semibold text-[#0D4F97]">Endereço</h2>
+
+            <div className="grid grid-cols-2 gap-4">
+              <Controller
+                control={form.control}
+                name="address.cep"
+                render={({ field, fieldState }) => (
+                  <FormItem>
+                    <FormLabel>CEP *</FormLabel>
+                    <FormControl>
+                      <InputMask
+                        mask="_____-___"
+                        replacement={{ _: /\d/ }}
+                        value={field.value ?? ""}
+                        onChange={(e) => field.onChange(e.target.value)}
+                        onBlur={field.onBlur}
+                        placeholder="99999-999"
+                        className="w-full rounded-md border px-3 py-2"
+                      />
+                    </FormControl>
+                    <FormMessage>{fieldState.error?.message}</FormMessage>
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="address.state"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Estado *</FormLabel>
+                    <Select onValueChange={field.onChange} value={field.value}>
+                      <FormControl>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Selecione o estado" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        {STATES.map((state) => (
+                          <SelectItem key={state} value={state}>
+                            {state}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
+
+            <div className="grid grid-cols-2 gap-4">
+              <FormField
+                control={form.control}
+                name="address.city"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Cidade *</FormLabel>
+                    <FormControl>
+                      <Input placeholder="Ex: São Paulo" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="address.neighborhood"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Bairro *</FormLabel>
+                    <FormControl>
+                      <Input placeholder="Ex: Centro" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
+
+            <div className="grid grid-cols-2 gap-4">
+              <FormField
+                control={form.control}
+                name="address.street"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Rua *</FormLabel>
+                    <FormControl>
+                      <Input placeholder="Ex: Rua das Flores" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="address.number"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Número *</FormLabel>
+                    <FormControl>
+                      <Input placeholder="Ex: 123" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
+
+            <FormField
+              control={form.control}
+              name="address.complement"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Complemento</FormLabel>
+                  <FormControl>
+                    <Input placeholder="Ex: Sala 2" {...field} value={field.value || ""} />
+                  </FormControl>
+                  <FormMessage />
                 </FormItem>
               )}
             />

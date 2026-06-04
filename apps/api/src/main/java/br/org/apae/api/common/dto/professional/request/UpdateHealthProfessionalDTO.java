@@ -1,5 +1,6 @@
 package br.org.apae.api.common.dto.professional.request;
 
+import br.org.apae.api.common.dto.address.UpdateAddressDTO;
 import br.org.apae.api.common.dto.availability.request.CreateAvailabilityDTO;
 import br.org.apae.api.common.dto.servicearea.request.UpdateServiceAreaDTO;
 import jakarta.validation.Valid;
@@ -27,6 +28,9 @@ public record UpdateHealthProfessionalDTO(
 
     @NotBlank(message = "O documento de identidade é obrigatório.")
     String identityDocument,
+
+    @NotNull(message = "Endereço é obrigatório.")
+    @Valid UpdateAddressDTO address,
 
     @Valid List<CreateAvailabilityDTO> availabilities,
 

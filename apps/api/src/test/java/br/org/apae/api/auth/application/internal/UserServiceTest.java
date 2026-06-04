@@ -58,7 +58,7 @@ class UserServiceTest {
   }
 
   @Test
-  void createUserShouldSaveAuthenticatedApaeGeralUser() {
+  void createUserShouldSaveAuthenticatedAtendimentoUser() {
     when(userRepository.existsByEmail("admin@apae.org.br")).thenReturn(false);
     when(userRepository.existsByCpf("12345678900")).thenReturn(false);
 
@@ -76,6 +76,6 @@ class UserServiceTest {
     assertEquals("encoded-password", savedUser.getPassword());
     assertEquals("12345678900", savedUser.getCpf());
     assertEquals("Administrador", savedUser.getFullName());
-    assertEquals(UserRole.APAE_GERAL, savedUser.getRole());
+    assertEquals(UserRole.ATENDIMENTO, savedUser.getRole());
   }
 }

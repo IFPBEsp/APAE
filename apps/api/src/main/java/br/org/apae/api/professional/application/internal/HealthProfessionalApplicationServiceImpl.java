@@ -79,7 +79,8 @@ public class HealthProfessionalApplicationServiceImpl implements HealthProfessio
                 dto.email(),
                 dto.name(),
                 dto.phoneNumber(),
-                dto.identityDocument());
+                dto.identityDocument(),
+                null);
 
         User savedUser = userRepository.save(user);
         HealthProfessional professionalToSave = mapper.toEntity(dto, serviceAreaDto, savedUser);

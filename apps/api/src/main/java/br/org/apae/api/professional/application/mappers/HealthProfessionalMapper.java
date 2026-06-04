@@ -1,5 +1,6 @@
 package br.org.apae.api.professional.application.mappers;
 
+import br.org.apae.api.address.application.mapper.AddressMapper;
 import br.org.apae.api.auth.domain.model.User;
 import br.org.apae.api.common.dto.availability.response.AvailabilityResponseDTO;
 import br.org.apae.api.common.dto.professional.request.CreateHealthProfessionalDTO;
@@ -21,15 +22,19 @@ public class HealthProfessionalMapper {
 
     private final ServiceAreaMapper serviceAreaMapper;
     private final AvailabilityMapper availabilityMapper;
+    private final AddressMapper addressMapper;
 
     public HealthProfessionalMapper(ServiceAreaMapper serviceAreaMapper,
-                                    AvailabilityMapper availabilityMapper) {
+                                    AvailabilityMapper availabilityMapper,
+                                    AddressMapper addressMapper) {
         this.serviceAreaMapper = serviceAreaMapper;
         this.availabilityMapper = availabilityMapper;
+        this.addressMapper = addressMapper;
     }
 
     public HealthProfessional toEntity(CreateHealthProfessionalDTO dto, ServiceAreaResponseDTO serviceAreaDto, User user) {
         ServiceArea serviceArea = serviceAreaMapper.toEntityFromResponse(serviceAreaDto);
+        user.updateAddress(addressMapper.toEntity(dto.address()));
 
         HealthProfessional entity = new HealthProfessional(
                 user,
@@ -55,6 +60,7 @@ public class HealthProfessionalMapper {
         professional.setServiceArea(serviceArea);
         professional.setPhoneNumber(dto.phoneNumber());
         professional.setIdentityDocument(dto.identityDocument());
+        professional.setAddress(addressMapper.updateEntityFromDto(professional.getAddress(), dto.address()));
         professional.setProfessionalDocument(dto.professionalDocument());
         professional.setProfilePhoto(dto.profilePhoto());
 

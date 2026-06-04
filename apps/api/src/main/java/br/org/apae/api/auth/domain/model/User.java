@@ -4,17 +4,22 @@ import java.util.Collection;
 import java.util.List;
 import java.util.UUID;
 
+import br.org.apae.api.address.domain.model.Address;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 
 @Entity
@@ -41,6 +46,10 @@ public class User implements UserDetails {
 
   @Column(name = "rg", unique = true)
   private String identityDocument;
+
+  @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+  @JoinColumn(name = "endereco_id", referencedColumnName = "id", unique = true)
+  private Address address;
 
   @Enumerated(EnumType.STRING)
   @Column(name = "cargo", nullable = false)
@@ -71,14 +80,20 @@ public class User implements UserDetails {
     this.identityDocument = identityDocument;
   }
 
+  public User(String email, String password, String cpf, String fullName, UserRole role,
+      String phoneNumber, String identityDocument, Address address) {
+    this(email, password, cpf, fullName, role, phoneNumber, identityDocument);
+    this.address = address;
+  }
+
   public static User createAuthenticatedUser(String email, String password, String cpf, String fullName,
       UserRole role) {
     return new User(email, password, cpf, fullName, role);
   }
 
   public static User createProfessionalUser(String email, String fullName, String phoneNumber,
-      String identityDocument) {
-    return new User(email, null, null, fullName, UserRole.APAE_GERAL, phoneNumber, identityDocument);
+      String identityDocument, Address address) {
+    return new User(email, null, null, fullName, UserRole.ATENDIMENTO, phoneNumber, identityDocument, address);
   }
 
   public UUID getId() {
@@ -118,11 +133,19 @@ public class User implements UserDetails {
     return identityDocument;
   }
 
+  public Address getAddress() {
+    return address;
+  }
+
   public void updateProfile(String email, String fullName, String phoneNumber, String identityDocument) {
     this.email = email;
     this.fullName = fullName;
     this.phoneNumber = phoneNumber;
     this.identityDocument = identityDocument;
+  }
+
+  public void updateAddress(Address address) {
+    this.address = address;
   }
 
   public void updatePassword(String password) {

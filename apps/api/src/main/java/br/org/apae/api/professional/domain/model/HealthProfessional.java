@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
+import br.org.apae.api.address.domain.model.Address;
 import br.org.apae.api.auth.domain.model.User;
 import br.org.apae.api.servicearea.domain.model.ServiceArea;
 
@@ -125,6 +126,16 @@ public class HealthProfessional {
 
     public void setIdentityDocument(String identityDocument) {
         updateUserProfile(getName(), getEmail(), getPhoneNumber(), identityDocument);
+    }
+
+    public Address getAddress() {
+        return user != null ? user.getAddress() : null;
+    }
+
+    public void setAddress(Address address) {
+        if (user != null) {
+            user.updateAddress(address);
+        }
     }
 
     public List<Availability> getAvailabilities() { return availabilities; }

@@ -10,6 +10,8 @@ import br.org.apae.api.common.dto.professional.request.CreateHealthProfessionalD
 import br.org.apae.api.common.dto.professional.request.documents.CreateProfessionalDocumentsDTO;
 import br.org.apae.api.common.dto.professional.response.HealthProfessionalResponseDTO;
 import br.org.apae.api.common.dto.servicearea.request.CreateServiceAreaDTO;
+import br.org.apae.api.common.dto.address.AddressResponseDTO;
+import br.org.apae.api.common.dto.address.CreateAddressDTO;
 import br.org.apae.api.common.dto.availability.request.CreateAvailabilityDTO;
 import br.org.apae.api.common.dto.servicearea.response.ServiceAreaResponseDTO;
 import br.org.apae.api.common.dto.availability.response.AvailabilityResponseDTO;
@@ -96,6 +98,31 @@ public final class HealthProfessionalMockDto {
         );
     }
 
+    public static CreateAddressDTO createAddressRequest() {
+        return new CreateAddressDTO(
+            "São Paulo",
+            "01001-000",
+            "SP",
+            "Centro",
+            "Rua Teste",
+            "123",
+            "Sala 1"
+        );
+    }
+
+    public static AddressResponseDTO createAddressResponse() {
+        return new AddressResponseDTO(
+            UUID.fromString("cccccccc-cccc-cccc-cccc-cccccccccccc"),
+            "01001-000",
+            "São Paulo",
+            "SP",
+            "Centro",
+            "Rua Teste",
+            "123",
+            "Sala 1"
+        );
+    }
+
     public static CreateHealthProfessionalDTO createHealthProfessionalRequest() {
         return new CreateHealthProfessionalDTO(
             createServiceAreaRequestPsychology(),
@@ -104,6 +131,7 @@ public final class HealthProfessionalMockDto {
             "teste@apae.org.br",
             "João da Silva",
             "123456789",
+            createAddressRequest(),
             List.of(
                 new CreateAvailabilityDTO("SEGUNDA", "MANHA"),
                 new CreateAvailabilityDTO("TERCA", "TARDE")
@@ -123,6 +151,7 @@ public final class HealthProfessionalMockDto {
             "11999999999",
             "Fisioterapia",
             true,
+            createAddressResponse(),
             createServiceAreaResponsePhysiotherapy(),
             List.of(
                 new AvailabilityResponseDTO(UUID.randomUUID(), "SEGUNDA", "MANHA"),
@@ -143,6 +172,7 @@ public final class HealthProfessionalMockDto {
             "11888888888",
             "Psicologia",
             true,
+            createAddressResponse(),
             createServiceAreaResponsePsychology(),
             List.of(),
             "maria-profile-photo.png"

@@ -2,6 +2,7 @@ import * as z from "zod";
 
 const nomeRegex = /^[A-Za-zÀ-ÖØ-öø-ÿ ]{3,100}$/;
 const telefoneRegex = /^\(\d{2}\) \d{5}-\d{4}$/;
+const cepRegex = /^\d{5}-\d{3}$/;
 
 const rgRegex =
   /^(\d{7,8}[\dXx]?|\d\.\d{3}\.\d{3}|\d{2}\.\d{3}\.\d{3}-[\dXx])$/;
@@ -56,6 +57,16 @@ const baseSchema = z.object({
       "Telefone inválido. Formato esperado: (xx) xxxxx-xxxx"
     )
     .transform((val) => val.trim()),
+
+  address: z.object({
+    cep: z.string().regex(cepRegex, "CEP inválido. Formato esperado: 99999-999"),
+    state: z.string().min(1, "Selecione um estado"),
+    city: z.string().min(1, "Cidade é obrigatória"),
+    neighborhood: z.string().min(2, "Bairro é obrigatório"),
+    street: z.string().min(2, "Rua é obrigatória"),
+    number: z.string().min(1, "Número é obrigatório").max(20, "Número deve ter no máximo 20 caracteres"),
+    complement: z.string().max(60, "Complemento deve ter no máximo 60 caracteres").optional().nullable(),
+  }),
 
   disponibilidade: z
     .array(
