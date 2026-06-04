@@ -23,7 +23,7 @@ function FilterDropdown({
   value,
   placeholder,
   options,
-  width = "w-[150px]",
+  width = "w-[120px]",
   onChange,
 }: FilterDropdownProps) {
   const triggerStyle = cn(
@@ -31,7 +31,7 @@ function FilterDropdown({
     "justify-between text-gray-600",
     "hover:bg-slate-50 hover:text-gray-700",
     "data-[state=open]:bg-slate-50",
-    "flex w-full sm:" + width,
+    "flex w-full sm:w-[120px] md:w-[150px]" + width,
   );
 
   return (
@@ -87,19 +87,19 @@ export function SearchFilters({
   const activeFilters = filters.filter((f) => f.onChange !== undefined);
 
   return (
-    <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2">
+    <div className="flex flex-col sm:flex-row gap-2 w-full">
       <div className="relative w-full sm:flex-1">
         <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-500" />
         <Input
           placeholder="Busque por nome"
-          className="pl-10 h-[36px] border-2 border-[#0D4F97] rounded-[5px] placeholder-[#0D4F97]"
+          className="pl-10 h-[36px] w-full border-2 border-[#0D4F97] rounded-[5px] placeholder-[#0D4F97]"
           value={searchName}
           onChange={(e) => onSearchName?.(e.target.value)}
         />
       </div>
 
       {activeFilters.length > 0 && (
-        <div className="flex flex-wrap items-center gap-2 w-full sm:w-auto">
+        <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
           {activeFilters.map((filter) => (
             <FilterDropdown
               key={filter.placeholder}
