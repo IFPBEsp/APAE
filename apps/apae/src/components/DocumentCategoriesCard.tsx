@@ -16,9 +16,9 @@ interface DocumentCategoriesCardProps {
 const DocumentCategoriesCard: React.FC<DocumentCategoriesCardProps> = ({
   onClickCategory,
   categories = [
-    { label: 'Pessoais', icon: <User />, type: 'pessoais' },
-    { label: 'Médicos', icon: <ClipboardPlus />, type: 'medicos' },
-    { label: 'Escolares', icon: <LibraryBigIcon />, type: 'escolares' },
+    { label: 'Pessoais', icon: <User />, type: 'personals' },
+    { label: 'Médicos', icon: <ClipboardPlus />, type: 'medicals' },
+    { label: 'Escolares', icon: <LibraryBigIcon />, type: 'schools' },
   ],
 }) => {
   return (
