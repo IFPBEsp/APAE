@@ -26,7 +26,7 @@ import { Personal, PersonalData } from "@/schemas/member-schemas";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { useState, useEffect } from "react";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter  } from "next/navigation";
 import { handleBackendValidationErrors } from "@/lib/utils/form-errors";
 import { formatCivilDateDisplayValue } from "@/lib/date";
 import { InputMask } from "@react-input/mask";
@@ -43,6 +43,7 @@ export default function MembersRegisterPersonalPage() {
   const [isLoading, setIsLoading] = useState(false);
 
   const pathname = usePathname();
+  const router = useRouter();
   const isEditing = pathname.includes("/edit");
   const form = useForm<z.infer<typeof Personal>>({
     mode: "onBlur",
@@ -86,9 +87,19 @@ export default function MembersRegisterPersonalPage() {
         title={isEditing ? "Editar Dados Pessoais" : "Dados Pessoais"}
         onSubmit={form.handleSubmit(onSubmit)}
         buttons={
-          <FormButton type="submit" disabled={isLoading}>
-            {isLoading ? "Validando..." : "Próximo"}
-          </FormButton>
+          <div className="flex gap-4">
+            <FormButton
+              type="button"
+              disabled={isLoading}
+              onClick={() => router.push("/patients")}
+            >
+              Voltar
+            </FormButton>
+
+            <FormButton type="submit" disabled={isLoading}>
+              {isLoading ? "Validando..." : "Próximo"}
+            </FormButton>
+          </div>
         }
       >
         <DoubleColumn>
