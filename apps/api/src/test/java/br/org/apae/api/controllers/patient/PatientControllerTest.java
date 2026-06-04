@@ -76,7 +76,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @Tag("patient")
 @Tag("unit")
 @Tag("controller")
-public class PatientControllerImplTest {
+public class PatientControllerTest {
 
     @TestConfiguration
     @EnableSpringDataWebSupport(pageSerializationMode = VIA_DTO)
