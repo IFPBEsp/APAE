@@ -5,8 +5,8 @@ import { AxiosError } from "axios";
 export async function GET(req: Request) {
   try {
     const { searchParams } = new URL(req.url);
-    const ativo = searchParams.get("ativo");
-    const query = ativo !== null ? `?ativo=${ativo}` : "";
+    const active = searchParams.get("ativo");
+    const query = active !== null ? `?ativo=${active}` : "";
 
     const api = await createBaseApi();
     const response = await api.get(`/professionals${query}`);

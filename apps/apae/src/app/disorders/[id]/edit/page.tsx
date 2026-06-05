@@ -11,7 +11,7 @@ import { Label } from "@/components/ui/label";
 import { useEffect } from "react";
 import { Loader2, ArrowLeft } from "lucide-react";
 
-export default function EditTranstornoPage() {
+export default function EditDisorderPage() {
   const router = useRouter();
   const params = useParams();
   const { id } = params;
@@ -27,7 +27,7 @@ export default function EditTranstornoPage() {
 
   useEffect(() => {
     if (id) {
-      const fetchTranstorno = async () => {
+      const fetchDisorder = async () => {
         try {
           const response = await fetch(`/apae-geral/api/disorders/${id}`);
           if (!response.ok) throw new Error("Transtorno não encontrado.");
@@ -39,7 +39,7 @@ export default function EditTranstornoPage() {
           router.push("/disorders");
         }
       };
-      fetchTranstorno();
+      fetchDisorder();
     }
   }, [id, setValue, router]);
 

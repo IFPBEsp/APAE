@@ -17,8 +17,8 @@ export function useStatesCities(form: UseFormReturn<FormValues>) {
 
   useEffect(() => {
     const subscription = form.watch((values, { name }) => {
-      if (name === "estado") {
-        const selectedState = values.estado;
+      if (name === "state") {
+        const selectedState = values.state;
         if (!selectedState) {
           setCities([]);
           return;
