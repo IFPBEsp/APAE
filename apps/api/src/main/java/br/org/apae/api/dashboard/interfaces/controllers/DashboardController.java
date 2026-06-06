@@ -18,6 +18,6 @@ public interface DashboardController {
     )
     @GetMapping("/overview")
     ResponseEntity<DashboardOverviewResponseDTO> getOverview(
-            @RequestParam(defaultValue = "1") int minAbsences
+            @RequestParam(defaultValue = "3") int minAbsences
     );
 }
