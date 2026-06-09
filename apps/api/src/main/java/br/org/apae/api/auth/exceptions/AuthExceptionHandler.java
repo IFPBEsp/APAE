@@ -68,15 +68,15 @@ public class AuthExceptionHandler {
     return new ResponseEntity<>(error, HttpStatus.UNAUTHORIZED);
   }
 
-  @ExceptionHandler(InvalidPasswordException.class)
-  public ResponseEntity<ErrorResponse> handleInvalidPassword(InvalidPasswordException ex, HttpServletRequest request) {
-    ErrorResponse error = new ErrorResponse(
-        HttpStatus.BAD_REQUEST.value(),
-        HttpStatus.BAD_REQUEST.getReasonPhrase(),
-        ex.getMessage(),
-        request.getRequestURI());
-    return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
-  }
+    @ExceptionHandler(InvalidPasswordException.class)
+    public ResponseEntity<ErrorResponse> handleInvalidPassword(InvalidPasswordException ex, HttpServletRequest request) {
+        ErrorResponse error = new ErrorResponse(
+                HttpStatus.UNAUTHORIZED.value(),
+                HttpStatus.UNAUTHORIZED.getReasonPhrase(),
+                ex.getMessage(),
+                request.getRequestURI());
+        return new ResponseEntity<>(error, HttpStatus.UNAUTHORIZED);
+    }
 
   @ExceptionHandler(EmailSendingException.class)
   public ResponseEntity<ErrorResponse> handleEmailSending(EmailSendingException ex, HttpServletRequest request) {
