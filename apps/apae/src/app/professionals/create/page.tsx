@@ -110,7 +110,6 @@ export default function CadastroProfissional(): JSX.Element {
       new Blob([JSON.stringify(payload)], { type: "application/json" })
     );
     
-    // profilePhoto faz referência ao componente do back, deve estar alinhado quando for fazer a integração
     if (values.photo) {
       formData.append("profilePhoto", values.photo);
     }

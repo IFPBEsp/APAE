@@ -194,7 +194,8 @@ export default function AtualizarProfissional(): JSX.Element {
     const curriculum = docs.find((d) => d.type === "CURRICULUM");
     const volunteer = docs.find((d) => d.type === "VOLUNTEER_AGREEMENT");
     const attachments = docs.filter((d) => d.type === "ATTACHMENTANY");
-    return { curriculum, volunteer, attachments };
+    const photo = docs.find((d) => d.type === "PHOTO");
+    return { curriculum, volunteer, attachments, photo };
   }, [docs]);
 
   function openRemoveModal(doc: DocumentWithUrl) {
@@ -283,7 +284,7 @@ export default function AtualizarProfissional(): JSX.Element {
         const photoData = new FormData();
         photoData.append("file", selectedPhoto);
 
-        const response = await fetch(`apae-geral/api/professionals/${profissional.id}/photo`, {
+        const response = await fetch(`/apae-geral/api/professionals/${profissional.id}/photo`, {
           method: "PATCH",
           body: photoData,
         });
@@ -605,7 +606,7 @@ export default function AtualizarProfissional(): JSX.Element {
                     >
                       <Avatar className="w-32 h-32 border-2 border-dashed border-gray-300 bg-gray-50 cursor-pointer flex items-center justify-center">
                         <AvatarImage
-                          src={photoPreviewUrl || undefined}
+                          src={photoPreviewUrl || groupedDocs.photo?.url || undefined}
                           alt="Foto do profissional"
                         />
 

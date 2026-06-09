@@ -24,6 +24,8 @@ export default function VisualizarProfissional() {
   const { documents, loading: loadingDocs, error: errorDocs } =
     useProfessionalDocuments(id);
 
+  const photoDoc = documents?.find((doc) => doc.type === "PHOTO");
+
   const disponibilidadeMatrix = useMemo(() => {
     const avs = profissional?.availabilities ?? [];
 
@@ -92,7 +94,7 @@ export default function VisualizarProfissional() {
 
       <div className="flex flex-col items-center sm:flex-row sm:items-center gap-4 sm:gap-6 mb-10">
         <Avatar className="h-24 w-24 border-2 border-[#0D4F97]">
-          <AvatarImage src="" alt={dados.name} />
+          <AvatarImage src={photoDoc?.url || ""} alt={dados.name} />
           <AvatarFallback className="text-xl font-bold bg-[#B2D7EC] text-[#0D4F97]">
             {dados.name?.charAt(0) || "P"}
           </AvatarFallback>

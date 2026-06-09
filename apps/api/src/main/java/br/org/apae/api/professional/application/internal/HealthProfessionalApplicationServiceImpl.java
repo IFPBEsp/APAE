@@ -215,19 +215,7 @@ public class HealthProfessionalApplicationServiceImpl implements HealthProfessio
                     .build()
             );
 
-            String photoUrl = documentService.getPresignedDocumentUrl(
-                br.org.apae.api.documents.interfaces.dto.GetPresignedDocumentUrlArgsDTO.builder()
-                    .owner(document.owner())
-                    .name(document.name())
-                    .category(document.category())
-                    .type(document.type())
-                    .year(document.year())
-                    .id(document.id())
-                    .expiry(7, java.util.concurrent.TimeUnit.DAYS)
-                    .build()
-            );
-
-            professional.setProfilePhoto(photoUrl);
+            professional.setProfilePhoto(document.id().toString());
 
             repository.save(professional);
 
