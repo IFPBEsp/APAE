@@ -60,3 +60,28 @@ export function buildUpdatePayload(values: any, availabilities: any[]) {
     availabilities,
   };
 }
+
+export function buildRegisterPayload(values: any) {
+  const availabilities = values.availability
+    .filter((d: any) => d?.checked)
+    .map((d: any) => ({ day: d?.day, shift: d?.shift }));
+
+  return {
+    serviceArea: { area: values.serviceArea },
+    phoneNumber: values.phone,
+    professionalDocument: values.professionalDocument?.trim() || null,
+    email: values.email.trim(),
+    name: values.fullName.trim(),
+    identityDocument: values.rg.trim(),
+    address: {
+      state: values.state,
+      city: values.city.trim(),
+      neighborhood: values.neighborhood.trim(),
+      street: values.street.trim(),
+      number: values.number?.trim(),
+      complement: values.complement?.trim() ?? "",
+      cep: values.cep,
+    },
+    availabilities,
+  };
+}
