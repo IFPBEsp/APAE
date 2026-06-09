@@ -20,14 +20,16 @@ import {
   formatIssuingBody,
   formatPhone,
   formatRG,
+  capitalizeFirst,
 } from "@/lib/formats";
 import { Personal, PersonalData } from "@/schemas/member-schemas";
-import { EditPersonal } from "@/schemas/edit-member-schemas";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { useState, useEffect } from "react";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter  } from "next/navigation";
 import { handleBackendValidationErrors } from "@/lib/utils/form-errors";
+import { formatCivilDateDisplayValue } from "@/lib/date";
+import { InputMask } from "@react-input/mask";
 
 import { DoubleColumn, FormButton, MembersRegisterForm } from "../form";
 import z from "zod";
@@ -39,11 +41,10 @@ export default function MembersRegisterPersonalPage() {
   } = useMembersRegisterContext();
 
   const [isLoading, setIsLoading] = useState(false);
-  
-  const pathname = usePathname();
-  const isEditing = pathname.includes("/edit");
-  const currentSchema = isEditing ? EditPersonal : Personal;
 
+  const pathname = usePathname();
+  const router = useRouter();
+  const isEditing = pathname.includes("/edit");
   const form = useForm<z.infer<typeof Personal>>({
     mode: "onBlur",
     resolver: zodResolver(Personal),
@@ -55,7 +56,7 @@ export default function MembersRegisterPersonalPage() {
   useEffect(() => {
     if (personal.name && !isInitialized) {
       form.reset(personal);
-      setIsInitialized(true); 
+      setIsInitialized(true);
     }
   }, [personal, form, isInitialized]);
 
@@ -80,35 +81,25 @@ export default function MembersRegisterPersonalPage() {
     }
   };
 
-  const formatDateInputValue = (date?: Date | string | null) => {
-    if (!date) return "";
-
-    const d = new Date(date);
-    if (isNaN(d.getTime())) return "";
-
-    const year = d.getFullYear();
-    const month = String(d.getMonth() + 1).padStart(2, "0");
-    const day = String(d.getDate()).padStart(2, "0");
-
-    return `${year}-${month}-${day}`;
-  };
-
-  const parseDateInputValue = (value: string) => {
-    if (!value) return null;
-
-    const [year, month, day] = value.split("-").map(Number);
-    return new Date(year, month - 1, day);
-  };
-
   return (
     <Form {...form}>
       <MembersRegisterForm
         title={isEditing ? "Editar Dados Pessoais" : "Dados Pessoais"}
         onSubmit={form.handleSubmit(onSubmit)}
         buttons={
-          <FormButton type="submit" disabled={isLoading}>
-            {isLoading ? "Validando..." : "Próximo"}
-          </FormButton>
+          <div className="flex gap-4">
+            <FormButton
+              type="button"
+              disabled={isLoading}
+              onClick={() => router.push("/patients")}
+            >
+              Voltar
+            </FormButton>
+
+            <FormButton type="submit" disabled={isLoading}>
+              {isLoading ? "Validando..." : "Próximo"}
+            </FormButton>
+          </div>
         }
       >
         <DoubleColumn>
@@ -119,7 +110,11 @@ export default function MembersRegisterPersonalPage() {
               <FormItem className="md:col-span-2">
                 <FormLabel>Nome Completo *</FormLabel>
                 <FormControl>
-                  <Input placeholder="Digite o nome completo" {...field} />
+                  <Input
+                    placeholder="Digite o nome completo"
+                    {...field}
+                    onChange={(e) => field.onChange(capitalizeFirst(e.target.value))}
+                  />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -243,13 +238,19 @@ export default function MembersRegisterPersonalPage() {
               <FormItem>
                 <FormLabel>Data de Emissão *</FormLabel>
                 <FormControl>
-                  <Input
-                    type="date"
-                    {...field}
-                    value={formatDateInputValue(field.value)}
-                    onChange={(e) =>
-                      field.onChange(parseDateInputValue(e.target.value))
+                  <InputMask
+                    mask="__/__/____"
+                    replacement={{ _: /\d/ }}
+                    inputMode="numeric"
+                    placeholder="dd/mm/aaaa"
+                    value={
+                      typeof field.value === "string"
+                        ? field.value
+                        : formatCivilDateDisplayValue(field.value)
                     }
+                    onChange={(e) => field.onChange(e.target.value)}
+                    onBlur={field.onBlur}
+                    className="file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input flex h-9 w-full min-w-0 rounded-md border bg-transparent px-3 py-1 text-base font-sans shadow-xs transition-[color,box-shadow] outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive"
                   />
                 </FormControl>
                 <FormMessage />
@@ -285,13 +286,19 @@ export default function MembersRegisterPersonalPage() {
               <FormItem>
                 <FormLabel>Data de Nascimento *</FormLabel>
                 <FormControl>
-                  <Input
-                    type="date"
-                    {...field}
-                    value={formatDateInputValue(field.value)}
-                    onChange={(e) =>
-                      field.onChange(parseDateInputValue(e.target.value))
+                  <InputMask
+                    mask="__/__/____"
+                    replacement={{ _: /\d/ }}
+                    inputMode="numeric"
+                    placeholder="dd/mm/aaaa"
+                    value={
+                      typeof field.value === "string"
+                        ? field.value
+                        : formatCivilDateDisplayValue(field.value)
                     }
+                    onChange={(e) => field.onChange(e.target.value)}
+                    onBlur={field.onBlur}
+                    className="file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input flex h-9 w-full min-w-0 rounded-md border bg-transparent px-3 py-1 text-base font-sans shadow-xs transition-[color,box-shadow] outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive"
                   />
                 </FormControl>
                 <FormMessage />
@@ -306,7 +313,11 @@ export default function MembersRegisterPersonalPage() {
               <FormItem>
                 <FormLabel>Naturalidade *</FormLabel>
                 <FormControl>
-                  <Input placeholder="Brasil" {...field} />
+                  <Input
+                    placeholder="Brasil"
+                    {...field}
+                    onChange={(e) => field.onChange(capitalizeFirst(e.target.value))}
+                  />
                 </FormControl>
                 <FormMessage />
               </FormItem>

@@ -53,7 +53,7 @@ export default function PersonDetailsPage() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [modalMode, setModalMode] = useState<"create" | "edit">("edit");
 
-  interface RegistroAnual {
+  interface AnnualRegistry {
     id?: string;
     bpc: boolean;
     familyIncome: number;
@@ -63,29 +63,29 @@ export default function PersonDetailsPage() {
     serviceAreas?: { id?: string; area: string }[];
   }
 
-  const [pessoa, setPessoa] = useState<PatientResponse | null>(null);
-  const [registroAnual, setRegistroAnual] = useState<RegistroAnual | null>(null);
+  const [person, setPerson] = useState<PatientResponse | null>(null);
+  const [annualRegistry , setAnnualRegistry] = useState<AnnualRegistry | null>(null);
   
   const [existingYears, setExistingYears] = useState<string[]>([]);
   const [selectedYear, setSelectedYear] = useState<string>(new Date().getFullYear().toString());
   
-  const [loadingPessoa, setLoadingPessoa] = useState(true);
-  const [loadingRegistro, setLoadingRegistro] = useState(false);
+  const [loadingPerson, setLoadingPerson] = useState(true);
+  const [loadingRegistry, setLoadingRegistry] = useState(false);
 
-  const fetchPessoa = useCallback(async (silent = false) => {
+  const fetchPerson = useCallback(async (silent = false) => {
     try {
-      if (!silent) setLoadingPessoa(true); 
+      if (!silent) setLoadingPerson(true); 
       const response = await fetch(`/apae-geral/api/patients/${id}`);
       if (!response.ok) throw new Error("Falha ao buscar dados do paciente.");
       const data: PatientResponse = await response.json();
-      setPessoa(data);
+      setPerson(data);
     } catch (err: unknown) {
       const errorMessage = err instanceof Error ? err.message : "Erro ao buscar dados do paciente.";
       console.error(err);
       toast.error(errorMessage);
       router.push("/patients");
     } finally {
-      if (!silent) setLoadingPessoa(false);
+      if (!silent) setLoadingPerson(false);
     }
   }, [id, router]);
 
@@ -116,34 +116,34 @@ export default function PersonDetailsPage() {
     }
   }, [id, selectedYear]);
 
-  const fetchRegistro = useCallback(async () => {
+  const fetchRecord = useCallback(async () => {
     try {
-      setLoadingRegistro(true);
-      setRegistroAnual(null);
+      setLoadingRegistry(true);
+      setAnnualRegistry(null);
       const response = await fetch(`/apae-geral/api/patients/${id}/registro-anual/${selectedYear}`);
       if (response.ok) {
         const data = await response.json();
-        setRegistroAnual(data);
+        setAnnualRegistry(data);
       }
     } catch (err) {
       console.error("Erro ao buscar registro anual:", err);
     } finally {
-      setLoadingRegistro(false);
+      setLoadingRegistry(false);
     }
   }, [id, selectedYear]);
 
   useEffect(() => {
     if (id) {
-        fetchPessoa();
+        fetchPerson();
         fetchYears();
     }
-  }, [id, fetchPessoa, fetchYears]);
+  }, [id, fetchPerson, fetchYears]);
 
   useEffect(() => {
     if (id && selectedYear) {
-        fetchRegistro();
+        fetchRecord();
     }
-  }, [id, selectedYear, fetchRegistro]);
+  }, [id, selectedYear, fetchRecord]);
 
   const handleEditClick = () => {
     setModalMode("edit");
@@ -160,16 +160,16 @@ export default function PersonDetailsPage() {
       if (savedYear) {
           fetchYears().then(() => {
               setSelectedYear(savedYear);
-              fetchPessoa(true); 
+              fetchPerson(true); 
           });
       } else {
           fetchYears();
-          fetchRegistro();
-          fetchPessoa(true);
+          fetchRecord();
+          fetchPerson(true);
       }
   };
 
-  if (loadingPessoa) {
+  if (loadingPerson) {
     return (
       <div className="flex justify-center items-center h-screen">
         <Loader2 className="h-8 w-8 animate-spin text-primary" />
@@ -177,13 +177,13 @@ export default function PersonDetailsPage() {
     );
   }
 
-  if (!pessoa) {
+  if (!person) {
     return (
       <div className="text-center mt-10"><p>Paciente não encontrado.</p><Button asChild variant="link"><Link href="/patients">Voltar</Link></Button></div>
     );
   }
 
-  const hasRegistro = !!registroAnual;
+  const hasRegistry = !!annualRegistry;
 
   return (
     <main className="container mx-auto p-4 md:p-6">
@@ -195,13 +195,13 @@ export default function PersonDetailsPage() {
 
       <div className="flex flex-col items-center gap-y-4 w-full mb-6">
         <Avatar className="h-40 w-40 border">
-          <AvatarImage src={pessoa?.photoUrl} alt={pessoa?.fullName ?? "Foto do paciente"} />
-          <AvatarFallback className="font-baloo font-bold text-[32px]">{pessoa?.fullName?.charAt(0) ?? "P"}</AvatarFallback>
+          <AvatarImage src={person?.photoUrl} alt={person?.fullName ?? "Foto do paciente"} />
+          <AvatarFallback className="font-baloo font-bold text-[32px]">{person?.fullName?.charAt(0) ?? "P"}</AvatarFallback>
         </Avatar>
-        <h3 className="font-baloo font-bold text-[#0D4F97] text-[24px]">{pessoa?.fullName}</h3>
+        <h3 className="font-baloo font-bold text-[#0D4F97] text-[24px]">{person?.fullName}</h3>
       </div>
 
-      <DocumentCategoriesCard onClickCategoria={(tipo: string) => { router.push(`/patients/${id}/documents/${tipo}`); }} />
+      <DocumentCategoriesCard onClickCategory={(tipo: string) => { router.push(`/patients/${id}/documents/${tipo}`); }} />
       
       
 
@@ -210,13 +210,13 @@ export default function PersonDetailsPage() {
         <Card className="w-full relative font-nunito">
           <CardHeader><CardTitle className="text-[#0D4F97]">Dados Pessoais</CardTitle></CardHeader>
           <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-x-4">
-            <InfoRow label="Nome Completo" value={pessoa.fullName} />
-            <InfoRow label="Data de Nasc." value={pessoa.birthDate} />
-            <InfoRow label="Naturalidade" value={pessoa.birthplace} />
-            <InfoRow label="Contato" value={pessoa.contact} />
-            <InfoRow label="Alergias" value={pessoa.allergies} />
-            <InfoRow label="Estudante?" value={pessoa.isStudent} />
-            <InfoRow label="Data de Cadastro" value={pessoa.registrationDate} />
+            <InfoRow label="Nome Completo" value={person.fullName} />
+            <InfoRow label="Data de Nasc." value={person.birthDate} />
+            <InfoRow label="Naturalidade" value={person.birthplace} />
+            <InfoRow label="Contato" value={person.contact} />
+            <InfoRow label="Alergias" value={person.allergies} />
+            <InfoRow label="Estudante?" value={person.isStudent} />
+            <InfoRow label="Data de Cadastro" value={person.registrationDate} />
           </CardContent>
         </Card>
 
@@ -224,16 +224,16 @@ export default function PersonDetailsPage() {
         <Card className="w-full relative font-nunito">
           <CardHeader><CardTitle className="text-[#0D4F97]">Documentação</CardTitle></CardHeader>
           <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-x-4">
-            <InfoRow label="CPF" value={pessoa.cpf} />
-            <InfoRow label="RG" value={pessoa.rg} />
-            <InfoRow label="Orgão Emissor" value={pessoa.issuingAgency} />
-            <InfoRow label="Data de Emissão" value={pessoa.issueDate} />
-            <InfoRow label="CNS" value={pessoa.cns} />
-            <InfoRow label="NIS" value={pessoa.nis} />
-            <InfoRow label="Nº Cert. Nasc." value={pessoa.birthCertificateNumber} />
-            <InfoRow label="Cartório" value={pessoa.registryOffice} />
-            <InfoRow label="Livro" value={pessoa.book} />
-            <InfoRow label="Folha" value={pessoa.fls} />
+            <InfoRow label="CPF" value={person.cpf} />
+            <InfoRow label="RG" value={person.rg} />
+            <InfoRow label="Orgão Emissor" value={person.issuingAgency} />
+            <InfoRow label="Data de Emissão" value={person.issueDate} />
+            <InfoRow label="CNS" value={person.cns} />
+            <InfoRow label="NIS" value={person.nis} />
+            <InfoRow label="Nº Cert. Nasc." value={person.birthCertificateNumber} />
+            <InfoRow label="Cartório" value={person.registryOffice} />
+            <InfoRow label="Livro" value={person.book} />
+            <InfoRow label="Folha" value={person.fls} />
           </CardContent>
         </Card>
 
@@ -241,13 +241,13 @@ export default function PersonDetailsPage() {
         <Card className="w-full relative font-nunito">
           <CardHeader><CardTitle className="text-[#0D4F97]">Endereço Residencial</CardTitle></CardHeader>
           <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-x-4">
-            <InfoRow label="Rua" value={pessoa.address?.street} />
-            <InfoRow label="Número" value={pessoa.address?.number} />
-            <InfoRow label="Bairro" value={pessoa.address?.neighborhood} />
-            <InfoRow label="Cidade" value={pessoa.address?.city} />
-            <InfoRow label="Estado" value={pessoa.address?.state} />
-            <InfoRow label="CEP" value={pessoa.address?.cep} />
-            <InfoRow label="Complemento" value={pessoa.address?.complement} />
+            <InfoRow label="Rua" value={person.address?.street} />
+            <InfoRow label="Número" value={person.address?.number} />
+            <InfoRow label="Bairro" value={person.address?.neighborhood} />
+            <InfoRow label="Cidade" value={person.address?.city} />
+            <InfoRow label="Estado" value={person.address?.state} />
+            <InfoRow label="CEP" value={person.address?.cep} />
+            <InfoRow label="Complemento" value={person.address?.complement} />
           </CardContent>
         </Card>
 
@@ -255,22 +255,22 @@ export default function PersonDetailsPage() {
         <Card className="w-full relative font-nunito">
           <CardHeader><CardTitle className="text-[#0D4F97]">Responsáveis</CardTitle></CardHeader>
           <CardContent>
-            {pessoa.guardian && (
+            {person.guardian && (
               <div className="mb-4 p-2 border rounded-md">
                 <p className="font-bold text-base">Guardião Principal</p>
-                <InfoRow label="Nome" value={pessoa.guardian.name} />
-                <InfoRow label="Parentesco" value={pessoa.guardian.kinship} />
-                <InfoRow label="Contato" value={pessoa.guardian.contact} />
-                <InfoRow label="Rua" value={pessoa.guardian.address?.street} />
-                <InfoRow label="Número" value={pessoa.guardian.address?.number} />
-                <InfoRow label="Bairro" value={pessoa.guardian.address?.neighborhood} />
-                <InfoRow label="Cidade" value={pessoa.guardian.address?.city} />
-                <InfoRow label="Estado" value={pessoa.guardian.address?.state} />
-                <InfoRow label="CEP" value={pessoa.guardian.address?.cep} />
-                <InfoRow label="Complemento" value={pessoa.guardian.address?.complement} />
+                <InfoRow label="Nome" value={person.guardian.name} />
+                <InfoRow label="Parentesco" value={person.guardian.kinship} />
+                <InfoRow label="Contato" value={person.guardian.contact} />
+                <InfoRow label="Rua" value={person.guardian.address?.street} />
+                <InfoRow label="Número" value={person.guardian.address?.number} />
+                <InfoRow label="Bairro" value={person.guardian.address?.neighborhood} />
+                <InfoRow label="Cidade" value={person.guardian.address?.city} />
+                <InfoRow label="Estado" value={person.guardian.address?.state} />
+                <InfoRow label="CEP" value={person.guardian.address?.cep} />
+                <InfoRow label="Complemento" value={person.guardian.address?.complement} />
               </div>
             )}
-            {pessoa.parents?.map((parent) => (
+            {person.parents?.map((parent) => (
               <div key={parent.id} className="mb-2 p-2 border-t border-gray-200">
                 <p className="font-bold text-base">Parentes</p>
                 <InfoRow label="Nome" value={parent.name} />
@@ -305,15 +305,15 @@ export default function PersonDetailsPage() {
                             <Button
                                 size="sm"
                                 onClick={handleEditClick}
-                                disabled={!hasRegistro || loadingRegistro}
+                                disabled={!hasRegistry || loadingRegistry}
                                 className="gap-1 hover:!bg-gray-100 text-[#0D4F97] border-0 disabled:opacity-50 disabled:cursor-not-allowed h-8"
                                 variant="outline"
                             >
-                                <SquarePen className="h-4 w-4" /> {loadingRegistro ? "..." : "Editar"}
+                                <SquarePen className="h-4 w-4" /> {loadingRegistry ? "..." : "Editar"}
                             </Button>
                         </span>
                     </TooltipTrigger>
-                    {!hasRegistro && !loadingRegistro && (<TooltipContent><p>Não existe registro para este ano.</p></TooltipContent>)}
+                    {!hasRegistry && !loadingRegistry && (<TooltipContent><p>Não existe registro para este ano.</p></TooltipContent>)}
                 </Tooltip>
               </TooltipProvider>
               <div className="flex items-center gap-1 border border-gray-300 rounded-md px-2 py-1 h-8">
@@ -335,21 +335,21 @@ export default function PersonDetailsPage() {
           </CardHeader>
           
           <CardContent>
-            <InfoRow label="Alergias" value={pessoa.allergies} />
-            <InfoRow label="Vacinas" value={pessoa.vaccineNames?.map((v) => v.name).join(", ")} />
+            <InfoRow label="Alergias" value={person.allergies} />
+            <InfoRow label="Vacinas" value={person.vaccineNames?.map((v) => v.name).join(", ")} />
             
             <h3 className="font-bold text-base mt-4 pt-4 border-t text-[#0D4F97]">Registro Anual ({selectedYear})</h3>
 
-            {loadingRegistro ? (
+            {loadingRegistry ? (
               <div className="py-4 flex justify-center"><Loader2 className="h-6 w-6 animate-spin text-[#0D4F97]" /></div>
-            ) : registroAnual ? (
+            ) : annualRegistry  ? (
               <div className="mt-2 animate-in fade-in slide-in-from-bottom-2">
-                <InfoRow label="Recebe BPC?" value={registroAnual.bpc} />
-                <InfoRow label="Renda Familiar" value={registroAnual.familyIncome} />
-                <InfoRow label="Tipo de Atendimento" value={registroAnual.serviceAreas?.map((atendimento) => atendimento.area).join(", ")} />
-                <InfoRow label="Doenças" value={registroAnual.diseases} />
-                <InfoRow label="Medicamentos Contínuos" value={registroAnual.continuousMedication} />
-                <InfoRow label="Transtornos" value={registroAnual.disorders?.map((d) => d.name).join(", ")} />
+                <InfoRow label="Recebe BPC?" value={annualRegistry .bpc} />
+                <InfoRow label="Renda Familiar" value={annualRegistry .familyIncome} />
+                <InfoRow label="Tipo de Atendimento" value={annualRegistry .serviceAreas?.map((atendimento) => atendimento.area).join(", ")} />
+                <InfoRow label="Doenças" value={annualRegistry .diseases} />
+                <InfoRow label="Medicamentos Contínuos" value={annualRegistry .continuousMedication} />
+                <InfoRow label="Transtornos" value={annualRegistry.disorders?.map((d) => d.name).join(", ")} />
               </div>
             ) : (
               <div className="text-center py-6 bg-slate-50 rounded-lg mt-2 border border-dashed border-slate-200">
@@ -365,7 +365,7 @@ export default function PersonDetailsPage() {
           onClose={handleModalClose}
           patientId={id} 
           currentYear={selectedYear}
-          initialData={modalMode === "edit" ? registroAnual : null}
+          initialData={modalMode === "edit" ? annualRegistry  : null}
           mode={modalMode} 
         />
       </div>

@@ -54,13 +54,12 @@ public class PatientRemovalTests {
     private UserService userService;
 
     @Test
-    @DisplayName("Should perform logical deletion (deactivate) successfully (Returns 204)")
+    @DisplayName("Deve realizar a deleção lógica (inativar) com sucesso (204)")
     @WithMockUser(username = "admin", roles = {"ADMIN"})
     void shouldPerformLogicalDeletionSuccessfully() throws Exception {
         UUID id = UUID.randomUUID();
 
         doNothing().when(patientService).deletePatient(id);
-
 
         mockMvc.perform(patch("/patients/{id}", id)
                         .with(csrf()))
@@ -68,7 +67,7 @@ public class PatientRemovalTests {
     }
 
     @Test
-    @DisplayName("Should return 404 Not Found when trying to deactivate non-existent ID")
+    @DisplayName("Deve retornar NotFound (404) ao tentar inativar um ID inexistente")
     @WithMockUser(username = "admin", roles = {"ADMIN"})
     void shouldReturnNotFoundWhenIdDoesNotExist() throws Exception {
         UUID id = UUID.randomUUID();

@@ -8,6 +8,7 @@ import { Input } from "@/components/ui/input";
 import { Loader2, ArrowLeft } from "lucide-react";
 import { useVaccinesContext, Vaccine } from "@/hooks/use-vaccines";
 import { z } from "zod";
+import { capitalizeFirst } from "@/lib/formats";
 import { UpdateVaccine } from "@/schemas/vaccine-schemas";
 import {
   Form,
@@ -19,7 +20,6 @@ import {
 } from "@/components/ui/form";
 import { useEffect, useState } from "react";
 
-// testeee
 
 export default function EditVaccinePage() {
   const { fetchVaccine, updateVaccine } = useVaccinesContext();
@@ -101,8 +101,12 @@ export default function EditVaccinePage() {
                       Nome da Vacina
                     </FormLabel>
                     <FormControl>
-                      <Input placeholder="Ex: Hepatite B" {...field} />
-                    </FormControl>
+                      <Input
+                        placeholder="Ex: Hepatite B"
+                        {...field}
+                        onChange={(e) => field.onChange(capitalizeFirst(e.target.value))}
+                      />                   
+                     </FormControl>
                     <FormMessage />
                   </FormItem>
                 )}

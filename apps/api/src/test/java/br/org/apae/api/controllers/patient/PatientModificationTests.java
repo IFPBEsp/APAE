@@ -62,7 +62,7 @@ public class PatientModificationTests {
     private UserService userService;
 
     @Test
-    @DisplayName("Should update a patient successfully (Returns 200)")
+    @DisplayName("Deve atualizar o paciente com sucesso (200)")
     @WithMockUser(username = "admin", roles = {"ADMIN"})
     void shouldUpdatePatientSuccessfully() throws Exception {
         UUID patientId = UUID.randomUUID();
@@ -120,7 +120,7 @@ public class PatientModificationTests {
     }
 
     @Test
-    @DisplayName("Should return 400 Bad Request when providing invalid data for update")
+    @DisplayName("Deve retornar BadRequest (400) ao tentar atualizar com dados inválidos")
     @WithMockUser(username = "admin", roles = {"ADMIN"})
     void shouldReturnBadRequestWhenDataIsInvalid() throws Exception {
         UpdatePatientDTO invalidDTO = PatientCreator.createInvalidUpdateRequest();
@@ -133,7 +133,7 @@ public class PatientModificationTests {
     }
 
     @Test
-    @DisplayName("Should throw PatientNotFoundException when trying to update a non-existent patient")
+    @DisplayName("Deve lançar PatientNotFoundException ao tentar atualizar um paciente inexistente")
     @WithMockUser(username = "admin", roles = {"ADMIN"})
     void shouldThrowNotFoundWhenUpdatingNonExistentPatient() throws Exception {
         UUID randomId = UUID.randomUUID();
@@ -149,4 +149,3 @@ public class PatientModificationTests {
                 .andExpect(status().isBadRequest());
     }
 }
-

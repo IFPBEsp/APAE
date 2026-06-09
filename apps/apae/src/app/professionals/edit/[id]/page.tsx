@@ -37,16 +37,16 @@ import {
 } from "@/components/ui/alert-dialog";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
-import { useGetByIdProfissional } from "@/hooks/profissional/use-get-by-id-profissional";
-import { useUpdateProfissional } from "@/hooks/profissional/use-update-profissional";
+import { useGetByIdProfessional } from "@/hooks/profissional/use-get-by-id-profissional";
+import { useUpdateProfessional } from "@/hooks/profissional/use-update-profissional";
 import { useUpdateProfessionalDocuments } from "@/hooks/profissional/use-update-professional-documents";
 
 import { updateProfessionalSchema } from "@/schemas/profissional.schema";
 import { STATES } from "@/lib/states";
 
 import HealthAreaSelect from "@/components/shared/HealthAreaSelect";
-import Disponibilidade from "@/components/forms/DisponibilidadeForm";
-import { gerarMatrizDisponibilidade } from "@/domains/professional/shared/disponibilidade.utils";
+import Availability from "@/components/forms/AvailabilityForm";
+import { generateAvailabilityMatrix } from "@/domains/professional/shared/disponibilidade.utils";
 
 import {
   getProfessionalDocuments,
@@ -65,22 +65,26 @@ function isValidFile(file: File): boolean {
     "image/webp",
   ];
   const maxSize = 5 * 1024 * 1024;
-  return allowedTypes.includes(file.type) && file.size > 0 && file.size <= maxSize;
+  return (
+    allowedTypes.includes(file.type) && file.size > 0 && file.size <= maxSize
+  );
 }
 
-export default function AtualizarProfissional(): JSX.Element {
+export default function ProfessionalUpdate(): JSX.Element {
   const router = useRouter();
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
-  
+
   const {
-    profissional,
+    professional,
     loading: loadingProf,
     error: errorProf,
-  } = useGetByIdProfissional();
+  } = useGetByIdProfessional();
 
-  const { updateProfissional, loading, error, success } = useUpdateProfissional();
-  const { upload, loadingDocs, errorDocs, successDocs } = useUpdateProfessionalDocuments();
+  const { updateProfessional, loading, error, success } =
+    useUpdateProfessional();
+  const { upload, loadingDocs, errorDocs, successDocs } =
+    useUpdateProfessionalDocuments();
 
   const [docs, setDocs] = useState<DocumentWithUrl[]>([]);
   const [docsLoading, setDocsLoading] = useState(false);
@@ -120,20 +124,20 @@ export default function AtualizarProfissional(): JSX.Element {
   }, [curriculumFile, volunteerFile, selectedPhoto, attachmentFiles]);
 
   const defaultValues: Partial<UpdateFormValues> = {
-    nomeCompleto: "",
+    fullName: "",
     email: "",
-    documentoProfissional: "",
-    areaAtendimento: "",
-    telefone: "",
+    professionalDocument: "",
+    serviceArea: "",
+    phone: "",
     rg: "",
-    estado: "",
-    cidade: "",
-    bairro: "",
-    rua: "",
-    numero: "",
-    complemento: "",
+    state: "",
+    city: "",
+    neighborhood: "",
+    street: "",
+    number: "",
+    complement: "",
     cep: "",
-    disponibilidade: gerarMatrizDisponibilidade([]),
+    availability: generateAvailabilityMatrix([]),
   };
 
   const form = useForm<UpdateFormValues>({
@@ -142,35 +146,35 @@ export default function AtualizarProfissional(): JSX.Element {
   });
 
   useEffect(() => {
-    if (!profissional) return;
+    if (!professional) return;
 
-    const disponibilidadesBackend = profissional.availabilities || [];
+    const backendAvailabilities = professional.availabilities || [];
 
-    const matrizCompleta = gerarMatrizDisponibilidade(
-      disponibilidadesBackend.map((a) => ({
-        dia: a.day.toLowerCase(),
-        turno: a.shift.toLowerCase(),
+    const fullMatrix = generateAvailabilityMatrix(
+      backendAvailabilities.map((a) => ({
+        day: a.day.toLowerCase(),
+        shift: a.shift.toLowerCase(),
         checked: true,
       })),
     );
 
     form.reset({
-      nomeCompleto: profissional.name,
-      email: profissional.email,
-      documentoProfissional: profissional.professionalDocument ?? "",
-      areaAtendimento: profissional.serviceArea.area,
-      telefone: profissional.phoneNumber,
-      rg: profissional.identityDocument,
-      estado: profissional.address.state,
-      cidade: profissional.address.city,
-      bairro: profissional.address.neighborhood,
-      rua: profissional.address.street,
-      numero: profissional.address.number,
-      complemento: profissional.address.complement ?? "",
-      cep: profissional.address.cep,
-      disponibilidade: matrizCompleta,
+      fullName: professional.name,
+      email: professional.email,
+      professionalDocument: professional.professionalDocument ?? "",
+      serviceArea: professional.serviceArea.area,
+      phone: professional.phoneNumber,
+      rg: professional.identityDocument,
+      state: professional.address.state,
+      city: professional.address.city,
+      neighborhood: professional.address.neighborhood,
+      street: professional.address.street,
+      number: professional.address.number,
+      complement: professional.address.complement ?? "",
+      cep: professional.address.cep,
+      availability: fullMatrix,
     });
-  }, [profissional, form]);
+  }, [professional, form]);
 
   const refreshDocuments = useCallback(async (professionalId: string) => {
     setDocsLoading(true);
@@ -186,9 +190,9 @@ export default function AtualizarProfissional(): JSX.Element {
   }, []);
 
   useEffect(() => {
-    if (!profissional?.id) return;
-    refreshDocuments(profissional.id);
-  }, [profissional?.id, refreshDocuments]);
+    if (!professional?.id) return;
+    refreshDocuments(professional.id);
+  }, [professional?.id, refreshDocuments]);
 
   const groupedDocs = useMemo(() => {
     const curriculum = docs.find((d) => d.type === "CURRICULUM");
@@ -204,7 +208,7 @@ export default function AtualizarProfissional(): JSX.Element {
   }
 
   async function confirmRemove() {
-    if (!profissional?.id || !docToRemove) return;
+    if (!professional?.id || !docToRemove) return;
 
     const idStr = String(docToRemove.id);
 
@@ -215,8 +219,8 @@ export default function AtualizarProfissional(): JSX.Element {
     });
 
     try {
-      await removeProfessionalDocument(profissional.id, docToRemove.id);
-      await refreshDocuments(profissional.id);
+      await removeProfessionalDocument(professional.id, docToRemove.id);
+      await refreshDocuments(professional.id);
       setRemoveModalOpen(false);
       setDocToRemove(null);
     } catch (e: unknown) {
@@ -232,35 +236,35 @@ export default function AtualizarProfissional(): JSX.Element {
   }
 
   const onSubmit: SubmitHandler<UpdateFormValues> = async (values) => {
-    if (!profissional?.id) return;
+    if (!professional?.id) return;
 
-    const availabilities = values.disponibilidade
+    const availabilities = values.availability
       .filter((d) => d?.checked)
       .map((d) => ({
-        day: d?.dia,
-        shift: d?.turno,
+        day: d?.day,
+        shift: d?.shift,
       }));
 
     const payload = {
-      serviceArea: { area: values.areaAtendimento },
-      phoneNumber: values.telefone,
-      professionalDocument: values.documentoProfissional?.trim() || null,
+      serviceArea: { area: values.serviceArea },
+      phoneNumber: values.phone,
+      professionalDocument: values.professionalDocument?.trim() || null,
       email: values.email.trim(),
-      name: values.nomeCompleto.trim(),
+      name: values.fullName.trim(),
       identityDocument: values.rg.trim(),
       address: {
-        state: values.estado,
-        city: values.cidade.trim(),
-        neighborhood: values.bairro.trim(),
-        street: values.rua.trim(),
-        number: values.numero?.trim(),
-        complement: values.complemento?.trim() ?? "",
+        state: values.state,
+        city: values.city.trim(),
+        neighborhood: values.neighborhood.trim(),
+        street: values.street.trim(),
+        number: values.number?.trim(),
+        complement: values.complement?.trim() ?? "",
         cep: values.cep,
       },
       availabilities,
     };
 
-    const ok = await updateProfissional(profissional.id, payload);
+    const ok = await updateProfessional(professional.id, payload);
     if (!ok) return;
 
     if (curriculumFile || volunteerFile || attachmentFiles.length > 0) {
@@ -269,12 +273,12 @@ export default function AtualizarProfissional(): JSX.Element {
       if (curriculumFile) fd.append("curriculum", curriculumFile);
       for (const f of attachmentFiles) fd.append("attachmentAny", f);
 
-      await upload(profissional.id, fd);
+      await upload(professional.id, fd);
 
       setCurriculumFile(null);
       setVolunteerFile(null);
       setAttachmentFiles([]);
-      await refreshDocuments(profissional.id);
+      await refreshDocuments(professional.id);
     }
 
     if (selectedPhoto) {
@@ -312,7 +316,8 @@ export default function AtualizarProfissional(): JSX.Element {
   if (loadingProf) return <p>Carregando dados...</p>;
   if (errorProf) return <p className="text-red-500">Erro: {errorProf}</p>;
 
-  const isConfirmBusy = !!docToRemove && removingIds.has(String(docToRemove.id));
+  const isConfirmBusy =
+    !!docToRemove && removingIds.has(String(docToRemove.id));
 
   return (
     <div className="p-0">
@@ -328,7 +333,9 @@ export default function AtualizarProfissional(): JSX.Element {
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel disabled={isConfirmBusy}>Cancelar</AlertDialogCancel>
+            <AlertDialogCancel disabled={isConfirmBusy}>
+              Cancelar
+            </AlertDialogCancel>
             <AlertDialogAction
               className="border border-input bg-background text-foreground hover:bg-accent hover:text-accent-foreground"
               onClick={confirmRemove}
@@ -347,7 +354,7 @@ export default function AtualizarProfissional(): JSX.Element {
         >
           <FormField
             control={form.control}
-            name="nomeCompleto"
+            name="fullName"
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Nome completo *</FormLabel>
@@ -366,7 +373,11 @@ export default function AtualizarProfissional(): JSX.Element {
               <FormItem>
                 <FormLabel>Email *</FormLabel>
                 <FormControl>
-                  <Input type="email" placeholder="profissional@exemplo.com" {...field} />
+                  <Input
+                    type="email"
+                    placeholder="profissional@exemplo.com"
+                    {...field}
+                  />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -376,7 +387,7 @@ export default function AtualizarProfissional(): JSX.Element {
           <div className="grid grid-cols-2 gap-4">
             <FormField
               control={form.control}
-              name="documentoProfissional"
+              name="professionalDocument"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Documento profissional</FormLabel>
@@ -394,12 +405,15 @@ export default function AtualizarProfissional(): JSX.Element {
 
             <Controller
               control={form.control}
-              name="areaAtendimento"
+              name="serviceArea"
               render={({ field, fieldState }) => (
                 <FormItem>
                   <FormLabel>Área de atendimento *</FormLabel>
                   <FormControl>
-                    <HealthAreaSelect value={field.value} onChange={field.onChange} />
+                    <HealthAreaSelect
+                      value={field.value}
+                      onChange={field.onChange}
+                    />
                   </FormControl>
                   <FormMessage>{fieldState.error?.message}</FormMessage>
                 </FormItem>
@@ -424,7 +438,7 @@ export default function AtualizarProfissional(): JSX.Element {
 
             <Controller
               control={form.control}
-              name="telefone"
+              name="phone"
               render={({ field, fieldState }) => (
                 <FormItem>
                   <FormLabel>Telefone *</FormLabel>
@@ -448,7 +462,7 @@ export default function AtualizarProfissional(): JSX.Element {
           <div className="grid grid-cols-2 gap-4">
             <Controller
               control={form.control}
-              name="estado"
+              name="state"
               render={({ field, fieldState }) => (
                 <FormItem>
                   <FormLabel>Estado *</FormLabel>
@@ -456,7 +470,9 @@ export default function AtualizarProfissional(): JSX.Element {
                     <Select onValueChange={field.onChange} value={field.value}>
                       <SelectTrigger
                         className={`w-full ${
-                          fieldState.invalid ? "border-red-500" : "border-gray-300"
+                          fieldState.invalid
+                            ? "border-red-500"
+                            : "border-gray-300"
                         }`}
                       >
                         <SelectValue placeholder="Selecione um estado" />
@@ -477,7 +493,7 @@ export default function AtualizarProfissional(): JSX.Element {
 
             <FormField
               control={form.control}
-              name="cidade"
+              name="city"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Cidade *</FormLabel>
@@ -492,7 +508,7 @@ export default function AtualizarProfissional(): JSX.Element {
 
           <FormField
             control={form.control}
-            name="rua"
+            name="street"
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Endereço *</FormLabel>
@@ -507,7 +523,7 @@ export default function AtualizarProfissional(): JSX.Element {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <FormField
               control={form.control}
-              name="bairro"
+              name="neighborhood"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Bairro *</FormLabel>
@@ -545,7 +561,7 @@ export default function AtualizarProfissional(): JSX.Element {
           <div className="grid grid-cols-2 gap-4">
             <FormField
               control={form.control}
-              name="numero"
+              name="number"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Número *</FormLabel>
@@ -559,7 +575,7 @@ export default function AtualizarProfissional(): JSX.Element {
 
             <FormField
               control={form.control}
-              name="complemento"
+              name="complement"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Complemento</FormLabel>
@@ -572,7 +588,7 @@ export default function AtualizarProfissional(): JSX.Element {
             />
           </div>
 
-          <Disponibilidade control={form.control} watch={form.watch} />
+          <Availability control={form.control} watch={form.watch} />
 
           <FormField
             control={form.control}
@@ -594,8 +610,41 @@ export default function AtualizarProfissional(): JSX.Element {
                       onChange={(e) => {
                         const file = e.target.files?.[0];
 
-                        field.onChange(file ?? null);
-                        setSelectedPhoto(file ?? null);
+                        if (!file) {
+                          field.onChange(null);
+                          setSelectedPhoto(null);
+                          return;
+                        }
+
+                        const allowedTypes = [
+                          "image/png",
+                          "image/jpeg",
+                          "image/jpg",
+                          "image/webp",
+                        ];
+
+                        const maxSize = 5 * 1024 * 1024;
+
+                        if (
+                          !allowedTypes.includes(file.type) ||
+                          file.size <= 0 ||
+                          file.size > maxSize
+                        ) {
+                          alert(
+                            "Apenas imagens PNG, JPG ou WEBP até 5MB são permitidas",
+                          );
+
+                          if (fileInputRef.current) {
+                            fileInputRef.current.value = "";
+                          }
+
+                          field.onChange(null);
+                          setSelectedPhoto(null);
+                          return;
+                        }
+
+                        field.onChange(file);
+                        setSelectedPhoto(file);
                       }}
                     />
 
@@ -616,7 +665,7 @@ export default function AtualizarProfissional(): JSX.Element {
                       </Avatar>
 
                       <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity bg-black/20 rounded-full">
-                        <span className="bg-white text-black text-[10px] font-bold px-2 py-1 rounded shadow-sm">
+                        <span className="bg-white text-black text-[10px] font-bold px-2 py-1 rounded shadow-sm cursor-pointer">
                           Escolher foto
                         </span>
                       </div>
@@ -662,7 +711,9 @@ export default function AtualizarProfissional(): JSX.Element {
               <p className="text-base font-semibold">Documentos já anexados</p>
 
               {docsLoading ? (
-                <p className="text-sm text-gray-600">Carregando documentos...</p>
+                <p className="text-sm text-gray-600">
+                  Carregando documentos...
+                </p>
               ) : docsError ? (
                 <p className="text-sm text-red-500">{docsError}</p>
               ) : (
@@ -719,7 +770,9 @@ export default function AtualizarProfissional(): JSX.Element {
                               className="flex items-center justify-between rounded-md border px-3 py-2"
                             >
                               <div className="min-w-0">
-                                <p className="truncate text-sm text-gray-700">{a.name}</p>
+                                <p className="truncate text-sm text-gray-700">
+                                  {a.name}
+                                </p>
                               </div>
                               <div className="flex items-center gap-2">
                                 <a
@@ -761,7 +814,10 @@ export default function AtualizarProfissional(): JSX.Element {
                   accept="image/*, application/pdf"
                   onChange={(e) => {
                     const file = e.target.files?.[0];
-                    if (!file) { setVolunteerFile(null); return; }
+                    if (!file) {
+                      setVolunteerFile(null);
+                      return;
+                    }
                     if (!isValidFile(file)) {
                       alert("Apenas imagens ou PDF são permitidos");
                       e.target.value = "";
@@ -787,7 +843,10 @@ export default function AtualizarProfissional(): JSX.Element {
                   accept="image/*, application/pdf"
                   onChange={(e) => {
                     const file = e.target.files?.[0];
-                    if (!file) { setCurriculumFile(null); return; }
+                    if (!file) {
+                      setCurriculumFile(null);
+                      return;
+                    }
                     if (!isValidFile(file)) {
                       alert("Apenas imagens ou PDF são permitidos");
                       e.target.value = "";
@@ -833,14 +892,18 @@ export default function AtualizarProfissional(): JSX.Element {
 
             {photoError && <p className="text-sm text-red-500">{photoError}</p>}
             {photoSuccess && (
-              <p className="text-sm text-green-600">Foto enviada com sucesso!</p>
+              <p className="text-sm text-green-600">
+                Foto enviada com sucesso!
+              </p>
             )}
 
             {(errorDocs || successDocs) && (
               <div className="text-sm">
                 {errorDocs && <p className="text-red-500">{errorDocs}</p>}
                 {successDocs && (
-                  <p className="text-green-600">Documentos enviados com sucesso!</p>
+                  <p className="text-green-600">
+                    Documentos enviados com sucesso!
+                  </p>
                 )}
               </div>
             )}
@@ -859,16 +922,23 @@ export default function AtualizarProfissional(): JSX.Element {
           )}
           {error && <p className="text-red-500">{error}</p>}
           {success && (
-            <p className="text-green-600">Profissional atualizado com sucesso!</p>
+            <p className="text-green-600">
+              Profissional atualizado com sucesso!
+            </p>
           )}
 
           <div className="flex justify-end gap-4">
-            <Button type="button" variant="outline" onClick={onCancel}>
+            <Button
+              className="cursor-pointer"
+              type="button"
+              variant="outline"
+              onClick={onCancel}
+            >
               Cancelar
             </Button>
             <Button
               type="submit"
-              className="bg-[#0D4F97] hover:bg-blue-900"
+              className="bg-[#0D4F97] hover:bg-blue-900 cursor-pointer"
               disabled={form.formState.isSubmitting || loading || loadingDocs}
             >
               Salvar

@@ -7,25 +7,25 @@ import { ArrowLeft, Loader2, FileText, GraduationCap, Search, ChevronLeft, Chevr
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input"; 
 
-const mockRelatorios = [
-  { id: "1", titulo: "Relatório Comportamental Semestral", data: "15/05/2026", autor: "Psicóloga Ana", status: "Concluído" },
-  { id: "2", titulo: "Acompanhamento Fonoaudiológico", data: "10/06/2026", autor: "Fono. Carlos", status: "Em andamento" },
-  { id: "3", titulo: "Avaliação Motora", data: "01/04/2026", autor: "Fisio. Roberta", status: "Concluído" }
+const mockReports = [
+  { id: "1", title: "Relatório Comportamental Semestral", date: "15/05/2026", author: "Psicóloga Ana", status: "Concluído" },
+  { id: "2", title: "Acompanhamento Fonoaudiológico", date: "10/06/2026", author: "Fono. Carlos", status: "Em andamento" },
+  { id: "3", title: "Avaliação Motora", date: "01/04/2026", author: "Fisio. Roberta", status: "Concluído" }
 ];
 
-const mockAvaliacoes = [
-  { id: "1", disciplina: "Desenvolvimento Cognitivo", data: "20/05/2026", nota: "B", observacao: "Apresentou boa evolução." },
-  { id: "2", disciplina: "Linguagem e Comunicação", data: "12/06/2026", nota: "A", observacao: "Excelente progresso na fala." }
+const mockReviews = [
+  { id: "1", discipline: "Desenvolvimento Cognitivo", date: "20/05/2026", grade: "B", observation: "Apresentou boa evolução." },
+  { id: "2", discipline: "Linguagem e Comunicação", date: "12/06/2026", grade: "A", observation: "Excelente progresso na fala." }
 ];
 
-export default function EscolaresPage() {
+export default function SchoolPage() {
   const params = useParams();
   const router = useRouter();
   const id = params?.id as string;
 
   const [status, setStatus] = useState<"loading" | "success" | "error" | "empty">("loading");
-  const [relatorios, setRelatorios] = useState<typeof mockRelatorios>([]);
-  const [avaliacoes, setAvaliacoes] = useState<typeof mockAvaliacoes>([]);
+  const [reports, setReports] = useState<typeof mockReports>([]);
+  const [reviews, setReviews] = useState<typeof mockReviews>([]);
   
   const [searchTerm, setSearchTerm] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
@@ -36,10 +36,10 @@ export default function EscolaresPage() {
         setStatus("loading");
         await new Promise((resolve) => setTimeout(resolve, 800)); 
         
-        setRelatorios(mockRelatorios);
-        setAvaliacoes(mockAvaliacoes);
+        setReports(mockReports);
+        setReviews(mockReviews);
         
-        if (mockRelatorios.length === 0 && mockAvaliacoes.length === 0) {
+        if (mockReports.length === 0 && mockReviews.length === 0) {
           setStatus("empty");
         } else {
           setStatus("success");
@@ -52,7 +52,7 @@ export default function EscolaresPage() {
     if (id) fetchDadosEscolares();
   }, [id]);
 
-  const relatoriosFiltrados = relatorios.filter(r => r.titulo.toLowerCase().includes(searchTerm.toLowerCase()));
+  const filteredReports = reports.filter(r => r.title.toLowerCase().includes(searchTerm.toLowerCase()));
 
   return (
     <main className="container mx-auto p-4 md:p-6 font-nunito space-y-6">
@@ -124,15 +124,15 @@ export default function EscolaresPage() {
                       </tr>
                     </thead>
                     <tbody>
-                      {relatoriosFiltrados.length > 0 ? (
-                        relatoriosFiltrados.map((relatorio) => (
-                          <tr key={relatorio.id} className="border-b hover:bg-slate-50 transition-colors">
-                            <td className="px-6 py-4 font-medium text-gray-900">{relatorio.titulo}</td>
-                            <td className="px-6 py-4 text-gray-600">{relatorio.data}</td>
-                            <td className="px-6 py-4 text-gray-600">{relatorio.autor}</td>
+                      {filteredReports.length > 0 ? (
+                        filteredReports.map((reports) => (
+                          <tr key={reports.id} className="border-b hover:bg-slate-50 transition-colors">
+                            <td className="px-6 py-4 font-medium text-gray-900">{reports.title}</td>
+                            <td className="px-6 py-4 text-gray-600">{reports.date}</td>
+                            <td className="px-6 py-4 text-gray-600">{reports.author}</td>
                             <td className="px-6 py-4 text-center">
-                              <span className={`px-3 py-1 rounded-full text-xs font-semibold ${relatorio.status === 'Concluído' ? 'bg-green-100 text-green-700' : 'bg-amber-100 text-amber-700'}`}>
-                                {relatorio.status}
+                              <span className={`px-3 py-1 rounded-full text-xs font-semibold ${reports.status === 'Concluído' ? 'bg-green-100 text-green-700' : 'bg-amber-100 text-amber-700'}`}>
+                                {reports.status}
                               </span>
                             </td>
                           </tr>
@@ -174,12 +174,12 @@ export default function EscolaresPage() {
                       </tr>
                     </thead>
                     <tbody>
-                      {avaliacoes.map((av) => (
+                      {reviews.map((av) => (
                         <tr key={av.id} className="border-b hover:bg-slate-50 transition-colors">
-                          <td className="px-6 py-4 font-medium text-gray-900">{av.disciplina}</td>
-                          <td className="px-6 py-4 text-gray-600">{av.data}</td>
-                          <td className="px-6 py-4 font-bold text-[#0D4F97] text-center">{av.nota}</td>
-                          <td className="px-6 py-4 text-gray-600 truncate max-w-md">{av.observacao}</td>
+                          <td className="px-6 py-4 font-medium text-gray-900">{av.discipline}</td>
+                          <td className="px-6 py-4 text-gray-600">{av.date}</td>
+                          <td className="px-6 py-4 font-bold text-[#0D4F97] text-center">{av.grade}</td>
+                          <td className="px-6 py-4 text-gray-600 truncate max-w-md">{av.observation}</td>
                         </tr>
                       ))}
                     </tbody>

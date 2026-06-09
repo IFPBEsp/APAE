@@ -47,18 +47,60 @@ Este projeto tem como objetivo o desenvolvimento de dois sistemas para a APAE, o
 
 ### Como Executar
 
-O projeto foi automatizado para rodar com o mínimo de comandos utilizando **pnpm Workspaces**:
+O projeto foi automatizado para rodar com o mínimo de comandos utilizando **pnpm Workspaces**. Siga os passos abaixo:
 
-1. **Terminal na pasta raiz:** `cd APAE`
-
-   1.1. Caso esteja no Windows, acessar terminal via **GitBash**
-
-2. **Setup Inicial**: `pnpm install`
-3. **Rodar Tudo (Docker + Back + Front)**: `pnpm dev`
-
+> **Nota para Windows:** Utilize **GitBash** para executar os comandos.
+> 
 > ℹ️ Algumas funcionalidades, como envio de e-mails, utilizam configuração opcional de variáveis de ambiente. Veja a seção [**Configuração do Projeto**](#configuração-do-projeto).
 
-#### Outros Comandos:
+#### Passo 1: Setup Inicial
+
+Instale todas as dependências do projeto:
+
+```bash
+cd APAE
+pnpm install
+```
+
+#### Passo 2: Build do Backend
+
+Compile o backend (API Java):
+
+```bash
+docker build -t apae-geral-backend:local  ./apps/api
+```
+
+> 📝 Para mais detalhes sobre a configuração do Docker para o backend, consulte [`docs/docs-docker/DOCKER_LOCAL.md`](./docs/docs-docker/DOCKER_LOCAL.md)
+
+#### Passo 3: Build do Frontend
+
+Compile o frontend (Next.js):
+
+```bash
+docker build -t apae-geral-frontend:local ./apps/apae
+```
+
+#### Passo 4: Seed do Banco de Dados
+
+Cria um usuário admin e views em mock no banco de dados para fins de testes:
+
+```bash
+pnpm db:seed
+```
+
+#### Passo 5: Executar o Projeto
+
+Inicie todos os serviços (Docker + Backend + Frontend):
+
+```bash
+pnpm run dev
+```
+
+Aguarde até que todos os serviços estejam prontos. O frontend estará acessível em `http://localhost:3000/apae-geral`.
+
+---
+
+#### Outros Comandos Úteis:
 
 - `pnpm dev:backend`: Executa apenas o backend (api).
 - `pnpm dev:apae`: Executa apenas o frontend (apae).
@@ -219,7 +261,7 @@ O Kanban é usado para organizar as **issues** no processo de desenvolvimento. A
 ### Configuração de Ambiente
 
 Este projeto automatiza a configuração inicial das variáveis de ambiente.
-Ao rodar `pnpm dev`, o script verifica a existência do arquivo `.env`.
+Ao rodar `pnpm run dev`, o script verifica a existência do arquivo `.env`.
 Caso ele não exista, uma cópia será criada automaticamente a partir do `.env.example`.
 
 **Nota:** O script nunca sobrescreverá um arquivo `.env` já existente.

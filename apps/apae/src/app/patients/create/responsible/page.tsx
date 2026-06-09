@@ -13,7 +13,7 @@ import {
   MembersRegisterStep,
   useMembersRegisterContext,
 } from "@/hooks/use-members-register-context";
-import { formatCEP } from "@/lib/formats";
+import { formatCEP, capitalizeFirst } from "@/lib/formats";
 import { Guardian, GuardianData } from "@/schemas/member-schemas";
 import { EditGuardian } from "@/schemas/edit-member-schemas";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -144,6 +144,7 @@ export default function MembersRegisterGuardianPage() {
                   <Input
                     placeholder="Digite o nome completo do responsável"
                     {...field}
+                    onChange={(e) => field.onChange(capitalizeFirst(e.target.value))}
                   />
                 </FormControl>
                 <FormMessage />
@@ -183,6 +184,7 @@ export default function MembersRegisterGuardianPage() {
                   <Input
                     placeholder="Mãe, Pai, Irmã, etc."
                     {...field}
+                    onChange={(e) => field.onChange(capitalizeFirst(e.target.value))}
                   />
                 </FormControl>
                 <FormMessage />
@@ -197,7 +199,11 @@ export default function MembersRegisterGuardianPage() {
               <FormItem className="md:col-span-2">
                 <FormLabel>Rua *</FormLabel>
                 <FormControl>
-                  <Input placeholder="Rua exemplo" {...field} />
+                  <Input
+                    placeholder="Rua exemplo"
+                    {...field}
+                    onChange={(e) => field.onChange(capitalizeFirst(e.target.value))}
+                  />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -252,7 +258,11 @@ export default function MembersRegisterGuardianPage() {
               <FormItem>
                 <FormLabel>Complemento</FormLabel>
                 <FormControl>
-                  <Input placeholder="Apartamento 101" {...field} />
+                  <Input
+                    placeholder="Apartamento 101"
+                    {...field}
+                    onChange={(e) => field.onChange(capitalizeFirst(e.target.value))}
+                  />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -288,7 +298,11 @@ export default function MembersRegisterGuardianPage() {
               <FormItem>
                 <FormLabel>Estado *</FormLabel>
                 <FormControl>
-                  <Input placeholder="Paraíba" {...field} />
+                  <Input
+                    placeholder="Paraíba"
+                    {...field}
+                    onChange={(e) => field.onChange(capitalizeFirst(e.target.value))}
+                  />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -302,7 +316,11 @@ export default function MembersRegisterGuardianPage() {
               <FormItem>
                 <FormLabel>Cidade *</FormLabel>
                 <FormControl>
-                  <Input placeholder="Esperança" {...field} />
+                  <Input
+                    placeholder="Esperança"
+                    {...field}
+                    onChange={(e) => field.onChange(capitalizeFirst(e.target.value))}
+                  />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -316,7 +334,11 @@ export default function MembersRegisterGuardianPage() {
               <FormItem>
                 <FormLabel>Bairro *</FormLabel>
                 <FormControl>
-                  <Input placeholder="Centro" {...field} />
+                  <Input
+                    placeholder="Centro"
+                    {...field}
+                    onChange={(e) => field.onChange(capitalizeFirst(e.target.value))}
+                  />
                 </FormControl>
                 <FormMessage />
               </FormItem>

@@ -23,42 +23,42 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { useRouter } from "next/navigation";
-import { useCreateProfissional } from "@/hooks/profissional/use-create-profissional";
-import Disponibilidade from "@/components/forms/DisponibilidadeForm";
-import { cadastroSchema } from "@/schemas/profissional.schema";
+import { useCreateProfessional } from "@/hooks/profissional/use-create-profissional";
+import Availability from "@/components/forms/AvailabilityForm";
+import { registerSchema } from "@/schemas/profissional.schema";
 import { STATES } from "@/lib/states";
 import { useRef, useState, useEffect, JSX } from "react";
 import HealthAreaSelect from "@/components/shared/HealthAreaSelect";
-import { gerarMatrizDisponibilidade } from "@/domains/professional/shared/disponibilidade.utils";
+import { generateAvailabilityMatrix } from "@/domains/professional/shared/disponibilidade.utils";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
-type CadastroFormValues = z.infer<typeof cadastroSchema>;
+type RegisterFormValues = z.infer<typeof registerSchema>;
 
-export default function CadastroProfissional(): JSX.Element {
+export default function ProfessionalRegister(): JSX.Element {
   const router = useRouter();
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
-  const { create, loading, error, success } = useCreateProfissional();
+  const { create, loading, error, success } = useCreateProfessional();
 
-  const defaultValues: Partial<CadastroFormValues> = {
-    nomeCompleto: "",
+  const defaultValues: Partial<RegisterFormValues> = {
+    fullName: "",
     email: "",
-    documentoProfissional: "",
-    areaAtendimento: "",
-    telefone: "",
+    professionalDocument: "",
+    serviceArea: "",
+    phone: "",
     rg: "",
-    estado: "",
-    cidade: "",
-    bairro: "",
-    rua: "",
-    numero: "",
-    complemento: "",
+    state: "",
+    city: "",
+    neighborhood: "",
+    street: "",
+    number: "",
+    complement: "",
     cep: "",
-    disponibilidade: gerarMatrizDisponibilidade([]),
+    availability: generateAvailabilityMatrix([]),
   };
 
-  const form = useForm<CadastroFormValues>({
-    resolver: zodResolver(cadastroSchema),
+  const form = useForm<RegisterFormValues>({
+    resolver: zodResolver(registerSchema),
     defaultValues,
   });
 
@@ -76,30 +76,30 @@ export default function CadastroProfissional(): JSX.Element {
     router.push("/professionals");
   };
 
-  const onSubmit: SubmitHandler<CadastroFormValues> = async (values) => {
+  const onSubmit: SubmitHandler<RegisterFormValues> = async (values) => {
     const formData = new FormData();
 
-    const availabilities = values.disponibilidade
+    const availabilities = values.availability
       .filter((d) => d?.checked)
       .map((d) => ({
-        day: d?.dia,
-        shift: d?.turno,
+        day: d?.day,
+        shift: d?.shift,
       }));
 
     const payload = {
-      serviceArea: { area: values.areaAtendimento },
-      phoneNumber: values.telefone,
-      professionalDocument: values.documentoProfissional?.trim() || null,
+      serviceArea: { area: values.serviceArea },
+      phoneNumber: values.phone,
+      professionalDocument: values.professionalDocument?.trim() || null,
       email: values.email.trim(),
-      name: values.nomeCompleto.trim(),
+      name: values.fullName.trim(),
       identityDocument: values.rg.trim(),
       address: {
-        state: values.estado,
-        city: values.cidade.trim(),
-        neighborhood: values.bairro.trim(),
-        street: values.rua.trim(),
-        number: values.numero?.trim(),
-        complement: values.complemento?.trim() ?? "",
+        state: values.state,
+        city: values.city.trim(),
+        neighborhood: values.neighborhood.trim(),
+        street: values.street.trim(),
+        number: values.number?.trim(),
+        complement: values.complement?.trim() ?? "",
         cep: values.cep,
       },
       availabilities,
@@ -114,10 +114,10 @@ export default function CadastroProfissional(): JSX.Element {
       formData.append("profilePhoto", values.photo);
     }
 
-    formData.append("volunteerAgreement", values.termoVoluntariado);
-    formData.append("curriculum", values.curriculo);
-    if (values.anexoQualquer) {
-      formData.append("attachmentAny", values.anexoQualquer);
+    formData.append("volunteerAgreement", values.volunteerAgreement);
+    formData.append("curriculum", values.curriculum);
+    if (values.attachmentAny) {
+      formData.append("attachmentAny", values.attachmentAny);
     }
     await create(formData);
   };
@@ -131,7 +131,7 @@ export default function CadastroProfissional(): JSX.Element {
         >
           <FormField
             control={form.control}
-            name="nomeCompleto"
+            name="fullName"
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Nome completo *</FormLabel>
@@ -162,7 +162,7 @@ export default function CadastroProfissional(): JSX.Element {
           <div className="grid grid-cols-2 gap-4">
             <FormField
               control={form.control}
-              name="documentoProfissional"
+              name="professionalDocument"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Documento profissional</FormLabel>
@@ -176,7 +176,7 @@ export default function CadastroProfissional(): JSX.Element {
 
             <Controller
               control={form.control}
-              name="areaAtendimento"
+              name="serviceArea"
               render={({ field, fieldState }) => (
                 <FormItem>
                   <FormLabel>Área de atendimento *</FormLabel>
@@ -208,7 +208,7 @@ export default function CadastroProfissional(): JSX.Element {
             />
             <Controller
               control={form.control}
-              name="telefone"
+              name="phone"
               render={({ field, fieldState }) => (
                 <FormItem>
                   <FormLabel>Telefone *</FormLabel>
@@ -232,18 +232,17 @@ export default function CadastroProfissional(): JSX.Element {
           <div className="grid grid-cols-2 gap-4">
             <Controller
               control={form.control}
-              name="estado"
+              name="state"
               render={({ field, fieldState }) => (
                 <FormItem>
                   <FormLabel>Estado *</FormLabel>
                   <FormControl>
                     <Select onValueChange={field.onChange} value={field.value}>
                       <SelectTrigger
-                        className={`w-full ${
-                          fieldState.invalid
+                        className={`w-full ${fieldState.invalid
                             ? "border-red-500"
                             : "border-gray-300"
-                        }`}
+                          }`}
                       >
                         <SelectValue placeholder="Selecione um estado" />
                       </SelectTrigger>
@@ -262,7 +261,7 @@ export default function CadastroProfissional(): JSX.Element {
             />
             <FormField
               control={form.control}
-              name="cidade"
+              name="city"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Cidade *</FormLabel>
@@ -277,7 +276,7 @@ export default function CadastroProfissional(): JSX.Element {
 
           <FormField
             control={form.control}
-            name="rua"
+            name="street"
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Endereço *</FormLabel>
@@ -292,7 +291,7 @@ export default function CadastroProfissional(): JSX.Element {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <FormField
               control={form.control}
-              name="bairro"
+              name="neighborhood"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Bairro *</FormLabel>
@@ -329,7 +328,7 @@ export default function CadastroProfissional(): JSX.Element {
           <div className="grid grid-cols-2 gap-4">
             <FormField
               control={form.control}
-              name="numero"
+              name="number"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Número *</FormLabel>
@@ -342,7 +341,7 @@ export default function CadastroProfissional(): JSX.Element {
             />
             <FormField
               control={form.control}
-              name="complemento"
+              name="complement"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Complemento</FormLabel>
@@ -406,7 +405,7 @@ export default function CadastroProfissional(): JSX.Element {
 
           <FormField
             control={form.control}
-            name="termoVoluntariado"
+            name="volunteerAgreement"
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Termo do Voluntário *</FormLabel>
@@ -426,7 +425,7 @@ export default function CadastroProfissional(): JSX.Element {
 
           <FormField
             control={form.control}
-            name="curriculo"
+            name="curriculum"
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Currículo *</FormLabel>
@@ -443,10 +442,10 @@ export default function CadastroProfissional(): JSX.Element {
               </FormItem>
             )}
           />
-          
+
           <FormField
             control={form.control}
-            name="anexoQualquer"
+            name="attachmentAny"
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Anexo qualquer</FormLabel>
@@ -464,7 +463,7 @@ export default function CadastroProfissional(): JSX.Element {
             )}
           />
 
-          <Disponibilidade control={form.control} watch={form.watch} />
+          <Availability control={form.control} watch={form.watch} />
 
           {loading && <p className="text-blue-500">Salvando...</p>}
           {error && <p className="text-red-500">{error}</p>}

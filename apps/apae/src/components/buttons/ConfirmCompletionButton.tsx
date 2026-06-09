@@ -17,13 +17,13 @@ import {
   DialogTrigger,
 } from '../ui/dialog';
 
-export default function ConfirmaRealizacaoButton({ id }: { id: string }) {
+export default function ConfirmCompletionButton({ id }: { id: string }) {
   const router = useRouter();
 
-  const confirmarRealizacaoDaConsulta = async () => {
+  const confirmAppointmentCompletion = async () => {
     try {
-      const agendamentoRealizado = await markAsPerformed(id);
-      router.push(`/historico-consultas/${agendamentoRealizado.id}`);
+      const completedAppointment = await markAsPerformed(id);
+      router.push(`/historico-consultas/${completedAppointment.id}`);
     } catch (e) {
       console.error(e);
     }
@@ -50,7 +50,7 @@ export default function ConfirmaRealizacaoButton({ id }: { id: string }) {
           <DialogClose asChild>
             <Button variant="outline">Não</Button>
           </DialogClose>
-          <Button onClick={confirmarRealizacaoDaConsulta} type="submit">
+          <Button onClick={confirmAppointmentCompletion} type="submit">
             Sim
           </Button>
         </DialogFooter>
