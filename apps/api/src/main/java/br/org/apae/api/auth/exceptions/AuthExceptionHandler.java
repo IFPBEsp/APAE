@@ -17,74 +17,74 @@ import jakarta.servlet.http.HttpServletRequest;
 
 @ControllerAdvice
 public class AuthExceptionHandler {
-  @ExceptionHandler(UserNotFoundException.class)
-  public ResponseEntity<ErrorResponse> handleUserNotFound(UserNotFoundException ex, HttpServletRequest request) {
-    ErrorResponse error = new ErrorResponse(
-        HttpStatus.NOT_FOUND.value(),
-        HttpStatus.NOT_FOUND.getReasonPhrase(),
-        ex.getMessage(),
-        request.getRequestURI());
-    return new ResponseEntity<>(error, HttpStatus.NOT_FOUND);
-  }
+    @ExceptionHandler(UserNotFoundException.class)
+    public ResponseEntity<ErrorResponse> handleUserNotFound(UserNotFoundException ex, HttpServletRequest request) {
+        ErrorResponse error = new ErrorResponse(
+                HttpStatus.NOT_FOUND.value(),
+                HttpStatus.NOT_FOUND.getReasonPhrase(),
+                ex.getMessage(),
+                request.getRequestURI());
+        return new ResponseEntity<>(error, HttpStatus.NOT_FOUND);
+    }
 
-  @ExceptionHandler(UserConflictException.class)
-  public ResponseEntity<ErrorResponse> handleUserConflict(UserConflictException ex, HttpServletRequest request) {
-    ErrorResponse error = new ErrorResponse(
-        HttpStatus.CONFLICT.value(),
-        HttpStatus.CONFLICT.getReasonPhrase(),
-        ex.getMessage(),
-        request.getRequestURI());
-    return new ResponseEntity<>(error, HttpStatus.CONFLICT);
-  }
+    @ExceptionHandler(UserConflictException.class)
+    public ResponseEntity<ErrorResponse> handleUserConflict(UserConflictException ex, HttpServletRequest request) {
+        ErrorResponse error = new ErrorResponse(
+                HttpStatus.CONFLICT.value(),
+                HttpStatus.CONFLICT.getReasonPhrase(),
+                ex.getMessage(),
+                request.getRequestURI());
+        return new ResponseEntity<>(error, HttpStatus.CONFLICT);
+    }
 
-  @ExceptionHandler(AuthenticationException.class)
-  public ResponseEntity<ErrorResponse> handleAuthentication(AuthenticationException ex, HttpServletRequest request) {
-    ErrorResponse error = new ErrorResponse(
-        HttpStatus.BAD_REQUEST.value(),
-        HttpStatus.BAD_REQUEST.getReasonPhrase(),
-        ex.getMessage(),
-        request.getRequestURI());
-    return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
-  }
+    @ExceptionHandler(AuthenticationException.class)
+    public ResponseEntity<ErrorResponse> handleAuthentication(AuthenticationException ex, HttpServletRequest request) {
+        ErrorResponse error = new ErrorResponse(
+                HttpStatus.BAD_REQUEST.value(),
+                HttpStatus.BAD_REQUEST.getReasonPhrase(),
+                ex.getMessage(),
+                request.getRequestURI());
+        return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
+    }
 
-  @ExceptionHandler(TokenGenerationException.class)
-  public ResponseEntity<ErrorResponse> handleTokenGeneration(TokenGenerationException ex, HttpServletRequest request) {
-    ErrorResponse error = new ErrorResponse(
-        HttpStatus.INTERNAL_SERVER_ERROR.value(),
-        HttpStatus.INTERNAL_SERVER_ERROR.getReasonPhrase(),
-        ex.getMessage(),
-        request.getRequestURI());
-    return new ResponseEntity<>(error, HttpStatus.INTERNAL_SERVER_ERROR);
-  }
+    @ExceptionHandler(TokenGenerationException.class)
+    public ResponseEntity<ErrorResponse> handleTokenGeneration(TokenGenerationException ex, HttpServletRequest request) {
+        ErrorResponse error = new ErrorResponse(
+                HttpStatus.INTERNAL_SERVER_ERROR.value(),
+                HttpStatus.INTERNAL_SERVER_ERROR.getReasonPhrase(),
+                ex.getMessage(),
+                request.getRequestURI());
+        return new ResponseEntity<>(error, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
 
-  @ExceptionHandler(TokenVerificationException.class)
-  public ResponseEntity<ErrorResponse> handleTokenVerification(TokenVerificationException ex,
-      HttpServletRequest request) {
-    ErrorResponse error = new ErrorResponse(
-        HttpStatus.UNAUTHORIZED.value(),
-        HttpStatus.UNAUTHORIZED.getReasonPhrase(),
-        ex.getMessage(),
-        request.getRequestURI());
-    return new ResponseEntity<>(error, HttpStatus.UNAUTHORIZED);
-  }
+    @ExceptionHandler(TokenVerificationException.class)
+    public ResponseEntity<ErrorResponse> handleTokenVerification(TokenVerificationException ex,
+                                                                 HttpServletRequest request) {
+        ErrorResponse error = new ErrorResponse(
+                HttpStatus.UNAUTHORIZED.value(),
+                HttpStatus.UNAUTHORIZED.getReasonPhrase(),
+                ex.getMessage(),
+                request.getRequestURI());
+        return new ResponseEntity<>(error, HttpStatus.UNAUTHORIZED);
+    }
 
-  @ExceptionHandler(InvalidPasswordException.class)
-  public ResponseEntity<ErrorResponse> handleInvalidPassword(InvalidPasswordException ex, HttpServletRequest request) {
-    ErrorResponse error = new ErrorResponse(
-        HttpStatus.BAD_REQUEST.value(),
-        HttpStatus.BAD_REQUEST.getReasonPhrase(),
-        ex.getMessage(),
-        request.getRequestURI());
-    return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
-  }
+    @ExceptionHandler(InvalidPasswordException.class)
+    public ResponseEntity<ErrorResponse> handleInvalidPassword(InvalidPasswordException ex, HttpServletRequest request) {
+        ErrorResponse error = new ErrorResponse(
+                HttpStatus.UNAUTHORIZED.value(),
+                HttpStatus.UNAUTHORIZED.getReasonPhrase(),
+                ex.getMessage(),
+                request.getRequestURI());
+        return new ResponseEntity<>(error, HttpStatus.UNAUTHORIZED);
+    }
 
-  @ExceptionHandler(EmailSendingException.class)
-  public ResponseEntity<ErrorResponse> handleEmailSending(EmailSendingException ex, HttpServletRequest request) {
-    ErrorResponse error = new ErrorResponse(
-        HttpStatus.INTERNAL_SERVER_ERROR.value(),
-        HttpStatus.INTERNAL_SERVER_ERROR.getReasonPhrase(),
-        ex.getMessage(),
-        request.getRequestURI());
-    return new ResponseEntity<>(error, HttpStatus.INTERNAL_SERVER_ERROR);
-  }
+    @ExceptionHandler(EmailSendingException.class)
+    public ResponseEntity<ErrorResponse> handleEmailSending(EmailSendingException ex, HttpServletRequest request) {
+        ErrorResponse error = new ErrorResponse(
+                HttpStatus.INTERNAL_SERVER_ERROR.value(),
+                HttpStatus.INTERNAL_SERVER_ERROR.getReasonPhrase(),
+                ex.getMessage(),
+                request.getRequestURI());
+        return new ResponseEntity<>(error, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
 }
