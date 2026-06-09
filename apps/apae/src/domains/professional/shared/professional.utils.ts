@@ -1,5 +1,7 @@
 import { generateAvailabilityMatrix } from "./disponibilidade.utils";
 
+type StatusFilter = "activate" | "inactivate";
+
 export function isValidFile(file: File): boolean {
   const allowedTypes = [
     "application/pdf",
@@ -83,5 +85,17 @@ export function buildRegisterPayload(values: any) {
       cep: values.cep,
     },
     availabilities,
+  };
+}
+
+export function getStatusActionConfig(statusFilter: StatusFilter) {
+  return {
+    label: statusFilter === "activate" ? "Inativar" : "Reativar",
+    itemClass: statusFilter === "activate"
+      ? "text-destructive focus:text-destructive"
+      : "text-green-600 focus:text-green-600",
+    buttonClass: statusFilter === "activate"
+      ? ""
+      : "bg-green-600 hover:bg-green-700 text-white",
   };
 }
