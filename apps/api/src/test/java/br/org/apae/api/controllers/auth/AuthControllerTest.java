@@ -35,6 +35,7 @@ import org.springframework.test.web.servlet.MockMvc;
 
 @WebMvcTest(controllers = AuthControllerImpl.class)
 @AutoConfigureMockMvc(addFilters = false)
+@Import(GlobalExceptionHandler.class)
 @Tag("auth")
 @Tag("unit")
 @Tag("controller")
