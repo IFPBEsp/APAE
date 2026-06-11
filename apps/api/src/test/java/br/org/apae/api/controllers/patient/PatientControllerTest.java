@@ -4,7 +4,7 @@ import br.org.apae.api.auth.application.internal.UserService;
 import br.org.apae.api.auth.infrastructure.security.JwtProvider;
 import br.org.apae.api.auth.infrastructure.security.SecurityConfiguration;
 import br.org.apae.api.common.dto.address.CreateAddressDTO;
-import br.org.apae.api.common.dto.patient.request.annual_registry.CreateAnnualRegistryDTO;
+import br.org.apae.api.common.dto.patient.request.annualregistry.CreateAnnualRegistryDTO;
 import br.org.apae.api.common.dto.patient.request.disorder.CreateDisorderDTO;
 import br.org.apae.api.common.dto.patient.request.documents.CreateDocumentsDTO;
 import br.org.apae.api.common.dto.patient.request.guardian.CreateGuardianDTO;
