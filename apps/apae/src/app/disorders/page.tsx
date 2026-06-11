@@ -8,8 +8,6 @@ import { Search, Edit, Trash2, Loader2 } from "lucide-react";
 import { ConfirmModal } from "@/components/ui/confirm-modal";
 import { toast } from "react-toastify";
 import { useDebounce } from "@/hooks/use-debounce";
-import { api } from "@/lib/api";
-import axios from "axios";
 
 interface Transtorno {
   id: string;
@@ -23,7 +21,6 @@ interface PaginatedResponse {
 }
 
 function TranstornosPageContent() {
-  // nuqs URL query states
   const [search, setSearch] = useQueryState(
     "search",
     parseAsString.withDefault("").withOptions({ shallow: false })
@@ -37,18 +34,15 @@ function TranstornosPageContent() {
     parseAsInteger.withDefault(10).withOptions({ shallow: false })
   );
 
-  // Local state for smooth typing and UI loading
   const [localSearch, setLocalSearch] = useState(search);
   const [transtornos, setTranstornos] = useState<Transtorno[]>([]);
   const [totalElements, setTotalElements] = useState(0);
   const [totalPages, setTotalPages] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
 
-  // Apply debounce to local search input value
   const debouncedSearch = useDebounce(localSearch, 500);
   const latestRequestKeyRef = useRef("");
 
-  // Sync debounced search with URL query state and reset page to 1
   useEffect(() => {
     if (debouncedSearch !== search) {
       void setSearch(debouncedSearch);
@@ -56,12 +50,10 @@ function TranstornosPageContent() {
     }
   }, [debouncedSearch, search, setSearch, setPage]);
 
-  // Sync local input search state when URL query state changes (e.g. browser navigation)
   useEffect(() => {
     setLocalSearch(search);
   }, [search]);
 
-  // Fetch paginated disorders data
   useEffect(() => {
     const controller = new AbortController();
 
@@ -76,20 +68,26 @@ function TranstornosPageContent() {
         const requestKey = params.toString();
         latestRequestKeyRef.current = requestKey;
 
-        const response = await api.get<PaginatedResponse>(`/transtornos?${requestKey}`, {
+        const response = await fetch(`/apae-geral/api/transtornos?${requestKey}`, {
           signal: controller.signal,
         });
 
-        // Prevents out-of-order state updates if another request is already in progress
+        if (!response.ok) {
+          const errorData = await response.json();
+          throw new Error(errorData.message || "Erro ao buscar dados");
+        }
+
+        const responseData: PaginatedResponse = await response.json();
+
         if (latestRequestKeyRef.current !== requestKey) {
           return;
         }
 
-        setTranstornos(response.data.data);
-        setTotalElements(response.data.total);
-        setTotalPages(response.data.totalPages);
+        setTranstornos(responseData.data);
+        setTotalElements(responseData.total);
+        setTotalPages(responseData.totalPages);
       } catch (err) {
-        if (axios.isCancel(err)) {
+        if (err instanceof DOMException && err.name === "AbortError") {
           return;
         }
         console.error("Erro ao carregar transtornos:", err);
@@ -108,43 +106,47 @@ function TranstornosPageContent() {
     };
   }, [search, page, limit]);
 
-  // Handles limit change (items per page) and resets page to 1
   const handleLimitChange = (newLimit: number) => {
     void setLimit(newLimit);
     void setPage(1);
   };
 
-  // Handles disorder deletion
   const handleDelete = async (id: string) => {
     try {
-      await api.delete(`/disorders/${id}`);
+      const response = await fetch(`/apae-geral/api/disorders/${id}`, {
+        method: "DELETE",
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || "Erro ao excluir o transtorno.");
+      }
+
       toast.success("Transtorno excluído com sucesso.");
-      
-      // If we are on a page higher than 1 and deleting the last item on the page, go back a page
+
       const isLastItemOnPage = transtornos.length === 1;
       if (isLastItemOnPage && page > 1) {
         void setPage(page - 1);
       } else {
-        // Otherwise, trigger data re-fetch by keeping the query params the same but modifying state manually or triggering fetch
-        // Since dependencies search, page, limit are checked, we can manually refetch or force state refresh
-        // Let's do a manual fetch call to refresh list
         const params = new URLSearchParams();
         if (search) params.append("search", search);
         params.append("page", String(page));
         params.append("limit", String(limit));
-        const response = await api.get<PaginatedResponse>(`/transtornos?${params.toString()}`);
-        setTranstornos(response.data.data);
-        setTotalElements(response.data.total);
-        setTotalPages(response.data.totalPages);
+
+        const refreshResponse = await fetch(`/apae-geral/api/transtornos?${params.toString()}`);
+        if (refreshResponse.ok) {
+          const refreshData: PaginatedResponse = await refreshResponse.json();
+          setTranstornos(refreshData.data);
+          setTotalElements(refreshData.total);
+          setTotalPages(refreshData.totalPages);
+        }
       }
     } catch (err: any) {
       console.error("Erro ao excluir transtorno:", err);
-      const errorMsg = err.response?.data?.message || "Erro ao excluir o transtorno.";
-      toast.error(errorMsg);
+      toast.error(err.message || "Erro ao excluir o transtorno.");
     }
   };
 
-  // Render page number buttons
   const renderPageNumbers = () => {
     const pages: number[] = [];
     const start = Math.max(1, page - 2);
@@ -206,7 +208,6 @@ function TranstornosPageContent() {
   return (
     <div className="bg-slate-50 min-h-screen">
       <main className="container mx-auto p-4 md:p-6 max-w-6xl">
-        {/* Barra de Busca (Topo) */}
         <div className="bg-white rounded-xl shadow-sm p-4 mb-6 border border-gray-100">
           <div className="relative w-full">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
@@ -220,9 +221,7 @@ function TranstornosPageContent() {
           </div>
         </div>
 
-        {/* Card Principal (Listagem) */}
         <section className="bg-white rounded-xl shadow-md border border-gray-100 overflow-hidden">
-          {/* Cabeçalho do Card */}
           <div className="flex justify-between items-center p-6 border-b border-gray-100">
             <div>
               <h2 className="text-xl font-bold text-[#004b8d]">Transtornos Cadastrados</h2>
@@ -235,7 +234,6 @@ function TranstornosPageContent() {
             </Button>
           </div>
 
-          {/* Corpo do Card */}
           <div className="divide-y divide-gray-100 min-h-[200px] flex flex-col justify-start">
             {isLoading ? (
               <div className="flex-1 flex justify-center items-center py-16">
@@ -290,7 +288,6 @@ function TranstornosPageContent() {
             )}
           </div>
 
-          {/* Rodapé do Card (Paginação) */}
           {!isLoading && transtornos.length > 0 && (
             <div className="bg-gray-50 px-6 py-4 flex flex-col sm:flex-row justify-between items-center gap-4 border-t border-gray-100">
               <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 w-full sm:w-auto">
