@@ -56,7 +56,7 @@ export default function ViewProfessional() {
 
       <div className="flex flex-col items-center sm:flex-row sm:items-center gap-4 sm:gap-6 mb-10">
         <Avatar className="h-24 w-24 border-2 border-[#0D4F97]">
-          <AvatarImage src={photoDoc?.url || ""} alt={date.name} />
+          <AvatarImage src={photoDoc?.url || ""} alt={professional.name} />
           <AvatarFallback className="text-xl font-bold bg-[#B2D7EC] text-[#0D4F97]">
             {professional.name?.charAt(0) || "P"}
           </AvatarFallback>

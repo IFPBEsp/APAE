@@ -1,6 +1,6 @@
 "use client";
 
-import { JSX } from "react";
+import { JSX, useMemo } from "react";
 import { useRouter } from "next/navigation";
 import { Controller, type SubmitHandler } from "react-hook-form";
 import * as z from "zod";
@@ -10,6 +10,9 @@ import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { InputMask } from "@react-input/mask";
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { User } from "lucide-react";
+
 
 import { useGetByIdProfessional } from "@/hooks/profissional/use-get-by-id-profissional";
 import { useUpdateProfessional } from "@/hooks/profissional/use-update-profissional";
@@ -38,8 +41,40 @@ export default function ProfessionalUpdate(): JSX.Element {
   const { updateProfessional, loading, error, success } = useUpdateProfessional();
   const { upload, loadingDocs, errorDocs, successDocs } = useUpdateProfessionalDocuments();
 
-  const photo = useProfessionalPhoto();
-  const docs = useProfessionalDocs(professional?.id);
+  const {
+    fileInputRef,
+    selectedPhoto,
+    setSelectedPhoto,
+    photoPreviewUrl,
+    photoError,
+    photoSuccess,
+    clearPhoto,
+    uploadPhoto,
+  } = useProfessionalPhoto();
+
+  const {
+    docs: docsList,
+    docsLoading,
+    docsError,
+    curriculumFile,
+    setCurriculumFile,
+    volunteerFile,
+    setVolunteerFile,
+    attachmentFiles,
+    setAttachmentFiles,
+    hasAnyUpload,
+    removingIds,
+    removeModalOpen,
+    setRemoveModalOpen,
+    docToRemove,
+    isConfirmBusy,
+    openRemoveModal,
+    confirmRemove,
+    refreshDocuments,
+    buildFormData,
+    clearFiles,
+    isValidFile,
+  } = useProfessionalDocs(professional?.id);
 
   const form = useForm<UpdateFormValues>({
     resolver: zodResolver(updateProfessionalSchema),
@@ -61,45 +96,12 @@ export default function ProfessionalUpdate(): JSX.Element {
   }, [professional?.id, refreshDocuments]);
 
   const groupedDocs = useMemo(() => {
-    const curriculum = docs.find((d) => d.type === "CURRICULUM");
-    const volunteer = docs.find((d) => d.type === "VOLUNTEER_AGREEMENT");
-    const attachments = docs.filter((d) => d.type === "ATTACHMENTANY");
-    const photo = docs.find((d) => d.type === "PHOTO");
-    return { curriculum, volunteer, attachments, photo };
-  }, [docs]);
-
-  function openRemoveModal(doc: DocumentWithUrl) {
-    setDocToRemove(doc);
-    setRemoveModalOpen(true);
-  }
-
-  async function confirmRemove() {
-    if (!professional?.id || !docToRemove) return;
-
-    const idStr = String(docToRemove.id);
-
-    setRemovingIds((prev) => {
-      const next = new Set(prev);
-      next.add(idStr);
-      return next;
-    });
-
-    try {
-      await removeProfessionalDocument(professional.id, docToRemove.id);
-      await refreshDocuments(professional.id);
-      setRemoveModalOpen(false);
-      setDocToRemove(null);
-    } catch (e: unknown) {
-      console.error(e);
-      alert((e as Error)?.message ?? "Erro ao remover documento");
-    } finally {
-      setRemovingIds((prev) => {
-        const next = new Set(prev);
-        next.delete(idStr);
-        return next;
-      });
-    }
-  }
+    const curriculum = docsList.find((d) => d.type === "CURRICULUM");
+    const volunteer = docsList.find((d) => d.type === "VOLUNTEER_AGREEMENT");
+    const attachments = docsList.filter((d) => d.type === "ATTACHMENTANY");
+    const photoDoc = docsList.find((d) => d.type === "PHOTO");
+    return { curriculum, volunteer, attachments, photo: photoDoc };
+  }, [docsList]);
 
   const onSubmit: SubmitHandler<UpdateFormValues> = async (values) => {
     if (!professional?.id) return;
@@ -111,35 +113,15 @@ export default function ProfessionalUpdate(): JSX.Element {
     const ok = await updateProfessional(professional.id, buildUpdatePayload(values, availabilities));
     if (!ok) return;
 
-    if (docs.hasAnyUpload) {
-      await upload(professional.id, docs.buildFormData());
-      docs.clearFiles();
-      await docs.refreshDocuments(professional.id);
+    if (hasAnyUpload) {
+      await upload(professional.id, buildFormData());
+      clearFiles();
+      await refreshDocuments(professional.id);
     }
 
     if (selectedPhoto) {
-      setPhotoError(null);
-      setPhotoSuccess(false);
-      try {
-        const photoData = new FormData();
-        photoData.append("file", selectedPhoto);
-
-        const response = await fetch(`/apae-geral/api/professionals/${professional.id}/photo`, {
-          method: "PATCH",
-          body: photoData,
-        });
-
-        if (!response.ok) {
-          const body = await response.json().catch(() => ({}));
-          throw new Error(body?.message ?? "Erro ao enviar foto");
-        }
-
-        setPhotoSuccess(true);
-        setSelectedPhoto(null);
-      } catch (e: unknown) {
-        setPhotoError((e as Error)?.message ?? "Erro ao enviar foto");
-        return;
-      }
+      const okPhoto = await uploadPhoto(professional.id);
+      if (!okPhoto) return;
     }
 
     router.push("/professionals");
@@ -338,26 +320,26 @@ export default function ProfessionalUpdate(): JSX.Element {
           />
 
           <ProfessionalDocuments
-            groupedDocs={docs.groupedDocs}
-            docsLoading={docs.docsLoading}
-            docsError={docs.docsError}
-            removingIds={docs.removingIds}
-            removeModalOpen={docs.removeModalOpen}
-            setRemoveModalOpen={docs.setRemoveModalOpen}
-            docToRemove={docs.docToRemove}
-            isConfirmBusy={docs.isConfirmBusy}
-            openRemoveModal={docs.openRemoveModal}
-            confirmRemove={docs.confirmRemove}
-            curriculumFile={docs.curriculumFile}
-            volunteerFile={docs.volunteerFile}
-            attachmentFiles={docs.attachmentFiles}
-            setCurriculumFile={docs.setCurriculumFile}
-            setVolunteerFile={docs.setVolunteerFile}
-            setAttachmentFiles={docs.setAttachmentFiles}
-            isValidFile={docs.isValidFile}
+            groupedDocs={groupedDocs}
+            docsLoading={docsLoading}
+            docsError={docsError}
+            removingIds={removingIds}
+            removeModalOpen={removeModalOpen}
+            setRemoveModalOpen={setRemoveModalOpen}
+            docToRemove={docToRemove}
+            isConfirmBusy={isConfirmBusy}
+            openRemoveModal={openRemoveModal}
+            confirmRemove={confirmRemove}
+            curriculumFile={curriculumFile}
+            volunteerFile={volunteerFile}
+            attachmentFiles={attachmentFiles}
+            setCurriculumFile={setCurriculumFile}
+            setVolunteerFile={setVolunteerFile}
+            setAttachmentFiles={setAttachmentFiles}
+            isValidFile={isValidFile}
             errorDocs={errorDocs}
             successDocs={successDocs}
-            hasAnyUpload={docs.hasAnyUpload}
+            hasAnyUpload={hasAnyUpload}
             loadingDocs={loadingDocs}
           />
 
@@ -365,6 +347,7 @@ export default function ProfessionalUpdate(): JSX.Element {
             <p className="text-blue-500">{loading ? "Salvando perfil..." : "Enviando documentos..."}</p>
           )}
           {error && <p className="text-red-500">{error}</p>}
+          {photoError && <p className="text-red-500">{photoError}</p>}
           {success && <p className="text-green-600">Profissional atualizado com sucesso!</p>}
 
           <div className="flex justify-end gap-4">

@@ -93,11 +93,8 @@ export async function removeProfessionalDocument(
     { method: "DELETE" },
   );
 
-  const data = await response.json(); 
-
   if (!response.ok) {
+    const data = await response.json().catch(() => ({}));
     throw new Error(data.message || "Erro ao remover documento");
-  }
-
-  return data; 
+  } 
 }
