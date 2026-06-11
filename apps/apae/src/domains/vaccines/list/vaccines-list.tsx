@@ -5,7 +5,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { SearchFilters } from "@/components/search-filters";
-import { Loader2, Plus } from "lucide-react";
+import { ArrowLeft, Loader2, Plus } from "lucide-react";
 import { VaccineListItem } from "../shared/vaccine-list-item";
 import { useVaccinesList } from "./use-vaccines-list";
 
@@ -21,6 +21,14 @@ export function VaccinesList() {
   return (
     <div className="!bg-slate-100 min-h-screen">
       <main className="container mx-auto p-4 md:p-6">
+        <Button
+          variant="ghost"
+          onClick={() => router.push("/patients")}
+          className="mb-4 text-sm text-[#003B93] hover:bg-blue-50" 
+        >
+          <ArrowLeft className="h-4 w-4 mr-2"/>
+            Voltar
+        </Button>
         <div className="bg-white rounded-xl shadow-md border-2 p-6 mb-4">
           <SearchFilters searchName={searchName} setSearchName={setSearchName} />
         </div>
