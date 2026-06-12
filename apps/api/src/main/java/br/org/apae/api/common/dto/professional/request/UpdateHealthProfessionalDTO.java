@@ -3,6 +3,7 @@ package br.org.apae.api.common.dto.professional.request;
 import br.org.apae.api.common.dto.address.UpdateAddressDTO;
 import br.org.apae.api.common.dto.availability.request.CreateAvailabilityDTO;
 import br.org.apae.api.common.dto.servicearea.request.UpdateServiceAreaDTO;
+import br.org.apae.api.common.validations.CPF;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.*;
 
@@ -21,6 +22,10 @@ public record UpdateHealthProfessionalDTO(
     @Email(message = "O e-mail informado é inválido.")
     @NotBlank(message = "O e-mail é obrigatório.")
     String email,
+
+    @CPF(message = "CPF inválido")
+    @NotBlank(message = "O CPF é obrigatório.")
+    String cpf,
 
     @NotBlank(message = "O nome é obrigatório.")
     @Size(min = 3, max = 100)

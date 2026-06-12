@@ -38,6 +38,9 @@ public class User implements UserDetails {
   @Column(name = "senha")
   private String password;
 
+  @Column(name = "primeiro_acesso", nullable = false)
+  private boolean firstAccess = false;
+
   @Column(name = "nome_completo")
   private String fullName;
 
@@ -81,9 +84,10 @@ public class User implements UserDetails {
   }
 
   public User(String email, String password, String cpf, String fullName, UserRole role,
-      String phoneNumber, String identityDocument, Address address) {
+      String phoneNumber, String identityDocument, Address address, boolean firstAccess) {
     this(email, password, cpf, fullName, role, phoneNumber, identityDocument);
     this.address = address;
+    this.firstAccess = firstAccess;
   }
 
   public static User createAuthenticatedUser(String email, String password, String cpf, String fullName,
@@ -91,9 +95,9 @@ public class User implements UserDetails {
     return new User(email, password, cpf, fullName, role);
   }
 
-  public static User createProfessionalUser(String email, String fullName, String phoneNumber,
+  public static User createProfessionalUser(String email, String cpf, String fullName, String phoneNumber,
       String identityDocument, Address address) {
-    return new User(email, null, null, fullName, UserRole.ATENDIMENTO, phoneNumber, identityDocument, address);
+    return new User(email, null, cpf, fullName, UserRole.ATENDIMENTO, phoneNumber, identityDocument, address, true);
   }
 
   public UUID getId() {
@@ -106,6 +110,10 @@ public class User implements UserDetails {
 
   public boolean hasConfiguredPassword() {
     return password != null && !password.isBlank();
+  }
+
+  public boolean isFirstAccess() {
+    return firstAccess;
   }
 
   @Override
@@ -144,12 +152,17 @@ public class User implements UserDetails {
     this.identityDocument = identityDocument;
   }
 
+  public void updateCpf(String cpf) {
+    this.cpf = cpf;
+  }
+
   public void updateAddress(Address address) {
     this.address = address;
   }
 
   public void updatePassword(String password) {
     this.password = password;
+    this.firstAccess = false;
   }
 
   @Override

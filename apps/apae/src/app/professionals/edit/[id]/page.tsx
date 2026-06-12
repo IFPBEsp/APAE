@@ -121,6 +121,7 @@ export default function AtualizarProfissional(): JSX.Element {
   const defaultValues: Partial<UpdateFormValues> = {
     nomeCompleto: "",
     email: "",
+    cpf: "",
     documentoProfissional: "",
     areaAtendimento: "",
     telefone: "",
@@ -158,6 +159,7 @@ export default function AtualizarProfissional(): JSX.Element {
     form.reset({
       nomeCompleto: profissional.name,
       email: profissional.email,
+      cpf: profissional.cpf ?? "",
       documentoProfissional: profissional.professionalDocument ?? "",
       areaAtendimento: profissional.serviceArea?.area ?? profissional.healthSector ?? "",
       telefone: profissional.phoneNumber,
@@ -248,6 +250,7 @@ export default function AtualizarProfissional(): JSX.Element {
       phoneNumber: values.telefone,
       professionalDocument: values.documentoProfissional?.trim() || null,
       email: values.email.trim(),
+      cpf: values.cpf.trim(),
       name: values.nomeCompleto.trim(),
       identityDocument: values.rg.trim(),
       address: {
@@ -371,6 +374,28 @@ export default function AtualizarProfissional(): JSX.Element {
                   <Input type="email" placeholder="profissional@exemplo.com" {...field} />
                 </FormControl>
                 <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          <Controller
+            control={form.control}
+            name="cpf"
+            render={({ field, fieldState }) => (
+              <FormItem>
+                <FormLabel>CPF *</FormLabel>
+                <FormControl>
+                  <InputMask
+                    mask="___.___.___-__"
+                    replacement={{ _: /\d/ }}
+                    value={field.value ?? ""}
+                    onChange={(e) => field.onChange(e.target.value)}
+                    onBlur={field.onBlur}
+                    placeholder="000.000.000-00"
+                    className="w-full rounded-md border px-3 py-2"
+                  />
+                </FormControl>
+                <FormMessage>{fieldState.error?.message}</FormMessage>
               </FormItem>
             )}
           />

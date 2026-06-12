@@ -10,6 +10,7 @@ import br.org.apae.api.common.dto.professional.response.HealthProfessionalRespon
 import br.org.apae.api.common.dto.servicearea.response.ServiceAreaResponseDTO;
 import br.org.apae.api.professional.application.interfaces.HealthProfessionalApplicationService;
 import br.org.apae.api.professional.application.mappers.HealthProfessionalMapper;
+import br.org.apae.api.professional.domain.exceptions.CpfConflictException;
 import br.org.apae.api.professional.domain.exceptions.EmailConflictException;
 import br.org.apae.api.professional.domain.exceptions.HealthProfessionalNotFoundException;
 import br.org.apae.api.professional.domain.exceptions.IdentityDocumentConflictException;
@@ -32,6 +33,7 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.UUID;
 import java.util.stream.Collectors;
 import java.nio.file.Files;
@@ -68,6 +70,9 @@ public class HealthProfessionalApplicationServiceImpl implements HealthProfessio
         if (userRepository.existsByEmail(dto.email())) {
             throw new EmailConflictException();
         }
+        if (userRepository.existsByCpf(dto.cpf())) {
+            throw new CpfConflictException();
+        }
         if (dto.identityDocument() != null && userRepository.existsByIdentityDocument(dto.identityDocument())) {
             throw new IdentityDocumentConflictException();
         }
@@ -77,6 +82,7 @@ public class HealthProfessionalApplicationServiceImpl implements HealthProfessio
 
         User user = User.createProfessionalUser(
                 dto.email(),
+                dto.cpf(),
                 dto.name(),
                 dto.phoneNumber(),
                 dto.identityDocument(),
@@ -100,6 +106,11 @@ public class HealthProfessionalApplicationServiceImpl implements HealthProfessio
         if (!entityToUpdate.getEmail().equalsIgnoreCase(dto.email())
                 && userRepository.existsByEmailAndIdNot(dto.email(), userId)) {
             throw new EmailConflictException();
+        }
+
+        if (!Objects.equals(entityToUpdate.getCpf(), dto.cpf())
+                && userRepository.existsByCpfAndIdNot(dto.cpf(), userId)) {
+            throw new CpfConflictException();
         }
 
         if (dto.identityDocument() != null

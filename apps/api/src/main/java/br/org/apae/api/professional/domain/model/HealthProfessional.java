@@ -96,6 +96,16 @@ public class HealthProfessional {
         updateUserProfile(getName(), email, getPhoneNumber(), getIdentityDocument());
     }
 
+    public String getCpf() {
+        return user != null ? user.getCpf() : null;
+    }
+
+    public void setCpf(String cpf) {
+        if (user != null) {
+            user.updateCpf(cpf);
+        }
+    }
+
     public ServiceArea getServiceArea() {
         return serviceArea;
     }

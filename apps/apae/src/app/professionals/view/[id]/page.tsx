@@ -113,6 +113,10 @@ export default function VisualizarProfissional() {
                 <p className="text-base text-gray-700">{profissional.email || "—"}</p>
               </div>
               <div>
+                <p className="font-semibold text-sm">CPF</p>
+                <p className="text-base text-gray-700">{profissional.cpf || "—"}</p>
+              </div>
+              <div>
                 <p className="font-semibold text-sm">Telefone</p>
                 <p className="text-base text-gray-700">
                   {profissional.phoneNumber || "—"}

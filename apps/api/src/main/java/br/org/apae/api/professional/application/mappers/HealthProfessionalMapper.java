@@ -57,6 +57,7 @@ public class HealthProfessionalMapper {
 
         professional.setName(dto.name());
         professional.setEmail(dto.email());
+        professional.setCpf(dto.cpf());
         professional.setServiceArea(serviceArea);
         professional.setPhoneNumber(dto.phoneNumber());
         professional.setIdentityDocument(dto.identityDocument());

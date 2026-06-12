@@ -32,6 +32,7 @@ export interface Professional {
   phoneNumber: string;
   professionalDocument: string | null;
   email: string;
+  cpf: string;
   name: string;
   identityDocument: string;
   healthSector?: string | null;
