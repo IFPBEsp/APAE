@@ -33,7 +33,7 @@ public class UserService {
       throw new UserConflictException();
     }
 
-    User user = User.createAuthenticatedUser(email, password, cpf, fullName, UserRole.ATENDIMENTO);
+    User user = User.createAuthenticatedUser(email, password, cpf, fullName, UserRole.APAE_GERAL);
     userRepository.save(user);
   }
 
