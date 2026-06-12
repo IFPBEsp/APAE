@@ -6,17 +6,10 @@ import { ArrowLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import FileCard from "@/components/fileCard";
 import { toast } from "react-toastify";
+import { listPatientDocuments } from "@/domains/documents/documents.api";
+import type { DocumentCategory, PatientDocument } from "@/domains/documents/documents.types";
 
-export interface FileItem {
-  id: string;
-  name: string;
-  category: "personal" | "medical" | "school";
-  type: string;
-  url: string;
-  year: string;
-}
-
-const documentCategory = {
+const documentCategory: Record<DocumentCategory, string> = {
   personal: "Documentos pessoais",
   medical: "Documentos médicos",
   school: "Documentos escolares",
@@ -26,35 +19,25 @@ export default function FileViewer() {
   const router = useRouter();
   const params = useParams();
   const patientId = params?.id as string;
-  const category = params?.type as "personal" | "medical" | "school";
+  const category = params?.type as DocumentCategory;
   const [yearFilter, setYearFilter] = React.useState<string>(
     new Date().getFullYear().toString()
   );
-  const [typeFilter, setTypeFilter] = React.useState<string>("LAUDO");
-  const [files, setFiles] = React.useState<FileItem[]>([]);
+  const [typeFilter] = React.useState<string>("");
+  const [files, setFiles] = React.useState<PatientDocument[]>([]);
 
   React.useEffect(() => {
     async function fetchDocuments() {
       try {
         if (!patientId || !category || !yearFilter) return;
 
-        const params = new URLSearchParams({
-          category: category,
-          year: yearFilter, 
-          ...(typeFilter && { type: typeFilter }), 
+        const data = await listPatientDocuments(patientId, {
+          category,
+          year: yearFilter,
+          ...(typeFilter ? { type: typeFilter } : {}),
         });
 
-        const response = await fetch(
-          `/api/pessoa/${patientId}/documents?${params.toString()}`
-        );
-        
-        if (!response.ok) {
-          const errorData = await response.json();
-          throw new Error(errorData.message || "Erro ao buscar os documentos");
-        }
-
-        const data = await response.json();
-        setFiles(data.urls); 
+        setFiles(data);
 
       } catch (err: any) {
         console.error("Erro ao buscar documentos:", err);
@@ -100,10 +83,10 @@ export default function FileViewer() {
         {files.length === 0 ? (
           <p>Nenhum arquivo encontrado.</p>
         ) : (
-          files.map((file: any, index: number) => (
+          files.map((file, index: number) => (
             <FileCard
               key={index}
-              file={{ fileName: file.fileName, link: file.link }}
+              file={{ fileName: file.name, link: file.url }}
             />
           ))
         )}

@@ -1,31 +1,30 @@
-import { createBaseApi } from "@/lib/axios";
-import { createserviceTypeSchema } from "@/schemas/service-type-schemas";
 import { NextResponse } from "next/server";
+
+import { createBaseApi } from "@/lib/axios";
+import { createServiceTypeSchema } from "@/domains/service-types/service-types.schema";
 
 export async function POST(request: Request) {
   try {
     const body = await request.json();
+    const validation = createServiceTypeSchema.safeParse(body);
 
-    const validation = createserviceTypeSchema.safeParse(body);
     if (!validation.success) {
       return new NextResponse(
         JSON.stringify({
-          message: "Dados inválidos.",
+          message: "Dados invalidos.",
           errors: validation.error.flatten().fieldErrors,
         }),
-        { status: 400 }
+        { status: 400 },
       );
     }
 
     const api = await createBaseApi();
-
-    const { data } = await api.post("/service-areas", validation.data);
-
-    return NextResponse.json(data);
+    const { data } = await api.post("/service-types", validation.data);
+    return NextResponse.json(data, { status: 201 });
   } catch (error: any) {
     return new NextResponse(
       JSON.stringify(error.response?.data || { message: error.message }),
-      { status: error.response?.status || 500 }
+      { status: error.response?.status || 500 },
     );
   }
 }
@@ -33,12 +32,12 @@ export async function POST(request: Request) {
 export async function GET() {
   try {
     const api = await createBaseApi();
-    const { data } = await api.get("/service-areas");
+    const { data } = await api.get("/service-types");
     return NextResponse.json(data);
   } catch (error: any) {
     return new NextResponse(
       JSON.stringify(error.response?.data || { message: error.message }),
-      { status: error.response?.status || 500 }
+      { status: error.response?.status || 500 },
     );
   }
 }
