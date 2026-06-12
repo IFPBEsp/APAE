@@ -1,7 +1,6 @@
 import { ServiceArea } from "./service-area";
-import { AddressResponse } from "./address";
 
-export const diasDaSemana = [
+export const daysOfWeek = [
   { id: "segunda", label: "Segunda" },
   { id: "terca", label: "Terça" },
   { id: "quarta", label: "Quarta" },
@@ -9,14 +8,14 @@ export const diasDaSemana = [
   { id: "sexta", label: "Sexta" },
 ];
 
-export const turnos = [
+export const shifts = [
   { id: "manha", label: "Manhã" },
   { id: "tarde", label: "Tarde" },
 ];
 
 export type AvailabilityType = {
-  dia: string;
-  turno: string;
+  day: string;
+  shift: string;
   checked: boolean;
 };
 
@@ -35,9 +34,20 @@ export interface Professional {
   cpf: string;
   name: string;
   identityDocument: string;
-  healthSector?: string | null;
+  address: Address;
   availabilities: Availability[];
-  ativo: boolean;
+  active?: boolean;
+  ativo?: boolean;
   profilePhoto?: string | null;
-  address?: AddressResponse | null;
+  profilePhotoUrl?: string | null;
+}
+
+export interface Address {
+  cep: string;
+  city: string;
+  state: string;
+  neighborhood: string;
+  street: string;
+  number?: string;
+  complement?: string;
 }

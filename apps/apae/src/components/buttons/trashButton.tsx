@@ -19,11 +19,11 @@ export default function TrashButton({
   id,
 }: {
   id: string;
-  realizado: boolean;
+  realized: boolean;
 }) {
   const router = useRouter();
 
-  const deletarAgendamento = async () => {
+  const excludeAppointment = async () => {
     await deleteAppointment(id);
     router.back();
   };
@@ -47,7 +47,7 @@ export default function TrashButton({
           <DialogClose asChild>
             <Button variant="outline">Não</Button>
           </DialogClose>
-          <Button onClick={deletarAgendamento} type="submit">
+          <Button onClick={excludeAppointment} type="submit">
             Sim
           </Button>
         </DialogFooter>

@@ -1,12 +1,16 @@
 import * as z from "zod";
 
-const nomeRegex = /^[A-Za-zÀ-ÖØ-öø-ÿ ]{3,100}$/;
-const telefoneRegex = /^\(\d{2}\) \d{5}-\d{4}$/;
-const cepRegex = /^\d{5}-\d{3}$/;
+const nameRegex = /^[A-Za-zÀ-ÖØ-öø-ÿ ]{3,100}$/;
+const phoneRegex = /^\(\d{2}\) \d{5}-\d{4}$/;
 const cpfRegex = /^\d{3}\.\d{3}\.\d{3}-\d{2}$/;
 
 const rgRegex =
   /^(\d{7,8}[\dXx]?|\d\.\d{3}\.\d{3}|\d{2}\.\d{3}\.\d{3}-[\dXx])$/;
+const stateRegex = /^[A-Z]{2}$/;
+const cityRegex = /^[A-Za-zÀ-ÿ\s]+$/;
+const neighborhoodRegex = /^[A-Za-zÀ-ÿ\s]+$/;
+const streetRegex = /^[A-Za-zÀ-ÿ0-9\s]+$/;
+const numberRegex = /^[0-9]{1,6}$/;
 
 const fileSchema = z
   .instanceof(File, { message: "Selecione um arquivo" })
@@ -33,10 +37,10 @@ const fileSchema = z
   );
 
 const baseSchema = z.object({
-  nomeCompleto: z
+  fullName: z
     .string()
     .regex(
-      nomeRegex,
+      nameRegex,
       "Nome inválido. Use apenas letras e espaços, 3-100 caracteres"
     ),
 
@@ -44,38 +48,40 @@ const baseSchema = z.object({
 
   cpf: z.string().regex(cpfRegex, "CPF inválido. Formato esperado: 999.999.999-99"),
 
-  documentoProfissional: z.string().optional().nullable(),
+  professionalDocument: z.string().optional().nullable(),
 
-  areaAtendimento: z.string().min(1, "Selecione uma área"),
+  serviceArea: z.string().min(1, "Selecione uma área"),
 
   rg: z
     .string()
     .regex(rgRegex, "RG inválido")
     .transform((val) => val.replace(/\W/g, "")),
 
-  telefone: z
+  state: z.string().regex(stateRegex, "Estado inválido"),
+  city: z.string().regex(cityRegex, "Cidade inválida"),
+  neighborhood: z.string().regex(neighborhoodRegex, "Bairro inválido"),
+  street: z.string().regex(streetRegex, "Rua inválida"),
+  number: z.string().regex(numberRegex, "Número inválido"),
+
+  complement: z.string().optional(),
+
+  cep: z
+    .string()
+    .regex(/^\d{5}-\d{3}$/, "CEP inválido. Formato esperado: XXXXX-XXX"),
+
+  phone: z
     .string()
     .regex(
-      telefoneRegex,
+      phoneRegex,
       "Telefone inválido. Formato esperado: (xx) xxxxx-xxxx"
     )
     .transform((val) => val.trim()),
 
-  address: z.object({
-    cep: z.string().regex(cepRegex, "CEP inválido. Formato esperado: 99999-999"),
-    state: z.string().min(1, "Selecione um estado"),
-    city: z.string().min(1, "Cidade é obrigatória"),
-    neighborhood: z.string().min(2, "Bairro é obrigatório"),
-    street: z.string().min(2, "Rua é obrigatória"),
-    number: z.string().min(1, "Número é obrigatório").max(20, "Número deve ter no máximo 20 caracteres"),
-    complement: z.string().max(60, "Complemento deve ter no máximo 60 caracteres").optional().nullable(),
-  }),
-
-  disponibilidade: z
+  availability: z
     .array(
       z.object({
-        dia: z.string(),
-        turno: z.string(),
+        day: z.string(),
+        shift: z.string(),
         checked: z.boolean(),
       })
     )
@@ -84,10 +90,10 @@ const baseSchema = z.object({
   photo: imageSchema.optional().nullable(),
 });
 
-export const cadastroSchema = baseSchema.extend({
-  termoVoluntariado: fileSchema,
-  curriculo: fileSchema,
-  anexoQualquer: fileSchema.optional(),
+export const registerSchema = baseSchema.extend({
+  volunteerAgreement: fileSchema,
+  curriculum: fileSchema,
+  attachmentAny: fileSchema.optional(),
 });
 
 export const updateProfessionalSchema = baseSchema;

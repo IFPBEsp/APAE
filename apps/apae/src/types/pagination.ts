@@ -4,7 +4,7 @@ export interface Page<T> {
   totalElements: number;
   totalPages: number;
   size: number;
-  number: number; // página atual
+  number: number; // current page
   first: boolean;
   last: boolean;
   empty: boolean;

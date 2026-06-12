@@ -1,6 +1,6 @@
 package br.org.apae.api.address.domain.model;
 
-import jakarta.persistence.*;
+import  jakarta.persistence.*;
 import java.util.UUID;
 
 @Entity

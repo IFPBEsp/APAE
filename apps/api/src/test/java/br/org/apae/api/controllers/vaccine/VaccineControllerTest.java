@@ -50,7 +50,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @Tag("patient")
 @Tag("unit")
 @Tag("controller")
-public class VaccineControllerTest {
+public class    VaccineControllerTest {
 
     @TestConfiguration
     @EnableSpringDataWebSupport(pageSerializationMode = VIA_DTO)
@@ -240,6 +240,22 @@ public class VaccineControllerTest {
                         .content(objectMapper.writeValueAsString(updateDto))
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isNotFound());
+    }
+
+    @Test
+    @DisplayName("Deve retornar Conflict (409) ao tentar atualizar vacina com nome já existente")
+    void shouldReturnConflictWhenUpdateVaccineWithDuplicateName() throws Exception {
+        UUID id = UUID.randomUUID();
+        CreateVaccineDTO updateDto = new CreateVaccineDTO("Hepatite B");
+        when(vaccineService.updateVaccine(eq(id), any(CreateVaccineDTO.class)))
+                .thenThrow(new VaccineConflictException(updateDto.name()));
+
+        mockMvc.perform(put(BASE_URL + "/{id}", id)
+                        .header("Authorization", AuthTestHelper.bearerToken())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(updateDto))
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isConflict());
     }
 
     @Test

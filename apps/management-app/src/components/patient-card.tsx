@@ -19,17 +19,17 @@ const getStatus = (patient: any) => {
 };
 
 const statusTextStyles: { [key: string]: string } = {
-    Paciente: "text-[#468f71]",
-    Aluno: "text-[#003B93]",
-    Inativo: "text-[#871d1e]",
-    "Em Fila": "text-[#9f9e9e]",
+    Patient: "text-[#468f71]",
+    Student: "text-[#003B93]",
+    Inactive: "text-[#871d1e]",
+    "In Line": "text-[#9f9e9e]",
 };
 
 const statusBorderStyles: { [key: string]: string } = {
-    Paciente: "border-2 border-[#5db993]",
-    Aluno: "border-2 border-[#0D4F97]",
-    Inativo: "border-2 border-[#ac3637]",
-    "Em Fila": "border border-[#9f9e9e]",
+    Patient: "border-2 border-[#5db993]",
+    Student: "border-2 border-[#0D4F97]",
+    Inactive: "border-2 border-[#ac3637]",
+    "In Line": "border border-[#9f9e9e]",
 };
 
 export function PatientCard({ patient }: PatientCardProps) {

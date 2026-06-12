@@ -20,12 +20,13 @@ import {
   formatIssuingBody,
   formatPhone,
   formatRG,
+  capitalizeFirst,
 } from "@/lib/formats";
 import { Personal, PersonalData } from "@/schemas/member-schemas";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { useState, useEffect } from "react";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter  } from "next/navigation";
 import { handleBackendValidationErrors } from "@/lib/utils/form-errors";
 import { formatCivilDateDisplayValue } from "@/lib/date";
 import { InputMask } from "@react-input/mask";
@@ -42,15 +43,12 @@ export default function MembersRegisterPersonalPage() {
   const [isLoading, setIsLoading] = useState(false);
 
   const pathname = usePathname();
+  const router = useRouter();
   const isEditing = pathname.includes("/edit");
-  const form = useForm<
-    z.input<typeof Personal>,
-    unknown,
-    z.output<typeof Personal>
-  >({
+  const form = useForm<z.infer<typeof Personal>>({
     mode: "onBlur",
     resolver: zodResolver(Personal),
-    defaultValues: personal as z.input<typeof Personal>,
+    defaultValues: personal,
   });
 
   const [isInitialized, setIsInitialized] = useState(false);
@@ -68,7 +66,7 @@ export default function MembersRegisterPersonalPage() {
     }
   }, [personal, form]);
 
-  const onSubmit = async (values: z.output<typeof Personal>) => {
+  const onSubmit = async (values: z.infer<typeof Personal>) => {
     setIsLoading(true);
     try {
       setPersonalData(values as PersonalData);
@@ -89,9 +87,19 @@ export default function MembersRegisterPersonalPage() {
         title={isEditing ? "Editar Dados Pessoais" : "Dados Pessoais"}
         onSubmit={form.handleSubmit(onSubmit)}
         buttons={
-          <FormButton type="submit" disabled={isLoading}>
-            {isLoading ? "Validando..." : "Próximo"}
-          </FormButton>
+          <div className="flex gap-4">
+            <FormButton
+              type="button"
+              disabled={isLoading}
+              onClick={() => router.push("/patients")}
+            >
+              Voltar
+            </FormButton>
+
+            <FormButton type="submit" disabled={isLoading}>
+              {isLoading ? "Validando..." : "Próximo"}
+            </FormButton>
+          </div>
         }
       >
         <DoubleColumn>
@@ -102,7 +110,11 @@ export default function MembersRegisterPersonalPage() {
               <FormItem className="md:col-span-2">
                 <FormLabel>Nome Completo *</FormLabel>
                 <FormControl>
-                  <Input placeholder="Digite o nome completo" {...field} />
+                  <Input
+                    placeholder="Digite o nome completo"
+                    {...field}
+                    onChange={(e) => field.onChange(capitalizeFirst(e.target.value))}
+                  />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -301,7 +313,11 @@ export default function MembersRegisterPersonalPage() {
               <FormItem>
                 <FormLabel>Naturalidade *</FormLabel>
                 <FormControl>
-                  <Input placeholder="Brasil" {...field} />
+                  <Input
+                    placeholder="Brasil"
+                    {...field}
+                    onChange={(e) => field.onChange(capitalizeFirst(e.target.value))}
+                  />
                 </FormControl>
                 <FormMessage />
               </FormItem>

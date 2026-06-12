@@ -37,7 +37,7 @@ export function SidebarSteps() {
 
           return (
             <div key={s.id} className={`flex items-center gap-4 transition-all duration-300 ${isCurrent ? "opacity-100 scale-105" : "opacity-60"}`}>
-              {/* O Ícone da Bolinha */}
+              {/* The Dot Icon */}
               <div className="flex-shrink-0">
                 {isCompleted ? (
                   <CheckCircle2 className="w-8 h-8 text-green-400" />
@@ -49,7 +49,7 @@ export function SidebarSteps() {
                   <Circle className="w-8 h-8 text-blue-300" />
                 )}
               </div>
-              {/* O Texto do Passo */}
+              {/* The Step Text */}
               <span className={`text-base md:text-lg font-bold ${isCurrent ? "text-white" : "text-blue-200"}`}>
                 {s.label}
               </span>

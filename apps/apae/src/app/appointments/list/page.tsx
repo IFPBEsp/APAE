@@ -4,7 +4,7 @@ import {
   CalendarDays,
   SearchIcon,
   Users,
-  AlertTriangle // Import do Ícone
+  AlertTriangle // Icon Import
 } from 'lucide-react';
 import { useEffect, useState, useRef } from 'react';
 
@@ -47,8 +47,7 @@ import Link from "next/link";
 import {
   Appointment,
   getAppointments,
-  getAreasDaSaude,
-  getProfessionalAreaName,
+  getServiceAreas,
 } from "../../services/appointmentService";
 import {Tooltip, TooltipContent, TooltipProvider, TooltipTrigger} from "@radix-ui/react-tooltip";
 
@@ -64,7 +63,7 @@ export default function AllApointments() {
   const [searchName, setSearchName] = useState('');
   const [areas, setAreas] = useState<Area[]>([]);
   const [appointments, setAppointments] = useState<Appointment[]>([]);
-  const [alertPatientIds, setAlertPatientIds] = useState<Set<string>>(new Set()); // ESTADO DO ALERTA
+  const [alertPatientIds, setAlertPatientIds] = useState<Set<string>>(new Set()); // ALERT STATE
   const initialized = useRef(false);
   const [isCreateOpen, setIsCreateOpen] = useState(false);
 
@@ -81,13 +80,13 @@ useEffect(() => {
 
       setAppointments(response.content as Appointment[])
 
-      const areasData = await getAreasDaSaude();
-      const areasExistentes: Area[] = areasData.map(
+      const areasData = await getServiceAreas();
+      const existingAreas: Area[] = areasData.map(
         (area, index) => ({ id: index, name: area })
       );
-      setAreas(areasExistentes);
+      setAreas(existingAreas);
 
-      // Busca direta na API (lógica que está funcionando)
+      // Direct fetch to API (working logic)
       const absencesResponse = await fetch('/apae-geral/api/patients/with-absences?minAbsences=3');
       
       if (!absencesResponse.ok) {
@@ -126,8 +125,8 @@ useEffect(() => {
         .includes(search);
 
     const matchesArea = selectedArea
-      ? getProfessionalAreaName(appointment.professional) === selectedArea
-      : true;
+      ? appointment.professional.healthSector === selectedArea
+        : true;
 
     const matchesStatus = selectedStatus
         ? selectedStatus === 'ativo'
@@ -295,7 +294,7 @@ useEffect(() => {
                         <div className="flex items-center gap-2">
                           <span className="truncate">{item.annualRegistration.patient.fullName}</span>
                           
-                          {/* CRUZA O ID DO PACIENTE DA TABELA COM O SET DE FALTOSOS */}
+                          {/* CROSS-REFERENCES TABLE PATIENT ID WITH ABSENCE SET */}
                           {alertPatientIds.has(item.annualRegistration.patient.id) && (
                             <TooltipProvider>
                               <Tooltip>

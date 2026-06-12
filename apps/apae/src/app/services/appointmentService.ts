@@ -163,7 +163,6 @@ export interface CancelGeneratedAppointmentDTO {
 
 export interface Professional {
   id: string;
-  userId?: string;
   serviceArea?: {
     id?: string | number;
     area?: string;
@@ -174,9 +173,8 @@ export interface Professional {
   email: string;
   cpf?: string;
   name: string;
-  identityDocument: string;
-  profilePhoto?: string | null;
-  ativo?: boolean;
+  identityDocument?: string;
+  address?: Address;
 }
 
 export interface Disorder {
@@ -445,7 +443,7 @@ export async function registerAbsence(
   return await res.json();
 }
 
-export async function getPacientes(): Promise<Patient[]> {
+export async function getPatients(): Promise<Patient[]> {
   const response = await fetch(`/apae-geral/api/patients?page=0&size=100`);
 
   if (!response.ok) {
@@ -456,7 +454,7 @@ export async function getPacientes(): Promise<Patient[]> {
   return data.content || data || [];
 }
 
-export async function getProfissionaisDaSaude(): Promise<Professional[]> {
+export async function getHealthProfessionals(): Promise<Professional[]> {
   const response = await fetch(`/apae-geral/api/professionals?page=0&size=100`);
 
   if (!response.ok) {
@@ -467,7 +465,7 @@ export async function getProfissionaisDaSaude(): Promise<Professional[]> {
   return data.content || data || [];
 }
 
-export async function getProfissionalDaSaude(
+export async function getHealthProfessional(
   id: string,
 ): Promise<Professional> {
   const response = await fetch(`/apae-geral/api/professionals/${id}`);
@@ -479,13 +477,13 @@ export async function getProfissionalDaSaude(
   return await response.json();
 }
 
-export async function getAreasDaSaude(): Promise<string[]> {
-  const profissionais = await getProfissionaisDaSaude();
-  const areas = profissionais.map(getProfessionalAreaName);
+export async function getServiceAreas(): Promise<string[]> {
+  const professionals = await getHealthProfessionals();
+  const areas = professionals.map((p) => p.healthSector);
   return [...new Set(areas)].filter(Boolean) as string[];
 }
 
-export const toggleConfirmacao = async (id: UUID): Promise<void> => {
+export const toggleConfirmation = async (id: UUID): Promise<void> => {
   const appointment = await getAppointmentById(id);
 
   if (!appointment.professional || !appointment.annualRegistration?.id) {

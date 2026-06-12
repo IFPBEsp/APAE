@@ -98,7 +98,7 @@ export default function MembersRegisterProfilePage() {
     };
   }, [previewUrl]);
 
-  // Busca a foto atual do paciente ao entrar na edição
+  // Fetches the patient's current photo when entering edit mode
   useEffect(() => {
     if (!isEditing || !id) return;
     if (profile.photo) return;

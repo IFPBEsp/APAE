@@ -1,36 +1,37 @@
 import axios from "axios";
 
-export async function getAllProfissionais(ativo?: boolean) {
+export async function getAllProfessionals(active?: boolean) {
   const url =
-    ativo === undefined
+    active === undefined
       ? `/apae-geral/api/professionals`
-      : `/apae-geral/api/professionals?ativo=${ativo}`;
+      : `/apae-geral/api/professionals?ativo=${active}`;
 
+  console.log("[getAllProfessionals] ativo:", active, "| url:", url);
   return axios.get(url);
 }
 
-/*export async function deleteProfissional(id: string) {
+/*export async function deleteProfessional(id: string) {
   const response = await fetch(API_URL + `/professionals/${id}`, {
     method: "DELETE",
   });
   return response;
 }*/
 
-export async function inactivateProfissional(id: string) {
+export async function inactivateProfessional(id: string) {
   const response = await fetch(`/apae-geral/api/professionals/${id}/inactivate`, {
     method: "PUT",
   });
   return response;
 }
 
-export async function activateProfissional(id: string) {
+export async function activateProfessional(id: string) {
   const response = await fetch(`/apae-geral/api/professionals/${id}/activate`, {
     method: "PUT",
   });
   return response;
 }
 
-export async function createProfissional(formData: FormData) {
+export async function createProfessional(formData: FormData) {
   const response = await fetch("/apae-geral/api/professionals", {
     method: "POST",
     body: formData,
@@ -39,7 +40,7 @@ export async function createProfissional(formData: FormData) {
   return response;
 }
 
-export async function updateProfissional(id: string, data: unknown) {
+export async function updateProfessional(id: string, data: unknown) {
   const response = await fetch(`/apae-geral/api/professionals/${id}`, {
     method: "PUT",
     headers: {
@@ -51,7 +52,7 @@ export async function updateProfissional(id: string, data: unknown) {
   return response;
 }
 
-export async function getProfissionalById(id: string) {
+export async function getProfessionalById(id: string) {
   try {
     const response = await axios.get(`/apae-geral/api/professionals/${id}`);
     return response.data;
