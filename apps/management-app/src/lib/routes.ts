@@ -5,5 +5,5 @@ export const NAV = [
   { label: "Dashboard", href: "/dashboard", icon: BarChart },
   { label: "Transtornos", href: "/transtornos", icon: SquareActivity},
   { label: "Vacinas", href: "/vaccines", icon: Syringe},
-  { label: "Tipos de Atendimento", href: "/tipo-atendimento", icon: BriefcaseMedical},
+  { label: "Tipos de Atendimento", href: "/service-types", icon: BriefcaseMedical},
 ]
