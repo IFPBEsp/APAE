@@ -11,6 +11,7 @@ import br.org.apae.api.documents.interfaces.dto.DocumentDTO;
 import br.org.apae.api.helpers.AuthTestHelper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -93,177 +94,196 @@ public class PatientDocumentsControllerTest {
                 Arguments.of("/patients/{id}/documents/schools", DocumentCategory.SCHOOL));
     }
 
-    @Test
-    @DisplayName("Deve fazer upload do documento com sucesso (201)")
-    void shouldUploadDocumentSuccessfully() throws Exception {
-        UUID patientId = UUID.randomUUID();
-        MockMultipartFile file = new MockMultipartFile(
-                "file", "document.pdf", "application/pdf", "content".getBytes());
+    @Nested
+    @DisplayName("Cenários de Criação")
+    class Criacao {
 
-        mockMvc.perform(
-                        multipart(BASE_URL, patientId)
-                                .file(file)
-                                .param("category", "MEDICAL")
-                                .param("type", "REFERRAL")
-                                .header("Authorization", AuthTestHelper.bearerToken())
-                                .with(csrf()))
-                .andExpect(status().isCreated());
+            @Test
+            @DisplayName("Deve fazer upload do documento com sucesso (201)")
+            void shouldUploadDocumentSuccessfully() throws Exception {
+            UUID patientId = UUID.randomUUID();
+            MockMultipartFile file = new MockMultipartFile(
+                    "file", "document.pdf", "application/pdf", "content".getBytes());
+
+            mockMvc.perform(
+                            multipart(BASE_URL, patientId)
+                                    .file(file)
+                                    .param("category", "MEDICAL")
+                                    .param("type", "REFERRAL")
+                                    .header("Authorization", AuthTestHelper.bearerToken())
+                                    .with(csrf()))
+                    .andDo(new DebugResultHandler())
+                    .andExpect(status().isCreated());
+            }
+
+            @Test
+            @DisplayName("Deve retornar erro quando o serviço falhar durante o upload")
+            void shouldReturnErrorWhenServiceFailsDuringUpload() throws Exception {
+            UUID patientId = UUID.randomUUID();
+            MockMultipartFile file = new MockMultipartFile(
+                    "file", "document.pdf", "application/pdf", "content".getBytes());
+
+            doThrow(new RuntimeException("Service error"))
+                    .when(documentService)
+                    .putDocument(any());
+
+            mockMvc.perform(
+                            multipart(BASE_URL, patientId)
+                                    .file(file)
+                                    .param("category", "MEDICAL")
+                                    .param("type", "REFERRAL")
+                                    .header("Authorization", AuthTestHelper.bearerToken())
+                                    .with(csrf()))
+                    .andExpect(status().isInternalServerError());
+            }
+
     }
 
-    @Test
-    @DisplayName("Deve falhar ao tentar fazer upload com categoria inválida")
-    void shouldFailWhenCategoryIsInvalid() throws Exception {
-        UUID patientId = UUID.randomUUID();
-        MockMultipartFile file = new MockMultipartFile(
-                "file", "document.pdf", "application/pdf", "content".getBytes());
+    @Nested
+    @DisplayName("Cenários de Busca e Listagem")
+    class BuscaEListagEm {
 
-        mockMvc.perform(
-                        multipart(BASE_URL, patientId)
-                                .file(file)
-                                .param("category", "INVALID")
-                                .param("type", "REFERRAL")
-                                .header("Authorization", AuthTestHelper.bearerToken())
-                                .with(csrf()))
-                .andExpect(status().isInternalServerError());
+            @ParameterizedTest(name = "Deve retornar documentos com sucesso para o endpoint {0}")
+            @MethodSource("PatientDocumentsControllerTest#\1")
+            void shouldReturnDocumentsSuccessfully(String endpoint, DocumentCategory category) throws Exception {
+            UUID patientId = UUID.randomUUID();
+
+            when(documentService.listDocuments(any())).thenReturn(List.of(document(patientId, category)));
+            when(documentService.getPresignedDocumentUrl(any())).thenReturn("http://presigned-url");
+
+            mockMvc.perform(get(endpoint, patientId)
+                            .header("Authorization", AuthTestHelper.bearerToken()))
+                    .andExpect(status().isOk())
+                    .andExpect(jsonPath("$", hasSize(1)))
+                    .andExpect(jsonPath("$[0].url").value("http://presigned-url"));
+            }
+
+            @ParameterizedTest(name = "Deve cobrir a exceção quando a geração da URL pre-assinada falhar para o endpoint {0}")
+            @MethodSource("PatientDocumentsControllerTest#\1")
+            void shouldCoverCatchWhenPresignedUrlFails(String endpoint, DocumentCategory category) throws Exception {
+            UUID patientId = UUID.randomUUID();
+
+            when(documentService.listDocuments(any())).thenReturn(List.of(document(patientId, category)));
+            when(documentService.getPresignedDocumentUrl(any())).thenThrow(new RuntimeException("MinIO unavailable"));
+
+            mockMvc.perform(get(endpoint, patientId)
+                            .header("Authorization", AuthTestHelper.bearerToken()))
+                    .andExpect(status().isOk())
+                    .andExpect(jsonPath("$", hasSize(0)));
+            }
+
+            @Test
+            @DisplayName("Deve substituir um documento com sucesso (200)")
+            void shouldReplaceDocumentSuccessfully() throws Exception {
+            UUID patientId = UUID.randomUUID();
+            UUID documentId = UUID.randomUUID();
+            DocumentDTO existingDoc = new DocumentDTO(
+                    documentId, "old-document.pdf", DocumentCategory.MEDICAL,
+                    DocumentType.REFERRAL, patientId.toString(), Year.now());
+            DocumentDTO replacedDoc = new DocumentDTO(
+                    UUID.randomUUID(), "new-document.pdf", DocumentCategory.MEDICAL,
+                    DocumentType.REFERRAL, patientId.toString(), Year.now());
+
+            when(documentService.listDocuments(any())).thenReturn(List.of(existingDoc));
+            when(documentService.putDocument(any())).thenReturn(replacedDoc);
+            doNothing().when(documentService).removeDocument(any());
+            when(documentService.getPresignedDocumentUrl(any())).thenReturn("http://presigned-url");
+
+            MockMultipartFile file = new MockMultipartFile(
+                    "file", "new-document.pdf", "application/pdf", "content".getBytes());
+
+            mockMvc.perform(multipart(BASE_URL + "/{documentId}", patientId, documentId)
+                            .file(file)
+                            .with(request -> { request.setMethod("PATCH"); return request; })
+                            .header("Authorization", AuthTestHelper.bearerToken())
+                            .with(csrf()))
+                    .andExpect(status().isOk())
+                    .andExpect(jsonPath("$.url").value("http://presigned-url"));
+            }
+
+            @Test
+            @DisplayName("Deve retornar 500 ao substituir documento inexistente (ResponseStatusException capturada pelo GlobalExceptionHandler)")
+            void shouldReturnErrorWhenReplacingNonExistentDocument() throws Exception {
+            UUID patientId = UUID.randomUUID();
+            UUID documentId = UUID.randomUUID();
+
+            when(documentService.listDocuments(any())).thenReturn(List.of());
+
+            MockMultipartFile file = new MockMultipartFile(
+                    "file", "new-document.pdf", "application/pdf", "content".getBytes());
+
+            mockMvc.perform(multipart(BASE_URL + "/{documentId}", patientId, documentId)
+                            .file(file)
+                            .with(request -> { request.setMethod("PATCH"); return request; })
+                            .header("Authorization", AuthTestHelper.bearerToken())
+                            .with(csrf()))
+                    .andExpect(status().isInternalServerError());
+            }
+
+            @Test
+            @DisplayName("Deve buscar documento pelo nome com sucesso (200)")
+            void shouldFindDocumentByNameSuccessfully() throws Exception {
+            UUID patientId = UUID.randomUUID();
+            String documentName = "laudo-medico.pdf";
+
+            when(documentService.getPresignedDocumentUrl(any())).thenReturn("http://presigned-url");
+
+            mockMvc.perform(get(BASE_URL + "/download", patientId)
+                            .header("Authorization", AuthTestHelper.bearerToken())
+                            .param("documentName", documentName))
+                    .andExpect(status().isOk())
+                    .andExpect(jsonPath("$.name").value(documentName))
+                    .andExpect(jsonPath("$.url").value("http://presigned-url"));
+            }
+
+            @Test
+            @DisplayName("Deve retornar erro ao buscar documento quando o serviço falhar")
+            void shouldReturnErrorWhenFindByNameServiceFails() throws Exception {
+            UUID patientId = UUID.randomUUID();
+
+            when(documentService.getPresignedDocumentUrl(any()))
+                    .thenThrow(new RuntimeException("MinIO unavailable"));
+
+            mockMvc.perform(get(BASE_URL + "/download", patientId)
+                            .header("Authorization", AuthTestHelper.bearerToken())
+                            .param("documentName", "laudo.pdf"))
+                    .andExpect(status().isInternalServerError());
+            }
     }
 
-    @Test
-    @DisplayName("Deve retornar erro quando o serviço falhar durante o upload")
-    void shouldReturnErrorWhenServiceFailsDuringUpload() throws Exception {
-        UUID patientId = UUID.randomUUID();
-        MockMultipartFile file = new MockMultipartFile(
-                "file", "document.pdf", "application/pdf", "content".getBytes());
+    @Nested
+    @DisplayName("Cenários de Login")
+    class Login {
 
-        doThrow(new RuntimeException("Service error"))
-                .when(documentService)
-                .putDocument(any());
+            @Test
+            @DisplayName("Deve falhar ao tentar fazer upload com categoria inválida")
+            void shouldFailWhenCategoryIsInvalid() throws Exception {
+            UUID patientId = UUID.randomUUID();
+            MockMultipartFile file = new MockMultipartFile(
+                    "file", "document.pdf", "application/pdf", "content".getBytes());
 
-        mockMvc.perform(
-                        multipart(BASE_URL, patientId)
-                                .file(file)
-                                .param("category", "MEDICAL")
-                                .param("type", "REFERRAL")
-                                .header("Authorization", AuthTestHelper.bearerToken())
-                                .with(csrf()))
-                .andExpect(status().isInternalServerError());
+            mockMvc.perform(
+                            multipart(BASE_URL, patientId)
+                                    .file(file)
+                                    .param("category", "INVALID")
+                                    .param("type", "REFERRAL")
+                                    .header("Authorization", AuthTestHelper.bearerToken())
+                                    .with(csrf()))
+                    .andExpect(status().isInternalServerError());
+            }
+
+            @ParameterizedTest(name = "Deve retornar erro quando o paciente não for encontrado para o endpoint {0}")
+            @MethodSource("PatientDocumentsControllerTest#\1")
+            void shouldReturnErrorWhenPatientNotFound(String endpoint, DocumentCategory category) throws Exception {
+            UUID patientId = UUID.randomUUID();
+
+            when(documentService.listDocuments(any())).thenThrow(new RuntimeException("Patient not found"));
+
+            mockMvc.perform(get(endpoint, patientId)
+                            .header("Authorization", AuthTestHelper.bearerToken()))
+                    .andExpect(status().isInternalServerError());
+            }
+
     }
 
-    @ParameterizedTest(name = "Deve retornar documentos com sucesso para o endpoint {0}")
-    @MethodSource("documentsEndpoints")
-    void shouldReturnDocumentsSuccessfully(String endpoint, DocumentCategory category) throws Exception {
-        UUID patientId = UUID.randomUUID();
-
-        when(documentService.listDocuments(any())).thenReturn(List.of(document(patientId, category)));
-        when(documentService.getPresignedDocumentUrl(any())).thenReturn("http://presigned-url");
-
-        mockMvc.perform(get(endpoint, patientId)
-                        .header("Authorization", AuthTestHelper.bearerToken()))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$", hasSize(1)))
-                .andExpect(jsonPath("$[0].url").value("http://presigned-url"));
-    }
-
-    @ParameterizedTest(name = "Deve retornar erro quando o paciente não for encontrado para o endpoint {0}")
-    @MethodSource("documentsEndpoints")
-    void shouldReturnErrorWhenPatientNotFound(String endpoint, DocumentCategory category) throws Exception {
-        UUID patientId = UUID.randomUUID();
-
-        when(documentService.listDocuments(any())).thenThrow(new RuntimeException("Patient not found"));
-
-        mockMvc.perform(get(endpoint, patientId)
-                        .header("Authorization", AuthTestHelper.bearerToken()))
-                .andExpect(status().isInternalServerError());
-    }
-
-    @ParameterizedTest(name = "Deve cobrir a exceção quando a geração da URL pre-assinada falhar para o endpoint {0}")
-    @MethodSource("documentsEndpoints")
-    void shouldCoverCatchWhenPresignedUrlFails(String endpoint, DocumentCategory category) throws Exception {
-        UUID patientId = UUID.randomUUID();
-
-        when(documentService.listDocuments(any())).thenReturn(List.of(document(patientId, category)));
-        when(documentService.getPresignedDocumentUrl(any())).thenThrow(new RuntimeException("MinIO unavailable"));
-
-        mockMvc.perform(get(endpoint, patientId)
-                        .header("Authorization", AuthTestHelper.bearerToken()))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$", hasSize(0)));
-    }
-
-    @Test
-    @DisplayName("Deve substituir um documento com sucesso (200)")
-    void shouldReplaceDocumentSuccessfully() throws Exception {
-        UUID patientId = UUID.randomUUID();
-        UUID documentId = UUID.randomUUID();
-        DocumentDTO existingDoc = new DocumentDTO(
-                documentId, "old-document.pdf", DocumentCategory.MEDICAL,
-                DocumentType.REFERRAL, patientId.toString(), Year.now());
-        DocumentDTO replacedDoc = new DocumentDTO(
-                UUID.randomUUID(), "new-document.pdf", DocumentCategory.MEDICAL,
-                DocumentType.REFERRAL, patientId.toString(), Year.now());
-
-        when(documentService.listDocuments(any())).thenReturn(List.of(existingDoc));
-        when(documentService.putDocument(any())).thenReturn(replacedDoc);
-        doNothing().when(documentService).removeDocument(any());
-        when(documentService.getPresignedDocumentUrl(any())).thenReturn("http://presigned-url");
-
-        MockMultipartFile file = new MockMultipartFile(
-                "file", "new-document.pdf", "application/pdf", "content".getBytes());
-
-        mockMvc.perform(multipart(BASE_URL + "/{documentId}", patientId, documentId)
-                        .file(file)
-                        .with(request -> { request.setMethod("PATCH"); return request; })
-                        .header("Authorization", AuthTestHelper.bearerToken())
-                        .with(csrf()))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.url").value("http://presigned-url"));
-    }
-
-    @Test
-    @DisplayName("Deve retornar 500 ao substituir documento inexistente (ResponseStatusException capturada pelo GlobalExceptionHandler)")
-    void shouldReturnErrorWhenReplacingNonExistentDocument() throws Exception {
-        UUID patientId = UUID.randomUUID();
-        UUID documentId = UUID.randomUUID();
-
-        when(documentService.listDocuments(any())).thenReturn(List.of());
-
-        MockMultipartFile file = new MockMultipartFile(
-                "file", "new-document.pdf", "application/pdf", "content".getBytes());
-
-        mockMvc.perform(multipart(BASE_URL + "/{documentId}", patientId, documentId)
-                        .file(file)
-                        .with(request -> { request.setMethod("PATCH"); return request; })
-                        .header("Authorization", AuthTestHelper.bearerToken())
-                        .with(csrf()))
-                .andExpect(status().isInternalServerError());
-    }
-
-    @Test
-    @DisplayName("Deve buscar documento pelo nome com sucesso (200)")
-    void shouldFindDocumentByNameSuccessfully() throws Exception {
-        UUID patientId = UUID.randomUUID();
-        String documentName = "laudo-medico.pdf";
-
-        when(documentService.getPresignedDocumentUrl(any())).thenReturn("http://presigned-url");
-
-        mockMvc.perform(get(BASE_URL + "/download", patientId)
-                        .header("Authorization", AuthTestHelper.bearerToken())
-                        .param("documentName", documentName))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.name").value(documentName))
-                .andExpect(jsonPath("$.url").value("http://presigned-url"));
-    }
-
-    @Test
-    @DisplayName("Deve retornar erro ao buscar documento quando o serviço falhar")
-    void shouldReturnErrorWhenFindByNameServiceFails() throws Exception {
-        UUID patientId = UUID.randomUUID();
-
-        when(documentService.getPresignedDocumentUrl(any()))
-                .thenThrow(new RuntimeException("MinIO unavailable"));
-
-        mockMvc.perform(get(BASE_URL + "/download", patientId)
-                        .header("Authorization", AuthTestHelper.bearerToken())
-                        .param("documentName", "laudo.pdf"))
-                .andExpect(status().isInternalServerError());
-    }
 }

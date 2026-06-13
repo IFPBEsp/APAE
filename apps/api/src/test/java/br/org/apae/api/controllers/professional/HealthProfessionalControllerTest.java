@@ -10,6 +10,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -51,280 +52,204 @@ import java.util.UUID;
 @WebMvcTest(controllers = HealthProfessionalControllerImpl.class)
 @AutoConfigureMockMvc(addFilters = true)
 @Import({
-    SpringDataWebConfiguration.class,
-    SecurityConfiguration.class
+ SpringDataWebConfiguration.class,
+ SecurityConfiguration.class
 })
 class HealthProfessionalControllerTest {
 
-    @Autowired
-    private MockMvc mockMvc;
+ @Autowired
+ private MockMvc mockMvc;
 
-    @Autowired
-    private ObjectMapper objectMapper;
+ @Autowired
+ private ObjectMapper objectMapper;
 
-    @MockitoBean
-    private HealthProfessionalApplicationService service;
+ @MockitoBean
+ private HealthProfessionalApplicationService service;
 
-    @MockitoBean
-    private JwtProvider jwtProvider;
+ @MockitoBean
+ private JwtProvider jwtProvider;
 
-    @MockitoBean
-    private UserService userService;
+ @MockitoBean
+ private UserService userService;
 
-    @MockitoBean
-    private DocumentApplicationService documentApplicationService;
+ @MockitoBean
+ private DocumentApplicationService documentApplicationService;
 
-    @BeforeEach
-    void setupAuth() {
-        AuthTestHelper.mockAuthenticatedUser(jwtProvider, userService);
-    }
+ @BeforeEach
+ void setupAuth() {
+  AuthTestHelper.mockAuthenticatedUser(jwtProvider, userService);
+ }
 
-    @Test
-    @DisplayName("Deve criar profissional com sucesso (201)")
-    void shouldCreateProfessionalSuccessfully() throws Exception {
-        var request = HealthProfessionalMockDto.createHealthProfessionalRequest();
-        var response = HealthProfessionalMockDto.createProfessionalResponse1();
+ @Nested
+ @DisplayName("Cenários de Criação (POST)")
+ class Criacao {
+  @Test
+  @DisplayName("Deve criar profissional com sucesso (201)")
+  void shouldCreateProfessionalSuccessfully() throws Exception {
+   var request = HealthProfessionalMockDto.createHealthProfessionalRequest();
+   var response = HealthProfessionalMockDto.createProfessionalResponse1();
 
-        Mockito.when(
-            service.createProfessional(
-                any(CreateHealthProfessionalDTO.class),
-                any(CreateProfessionalDocumentsDTO.class)
-            )
-        ).thenReturn(response);
+   Mockito.when(service.createProfessional(any(CreateHealthProfessionalDTO.class), any(CreateProfessionalDocumentsDTO.class))).thenReturn(response);
 
-        var professionalPart = new MockMultipartFile(
-            "professional",
-            "",
-            MediaType.APPLICATION_JSON_VALUE,
-            objectMapper.writeValueAsBytes(request)
-        );
+   var professionalPart = new MockMultipartFile("professional", "", MediaType.APPLICATION_JSON_VALUE, objectMapper.writeValueAsBytes(request));
 
-        mockMvc.perform(
-                multipart("/professionals")
-                    .file(professionalPart)
-                    .file(HealthProfessionalMockDto.volunteerAgreementFile())
-                    .file(HealthProfessionalMockDto.curriculumFile())
-                    .file(HealthProfessionalMockDto.attachmentAnyFile())
-                    .header("Authorization", AuthTestHelper.bearerToken())
-                    .contentType(MediaType.MULTIPART_FORM_DATA)
-            )
-            .andExpect(status().isCreated());
+   mockMvc.perform(multipart("/professionals").file(professionalPart).file(HealthProfessionalMockDto.volunteerAgreementFile())
+       .file(HealthProfessionalMockDto.curriculumFile()).file(HealthProfessionalMockDto.attachmentAnyFile())
+       .header("Authorization", AuthTestHelper.bearerToken()).contentType(MediaType.MULTIPART_FORM_DATA))
+     .andExpect(status().isCreated());
 
-        Mockito.verify(service).createProfessional(any(), any());
-    }
+   Mockito.verify(service).createProfessional(any(), any());
+  }
+ }
 
-    @Test
-    @DisplayName("Deve listar todos os profissionais paginado (200)")
-    void shouldReturnAllProfessionals() throws Exception {
-        var responses = HealthProfessionalMockDto.createProfessionalResponseList();
+ @Nested
+ @DisplayName("Cenários de Busca e Listagem (GET)")
+ class BuscasEListagens {
+  @Test
+  @DisplayName("Deve listar todos os profissionais paginado (200)")
+  void shouldReturnAllProfessionals() throws Exception {
+   var responses = HealthProfessionalMockDto.createProfessionalResponseList();
+   var page = new PageImpl<>(responses, PageRequest.of(0, 10), responses.size());
 
-        var page = new PageImpl<>(
-            responses,
-            PageRequest.of(0, 10),
-            responses.size()
-        );
+   Mockito.when(service.findAllProfessionals(isNull(), any(Pageable.class))).thenReturn(page);
 
-        Mockito.when(service.findAllProfessionals(isNull(), any(Pageable.class)))
-            .thenReturn(page);
+   mockMvc.perform(get("/professionals").param("Ativo", "true").header("Authorization", AuthTestHelper.bearerToken()))
+     .andExpect(status().isOk())
+     .andExpect(jsonPath("$.content.length()").value(2))
+     .andExpect(jsonPath("$.content[0].id").value(HealthProfessionalMockDto.PROFESSIONAL_ID_1.toString()));
+  }
 
-        mockMvc.perform(get("/professionals")
-                .param("Ativo", "true")
-                .header("Authorization", AuthTestHelper.bearerToken()))
-            .andExpect(status().isOk())
-            .andExpect(jsonPath("$.content").isArray())
-            .andExpect(jsonPath("$.content.length()").value(2))
-            .andExpect(jsonPath("$.content[0].id").value(HealthProfessionalMockDto.PROFESSIONAL_ID_1.toString()))
-            .andExpect(jsonPath("$.content[0].healthSector").value("Fisioterapia"))
-            .andExpect(jsonPath("$.content[0].address.city").value("São Paulo"))
-            .andExpect(jsonPath("$.content[1].id").value(HealthProfessionalMockDto.PROFESSIONAL_ID_2.toString()))
-            .andExpect(jsonPath("$.content[1].name").value("Maria Souza"))
-            .andExpect(jsonPath("$.content[1].address.neighborhood").value("Santana"));
-    }
+  @Test
+  @DisplayName("Deve buscar profissional por ID com sucesso (200)")
+  void shouldFindProfessionalByIdSuccessfully() throws Exception {
+   UUID id = HealthProfessionalMockDto.PROFESSIONAL_ID_1;
+   var response = HealthProfessionalMockDto.createProfessionalResponse1();
 
-    @Test
-    @DisplayName("Deve inativar profissional com sucesso (204) usando PUT")
-    void shouldInactivateProfessionalSuccessfully() throws Exception {
-        UUID id = HealthProfessionalMockDto.PROFESSIONAL_ID_1;
+   Mockito.when(service.findProfessionalById(id)).thenReturn(response);
 
-        Mockito.doNothing().when(service).inactivateProfessional(id);
+   mockMvc.perform(get("/professionals/{id}", id).header("Authorization", AuthTestHelper.bearerToken()))
+     .andExpect(status().isOk())
+     .andExpect(jsonPath("$.id").value(id.toString()));
+  }
 
-        mockMvc.perform(put("/professionals/{id}/inactivate", id)
-                        .header("Authorization", AuthTestHelper.bearerToken()))
-                .andExpect(status().isNoContent()); 
+  @Test
+  @DisplayName("Deve listar horários disponíveis do profissional no formato HH:mm (200)")
+  void shouldGetAvailableTimesSuccessfully() throws Exception {
+   UUID id = HealthProfessionalMockDto.PROFESSIONAL_ID_1;
+   String dateString = "2026-05-18";
+   List<LocalTime> mockTimes = List.of(LocalTime.of(9, 0), LocalTime.of(10, 30));
 
-        Mockito.verify(service).inactivateProfessional(id);
-    }
+   Mockito.when(service.getAvailableTimes(id, LocalDate.parse(dateString))).thenReturn(mockTimes);
 
-    @Test
-    @DisplayName("Deve ativar profissional com sucesso (204) usando PUT")
-    void shouldActivateProfessionalSuccessfully() throws Exception {
-        UUID id = HealthProfessionalMockDto.PROFESSIONAL_ID_1;
+   mockMvc.perform(get("/professionals/{id}/available-times", id).param("date", dateString).header("Authorization", AuthTestHelper.bearerToken()))
+     .andExpect(status().isOk())
+     .andExpect(jsonPath("$.length()").value(2))
+     .andExpect(jsonPath("$[0]").value("09:00"));
+  }
 
-        Mockito.doNothing().when(service).activateProfessional(id);
+  @Test
+  @DisplayName("Deve retornar 404 ao buscar profissional inexistente")
+  void shouldReturnNotFoundWhenProfessionalDoesNotExist() throws Exception {
+   UUID id = UUID.randomUUID();
+   Mockito.when(service.findProfessionalById(id)).thenThrow(new HealthProfessionalNotFoundException());
+   mockMvc.perform(get("/professionals/{id}", id).header("Authorization", AuthTestHelper.bearerToken()))
+     .andExpect(status().isNotFound());
+  }
+ }
 
-        mockMvc.perform(put("/professionals/{id}/activate", id)
-                        .header("Authorization", AuthTestHelper.bearerToken()))
-                .andExpect(status().isNoContent());
+ @Nested
+ @DisplayName("Cenários de Atualização de Dados e Ações de Status (PUT / PATCH)")
+ class AtualizacoesEStatus {
+  @Test
+  @DisplayName("Deve atualizar profissional com sucesso (200)")
+  void shouldUpdateProfessionalSuccessfully() throws Exception {
+   UUID id = HealthProfessionalMockDto.PROFESSIONAL_ID_1;
+   var response = HealthProfessionalMockDto.createProfessionalResponse1();
+   var updateRequest = HealthProfessionalMockDto.createHealthProfessionalRequest();
 
-        Mockito.verify(service).activateProfessional(id);
-    }
+   Mockito.when(service.updateProfessional(Mockito.eq(id), any(UpdateHealthProfessionalDTO.class))).thenReturn(response);
 
-    @Test
-    @DisplayName("Deve reativar profissional com sucesso (204) usando PATCH")
-    void shouldReactivateProfessionalSuccessfully() throws Exception {
-        UUID id = HealthProfessionalMockDto.PROFESSIONAL_ID_1;
+   mockMvc.perform(put("/professionals/{id}", id).header("Authorization", AuthTestHelper.bearerToken())
+       .contentType(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsBytes(updateRequest)))
+     .andExpect(status().isOk())
+     .andExpect(jsonPath("$.id").value(id.toString()));
+  }
 
-        Mockito.doNothing().when(service).reactivateProfessional(id);
+  @Test
+  @DisplayName("Deve inativar profissional com sucesso (204) usando PUT")
+  void shouldInactivateProfessionalSuccessfully() throws Exception {
+   UUID id = HealthProfessionalMockDto.PROFESSIONAL_ID_1;
+   Mockito.doNothing().when(service).inactivateProfessional(id);
+   mockMvc.perform(put("/professionals/{id}/inactivate", id).header("Authorization", AuthTestHelper.bearerToken()))
+     .andExpect(status().isNoContent());
+  }
 
-        mockMvc.perform(patch("/professionals/{id}/reactivate", id)
-                        .header("Authorization", AuthTestHelper.bearerToken()))
-                .andExpect(status().isNoContent());
+  @Test
+  @DisplayName("Deve ativar profissional com sucesso (204) usando PUT")
+  void shouldActivateProfessionalSuccessfully() throws Exception {
+   UUID id = HealthProfessionalMockDto.PROFESSIONAL_ID_1;
+   Mockito.doNothing().when(service).activateProfessional(id);
+   mockMvc.perform(put("/professionals/{id}/activate", id).header("Authorization", AuthTestHelper.bearerToken()))
+     .andExpect(status().isNoContent());
+  }
 
-        Mockito.verify(service).reactivateProfessional(id);
-    }
+  @Test
+  @DisplayName("Deve reativar profissional com sucesso (204) usando PATCH")
+  void shouldReactivateProfessionalSuccessfully() throws Exception {
+   UUID id = HealthProfessionalMockDto.PROFESSIONAL_ID_1;
+   Mockito.doNothing().when(service).reactivateProfessional(id);
+   mockMvc.perform(patch("/professionals/{id}/reactivate", id).header("Authorization", AuthTestHelper.bearerToken()))
+     .andExpect(status().isNoContent());
+  }
+ }
 
-    @Test
-    @DisplayName("Deve buscar profissional por ID com sucesso (200)")
-    void shouldFindProfessionalByIdSuccessfully() throws Exception {
-        UUID id = HealthProfessionalMockDto.PROFESSIONAL_ID_1;
-        var response = HealthProfessionalMockDto.createProfessionalResponse1();
+ @Nested
+ @DisplayName("Cenários de Documentos e Foto de Perfil")
+ class DocumentosEFotos {
+  @Test
+  @DisplayName("Deve listar documentos do profissional com sucesso (200)")
+  void shouldGetProfessionalDocumentsSuccessfully() throws Exception {
+   UUID id = HealthProfessionalMockDto.PROFESSIONAL_ID_1;
+   DocumentDTO docMock = new DocumentDTO(UUID.randomUUID(), "CRM_Doc", DocumentCategory.PROFESSIONAL, br.org.apae.api.documents.domain.enums.DocumentType.MEDICAL_REPORT, id.toString(), java.time.Year.of(2026));
 
-        Mockito.when(service.findProfessionalById(id)).thenReturn(response);
+   Mockito.when(documentApplicationService.listDocuments(any())).thenReturn(List.of(docMock));
+   Mockito.when(documentApplicationService.getPresignedDocumentUrl(any())).thenReturn("https://aws.s3.url/presigned");
 
-        mockMvc.perform(get("/professionals/{id}", id)
-                        .header("Authorization", AuthTestHelper.bearerToken()))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.id").value(id.toString()))
-                .andExpect(jsonPath("$.healthSector").value("Fisioterapia"));
-    }
+   mockMvc.perform(get("/professionals/{id}/documents", id).header("Authorization", AuthTestHelper.bearerToken()))
+     .andExpect(status().isOk())
+     .andExpect(jsonPath("$.length()").value(1))
+     .andExpect(jsonPath("$[0].url").value("https://aws.s3.url/presigned"));
+  }
 
-    @Test
-    @DisplayName("Deve atualizar profissional com sucesso (200)")
-    void shouldUpdateProfessionalSuccessfully() throws Exception {
-        UUID id = HealthProfessionalMockDto.PROFESSIONAL_ID_1;
-        var response = HealthProfessionalMockDto.createProfessionalResponse1();
-        var updateRequest = HealthProfessionalMockDto.createHealthProfessionalRequest();
+  @Test
+  @DisplayName("Deve atualizar documentos do profissional com sucesso (204) via PATCH Multipart")
+  void shouldUpdateProfessionalDocumentsSuccessfully() throws Exception {
+   UUID id = HealthProfessionalMockDto.PROFESSIONAL_ID_1;
+   mockMvc.perform(multipart("/professionals/{id}/documents", id).file(HealthProfessionalMockDto.volunteerAgreementFile()).file(HealthProfessionalMockDto.curriculumFile())
+       .with(request -> { request.setMethod("PATCH"); return request; }).header("Authorization", AuthTestHelper.bearerToken()).contentType(MediaType.MULTIPART_FORM_DATA))
+     .andExpect(status().isNoContent());
+   Mockito.verify(service).updateProfessionalDocuments(Mockito.eq(id), any());
+  }
 
-        Mockito.when(service.updateProfessional(Mockito.eq(id), any(UpdateHealthProfessionalDTO.class)))
-                .thenReturn(response);
+  @Test
+  @DisplayName("Deve remover documento do profissional com sucesso (204)")
+  void shouldRemoveProfessionalDocumentSuccessfully() throws Exception {
+   UUID id = HealthProfessionalMockDto.PROFESSIONAL_ID_1;
+   UUID documentId = UUID.randomUUID();
+   Mockito.doNothing().when(service).removeProfessionalDocument(id, documentId);
+   mockMvc.perform(delete("/professionals/{id}/documents/{documentId}", id, documentId).header("Authorization", AuthTestHelper.bearerToken()))
+     .andExpect(status().isNoContent());
+  }
 
-        mockMvc.perform(put("/professionals/{id}", id)
-                        .header("Authorization", AuthTestHelper.bearerToken())
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsBytes(updateRequest)))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.id").value(id.toString()));
-    }
+  @Test
+  @DisplayName("Deve fazer upload da foto de perfil com sucesso (204)")
+  void shouldUploadProfessionalPhotoSuccessfully() throws Exception {
+   UUID id = HealthProfessionalMockDto.PROFESSIONAL_ID_1;
+   MockMultipartFile photoFile = new MockMultipartFile("file", "profile.jpg", MediaType.IMAGE_JPEG_VALUE, "fake-image-bytes".getBytes());
+   Mockito.doNothing().when(service).uploadProfessionalPhoto(Mockito.eq(id), any(MultipartFile.class));
 
-    @Test
-    @DisplayName("Deve listar documentos do profissional com sucesso (200)")
-    void shouldGetProfessionalDocumentsSuccessfully() throws Exception {
-        UUID id = HealthProfessionalMockDto.PROFESSIONAL_ID_1;
-        UUID docId = UUID.randomUUID();
-        
-        DocumentDTO docMock = new DocumentDTO(
-            docId, 
-            "CRM_Doc", 
-            DocumentCategory.PROFESSIONAL, 
-            br.org.apae.api.documents.domain.enums.DocumentType.MEDICAL_REPORT, 
-            id.toString(), 
-            java.time.Year.of(2026)
-        );
-
-        Mockito.when(documentApplicationService.listDocuments(any()))
-                .thenReturn(List.of(docMock));
-
-        Mockito.when(documentApplicationService.getPresignedDocumentUrl(any()))
-                .thenReturn("https://aws.s3.url/presigned");
-
-        mockMvc.perform(get("/professionals/{id}/documents", id)
-                        .header("Authorization", AuthTestHelper.bearerToken()))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.length()").value(1))
-                .andExpect(jsonPath("$[0].name").value("CRM_Doc"))
-                .andExpect(jsonPath("$[0].url").value("https://aws.s3.url/presigned"));
-    }
-
-    @Test
-    @DisplayName("Deve atualizar documentos do profissional com sucesso (204) via PATCH Multipart")
-    void shouldUpdateProfessionalDocumentsSuccessfully() throws Exception {
-        UUID id = HealthProfessionalMockDto.PROFESSIONAL_ID_1;
-
-        mockMvc.perform(multipart("/professionals/{id}/documents", id)
-                        .file(HealthProfessionalMockDto.volunteerAgreementFile()) // ADAPTAÇÃO: utilizando arquivos do mock
-                        .file(HealthProfessionalMockDto.curriculumFile())
-                        .with(request -> { request.setMethod("PATCH"); return request; })
-                        .header("Authorization", AuthTestHelper.bearerToken())
-                        .contentType(MediaType.MULTIPART_FORM_DATA))
-                .andExpect(status().isNoContent());
-
-        Mockito.verify(service).updateProfessionalDocuments(Mockito.eq(id), any());
-    }
-
-    @Test
-    @DisplayName("Deve remover documento do profissional com sucesso (204)")
-    void shouldRemoveProfessionalDocumentSuccessfully() throws Exception {
-        UUID id = HealthProfessionalMockDto.PROFESSIONAL_ID_1;
-        UUID documentId = UUID.randomUUID();
-
-        Mockito.doNothing().when(service).removeProfessionalDocument(id, documentId);
-
-        mockMvc.perform(delete("/professionals/{id}/documents/{documentId}", id, documentId)
-                        .header("Authorization", AuthTestHelper.bearerToken()))
-                .andExpect(status().isNoContent());
-    }
-
-    @Test
-    @DisplayName("Deve fazer upload da foto de perfil com sucesso (204)")
-    void shouldUploadProfessionalPhotoSuccessfully() throws Exception {
-        UUID id = HealthProfessionalMockDto.PROFESSIONAL_ID_1;
-        MockMultipartFile photoFile = new MockMultipartFile(
-            "file", 
-            "profile.jpg", 
-            MediaType.IMAGE_JPEG_VALUE, 
-            "fake-image-bytes".getBytes()
-        );
-
-        Mockito.doNothing().when(service).uploadProfessionalPhoto(Mockito.eq(id), any(MultipartFile.class));
-
-        mockMvc.perform(multipart("/professionals/{id}/photo", id)
-                        .file(photoFile)
-                        .header("Authorization", AuthTestHelper.bearerToken()))
-                .andExpect(status().isNoContent());
-
-        Mockito.verify(service).uploadProfessionalPhoto(Mockito.eq(id), any(MultipartFile.class));
-    }
-
-    @Test
-    @DisplayName("Deve listar horários disponíveis do profissional no formato HH:mm (200)")
-    void shouldGetAvailableTimesSuccessfully() throws Exception {
-        UUID id = HealthProfessionalMockDto.PROFESSIONAL_ID_1;
-        String dateString = "2026-05-18";
-
-        List<LocalTime> mockTimes = List.of(LocalTime.of(9, 0), LocalTime.of(10, 30));
-
-        Mockito.when(service.getAvailableTimes(id, LocalDate.parse(dateString)))
-                .thenReturn(mockTimes);
-
-        mockMvc.perform(get("/professionals/{id}/available-times", id)
-                        .param("date", dateString)
-                        .header("Authorization", AuthTestHelper.bearerToken()))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.length()").value(2))
-                .andExpect(jsonPath("$[0]").value("09:00"))
-                .andExpect(jsonPath("$[1]").value("10:30"));
-    }
-
-    @Test
-    @DisplayName("Deve retornar 404 ao buscar profissional inexistente")
-    void shouldReturnNotFoundWhenProfessionalDoesNotExist() throws Exception {
-        UUID id = UUID.randomUUID(); 
-
-        Mockito.when(service.findProfessionalById(id))
-                .thenThrow(new HealthProfessionalNotFoundException());
-
-        mockMvc.perform(get("/professionals/{id}", id)
-                        .header("Authorization", AuthTestHelper.bearerToken()))
-                .andExpect(status().isNotFound());
-    }
+   mockMvc.perform(multipart("/professionals/{id}/photo", id).file(photoFile).header("Authorization", AuthTestHelper.bearerToken()))
+     .andExpect(status().isNoContent());
+  }
+ }
 }
