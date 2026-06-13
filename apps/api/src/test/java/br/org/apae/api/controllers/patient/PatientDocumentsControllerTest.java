@@ -9,6 +9,7 @@ import br.org.apae.api.documents.domain.enums.DocumentCategory;
 import br.org.apae.api.documents.domain.enums.DocumentType;
 import br.org.apae.api.documents.interfaces.dto.DocumentDTO;
 import br.org.apae.api.helpers.AuthTestHelper;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -17,6 +18,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
+import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -75,6 +77,11 @@ public class PatientDocumentsControllerTest {
     @BeforeEach
     void setupAuth() {
         AuthTestHelper.mockAuthenticatedUser(jwtProvider, userService);
+    }
+
+    @AfterEach
+    void tearDown() {
+        Mockito.reset(documentService, jwtProvider, userService);
     }
 
     private DocumentDTO document(UUID patientId, DocumentCategory category) {
@@ -141,10 +148,10 @@ public class PatientDocumentsControllerTest {
 
     @Nested
     @DisplayName("Cenários de Busca e Listagem")
-    class BuscaEListagEm {
+    class BuscaEListagem {
 
             @ParameterizedTest(name = "Deve retornar documentos com sucesso para o endpoint {0}")
-            @MethodSource("documentsEndpoints")
+            @MethodSource("br.org.apae.api.controllers.patient.PatientDocumentsControllerTest#documentsEndpoints")
             void shouldReturnDocumentsSuccessfully(String endpoint, DocumentCategory category) throws Exception {
             UUID patientId = UUID.randomUUID();
 
@@ -159,7 +166,7 @@ public class PatientDocumentsControllerTest {
             }
 
             @ParameterizedTest(name = "Deve cobrir a exceção quando a geração da URL pre-assinada falhar para o endpoint {0}")
-            @MethodSource("PatientDocumentsControllerTest#\1")
+            @MethodSource("br.org.apae.api.controllers.patient.PatientDocumentsControllerTest#documentsEndpoints")
             void shouldCoverCatchWhenPresignedUrlFails(String endpoint, DocumentCategory category) throws Exception {
             UUID patientId = UUID.randomUUID();
 
@@ -273,7 +280,7 @@ public class PatientDocumentsControllerTest {
             }
 
             @ParameterizedTest(name = "Deve retornar erro quando o paciente não for encontrado para o endpoint {0}")
-            @MethodSource("PatientDocumentsControllerTest#\1")
+            @MethodSource("br.org.apae.api.controllers.patient.PatientDocumentsControllerTest#documentsEndpoints")
             void shouldReturnErrorWhenPatientNotFound(String endpoint, DocumentCategory category) throws Exception {
             UUID patientId = UUID.randomUUID();
 

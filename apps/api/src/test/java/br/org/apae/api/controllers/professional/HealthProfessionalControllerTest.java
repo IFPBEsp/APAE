@@ -8,6 +8,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -26,7 +27,6 @@ import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.web.multipart.MultipartFile;
 
 import br.org.apae.api.auth.application.internal.UserService;
 import br.org.apae.api.auth.infrastructure.security.JwtProvider;
@@ -78,6 +78,11 @@ class HealthProfessionalControllerTest {
  @BeforeEach
  void setupAuth() {
   AuthTestHelper.mockAuthenticatedUser(jwtProvider, userService);
+ }
+
+ @AfterEach
+ void tearDown() {
+  Mockito.reset(service, documentApplicationService, jwtProvider, userService);
  }
 
  @Nested
@@ -246,9 +251,15 @@ class HealthProfessionalControllerTest {
   void shouldUploadProfessionalPhotoSuccessfully() throws Exception {
    UUID id = HealthProfessionalMockDto.PROFESSIONAL_ID_1;
    MockMultipartFile photoFile = new MockMultipartFile("file", "profile.jpg", MediaType.IMAGE_JPEG_VALUE, "fake-image-bytes".getBytes());
-   Mockito.doNothing().when(service).uploadProfessionalPhoto(Mockito.eq(id), any(MultipartFile.class));
+   
+   Mockito.doNothing().when(service).uploadProfessionalPhoto(Mockito.eq(id), any());
 
-   mockMvc.perform(multipart("/professionals/{id}/photo", id).file(photoFile).header("Authorization", AuthTestHelper.bearerToken()))
+   mockMvc.perform(multipart("/professionals/{id}/photo", id).file(photoFile)
+       .with(request -> {
+        request.setMethod("PATCH");
+        return request;
+       })
+       .header("Authorization", AuthTestHelper.bearerToken()))
      .andExpect(status().isNoContent());
   }
  }

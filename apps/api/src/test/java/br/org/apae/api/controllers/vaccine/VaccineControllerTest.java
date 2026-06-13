@@ -82,7 +82,7 @@ public class VaccineControllerTest {
 
  @AfterEach
  void tearDown() {
-  Mockito.clearInvocations(vaccineService);
+  Mockito.reset(vaccineService, jwtProvider, userService);
  }
 
  @Nested

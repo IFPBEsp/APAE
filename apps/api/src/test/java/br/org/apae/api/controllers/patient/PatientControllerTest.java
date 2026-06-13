@@ -119,7 +119,7 @@ public class PatientControllerTest {
  
  @AfterEach
  void tearDown() {
-  Mockito.clearInvocations(patientService, disorderApplicationService, annualRegistryApplicationService, serviceAreaApplicationService);
+  Mockito.reset(patientService, disorderApplicationService, annualRegistryApplicationService, serviceAreaApplicationService, jwtProvider, userService);
  }
 
  private CreateAddressDTO createAddress() {
@@ -182,11 +182,15 @@ public class PatientControllerTest {
    CreatePatientDTO patientDTO = createValidPatientRequest();
    CreateDocumentsDTO docsDTO = PatientCreator.createDocuments();
 
-   when(patientService.createPatient(any(CreatePatientDTO.class), any(CreateDocumentsDTO.class))).thenThrow(new PatientConflictException());
+   when(patientService.createPatient(any(), any())).thenThrow(new PatientConflictException());
 
    MockMultipartFile patientPart = new MockMultipartFile("patient", "", MediaType.APPLICATION_JSON_VALUE, objectMapper.writeValueAsString(patientDTO).getBytes(StandardCharsets.UTF_8));
 
-   mockMvc.perform(multipart(BASE_URL).file(patientPart).file((MockMultipartFile) docsDTO.rg())
+   mockMvc.perform(multipart(BASE_URL)
+       .file(patientPart).file((MockMultipartFile) docsDTO.rg()).file((MockMultipartFile) docsDTO.cpf())
+       .file((MockMultipartFile) docsDTO.proof_of_address()).file((MockMultipartFile) docsDTO.birth_certificate())
+       .file((MockMultipartFile) docsDTO.photo()).file((MockMultipartFile) docsDTO.reports().getFirst())
+       .file((MockMultipartFile) docsDTO.referrals().getFirst())
        .header("Authorization", AuthTestHelper.bearerToken()).with(csrf()).contentType(MediaType.MULTIPART_FORM_DATA))
      .andExpect(status().isConflict());
   }

@@ -7,9 +7,11 @@ import br.org.apae.api.common.dto.appointment.request.absence.CreateAbsenceDTO;
 import br.org.apae.api.common.dto.appointment.response.absence.AbsenceResponseDTO;
 import br.org.apae.api.common.dto.appointment.response.absence.JustifyAbsenceDTO;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -49,6 +51,11 @@ class AbsenceControllerImplTest {
 
     @Autowired
     private ObjectMapper objectMapper;
+
+    @AfterEach
+    void tearDown() {
+        Mockito.reset(service, jwtProvider, userService);
+    }
 
     @Nested
     @DisplayName("Cenários de Registro de Ausência (POST /absences)")

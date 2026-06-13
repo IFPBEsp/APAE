@@ -6,16 +6,16 @@ import br.org.apae.api.auth.infrastructure.security.JwtProvider;
 import br.org.apae.api.common.dto.appointment.request.absence.CreateAbsenceDTO;
 import br.org.apae.api.common.dto.appointment.response.absence.AbsenceResponseDTO;
 import br.org.apae.api.common.dto.appointment.response.absence.JustifyAbsenceDTO;
-import br.org.apae.api.common.exceptions.handler.GlobalExceptionHandler;
 import br.org.apae.api.controllers.absence.AbsenceControllerImpl;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.context.annotation.Import;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
@@ -36,7 +36,6 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 
 @WebMvcTest(controllers = AbsenceControllerImpl.class)
 @AutoConfigureMockMvc(addFilters = false)
-@Import(GlobalExceptionHandler.class)
 class AbsenceControllerTest {
 
     @Autowired
@@ -53,6 +52,11 @@ class AbsenceControllerTest {
 
     @Autowired
     private ObjectMapper objectMapper;
+
+    @AfterEach
+    void tearDown() {
+        Mockito.reset(service, jwtProvider, userService);
+    }
 
     @Nested
     @DisplayName("Cenários de Registro de Ausência (POST /absences)")
@@ -221,6 +225,7 @@ class AbsenceControllerTest {
             String documentId = "doc-123";
 
             JustifyAbsenceDTO request = new JustifyAbsenceDTO("Motivo de saúde urgente", documentId);
+
             AbsenceResponseDTO response = new AbsenceResponseDTO(
                     absenceId, generatedId, patientId, professionalId, date, "Motivo de saúde urgente", false, true, documentId);
 

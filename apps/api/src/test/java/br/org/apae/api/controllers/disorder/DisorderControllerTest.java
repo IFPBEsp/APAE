@@ -6,16 +6,19 @@ import br.org.apae.api.auth.infrastructure.security.SecurityConfiguration;
 import br.org.apae.api.common.dto.patient.request.disorder.CreateDisorderDTO;
 import br.org.apae.api.common.dto.patient.request.disorder.UpdateDisorderDTO;
 import br.org.apae.api.common.dto.patient.response.disorder.DisorderResponseDTO;
+import br.org.apae.api.common.exceptions.handler.GlobalExceptionHandler;
 import br.org.apae.api.helpers.AuthTestHelper;
 import br.org.apae.api.patient.application.interfaces.DisorderApplicationService;
 import br.org.apae.api.patient.domain.exceptions.DisorderConflictException;
 import br.org.apae.api.patient.domain.exceptions.DisorderNotFoundException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -42,7 +45,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @AutoConfigureMockMvc(addFilters = true)
 @Import({
   SpringDataWebConfiguration.class,
-  SecurityConfiguration.class
+  SecurityConfiguration.class,
+  GlobalExceptionHandler.class
 })
 @Tag("patient")
 @Tag("unit")
@@ -73,6 +77,11 @@ class DisorderControllerTest {
  @BeforeEach
  void setupAuth() {
   AuthTestHelper.mockAuthenticatedUser(jwtProvider, userService);
+ }
+
+ @AfterEach
+ void tearDown() {
+  Mockito.reset(disorderService, jwtProvider, userService);
  }
 
  @Nested

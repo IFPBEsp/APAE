@@ -18,11 +18,13 @@ import br.org.apae.api.patient.domain.exceptions.DisorderMismatchException;
 import br.org.apae.api.professional.domain.exceptions.ServiceAreaNotFoundException;
 import br.org.apae.api.patient.domain.exceptions.PatientNotFoundException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -87,6 +89,11 @@ public class AnnualRegistryControllerTest {
   AuthTestHelper.mockAuthenticatedUser(jwtProvider, userService);
  }
 
+ @AfterEach
+ void tearDown() {
+  Mockito.reset(annualRegistryService, jwtProvider, userService);
+ }
+
  private CreateAnnualRegistryDTO createValidCreateDTO() {
   return new CreateAnnualRegistryDTO("123456", "Doença Teste", "Nenhum", BigDecimal.valueOf(2000.00), Year.of(2024), Collections.emptySet(), Collections.emptySet());
  }
@@ -109,7 +116,7 @@ public class AnnualRegistryControllerTest {
    CreateAnnualRegistryDTO requestDto = createValidCreateDTO();
    AnnualRegistryResponseDTO responseDto = createResponseDTO(patientId, requestDto.year().getValue());
 
-   when(annualRegistryService.createRegistry(requestDto, patientId)).thenReturn(responseDto);
+   when(annualRegistryService.createRegistry(any(), eq(patientId))).thenReturn(responseDto);
 
    mockMvc.perform(post(BASE_URL, patientId).header("Authorization", AuthTestHelper.bearerToken())
        .contentType(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(requestDto)).accept(MediaType.APPLICATION_JSON))
@@ -135,7 +142,7 @@ public class AnnualRegistryControllerTest {
    UUID patientId = UUID.randomUUID();
    CreateAnnualRegistryDTO requestDto = createValidCreateDTO();
 
-   when(annualRegistryService.createRegistry(requestDto,patientId)).thenThrow(new PatientNotFoundException());
+   when(annualRegistryService.createRegistry(any(),eq(patientId))).thenThrow(new PatientNotFoundException());
 
    mockMvc.perform(post(BASE_URL, patientId).header("Authorization", AuthTestHelper.bearerToken())
        .contentType(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(requestDto)))
@@ -148,7 +155,7 @@ public class AnnualRegistryControllerTest {
    UUID patientId = UUID.randomUUID();
    CreateAnnualRegistryDTO requestDto = createValidCreateDTO();
 
-   when(annualRegistryService.createRegistry(requestDto, patientId)).thenThrow(new DisorderMismatchException());
+   when(annualRegistryService.createRegistry(any(), eq(patientId))).thenThrow(new DisorderMismatchException());
 
    mockMvc.perform(post(BASE_URL, patientId).header("Authorization", AuthTestHelper.bearerToken())
        .contentType(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(requestDto)))
@@ -174,7 +181,7 @@ public class AnnualRegistryControllerTest {
    UUID patientId = UUID.randomUUID();
    CreateAnnualRegistryDTO requestDto = createValidCreateDTO();
 
-   when(annualRegistryService.createRegistry(requestDto, patientId)).thenThrow(new AnnualRegistryConflictException(requestDto.year()));
+   when(annualRegistryService.createRegistry(any(), eq(patientId))).thenThrow(new AnnualRegistryConflictException(requestDto.year()));
 
    mockMvc.perform(post(BASE_URL, patientId).header("Authorization", AuthTestHelper.bearerToken())
        .contentType(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(requestDto)))
@@ -251,7 +258,7 @@ public class AnnualRegistryControllerTest {
    UpdateAnnualRegistryDTO updateDto = new UpdateAnnualRegistryDTO("987654", "Doença Atualizada", BigDecimal.valueOf(2500.00), Year.of(2025), Collections.emptySet());
    AnnualRegistryResponseDTO responseDto = createResponseDTO(patientId, 2025);
 
-   when(annualRegistryService.updateRegistry(patientId, registryId, updateDto)).thenReturn(responseDto);
+   when(annualRegistryService.updateRegistry(eq(patientId), eq(registryId), any())).thenReturn(responseDto);
 
    mockMvc.perform(patch(BASE_URL + "/{registryId}", patientId, registryId).header("Authorization", AuthTestHelper.bearerToken())
        .contentType(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(updateDto)))
@@ -266,7 +273,7 @@ public class AnnualRegistryControllerTest {
    UUID registryId = UUID.randomUUID();
    UpdateAnnualRegistryDTO updateDto = new UpdateAnnualRegistryDTO("987654", "Doença Atualizada", BigDecimal.valueOf(2500.00), Year.of(2025), Collections.emptySet());
 
-   when(annualRegistryService.updateRegistry(patientId, registryId, updateDto)).thenThrow(new AnnualRegistryConflictException(Year.of(2025)));
+   when(annualRegistryService.updateRegistry(eq(patientId), eq(registryId), any())).thenThrow(new AnnualRegistryConflictException(Year.of(2025)));
 
    mockMvc.perform(patch(BASE_URL + "/{registryId}", patientId, registryId).header("Authorization", AuthTestHelper.bearerToken())
        .contentType(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(updateDto)))
@@ -280,7 +287,7 @@ public class AnnualRegistryControllerTest {
    UUID registryId = UUID.randomUUID();
    UpdateAnnualRegistryDTO updateDto = new UpdateAnnualRegistryDTO("987654", "Doença Atualizada", BigDecimal.valueOf(2500.00), Year.of(2025), Collections.emptySet());
 
-   when(annualRegistryService.updateRegistry(patientId, registryId, updateDto)).thenThrow(new RegistryNotFoundException(registryId));
+   when(annualRegistryService.updateRegistry(eq(patientId), eq(registryId), any())).thenThrow(new RegistryNotFoundException(registryId));
 
    mockMvc.perform(patch(BASE_URL + "/{registryId}", patientId, registryId).header("Authorization", AuthTestHelper.bearerToken())
        .contentType(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(updateDto)))
@@ -295,7 +302,7 @@ public class AnnualRegistryControllerTest {
    ReplaceAnnualRegistryDTO replaceDto = createValidReplaceDTO();
    AnnualRegistryResponseDTO responseDto = createResponseDTO(patientId, 2024);
 
-   when(annualRegistryService.replaceRegistry(patientId, registryId, replaceDto)).thenReturn(responseDto);
+   when(annualRegistryService.replaceRegistry(eq(patientId), eq(registryId), any())).thenReturn(responseDto);
 
    mockMvc.perform(put(BASE_URL + "/{registryId}", patientId, registryId).header("Authorization", AuthTestHelper.bearerToken())
        .contentType(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(replaceDto)))
