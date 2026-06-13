@@ -144,7 +144,7 @@ public class PatientDocumentsControllerTest {
     class BuscaEListagEm {
 
             @ParameterizedTest(name = "Deve retornar documentos com sucesso para o endpoint {0}")
-            @MethodSource("PatientDocumentsControllerTest#\1")
+            @MethodSource("documentsEndpoints")
             void shouldReturnDocumentsSuccessfully(String endpoint, DocumentCategory category) throws Exception {
             UUID patientId = UUID.randomUUID();
 
