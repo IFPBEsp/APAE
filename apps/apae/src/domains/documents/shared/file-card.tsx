@@ -1,20 +1,16 @@
 "use client";
 
-import Image from "next/image";
-import { useState } from "react";
-
 import * as React from "react";
 import { FileText, ExternalLink } from "lucide-react";
 import {
   Dialog,
   DialogContent,
-  DialogFooter,
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 
-interface Props {
+interface FileCardProps {
   file: {
     fileName: string;
     link: string;
@@ -25,27 +21,13 @@ interface Props {
   onReplace?: () => void;
 }
 
-export default function FileCard({
-  file,
-  canReplace = false,
-  onReplace,
-}: Props) {
+export default function FileCard({ file, canReplace = false, onReplace }: FileCardProps) {
   const [open, setOpen] = React.useState(false);
-
-  // State for the Modal (Large Preview)
-  const [modalViewType, setModalViewType] = React.useState<"img" | "iframe">(
-    "img",
-  );
-
-  // NEW: Status for the Miniature (Small Card)
-  const [thumbnailView, setThumbnailView] = React.useState<"img" | "icon">(
-    "img",
-  );
+  const [modalViewType, setModalViewType] = React.useState<"img" | "iframe">("img");
+  const [thumbnailView, setThumbnailView] = React.useState<"img" | "icon">("img");
 
   React.useEffect(() => {
-    if (open) {
-      setModalViewType("img");
-    }
+    if (open) setModalViewType("img");
   }, [open]);
 
   return (
@@ -56,24 +38,17 @@ export default function FileCard({
       >
         <p className="truncate mb-2 text-sm font-medium">{file.fileName}</p>
 
-        {/* MINIATURE AREA */}
         <div className="flex flex-col items-center justify-center bg-blue-50 text-blue-900 rounded-md w-full h-32 border border-blue-100 overflow-hidden relative">
           {thumbnailView === "img" ? (
             <img
               src={file.link}
               alt={file.fileName}
-              // Object-cover makes the image fill the entire square in an elegant way.
               className="w-full h-full object-cover"
-              // If it fails (for PDF), switch to the icon.
               onError={() => setThumbnailView("icon")}
             />
           ) : (
             <>
-              <FileText
-                size={40}
-                strokeWidth={1.5}
-                className="mb-1 text-blue-800"
-              />
+              <FileText size={40} strokeWidth={1.5} className="mb-1 text-blue-800" />
               <span className="text-[10px] font-bold uppercase tracking-wider text-blue-800">
                 Documento
               </span>
@@ -86,24 +61,19 @@ export default function FileCard({
             type="button"
             variant="secondary"
             className="mt-3 w-full border border-blue-100 bg-blue-50 text-blue-900 hover:bg-blue-100"
-            onClick={(event) => {
-              event.stopPropagation();
-              onReplace();
-            }}
+            onClick={(e) => { e.stopPropagation(); onReplace(); }}
           >
             Substituir
           </Button>
         )}
       </div>
 
-      {/* Preview Modal (KEPT AS IT WORKED) */}
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogContent className="sm:max-w-[900px] max-h-[90vh] overflow-hidden bg-white">
           <DialogHeader className="flex flex-row items-center justify-between">
             <DialogTitle className="truncate pr-4">{file.fileName}</DialogTitle>
           </DialogHeader>
 
-          {/* Large Preview Area */}
           <div className="flex justify-center items-center w-full h-[60vh] bg-gray-50 rounded-lg overflow-hidden relative">
             {modalViewType === "img" && (
               <img
@@ -113,23 +83,13 @@ export default function FileCard({
                 onError={() => setModalViewType("iframe")}
               />
             )}
-
             {modalViewType === "iframe" && (
-              <iframe
-                src={file.link}
-                title={file.fileName}
-                className="w-full h-full border-0"
-              />
+              <iframe src={file.link} title={file.fileName} className="w-full h-full border-0" />
             )}
           </div>
 
-          {/* Button to open in new tab */}
           <div className="flex justify-center mt-4 pb-2">
-            <Button
-              variant="default"
-              onClick={() => window.open(file.link, "_blank")}
-              className="gap-2"
-            >
+            <Button variant="default" onClick={() => window.open(file.link, "_blank")} className="gap-2">
               <ExternalLink size={18} />
               Abrir em nova guia
             </Button>
