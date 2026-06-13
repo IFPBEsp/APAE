@@ -27,12 +27,15 @@ import br.org.apae.api.patient.domain.exceptions.PatientConflictException;
 import br.org.apae.api.patient.domain.exceptions.PatientNotFoundException;
 import br.org.apae.api.servicearea.application.interfaces.ServiceAreaApplicationService;
 import com.fasterxml.jackson.databind.ObjectMapper;
+
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
+import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -112,6 +115,11 @@ public class PatientControllerTest {
  @BeforeEach
  void setupAuth() {
   AuthTestHelper.mockAuthenticatedUser(jwtProvider, userService);
+ }
+ 
+ @AfterEach
+ void tearDown() {
+  Mockito.clearInvocations(patientService, disorderApplicationService, annualRegistryApplicationService, serviceAreaApplicationService);
  }
 
  private CreateAddressDTO createAddress() {
