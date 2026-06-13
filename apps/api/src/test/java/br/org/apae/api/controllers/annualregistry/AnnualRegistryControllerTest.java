@@ -51,10 +51,11 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @WebMvcTest(controllers = AnnualRegistryControllerImpl.class)
 @AutoConfigureMockMvc(addFilters = true)
 @Import({
-  SpringDataWebConfiguration.class,
-  SecurityConfiguration.class,
-  GlobalExceptionHandler.class
-})
+        SpringDataWebConfiguration.class,
+        SecurityConfiguration.class,
+        GlobalExceptionHandler.class,
+        br.org.apae.api.patient.application.exceptions.PatientExceptionHandler.class 
+      })
 @Tag("patient")
 @Tag("unit")
 @Tag("controller")
