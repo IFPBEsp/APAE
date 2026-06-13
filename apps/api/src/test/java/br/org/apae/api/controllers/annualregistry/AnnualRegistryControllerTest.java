@@ -114,7 +114,7 @@ public class AnnualRegistryControllerTest {
    mockMvc.perform(post(BASE_URL, patientId).header("Authorization", AuthTestHelper.bearerToken())
        .contentType(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(requestDto)).accept(MediaType.APPLICATION_JSON))
      .andExpect(status().isCreated())
-     .andExpect(jsonPath("$.year").value(requestDto.year()))
+     .andExpect(jsonPath("$.year").value(requestDto.year().getValue()))
      .andExpect(jsonPath("$.patientId").value(patientId.toString()));
   }
 
