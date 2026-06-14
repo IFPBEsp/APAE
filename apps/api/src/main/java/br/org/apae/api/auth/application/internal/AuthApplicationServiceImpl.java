@@ -35,136 +35,136 @@ import br.org.apae.api.notification.domain.model.EmailMessage;
 
 @Service
 public class AuthApplicationServiceImpl implements AuthApplicationService {
-  private static final int PASSWORD_RECOVERY_EXPIRATION_MINUTES = 30;
+    private static final int PASSWORD_RECOVERY_EXPIRATION_MINUTES = 30;
 
-  private final UserService userService;
-  private final PasswordEncoder passwordEncoder;
-  private final TokenProvider tokenProvider;
-  private final AuthenticationConfiguration authenticationConfiguration;
-  private final PasswordRecoveryTokenRepository passwordRecoveryTokenRepository;
-  private final EmailSender emailSender;
+    private final UserService userService;
+    private final PasswordEncoder passwordEncoder;
+    private final TokenProvider tokenProvider;
+    private final AuthenticationConfiguration authenticationConfiguration;
+    private final PasswordRecoveryTokenRepository passwordRecoveryTokenRepository;
+    private final EmailSender emailSender;
 
-  @Value("${app.frontend.reset-password-url}")
-  private String resetPasswordUrl;
+    @Value("${app.frontend.reset-password-url}")
+    private String resetPasswordUrl;
 
-  public AuthApplicationServiceImpl(
-      UserService userService,
-      PasswordEncoder passwordEncoder,
-      AuthenticationConfiguration authenticationConfiguration,
-      TokenProvider tokenProvider,
-      PasswordRecoveryTokenRepository passwordRecoveryTokenRepository,
-      EmailSender emailSender) {
-    this.userService = userService;
-    this.passwordEncoder = passwordEncoder;
-    this.authenticationConfiguration = authenticationConfiguration;
-    this.tokenProvider = tokenProvider;
-    this.passwordRecoveryTokenRepository = passwordRecoveryTokenRepository;
-    this.emailSender = emailSender;
-  }
-
-  @Override
-  public void signUp(SignUpDTO signUpDto) {
-    String passwordHashed = passwordEncoder.encode(signUpDto.password());
-    userService.createUser(signUpDto.email(), passwordHashed, signUpDto.cpf(), signUpDto.fullName());
-  }
-
-  @Override
-  public TokenResponseDTO signIn(SignInDTO signInDto) {
-    try {
-      User user = userService.findUserByUsername(signInDto.username());
-
-      if (!passwordEncoder.matches(signInDto.password(), user.getPassword())) {
-        throw new InvalidPasswordException();
-      }
-
-      AuthenticationManager authenticationManager = authenticationConfiguration.getAuthenticationManager();
-      var authenticationToken = new UsernamePasswordAuthenticationToken(
-          signInDto.username(), signInDto.password());
-      var authentication = authenticationManager.authenticate(authenticationToken);
-
-      UserDetails userDetails = (UserDetails) authentication.getPrincipal();
-      String token = tokenProvider.generateToken((User) userDetails);
-
-      return new TokenResponseDTO(token);
-    } catch (UserNotFoundException | InvalidPasswordException e) {
-      throw e;
-    } catch (Exception e) {
-      throw new AuthenticationException();
-    }
-  }
-
-  @Override
-  @Transactional
-  public void requestPasswordRecovery(PasswordRecoveryRequestDTO dto) {
-    Optional<User> optionalUser = userService.findUserByEmail(dto.email());
-
-    if (optionalUser.isEmpty()) {
-      return;
+    public AuthApplicationServiceImpl(
+            UserService userService,
+            PasswordEncoder passwordEncoder,
+            AuthenticationConfiguration authenticationConfiguration,
+            TokenProvider tokenProvider,
+            PasswordRecoveryTokenRepository passwordRecoveryTokenRepository,
+            EmailSender emailSender) {
+        this.userService = userService;
+        this.passwordEncoder = passwordEncoder;
+        this.authenticationConfiguration = authenticationConfiguration;
+        this.tokenProvider = tokenProvider;
+        this.passwordRecoveryTokenRepository = passwordRecoveryTokenRepository;
+        this.emailSender = emailSender;
     }
 
-    User user = optionalUser.get();
-
-    String rawToken = UUID.randomUUID().toString() + UUID.randomUUID();
-    String tokenHash = hashToken(rawToken);
-
-    PasswordRecoveryToken passwordRecoveryToken = new PasswordRecoveryToken(
-        tokenHash,
-        user,
-        LocalDateTime.now().plusMinutes(PASSWORD_RECOVERY_EXPIRATION_MINUTES));
-
-    passwordRecoveryTokenRepository.save(passwordRecoveryToken);
-
-    String recoveryLink = resetPasswordUrl + "?token=" + rawToken;
-
-    EmailMessage emailMessage = new EmailMessage(
-        List.of(dto.email()),
-        "Recuperação de senha",
-        "Olá,\n\n" +
-            "Recebemos uma solicitação para redefinição da sua senha.\n" +
-            "Clique no link abaixo para continuar:\n\n" +
-            recoveryLink +
-            "\n\nSe você não solicitou esta alteração, ignore este e-mail.");
-
-    emailSender.send(emailMessage);
-  }
-
-  @Override
-  @Transactional
-  public void resetPassword(PasswordResetDTO dto) {
-    if (!dto.newPassword().equals(dto.confirmPassword())) {
-      throw new AuthenticationException("As senhas não coincidem.");
+    @Override
+    public void signUp(SignUpDTO signUpDto) {
+        String passwordHashed = passwordEncoder.encode(signUpDto.password());
+        userService.createUser(signUpDto.email(), passwordHashed, signUpDto.cpf(), signUpDto.fullName());
     }
 
-    String tokenHash = hashToken(dto.token());
+    @Override
+    public TokenResponseDTO signIn(SignInDTO signInDto) {
+        try {
+            User user = userService.findUserByUsername(signInDto.username());
 
-    PasswordRecoveryToken recoveryToken = passwordRecoveryTokenRepository.findByTokenHash(tokenHash)
-        .orElseThrow(() -> new AuthenticationException("Token inválido."));
+            if (!passwordEncoder.matches(signInDto.password(), user.getPassword())) {
+                throw new InvalidPasswordException();
+            }
 
-    if (recoveryToken.isUsed()) {
-      throw new AuthenticationException("Token já utilizado.");
+            AuthenticationManager authenticationManager = authenticationConfiguration.getAuthenticationManager();
+            var authenticationToken = new UsernamePasswordAuthenticationToken(
+                    signInDto.username(), signInDto.password());
+            var authentication = authenticationManager.authenticate(authenticationToken);
+
+            UserDetails userDetails = (UserDetails) authentication.getPrincipal();
+            String token = tokenProvider.generateToken((User) userDetails);
+
+            return new TokenResponseDTO(token);
+        } catch (UserNotFoundException | InvalidPasswordException e) {
+            throw new InvalidPasswordException("E-mail ou senha incorretos");
+        } catch (Exception e) {
+            throw new AuthenticationException();
+        }
     }
 
-    if (recoveryToken.getExpiresAt().isBefore(LocalDateTime.now())) {
-      throw new AuthenticationException("Token expirado.");
+    @Override
+    @Transactional
+    public void requestPasswordRecovery(PasswordRecoveryRequestDTO dto) {
+        Optional<User> optionalUser = userService.findUserByEmail(dto.email());
+
+        if (optionalUser.isEmpty()) {
+            return;
+        }
+
+        User user = optionalUser.get();
+
+        String rawToken = UUID.randomUUID().toString() + UUID.randomUUID();
+        String tokenHash = hashToken(rawToken);
+
+        PasswordRecoveryToken passwordRecoveryToken = new PasswordRecoveryToken(
+                tokenHash,
+                user,
+                LocalDateTime.now().plusMinutes(PASSWORD_RECOVERY_EXPIRATION_MINUTES));
+
+        passwordRecoveryTokenRepository.save(passwordRecoveryToken);
+
+        String recoveryLink = resetPasswordUrl + "?token=" + rawToken;
+
+        EmailMessage emailMessage = new EmailMessage(
+                List.of(dto.email()),
+                "Recuperação de senha",
+                "Olá,\n\n" +
+                        "Recebemos uma solicitação para redefinição da sua senha.\n" +
+                        "Clique no link abaixo para continuar:\n\n" +
+                        recoveryLink +
+                        "\n\nSe você não solicitou esta alteração, ignore este e-mail.");
+
+        emailSender.send(emailMessage);
     }
 
-    User user = recoveryToken.getUser();
-    String encodedPassword = passwordEncoder.encode(dto.newPassword());
+    @Override
+    @Transactional
+    public void resetPassword(PasswordResetDTO dto) {
+        if (!dto.newPassword().equals(dto.confirmPassword())) {
+            throw new AuthenticationException("As senhas não coincidem.");
+        }
 
-    user.updatePassword(encodedPassword);
-    userService.save(user);
+        String tokenHash = hashToken(dto.token());
 
-    recoveryToken.markAsUsed();
-    passwordRecoveryTokenRepository.save(recoveryToken);
-  }
+        PasswordRecoveryToken recoveryToken = passwordRecoveryTokenRepository.findByTokenHash(tokenHash)
+                .orElseThrow(() -> new AuthenticationException("Token inválido."));
 
-  private String hashToken(String rawToken) {
-    try {
-      MessageDigest digest = MessageDigest.getInstance("SHA-256");
-      byte[] hashBytes = digest.digest(rawToken.getBytes(StandardCharsets.UTF_8));
-      return HexFormat.of().formatHex(hashBytes);
-    } catch (Exception e) {
-      throw new AuthenticationException("Erro ao processar token de recuperação.", e);
+        if (recoveryToken.isUsed()) {
+            throw new AuthenticationException("Token já utilizado.");
+        }
+
+        if (recoveryToken.getExpiresAt().isBefore(LocalDateTime.now())) {
+            throw new AuthenticationException("Token expirado.");
+        }
+
+        User user = recoveryToken.getUser();
+        String encodedPassword = passwordEncoder.encode(dto.newPassword());
+
+        user.updatePassword(encodedPassword);
+        userService.save(user);
+
+        recoveryToken.markAsUsed();
+        passwordRecoveryTokenRepository.save(recoveryToken);
     }
-  }
+
+    private String hashToken(String rawToken) {
+        try {
+            MessageDigest digest = MessageDigest.getInstance("SHA-256");
+            byte[] hashBytes = digest.digest(rawToken.getBytes(StandardCharsets.UTF_8));
+            return HexFormat.of().formatHex(hashBytes);
+        } catch (Exception e) {
+            throw new AuthenticationException("Erro ao processar token de recuperação.", e);
+        }
+    }
 }
