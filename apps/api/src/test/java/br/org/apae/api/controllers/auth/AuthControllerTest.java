@@ -21,6 +21,8 @@ import br.org.apae.api.common.dto.auth.request.PasswordResetDTO;
 import br.org.apae.api.common.dto.auth.request.SignInDTO;
 import br.org.apae.api.common.dto.auth.request.SignUpDTO;
 import br.org.apae.api.common.dto.auth.response.TokenResponseDTO;
+import br.org.apae.api.common.exceptions.handler.GlobalExceptionHandler;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -29,12 +31,14 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
 @WebMvcTest(controllers = AuthControllerImpl.class)
 @AutoConfigureMockMvc(addFilters = false)
+@Import(GlobalExceptionHandler.class)
 @Tag("auth")
 @Tag("unit")
 @Tag("controller")
