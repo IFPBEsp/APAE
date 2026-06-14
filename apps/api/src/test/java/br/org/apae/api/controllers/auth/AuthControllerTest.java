@@ -172,7 +172,7 @@ class AuthControllerTest {
                     "senha-incorreta"
             );
 
-            when(authService.signIn(requestDto))
+            when(authService.signIn(any(SignInDTO.class)))
                     .thenThrow(new InvalidPasswordException());
 
             mockMvc.perform(post(BASE_URL + "/signin")
@@ -191,8 +191,8 @@ class AuthControllerTest {
                     "Senha123"
             );
 
-            when(authService.signIn(requestDto))
-                    .thenThrow(new UserNotFoundException());
+            when(authService.signIn(any(SignInDTO.class)))
+                    .thenThrow(new InvalidPasswordException());
 
             mockMvc.perform(post(BASE_URL + "/signin")
                             .contentType(MediaType.APPLICATION_JSON)
