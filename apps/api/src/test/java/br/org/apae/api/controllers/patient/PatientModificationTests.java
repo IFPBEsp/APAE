@@ -8,7 +8,7 @@ import br.org.apae.api.patient.application.interfaces.AnnualRegistryApplicationS
 import br.org.apae.api.patient.application.interfaces.DisorderApplicationService;
 import br.org.apae.api.patient.application.interfaces.PatientApplicationService;
 import br.org.apae.api.patient.domain.exceptions.PatientNotFoundException;
-import br.org.apae.api.servicearea.application.interfaces.ServiceAreaApplicationService;
+import br.org.apae.api.servicetype.application.interfaces.ServiceTypeApplicationService;
 import br.org.apae.api.controllers.patient.mocks.patient.PatientCreator;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.DisplayName;
@@ -53,7 +53,7 @@ public class PatientModificationTests {
     private AnnualRegistryApplicationService annualRegistryApplicationService;
 
     @MockitoBean
-    private ServiceAreaApplicationService serviceAreaApplicationService;
+    private ServiceTypeApplicationService serviceAreaApplicationService;
 
     @MockitoBean
     private JwtProvider jwtProvider;

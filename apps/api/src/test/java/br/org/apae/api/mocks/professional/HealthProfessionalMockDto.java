@@ -11,9 +11,9 @@ import br.org.apae.api.common.dto.address.CreateAddressDTO;
 import br.org.apae.api.common.dto.professional.request.CreateHealthProfessionalDTO;
 import br.org.apae.api.common.dto.professional.request.documents.CreateProfessionalDocumentsDTO;
 import br.org.apae.api.common.dto.professional.response.HealthProfessionalResponseDTO;
-import br.org.apae.api.common.dto.servicearea.request.CreateServiceAreaDTO;
+import br.org.apae.api.common.dto.servicetype.request.CreateServiceTypeDTO;
 import br.org.apae.api.common.dto.availability.request.CreateAvailabilityDTO;
-import br.org.apae.api.common.dto.servicearea.response.ServiceAreaResponseDTO;
+import br.org.apae.api.common.dto.servicetype.response.ServiceTypeResponseDTO;
 import br.org.apae.api.common.dto.availability.response.AvailabilityResponseDTO;
 
 public final class HealthProfessionalMockDto {
@@ -45,20 +45,20 @@ public final class HealthProfessionalMockDto {
         return new CreateProfessionalDocumentsDTO(volunteerAgreementFile(), curriculumFile(), null);
     }
 
-    public static CreateServiceAreaDTO createServiceAreaRequestPhysiotherapy() {
-        return new CreateServiceAreaDTO("Fisioterapia");
+    public static CreateServiceTypeDTO createServiceAreaRequestPhysiotherapy() {
+        return new CreateServiceTypeDTO("Fisioterapia");
     }
 
-    public static CreateServiceAreaDTO createServiceAreaRequestPsychology() {
-        return new CreateServiceAreaDTO("Psicologia");
+    public static CreateServiceTypeDTO createServiceAreaRequestPsychology() {
+        return new CreateServiceTypeDTO("Psicologia");
     }
 
-    public static ServiceAreaResponseDTO createServiceAreaResponsePhysiotherapy() {
-        return new ServiceAreaResponseDTO(1, "Fisioterapia");
+    public static ServiceTypeResponseDTO createServiceAreaResponsePhysiotherapy() {
+        return new ServiceTypeResponseDTO(1, "Fisioterapia");
     }
 
-    public static ServiceAreaResponseDTO createServiceAreaResponsePsychology() {
-        return new ServiceAreaResponseDTO(2, "Psicologia");
+    public static ServiceTypeResponseDTO createServiceAreaResponsePsychology() {
+        return new ServiceTypeResponseDTO(2, "Psicologia");
     }
 
     public static CreateAddressDTO createAddressRequest() {

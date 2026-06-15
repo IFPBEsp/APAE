@@ -1,6 +1,6 @@
 package br.org.apae.api.patient.domain.model;
 
-import br.org.apae.api.servicearea.domain.model.ServiceArea;
+import br.org.apae.api.servicetype.domain.model.ServiceType;
 import jakarta.persistence.*;
 import java.math.BigDecimal;
 import java.util.*;
@@ -37,13 +37,13 @@ public class AnnualRegistry {
 
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(name = "cadastro_anual_areas_de_atendimento", joinColumns = @JoinColumn(name = "cadastro_anual_id"), inverseJoinColumns = @JoinColumn(name = "areas_de_atendimento_id"))
-    private Set<ServiceArea> serviceAreas = new HashSet<>();
+    private Set<ServiceType> serviceAreas = new HashSet<>();
 
     protected AnnualRegistry() {
     }
 
     public AnnualRegistry(String bpc, String diseases, String continuousMedication, BigDecimal familyIncome, int year, UUID patientId,
-                          Set<Disorder> disorders, Set<ServiceArea> serviceAreas) {
+                          Set<Disorder> disorders, Set<ServiceType> serviceAreas) {
         this.bpc = bpc;
         this.diseases = diseases;
         this.continuousMedication = continuousMedication;
@@ -55,7 +55,7 @@ public class AnnualRegistry {
     }
 
     public AnnualRegistry(UUID id, String bpc, String diseases, String continuousMedication, BigDecimal familyIncome, int year, UUID patientId,
-                          Set<Disorder> disorders, Set<ServiceArea> serviceAreas) {
+                          Set<Disorder> disorders, Set<ServiceType> serviceAreas) {
         this.id = id;
         this.bpc = bpc;
         this.diseases = diseases;
@@ -75,7 +75,7 @@ public class AnnualRegistry {
     public Integer getYear() { return year; }
     public UUID getPatientId() { return patientId; }
 
-    public Set<ServiceArea> getServiceAreas() {
+    public Set<ServiceType> getServiceAreas() {
         return serviceAreas;
     }
     public Set<Disorder> getDisorders() { return Collections.unmodifiableSet(disorders); }
@@ -96,7 +96,7 @@ public class AnnualRegistry {
     public void setFamilyIncome(BigDecimal familyIncome) { this.familyIncome = familyIncome; }
     public void setYear(Integer year) { this.year = year; }
     public void setDisorders(Set<Disorder> disorders) { this.disorders = disorders; }
-    public void setServiceAreas(Set<ServiceArea> serviceAreas) {
+    public void setServiceAreas(Set<ServiceType> serviceAreas) {
         this.serviceAreas = serviceAreas;
     }
 }

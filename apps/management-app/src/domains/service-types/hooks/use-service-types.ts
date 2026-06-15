@@ -35,10 +35,10 @@ export function useServiceTypes() {
     loadServiceTypes();
   }, []);
 
-  async function handleCreateServiceType(area: string) {
+  async function handleCreateServiceType(name: string) {
     try {
       setIsSaving(true);
-      await createServiceType({ area });
+      await createServiceType({ name });
       toast.success("Tipo de atendimento criado com sucesso!");
       await loadServiceTypes();
     } catch (error) {
@@ -63,7 +63,7 @@ export function useServiceTypes() {
   }
 
   const filteredServiceTypes = serviceTypes.filter((serviceType) =>
-    serviceType.area.toLowerCase().includes(searchName.toLowerCase()),
+    serviceType.name.toLowerCase().includes(searchName.toLowerCase()),
   );
 
   return {

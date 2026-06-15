@@ -1,13 +1,13 @@
-package br.org.apae.api.controllers.servicearea;
+package br.org.apae.api.controllers.servicetype;
 
 import br.org.apae.api.auth.infrastructure.security.JwtProvider;
 import br.org.apae.api.auth.infrastructure.security.SecurityFilter;
-import br.org.apae.api.common.dto.servicearea.request.CreateServiceAreaDTO;
-import br.org.apae.api.common.dto.servicearea.request.UpdateServiceAreaDTO;
-import br.org.apae.api.common.dto.servicearea.response.ServiceAreaResponseDTO;
-import br.org.apae.api.professional.domain.exceptions.ServiceAreaConflictException;
-import br.org.apae.api.professional.domain.exceptions.ServiceAreaNotFoundException;
-import br.org.apae.api.servicearea.application.interfaces.ServiceAreaApplicationService;
+import br.org.apae.api.common.dto.servicetype.request.CreateServiceTypeDTO;
+import br.org.apae.api.common.dto.servicetype.request.UpdateServiceTypeDTO;
+import br.org.apae.api.common.dto.servicetype.response.ServiceTypeResponseDTO;
+import br.org.apae.api.professional.domain.exceptions.ServiceTypeConflictException;
+import br.org.apae.api.professional.domain.exceptions.ServiceTypeNotFoundException;
+import br.org.apae.api.servicetype.application.interfaces.ServiceTypeApplicationService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -34,13 +34,13 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-@WebMvcTest(ServiceAreaControllerImpl.class)
+@WebMvcTest(ServiceTypeControllerImpl.class)
 @WithMockUser
 @AutoConfigureMockMvc(addFilters = false)
-class ServiceAreaControllerTest {
+class ServiceTypeControllerTest {
 
-    private static final String URI = "/service-areas";
-    private static final String SERVICE_TYPES_URI = "/service-types";
+    private static final String URI = "/service-types";
+    private static final String LEGACY_URI = "/service-areas";
 
     @Autowired
     private MockMvc mockMvc;
@@ -49,7 +49,7 @@ class ServiceAreaControllerTest {
     private ObjectMapper objectMapper;
 
     @MockitoBean
-    private ServiceAreaApplicationService service;
+    private ServiceTypeApplicationService service;
 
     @MockitoBean
     private JwtProvider jwtProvider;
@@ -58,16 +58,16 @@ class ServiceAreaControllerTest {
     private SecurityFilter securityFilter;
 
     @Nested
-    @DisplayName("POST /service-areas")
-    class CreateServiceArea {
+    @DisplayName("POST /service-types")
+    class CreateServiceType {
 
         @Test
         @DisplayName("Deve criar área de atendimento com sucesso")
-        void shouldCreateServiceAreaSuccessfully() throws Exception {
-            CreateServiceAreaDTO request = new CreateServiceAreaDTO("Fisioterapia");
-            ServiceAreaResponseDTO response = new ServiceAreaResponseDTO(1, "Fisioterapia");
+        void shouldCreateServiceTypeSuccessfully() throws Exception {
+            CreateServiceTypeDTO request = new CreateServiceTypeDTO("Fisioterapia");
+            ServiceTypeResponseDTO response = new ServiceTypeResponseDTO(1, "Fisioterapia");
 
-            when(service.createServiceArea(any(CreateServiceAreaDTO.class)))
+            when(service.createServiceType(any(CreateServiceTypeDTO.class)))
                     .thenReturn(response);
 
             mockMvc.perform(post(URI)
@@ -77,18 +77,18 @@ class ServiceAreaControllerTest {
                     .andExpect(jsonPath("$.id").value(1))
                     .andExpect(jsonPath("$.area").value("Fisioterapia"));
 
-            ArgumentCaptor<CreateServiceAreaDTO> captor =
-                    ArgumentCaptor.forClass(CreateServiceAreaDTO.class);
+            ArgumentCaptor<CreateServiceTypeDTO> captor =
+                    ArgumentCaptor.forClass(CreateServiceTypeDTO.class);
 
-            verify(service).createServiceArea(captor.capture());
+            verify(service).createServiceType(captor.capture());
 
             assertThat(captor.getValue().area()).isEqualTo("Fisioterapia");
         }
 
         @Test
         @DisplayName("Deve retornar BadRequest quando área estiver em branco")
-        void shouldReturnBadRequestWhenCreatingServiceAreaWithBlankArea() throws Exception {
-            CreateServiceAreaDTO request = new CreateServiceAreaDTO("");
+        void shouldReturnBadRequestWhenCreatingServiceTypeWithBlankArea() throws Exception {
+            CreateServiceTypeDTO request = new CreateServiceTypeDTO("");
 
             mockMvc.perform(post(URI)
                             .contentType(APPLICATION_JSON)
@@ -100,34 +100,34 @@ class ServiceAreaControllerTest {
 
         @Test
         @DisplayName("Deve retornar Conflict quando área de atendimento já existir")
-        void shouldReturnConflictWhenCreatingDuplicatedServiceArea() throws Exception {
-            CreateServiceAreaDTO request = new CreateServiceAreaDTO("Fisioterapia");
+        void shouldReturnConflictWhenCreatingDuplicatedServiceType() throws Exception {
+            CreateServiceTypeDTO request = new CreateServiceTypeDTO("Fisioterapia");
 
-            when(service.createServiceArea(any(CreateServiceAreaDTO.class)))
-                    .thenThrow(new ServiceAreaConflictException());
+            when(service.createServiceType(any(CreateServiceTypeDTO.class)))
+                    .thenThrow(new ServiceTypeConflictException());
 
             mockMvc.perform(post(URI)
                             .contentType(APPLICATION_JSON)
                             .content(objectMapper.writeValueAsString(request)))
                     .andExpect(status().isConflict());
 
-            verify(service).createServiceArea(any(CreateServiceAreaDTO.class));
+            verify(service).createServiceType(any(CreateServiceTypeDTO.class));
         }
     }
 
     @Nested
-    @DisplayName("GET /service-areas")
-    class GetAllServiceAreas {
+    @DisplayName("GET /service-types")
+    class GetAllServiceTypes {
 
         @Test
         @DisplayName("Deve listar áreas de atendimento com sucesso")
-        void shouldGetAllServiceAreasSuccessfully() throws Exception {
-            List<ServiceAreaResponseDTO> response = List.of(
-                    new ServiceAreaResponseDTO(1, "Fisioterapia"),
-                    new ServiceAreaResponseDTO(2, "Psicologia")
+        void shouldGetAllServiceTypesSuccessfully() throws Exception {
+            List<ServiceTypeResponseDTO> response = List.of(
+                    new ServiceTypeResponseDTO(1, "Fisioterapia"),
+                    new ServiceTypeResponseDTO(2, "Psicologia")
             );
 
-            when(service.findAllServiceAreas()).thenReturn(response);
+            when(service.findAllServiceTypes()).thenReturn(response);
 
             mockMvc.perform(get(URI))
                     .andExpect(status().isOk())
@@ -137,83 +137,83 @@ class ServiceAreaControllerTest {
                     .andExpect(jsonPath("$[1].id").value(2))
                     .andExpect(jsonPath("$[1].area").value("Psicologia"));
 
-            verify(service).findAllServiceAreas();
+            verify(service).findAllServiceTypes();
         }
 
         @Test
         @DisplayName("Deve retornar lista vazia quando não houver áreas cadastradas")
-        void shouldReturnEmptyListWhenThereAreNoServiceAreas() throws Exception {
-            when(service.findAllServiceAreas()).thenReturn(Collections.emptyList());
+        void shouldReturnEmptyListWhenThereAreNoServiceTypes() throws Exception {
+            when(service.findAllServiceTypes()).thenReturn(Collections.emptyList());
 
             mockMvc.perform(get(URI))
                     .andExpect(status().isOk())
                     .andExpect(jsonPath("$.length()").value(0));
 
-            verify(service).findAllServiceAreas();
+            verify(service).findAllServiceTypes();
         }
 
         @Test
-        @DisplayName("Deve listar areas de atendimento pela rota padronizada /service-types")
-        void shouldGetAllServiceAreasThroughServiceTypesRoute() throws Exception {
-            List<ServiceAreaResponseDTO> response = List.of(
-                    new ServiceAreaResponseDTO(1, "Fisioterapia")
+        @DisplayName("Deve listar tipos de atendimento pela rota legada /service-areas")
+        void shouldGetAllServiceTypesThroughLegacyRoute() throws Exception {
+            List<ServiceTypeResponseDTO> response = List.of(
+                    new ServiceTypeResponseDTO(1, "Fisioterapia")
             );
 
-            when(service.findAllServiceAreas()).thenReturn(response);
+            when(service.findAllServiceTypes()).thenReturn(response);
 
-            mockMvc.perform(get(SERVICE_TYPES_URI))
+            mockMvc.perform(get(LEGACY_URI))
                     .andExpect(status().isOk())
                     .andExpect(jsonPath("$.length()").value(1))
                     .andExpect(jsonPath("$[0].id").value(1))
                     .andExpect(jsonPath("$[0].area").value("Fisioterapia"));
 
-            verify(service).findAllServiceAreas();
+            verify(service).findAllServiceTypes();
         }
     }
 
     @Nested
-    @DisplayName("GET /service-areas/{id}")
-    class FindServiceAreaById {
+    @DisplayName("GET /service-types/{id}")
+    class FindServiceTypeById {
 
         @Test
         @DisplayName("Deve buscar área de atendimento por ID com sucesso")
-        void shouldFindServiceAreaByIdSuccessfully() throws Exception {
-            ServiceAreaResponseDTO response = new ServiceAreaResponseDTO(1, "Fisioterapia");
+        void shouldFindServiceTypeByIdSuccessfully() throws Exception {
+            ServiceTypeResponseDTO response = new ServiceTypeResponseDTO(1, "Fisioterapia");
 
-            when(service.findServiceAreaById(1)).thenReturn(response);
+            when(service.findServiceTypeById(1)).thenReturn(response);
 
             mockMvc.perform(get(URI + "/{id}", 1))
                     .andExpect(status().isOk())
                     .andExpect(jsonPath("$.id").value(1))
                     .andExpect(jsonPath("$.area").value("Fisioterapia"));
 
-            verify(service).findServiceAreaById(1);
+            verify(service).findServiceTypeById(1);
         }
 
         @Test
         @DisplayName("Deve retornar NotFound quando área de atendimento não existir")
-        void shouldReturnNotFoundWhenServiceAreaDoesNotExist() throws Exception {
-            when(service.findServiceAreaById(99))
-                    .thenThrow(new ServiceAreaNotFoundException());
+        void shouldReturnNotFoundWhenServiceTypeDoesNotExist() throws Exception {
+            when(service.findServiceTypeById(99))
+                    .thenThrow(new ServiceTypeNotFoundException());
 
             mockMvc.perform(get(URI + "/{id}", 99))
                     .andExpect(status().isNotFound());
 
-            verify(service).findServiceAreaById(99);
+            verify(service).findServiceTypeById(99);
         }
     }
 
     @Nested
-    @DisplayName("PUT /service-areas/{id}")
-    class UpdateServiceArea {
+    @DisplayName("PUT /service-types/{id}")
+    class UpdateServiceType {
 
         @Test
         @DisplayName("Deve atualizar área de atendimento com sucesso")
-        void shouldUpdateServiceAreaSuccessfully() throws Exception {
-            UpdateServiceAreaDTO request = new UpdateServiceAreaDTO("Terapia Ocupacional");
-            ServiceAreaResponseDTO response = new ServiceAreaResponseDTO(1, "Terapia Ocupacional");
+        void shouldUpdateServiceTypeSuccessfully() throws Exception {
+            UpdateServiceTypeDTO request = new UpdateServiceTypeDTO("Terapia Ocupacional");
+            ServiceTypeResponseDTO response = new ServiceTypeResponseDTO(1, "Terapia Ocupacional");
 
-            when(service.updateServiceArea(eq(1), any(UpdateServiceAreaDTO.class)))
+            when(service.updateServiceType(eq(1), any(UpdateServiceTypeDTO.class)))
                     .thenReturn(response);
 
             mockMvc.perform(put(URI + "/{id}", 1)
@@ -223,18 +223,18 @@ class ServiceAreaControllerTest {
                     .andExpect(jsonPath("$.id").value(1))
                     .andExpect(jsonPath("$.area").value("Terapia Ocupacional"));
 
-            ArgumentCaptor<UpdateServiceAreaDTO> captor =
-                    ArgumentCaptor.forClass(UpdateServiceAreaDTO.class);
+            ArgumentCaptor<UpdateServiceTypeDTO> captor =
+                    ArgumentCaptor.forClass(UpdateServiceTypeDTO.class);
 
-            verify(service).updateServiceArea(eq(1), captor.capture());
+            verify(service).updateServiceType(eq(1), captor.capture());
 
             assertThat(captor.getValue().area()).isEqualTo("Terapia Ocupacional");
         }
 
         @Test
         @DisplayName("Deve retornar BadRequest quando área estiver em branco na atualização")
-        void shouldReturnBadRequestWhenUpdatingServiceAreaWithBlankArea() throws Exception {
-            UpdateServiceAreaDTO request = new UpdateServiceAreaDTO("");
+        void shouldReturnBadRequestWhenUpdatingServiceTypeWithBlankArea() throws Exception {
+            UpdateServiceTypeDTO request = new UpdateServiceTypeDTO("");
 
             mockMvc.perform(put(URI + "/{id}", 1)
                             .contentType(APPLICATION_JSON)
@@ -246,62 +246,62 @@ class ServiceAreaControllerTest {
 
         @Test
         @DisplayName("Deve retornar NotFound quando área de atendimento não existir na atualização")
-        void shouldReturnNotFoundWhenUpdatingNonExistentServiceArea() throws Exception {
-            UpdateServiceAreaDTO request = new UpdateServiceAreaDTO("Fonoaudiologia");
+        void shouldReturnNotFoundWhenUpdatingNonExistentServiceType() throws Exception {
+            UpdateServiceTypeDTO request = new UpdateServiceTypeDTO("Fonoaudiologia");
 
-            when(service.updateServiceArea(eq(99), any(UpdateServiceAreaDTO.class)))
-                    .thenThrow(new ServiceAreaNotFoundException());
+            when(service.updateServiceType(eq(99), any(UpdateServiceTypeDTO.class)))
+                    .thenThrow(new ServiceTypeNotFoundException());
 
             mockMvc.perform(put(URI + "/{id}", 99)
                             .contentType(APPLICATION_JSON)
                             .content(objectMapper.writeValueAsString(request)))
                     .andExpect(status().isNotFound());
 
-            verify(service).updateServiceArea(eq(99), any(UpdateServiceAreaDTO.class));
+            verify(service).updateServiceType(eq(99), any(UpdateServiceTypeDTO.class));
         }
 
         @Test
         @DisplayName("Deve retornar Conflict quando área atualizada já existir")
-        void shouldReturnConflictWhenUpdatingToDuplicatedServiceArea() throws Exception {
-            UpdateServiceAreaDTO request = new UpdateServiceAreaDTO("Psicologia");
+        void shouldReturnConflictWhenUpdatingToDuplicatedServiceType() throws Exception {
+            UpdateServiceTypeDTO request = new UpdateServiceTypeDTO("Psicologia");
 
-            when(service.updateServiceArea(eq(1), any(UpdateServiceAreaDTO.class)))
-                    .thenThrow(new ServiceAreaConflictException());
+            when(service.updateServiceType(eq(1), any(UpdateServiceTypeDTO.class)))
+                    .thenThrow(new ServiceTypeConflictException());
 
             mockMvc.perform(put(URI + "/{id}", 1)
                             .contentType(APPLICATION_JSON)
                             .content(objectMapper.writeValueAsString(request)))
                     .andExpect(status().isConflict());
 
-            verify(service).updateServiceArea(eq(1), any(UpdateServiceAreaDTO.class));
+            verify(service).updateServiceType(eq(1), any(UpdateServiceTypeDTO.class));
         }
     }
 
     @Nested
-    @DisplayName("DELETE /service-areas/{id}")
-    class DeleteServiceArea {
+    @DisplayName("DELETE /service-types/{id}")
+    class DeleteServiceType {
 
         @Test
         @DisplayName("Deve excluir área de atendimento com sucesso")
-        void shouldDeleteServiceAreaSuccessfully() throws Exception {
-            doNothing().when(service).deleteServiceArea(1);
+        void shouldDeleteServiceTypeSuccessfully() throws Exception {
+            doNothing().when(service).deleteServiceType(1);
 
             mockMvc.perform(delete(URI + "/{id}", 1))
                     .andExpect(status().isNoContent())
                     .andExpect(content().string(""));
 
-            verify(service).deleteServiceArea(1);
+            verify(service).deleteServiceType(1);
         }
 
         @Test
         @DisplayName("Deve retornar NotFound quando área de atendimento não existir na exclusão")
-        void shouldReturnNotFoundWhenDeletingNonExistentServiceArea() throws Exception {
-            doThrow(new ServiceAreaNotFoundException()).when(service).deleteServiceArea(99);
+        void shouldReturnNotFoundWhenDeletingNonExistentServiceType() throws Exception {
+            doThrow(new ServiceTypeNotFoundException()).when(service).deleteServiceType(99);
 
             mockMvc.perform(delete(URI + "/{id}", 99))
                     .andExpect(status().isNotFound());
 
-            verify(service).deleteServiceArea(99);
+            verify(service).deleteServiceType(99);
         }
     }
 }

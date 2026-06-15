@@ -15,7 +15,7 @@ import br.org.apae.api.patient.domain.exceptions.AnnualRegistryConflictException
 import br.org.apae.api.patient.domain.exceptions.RegistryNotFoundException;
 import br.org.apae.api.patient.domain.exceptions.RegistryOwnershipException;
 import br.org.apae.api.patient.domain.exceptions.DisorderMismatchException;
-import br.org.apae.api.professional.domain.exceptions.ServiceAreaNotFoundException;
+import br.org.apae.api.professional.domain.exceptions.ServiceTypeNotFoundException;
 import br.org.apae.api.patient.domain.exceptions.PatientNotFoundException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
@@ -86,7 +86,7 @@ public class AnnualRegistryControllerTest {
     }
 
     @Test
-    @DisplayName("Deve criar registro com sucesso (201) quando todos dados e dependências (Patient, ServiceArea, Disorders) são válidos")
+    @DisplayName("Deve criar registro com sucesso (201) quando todos dados e dependências (Patient, ServiceType, Disorders) são válidos")
     void shouldCreateRegistrySuccess() throws Exception {
         UUID patientId = UUID.randomUUID();
         CreateAnnualRegistryDTO requestDto = createValidCreateDTO();
@@ -160,13 +160,13 @@ public class AnnualRegistryControllerTest {
     }
 
     @Test
-    @DisplayName("Deve retornar NotFound quando ServiceArea enviada não é encontrada")
-    void shouldReturnErrorWhenServiceAreaNotFound() throws Exception {
+    @DisplayName("Deve retornar NotFound quando ServiceType enviado não é encontrado")
+    void shouldReturnErrorWhenServiceTypeNotFound() throws Exception {
         UUID patientId = UUID.randomUUID();
         CreateAnnualRegistryDTO requestDto = createValidCreateDTO();
 
         when(annualRegistryService.createRegistry(any(), eq(patientId)))
-                .thenThrow(new ServiceAreaNotFoundException());
+                .thenThrow(new ServiceTypeNotFoundException());
 
         mockMvc.perform(post(BASE_URL, patientId)
                         .header("Authorization", AuthTestHelper.bearerToken())

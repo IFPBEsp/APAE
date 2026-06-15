@@ -92,7 +92,6 @@ export default function AnnualRegistryEditModal({
                 const sourceServiceAreas = initialData.serviceArea || initialData.serviceAreas || initialData.serviceTypes || [];
                 const serviceTypeList = Array.isArray(sourceServiceAreas) ? sourceServiceAreas.map((s: any) => ({
                     id: s.id,
-                    area: s.area || s.name, 
                     name: s.name || s.area  
                 })) : [];
 
@@ -196,7 +195,7 @@ export default function AnnualRegistryEditModal({
 
             const formattedServiceAreas = (data.serviceTypes || []).map((s: any) => ({
                 id: s.id,
-                area: s.area || s.name || s.label || s.value 
+                area: s.name || s.area || s.label || s.value 
             }));
 
             const regPayload: any = {
@@ -376,7 +375,7 @@ export default function AnnualRegistryEditModal({
                                                         endpoint="/api/service-types" 
                                                         labelSingular="Tipo de Atendimento"
                                                         placeholder="Selecione ou crie tipos..."
-                                                        labelKey="area" 
+                                                        labelKey="name" 
                                                         menuPlacement="top"
                                                     />
                                                 </FormControl><FormMessage /></FormItem>)} 

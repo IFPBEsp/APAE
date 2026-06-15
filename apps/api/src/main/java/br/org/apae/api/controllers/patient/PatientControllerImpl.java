@@ -19,12 +19,12 @@ import br.org.apae.api.common.dto.patient.response.disorder.DisorderResponseDTO;
 import br.org.apae.api.common.dto.patient.response.patient.PatientResponseDTO;
 import br.org.apae.api.common.dto.patient.response.patient.PatientSummaryResponseDTO;
 import br.org.apae.api.common.dto.patient.response.patient.PatientWithAbsencesResponseDTO;
-import br.org.apae.api.common.dto.servicearea.response.ServiceAreaResponseDTO;
+import br.org.apae.api.common.dto.servicetype.response.ServiceTypeResponseDTO;
 import br.org.apae.api.patient.application.interfaces.AnnualRegistryApplicationService;
 import br.org.apae.api.patient.application.interfaces.DisorderApplicationService;
 import br.org.apae.api.patient.application.interfaces.PatientApplicationService;
 import br.org.apae.api.patient.interfaces.controllers.PatientController;
-import br.org.apae.api.servicearea.application.interfaces.ServiceAreaApplicationService;
+import br.org.apae.api.servicetype.application.interfaces.ServiceTypeApplicationService;
 
 @RestController
 public class PatientControllerImpl implements PatientController {
@@ -32,13 +32,13 @@ public class PatientControllerImpl implements PatientController {
     private final PatientApplicationService patientService;
     private final DisorderApplicationService disorderService;
     private final AnnualRegistryApplicationService annualRegistryService;
-    private final ServiceAreaApplicationService serviceAreaService;
+    private final ServiceTypeApplicationService serviceAreaService;
 
     public PatientControllerImpl(
             PatientApplicationService patientService,
             DisorderApplicationService disorderService,
             AnnualRegistryApplicationService annualRegistryService,
-            ServiceAreaApplicationService serviceAreaService
+            ServiceTypeApplicationService serviceAreaService
     ) {
         this.patientService = patientService;
         this.disorderService = disorderService;
@@ -126,9 +126,9 @@ public class PatientControllerImpl implements PatientController {
 
     @Override
     public ResponseEntity<List<String>> getTiposAtendimento() {
-        List<ServiceAreaResponseDTO> serviceAreaResponseDTOS = serviceAreaService.findAllServiceAreas();
+        List<ServiceTypeResponseDTO> serviceAreaResponseDTOS = serviceAreaService.findAllServiceTypes();
         List<String> serviceAreaNames = serviceAreaResponseDTOS.stream()
-                .map(ServiceAreaResponseDTO::area)
+                .map(ServiceTypeResponseDTO::area)
                 .distinct()
                 .toList();
         return ResponseEntity.ok(serviceAreaNames);

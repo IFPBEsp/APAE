@@ -16,6 +16,7 @@ const documentCategory: Record<DocumentCategory, string> = {
 };
 
 export default function FileViewer() {
+  const typeFilter = "";
   const router = useRouter();
   const params = useParams();
   const patientId = params?.id as string;
@@ -23,7 +24,6 @@ export default function FileViewer() {
   const [yearFilter, setYearFilter] = React.useState<string>(
     new Date().getFullYear().toString()
   );
-  const [typeFilter] = React.useState<string>("");
   const [files, setFiles] = React.useState<PatientDocument[]>([]);
 
   React.useEffect(() => {
@@ -83,9 +83,9 @@ export default function FileViewer() {
         {files.length === 0 ? (
           <p>Nenhum arquivo encontrado.</p>
         ) : (
-          files.map((file, index: number) => (
+          files.map((file) => (
             <FileCard
-              key={index}
+              key={file.id}
               file={{ fileName: file.name, link: file.url }}
             />
           ))

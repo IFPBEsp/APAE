@@ -44,11 +44,11 @@ export function EditServiceTypePage() {
 
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
             <div>
-              <Label htmlFor="area" className="font-semibold text-[#003B93]">
+              <Label htmlFor="name" className="font-semibold text-[#003B93]">
                 Nome do tipo de atendimento
               </Label>
-              <Input id="area" {...register("area")} className="mt-1 block w-full" />
-              {errors.area && <p className="mt-1 text-sm text-red-600">{errors.area.message}</p>}
+              <Input id="name" {...register("name")} className="mt-1 block w-full" />
+              {errors.name && <p className="mt-1 text-sm text-red-600">{errors.name.message}</p>}
             </div>
 
             <div className="flex justify-end gap-2 pt-4">

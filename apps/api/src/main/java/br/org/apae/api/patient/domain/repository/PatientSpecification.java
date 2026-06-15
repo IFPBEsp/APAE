@@ -3,7 +3,7 @@ package br.org.apae.api.patient.domain.repository;
 import br.org.apae.api.patient.domain.model.AnnualRegistry;
 import br.org.apae.api.patient.domain.model.Disorder;
 import br.org.apae.api.patient.domain.model.Patient;
-import br.org.apae.api.servicearea.domain.model.ServiceArea;
+import br.org.apae.api.servicetype.domain.model.ServiceType;
 import jakarta.persistence.criteria.Join;
 import jakarta.persistence.criteria.Predicate;
 import jakarta.persistence.criteria.Root;
@@ -61,7 +61,7 @@ public class PatientSpecification {
                         case "treatmentType":
                             Subquery<UUID> tipoSubQuery = query.subquery(UUID.class);
                             Root<AnnualRegistry> tipoRoot = tipoSubQuery.from(AnnualRegistry.class);
-                            Join<AnnualRegistry, ServiceArea> serviceAreaJoin = tipoRoot.join("serviceAreas");
+                            Join<AnnualRegistry, ServiceType> serviceAreaJoin = tipoRoot.join("serviceAreas");
                             tipoSubQuery.select(tipoRoot.get("patientId"))
                                     .where(criteriaBuilder.like(
                                             criteriaBuilder.lower(serviceAreaJoin.get("area")),

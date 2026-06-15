@@ -1,10 +1,10 @@
 export interface ServiceType {
   id: string | number;
-  area: string;
+  name: string;
 }
 
 export interface CreateServiceTypeDTO {
-  area: string;
+  name: string;
 }
 
 export type UpdateServiceTypeDTO = CreateServiceTypeDTO;

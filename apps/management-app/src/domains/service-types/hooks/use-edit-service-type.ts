@@ -20,7 +20,7 @@ export function useEditServiceType(id: string | undefined) {
     async function loadServiceType(serviceTypeId: string) {
       try {
         const data = await getServiceType(serviceTypeId);
-        form.setValue("area", data.area);
+        form.setValue("name", data.name);
       } catch (error) {
         const message = error instanceof Error ? error.message : "Tipo de atendimento nao encontrado.";
         toast.error(message);

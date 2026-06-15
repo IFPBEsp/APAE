@@ -3,6 +3,13 @@ import { NextResponse } from "next/server";
 import { createBaseApi } from "@/lib/axios";
 import { createServiceTypeSchema } from "@/domains/service-types/service-types.schema";
 
+function normalizeServiceType(data: { area?: string; id: string | number; name?: string }) {
+  return {
+    id: data.id,
+    name: data.name ?? data.area ?? "",
+  };
+}
+
 export async function POST(request: Request) {
   try {
     const body = await request.json();
@@ -19,8 +26,8 @@ export async function POST(request: Request) {
     }
 
     const api = await createBaseApi();
-    const { data } = await api.post("/service-types", validation.data);
-    return NextResponse.json(data, { status: 201 });
+    const { data } = await api.post("/service-types", { area: validation.data.name });
+    return NextResponse.json(normalizeServiceType(data), { status: 201 });
   } catch (error: any) {
     return new NextResponse(
       JSON.stringify(error.response?.data || { message: error.message }),
@@ -33,7 +40,7 @@ export async function GET() {
   try {
     const api = await createBaseApi();
     const { data } = await api.get("/service-types");
-    return NextResponse.json(data);
+    return NextResponse.json(Array.isArray(data) ? data.map(normalizeServiceType) : []);
   } catch (error: any) {
     return new NextResponse(
       JSON.stringify(error.response?.data || { message: error.message }),

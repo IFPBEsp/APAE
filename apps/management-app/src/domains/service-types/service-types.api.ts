@@ -4,6 +4,19 @@ import type {
   UpdateServiceTypeDTO,
 } from "./service-types.types";
 
+interface ServiceTypeApiDTO {
+  area?: string;
+  id: string | number;
+  name?: string;
+}
+
+function normalizeServiceType(data: ServiceTypeApiDTO): ServiceType {
+  return {
+    id: data.id,
+    name: data.name ?? data.area ?? "",
+  };
+}
+
 async function parseResponse<T>(response: Response): Promise<T> {
   if (!response.ok) {
     const errorData = await response.json().catch(() => ({}));
@@ -15,12 +28,14 @@ async function parseResponse<T>(response: Response): Promise<T> {
 
 export async function listServiceTypes() {
   const response = await fetch("/api/service-types");
-  return parseResponse<ServiceType[]>(response);
+  const data = await parseResponse<ServiceTypeApiDTO[]>(response);
+  return data.map(normalizeServiceType);
 }
 
 export async function getServiceType(id: string) {
   const response = await fetch(`/api/service-types/${id}`);
-  return parseResponse<ServiceType>(response);
+  const data = await parseResponse<ServiceTypeApiDTO>(response);
+  return normalizeServiceType(data);
 }
 
 export async function createServiceType(payload: CreateServiceTypeDTO) {
@@ -30,7 +45,8 @@ export async function createServiceType(payload: CreateServiceTypeDTO) {
     body: JSON.stringify(payload),
   });
 
-  return parseResponse<ServiceType>(response);
+  const data = await parseResponse<ServiceTypeApiDTO>(response);
+  return normalizeServiceType(data);
 }
 
 export async function updateServiceType(id: string, payload: UpdateServiceTypeDTO) {
@@ -40,7 +56,8 @@ export async function updateServiceType(id: string, payload: UpdateServiceTypeDT
     body: JSON.stringify(payload),
   });
 
-  return parseResponse<ServiceType>(response);
+  const data = await parseResponse<ServiceTypeApiDTO>(response);
+  return normalizeServiceType(data);
 }
 
 export async function deleteServiceType(id: string | number) {

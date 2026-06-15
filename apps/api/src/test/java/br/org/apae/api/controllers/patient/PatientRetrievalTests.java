@@ -5,14 +5,14 @@ import br.org.apae.api.auth.infrastructure.security.JwtProvider;
 import br.org.apae.api.common.dto.patient.response.disorder.DisorderResponseDTO;
 import br.org.apae.api.common.dto.patient.response.patient.PatientResponseDTO;
 import br.org.apae.api.common.dto.patient.response.patient.PatientSummaryResponseDTO;
-import br.org.apae.api.common.dto.servicearea.response.ServiceAreaResponseDTO;
+import br.org.apae.api.common.dto.servicetype.response.ServiceTypeResponseDTO;
 import br.org.apae.api.controllers.patient.mocks.patient.PatientCreator;
 import br.org.apae.api.patient.application.exceptions.PatientExceptionHandler;
 import br.org.apae.api.patient.application.interfaces.AnnualRegistryApplicationService;
 import br.org.apae.api.patient.application.interfaces.DisorderApplicationService;
 import br.org.apae.api.patient.application.interfaces.PatientApplicationService;
 import br.org.apae.api.patient.domain.exceptions.PatientNotFoundException;
-import br.org.apae.api.servicearea.application.interfaces.ServiceAreaApplicationService;
+import br.org.apae.api.servicetype.application.interfaces.ServiceTypeApplicationService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Tags;
@@ -66,7 +66,7 @@ public class PatientRetrievalTests {
     private AnnualRegistryApplicationService annualRegistryApplicationService;
 
     @MockitoBean
-    private ServiceAreaApplicationService serviceAreaApplicationService;
+    private ServiceTypeApplicationService serviceAreaApplicationService;
 
     @MockitoBean
     private JwtProvider jwtProvider;
@@ -351,13 +351,13 @@ public class PatientRetrievalTests {
     @Test
     @DisplayName("Should list available service areas")
     @WithMockUser(username = "admin", roles = {"ADMIN"})
-    void shouldListAvailableAllServiceArea() throws Exception {
-        List<ServiceAreaResponseDTO> mockData = List.of(
-                new ServiceAreaResponseDTO(1, "Fisioterapia"),
-                new ServiceAreaResponseDTO(2, "Nutrição")
+    void shouldListAvailableAllServiceTypes() throws Exception {
+        List<ServiceTypeResponseDTO> mockData = List.of(
+                new ServiceTypeResponseDTO(1, "Fisioterapia"),
+                new ServiceTypeResponseDTO(2, "Nutrição")
         );
 
-        when(serviceAreaApplicationService.findAllServiceAreas())
+        when(serviceAreaApplicationService.findAllServiceTypes())
                 .thenReturn(mockData);
 
         mockMvc.perform(get("/patients/filtros/tipos-atendimento"))

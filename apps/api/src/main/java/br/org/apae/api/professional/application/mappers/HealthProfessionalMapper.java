@@ -7,11 +7,11 @@ import br.org.apae.api.common.dto.availability.response.AvailabilityResponseDTO;
 import br.org.apae.api.common.dto.professional.request.CreateHealthProfessionalDTO;
 import br.org.apae.api.common.dto.professional.request.UpdateHealthProfessionalDTO;
 import br.org.apae.api.common.dto.professional.response.HealthProfessionalResponseDTO;
-import br.org.apae.api.common.dto.servicearea.response.ServiceAreaResponseDTO;
+import br.org.apae.api.common.dto.servicetype.response.ServiceTypeResponseDTO;
 import br.org.apae.api.professional.domain.model.Availability;
 import br.org.apae.api.professional.domain.model.HealthProfessional;
-import br.org.apae.api.servicearea.application.mappers.ServiceAreaMapper;
-import br.org.apae.api.servicearea.domain.model.ServiceArea;
+import br.org.apae.api.servicetype.application.mappers.ServiceTypeMapper;
+import br.org.apae.api.servicetype.domain.model.ServiceType;
 import org.springframework.stereotype.Component;
 
 import java.util.Collections;
@@ -22,20 +22,20 @@ import java.util.stream.Collectors;
 public class HealthProfessionalMapper {
 
     private final AddressMapper addressMapper;
-    private final ServiceAreaMapper serviceAreaMapper;
+    private final ServiceTypeMapper serviceAreaMapper;
     private final AvailabilityMapper availabilityMapper;
 
     public HealthProfessionalMapper(AddressMapper addressMapper,
-                                    ServiceAreaMapper serviceAreaMapper,
+                                    ServiceTypeMapper serviceAreaMapper,
                                     AvailabilityMapper availabilityMapper) {
         this.addressMapper = addressMapper;
         this.serviceAreaMapper = serviceAreaMapper;
         this.availabilityMapper = availabilityMapper;
     }
 
-    public HealthProfessional toEntity(CreateHealthProfessionalDTO dto, ServiceAreaResponseDTO serviceAreaDto) {
+    public HealthProfessional toEntity(CreateHealthProfessionalDTO dto, ServiceTypeResponseDTO serviceAreaDto) {
         Address address = addressMapper.toEntity(dto.address());
-        ServiceArea serviceArea = serviceAreaMapper.toEntityFromResponse(serviceAreaDto);
+        ServiceType serviceArea = serviceAreaMapper.toEntityFromResponse(serviceAreaDto);
 
         HealthProfessional entity = new HealthProfessional(
                 dto.name(),
@@ -56,9 +56,9 @@ public class HealthProfessionalMapper {
     }
 
     public HealthProfessional updateEntityFromDto(HealthProfessional professional, UpdateHealthProfessionalDTO dto,
-                                                  ServiceAreaResponseDTO serviceAreaDto) {
+                                                  ServiceTypeResponseDTO serviceAreaDto) {
         Address address = addressMapper.toEntity(dto.address());
-        ServiceArea serviceArea = serviceAreaMapper.toEntityFromResponse(serviceAreaDto);
+        ServiceType serviceArea = serviceAreaMapper.toEntityFromResponse(serviceAreaDto);
 
         professional.setName(dto.name());
         professional.setEmail(dto.email());
@@ -81,7 +81,7 @@ public class HealthProfessionalMapper {
 
     public HealthProfessionalResponseDTO toResponseDTO(HealthProfessional professional) {
         AddressResponseDTO addressResponseDTO = new AddressResponseDTO(professional.getAddress());
-        ServiceAreaResponseDTO serviceAreaResponseDTO = new ServiceAreaResponseDTO(professional.getServiceArea());
+        ServiceTypeResponseDTO serviceAreaResponseDTO = new ServiceTypeResponseDTO(professional.getServiceArea());
 
         List<AvailabilityResponseDTO> availabilityDTOs = (professional.getAvailabilities() != null)
                 ? professional.getAvailabilities().stream()

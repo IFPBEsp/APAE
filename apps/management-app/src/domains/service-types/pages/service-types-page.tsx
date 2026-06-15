@@ -14,7 +14,7 @@ import type { ServiceType } from "../service-types.types";
 
 export function ServiceTypesPage() {
   const router = useRouter();
-  const [newArea, setNewArea] = useState("");
+  const [newServiceTypeName, setNewServiceTypeName] = useState("");
   const {
     createServiceType,
     deleteServiceType,
@@ -29,17 +29,17 @@ export function ServiceTypesPage() {
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
 
-    const normalizedArea = newArea.trim();
-    if (!normalizedArea) {
+    const normalizedName = newServiceTypeName.trim();
+    if (!normalizedName) {
       return;
     }
 
-    await createServiceType(normalizedArea);
-    setNewArea("");
+    await createServiceType(normalizedName);
+    setNewServiceTypeName("");
   }
 
   async function handleDelete(service: ServiceType) {
-    const shouldDelete = window.confirm(`Deseja remover o tipo de atendimento \"${service.area}\"?`);
+    const shouldDelete = window.confirm(`Deseja remover o tipo de atendimento \"${service.name}\"?`);
 
     if (!shouldDelete) {
       return;
@@ -86,8 +86,8 @@ export function ServiceTypesPage() {
           <SearchFilters searchName={searchName} setSearchName={setSearchName} />
           <form onSubmit={handleSubmit} className="flex flex-col gap-3 md:flex-row">
             <Input
-              value={newArea}
-              onChange={(event) => setNewArea(event.target.value)}
+              value={newServiceTypeName}
+              onChange={(event) => setNewServiceTypeName(event.target.value)}
               placeholder="Novo tipo de atendimento"
             />
             <Button type="submit" disabled={isSaving} className="bg-[#0D4F97] hover:bg-[#0b427d] text-white">

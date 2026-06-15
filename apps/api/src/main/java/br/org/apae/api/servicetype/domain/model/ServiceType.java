@@ -1,10 +1,10 @@
-package br.org.apae.api.servicearea.domain.model;
+package br.org.apae.api.servicetype.domain.model;
 
 import jakarta.persistence.*;
 
 @Entity
 @Table(name = "areas_de_atendimento")
-public class ServiceArea {
+public class ServiceType {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -13,14 +13,14 @@ public class ServiceArea {
     @Column(name = "area", nullable = false, unique = true)
     private String area;
 
-    protected ServiceArea() {
+    protected ServiceType() {
     }
 
-    public ServiceArea(String area) {
+    public ServiceType(String area) {
         this.area = area;
     }
 
-    public ServiceArea(Integer id, String area) {
+    public ServiceType(Integer id, String area) {
         this.id = id;
         this.area = area;
     }

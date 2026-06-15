@@ -3,6 +3,13 @@ import { NextResponse } from "next/server";
 import { updateServiceTypeSchema } from "@/domains/service-types/service-types.schema";
 import { createBaseApi } from "@/lib/axios";
 
+function normalizeServiceType(data: { area?: string; id: string | number; name?: string }) {
+  return {
+    id: data.id,
+    name: data.name ?? data.area ?? "",
+  };
+}
+
 interface RouteParams {
   params: Promise<{ id: string }>;
 }
@@ -12,7 +19,7 @@ export async function GET(request: Request, { params }: RouteParams) {
     const { id } = await params;
     const api = await createBaseApi();
     const { data } = await api.get(`/service-types/${id}`);
-    return NextResponse.json(data);
+    return NextResponse.json(normalizeServiceType(data));
   } catch (error: any) {
     return new NextResponse(
       JSON.stringify(error.response?.data || { message: error.message }),
@@ -32,8 +39,8 @@ export async function PUT(request: Request, { params }: RouteParams) {
     }
 
     const api = await createBaseApi();
-    const { data } = await api.put(`/service-types/${id}`, validation.data);
-    return NextResponse.json(data);
+    const { data } = await api.put(`/service-types/${id}`, { area: validation.data.name });
+    return NextResponse.json(normalizeServiceType(data));
   } catch (error: any) {
     return new NextResponse(
       JSON.stringify(error.response?.data || { message: error.message }),

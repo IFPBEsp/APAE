@@ -2,7 +2,7 @@ package br.org.apae.api.common.dto.professional.response;
 
 import br.org.apae.api.common.dto.address.AddressResponseDTO;
 import br.org.apae.api.common.dto.availability.response.AvailabilityResponseDTO;
-import br.org.apae.api.common.dto.servicearea.response.ServiceAreaResponseDTO;
+import br.org.apae.api.common.dto.servicetype.response.ServiceTypeResponseDTO;
 import br.org.apae.api.professional.domain.model.HealthProfessional;
 
 import java.util.List;
@@ -18,13 +18,13 @@ public record HealthProfessionalResponseDTO(
         String healthSector,
         Boolean ativo,
         AddressResponseDTO address,
-        ServiceAreaResponseDTO serviceArea,
+        ServiceTypeResponseDTO serviceArea,
         List<AvailabilityResponseDTO> availabilities,
         String profilePhoto
 ) {
 
     public HealthProfessionalResponseDTO(HealthProfessional entity,
-                                         ServiceAreaResponseDTO serviceArea,
+                                         ServiceTypeResponseDTO serviceArea,
                                          AddressResponseDTO address,
                                          List<AvailabilityResponseDTO> availabilities) {
         this(

@@ -12,14 +12,14 @@ import br.org.apae.api.common.dto.patient.request.patient.CreatePatientDTO;
 import br.org.apae.api.common.dto.patient.request.vaccine.CreateVaccineDTO;
 import br.org.apae.api.common.dto.patient.response.disorder.DisorderResponseDTO;
 import br.org.apae.api.common.dto.patient.response.patient.PatientResponseDTO;
-import br.org.apae.api.common.dto.servicearea.request.CreateServiceAreaDTO;
-import br.org.apae.api.common.dto.servicearea.response.ServiceAreaResponseDTO;
+import br.org.apae.api.common.dto.servicetype.request.CreateServiceTypeDTO;
+import br.org.apae.api.common.dto.servicetype.response.ServiceTypeResponseDTO;
 import br.org.apae.api.controllers.patient.mocks.patient.PatientCreator;
 import br.org.apae.api.patient.application.interfaces.AnnualRegistryApplicationService;
 import br.org.apae.api.patient.application.interfaces.DisorderApplicationService;
 import br.org.apae.api.patient.application.interfaces.PatientApplicationService;
 import br.org.apae.api.patient.domain.exceptions.PatientConflictException;
-import br.org.apae.api.servicearea.application.interfaces.ServiceAreaApplicationService;
+import br.org.apae.api.servicetype.application.interfaces.ServiceTypeApplicationService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Tag;
@@ -71,7 +71,7 @@ public class PatientRegistrationTests {
     private AnnualRegistryApplicationService annualRegistryApplicationService;
 
     @MockitoBean
-    private ServiceAreaApplicationService serviceAreaApplicationService;
+    private ServiceTypeApplicationService serviceAreaApplicationService;
 
     @MockitoBean
     private JwtProvider jwtProvider;
@@ -87,7 +87,7 @@ public class PatientRegistrationTests {
                 new BigDecimal("1412.00"),
                 Year.of(2024),
                 Set.of(new CreateDisorderDTO("TEA")),
-                Set.of(new CreateServiceAreaDTO("Psicologia"))
+                Set.of(new CreateServiceTypeDTO("Psicologia"))
         );
     }
 
@@ -347,8 +347,8 @@ public class PatientRegistrationTests {
     @WithMockUser(username = "admin", roles = {"ADMIN"})
     void shouldReturnTiposAtendimento() throws Exception {
 
-        when(serviceAreaApplicationService.findAllServiceAreas())
-                .thenReturn(List.of(new ServiceAreaResponseDTO(null, "Psicologia")));
+        when(serviceAreaApplicationService.findAllServiceTypes())
+                .thenReturn(List.of(new ServiceTypeResponseDTO(null, "Psicologia")));
 
         mockMvc.perform(get("/patients/filtros/tipos-atendimento"))
                 .andExpect(status().isOk())
