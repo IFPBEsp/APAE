@@ -2,12 +2,14 @@
 
 import { Suspense } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
-import { Search, Edit, Trash2, Loader2 } from "lucide-react";
+import { Search, Edit, Trash2, Loader2, ArrowLeft } from "lucide-react";
 import { ConfirmModal } from "@/components/ui/confirm-modal";
 import { useDisordersList } from "./use-disorders-list";
 
 function DisordersListContent() {
+  const router = useRouter();
   const {
     page,
     setPage,
@@ -83,6 +85,15 @@ function DisordersListContent() {
   return (
     <div className="bg-slate-50 min-h-screen">
       <main className="container mx-auto p-4 md:p-6 max-w-6xl">
+        <Button
+          variant="ghost"
+          onClick={() => router.push("/patients")}
+          className="mb-4 text-sm text-[#003B93] hover:bg-blue-50"
+        >
+          <ArrowLeft className="h-4 w-4 mr-2" />
+          Voltar
+        </Button>
+
         <div className="bg-white rounded-xl shadow-sm p-4 mb-6 border border-gray-100">
           <div className="relative w-full">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
