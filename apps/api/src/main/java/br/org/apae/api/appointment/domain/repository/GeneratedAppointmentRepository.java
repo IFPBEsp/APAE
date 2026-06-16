@@ -8,6 +8,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
+import java.util.List;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -49,4 +50,6 @@ public interface GeneratedAppointmentRepository extends JpaRepository<GeneratedA
         @Param("date") LocalDate date,
         @Param("excludeAppointmentId") UUID excludeAppointmentId
     );
+
+    List<GeneratedAppointment> findByAppointmentProfessionalId(UUID professionalId);
 }

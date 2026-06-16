@@ -538,4 +538,12 @@ public class AppointmentApplicationServiceImpl implements AppointmentApplication
             }
         }
     }
+
+    @Override
+    public List<GeneratedAppointmentResponseDTO> listGeneratedByProfessional(UUID professionalId) {
+        return generatedRepo.findByAppointmentProfessionalId(professionalId)
+                .stream()
+                .map(mapper::toGeneratedResponse)
+                .toList();
+    }
 }
