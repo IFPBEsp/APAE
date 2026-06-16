@@ -1,6 +1,6 @@
 "use client";
 
-import { JSX } from "react";
+import { JSX, useMemo } from "react";
 import { useRouter } from "next/navigation";
 import { Controller, type SubmitHandler } from "react-hook-form";
 import * as z from "zod";
@@ -10,6 +10,9 @@ import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { InputMask } from "@react-input/mask";
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { User } from "lucide-react";
+
 
 import { useGetByIdProfessional } from "@/hooks/profissional/use-get-by-id-profissional";
 import { useUpdateProfessional } from "@/hooks/profissional/use-update-profissional";
@@ -38,8 +41,40 @@ export default function ProfessionalUpdate(): JSX.Element {
   const { updateProfessional, loading, error, success } = useUpdateProfessional();
   const { upload, loadingDocs, errorDocs, successDocs } = useUpdateProfessionalDocuments();
 
-  const photo = useProfessionalPhoto();
-  const docs = useProfessionalDocs(professional?.id);
+  const {
+    fileInputRef,
+    selectedPhoto,
+    setSelectedPhoto,
+    photoPreviewUrl,
+    photoError,
+    photoSuccess,
+    clearPhoto,
+    uploadPhoto,
+  } = useProfessionalPhoto();
+
+  const {
+    docs: docsList,
+    docsLoading,
+    docsError,
+    curriculumFile,
+    setCurriculumFile,
+    volunteerFile,
+    setVolunteerFile,
+    attachmentFiles,
+    setAttachmentFiles,
+    hasAnyUpload,
+    removingIds,
+    removeModalOpen,
+    setRemoveModalOpen,
+    docToRemove,
+    isConfirmBusy,
+    openRemoveModal,
+    confirmRemove,
+    refreshDocuments,
+    buildFormData,
+    clearFiles,
+    isValidFile,
+  } = useProfessionalDocs(professional?.id);
 
   const form = useForm<UpdateFormValues>({
     resolver: zodResolver(updateProfessionalSchema),
@@ -57,8 +92,16 @@ export default function ProfessionalUpdate(): JSX.Element {
 
   useEffect(() => {
     if (!professional?.id) return;
-    docs.refreshDocuments(professional.id);
-  }, [professional?.id]);
+    refreshDocuments(professional.id);
+  }, [professional?.id, refreshDocuments]);
+
+  const groupedDocs = useMemo(() => {
+    const curriculum = docsList.find((d) => d.type === "CURRICULUM");
+    const volunteer = docsList.find((d) => d.type === "VOLUNTEER_AGREEMENT");
+    const attachments = docsList.filter((d) => d.type === "ATTACHMENTANY");
+    const photoDoc = docsList.find((d) => d.type === "PHOTO");
+    return { curriculum, volunteer, attachments, photo: photoDoc };
+  }, [docsList]);
 
   const onSubmit: SubmitHandler<UpdateFormValues> = async (values) => {
     if (!professional?.id) return;
@@ -70,15 +113,15 @@ export default function ProfessionalUpdate(): JSX.Element {
     const ok = await updateProfessional(professional.id, buildUpdatePayload(values, availabilities));
     if (!ok) return;
 
-    if (docs.hasAnyUpload) {
-      await upload(professional.id, docs.buildFormData());
-      docs.clearFiles();
-      await docs.refreshDocuments(professional.id);
+    if (hasAnyUpload) {
+      await upload(professional.id, buildFormData());
+      clearFiles();
+      await refreshDocuments(professional.id);
     }
 
-    if (photo.selectedPhoto) {
-      const photoOk = await photo.uploadPhoto(professional.id);
-      if (!photoOk) return;
+    if (selectedPhoto) {
+      const okPhoto = await uploadPhoto(professional.id);
+      if (!okPhoto) return;
     }
 
     router.push("/professionals");
@@ -160,38 +203,143 @@ export default function ProfessionalUpdate(): JSX.Element {
 
           <Availability control={form.control} watch={form.watch} />
 
-          <ProfessionalPhoto
-            fileInputRef={photo.fileInputRef}
-            selectedPhoto={photo.selectedPhoto}
-            photoPreviewUrl={photo.photoPreviewUrl}
-            profilePhotoUrl={professional?.profilePhotoUrl}
-            photoError={photo.photoError}
-            photoSuccess={photo.photoSuccess}
-            setSelectedPhoto={photo.setSelectedPhoto}
-            clearPhoto={photo.clearPhoto}
+          <FormField
+            control={form.control}
+            name="photo"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel className="text-sm font-medium">
+                  Selecione uma foto*
+                </FormLabel>
+
+                <FormControl>
+                  <div className="flex flex-col items-start gap-4 w-full">
+                    <input
+                      ref={fileInputRef}
+                      type="file"
+                      id={`${field.name}-upload`}
+                      className="hidden"
+                      accept="image/png,image/jpeg,image/jpg,image/webp"
+                      onChange={(e) => {
+                        const file = e.target.files?.[0];
+
+                        if (!file) {
+                          field.onChange(null);
+                          setSelectedPhoto(null);
+                          return;
+                        }
+
+                        const allowedTypes = [
+                          "image/png",
+                          "image/jpeg",
+                          "image/jpg",
+                          "image/webp",
+                        ];
+
+                        const maxSize = 5 * 1024 * 1024;
+
+                        if (
+                          !allowedTypes.includes(file.type) ||
+                          file.size <= 0 ||
+                          file.size > maxSize
+                        ) {
+                          alert(
+                            "Apenas imagens PNG, JPG ou WEBP até 5MB são permitidas",
+                          );
+
+                          if (fileInputRef.current) {
+                            fileInputRef.current.value = "";
+                          }
+
+                          field.onChange(null);
+                          setSelectedPhoto(null);
+                          return;
+                        }
+
+                        field.onChange(file);
+                        setSelectedPhoto(file);
+                      }}
+                    />
+
+                    <button
+                      type="button"
+                      onClick={() => fileInputRef.current?.click()}
+                      className="relative group mr-auto rounded-full transition-transform hover:scale-105"
+                    >
+                      <Avatar className="w-32 h-32 border-2 border-dashed border-gray-300 bg-gray-50 cursor-pointer flex items-center justify-center">
+                        <AvatarImage
+                          src={photoPreviewUrl || groupedDocs.photo?.url || undefined}
+                          alt="Foto do profissional"
+                        />
+
+                        <AvatarFallback className="bg-transparent">
+                          <User className="w-12 h-12 text-gray-400" />
+                        </AvatarFallback>
+                      </Avatar>
+
+                      <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity bg-black/20 rounded-full">
+                        <span className="bg-white text-black text-[10px] font-bold px-2 py-1 rounded shadow-sm cursor-pointer">
+                          Escolher foto
+                        </span>
+                      </div>
+                    </button>
+
+                    <p className="text-xs text-gray-500">
+                      PNG, JPG ou WEBP até 5MB
+                    </p>
+
+                    {field.value && (
+                      <div className="flex items-center gap-2">
+                        <p className="text-xs text-gray-600">
+                          Selecionado: {field.value.name}
+                        </p>
+
+                        <Button
+                          type="button"
+                          variant="outline"
+                          size="sm"
+                          onClick={() => {
+                            field.onChange(null);
+                            setSelectedPhoto(null);
+
+                            if (fileInputRef.current) {
+                              fileInputRef.current.value = "";
+                            }
+                          }}
+                        >
+                          Remover
+                        </Button>
+                      </div>
+                    )}
+                  </div>
+                </FormControl>
+
+                <FormMessage />
+              </FormItem>
+            )}
           />
 
           <ProfessionalDocuments
-            groupedDocs={docs.groupedDocs}
-            docsLoading={docs.docsLoading}
-            docsError={docs.docsError}
-            removingIds={docs.removingIds}
-            removeModalOpen={docs.removeModalOpen}
-            setRemoveModalOpen={docs.setRemoveModalOpen}
-            docToRemove={docs.docToRemove}
-            isConfirmBusy={docs.isConfirmBusy}
-            openRemoveModal={docs.openRemoveModal}
-            confirmRemove={docs.confirmRemove}
-            curriculumFile={docs.curriculumFile}
-            volunteerFile={docs.volunteerFile}
-            attachmentFiles={docs.attachmentFiles}
-            setCurriculumFile={docs.setCurriculumFile}
-            setVolunteerFile={docs.setVolunteerFile}
-            setAttachmentFiles={docs.setAttachmentFiles}
-            isValidFile={docs.isValidFile}
+            groupedDocs={groupedDocs}
+            docsLoading={docsLoading}
+            docsError={docsError}
+            removingIds={removingIds}
+            removeModalOpen={removeModalOpen}
+            setRemoveModalOpen={setRemoveModalOpen}
+            docToRemove={docToRemove}
+            isConfirmBusy={isConfirmBusy}
+            openRemoveModal={openRemoveModal}
+            confirmRemove={confirmRemove}
+            curriculumFile={curriculumFile}
+            volunteerFile={volunteerFile}
+            attachmentFiles={attachmentFiles}
+            setCurriculumFile={setCurriculumFile}
+            setVolunteerFile={setVolunteerFile}
+            setAttachmentFiles={setAttachmentFiles}
+            isValidFile={isValidFile}
             errorDocs={errorDocs}
             successDocs={successDocs}
-            hasAnyUpload={docs.hasAnyUpload}
+            hasAnyUpload={hasAnyUpload}
             loadingDocs={loadingDocs}
           />
 
@@ -199,6 +347,7 @@ export default function ProfessionalUpdate(): JSX.Element {
             <p className="text-blue-500">{loading ? "Salvando perfil..." : "Enviando documentos..."}</p>
           )}
           {error && <p className="text-red-500">{error}</p>}
+          {photoError && <p className="text-red-500">{photoError}</p>}
           {success && <p className="text-green-600">Profissional atualizado com sucesso!</p>}
 
           <div className="flex justify-end gap-4">
