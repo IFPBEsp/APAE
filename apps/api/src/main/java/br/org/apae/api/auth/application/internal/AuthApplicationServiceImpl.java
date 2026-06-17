@@ -87,10 +87,8 @@ public class AuthApplicationServiceImpl implements AuthApplicationService {
 
             return new TokenResponseDTO(token);
         } catch (UserNotFoundException | InvalidPasswordException e) {
-            throw new InvalidPasswordException("E-mail ou senha incorretos");
+            throw e;
         } catch (Exception e) {
-            throw new AuthenticationException();
-        }
     }
 
     @Override

@@ -172,10 +172,10 @@ class AuthControllerTest {
                     "senha-incorreta"
             );
 
-            when(authService.signIn(any(SignInDTO.class)))
-                    .thenThrow(new InvalidPasswordException("E-mail ou senha incorretos"));
+            when(authService.signIn(requestDto))
+                    .thenThrow(new InvalidPasswordException());
 
-            mockMvc.perform(post("/auth/signin")
+            mockMvc.perform(post(BASE_URL + "/signin")
                             .contentType(MediaType.APPLICATION_JSON)
                             .content(objectMapper.writeValueAsString(requestDto)))
                     .andExpect(status().isUnauthorized());
@@ -191,10 +191,10 @@ class AuthControllerTest {
                     "Senha123"
             );
 
-            when(authService.signIn(any(SignInDTO.class)))
-                    .thenThrow(new InvalidPasswordException("E-mail ou senha incorretos"));
+            when(authService.signIn(requestDto))
+                    .thenThrow(new InvalidPasswordException());
 
-            mockMvc.perform(post("/auth/signin")
+            mockMvc.perform(post(BASE_URL + "/signin")
                             .contentType(MediaType.APPLICATION_JSON)
                             .content(objectMapper.writeValueAsString(requestDto)))
                     .andExpect(status().isUnauthorized());
