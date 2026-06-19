@@ -63,7 +63,7 @@ export default function ViewProfessional() {
         </Avatar>
         <div className="text-center sm:text-left">
           <h2 className="text-xl font-bold text-[#0D4F97]">{professional.name}</h2>
-          <p className="text-base text-gray-600">{professional.serviceArea?.area}</p>
+          <p className="text-base text-gray-600">{professional.serviceType?.name}</p>
         </div>
       </div>
 

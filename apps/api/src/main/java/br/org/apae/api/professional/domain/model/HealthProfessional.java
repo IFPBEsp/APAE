@@ -7,7 +7,7 @@ import java.util.List;
 import java.util.UUID;
 
 import br.org.apae.api.address.domain.model.Address;
-import br.org.apae.api.servicearea.domain.model.ServiceArea;
+import br.org.apae.api.servicetype.domain.model.ServiceType;
 
 @Entity
 @Table(name = "profissionais_da_saude")
@@ -31,7 +31,7 @@ public class HealthProfessional {
             name = "FK_HEALTH_PROFESSIONAL_SERVICE_AREA",
             foreignKeyDefinition = "FOREIGN KEY (area_de_atendimento) REFERENCES areas_de_atendimento(area) ON UPDATE CASCADE"
     ))
-    private ServiceArea serviceArea;
+    private ServiceType serviceArea;
 
     @Column(name = "contato", nullable = false)
     private String phoneNumber;
@@ -58,7 +58,7 @@ public class HealthProfessional {
     protected HealthProfessional() {
     }
 
-    public HealthProfessional(String name, String email, ServiceArea serviceArea, String phoneNumber,
+    public HealthProfessional(String name, String email, ServiceType serviceArea, String phoneNumber,
             String identityDocument,
             String professionalDocument, Address address) {
         this.name = name;
@@ -70,7 +70,7 @@ public class HealthProfessional {
         this.address = address;
     }
 
-    public HealthProfessional(UUID id, String name, String email, ServiceArea serviceArea, String phoneNumber,
+    public HealthProfessional(UUID id, String name, String email, ServiceType serviceArea, String phoneNumber,
             String identityDocument, String professionalDocument, Address address) {
         this.id = id;
         this.name = name;
@@ -106,11 +106,11 @@ public class HealthProfessional {
         this.email = email;
     }
 
-    public ServiceArea getServiceArea() {
+    public ServiceType getServiceArea() {
         return serviceArea;
     }
 
-    public void setServiceArea(ServiceArea serviceArea) {
+    public void setServiceArea(ServiceType serviceArea) {
         this.serviceArea = serviceArea;
     }
 

@@ -13,7 +13,7 @@ import {
   updateAnnualRegistryApi,
   updatePatientApi,
 } from "./annual-registry.api";
-import type { DocumentDTO, FullPatientData, AnnualRegistry, ServiceAreaItem } from "./annual-registry.types";
+import type { DocumentDTO, FullPatientData, AnnualRegistry, ServiceTypeItem } from "./annual-registry.types";
 
 interface UseAnnualRegistryModalParams {
   isOpen: boolean;
@@ -111,9 +111,9 @@ export function useAnnualRegistryModal({
         ? fullPatientData.vaccineNames.map((v: unknown) => (typeof v === "string" ? { name: v } : v))
         : [];
 
-      const sourceServiceAreas = initialData.serviceArea || initialData.serviceAreas || initialData.serviceTypes || [];
-      const serviceTypeList = Array.isArray(sourceServiceAreas)
-        ? sourceServiceAreas.map((s: ServiceAreaItem) => ({ id: s.id, area: s.area || s.name, name: s.name || s.area }))
+      const sourceServiceTypes = initialData.serviceTypes || initialData.serviceAreas || initialData.serviceArea || [];
+      const serviceTypeList = Array.isArray(sourceServiceTypes)
+        ? sourceServiceTypes.map((s: ServiceTypeItem) => ({ id: s.id, name: s.name || s.area || s.label || s.value }))
         : [];
 
       const medicationValue =
@@ -206,8 +206,7 @@ export function useAnnualRegistryModal({
         medications: data.continuousMedication || "Nenhum",
         medicamentos: data.continuousMedication || "Nenhum",
         disorders: (data.disorders || []).map((d: Record<string, unknown>) => ({ name: d.name || d.label || d.value, id: d.id })),
-        serviceArea: (data.serviceTypes || []).map((s: Record<string, unknown>) => ({ id: s.id, area: s.area || s.name || s.label })),
-        serviceAreas: (data.serviceTypes || []).map((s: Record<string, unknown>) => ({ id: s.id, area: s.area || s.name || s.label })),
+        serviceTypes: (data.serviceTypes || []).map((s: Record<string, unknown>) => ({ id: s.id, name: s.name || s.area || s.label || s.value })),
         ano: parseInt(data.year),
         year: parseInt(data.year),
       };

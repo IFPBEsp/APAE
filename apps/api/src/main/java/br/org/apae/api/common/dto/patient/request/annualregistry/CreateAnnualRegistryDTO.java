@@ -5,7 +5,7 @@ import java.time.Year;
 import java.util.Set;
 
 import br.org.apae.api.common.dto.patient.request.disorder.CreateDisorderDTO;
-import br.org.apae.api.common.dto.servicearea.request.CreateServiceAreaDTO;
+import br.org.apae.api.common.dto.servicetype.request.CreateServiceTypeDTO;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 import jakarta.validation.constraints.Size;
@@ -24,5 +24,5 @@ public record CreateAnnualRegistryDTO(
                 Set<CreateDisorderDTO> disorders,
 
                 @NotNull
-                Set<CreateServiceAreaDTO> serviceArea) {
+                Set<CreateServiceTypeDTO> serviceTypes) {
 }

@@ -39,7 +39,7 @@ export default function ServiceTypesPage() {
   }, []);
 
   const filteredserviceTypes = serviceTypes.filter((serviceType) =>
-    serviceType.area.toLowerCase().includes(searchName.toLowerCase()),
+    serviceType.name.toLowerCase().includes(searchName.toLowerCase()),
   );
 
   const renderContent = () => {

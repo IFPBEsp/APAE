@@ -54,7 +54,7 @@ export default function ProfessionalRegister(): JSX.Element {
       }));
 
     const payload = {
-      serviceArea: { area: values.serviceArea },
+      serviceType: { name: values.serviceArea },
       phoneNumber: values.phone,
       professionalDocument: values.professionalDocument?.trim() || null,
       email: values.email.trim(),

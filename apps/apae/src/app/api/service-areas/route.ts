@@ -5,7 +5,7 @@ import { AxiosError } from "axios";
 export async function GET() {
   try {
     const api = await createBaseApi();
-    const response = await api.get("/service-areas");
+    const response = await api.get("/service-types");
 
     return NextResponse.json(response.data, { status: 200 });
   } catch (error) {
@@ -13,7 +13,7 @@ export async function GET() {
       return NextResponse.json(
         {
           message:
-            error.response?.data?.message || "Erro ao buscar áreas de atendimento",
+            error.response?.data?.message || "Erro ao buscar tipos de atendimento",
         },
         { status: error.response?.status || 500 }
       );
@@ -31,7 +31,7 @@ export async function POST(req: Request) {
     const body = await req.json();
 
     const api = await createBaseApi();
-    const response = await api.post("/service-areas", body);
+    const response = await api.post("/service-types", body);
 
     return NextResponse.json(response.data, { status: 201 });
   } catch (error) {
@@ -40,7 +40,7 @@ export async function POST(req: Request) {
       return NextResponse.json(
         {
           message:
-            data?.message || "Erro ao criar área de atendimento"
+            data?.message || "Erro ao criar tipo de atendimento"
         },
         { status: error.response?.status || 500 }
       );

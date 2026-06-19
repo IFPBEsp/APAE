@@ -9,11 +9,13 @@ import org.springframework.mock.web.MockMultipartFile;
 import br.org.apae.api.common.dto.address.AddressResponseDTO;
 import br.org.apae.api.common.dto.address.CreateAddressDTO;
 import br.org.apae.api.common.dto.professional.request.CreateHealthProfessionalDTO;
+import br.org.apae.api.common.dto.professional.request.UpdateHealthProfessionalDTO;
 import br.org.apae.api.common.dto.professional.request.documents.CreateProfessionalDocumentsDTO;
 import br.org.apae.api.common.dto.professional.response.HealthProfessionalResponseDTO;
-import br.org.apae.api.common.dto.servicearea.request.CreateServiceAreaDTO;
+import br.org.apae.api.common.dto.servicetype.request.CreateServiceTypeDTO;
+import br.org.apae.api.common.dto.servicetype.request.UpdateServiceTypeDTO;
 import br.org.apae.api.common.dto.availability.request.CreateAvailabilityDTO;
-import br.org.apae.api.common.dto.servicearea.response.ServiceAreaResponseDTO;
+import br.org.apae.api.common.dto.servicetype.response.ServiceTypeResponseDTO;
 import br.org.apae.api.common.dto.availability.response.AvailabilityResponseDTO;
 
 public final class HealthProfessionalMockDto {
@@ -45,20 +47,20 @@ public final class HealthProfessionalMockDto {
         return new CreateProfessionalDocumentsDTO(volunteerAgreementFile(), curriculumFile(), null);
     }
 
-    public static CreateServiceAreaDTO createServiceAreaRequestPhysiotherapy() {
-        return new CreateServiceAreaDTO("Fisioterapia");
+    public static CreateServiceTypeDTO createServiceTypeRequestPhysiotherapy() {
+        return new CreateServiceTypeDTO("Fisioterapia");
     }
 
-    public static CreateServiceAreaDTO createServiceAreaRequestPsychology() {
-        return new CreateServiceAreaDTO("Psicologia");
+    public static CreateServiceTypeDTO createServiceTypeRequestPsychology() {
+        return new CreateServiceTypeDTO("Psicologia");
     }
 
-    public static ServiceAreaResponseDTO createServiceAreaResponsePhysiotherapy() {
-        return new ServiceAreaResponseDTO(1, "Fisioterapia");
+    public static ServiceTypeResponseDTO createServiceTypeResponsePhysiotherapy() {
+        return new ServiceTypeResponseDTO(1, "Fisioterapia");
     }
 
-    public static ServiceAreaResponseDTO createServiceAreaResponsePsychology() {
-        return new ServiceAreaResponseDTO(2, "Psicologia");
+    public static ServiceTypeResponseDTO createServiceTypeResponsePsychology() {
+        return new ServiceTypeResponseDTO(2, "Psicologia");
     }
 
     public static CreateAddressDTO createAddressRequest() {
@@ -67,7 +69,7 @@ public final class HealthProfessionalMockDto {
 
     public static CreateHealthProfessionalDTO createHealthProfessionalRequest() {
         return new CreateHealthProfessionalDTO(
-            createServiceAreaRequestPsychology(),
+            createServiceTypeRequestPsychology(),
             "11999999999",
             "CRP-12345",
             "teste@apae.org.br",
@@ -79,6 +81,23 @@ public final class HealthProfessionalMockDto {
                 new CreateAvailabilityDTO("TERCA", "TARDE")
             ),
             "http://example.com/photo.jpg" // Adicionado o parâmetro faltante do CreateHealthProfessionalDTO
+        );
+    }
+
+    public static UpdateHealthProfessionalDTO updateHealthProfessionalRequest() {
+        return new UpdateHealthProfessionalDTO(
+            new UpdateServiceTypeDTO("Fisioterapia"),
+            "11999999999",
+            "CREFITO-12345",
+            "teste@apae.org.br",
+            "João da Silva",
+            "123456789",
+            createAddressRequest(),
+            List.of(
+                new CreateAvailabilityDTO("SEGUNDA", "MANHA"),
+                new CreateAvailabilityDTO("TERCA", "TARDE")
+            ),
+            "http://example.com/photo.jpg"
         );
     }
 
@@ -101,7 +120,7 @@ public final class HealthProfessionalMockDto {
             "Fisioterapia",
             true,
             createAddressResponse1(),
-            createServiceAreaResponsePhysiotherapy(),
+            createServiceTypeResponsePhysiotherapy(),
             List.of(
                 new AvailabilityResponseDTO(UUID.randomUUID(), "SEGUNDA", "MANHA"),
                 new AvailabilityResponseDTO(UUID.randomUUID(), "TERCA", "TARDE")
@@ -121,7 +140,7 @@ public final class HealthProfessionalMockDto {
             "Psicologia",
             true,
             createAddressResponse2(),
-            createServiceAreaResponsePsychology(),
+            createServiceTypeResponsePsychology(),
             List.of(),
             null // Adicionado o parâmetro faltante (null) do HealthProfessionalResponseDTO
         );

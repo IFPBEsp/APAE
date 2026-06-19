@@ -43,7 +43,7 @@ export default function HealthAreaSelect({
   const [newArea, setNewArea] = React.useState("");
 
   const normalizedAreas = React.useMemo(() => {
-    return areas.map((a) => a.area);
+    return areas.map((a) => a.name);
   }, [areas]);
 
   const formatArea = (s: string) =>
@@ -58,7 +58,7 @@ export default function HealthAreaSelect({
     try {
       const response = await create(formatted);
 
-      onChange(response.area);
+      onChange(response.name);
       setNewArea("");
       setCreatingMode(false);
       setOpen(false);

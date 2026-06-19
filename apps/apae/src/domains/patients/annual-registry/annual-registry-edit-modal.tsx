@@ -182,7 +182,7 @@ export default function AnnualRegistryEditModal({
                       <FormItem>
                         <FormLabel className={`font-bold text-xs ${errors.serviceTypes ? "text-red-500" : "text-slate-700"} mb-1.5 block`}>Tipos de Atendimento</FormLabel>
                         <FormControl>
-                          <GenericDatabaseSelect value={field.value || []} onChange={field.onChange} endpoint="/apae-geral/api/service-types" labelSingular="Tipo" placeholder="Selecione tipos..." labelKey="area" menuPlacement="top" />
+                          <GenericDatabaseSelect value={field.value || []} onChange={field.onChange} endpoint="/apae-geral/api/service-types" labelSingular="Tipo" placeholder="Selecione tipos..." labelKey="name" menuPlacement="top" />
                         </FormControl>
                         <FormMessage />
                       </FormItem>

@@ -19,7 +19,7 @@ import br.org.apae.api.common.dto.appointment.response.appointment.TodayAppointm
 import br.org.apae.api.common.dto.patient.response.disorder.DisorderResponseDTO;
 import br.org.apae.api.common.dto.patient.response.patient.PatientResponseDTO;
 import br.org.apae.api.common.dto.professional.response.HealthProfessionalResponseDTO;
-import br.org.apae.api.common.dto.servicearea.response.ServiceAreaResponseDTO;
+import br.org.apae.api.common.dto.servicetype.response.ServiceTypeResponseDTO;
 import br.org.apae.api.patient.domain.model.AnnualRegistry;
 import br.org.apae.api.professional.domain.model.HealthProfessional;
 
@@ -77,7 +77,7 @@ public class AppointmentMapper {
 
   public AppointmentResponseDTO toResponse(Appointment appointment, PatientResponseDTO patient) {
     HealthProfessional professional = appointment.getProfessional();
-    ServiceAreaResponseDTO serviceArea = new ServiceAreaResponseDTO(professional.getServiceArea());
+    ServiceTypeResponseDTO serviceType = new ServiceTypeResponseDTO(professional.getServiceArea());
     AddressResponseDTO address = new AddressResponseDTO(professional.getAddress());
     List<AvailabilityResponseDTO> availabilities = professional.getAvailabilities()
         .stream()
@@ -87,7 +87,7 @@ public class AppointmentMapper {
         appointment.getId(),
         new HealthProfessionalResponseDTO(
           professional, 
-          serviceArea,
+          serviceType,
           address, 
           availabilities),
         toResponse(appointment.getAnnualRegistration(), patient),
@@ -120,7 +120,7 @@ public class AppointmentMapper {
     Appointment appointment = generatedAppointment.getAppointment();
     // Patient patient = appointment.getAnnualRegistration().getPatient();
     HealthProfessional professional = appointment.getProfessional();
-    ServiceAreaResponseDTO serviceArea = new ServiceAreaResponseDTO(professional.getServiceArea());
+    ServiceTypeResponseDTO serviceType = new ServiceTypeResponseDTO(professional.getServiceArea());
     AddressResponseDTO address = new AddressResponseDTO(professional.getAddress());
     List<AvailabilityResponseDTO> availabilities = professional.getAvailabilities()
         .stream()
@@ -131,7 +131,7 @@ public class AppointmentMapper {
         patient,
         new HealthProfessionalResponseDTO(
           professional, 
-          serviceArea,
+          serviceType,
           address, 
           availabilities),
         generatedAppointment.getScheduledDateTime(),

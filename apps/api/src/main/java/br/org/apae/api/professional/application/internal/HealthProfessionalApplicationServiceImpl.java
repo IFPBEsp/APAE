@@ -5,7 +5,7 @@ import br.org.apae.api.common.dto.professional.request.UpdateHealthProfessionalD
 import br.org.apae.api.common.dto.professional.request.documents.CreateProfessionalDocumentsDTO;
 import br.org.apae.api.common.dto.professional.request.documents.UpdateProfessionalDocumentsDTO;
 import br.org.apae.api.common.dto.professional.response.HealthProfessionalResponseDTO;
-import br.org.apae.api.common.dto.servicearea.response.ServiceAreaResponseDTO;
+import br.org.apae.api.common.dto.servicetype.response.ServiceTypeResponseDTO;
 import br.org.apae.api.professional.application.interfaces.HealthProfessionalApplicationService;
 import br.org.apae.api.professional.application.mappers.HealthProfessionalMapper;
 import br.org.apae.api.professional.domain.exceptions.EmailConflictException;
@@ -16,14 +16,12 @@ import br.org.apae.api.professional.domain.model.HealthProfessional;
 import br.org.apae.api.professional.domain.model.enums.Day;
 import br.org.apae.api.professional.domain.model.enums.Shift;
 import br.org.apae.api.professional.domain.repository.HealthProfessionalRepository;
-import br.org.apae.api.servicearea.application.interfaces.ServiceAreaApplicationService;
+import br.org.apae.api.servicetype.application.interfaces.ServiceTypeApplicationService;
 import br.org.apae.api.documents.application.interfaces.DocumentApplicationService;
 import br.org.apae.api.documents.domain.enums.DocumentCategory;
+import br.org.apae.api.documents.domain.enums.DocumentType;
 import br.org.apae.api.documents.interfaces.dto.DocumentDTO;
 import br.org.apae.api.documents.interfaces.dto.PutDocumentArgsDTO;
-import br.org.apae.api.documents.interfaces.dto.PutDocumentArgsDTO;
-import br.org.apae.api.documents.domain.enums.DocumentCategory;
-import br.org.apae.api.documents.domain.enums.DocumentType;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -45,16 +43,16 @@ public class HealthProfessionalApplicationServiceImpl implements HealthProfessio
     private final HealthProfessionalRepository repository;
     private final HealthProfessionalMapper mapper;
     private final ProfessionalDocumentsService documentsService;
-    private final ServiceAreaApplicationService serviceAreaApplicationService;
+    private final ServiceTypeApplicationService serviceTypeApplicationService;
     private final DocumentApplicationService documentService;
 
     public HealthProfessionalApplicationServiceImpl(HealthProfessionalRepository repository,
             HealthProfessionalMapper mapper, ProfessionalDocumentsService documentsService,
-            ServiceAreaApplicationService serviceAreaApplicationService, DocumentApplicationService documentService) {
+            ServiceTypeApplicationService serviceTypeApplicationService, DocumentApplicationService documentService) {
         this.repository = repository;
         this.mapper = mapper;
         this.documentsService = documentsService;
-        this.serviceAreaApplicationService = serviceAreaApplicationService;
+        this.serviceTypeApplicationService = serviceTypeApplicationService;
         this.documentService = documentService;
     }
 
@@ -75,10 +73,10 @@ public class HealthProfessionalApplicationServiceImpl implements HealthProfessio
             throw new IdentityDocumentConflictException();
         }
 
-        ServiceAreaResponseDTO serviceAreaDto = serviceAreaApplicationService
-                .findServiceAreaByArea(dto.serviceArea().area());
+        ServiceTypeResponseDTO serviceTypeDto = serviceTypeApplicationService
+                .findServiceTypeByArea(dto.serviceType().name());
 
-        HealthProfessional professionalToSave = mapper.toEntity(dto, serviceAreaDto);
+        HealthProfessional professionalToSave = mapper.toEntity(dto, serviceTypeDto);
         HealthProfessional savedProfessional = repository.save(professionalToSave);
 
         documentsService.storeProfessionalDocuments(professionalToSave, documentsDTO);
@@ -104,15 +102,14 @@ public class HealthProfessionalApplicationServiceImpl implements HealthProfessio
             throw new ProfessionalDocumentConflictException();
         }
 
-        String area = (dto.serviceArea() != null
-                && dto.serviceArea().area() != null
-                && !dto.serviceArea().area().isBlank())
-                ? dto.serviceArea().area()
+        String area = (dto.serviceType() != null
+                && dto.serviceType().name() != null
+                && !dto.serviceType().name().isBlank())
+                ? dto.serviceType().name()
                 : entityToUpdate.getServiceArea().getArea();
 
-        ServiceAreaResponseDTO serviceAreaDto = serviceAreaApplicationService.findServiceAreaByArea(area);
-
-        HealthProfessional updatedProfessional = mapper.updateEntityFromDto(entityToUpdate, dto, serviceAreaDto);
+        ServiceTypeResponseDTO serviceTypeDto = serviceTypeApplicationService.findServiceTypeByArea(area);
+        HealthProfessional updatedProfessional = mapper.updateEntityFromDto(entityToUpdate, dto, serviceTypeDto);
 
         repository.save(updatedProfessional);
 

@@ -14,8 +14,8 @@ import br.org.apae.api.common.dto.patient.request.vaccine.CreateVaccineDTO;
 import br.org.apae.api.common.dto.patient.response.disorder.DisorderResponseDTO;
 import br.org.apae.api.common.dto.patient.response.patient.PatientResponseDTO;
 import br.org.apae.api.common.dto.patient.response.patient.PatientSummaryResponseDTO;
-import br.org.apae.api.common.dto.servicearea.request.CreateServiceAreaDTO;
-import br.org.apae.api.common.dto.servicearea.response.ServiceAreaResponseDTO;
+import br.org.apae.api.common.dto.servicetype.request.CreateServiceTypeDTO;
+import br.org.apae.api.common.dto.servicetype.response.ServiceTypeResponseDTO;
 import br.org.apae.api.common.exceptions.handler.GlobalExceptionHandler;
 import br.org.apae.api.controllers.patient.mocks.patient.PatientCreator;
 import br.org.apae.api.helpers.AuthTestHelper;
@@ -25,7 +25,7 @@ import br.org.apae.api.patient.application.interfaces.DisorderApplicationService
 import br.org.apae.api.patient.application.interfaces.PatientApplicationService;
 import br.org.apae.api.patient.domain.exceptions.PatientConflictException;
 import br.org.apae.api.patient.domain.exceptions.PatientNotFoundException;
-import br.org.apae.api.servicearea.application.interfaces.ServiceAreaApplicationService;
+import br.org.apae.api.servicetype.application.interfaces.ServiceTypeApplicationService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import org.junit.jupiter.api.AfterEach;
@@ -62,6 +62,7 @@ import java.util.UUID;
 
 import static org.hamcrest.Matchers.hasSize;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 import static org.springframework.data.web.config.EnableSpringDataWebSupport.PageSerializationMode.VIA_DTO;
@@ -102,7 +103,7 @@ public class PatientControllerTest {
  private AnnualRegistryApplicationService annualRegistryApplicationService;
 
  @MockitoBean
- private ServiceAreaApplicationService serviceAreaApplicationService;
+ private ServiceTypeApplicationService serviceTypeApplicationService;
 
  @MockitoBean
  private JwtProvider jwtProvider;
@@ -119,7 +120,7 @@ public class PatientControllerTest {
  
  @AfterEach
  void tearDown() {
-  Mockito.reset(patientService, disorderApplicationService, annualRegistryApplicationService, serviceAreaApplicationService, jwtProvider, userService);
+  Mockito.reset(patientService, disorderApplicationService, annualRegistryApplicationService, serviceTypeApplicationService, jwtProvider, userService);
  }
 
  private CreateAddressDTO createAddress() {
@@ -127,7 +128,7 @@ public class PatientControllerTest {
  }
 
  private CreateAnnualRegistryDTO createAnnualRegistry() {
-  return new CreateAnnualRegistryDTO("123456789", "Nenhuma doença pré-existente", "Nenhum", new BigDecimal("1412.00"), Year.of(2024), Set.of(new CreateDisorderDTO("TEA")), Set.of(new CreateServiceAreaDTO("Psicologia")));
+  return new CreateAnnualRegistryDTO("123456789", "Nenhuma doença pré-existente", "Nenhum", new BigDecimal("1412.00"), Year.of(2024), Set.of(new CreateDisorderDTO("TEA")), Set.of(new CreateServiceTypeDTO("Psicologia")));
  }
 
  private CreatePatientDTO createValidPatientRequest() {
@@ -152,15 +153,20 @@ public class PatientControllerTest {
 
    MockMultipartFile patientPart = new MockMultipartFile("patient", "", MediaType.APPLICATION_JSON_VALUE, objectMapper.writeValueAsString(patientDTO).getBytes(StandardCharsets.UTF_8));
 
-   mockMvc.perform(multipart(BASE_URL)
-       .file(patientPart).file((MockMultipartFile) docsDTO.rg()).file((MockMultipartFile) docsDTO.cpf())
-       .file((MockMultipartFile) docsDTO.proof_of_address()).file((MockMultipartFile) docsDTO.birth_certificate())
-       .file((MockMultipartFile) docsDTO.photo()).file((MockMultipartFile) docsDTO.reports().getFirst())
-       .file((MockMultipartFile) docsDTO.referrals().getFirst())
-       .header("Authorization", AuthTestHelper.bearerToken()).with(csrf()).contentType(MediaType.MULTIPART_FORM_DATA))
-     .andExpect(status().isCreated())
-     .andExpect(jsonPath("$.id").value(responseDTO.id().toString()))
-     .andExpect(jsonPath("$.fullName").value("João da Silva"));
+    mockMvc.perform(multipart(BASE_URL)
+        .file(patientPart).file((MockMultipartFile) docsDTO.rg()).file((MockMultipartFile) docsDTO.cpf())
+        .file((MockMultipartFile) docsDTO.proof_of_address()).file((MockMultipartFile) docsDTO.birth_certificate())
+        .file((MockMultipartFile) docsDTO.photo()).file((MockMultipartFile) docsDTO.reports().getFirst())
+        .file((MockMultipartFile) docsDTO.referrals().getFirst())
+        .header("Authorization", AuthTestHelper.bearerToken()).with(csrf()).contentType(MediaType.MULTIPART_FORM_DATA))
+      .andExpect(status().isCreated())
+      .andExpect(jsonPath("$.id").value(responseDTO.id().toString()))
+      .andExpect(jsonPath("$.fullName").value("João da Silva"));
+
+    ArgumentCaptor<CreatePatientDTO> patientCaptor = ArgumentCaptor.forClass(CreatePatientDTO.class);
+    verify(patientService).createPatient(patientCaptor.capture(), any(CreateDocumentsDTO.class));
+    assertNotNull(patientCaptor.getValue().annualRegistry());
+    assertEquals("Psicologia", patientCaptor.getValue().annualRegistry().serviceTypes().iterator().next().name());
   }
 
   @Test
@@ -431,8 +437,8 @@ public class PatientControllerTest {
 
   @Test
   @DisplayName("Deve listar tipos de atendimento disponíveis para filtro")
-  void shouldListAvailableServiceAreas() throws Exception {
-   when(serviceAreaApplicationService.findAllServiceAreas()).thenReturn(List.of(new ServiceAreaResponseDTO(1, "Fisioterapia"), new ServiceAreaResponseDTO(2, "Nutrição")));
+  void shouldListAvailableServiceTypes() throws Exception {
+   when(serviceTypeApplicationService.findAllServiceTypes()).thenReturn(List.of(new ServiceTypeResponseDTO(1, "Fisioterapia"), new ServiceTypeResponseDTO(2, "Nutrição")));
    mockMvc.perform(get(BASE_URL + "/filtros/tipos-atendimento").header("Authorization", AuthTestHelper.bearerToken()).accept(MediaType.APPLICATION_JSON))
      .andExpect(status().isOk()).andExpect(jsonPath("$", hasSize(2))).andExpect(jsonPath("$[0]").value("Fisioterapia"));
   }

@@ -513,7 +513,7 @@ export function MembersRegisterProvider({
           bpc: boolean;
           diseases: string;
           continuousMedication: string;
-          serviceArea: { area: string }[];
+          serviceTypes: { name: string }[];
           familyIncome: number;
           year: number;
           disorders: { name: string }[];
@@ -524,7 +524,7 @@ export function MembersRegisterProvider({
         bpc: additionals.bpc,
         diseases: additionals.diseases || "Nenhuma",
         continuousMedication: additionals.medications || "Nenhum",
-        serviceArea: additionals.care.types.map((area: string) => ({ area })),
+        serviceTypes: additionals.care.types.map((name: string) => ({ name })),
         familyIncome: parseIncome(additionals.householdIncome),
         year: new Date().getFullYear(),
         disorders: additionals.disability.types.map((name: string) => ({

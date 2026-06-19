@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { createServiceArea } from "@/services/servicearea-service";
+import { createServiceType } from "@/services/service-type-service";
 
 export function useCreateServiceArea() {
   const [loading, setLoading] = useState(false);
@@ -10,7 +10,7 @@ export function useCreateServiceArea() {
     setError(null);
 
     try {
-      const response = await createServiceArea(area);
+      const response = await createServiceType(area);
       const data = await response.json();
 
       if (!response.ok) {

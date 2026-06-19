@@ -17,7 +17,7 @@ import br.org.apae.api.common.dto.patient.response.parent.ParentResponseDTO;
 import br.org.apae.api.common.dto.patient.response.patient.PatientResponseDTO;
 import br.org.apae.api.common.dto.patient.response.patient.PatientSummaryResponseDTO;
 import br.org.apae.api.common.dto.patient.response.vaccine.VaccineResponseDTO;
-import br.org.apae.api.common.dto.servicearea.request.CreateServiceAreaDTO;
+import br.org.apae.api.common.dto.servicetype.request.CreateServiceTypeDTO;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -49,8 +49,8 @@ public class PatientCreator {
         return new CreateDisorderDTO("Transtorno do Espectro Autista");
     }
 
-    private static CreateServiceAreaDTO createServiceArea() {
-        return new CreateServiceAreaDTO("Psicologia");
+    private static CreateServiceTypeDTO createServiceType() {
+        return new CreateServiceTypeDTO("Psicologia");
     }
 
     private static CreateGuardianDTO createGuardian() {
@@ -83,7 +83,7 @@ public class PatientCreator {
                 new BigDecimal("1412.00"),
                 2024,
                 Set.of(createDisorder()),
-                Set.of(createServiceArea())
+                Set.of(createServiceType())
         );
     }
 */
