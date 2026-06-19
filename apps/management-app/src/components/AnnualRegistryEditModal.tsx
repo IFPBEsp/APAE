@@ -89,10 +89,10 @@ export default function AnnualRegistryEditModal({
                     ? fullPatientData.vaccineNames.map((v: any) => (typeof v === 'string' ? { name: v } : v)) 
                     : [];
 
-                const sourceServiceAreas = initialData.serviceArea || initialData.serviceAreas || initialData.serviceTypes || [];
-                const serviceTypeList = Array.isArray(sourceServiceAreas) ? sourceServiceAreas.map((s: any) => ({
+                const sourceServiceTypes = initialData.serviceTypes || [];
+                const serviceTypeList = Array.isArray(sourceServiceTypes) ? sourceServiceTypes.map((s: any) => ({
                     id: s.id,
-                    name: s.name || s.area  
+                    name: s.name  
                 })) : [];
 
                 const disorderList = Array.isArray(initialData.disorders) ? initialData.disorders : [];
@@ -193,9 +193,9 @@ export default function AnnualRegistryEditModal({
                 id: d.id 
             }));
 
-            const formattedServiceAreas = (data.serviceTypes || []).map((s: any) => ({
+            const formattedServiceTypes = (data.serviceTypes || []).map((s: any) => ({
                 id: s.id,
-                area: s.name || s.area || s.label || s.value 
+                name: s.name || s.area || s.label || s.value 
             }));
 
             const regPayload: any = {
@@ -204,8 +204,7 @@ export default function AnnualRegistryEditModal({
                 diseases: finalDiseases, 
                 continuousMedication: finalMedication, 
                 disorders: formattedDisorders,
-                serviceArea: formattedServiceAreas,  
-                serviceAreas: formattedServiceAreas 
+                serviceTypes: formattedServiceTypes 
             };
 
             let regRes;

@@ -32,7 +32,7 @@ export default function EditServiceTypePage() {
           const response = await fetch(`/apae-geral/api/service-types/${id}`);
           if (!response.ok) throw new Error("Tipo de atendimento não encontrado.");
           const data = await response.json();
-          setValue("area", data.area);
+          setValue("name", data.name);
         } catch (error) {
           const err = error as Error;
           toast.error(err.message);
@@ -88,16 +88,16 @@ export default function EditServiceTypePage() {
           
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
             <div>
-              <Label htmlFor="area" className="font-semibold text-[#003B93]">
+              <Label htmlFor="name" className="font-semibold text-[#003B93]">
                 Nome do tipo de atendimento
               </Label>
               <Input
-                id="area"
-                {...register("area")}
+                id="name"
+                {...register("name")}
                 className="mt-1 block w-full"
               />
-              {errors.area && (
-                <p className="mt-1 text-sm text-red-600">{errors.area.message}</p>
+              {errors.name && (
+                <p className="mt-1 text-sm text-red-600">{errors.name.message}</p>
               )}
             </div>
 

@@ -9,8 +9,8 @@ import jakarta.validation.constraints.*;
 import java.util.List;
 
 public record UpdateHealthProfessionalDTO(
-    @NotNull(message = "Área de atendimento é obrigatório.")
-    @Valid UpdateServiceTypeDTO serviceArea,
+    @NotNull(message = "Tipo de atendimento é obrigatório.")
+    @Valid UpdateServiceTypeDTO serviceType,
 
     @NotBlank(message = "O número de telefone é obrigatório.")
     String phoneNumber,

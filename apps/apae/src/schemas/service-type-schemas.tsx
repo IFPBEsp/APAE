@@ -2,11 +2,11 @@ import { z } from "zod";
 
 export const serviceTypeSchema = z.object({
   id: z.string(),
-  area: z.string(),
+  name: z.string(),
 });
 
 export const createserviceTypeSchema = z.object({
-  area: z.string().min(1, "A área é obrigatória."),
+  name: z.string().min(1, "O nome é obrigatório."),
 });
 
 export const updateserviceTypeSchema = createserviceTypeSchema;

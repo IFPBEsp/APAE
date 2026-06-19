@@ -1,7 +1,6 @@
 package br.org.apae.api.appointment.interfaces.controllers;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.UUID;
 
@@ -13,11 +12,8 @@ import org.springframework.web.bind.annotation.*;
 import br.org.apae.api.common.dto.appointment.request.appointment.*;
 import br.org.apae.api.common.dto.appointment.response.appointment.*;
 import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.Parameter;
-import io.swagger.v3.oas.annotations.media.Content;
-import io.swagger.v3.oas.annotations.media.Schema;
-import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import jakarta.validation.Valid;
+import java.util.List;
 
 @RequestMapping("/appointments")
 public interface AppointmentController {
@@ -82,4 +78,11 @@ public interface AppointmentController {
   @Operation(summary = "Buscar agendamento gerado por ID")
   @GetMapping("/today/{id}")
   ResponseEntity<TodayAppointmentsResponseDTO> getTodayAppointmentById(@PathVariable UUID id);
+
+  @Operation(
+        summary = "Listar agendamentos gerados por profissional", 
+        description = "Retorna todos os agendamentos gerados vinculados a um profissional específico. Ideal para integrações."
+  )
+  @GetMapping("/professional/{professionalId}/generated")
+  ResponseEntity<List<GeneratedAppointmentResponseDTO>> listGeneratedByProfessional(@PathVariable UUID professionalId);
 }

@@ -40,8 +40,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 class ServiceTypeControllerTest {
 
     private static final String URI = "/service-types";
-    private static final String LEGACY_URI = "/service-areas";
-
     @Autowired
     private MockMvc mockMvc;
 
@@ -62,7 +60,7 @@ class ServiceTypeControllerTest {
     class CreateServiceType {
 
         @Test
-        @DisplayName("Deve criar área de atendimento com sucesso")
+        @DisplayName("Deve criar tipo de atendimento com sucesso")
         void shouldCreateServiceTypeSuccessfully() throws Exception {
             CreateServiceTypeDTO request = new CreateServiceTypeDTO("Fisioterapia");
             ServiceTypeResponseDTO response = new ServiceTypeResponseDTO(1, "Fisioterapia");
@@ -75,18 +73,18 @@ class ServiceTypeControllerTest {
                             .content(objectMapper.writeValueAsString(request)))
                     .andExpect(status().isCreated())
                     .andExpect(jsonPath("$.id").value(1))
-                    .andExpect(jsonPath("$.area").value("Fisioterapia"));
+                    .andExpect(jsonPath("$.name").value("Fisioterapia"));
 
             ArgumentCaptor<CreateServiceTypeDTO> captor =
                     ArgumentCaptor.forClass(CreateServiceTypeDTO.class);
 
             verify(service).createServiceType(captor.capture());
 
-            assertThat(captor.getValue().area()).isEqualTo("Fisioterapia");
+            assertThat(captor.getValue().name()).isEqualTo("Fisioterapia");
         }
 
         @Test
-        @DisplayName("Deve retornar BadRequest quando área estiver em branco")
+        @DisplayName("Deve retornar BadRequest quando tipo de atendimento estiver em branco")
         void shouldReturnBadRequestWhenCreatingServiceTypeWithBlankArea() throws Exception {
             CreateServiceTypeDTO request = new CreateServiceTypeDTO("");
 
@@ -99,7 +97,7 @@ class ServiceTypeControllerTest {
         }
 
         @Test
-        @DisplayName("Deve retornar Conflict quando área de atendimento já existir")
+        @DisplayName("Deve retornar Conflict quando tipo de atendimento já existir")
         void shouldReturnConflictWhenCreatingDuplicatedServiceType() throws Exception {
             CreateServiceTypeDTO request = new CreateServiceTypeDTO("Fisioterapia");
 
@@ -120,7 +118,7 @@ class ServiceTypeControllerTest {
     class GetAllServiceTypes {
 
         @Test
-        @DisplayName("Deve listar áreas de atendimento com sucesso")
+        @DisplayName("Deve listar tipos de atendimento com sucesso")
         void shouldGetAllServiceTypesSuccessfully() throws Exception {
             List<ServiceTypeResponseDTO> response = List.of(
                     new ServiceTypeResponseDTO(1, "Fisioterapia"),
@@ -133,15 +131,15 @@ class ServiceTypeControllerTest {
                     .andExpect(status().isOk())
                     .andExpect(jsonPath("$.length()").value(2))
                     .andExpect(jsonPath("$[0].id").value(1))
-                    .andExpect(jsonPath("$[0].area").value("Fisioterapia"))
+                    .andExpect(jsonPath("$[0].name").value("Fisioterapia"))
                     .andExpect(jsonPath("$[1].id").value(2))
-                    .andExpect(jsonPath("$[1].area").value("Psicologia"));
+                    .andExpect(jsonPath("$[1].name").value("Psicologia"));
 
             verify(service).findAllServiceTypes();
         }
 
         @Test
-        @DisplayName("Deve retornar lista vazia quando não houver áreas cadastradas")
+        @DisplayName("Deve retornar lista vazia quando não houver tipos cadastrados")
         void shouldReturnEmptyListWhenThereAreNoServiceTypes() throws Exception {
             when(service.findAllServiceTypes()).thenReturn(Collections.emptyList());
 
@@ -152,23 +150,6 @@ class ServiceTypeControllerTest {
             verify(service).findAllServiceTypes();
         }
 
-        @Test
-        @DisplayName("Deve listar tipos de atendimento pela rota legada /service-areas")
-        void shouldGetAllServiceTypesThroughLegacyRoute() throws Exception {
-            List<ServiceTypeResponseDTO> response = List.of(
-                    new ServiceTypeResponseDTO(1, "Fisioterapia")
-            );
-
-            when(service.findAllServiceTypes()).thenReturn(response);
-
-            mockMvc.perform(get(LEGACY_URI))
-                    .andExpect(status().isOk())
-                    .andExpect(jsonPath("$.length()").value(1))
-                    .andExpect(jsonPath("$[0].id").value(1))
-                    .andExpect(jsonPath("$[0].area").value("Fisioterapia"));
-
-            verify(service).findAllServiceTypes();
-        }
     }
 
     @Nested
@@ -176,7 +157,7 @@ class ServiceTypeControllerTest {
     class FindServiceTypeById {
 
         @Test
-        @DisplayName("Deve buscar área de atendimento por ID com sucesso")
+        @DisplayName("Deve buscar tipo de atendimento por ID com sucesso")
         void shouldFindServiceTypeByIdSuccessfully() throws Exception {
             ServiceTypeResponseDTO response = new ServiceTypeResponseDTO(1, "Fisioterapia");
 
@@ -185,13 +166,13 @@ class ServiceTypeControllerTest {
             mockMvc.perform(get(URI + "/{id}", 1))
                     .andExpect(status().isOk())
                     .andExpect(jsonPath("$.id").value(1))
-                    .andExpect(jsonPath("$.area").value("Fisioterapia"));
+                    .andExpect(jsonPath("$.name").value("Fisioterapia"));
 
             verify(service).findServiceTypeById(1);
         }
 
         @Test
-        @DisplayName("Deve retornar NotFound quando área de atendimento não existir")
+        @DisplayName("Deve retornar NotFound quando tipo de atendimento não existir")
         void shouldReturnNotFoundWhenServiceTypeDoesNotExist() throws Exception {
             when(service.findServiceTypeById(99))
                     .thenThrow(new ServiceTypeNotFoundException());
@@ -208,7 +189,7 @@ class ServiceTypeControllerTest {
     class UpdateServiceType {
 
         @Test
-        @DisplayName("Deve atualizar área de atendimento com sucesso")
+        @DisplayName("Deve atualizar tipo de atendimento com sucesso")
         void shouldUpdateServiceTypeSuccessfully() throws Exception {
             UpdateServiceTypeDTO request = new UpdateServiceTypeDTO("Terapia Ocupacional");
             ServiceTypeResponseDTO response = new ServiceTypeResponseDTO(1, "Terapia Ocupacional");
@@ -221,18 +202,18 @@ class ServiceTypeControllerTest {
                             .content(objectMapper.writeValueAsString(request)))
                     .andExpect(status().isOk())
                     .andExpect(jsonPath("$.id").value(1))
-                    .andExpect(jsonPath("$.area").value("Terapia Ocupacional"));
+                    .andExpect(jsonPath("$.name").value("Terapia Ocupacional"));
 
             ArgumentCaptor<UpdateServiceTypeDTO> captor =
                     ArgumentCaptor.forClass(UpdateServiceTypeDTO.class);
 
             verify(service).updateServiceType(eq(1), captor.capture());
 
-            assertThat(captor.getValue().area()).isEqualTo("Terapia Ocupacional");
+            assertThat(captor.getValue().name()).isEqualTo("Terapia Ocupacional");
         }
 
         @Test
-        @DisplayName("Deve retornar BadRequest quando área estiver em branco na atualização")
+        @DisplayName("Deve retornar BadRequest quando tipo de atendimento estiver em branco na atualização")
         void shouldReturnBadRequestWhenUpdatingServiceTypeWithBlankArea() throws Exception {
             UpdateServiceTypeDTO request = new UpdateServiceTypeDTO("");
 
@@ -245,7 +226,7 @@ class ServiceTypeControllerTest {
         }
 
         @Test
-        @DisplayName("Deve retornar NotFound quando área de atendimento não existir na atualização")
+        @DisplayName("Deve retornar NotFound quando tipo de atendimento não existir na atualização")
         void shouldReturnNotFoundWhenUpdatingNonExistentServiceType() throws Exception {
             UpdateServiceTypeDTO request = new UpdateServiceTypeDTO("Fonoaudiologia");
 

@@ -15,7 +15,7 @@ export type UpdateProfessionalDto = {
     cep: string;
   };
   professionalDocument: string | null;
-  serviceArea: { area: string };
+  serviceType: { name: string };
   identityDocument: string;
   availabilities?: { day?: string; shift?: string }[];
 };

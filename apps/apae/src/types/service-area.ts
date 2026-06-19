@@ -1,10 +1,9 @@
 export interface ServiceArea {
   id: number;
-  area: string;
+  name: string;
 }
 
 export interface ServiceAreaResponse {
   id: string | number;
-  area: string;
-  name?: string;
+  name: string;
 }

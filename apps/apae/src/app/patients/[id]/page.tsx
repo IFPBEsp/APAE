@@ -4,13 +4,13 @@
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import DocumentCategoriesCard from "@/components/DocumentCategoriesCard";
+import DocumentCategoriesCard from "@/domains/documents/shared/document-categories-card";
 import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
 import { useEffect, useState, useCallback } from "react";
 import { toast } from "react-toastify";
 import { Loader2, ArrowLeft, SquarePen, Plus } from "lucide-react";
-import AnnualRegistryEditModal from "@/components/AnnualRegistryEditModal";
+import AnnualRegistryEditModal from "@/domains/patients/annual-registry/annual-registry-edit-modal";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { PatientResponse } from "@/types/patient";
 
@@ -60,7 +60,7 @@ export default function PersonDetailsPage() {
     diseases: string;
     continuousMedication: string;
     disorders?: { id?: string; name: string }[];
-    serviceAreas?: { id?: string; area: string }[];
+    serviceTypes?: { id?: string; name: string }[];
   }
 
   const [person, setPerson] = useState<PatientResponse | null>(null);
@@ -346,7 +346,7 @@ export default function PersonDetailsPage() {
               <div className="mt-2 animate-in fade-in slide-in-from-bottom-2">
                 <InfoRow label="Recebe BPC?" value={annualRegistry .bpc} />
                 <InfoRow label="Renda Familiar" value={annualRegistry .familyIncome} />
-                <InfoRow label="Tipo de Atendimento" value={annualRegistry .serviceAreas?.map((atendimento) => atendimento.area).join(", ")} />
+                <InfoRow label="Tipo de Atendimento" value={annualRegistry .serviceTypes?.map((atendimento) => atendimento.name).join(", ")} />
                 <InfoRow label="Doenças" value={annualRegistry .diseases} />
                 <InfoRow label="Medicamentos Contínuos" value={annualRegistry .continuousMedication} />
                 <InfoRow label="Transtornos" value={annualRegistry.disorders?.map((d) => d.name).join(", ")} />

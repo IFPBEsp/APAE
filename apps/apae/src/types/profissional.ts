@@ -26,7 +26,7 @@ export interface Availability {
 
 export interface Professional {
   id: string;
-  serviceArea: ServiceArea;
+  serviceType: ServiceArea;
   phoneNumber: string;
   professionalDocument: string;
   email: string;

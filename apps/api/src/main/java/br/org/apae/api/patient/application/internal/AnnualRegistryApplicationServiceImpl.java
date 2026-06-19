@@ -33,16 +33,16 @@ public class AnnualRegistryApplicationServiceImpl implements AnnualRegistryAppli
     private final AnnualRegistryMapper annualRegistryMapper;
     private final DisorderApplicationService disorderService;
     private final PatientDomainService patientDomainService;
-    private final ServiceTypeApplicationService serviceAreaService;
+    private final ServiceTypeApplicationService serviceTypeService;
 
     public AnnualRegistryApplicationServiceImpl(AnnualRegistryRepository annualRegistryRepository,
                                                 AnnualRegistryMapper annualRegistryMapper, DisorderApplicationService disorderService,
-                                                PatientDomainService patientDomainService, ServiceTypeApplicationService serviceAreaService) {
+                                                PatientDomainService patientDomainService, ServiceTypeApplicationService serviceTypeService) {
         this.annualRegistryRepository = annualRegistryRepository;
         this.annualRegistryMapper = annualRegistryMapper;
         this.disorderService = disorderService;
         this.patientDomainService = patientDomainService;
-        this.serviceAreaService = serviceAreaService;
+        this.serviceTypeService = serviceTypeService;
     }
 
     @Override
@@ -63,14 +63,14 @@ public class AnnualRegistryApplicationServiceImpl implements AnnualRegistryAppli
             throw new DisorderMismatchException();
         }
 
-        Set<ServiceTypeResponseDTO> serviceAreaResponseDTOS = serviceAreaService.
-                findServiceTypes(createAnnualRegistryDTO.serviceArea());
+        Set<ServiceTypeResponseDTO> serviceTypeResponses = serviceTypeService.
+                findServiceTypes(createAnnualRegistryDTO.serviceTypes());
 
-        if (createAnnualRegistryDTO.serviceArea().size() != serviceAreaResponseDTOS.size()) {
+        if (createAnnualRegistryDTO.serviceTypes().size() != serviceTypeResponses.size()) {
             throw new ServiceTypeNotFoundException();
         }
 
-        AnnualRegistry registry = annualRegistryMapper.toEntity(createAnnualRegistryDTO, disorderDtos, serviceAreaResponseDTOS, patientId);
+        AnnualRegistry registry = annualRegistryMapper.toEntity(createAnnualRegistryDTO, disorderDtos, serviceTypeResponses, patientId);
         AnnualRegistry registrySaved = annualRegistryRepository.save(registry);
 
         return annualRegistryMapper.toResponseDTO(registrySaved);
@@ -145,14 +145,14 @@ public class AnnualRegistryApplicationServiceImpl implements AnnualRegistryAppli
             throw new DisorderMismatchException();
         }
 
-        Set<ServiceTypeResponseDTO> serviceAreaResponseDTOS = serviceAreaService
-                .findServiceTypes(replaceDto.serviceAreas());
+        Set<ServiceTypeResponseDTO> serviceTypeResponses = serviceTypeService
+                .findServiceTypes(replaceDto.serviceTypes());
 
-        if (replaceDto.serviceAreas().size() != serviceAreaResponseDTOS.size()) {
+        if (replaceDto.serviceTypes().size() != serviceTypeResponses.size()) {
             throw new ServiceTypeNotFoundException();
         }
 
-        AnnualRegistry replacedRegistry = annualRegistryMapper.replaceEntityFromDto(registry, replaceDto, disorderDtos, serviceAreaResponseDTOS);
+        AnnualRegistry replacedRegistry = annualRegistryMapper.replaceEntityFromDto(registry, replaceDto, disorderDtos, serviceTypeResponses);
 
         AnnualRegistry registrySaved = annualRegistryRepository.save(replacedRegistry);
         return annualRegistryMapper.toResponseDTO(registrySaved);

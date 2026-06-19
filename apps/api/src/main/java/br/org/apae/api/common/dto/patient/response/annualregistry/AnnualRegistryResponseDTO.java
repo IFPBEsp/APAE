@@ -17,10 +17,10 @@ public record AnnualRegistryResponseDTO(
         Integer year,
         UUID patientId,
         Set<DisorderResponseDTO> disorders,
-        Set<ServiceTypeResponseDTO> serviceAreas
+        Set<ServiceTypeResponseDTO> serviceTypes
 ) {
 
-        public AnnualRegistryResponseDTO(AnnualRegistry entity, Set<DisorderResponseDTO> disorderDtos, Set<ServiceTypeResponseDTO> serviceAreas) {
+        public AnnualRegistryResponseDTO(AnnualRegistry entity, Set<DisorderResponseDTO> disorderDtos, Set<ServiceTypeResponseDTO> serviceTypes) {
                 this(
                         entity.getId(),
                         entity.getBpc(),
@@ -30,7 +30,7 @@ public record AnnualRegistryResponseDTO(
                         entity.getYear(),
                         entity.getPatientId(),
                         disorderDtos,
-                        serviceAreas
+                        serviceTypes
                 );
         }
 }

@@ -18,7 +18,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 import java.util.List;
 
-@RequestMapping({ "/service-types", "/service-areas" })
+@RequestMapping("/service-types")
 public interface ServiceTypeController {
 
     @Operation(summary = "Cadastrar tipo de atendimento", description = "Cria um novo tipo de atendimento no sistema.", responses = {

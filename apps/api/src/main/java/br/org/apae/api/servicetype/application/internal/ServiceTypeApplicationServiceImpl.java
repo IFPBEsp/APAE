@@ -31,7 +31,7 @@ public class ServiceTypeApplicationServiceImpl implements ServiceTypeApplication
     @Override
     @Transactional
     public ServiceTypeResponseDTO createServiceType(CreateServiceTypeDTO dto) {
-        if (repository.existsByArea(dto.area())) {
+        if (repository.existsByArea(dto.name())) {
             throw new ServiceTypeConflictException();
         }
 
@@ -47,7 +47,7 @@ public class ServiceTypeApplicationServiceImpl implements ServiceTypeApplication
         ServiceType entityToUpdate = repository.findById(id)
                 .orElseThrow(ServiceTypeNotFoundException::new);
 
-        if (!entityToUpdate.getArea().equalsIgnoreCase(dto.area()) && repository.existsByArea(dto.area())) {
+        if (!entityToUpdate.getArea().equalsIgnoreCase(dto.name()) && repository.existsByArea(dto.name())) {
             throw new ServiceTypeConflictException();
         }
 
@@ -77,7 +77,7 @@ public class ServiceTypeApplicationServiceImpl implements ServiceTypeApplication
     @Override
     public Set<ServiceTypeResponseDTO> findServiceTypes(Set<CreateServiceTypeDTO> serviceTypeNames) {
         Set<String> areas = serviceTypeNames.stream()
-                .map(CreateServiceTypeDTO::area)
+                .map(CreateServiceTypeDTO::name)
                 .collect(Collectors.toSet());
 
         Set<ServiceType> serviceTypes = repository.findByAreaIn(areas);

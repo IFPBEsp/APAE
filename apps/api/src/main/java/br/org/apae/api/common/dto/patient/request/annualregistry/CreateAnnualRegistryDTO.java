@@ -24,5 +24,5 @@ public record CreateAnnualRegistryDTO(
                 Set<CreateDisorderDTO> disorders,
 
                 @NotNull
-                Set<CreateServiceTypeDTO> serviceArea) {
+                Set<CreateServiceTypeDTO> serviceTypes) {
 }

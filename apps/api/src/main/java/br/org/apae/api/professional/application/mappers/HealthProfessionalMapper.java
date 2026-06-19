@@ -22,25 +22,25 @@ import java.util.stream.Collectors;
 public class HealthProfessionalMapper {
 
     private final AddressMapper addressMapper;
-    private final ServiceTypeMapper serviceAreaMapper;
+    private final ServiceTypeMapper serviceTypeMapper;
     private final AvailabilityMapper availabilityMapper;
 
     public HealthProfessionalMapper(AddressMapper addressMapper,
-                                    ServiceTypeMapper serviceAreaMapper,
+                                    ServiceTypeMapper serviceTypeMapper,
                                     AvailabilityMapper availabilityMapper) {
         this.addressMapper = addressMapper;
-        this.serviceAreaMapper = serviceAreaMapper;
+        this.serviceTypeMapper = serviceTypeMapper;
         this.availabilityMapper = availabilityMapper;
     }
 
-    public HealthProfessional toEntity(CreateHealthProfessionalDTO dto, ServiceTypeResponseDTO serviceAreaDto) {
+    public HealthProfessional toEntity(CreateHealthProfessionalDTO dto, ServiceTypeResponseDTO serviceTypeDto) {
         Address address = addressMapper.toEntity(dto.address());
-        ServiceType serviceArea = serviceAreaMapper.toEntityFromResponse(serviceAreaDto);
+        ServiceType serviceType = serviceTypeMapper.toEntityFromResponse(serviceTypeDto);
 
         HealthProfessional entity = new HealthProfessional(
                 dto.name(),
                 dto.email(),
-                serviceArea,
+                serviceType,
                 dto.phoneNumber(),
                 dto.identityDocument(),
                 dto.professionalDocument(),
@@ -56,13 +56,13 @@ public class HealthProfessionalMapper {
     }
 
     public HealthProfessional updateEntityFromDto(HealthProfessional professional, UpdateHealthProfessionalDTO dto,
-                                                  ServiceTypeResponseDTO serviceAreaDto) {
+                                                  ServiceTypeResponseDTO serviceTypeDto) {
         Address address = addressMapper.toEntity(dto.address());
-        ServiceType serviceArea = serviceAreaMapper.toEntityFromResponse(serviceAreaDto);
+        ServiceType serviceType = serviceTypeMapper.toEntityFromResponse(serviceTypeDto);
 
         professional.setName(dto.name());
         professional.setEmail(dto.email());
-        professional.setServiceArea(serviceArea);
+        professional.setServiceArea(serviceType);
         professional.setPhoneNumber(dto.phoneNumber());
         professional.setIdentityDocument(dto.identityDocument());
         professional.setProfessionalDocument(dto.professionalDocument());
@@ -81,7 +81,7 @@ public class HealthProfessionalMapper {
 
     public HealthProfessionalResponseDTO toResponseDTO(HealthProfessional professional) {
         AddressResponseDTO addressResponseDTO = new AddressResponseDTO(professional.getAddress());
-        ServiceTypeResponseDTO serviceAreaResponseDTO = new ServiceTypeResponseDTO(professional.getServiceArea());
+        ServiceTypeResponseDTO serviceTypeResponseDTO = new ServiceTypeResponseDTO(professional.getServiceArea());
 
         List<AvailabilityResponseDTO> availabilityDTOs = (professional.getAvailabilities() != null)
                 ? professional.getAvailabilities().stream()
@@ -91,7 +91,7 @@ public class HealthProfessionalMapper {
 
         return new HealthProfessionalResponseDTO(
                 professional,
-                serviceAreaResponseDTO,
+                serviceTypeResponseDTO,
                 addressResponseDTO,
                 availabilityDTOs
         );

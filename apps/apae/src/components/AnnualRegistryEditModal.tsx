@@ -39,9 +39,8 @@ interface DisorderItem {
     value?: string;
 }
 
-interface ServiceAreaItem {
+interface ServiceTypeItem {
     id?: string | number;
-    area?: string;
     name?: string;
     label?: string;
     value?: string;
@@ -57,9 +56,7 @@ interface AnnualRegistry {
     medicamentos?: string;
     medication?: string;
     disorders?: DisorderItem[];
-    serviceAreas?: ServiceAreaItem[];
-    serviceArea?: ServiceAreaItem[];
-    serviceTypes?: ServiceAreaItem[];
+    serviceTypes?: ServiceTypeItem[];
 }
 
 interface FullPatientData {
@@ -149,11 +146,10 @@ export default function AnnualRegistryEditModal({
                     ? fullPatientData.vaccineNames.map((v: any) => (typeof v === 'string' ? { name: v } : v))
                     : [];
 
-                const sourceServiceAreas = initialData.serviceArea || initialData.serviceAreas || initialData.serviceTypes || [];
-                const serviceTypeList = Array.isArray(sourceServiceAreas) ? sourceServiceAreas.map((s: any) => ({
+                const sourceServiceTypes = initialData.serviceTypes || [];
+                const serviceTypeList = Array.isArray(sourceServiceTypes) ? sourceServiceTypes.map((s: any) => ({
                     id: s.id,
-                    area: s.area || s.name,
-                    name: s.name || s.area
+                    name: s.name
                 })) : [];
 
                 const medicationValue = initialData.continuousMedication || 
@@ -271,8 +267,7 @@ export default function AnnualRegistryEditModal({
                 medications: data.continuousMedication || "Nenhum",
                 medicamentos: data.continuousMedication || "Nenhum",
                 disorders: (data.disorders || []).map((d: any) => ({ name: d.name || d.label || d.value, id: d.id })),
-                serviceArea: (data.serviceTypes || []).map((s: any) => ({ id: s.id, area: s.area || s.name || s.label })),
-                serviceAreas: (data.serviceTypes || []).map((s: any) => ({ id: s.id, area: s.area || s.name || s.label })),
+                serviceTypes: (data.serviceTypes || []).map((s: any) => ({ id: s.id, name: s.name || s.label || s.value })),
                 ano: parseInt(data.year),
                 year: parseInt(data.year)
             };

@@ -77,7 +77,7 @@ public class AppointmentMapper {
 
   public AppointmentResponseDTO toResponse(Appointment appointment, PatientResponseDTO patient) {
     HealthProfessional professional = appointment.getProfessional();
-    ServiceTypeResponseDTO serviceArea = new ServiceTypeResponseDTO(professional.getServiceArea());
+    ServiceTypeResponseDTO serviceType = new ServiceTypeResponseDTO(professional.getServiceArea());
     AddressResponseDTO address = new AddressResponseDTO(professional.getAddress());
     List<AvailabilityResponseDTO> availabilities = professional.getAvailabilities()
         .stream()
@@ -87,7 +87,7 @@ public class AppointmentMapper {
         appointment.getId(),
         new HealthProfessionalResponseDTO(
           professional, 
-          serviceArea,
+          serviceType,
           address, 
           availabilities),
         toResponse(appointment.getAnnualRegistration(), patient),
@@ -120,7 +120,7 @@ public class AppointmentMapper {
     Appointment appointment = generatedAppointment.getAppointment();
     // Patient patient = appointment.getAnnualRegistration().getPatient();
     HealthProfessional professional = appointment.getProfessional();
-    ServiceTypeResponseDTO serviceArea = new ServiceTypeResponseDTO(professional.getServiceArea());
+    ServiceTypeResponseDTO serviceType = new ServiceTypeResponseDTO(professional.getServiceArea());
     AddressResponseDTO address = new AddressResponseDTO(professional.getAddress());
     List<AvailabilityResponseDTO> availabilities = professional.getAvailabilities()
         .stream()
@@ -131,7 +131,7 @@ public class AppointmentMapper {
         patient,
         new HealthProfessionalResponseDTO(
           professional, 
-          serviceArea,
+          serviceType,
           address, 
           availabilities),
         generatedAppointment.getScheduledDateTime(),

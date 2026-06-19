@@ -58,11 +58,11 @@ export default function VisualizationProfessionalPage() {
     const document = prof.professionalDocument?.toLowerCase() || "";
     const term = searchTerm.toLowerCase();
     const matchesSearch = name.includes(term) || document.includes(term);
-    const matchesArea = areaFilter === "all" || prof.serviceArea.area === areaFilter;
+    const matchesArea = areaFilter === "all" || prof.serviceType.name === areaFilter;
     return matchesSearch && matchesArea;
   });
 
-  const displayAreas = ["all", ...Array.from(new Set(professionals.map((p) => p.serviceArea.area)))];
+  const displayAreas = ["all", ...Array.from(new Set(professionals.map((p) => p.serviceType.name)))];
 
   return (
     <div className="w-full bg-background p-4 md:p-6 lg:p-8">
@@ -123,7 +123,7 @@ export default function VisualizationProfessionalPage() {
                     <TableRow key={prof.id}>
                       <TableCell className="font-medium">{prof.name}</TableCell>
                       <TableCell>{prof.professionalDocument}</TableCell>
-                      <TableCell>{prof.serviceArea.area}</TableCell>
+                      <TableCell>{prof.serviceType.name}</TableCell>
                       <TableCell className="hidden md:table-cell">{prof.phoneNumber}</TableCell>
                       <TableCell className="text-right">
                         <AlertDialog>

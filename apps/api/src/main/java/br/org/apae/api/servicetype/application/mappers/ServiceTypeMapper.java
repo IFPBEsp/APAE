@@ -14,15 +14,15 @@ import java.util.stream.Collectors;
 public class ServiceTypeMapper {
 
     public ServiceType toEntity(CreateServiceTypeDTO dto) {
-        return new ServiceType(dto.area());
+        return new ServiceType(dto.name());
     }
 
     public ServiceType toEntityFromResponse(ServiceTypeResponseDTO serviceTypeResponseDTO) {
-        return new ServiceType(serviceTypeResponseDTO.id(), serviceTypeResponseDTO.area());
+        return new ServiceType(serviceTypeResponseDTO.id(), serviceTypeResponseDTO.name());
     }
 
     public ServiceType updateEntityFromDto(ServiceType entity, UpdateServiceTypeDTO dto) {
-        entity.setArea(dto.area());
+        entity.setArea(dto.name());
         return entity;
     }
 

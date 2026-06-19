@@ -5,7 +5,7 @@ import br.org.apae.api.servicetype.domain.model.ServiceType;
 
 public record ServiceTypeResponseDTO(
         Integer id,
-        String area) {
+        String name) {
 
     public ServiceTypeResponseDTO(ServiceType entity) {
         this(

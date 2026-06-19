@@ -11,6 +11,8 @@ import br.org.apae.api.patient.domain.exceptions.ParentMismatchException;
 import br.org.apae.api.patient.domain.exceptions.ParentNotFoundException;
 import br.org.apae.api.patient.domain.exceptions.PatientConflictException;
 import br.org.apae.api.patient.domain.exceptions.PatientNotFoundException;
+import br.org.apae.api.patient.domain.exceptions.RegistryNotFoundException;
+import br.org.apae.api.patient.domain.exceptions.RegistryOwnershipException;
 import br.org.apae.api.patient.domain.exceptions.VaccineConflictException;
 import br.org.apae.api.patient.domain.exceptions.VaccineMismatchException;
 import br.org.apae.api.patient.domain.exceptions.VaccineNotFoundException;
@@ -220,6 +222,36 @@ public class PatientExceptionHandler {
     );
 
     return new ResponseEntity<>(error, HttpStatus.CONFLICT);
+  }
+
+  @ExceptionHandler(RegistryNotFoundException.class)
+  public ResponseEntity<ErrorResponse> handleRegistryNotFound(
+          RegistryNotFoundException ex,
+          HttpServletRequest request
+  ) {
+    ErrorResponse error = new ErrorResponse(
+            HttpStatus.NOT_FOUND.value(),
+            HttpStatus.NOT_FOUND.getReasonPhrase(),
+            ex.getMessage(),
+            request.getRequestURI()
+    );
+
+    return new ResponseEntity<>(error, HttpStatus.NOT_FOUND);
+  }
+
+  @ExceptionHandler(RegistryOwnershipException.class)
+  public ResponseEntity<ErrorResponse> handleRegistryOwnership(
+          RegistryOwnershipException ex,
+          HttpServletRequest request
+  ) {
+    ErrorResponse error = new ErrorResponse(
+            HttpStatus.NOT_FOUND.value(),
+            HttpStatus.NOT_FOUND.getReasonPhrase(),
+            ex.getMessage(),
+            request.getRequestURI()
+    );
+
+    return new ResponseEntity<>(error, HttpStatus.NOT_FOUND);
   }
 
   @ExceptionHandler(MethodArgumentNotValidException.class)

@@ -534,15 +534,15 @@ export default function MembersRegisterAdditionalsPage() {
                         defaultValue={field.value || []}
                         value={field.value || []}
                         options={[
-                          ...cares.map((care: { area: string }) => ({
-                            label: care.area,
-                            value: care.area,
+                          ...cares.map((care: { name: string }) => ({
+                            label: care.name,
+                            value: care.name,
                           })),
                           ...(field.value || [])
                             .filter(
                               (val: string) =>
                                 !cares.some(
-                                  (c: { area: string }) => c.area === val,
+                                  (c: { name: string }) => c.name === val,
                                 ),
                             )
                             .map((val: string) => ({ label: val, value: val })),

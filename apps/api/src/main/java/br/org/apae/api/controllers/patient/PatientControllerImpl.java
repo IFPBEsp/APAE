@@ -32,18 +32,18 @@ public class PatientControllerImpl implements PatientController {
     private final PatientApplicationService patientService;
     private final DisorderApplicationService disorderService;
     private final AnnualRegistryApplicationService annualRegistryService;
-    private final ServiceTypeApplicationService serviceAreaService;
+    private final ServiceTypeApplicationService serviceTypeService;
 
     public PatientControllerImpl(
             PatientApplicationService patientService,
             DisorderApplicationService disorderService,
             AnnualRegistryApplicationService annualRegistryService,
-            ServiceTypeApplicationService serviceAreaService
+            ServiceTypeApplicationService serviceTypeService
     ) {
         this.patientService = patientService;
         this.disorderService = disorderService;
         this.annualRegistryService = annualRegistryService;
-        this.serviceAreaService = serviceAreaService;
+        this.serviceTypeService = serviceTypeService;
     }
 
     @Override
@@ -126,11 +126,11 @@ public class PatientControllerImpl implements PatientController {
 
     @Override
     public ResponseEntity<List<String>> getTiposAtendimento() {
-        List<ServiceTypeResponseDTO> serviceAreaResponseDTOS = serviceAreaService.findAllServiceTypes();
-        List<String> serviceAreaNames = serviceAreaResponseDTOS.stream()
-                .map(ServiceTypeResponseDTO::area)
+        List<ServiceTypeResponseDTO> serviceTypeResponses = serviceTypeService.findAllServiceTypes();
+        List<String> serviceTypeNames = serviceTypeResponses.stream()
+                .map(ServiceTypeResponseDTO::name)
                 .distinct()
                 .toList();
-        return ResponseEntity.ok(serviceAreaNames);
+        return ResponseEntity.ok(serviceTypeNames);
     }
 }

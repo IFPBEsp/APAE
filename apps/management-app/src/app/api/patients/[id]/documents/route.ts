@@ -1,7 +1,7 @@
 import { AxiosError } from "axios";
 import { NextRequest, NextResponse } from "next/server";
 
-import { createBaseApi } from "@/lib/axios";
+import { createDocumentsAPI } from "@/lib/axios";
 
 const categoryRouteMap: Record<string, string> = {
   medical: "medicals",
@@ -37,7 +37,7 @@ export async function GET(
   }
 
   try {
-    const api = await createBaseApi();
+    const api = await createDocumentsAPI();
     const searchParams = new URLSearchParams();
 
     if (year) {
@@ -87,7 +87,7 @@ export async function POST(
       formData.append("year", year);
     }
 
-    const api = await createBaseApi();
+    const api = await createDocumentsAPI();
     const response = await api.post(`/patients/${id}/documents`, formData, {
       headers: {
         "Content-Type": "multipart/form-data",

@@ -25,5 +25,5 @@ public record ReplaceAnnualRegistryDTO(
         Set<CreateDisorderDTO> disorders,
 
         @NotNull
-        Set<CreateServiceTypeDTO> serviceAreas
+        Set<CreateServiceTypeDTO> serviceTypes
 ) {}

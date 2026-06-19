@@ -45,19 +45,19 @@ public final class HealthProfessionalMockDto {
         return new CreateProfessionalDocumentsDTO(volunteerAgreementFile(), curriculumFile(), null);
     }
 
-    public static CreateServiceTypeDTO createServiceAreaRequestPhysiotherapy() {
+    public static CreateServiceTypeDTO createServiceTypeRequestPhysiotherapy() {
         return new CreateServiceTypeDTO("Fisioterapia");
     }
 
-    public static CreateServiceTypeDTO createServiceAreaRequestPsychology() {
+    public static CreateServiceTypeDTO createServiceTypeRequestPsychology() {
         return new CreateServiceTypeDTO("Psicologia");
     }
 
-    public static ServiceTypeResponseDTO createServiceAreaResponsePhysiotherapy() {
+    public static ServiceTypeResponseDTO createServiceTypeResponsePhysiotherapy() {
         return new ServiceTypeResponseDTO(1, "Fisioterapia");
     }
 
-    public static ServiceTypeResponseDTO createServiceAreaResponsePsychology() {
+    public static ServiceTypeResponseDTO createServiceTypeResponsePsychology() {
         return new ServiceTypeResponseDTO(2, "Psicologia");
     }
 
@@ -67,7 +67,7 @@ public final class HealthProfessionalMockDto {
 
     public static CreateHealthProfessionalDTO createHealthProfessionalRequest() {
         return new CreateHealthProfessionalDTO(
-            createServiceAreaRequestPsychology(),
+            createServiceTypeRequestPsychology(),
             "11999999999",
             "CRP-12345",
             "teste@apae.org.br",
@@ -101,7 +101,7 @@ public final class HealthProfessionalMockDto {
             "Fisioterapia",
             true,
             createAddressResponse1(),
-            createServiceAreaResponsePhysiotherapy(),
+            createServiceTypeResponsePhysiotherapy(),
             List.of(
                 new AvailabilityResponseDTO(UUID.randomUUID(), "SEGUNDA", "MANHA"),
                 new AvailabilityResponseDTO(UUID.randomUUID(), "TERCA", "TARDE")
@@ -121,7 +121,7 @@ public final class HealthProfessionalMockDto {
             "Psicologia",
             true,
             createAddressResponse2(),
-            createServiceAreaResponsePsychology(),
+            createServiceTypeResponsePsychology(),
             List.of(),
             null // Adicionado o parâmetro faltante (null) do HealthProfessionalResponseDTO
         );

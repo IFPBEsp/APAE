@@ -18,13 +18,13 @@ public record HealthProfessionalResponseDTO(
         String healthSector,
         Boolean ativo,
         AddressResponseDTO address,
-        ServiceTypeResponseDTO serviceArea,
+        ServiceTypeResponseDTO serviceType,
         List<AvailabilityResponseDTO> availabilities,
         String profilePhoto
 ) {
 
     public HealthProfessionalResponseDTO(HealthProfessional entity,
-                                         ServiceTypeResponseDTO serviceArea,
+                                         ServiceTypeResponseDTO serviceType,
                                          AddressResponseDTO address,
                                          List<AvailabilityResponseDTO> availabilities) {
         this(
@@ -37,7 +37,7 @@ public record HealthProfessionalResponseDTO(
                 (entity.getServiceArea() != null) ? entity.getServiceArea().getArea() : null,
                 entity.getAtivo(),
                 address,
-                serviceArea,
+                serviceType,
                 availabilities,
                 entity.getProfilePhoto()
         );

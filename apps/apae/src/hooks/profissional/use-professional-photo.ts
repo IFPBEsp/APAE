@@ -26,7 +26,7 @@ export function useProfessionalPhoto() {
     try {
       const photoData = new FormData();
       photoData.append("file", selectedPhoto);
-      const response = await fetch(`/api/professionals/${professionalId}/photo`, {
+      const response = await fetch(`/apae-geral/api/professionals/${professionalId}/photo`, {
         method: "PATCH",
         body: photoData,
       });
