@@ -26,7 +26,7 @@ export async function POST(request: Request) {
     }
 
     const api = await createBaseApi();
-    const { data } = await api.post("/service-types", { area: validation.data.name });
+    const { data } = await api.post("/service-types", { name: validation.data.name });
     return NextResponse.json(normalizeServiceType(data), { status: 201 });
   } catch (error: any) {
     return new NextResponse(

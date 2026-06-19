@@ -11,7 +11,7 @@ export async function GET(request: Request, { params }: IParams) {
   try {
     const { id } = await params; 
     const api = await createBaseApi();
-    const { data } = await api.get(`/service-areas/${id}`);
+    const { data } = await api.get(`/service-types/${id}`);
     return NextResponse.json(data);
   } catch (error) {
     if (error instanceof AxiosError) {
@@ -33,7 +33,7 @@ export async function PUT(request: Request, { params }: IParams) {
     if (!validation.success) return NextResponse.json({ errors: validation.error.flatten() }, { status: 400 });
 
     const api = await createBaseApi();
-    const { data } = await api.put(`/service-areas/${id}`, validation.data);
+    const { data } = await api.put(`/service-types/${id}`, validation.data);
     return NextResponse.json(data);
   } catch (error) {
     if (error instanceof AxiosError) {

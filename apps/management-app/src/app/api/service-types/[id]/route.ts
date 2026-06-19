@@ -39,7 +39,7 @@ export async function PUT(request: Request, { params }: RouteParams) {
     }
 
     const api = await createBaseApi();
-    const { data } = await api.put(`/service-types/${id}`, { area: validation.data.name });
+    const { data } = await api.put(`/service-types/${id}`, { name: validation.data.name });
     return NextResponse.json(normalizeServiceType(data));
   } catch (error: any) {
     return new NextResponse(

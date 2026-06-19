@@ -1,16 +1,16 @@
 import { useEffect, useState } from "react";
-import { getAllServiceAreas } from "@/services/servicearea-service";
-import { ServiceArea } from "@/types/service-area";
+import { getAllServiceTypes } from "@/services/service-type-service";
+import { ServiceType } from "@/types/service-type";
 
 export function useFetchServiceAreas() {
-  const [areas, setAreas] = useState<ServiceArea[]>([]);
+  const [areas, setAreas] = useState<ServiceType[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   async function fetchData() {
     try {
       setLoading(true);
-      const response = await getAllServiceAreas();
+      const response = await getAllServiceTypes();
 
       if (!response.ok) {
         const errorData = await response.json();
@@ -18,7 +18,7 @@ export function useFetchServiceAreas() {
         throw new Error(errorMessage.message);
       }
 
-      const data: ServiceArea[] = await response.json();
+      const data: ServiceType[] = await response.json();
       setAreas(data);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Erro desconhecido");

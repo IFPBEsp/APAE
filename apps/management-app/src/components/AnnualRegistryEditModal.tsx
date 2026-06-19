@@ -89,10 +89,10 @@ export default function AnnualRegistryEditModal({
                     ? fullPatientData.vaccineNames.map((v: any) => (typeof v === 'string' ? { name: v } : v)) 
                     : [];
 
-                const sourceServiceTypes = initialData.serviceTypes || [];
+                const sourceServiceTypes = initialData.serviceTypes || initialData.serviceAreas || initialData.serviceArea || [];
                 const serviceTypeList = Array.isArray(sourceServiceTypes) ? sourceServiceTypes.map((s: any) => ({
                     id: s.id,
-                    name: s.name  
+                    name: s.name || s.area || s.label || s.value
                 })) : [];
 
                 const disorderList = Array.isArray(initialData.disorders) ? initialData.disorders : [];

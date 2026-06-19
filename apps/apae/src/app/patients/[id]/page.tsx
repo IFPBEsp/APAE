@@ -60,11 +60,16 @@ export default function PersonDetailsPage() {
     diseases: string;
     continuousMedication: string;
     disorders?: { id?: string; name: string }[];
+    serviceArea?: { id?: string; name?: string; area?: string }[];
+    serviceAreas?: { id?: string; name?: string; area?: string }[];
     serviceTypes?: { id?: string; name: string }[];
   }
 
   const [person, setPerson] = useState<PatientResponse | null>(null);
   const [annualRegistry , setAnnualRegistry] = useState<AnnualRegistry | null>(null);
+
+  const serviceTypeNames =
+    annualRegistry?.serviceTypes || annualRegistry?.serviceAreas || annualRegistry?.serviceArea || [];
   
   const [existingYears, setExistingYears] = useState<string[]>([]);
   const [selectedYear, setSelectedYear] = useState<string>(new Date().getFullYear().toString());
@@ -346,7 +351,7 @@ export default function PersonDetailsPage() {
               <div className="mt-2 animate-in fade-in slide-in-from-bottom-2">
                 <InfoRow label="Recebe BPC?" value={annualRegistry .bpc} />
                 <InfoRow label="Renda Familiar" value={annualRegistry .familyIncome} />
-                <InfoRow label="Tipo de Atendimento" value={annualRegistry .serviceTypes?.map((atendimento) => atendimento.name).join(", ")} />
+                <InfoRow label="Tipo de Atendimento" value={serviceTypeNames.map((atendimento) => atendimento.name || atendimento.area).join(", ")} />
                 <InfoRow label="Doenças" value={annualRegistry .diseases} />
                 <InfoRow label="Medicamentos Contínuos" value={annualRegistry .continuousMedication} />
                 <InfoRow label="Transtornos" value={annualRegistry.disorders?.map((d) => d.name).join(", ")} />

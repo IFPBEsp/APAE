@@ -20,7 +20,7 @@ export async function POST(request: Request) {
 
     const api = await createBaseApi();
 
-    const { data } = await api.post("/service-areas", validation.data);
+    const { data } = await api.post("/service-types", validation.data);
 
     return NextResponse.json(data);
   } catch (error) {
@@ -39,7 +39,7 @@ export async function POST(request: Request) {
 export async function GET() {
   try {
     const api = await createBaseApi();
-    const { data } = await api.get("/service-areas");
+    const { data } = await api.get("/service-types");
     return NextResponse.json(data);
   } catch (error) {
     if (error instanceof AxiosError) {

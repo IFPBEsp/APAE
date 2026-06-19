@@ -116,12 +116,14 @@ class HealthProfessionalControllerTest {
    var responses = HealthProfessionalMockDto.createProfessionalResponseList();
    var page = new PageImpl<>(responses, PageRequest.of(0, 10), responses.size());
 
-   Mockito.when(service.findAllProfessionals(isNull(), any(Pageable.class))).thenReturn(page);
+   Mockito.when(service.findAllProfessionals(Mockito.eq(true), any(Pageable.class))).thenReturn(page);
 
-   mockMvc.perform(get("/professionals").param("Ativo", "true").header("Authorization", AuthTestHelper.bearerToken()))
-     .andExpect(status().isOk())
-     .andExpect(jsonPath("$.content.length()").value(2))
-     .andExpect(jsonPath("$.content[0].id").value(HealthProfessionalMockDto.PROFESSIONAL_ID_1.toString()));
+   mockMvc.perform(get("/professionals").param("ativo", "true").header("Authorization", AuthTestHelper.bearerToken()))
+      .andExpect(status().isOk())
+      .andExpect(jsonPath("$.content.length()").value(2))
+      .andExpect(jsonPath("$.content[0].id").value(HealthProfessionalMockDto.PROFESSIONAL_ID_1.toString()));
+
+   Mockito.verify(service).findAllProfessionals(Mockito.eq(true), any(Pageable.class));
   }
 
   @Test
@@ -170,14 +172,15 @@ class HealthProfessionalControllerTest {
   void shouldUpdateProfessionalSuccessfully() throws Exception {
    UUID id = HealthProfessionalMockDto.PROFESSIONAL_ID_1;
    var response = HealthProfessionalMockDto.createProfessionalResponse1();
-   var updateRequest = HealthProfessionalMockDto.createHealthProfessionalRequest();
+   var updateRequest = HealthProfessionalMockDto.updateHealthProfessionalRequest();
 
    Mockito.when(service.updateProfessional(Mockito.eq(id), any(UpdateHealthProfessionalDTO.class))).thenReturn(response);
 
-   mockMvc.perform(put("/professionals/{id}", id).header("Authorization", AuthTestHelper.bearerToken())
-       .contentType(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsBytes(updateRequest)))
-     .andExpect(status().isOk())
-     .andExpect(jsonPath("$.id").value(id.toString()));
+    mockMvc.perform(put("/professionals/{id}", id).header("Authorization", AuthTestHelper.bearerToken())
+        .contentType(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsBytes(updateRequest)))
+      .andExpect(status().isOk())
+      .andExpect(jsonPath("$.id").value(id.toString()))
+      .andExpect(jsonPath("$.serviceType.name").value("Fisioterapia"));
   }
 
   @Test

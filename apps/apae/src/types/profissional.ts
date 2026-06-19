@@ -1,4 +1,4 @@
-import { ServiceArea } from "./service-area";
+import { ServiceType } from "./service-type";
 
 export const daysOfWeek = [
   { id: "segunda", label: "Segunda" },
@@ -26,7 +26,7 @@ export interface Availability {
 
 export interface Professional {
   id: string;
-  serviceType: ServiceArea;
+  serviceType: ServiceType;
   phoneNumber: string;
   professionalDocument: string;
   email: string;

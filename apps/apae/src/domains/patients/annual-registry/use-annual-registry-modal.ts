@@ -111,9 +111,9 @@ export function useAnnualRegistryModal({
         ? fullPatientData.vaccineNames.map((v: unknown) => (typeof v === "string" ? { name: v } : v))
         : [];
 
-      const sourceServiceTypes = initialData.serviceTypes || [];
+      const sourceServiceTypes = initialData.serviceTypes || initialData.serviceAreas || initialData.serviceArea || [];
       const serviceTypeList = Array.isArray(sourceServiceTypes)
-        ? sourceServiceTypes.map((s: ServiceTypeItem) => ({ id: s.id, name: s.name || s.label || s.value }))
+        ? sourceServiceTypes.map((s: ServiceTypeItem) => ({ id: s.id, name: s.name || s.area || s.label || s.value }))
         : [];
 
       const medicationValue =
@@ -206,7 +206,7 @@ export function useAnnualRegistryModal({
         medications: data.continuousMedication || "Nenhum",
         medicamentos: data.continuousMedication || "Nenhum",
         disorders: (data.disorders || []).map((d: Record<string, unknown>) => ({ name: d.name || d.label || d.value, id: d.id })),
-        serviceTypes: (data.serviceTypes || []).map((s: Record<string, unknown>) => ({ id: s.id, name: s.name || s.label || s.value })),
+        serviceTypes: (data.serviceTypes || []).map((s: Record<string, unknown>) => ({ id: s.id, name: s.name || s.area || s.label || s.value })),
         ano: parseInt(data.year),
         year: parseInt(data.year),
       };

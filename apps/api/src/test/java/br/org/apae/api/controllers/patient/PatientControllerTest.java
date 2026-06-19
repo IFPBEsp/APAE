@@ -62,6 +62,7 @@ import java.util.UUID;
 
 import static org.hamcrest.Matchers.hasSize;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 import static org.springframework.data.web.config.EnableSpringDataWebSupport.PageSerializationMode.VIA_DTO;
@@ -152,15 +153,20 @@ public class PatientControllerTest {
 
    MockMultipartFile patientPart = new MockMultipartFile("patient", "", MediaType.APPLICATION_JSON_VALUE, objectMapper.writeValueAsString(patientDTO).getBytes(StandardCharsets.UTF_8));
 
-   mockMvc.perform(multipart(BASE_URL)
-       .file(patientPart).file((MockMultipartFile) docsDTO.rg()).file((MockMultipartFile) docsDTO.cpf())
-       .file((MockMultipartFile) docsDTO.proof_of_address()).file((MockMultipartFile) docsDTO.birth_certificate())
-       .file((MockMultipartFile) docsDTO.photo()).file((MockMultipartFile) docsDTO.reports().getFirst())
-       .file((MockMultipartFile) docsDTO.referrals().getFirst())
-       .header("Authorization", AuthTestHelper.bearerToken()).with(csrf()).contentType(MediaType.MULTIPART_FORM_DATA))
-     .andExpect(status().isCreated())
-     .andExpect(jsonPath("$.id").value(responseDTO.id().toString()))
-     .andExpect(jsonPath("$.fullName").value("João da Silva"));
+    mockMvc.perform(multipart(BASE_URL)
+        .file(patientPart).file((MockMultipartFile) docsDTO.rg()).file((MockMultipartFile) docsDTO.cpf())
+        .file((MockMultipartFile) docsDTO.proof_of_address()).file((MockMultipartFile) docsDTO.birth_certificate())
+        .file((MockMultipartFile) docsDTO.photo()).file((MockMultipartFile) docsDTO.reports().getFirst())
+        .file((MockMultipartFile) docsDTO.referrals().getFirst())
+        .header("Authorization", AuthTestHelper.bearerToken()).with(csrf()).contentType(MediaType.MULTIPART_FORM_DATA))
+      .andExpect(status().isCreated())
+      .andExpect(jsonPath("$.id").value(responseDTO.id().toString()))
+      .andExpect(jsonPath("$.fullName").value("João da Silva"));
+
+    ArgumentCaptor<CreatePatientDTO> patientCaptor = ArgumentCaptor.forClass(CreatePatientDTO.class);
+    verify(patientService).createPatient(patientCaptor.capture(), any(CreateDocumentsDTO.class));
+    assertNotNull(patientCaptor.getValue().annualRegistry());
+    assertEquals("Psicologia", patientCaptor.getValue().annualRegistry().serviceTypes().iterator().next().name());
   }
 
   @Test

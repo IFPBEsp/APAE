@@ -54,6 +54,11 @@ export async function GET(
     return NextResponse.json(filteredDocuments);
   } catch (error) {
     const err = error as AxiosError;
+
+    if (err.response?.status === 404) {
+      return NextResponse.json([]);
+    }
+
     return NextResponse.json(
       { message: err.response?.data || "Erro ao buscar documentos" },
       { status: err.response?.status || 500 },

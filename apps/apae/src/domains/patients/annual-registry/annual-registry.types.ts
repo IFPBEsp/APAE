@@ -15,6 +15,7 @@ export interface DisorderItem {
 
 export interface ServiceTypeItem {
   id?: string | number;
+  area?: string;
   name?: string;
   label?: string;
   value?: string;
@@ -30,6 +31,8 @@ export interface AnnualRegistry {
   medicamentos?: string;
   medication?: string;
   disorders?: DisorderItem[];
+  serviceArea?: ServiceTypeItem[];
+  serviceAreas?: ServiceTypeItem[];
   serviceTypes?: ServiceTypeItem[];
 }
 

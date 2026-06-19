@@ -41,6 +41,10 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.UUID;
+import java.util.Set;
+
+import br.org.apae.api.common.dto.servicetype.request.CreateServiceTypeDTO;
+import br.org.apae.api.common.dto.servicetype.response.ServiceTypeResponseDTO;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
@@ -93,17 +97,17 @@ public class AnnualRegistryControllerTest {
   Mockito.reset(annualRegistryService, jwtProvider, userService);
  }
 
- private CreateAnnualRegistryDTO createValidCreateDTO() {
-  return new CreateAnnualRegistryDTO("123456", "Doença Teste", "Nenhum", BigDecimal.valueOf(2000.00), Year.of(2024), Collections.emptySet(), Collections.emptySet());
- }
+  private CreateAnnualRegistryDTO createValidCreateDTO() {
+   return new CreateAnnualRegistryDTO("123456", "Doença Teste", "Nenhum", BigDecimal.valueOf(2000.00), Year.of(2024), Collections.emptySet(), Set.of(new CreateServiceTypeDTO("Psicologia")));
+  }
 
- private ReplaceAnnualRegistryDTO createValidReplaceDTO() {
-  return new ReplaceAnnualRegistryDTO("987654", "Nova Doença", BigDecimal.valueOf(3000.00), "Novos Meds", Collections.emptySet(), Collections.emptySet());
- }
+  private ReplaceAnnualRegistryDTO createValidReplaceDTO() {
+   return new ReplaceAnnualRegistryDTO("987654", "Nova Doença", BigDecimal.valueOf(3000.00), "Novos Meds", Collections.emptySet(), Set.of(new CreateServiceTypeDTO("Fisioterapia")));
+  }
 
- private AnnualRegistryResponseDTO createResponseDTO(UUID patientId, Integer year) {
-  return new AnnualRegistryResponseDTO(UUID.randomUUID(), "123456", "Doença X", "Remedio Y", BigDecimal.valueOf(1500), year, patientId, new HashSet<>(), new HashSet<>());
- }
+  private AnnualRegistryResponseDTO createResponseDTO(UUID patientId, Integer year) {
+   return new AnnualRegistryResponseDTO(UUID.randomUUID(), "123456", "Doença X", "Remedio Y", BigDecimal.valueOf(1500), year, patientId, new HashSet<>(), Set.of(new ServiceTypeResponseDTO(1, "Psicologia")));
+  }
 
  @Nested
  @DisplayName("Cenários de Criação (POST)")
@@ -117,11 +121,12 @@ public class AnnualRegistryControllerTest {
 
    when(annualRegistryService.createRegistry(any(), eq(patientId))).thenReturn(responseDto);
 
-   mockMvc.perform(post(BASE_URL, patientId).header("Authorization", AuthTestHelper.bearerToken())
-       .contentType(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(requestDto)).accept(MediaType.APPLICATION_JSON))
-     .andExpect(status().isCreated())
-     .andExpect(jsonPath("$.year").value(requestDto.year().getValue()))
-     .andExpect(jsonPath("$.patientId").value(patientId.toString()));
+    mockMvc.perform(post(BASE_URL, patientId).header("Authorization", AuthTestHelper.bearerToken())
+        .contentType(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(requestDto)).accept(MediaType.APPLICATION_JSON))
+      .andExpect(status().isCreated())
+      .andExpect(jsonPath("$.year").value(requestDto.year().getValue()))
+      .andExpect(jsonPath("$.patientId").value(patientId.toString()))
+      .andExpect(jsonPath("$.serviceTypes[0].name").value("Psicologia"));
   }
 
   @Test
@@ -200,10 +205,11 @@ public class AnnualRegistryControllerTest {
 
    when(annualRegistryService.findRegistryByPatientAndYear(patientId, Year.of(year))).thenReturn(responseDto);
 
-   mockMvc.perform(get(BASE_URL + "/{year}", patientId, year).header("Authorization", AuthTestHelper.bearerToken())
-       .accept(MediaType.APPLICATION_JSON))
-     .andExpect(status().isOk())
-     .andExpect(jsonPath("$.year").value(year));
+    mockMvc.perform(get(BASE_URL + "/{year}", patientId, year).header("Authorization", AuthTestHelper.bearerToken())
+        .accept(MediaType.APPLICATION_JSON))
+      .andExpect(status().isOk())
+      .andExpect(jsonPath("$.year").value(year))
+      .andExpect(jsonPath("$.serviceTypes[0].name").value("Psicologia"));
   }
 
   @Test
@@ -303,9 +309,10 @@ public class AnnualRegistryControllerTest {
 
    when(annualRegistryService.replaceRegistry(eq(patientId), eq(registryId), any())).thenReturn(responseDto);
 
-   mockMvc.perform(put(BASE_URL + "/{registryId}", patientId, registryId).header("Authorization", AuthTestHelper.bearerToken())
-       .contentType(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(replaceDto)))
-     .andExpect(status().isOk());
+    mockMvc.perform(put(BASE_URL + "/{registryId}", patientId, registryId).header("Authorization", AuthTestHelper.bearerToken())
+        .contentType(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(replaceDto)))
+      .andExpect(status().isOk())
+      .andExpect(jsonPath("$.serviceTypes[0].name").value("Psicologia"));
   }
 
   @Test

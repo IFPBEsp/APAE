@@ -9,9 +9,11 @@ import org.springframework.mock.web.MockMultipartFile;
 import br.org.apae.api.common.dto.address.AddressResponseDTO;
 import br.org.apae.api.common.dto.address.CreateAddressDTO;
 import br.org.apae.api.common.dto.professional.request.CreateHealthProfessionalDTO;
+import br.org.apae.api.common.dto.professional.request.UpdateHealthProfessionalDTO;
 import br.org.apae.api.common.dto.professional.request.documents.CreateProfessionalDocumentsDTO;
 import br.org.apae.api.common.dto.professional.response.HealthProfessionalResponseDTO;
 import br.org.apae.api.common.dto.servicetype.request.CreateServiceTypeDTO;
+import br.org.apae.api.common.dto.servicetype.request.UpdateServiceTypeDTO;
 import br.org.apae.api.common.dto.availability.request.CreateAvailabilityDTO;
 import br.org.apae.api.common.dto.servicetype.response.ServiceTypeResponseDTO;
 import br.org.apae.api.common.dto.availability.response.AvailabilityResponseDTO;
@@ -79,6 +81,23 @@ public final class HealthProfessionalMockDto {
                 new CreateAvailabilityDTO("TERCA", "TARDE")
             ),
             "http://example.com/photo.jpg" // Adicionado o parâmetro faltante do CreateHealthProfessionalDTO
+        );
+    }
+
+    public static UpdateHealthProfessionalDTO updateHealthProfessionalRequest() {
+        return new UpdateHealthProfessionalDTO(
+            new UpdateServiceTypeDTO("Fisioterapia"),
+            "11999999999",
+            "CREFITO-12345",
+            "teste@apae.org.br",
+            "João da Silva",
+            "123456789",
+            createAddressRequest(),
+            List.of(
+                new CreateAvailabilityDTO("SEGUNDA", "MANHA"),
+                new CreateAvailabilityDTO("TERCA", "TARDE")
+            ),
+            "http://example.com/photo.jpg"
         );
     }
 
