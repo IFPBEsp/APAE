@@ -12,7 +12,7 @@ import { Input } from "@/components/ui/input";
 import {
   MembersRegisterStep,
   useMembersRegisterContext,
-} from "@/hooks/use-members-register-context";
+} from "@/domains/patients/hooks/use-members-register-context";
 import {
   formatBirthCertificate,
   formatCNS,
@@ -22,11 +22,11 @@ import {
   formatRG,
   capitalizeFirst,
 } from "@/lib/formats";
-import { Personal, PersonalData } from "@/schemas/member-schemas";
+import { Personal, PersonalData } from "@/domains/patients/schemas/member-schemas";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { useState, useEffect } from "react";
-import { usePathname, useRouter  } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { handleBackendValidationErrors } from "@/lib/utils/form-errors";
 import { formatCivilDateDisplayValue } from "@/lib/date";
 import { InputMask } from "@react-input/mask";

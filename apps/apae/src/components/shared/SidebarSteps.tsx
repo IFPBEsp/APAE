@@ -1,6 +1,6 @@
 "use client";
 
-import { useMembersRegisterContext, MembersRegisterStep } from "@/hooks/use-members-register-context";
+import { useMembersRegisterContext, MembersRegisterStep } from "@/domains/patients/hooks/use-members-register-context";
 import { CheckCircle2, Circle } from "lucide-react";
 import { Nunito } from "next/font/google";
 import { usePathname } from "next/navigation";
@@ -10,7 +10,7 @@ const nunito = Nunito({ subsets: ["latin"], weight: ["400", "600", "700", "900"]
 export function SidebarSteps() {
   const { state: { step } } = useMembersRegisterContext();
   const pathname = usePathname();
-  const isEditing = pathname.includes("/edit"); 
+  const isEditing = pathname.includes("/edit");
 
   const stepsList = [
     { id: MembersRegisterStep.PERSONAL, label: "Dados Pessoais" },

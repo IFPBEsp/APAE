@@ -12,14 +12,14 @@ import { Input } from "@/components/ui/input";
 import {
   MembersRegisterStep,
   useMembersRegisterContext,
-} from "@/hooks/use-members-register-context";
+} from "@/domains/patients/hooks/use-members-register-context";
 import { formatCEP, capitalizeFirst } from "@/lib/formats";
-import { Address } from "@/schemas/member-schemas";
+import { Address } from "@/domains/patients/schemas/member-schemas";
 import { EditAddress } from "@/schemas/edit-member-schemas";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { useState, useEffect } from "react";
-import { usePathname } from "next/navigation"; 
+import { usePathname } from "next/navigation";
 import { handleBackendValidationErrors } from "@/lib/utils/form-errors";
 import { Checkbox } from "@/components/ui/checkbox";
 
@@ -50,7 +50,7 @@ export default function MembersRegisterAddressPage() {
   const isNoNumber = form.watch("noNumber");
 
   useEffect(() => {
-    if(isNoNumber) {
+    if (isNoNumber) {
       form.setValue("number", "SN");
       form.clearErrors("number");
     } else {
@@ -155,7 +155,7 @@ export default function MembersRegisterAddressPage() {
                       checked={field.value}
                       onCheckedChange={(checked) => {
                         field.onChange(checked);
-                        if (checked){
+                        if (checked) {
                           form.setValue("number", "SN");
                           form.clearErrors("number");
                         } else {
