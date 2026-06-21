@@ -1,4 +1,5 @@
 import axios from "axios";
+import { FormLogin } from "./authSchema";
 
 const API_URL =
   process.env.NEXT_PUBLIC_API_URL ||
