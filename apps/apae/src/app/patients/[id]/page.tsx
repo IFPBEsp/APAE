@@ -12,7 +12,7 @@ import { toast } from "react-toastify";
 import { Loader2, ArrowLeft, SquarePen, Plus } from "lucide-react";
 import AnnualRegistryEditModal from "@/domains/patients/annual-registry/annual-registry-edit-modal";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
-import { PatientResponse } from "@/types/patient";
+import { PatientResponse } from "@/domains/patients/types/patient";
 
 interface InfoRowProps {
   label: string;

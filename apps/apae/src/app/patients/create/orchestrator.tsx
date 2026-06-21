@@ -3,8 +3,8 @@
 import {
   MembersRegisterStep,
   useMembersRegisterContext,
-} from "@/hooks/use-members-register-context";
-import { useRouter, usePathname } from "next/navigation"; 
+} from "@/domains/patients/hooks/use-members-register-context";
+import { useRouter, usePathname } from "next/navigation";
 import { useEffect } from "react";
 
 export function PageOrchestrator({
@@ -13,7 +13,7 @@ export function PageOrchestrator({
   readonly children: React.ReactNode;
 }) {
   const router = useRouter();
-  const pathname = usePathname(); 
+  const pathname = usePathname();
   const {
     state: { step },
   } = useMembersRegisterContext();
