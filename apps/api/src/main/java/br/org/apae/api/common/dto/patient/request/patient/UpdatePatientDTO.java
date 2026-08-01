@@ -7,7 +7,7 @@ import java.util.Set;
 import br.org.apae.api.common.dto.address.CreateAddressDTO;
 import br.org.apae.api.common.dto.patient.request.guardian.UpdateGuardianDTO;
 import br.org.apae.api.common.dto.patient.request.parent.UpdateParentDTO;
-import br.org.apae.api.common.dto.patient.request.vaccine.CreateVaccineDTO;
+import br.org.apae.api.common.dto.patient.request.vaccine.VaccineNameDTO;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
@@ -54,5 +54,5 @@ public record UpdatePatientDTO(
 
         @NotEmpty(message = "É necessário fornecer os dados de pelo menos um parente ou responsável legal") @Valid List<UpdateParentDTO> parents,
 
-        @NotEmpty(message = "A lista de vacinas não pode estar vazia") Set<CreateVaccineDTO> vaccineNames) {
+        @NotEmpty(message = "A lista de vacinas não pode estar vazia") Set<VaccineNameDTO> vaccineNames) {
 }

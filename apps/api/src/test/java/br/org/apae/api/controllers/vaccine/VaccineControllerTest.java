@@ -3,14 +3,11 @@ package br.org.apae.api.controllers.vaccine;
 import br.org.apae.api.auth.application.internal.UserService;
 import br.org.apae.api.auth.infrastructure.security.JwtProvider;
 import br.org.apae.api.auth.infrastructure.security.SecurityConfiguration;
-import br.org.apae.api.common.dto.patient.request.vaccine.CreateVaccineDTO;
 import br.org.apae.api.common.dto.patient.response.vaccine.VaccineResponseDTO;
 import br.org.apae.api.common.exceptions.handler.GlobalExceptionHandler;
 import br.org.apae.api.helpers.AuthTestHelper;
 import br.org.apae.api.patient.application.interfaces.VaccineApplicationService;
-import br.org.apae.api.patient.domain.exceptions.VaccineConflictException;
 import br.org.apae.api.patient.domain.exceptions.VaccineNotFoundException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -35,8 +32,6 @@ import java.util.UUID;
 
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
 import static org.springframework.data.web.config.EnableSpringDataWebSupport.PageSerializationMode.VIA_DTO;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -61,9 +56,6 @@ public class VaccineControllerTest {
  @Autowired
  private MockMvc mockMvc;
 
- @Autowired
- private ObjectMapper objectMapper;
-
  @MockitoBean
  private VaccineApplicationService vaccineService;
 
@@ -83,46 +75,6 @@ public class VaccineControllerTest {
  @AfterEach
  void tearDown() {
   Mockito.reset(vaccineService, jwtProvider, userService);
- }
-
- @Nested
- @DisplayName("Cenários de Criação (POST)")
- class Criacao {
-  @Test
-  @DisplayName("Deve criar vacina com sucesso (201) quando dados são válidos")
-  void shouldCreateVaccineSuccess() throws Exception {
-   CreateVaccineDTO requestDto = new CreateVaccineDTO("BCG");
-   UUID idGerado = UUID.randomUUID();
-   VaccineResponseDTO responseDto = new VaccineResponseDTO(idGerado, requestDto.name(), false);
-
-   when(vaccineService.createVaccine(any(CreateVaccineDTO.class))).thenReturn(responseDto);
-
-   mockMvc.perform(post(BASE_URL).header("Authorization", AuthTestHelper.bearerToken())
-       .contentType(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(requestDto)).accept(MediaType.APPLICATION_JSON))
-     .andExpect(status().isCreated())
-     .andExpect(jsonPath("$.id").value(idGerado.toString()));
-  }
-
-  @Test
-  @DisplayName("Deve retornar Erro de Validação (400) quando nome da vacina é inválido")
-  void shouldReturnBadRequestWhenNameIsInvalid() throws Exception {
-   CreateVaccineDTO invalidDto = new CreateVaccineDTO("");
-   mockMvc.perform(post(BASE_URL).header("Authorization", AuthTestHelper.bearerToken())
-       .contentType(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(invalidDto)).accept(MediaType.APPLICATION_JSON))
-     .andExpect(status().isBadRequest());
-   verify(vaccineService, never()).createVaccine(any());
-  }
-
-  @Test
-  @DisplayName("Deve retornar Conflict (409) ao tentar criar vacina com nome duplicado")
-  void shouldReturnConflictWhenCreateVaccineWithDuplicateName() throws Exception {
-   CreateVaccineDTO requestDto = new CreateVaccineDTO("Hepatite B");
-   when(vaccineService.createVaccine(any(CreateVaccineDTO.class))).thenThrow(new VaccineConflictException(requestDto.name()));
-
-   mockMvc.perform(post(BASE_URL).header("Authorization", AuthTestHelper.bearerToken())
-       .contentType(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(requestDto)).accept(MediaType.APPLICATION_JSON))
-     .andExpect(status().isConflict());
-  }
  }
 
  @Nested
@@ -185,66 +137,4 @@ public class VaccineControllerTest {
   }
  }
 
- @Nested
- @DisplayName("Cenários de Atualização (PUT)")
- class Atualizacao {
-  @Test
-  @DisplayName("Deve atualizar vacina com sucesso (200)")
-  void shouldUpdateVaccineSuccess() throws Exception {
-   UUID id = UUID.randomUUID();
-   CreateVaccineDTO updateDto = new CreateVaccineDTO("BCG Atualizada");
-   VaccineResponseDTO responseDto = new VaccineResponseDTO(id, updateDto.name(), false);
-
-   when(vaccineService.updateVaccine(eq(id), any(CreateVaccineDTO.class))).thenReturn(responseDto);
-
-   mockMvc.perform(put(BASE_URL + "/{id}", id).header("Authorization", AuthTestHelper.bearerToken())
-       .contentType(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(updateDto)).accept(MediaType.APPLICATION_JSON))
-     .andExpect(status().isOk())
-     .andExpect(jsonPath("$.name").value(updateDto.name()));
-  }
-
-  @Test
-  @DisplayName("Deve retornar NotFound (404) ao tentar atualizar vacina inexistente")
-  void shouldReturnNotFoundWhenUpdateVaccineNonExistent() throws Exception {
-   UUID id = UUID.randomUUID();
-   CreateVaccineDTO updateDto = new CreateVaccineDTO("BCG");
-   when(vaccineService.updateVaccine(eq(id), any(CreateVaccineDTO.class))).thenThrow(new VaccineNotFoundException());
-   mockMvc.perform(put(BASE_URL + "/{id}", id).header("Authorization", AuthTestHelper.bearerToken())
-       .contentType(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(updateDto)).accept(MediaType.APPLICATION_JSON))
-     .andExpect(status().isNotFound());
-  }
-
-  @Test
-  @DisplayName("Deve retornar Conflict (409) ao tentar atualizar vacina com nome já existente")
-  void shouldReturnConflictWhenUpdateVaccineWithDuplicateName() throws Exception {
-   UUID id = UUID.randomUUID();
-   CreateVaccineDTO updateDto = new CreateVaccineDTO("Hepatite B");
-   when(vaccineService.updateVaccine(eq(id), any(CreateVaccineDTO.class))).thenThrow(new VaccineConflictException(updateDto.name()));
-   mockMvc.perform(put(BASE_URL + "/{id}", id).header("Authorization", AuthTestHelper.bearerToken())
-       .contentType(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(updateDto)).accept(MediaType.APPLICATION_JSON))
-     .andExpect(status().isConflict());
-  }
- }
-
- @Nested
- @DisplayName("Cenários de Exclusão (DELETE)")
- class Exclusao {
-  @Test
-  @DisplayName("Deve deletar vacina com sucesso (204)")
-  void shouldDeleteVaccineSuccess() throws Exception {
-   UUID id = UUID.randomUUID();
-   doNothing().when(vaccineService).deleteVaccine(id);
-   mockMvc.perform(delete(BASE_URL + "/{id}", id).header("Authorization", AuthTestHelper.bearerToken()))
-     .andExpect(status().isNoContent());
-  }
-
-  @Test
-  @DisplayName("Deve retornar NotFound (404) ao deletar vacina inexistente")
-  void shouldReturnNotFoundWhenDeleteVaccineNonExistent() throws Exception {
-   UUID id = UUID.randomUUID();
-   doThrow(new VaccineNotFoundException()).when(vaccineService).deleteVaccine(id);
-   mockMvc.perform(delete(BASE_URL + "/{id}", id).header("Authorization", AuthTestHelper.bearerToken()))
-     .andExpect(status().isNotFound());
-  }
- }
 }

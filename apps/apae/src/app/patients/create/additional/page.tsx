@@ -31,28 +31,15 @@ import {
 } from "../form";
 import { CreatableMultiSelect } from "@/components/creatable-multi-select";
 import { useVaccinesContext } from "@/hooks/use-vaccines";
-import {
-  Dialog,
-  DialogContent,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
-import { CreateVaccine } from "@/schemas/vaccine-schemas";
-import { Button } from "@/components/ui/button";
 import { useDisordersContext } from "@/hooks/use-disorders";
-import { CreateDisorder } from "@/schemas/disorder-schemas";
 import { formatCurrency, capitalizeFirst } from "@/lib/formats";
-import { useCreateServiceArea } from "@/hooks/service-area/use-create-service-area";
 import { useFetchServiceAreas } from "@/hooks/service-area/use-fetch-service-areas";
-import { CreateCare } from "@/schemas/care-schemas";
 
-import { CreateVaccineDialog } from "@/domains/patients/components/dialogs/CreateVaccineDialog";
 import { CreateCareDialog } from "@/domains/patients/components/dialogs/CreateCareDialog";
 import { CreateDisorderDialog } from "@/domains/patients/components/dialogs/CreateDisorderDialog";
 
 export default function MembersRegisterAdditionalsPage() {
-  const [modal, setModal] = useState<"disorder" | "vaccine" | "care" | null>(
+  const [modal, setModal] = useState<"disorder" | "care" | null>(
     null,
   );
   const [refreshKey, setRefreshKey] = useState(0);
@@ -150,21 +137,6 @@ export default function MembersRegisterAdditionalsPage() {
           }
         }}
       />
-      <CreateVaccineDialog
-        open={modal === "vaccine"}
-        onOpenChange={(value: boolean) => setModal(value ? "vaccine" : null)}
-        onSuccess={(newName: string) => {
-          const currentValues = form.getValues("vaccines") || [];
-          if (!currentValues.includes(newName)) {
-            form.setValue("vaccines", [...currentValues, newName], {
-              shouldDirty: true,
-              shouldValidate: true,
-            });
-            setRefreshKey((k) => k + 1);
-          }
-        }}
-      />
-
       <Form {...form}>
         <MembersRegisterForm
           title={
@@ -234,7 +206,6 @@ export default function MembersRegisterAdditionalsPage() {
                       onValueChange={field.onChange}
                       placeholder="Selecione as vacinas"
                       hideSelectAll={true}
-                      onCreate={() => setModal("vaccine")}
                     />
                   </FormControl>
                   <FormMessage />

@@ -11,7 +11,7 @@ import br.org.apae.api.common.dto.patient.request.parent.CreateParentDTO;
 import br.org.apae.api.common.dto.patient.request.parent.UpdateParentDTO;
 import br.org.apae.api.common.dto.patient.request.patient.CreatePatientDTO;
 import br.org.apae.api.common.dto.patient.request.patient.UpdatePatientDTO;
-import br.org.apae.api.common.dto.patient.request.vaccine.CreateVaccineDTO;
+import br.org.apae.api.common.dto.patient.request.vaccine.VaccineNameDTO;
 import br.org.apae.api.common.dto.patient.response.guardian.GuardianResponseDTO;
 import br.org.apae.api.common.dto.patient.response.parent.ParentResponseDTO;
 import br.org.apae.api.common.dto.patient.response.patient.PatientResponseDTO;
@@ -41,8 +41,8 @@ public class PatientCreator {
         );
     }
 
-    private static CreateVaccineDTO createVaccine() {
-        return new CreateVaccineDTO("BCG");
+    private static VaccineNameDTO vaccineName() {
+        return new VaccineNameDTO("BCG");
     }
 
     private static CreateDisorderDTO createDisorder() {
@@ -206,7 +206,7 @@ public class PatientCreator {
                 createAddress(),
                 createGuardian(),
                 createParents(),
-                Set.of(createVaccine()),
+                Set.of(vaccineName()),
                 createAnnualRegistry()
         );
     }
@@ -232,7 +232,7 @@ public class PatientCreator {
             createAddress(),
             createUpdateGuardian(),
             createUpdateParents(),
-            Set.of(createVaccine())
+            Set.of(vaccineName())
     );
 }
 /*
@@ -258,7 +258,7 @@ public class PatientCreator {
                 createAddress(),
                 createGuardian(),
                 createParents(),
-                Set.of(createVaccine()),
+                Set.of(vaccineName()),
                 createAnnualRegistry()
         );
     }
@@ -284,7 +284,7 @@ public class PatientCreator {
                 PatientCreator.createAddress(),
                 PatientCreator.createUpdateGuardian(),
                 PatientCreator.createUpdateParents(),
-                Set.of(createVaccine())
+                Set.of(vaccineName())
         );
     }
 

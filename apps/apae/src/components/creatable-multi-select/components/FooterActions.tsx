@@ -32,14 +32,18 @@ export function FooterActions({
             </>
           )}
 
-          <CommandItem
-            onSelect={() => onCreate?.()}
-            className="flex-1 justify-center cursor-pointer"
-          >
-            Criar
-          </CommandItem>
+          {onCreate && (
+            <>
+              <CommandItem
+                onSelect={onCreate}
+                className="flex-1 justify-center cursor-pointer"
+              >
+                Criar
+              </CommandItem>
 
-          <Separator orientation="vertical" className="flex min-h-6 h-full" />
+              <Separator orientation="vertical" className="flex min-h-6 h-full" />
+            </>
+          )}
 
           <CommandItem
             onSelect={onClose}
