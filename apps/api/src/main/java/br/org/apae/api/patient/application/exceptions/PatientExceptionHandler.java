@@ -23,6 +23,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import br.org.apae.api.patient.domain.exceptions.VaccineConflictException;
+import br.org.apae.api.patient.domain.exceptions.VaccineInUseException;
 
 @ControllerAdvice
 @Order(Ordered.HIGHEST_PRECEDENCE)
@@ -252,4 +254,18 @@ public class PatientExceptionHandler {
 
     return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
   }
+  
+  @ExceptionHandler(VaccineConflictException.class)
+    public ResponseEntity<ProblemDetail> handleVaccineConflictException(VaccineConflictException ex) {
+        ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(HttpStatus.CONFLICT, ex.getMessage());
+        problemDetail.setTitle("Conflito de Vacina");
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(problemDetail);
+    }
+
+    @ExceptionHandler(VaccineInUseException.class)
+    public ResponseEntity<ProblemDetail> handleVaccineInUseException(VaccineInUseException ex) {
+        ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(HttpStatus.CONFLICT, ex.getMessage());
+        problemDetail.setTitle("Vacina em Uso");
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(problemDetail);
+    }
 }
