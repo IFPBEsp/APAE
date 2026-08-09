@@ -105,7 +105,7 @@ public class VaccineApplicationServiceImpl implements VaccineApplicationService 
             throw new VaccineConflictException();
         }
 
-        vaccine.setName(dto.name());
+        vaccine.updateName(dto.name());
         Vaccine updatedVaccine = vaccineRepository.save(vaccine);
 
         return vaccineMapper.toResponseDTO(updatedVaccine);

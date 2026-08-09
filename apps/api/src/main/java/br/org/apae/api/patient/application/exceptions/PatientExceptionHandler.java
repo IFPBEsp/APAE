@@ -1,5 +1,7 @@
 package br.org.apae.api.patient.application.exceptions;
 
+import org.springframework.http.ProblemDetail;
+
 import br.org.apae.api.common.exceptions.types.ErrorResponse;
 import br.org.apae.api.patient.domain.exceptions.AnnualRegistryConflictException;
 import br.org.apae.api.patient.domain.exceptions.DisorderConflictException;
@@ -254,7 +256,7 @@ public class PatientExceptionHandler {
 
     return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
   }
-  
+
   @ExceptionHandler(VaccineConflictException.class)
     public ResponseEntity<ProblemDetail> handleVaccineConflictException(VaccineConflictException ex) {
         ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(HttpStatus.CONFLICT, ex.getMessage());
