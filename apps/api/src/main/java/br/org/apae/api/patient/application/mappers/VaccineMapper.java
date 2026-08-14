@@ -26,4 +26,9 @@ public class VaccineMapper {
                 .map(this::toResponseDTO)
                 .collect(Collectors.toSet());
     }
+
+    public Vaccine toEntity(CreateVaccineDTO dto) {
+        return new Vaccine(dto.name());
+    }
+
 }
