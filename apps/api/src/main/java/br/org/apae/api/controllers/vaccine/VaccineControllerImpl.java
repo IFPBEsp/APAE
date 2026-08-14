@@ -8,6 +8,9 @@ import java.util.List;
 import java.util.UUID;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
+import br.org.apae.api.common.dto.patient.request.vaccine.CreateVaccineDTO;
+import br.org.apae.api.common.dto.patient.request.vaccine.UpdateVaccineDTO;
+import org.springframework.http.HttpStatus;
 
 @RestController
 public class VaccineControllerImpl implements VaccineController {
@@ -36,4 +39,23 @@ public class VaccineControllerImpl implements VaccineController {
         VaccineResponseDTO vaccine = vaccineService.findVaccineByName(name);
         return ResponseEntity.ok(vaccine);
     }
+
+    @Override
+    public ResponseEntity<VaccineResponseDTO> create(CreateVaccineDTO dto) {
+        VaccineResponseDTO response = vaccineService.createVaccine(dto);
+        return ResponseEntity.status(HttpStatus.CREATED).body(response);
+    }
+
+    @Override
+    public ResponseEntity<VaccineResponseDTO> update(UUID id, UpdateVaccineDTO dto) {
+        VaccineResponseDTO response = vaccineService.updateVaccine(id, dto);
+        return ResponseEntity.ok(response);
+    }
+
+    @Override
+    public ResponseEntity<Void> delete(UUID id) {
+        vaccineService.deleteVaccine(id);
+        return ResponseEntity.noContent().build();
+    }
+
 }
