@@ -41,6 +41,9 @@ public class User implements UserDetails {
   @Column(name = "primeiro_acesso", nullable = false)
   private boolean firstAccess = false;
 
+  @Column(name = "ativo", nullable = false)
+  private boolean active = true;
+
   @Column(name = "nome_completo")
   private String fullName;
 
@@ -114,6 +117,11 @@ public class User implements UserDetails {
 
   public boolean isFirstAccess() {
     return firstAccess;
+  }
+
+  @Override
+  public boolean isEnabled() {
+    return active;
   }
 
   @Override
