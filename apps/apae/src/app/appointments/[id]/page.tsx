@@ -171,7 +171,7 @@ export default function ViewAppointment() {
                 </DialogContent>
               </Dialog>
               <div className="rounded-full overflow-hidden border-1 border-[#0D4F97]">
-                <TrashButton id={id} realized={false} />
+                <TrashButton id={id} realized={false} hasHistory={!!(appointment.replacedByDate || appointment.updatedFromDate)}/>
               </div>
             </CardAction>
           </CardHeader>

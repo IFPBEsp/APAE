@@ -224,9 +224,24 @@ public class PatientExceptionHandler {
     return new ResponseEntity<>(error, HttpStatus.CONFLICT);
   }
 
-  @ExceptionHandler({RegistryNotFoundException.class, RegistryOwnershipException.class})
+  @ExceptionHandler(RegistryNotFoundException.class)
   public ResponseEntity<ErrorResponse> handleRegistryNotFound(
-          RuntimeException ex,
+          RegistryNotFoundException ex,
+          HttpServletRequest request
+  ) {
+    ErrorResponse error = new ErrorResponse(
+            HttpStatus.NOT_FOUND.value(),
+            HttpStatus.NOT_FOUND.getReasonPhrase(),
+            ex.getMessage(),
+            request.getRequestURI()
+    );
+
+    return new ResponseEntity<>(error, HttpStatus.NOT_FOUND);
+  }
+
+  @ExceptionHandler(RegistryOwnershipException.class)
+  public ResponseEntity<ErrorResponse> handleRegistryOwnership(
+          RegistryOwnershipException ex,
           HttpServletRequest request
   ) {
     ErrorResponse error = new ErrorResponse(

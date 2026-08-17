@@ -1,11 +1,11 @@
 "use client";
 
 import Image from "@/assets/background_image.jpg";
-import { MembersRegisterProvider } from "@/hooks/use-members-register-context";
+import { MembersRegisterProvider } from "@/domains/patients/hooks/use-members-register-context";
 import { PageOrchestrator } from "./orchestrator";
 import { Nunito } from "next/font/google";
 import { VaccinesProvider } from "@/hooks/use-vaccines";
-import { useMembersRegisterContext, MembersRegisterStep } from "@/hooks/use-members-register-context";
+import { useMembersRegisterContext, MembersRegisterStep } from "@/domains/patients/hooks/use-members-register-context";
 import { CheckCircle2, Circle } from "lucide-react";
 import { DisordersProvider } from "@/hooks/use-disorders";
 
@@ -127,7 +127,7 @@ export default function MembersRegisterLayout({
                     "linear-gradient(180deg, rgba(13, 79, 151, 0.2) 54.32%, rgba(255, 255, 255, 0.6) 110.28%)",
                 }}
               />
-               <div className="hidden xl:flex relative z-10 w-full h-full bg-[#0D4F97]/50">
+              <div className="hidden xl:flex relative z-10 w-full h-full bg-[#0D4F97]/50">
                 <SidebarSteps />
               </div>
               <div className="relative flex flex-col w-full h-full bg-muted overflow-y-auto">

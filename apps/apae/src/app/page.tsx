@@ -106,30 +106,13 @@ export default function DashboardPage() {
     };
 
   const fetchTodayAppointmentsByStatus = async () => {
-    if (!todayAppointments.length || !allAppointments.length) return;
+    if (!allAppointments.length) return;
 
-    const appointmentMap = new Map(
-      allAppointments.map(a => [a.id, a])
-    );
-
-    const active: TodayAppointment[] = [];
-    const inactive: TodayAppointment[] = [];
-
-    for (const today of todayAppointments) {
-      const related = appointmentMap.get(today.ruleId);
-
-      if (!related) continue;
-
-      if (related.isActive) {
-        active.push(today);
-      } else {
-        inactive.push(today);
-      }
-    }
-
-    setActiveAppointments(active);
-    setInactiveAppointments(inactive);
+    setActiveAppointments(allAppointments.filter(a => a.isActive === true) as any);
+    setInactiveAppointments(allAppointments.filter(a => a.isActive === false) as any);
   };
+
+
 
   useEffect(() => {
 
@@ -146,7 +129,7 @@ export default function DashboardPage() {
 
   useEffect(() => {
     fetchTodayAppointmentsByStatus();
-  }, [todayAppointments, allAppointments]);
+  }, [allAppointments]);
 
   const markAsPerformedHandle = async (id: UUID) => {
     await markAsPerformed(id);
@@ -230,14 +213,14 @@ export default function DashboardPage() {
           <InfoCard
             title="Ativos"
             icon={UserRoundCheck}
-            value={activeAppointments.length}
+            value={allAppointments.filter(a => a.isActive).length}
             titleClassName="text-[#0D4F97]"
             valueClassName="text-[#0D4F97]"
           />
           <InfoCard
             title="Inativos"
             icon={UserRoundX}
-            value={inactiveAppointments.length}
+            value={allAppointments.filter(a => !a.isActive).length}
             titleClassName="text-[#0D4F97]"
             valueClassName="text-[#0D4F97]"
           />

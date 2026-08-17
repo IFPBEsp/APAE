@@ -3,6 +3,7 @@ package br.org.apae.api.controllers.appointment;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.UUID;
+import java.util.List;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -87,5 +88,11 @@ public class AppointmentControllerImpl implements AppointmentController {
   @Override
   public ResponseEntity<TodayAppointmentsResponseDTO> getTodayAppointmentById(UUID id) {
     return ResponseEntity.ok(service.findGeneratedAppointmentById(id));
+  }
+
+  @Override
+  public ResponseEntity<List<GeneratedAppointmentResponseDTO>> listGeneratedByProfessional(UUID professionalId) {
+      List<GeneratedAppointmentResponseDTO> response = service.listGeneratedByProfessional(professionalId);
+      return ResponseEntity.ok(response);
   }
 }

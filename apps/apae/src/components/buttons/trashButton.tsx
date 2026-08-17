@@ -1,5 +1,5 @@
 "use client";
-
+import { toast } from "react-toastify";
 import { Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { deleteAppointment } from "@/app/services/appointmentService";
@@ -17,9 +17,11 @@ import {
 
 export default function TrashButton({
   id,
+    hasHistory,
 }: {
   id: string;
   realized: boolean;
+  hasHistory: boolean
 }) {
   const router = useRouter();
 
@@ -27,6 +29,22 @@ export default function TrashButton({
     await deleteAppointment(id);
     router.back();
   };
+
+  if (hasHistory) {
+    return (
+        <Button
+            className="bg-transparent cursor-not-allowed text-[#970D0D] opacity-50 hover:bg-[rgba(0,0,0,0.1)] transition-colors"
+            onClick={() =>
+                toast.warning(
+                    "Este agendamento possui histórico e não pode ser excluído."
+                )
+            }
+        >
+          <Trash2 />
+        </Button>
+    );
+  }
+
 
   return (
     <Dialog>

@@ -4,7 +4,7 @@ import * as React from "react";
 import { useRouter, useParams } from "next/navigation";
 import { ArrowLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import FileCard from "@/components/fileCard";
+import FileCard from "@/domains/documents/shared/file-card";
 import ReplaceDocumentModal from "@/components/documents/ReplaceDocumentModal";
 import { toast } from "react-toastify";
 import {

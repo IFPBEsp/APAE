@@ -14,7 +14,7 @@ import React from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Button } from "@/components/ui/button";
 import { PasswordInput } from "@/components/forms/PasswordInputs";
-import { FormSignUp, signUpSchema } from "@/schemas/authSchema";
+import { FormSignUp, signUpSchema } from "@/domains/auth/authSchema";
 import { toast } from "react-toastify";
 import { useRouter } from "next/navigation";
 
