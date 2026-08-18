@@ -7,6 +7,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Component;
+import br.org.apae.api.common.dto.patient.request.vaccine.CreateVaccineDTO;
 
 @Component
 public class VaccineMapper {
@@ -25,5 +26,9 @@ public class VaccineMapper {
         return vaccines.stream()
                 .map(this::toResponseDTO)
                 .collect(Collectors.toSet());
+    }
+
+    public Vaccine toEntity(CreateVaccineDTO dto) {
+        return new Vaccine(dto.name());
     }
 }
