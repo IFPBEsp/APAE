@@ -1,5 +1,13 @@
 package br.org.apae.api.patient.application.exceptions;
 
+import org.springframework.core.Ordered;
+import org.springframework.core.annotation.Order;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.web.bind.annotation.ControllerAdvice;
+import org.springframework.web.bind.annotation.ExceptionHandler;
+
 import br.org.apae.api.common.exceptions.types.ErrorResponse;
 import br.org.apae.api.patient.domain.exceptions.AnnualRegistryConflictException;
 import br.org.apae.api.patient.domain.exceptions.DisorderConflictException;
@@ -13,16 +21,11 @@ import br.org.apae.api.patient.domain.exceptions.PatientConflictException;
 import br.org.apae.api.patient.domain.exceptions.PatientNotFoundException;
 import br.org.apae.api.patient.domain.exceptions.RegistryNotFoundException;
 import br.org.apae.api.patient.domain.exceptions.RegistryOwnershipException;
+import br.org.apae.api.patient.domain.exceptions.VaccineConflictException;
+import br.org.apae.api.patient.domain.exceptions.VaccineInUseException;
 import br.org.apae.api.patient.domain.exceptions.VaccineMismatchException;
 import br.org.apae.api.patient.domain.exceptions.VaccineNotFoundException;
 import jakarta.servlet.http.HttpServletRequest;
-import org.springframework.core.Ordered;
-import org.springframework.core.annotation.Order;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.MethodArgumentNotValidException;
-import org.springframework.web.bind.annotation.ControllerAdvice;
-import org.springframework.web.bind.annotation.ExceptionHandler;
 
 @ControllerAdvice
 @Order(Ordered.HIGHEST_PRECEDENCE)
@@ -252,4 +255,14 @@ public class PatientExceptionHandler {
 
     return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
   }
+
+  @ExceptionHandler(VaccineConflictException.class)
+    public ResponseEntity<String> handleVaccineConflict(VaccineConflictException ex) {
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(ex.getMessage());
+    }
+
+    @ExceptionHandler(VaccineInUseException.class)
+    public ResponseEntity<String> handleVaccineInUse(VaccineInUseException ex) {
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(ex.getMessage());
+    }
 }
