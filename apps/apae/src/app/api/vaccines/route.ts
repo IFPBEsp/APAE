@@ -9,7 +9,23 @@ export async function GET() {
     } catch (error) {
         const message = error instanceof Error ? error.message : "Erro desconhecido";
         console.error("Erro ao buscar vacinas:", message);
-        return NextResponse.json({ message: "Erro ao buscar a lista de vacinas." }, { status: 500 }
+        return NextResponse.json({ message: "Erro ao buscar a lista de vacinas." }, { status: 500 });
+    }
+}
+
+export async function POST(request: Request) {
+    try {
+        const body = await request.json();
+        const api = await createBaseApi();
+        
+        const { data } = await api.post("/vaccines", body);
+        return NextResponse.json(data, { status: 201 });
+    } catch (error) {
+        const message = error instanceof Error ? error.message : "Erro desconhecido";
+        console.error("Erro ao cadastrar vacina:", message);
+        return NextResponse.json(
+            { message: "Erro ao cadastrar vacina." },
+            { status: 500 }
         );
     }
 }
