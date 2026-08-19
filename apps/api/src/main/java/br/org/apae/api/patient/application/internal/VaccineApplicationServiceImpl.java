@@ -1,24 +1,25 @@
 package br.org.apae.api.patient.application.internal;
 
-import br.org.apae.api.patient.domain.exceptions.VaccineMismatchException;
-import br.org.apae.api.patient.domain.exceptions.VaccineNotFoundException;
-import br.org.apae.api.patient.domain.model.Vaccine;
-import br.org.apae.api.patient.domain.repository.PatientRepository;
-import br.org.apae.api.patient.domain.repository.VaccineRepository;
-import br.org.apae.api.common.dto.patient.request.vaccine.VaccineNameDTO;
-import br.org.apae.api.common.dto.patient.response.vaccine.VaccineResponseDTO;
+import java.util.List;
+import java.util.Set;
+import java.util.UUID;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
-import java.util.Set;
-
+import br.org.apae.api.common.dto.patient.request.vaccine.CreateVaccineDTO;
+import br.org.apae.api.common.dto.patient.request.vaccine.UpdateVaccineDTO;
+import br.org.apae.api.common.dto.patient.request.vaccine.VaccineNameDTO;
+import br.org.apae.api.common.dto.patient.response.vaccine.VaccineResponseDTO;
 import br.org.apae.api.patient.application.interfaces.VaccineApplicationService;
 import br.org.apae.api.patient.application.mappers.VaccineMapper;
-import java.util.UUID;
-import java.util.stream.Collectors;
+import br.org.apae.api.patient.domain.exceptions.VaccineMismatchException;
+import br.org.apae.api.patient.domain.exceptions.VaccineNotFoundException;
+import br.org.apae.api.patient.domain.model.Vaccine;
+import br.org.apae.api.patient.domain.repository.PatientRepository;
+import br.org.apae.api.patient.domain.repository.VaccineRepository;
 
 @Service
 public class VaccineApplicationServiceImpl implements VaccineApplicationService {
@@ -77,5 +78,19 @@ public class VaccineApplicationServiceImpl implements VaccineApplicationService 
         }
 
         return vaccineMapper.toResponseDTOSet(vaccines);
+    }
+
+    @Override
+    public VaccineResponseDTO createVaccine(CreateVaccineDTO dto) {
+        return null;
+    }
+
+    @Override
+    public VaccineResponseDTO updateVaccine(UUID id, UpdateVaccineDTO dto) {
+        return null;
+    }
+
+    @Override
+    public void deleteVaccine(UUID id) {
     }
 }

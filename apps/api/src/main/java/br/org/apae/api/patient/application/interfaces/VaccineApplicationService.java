@@ -4,6 +4,8 @@ import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
+import br.org.apae.api.common.dto.patient.request.vaccine.CreateVaccineDTO;
+import br.org.apae.api.common.dto.patient.request.vaccine.UpdateVaccineDTO;
 import br.org.apae.api.common.dto.patient.request.vaccine.VaccineNameDTO;
 import br.org.apae.api.common.dto.patient.response.vaccine.VaccineResponseDTO;
 
@@ -15,4 +17,10 @@ public interface VaccineApplicationService {
   VaccineResponseDTO findVaccineByName(String name);
 
   Set<VaccineResponseDTO> findVaccines(Set<VaccineNameDTO> vaccineNames);
+
+  VaccineResponseDTO createVaccine(CreateVaccineDTO dto);
+
+  VaccineResponseDTO updateVaccine(java.util.UUID id, UpdateVaccineDTO dto);
+
+  void deleteVaccine(java.util.UUID id);
 }
