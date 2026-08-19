@@ -1,5 +1,6 @@
 package br.org.apae.api.patient.application.mappers;
 
+import br.org.apae.api.common.dto.patient.request.vaccine.CreateVaccineDTO;
 import br.org.apae.api.common.dto.patient.response.vaccine.VaccineResponseDTO;
 import br.org.apae.api.patient.domain.model.Vaccine;
 
@@ -10,6 +11,16 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class VaccineMapper {
+
+    public Vaccine toEntity(CreateVaccineDTO dto) {
+        return new Vaccine(dto.name());
+    }
+
+    public Set<Vaccine> toEntitySet(Set<CreateVaccineDTO> dtos) {
+        return dtos.stream()
+                .map(this::toEntity)
+                .collect(Collectors.toSet());
+    }
 
     public Set<Vaccine> toEntitySetFromResponse(Set<VaccineResponseDTO> responseDTOs) {
         return responseDTOs.stream()
