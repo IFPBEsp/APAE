@@ -15,6 +15,8 @@ import br.org.apae.api.common.dto.patient.request.vaccine.VaccineNameDTO;
 import br.org.apae.api.common.dto.patient.response.vaccine.VaccineResponseDTO;
 import br.org.apae.api.patient.application.interfaces.VaccineApplicationService;
 import br.org.apae.api.patient.application.mappers.VaccineMapper;
+import br.org.apae.api.patient.domain.exceptions.VaccineConflictException;
+import br.org.apae.api.patient.domain.exceptions.VaccineInUseException;
 import br.org.apae.api.patient.domain.exceptions.VaccineMismatchException;
 import br.org.apae.api.patient.domain.exceptions.VaccineNotFoundException;
 import br.org.apae.api.patient.domain.model.Vaccine;
@@ -81,16 +83,46 @@ public class VaccineApplicationServiceImpl implements VaccineApplicationService 
     }
 
     @Override
+    @Transactional
     public VaccineResponseDTO createVaccine(CreateVaccineDTO dto) {
-        return null;
+        
+        if (vaccineRepository.existsByNameIgnoreCase(dto.name())) {
+            throw new VaccineConflictException("Já existe uma vacina cadastrada com o nome: " + dto.name());
+        }
+
+        Vaccine newVaccine = vaccineMapper.toEntity(dto);
+        Vaccine savedVaccine = vaccineRepository.save(newVaccine);
+
+        return vaccineMapper.toResponseDTO(savedVaccine); 
     }
 
     @Override
+    @Transactional
     public VaccineResponseDTO updateVaccine(UUID id, UpdateVaccineDTO dto) {
-        return null;
+        Vaccine vaccine = vaccineRepository.findById(id)
+                .orElseThrow(() -> new VaccineNotFoundException("Vacina não encontrada com o ID informado."));
+
+        if (vaccineRepository.existsByNameIgnoreCaseAndIdNot(dto.name(), id)) {
+            throw new VaccineConflictException("Já existe outra vacina cadastrada com o nome: " + dto.name());
+        }
+
+        vaccine.updateName(dto.name());
+        Vaccine updatedVaccine = vaccineRepository.save(vaccine);
+
+        return vaccineMapper.toResponseDTO(updatedVaccine);
     }
 
     @Override
+    @Transactional
     public void deleteVaccine(UUID id) {
+        Vaccine vaccine = vaccineRepository.findById(id)
+                .orElseThrow(() -> new VaccineNotFoundException("Vacina não encontrada com o ID informado."));
+
+        if (patientRepository.isVaccineInUse(id)) {
+            throw new VaccineInUseException("Não é possível excluir esta vacina pois ela está em uso por um ou mais pacientes.");
+        }
+
+        vaccineRepository.delete(vaccine);
+        vaccineRepository.flush();
     }
 }
