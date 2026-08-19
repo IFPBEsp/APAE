@@ -1,22 +1,26 @@
 package br.org.apae.api.patient.application.internal;
 
+import br.org.apae.api.common.dto.patient.request.vaccine.CreateVaccineDTO;
+import br.org.apae.api.common.dto.patient.request.vaccine.UpdateVaccineDTO;
+import br.org.apae.api.common.dto.patient.request.vaccine.VaccineNameDTO;
+import br.org.apae.api.common.dto.patient.response.vaccine.VaccineResponseDTO;
+import br.org.apae.api.patient.application.interfaces.VaccineApplicationService;
+import br.org.apae.api.patient.application.mappers.VaccineMapper;
+import br.org.apae.api.patient.domain.exceptions.VaccineConflictException;
+import br.org.apae.api.patient.domain.exceptions.VaccineInUseException;
 import br.org.apae.api.patient.domain.exceptions.VaccineMismatchException;
 import br.org.apae.api.patient.domain.exceptions.VaccineNotFoundException;
 import br.org.apae.api.patient.domain.model.Vaccine;
 import br.org.apae.api.patient.domain.repository.PatientRepository;
 import br.org.apae.api.patient.domain.repository.VaccineRepository;
-import br.org.apae.api.common.dto.patient.request.vaccine.VaccineNameDTO;
-import br.org.apae.api.common.dto.patient.response.vaccine.VaccineResponseDTO;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Set;
-
-import br.org.apae.api.patient.application.interfaces.VaccineApplicationService;
-import br.org.apae.api.patient.application.mappers.VaccineMapper;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -35,12 +39,26 @@ public class VaccineApplicationServiceImpl implements VaccineApplicationService 
     }
 
     @Override
+    @Transactional
+    public VaccineResponseDTO createVaccine(CreateVaccineDTO dto) {
+        if (vaccineRepository.findByNameIgnoreCase(dto.name()).isPresent()) {
+            throw new VaccineConflictException(dto.name());
+        }
+
+        Vaccine vaccine = vaccineMapper.toEntity(dto);
+        Vaccine savedVaccine = vaccineRepository.save(vaccine);
+
+        return new VaccineResponseDTO(savedVaccine.getId(), savedVaccine.getName(), false);
+    }
+
+    @Override
     @Transactional(readOnly = true)
     public VaccineResponseDTO findVaccineById(UUID id) {
         Vaccine vaccine = vaccineRepository.findById(id)
                 .orElseThrow(VaccineNotFoundException::new);
 
-        return vaccineMapper.toResponseDTO(vaccine);
+        boolean inUse = patientRepository.isVaccineInUse(id);
+        return new VaccineResponseDTO(vaccine.getId(), vaccine.getName(), inUse);
     }
 
     @Override
@@ -50,7 +68,8 @@ public class VaccineApplicationServiceImpl implements VaccineApplicationService 
                 .orElseThrow(
                         () -> new VaccineNotFoundException(name));
 
-        return vaccineMapper.toResponseDTO(vaccine);
+        boolean inUse = patientRepository.isVaccineInUse(vaccine.getId());
+        return new VaccineResponseDTO(vaccine.getId(), vaccine.getName(), inUse);
     }
 
     @Override
@@ -77,5 +96,43 @@ public class VaccineApplicationServiceImpl implements VaccineApplicationService 
         }
 
         return vaccineMapper.toResponseDTOSet(vaccines);
+    }
+
+    @Override
+    @Transactional
+    public VaccineResponseDTO updateVaccine(UUID id, UpdateVaccineDTO dto) {
+        Vaccine vaccine = vaccineRepository.findById(id)
+                .orElseThrow(VaccineNotFoundException::new);
+
+        if (dto.name() != null && !dto.name().isEmpty()) {
+            if (vaccineRepository.existsByNameIgnoreCaseAndIdNot(dto.name(), id)) {
+                throw new VaccineConflictException(dto.name());
+            }
+            vaccine.setName(dto.name());
+        }
+
+        Vaccine updatedVaccine = vaccineRepository.save(vaccine);
+        boolean inUse = patientRepository.isVaccineInUse(id);
+
+        return new VaccineResponseDTO(updatedVaccine.getId(), updatedVaccine.getName(), inUse);
+    }
+
+    @Override
+    @Transactional
+    public void deleteVaccine(UUID id) {
+        if (!vaccineRepository.existsById(id)) {
+            throw new VaccineNotFoundException();
+        }
+
+        if (patientRepository.isVaccineInUse(id)) {
+            throw new VaccineInUseException();
+        }
+
+        try {
+            vaccineRepository.deleteById(id);
+            vaccineRepository.flush();
+        } catch (DataIntegrityViolationException e) {
+            throw new VaccineInUseException();
+        }
     }
 }
