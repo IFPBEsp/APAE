@@ -11,9 +11,6 @@ export async function POST(request: Request) {
         return NextResponse.json(data, { status: 201 });
     } catch (error) {
         if (error instanceof AxiosError) {
-            if (error.response?.status === 409) {
-                return new NextResponse(JSON.stringify({ message: "Vacina já existe" }), { status: 200 });
-            }
             return new NextResponse(
                 JSON.stringify(error.response?.data || { message: error.message }), { status: error.response?.status || 500 }
             );
