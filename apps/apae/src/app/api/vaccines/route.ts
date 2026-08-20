@@ -13,3 +13,19 @@ export async function GET() {
         );
     }
 }
+
+export async function POST(request: Request) {
+    try {
+        const body = await request.json();
+        const api = await createBaseApi();
+        const { data } = await api.post("/vaccines", body);
+        return Response.json(data, { status: 201 });
+    } catch (error) {
+        const message = error instanceof Error ? error.message : "Erro desconhecido";
+        console.error("Erro ao criar vacina:", message);
+        return Response.json(
+            { message: "Erro ao criar vacina." },
+            { status: 500 }
+        );
+    }
+}
