@@ -5,7 +5,7 @@ import br.org.apae.api.patient.domain.model.Vaccine;
 
 import java.util.Set;
 import java.util.stream.Collectors;
-
+import br.org.apae.api.common.dto.patient.request.vaccine.CreateVaccineDTO;
 import org.springframework.stereotype.Component;
 
 @Component

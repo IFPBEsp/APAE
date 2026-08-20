@@ -106,7 +106,7 @@ public class VaccineApplicationServiceImpl implements VaccineApplicationService 
             throw new VaccineConflictException("Já existe outra vacina cadastrada com este nome.");
         }
 
-        vaccine.setName(dto.name());
+        vaccine.updateName(dto.name());
         vaccine = vaccineRepository.save(vaccine);
         
         return vaccineMapper.toResponseDTO(vaccine);
