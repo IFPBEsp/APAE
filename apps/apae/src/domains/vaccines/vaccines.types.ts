@@ -1,7 +1,7 @@
 export type Vaccine = Readonly<{
   id: string;
   name: string;
-  hasPatient: boolean;
+  hasPatient?: boolean;
 }>;
 
 export type CreateVaccineParams = Readonly<{

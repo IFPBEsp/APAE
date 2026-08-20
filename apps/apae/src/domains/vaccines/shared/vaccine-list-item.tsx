@@ -37,7 +37,7 @@ export function VaccineListItem({ vaccine, onDeleteSuccess }: VaccineListItemPro
     <div className="flex items-center justify-between p-4 border-b hover:bg-gray-50 transition-colors">
       <div className="flex-1">
         <h3 className="font-bold text-base text-[#003B93]">{vaccine.name}</h3>
-        {vaccine.inUse && (
+        {vaccine.hasPatient && (
           <span className="text-xs text-amber-700 bg-amber-100 px-2 py-1 rounded mt-1 inline-block font-medium">
             Em uso por pacientes
           </span>
@@ -56,8 +56,8 @@ export function VaccineListItem({ vaccine, onDeleteSuccess }: VaccineListItemPro
         <Button
           variant="outline"
           size="icon"
-          title={vaccine.inUse ? "Não é possível excluir vacina em uso" : "Excluir Vacina"}
-          disabled={vaccine.inUse || isDeleting}
+          title={vaccine.hasPatient ? "Não é possível excluir vacina em uso" : "Excluir Vacina"}
+          disabled={vaccine.hasPatient || isDeleting}
           onClick={() => setShowConfirm(true)}
           className="border-red-200 hover:bg-red-50"
         >
