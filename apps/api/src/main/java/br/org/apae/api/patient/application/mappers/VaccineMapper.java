@@ -2,14 +2,26 @@ package br.org.apae.api.patient.application.mappers;
 
 import br.org.apae.api.common.dto.patient.response.vaccine.VaccineResponseDTO;
 import br.org.apae.api.patient.domain.model.Vaccine;
+import br.org.apae.api.patient.domain.repository.PatientRepository;
+import br.org.apae.api.common.dto.patient.request.vaccine.CreateVaccineDTO;
 
 import java.util.Set;
 import java.util.stream.Collectors;
-import br.org.apae.api.common.dto.patient.request.vaccine.CreateVaccineDTO;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 @Component
 public class VaccineMapper {
+
+    private PatientRepository patientRepository;
+
+    public VaccineMapper() {
+    }
+
+    @Autowired
+    public VaccineMapper(PatientRepository patientRepository) {
+        this.patientRepository = patientRepository;
+    }
 
     public Set<Vaccine> toEntitySetFromResponse(Set<VaccineResponseDTO> responseDTOs) {
         return responseDTOs.stream()
@@ -18,7 +30,13 @@ public class VaccineMapper {
     }
 
     public VaccineResponseDTO toResponseDTO(Vaccine vaccine) {
-        return new VaccineResponseDTO(vaccine.getId(), vaccine.getName(), false);
+        boolean hasPatient = false;
+        
+        if (this.patientRepository != null && vaccine.getId() != null) {
+            hasPatient = patientRepository.isVaccineInUse(vaccine.getId());
+        }
+        
+        return new VaccineResponseDTO(vaccine.getId(), vaccine.getName(), hasPatient);
     }
 
     public Set<VaccineResponseDTO> toResponseDTOSet(Set<Vaccine> vaccines) {
@@ -30,5 +48,4 @@ public class VaccineMapper {
     public Vaccine toEntity(CreateVaccineDTO dto) {
         return new Vaccine(dto.name());
     }
-
 }
