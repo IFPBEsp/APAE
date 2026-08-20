@@ -1,24 +1,12 @@
 package br.org.apae.api.patient.application.exceptions;
 
 import br.org.apae.api.common.exceptions.types.ErrorResponse;
-import br.org.apae.api.patient.domain.exceptions.AnnualRegistryConflictException;
-import br.org.apae.api.patient.domain.exceptions.DisorderConflictException;
-import br.org.apae.api.patient.domain.exceptions.DisorderMismatchException;
-import br.org.apae.api.patient.domain.exceptions.DisorderNotFoundException;
-import br.org.apae.api.patient.domain.exceptions.GuardianNotFoundException;
-import br.org.apae.api.patient.domain.exceptions.InvalidDataException;
-import br.org.apae.api.patient.domain.exceptions.ParentMismatchException;
-import br.org.apae.api.patient.domain.exceptions.ParentNotFoundException;
-import br.org.apae.api.patient.domain.exceptions.PatientConflictException;
-import br.org.apae.api.patient.domain.exceptions.PatientNotFoundException;
-import br.org.apae.api.patient.domain.exceptions.RegistryNotFoundException;
-import br.org.apae.api.patient.domain.exceptions.RegistryOwnershipException;
-import br.org.apae.api.patient.domain.exceptions.VaccineMismatchException;
-import br.org.apae.api.patient.domain.exceptions.VaccineNotFoundException;
+import br.org.apae.api.patient.domain.exceptions.*;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ProblemDetail;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -251,5 +239,18 @@ public class PatientExceptionHandler {
     );
 
     return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
+  }
+  @ExceptionHandler(VaccineConflictException.class)
+  public ResponseEntity<ProblemDetail> handleVaccineConflictException(VaccineConflictException ex) {
+    ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(HttpStatus.CONFLICT, ex.getMessage());
+    problemDetail.setTitle("Conflito de Vacina");
+    return ResponseEntity.status(HttpStatus.CONFLICT).body(problemDetail);
+  }
+
+  @ExceptionHandler(VaccineInUseException.class)
+  public ResponseEntity<ProblemDetail> handleVaccineInUseException(VaccineInUseException ex) {
+    ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(HttpStatus.CONFLICT, ex.getMessage());
+    problemDetail.setTitle("Vacina em Uso");
+    return ResponseEntity.status(HttpStatus.CONFLICT).body(problemDetail);
   }
 }
