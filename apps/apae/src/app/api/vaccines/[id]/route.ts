@@ -1,12 +1,19 @@
 import { createBaseApi } from "@/lib/axios";
-import { createVaccineSchema } from "@/domains/vaccines/vaccines.schema";
+import { updateVaccineSchema } from "@/domains/vaccines/vaccines.schema";
 import { NextResponse } from "next/server";
 import { AxiosError } from "axios";
 
-export async function GET() {
+type Params = {
+  params: Promise<{
+    id: string;
+  }>;
+};
+
+export async function GET(request: Request, { params }: Params) {
   try {
+    const { id } = await params;
     const api = await createBaseApi();
-    const { data } = await api.get("/vaccines");
+    const { data } = await api.get(`/vaccines/${id}`);
     return NextResponse.json(data);
   } catch (error) {
     if (error instanceof AxiosError) {
@@ -17,17 +24,18 @@ export async function GET() {
     }
 
     return new NextResponse(
-      JSON.stringify({ message: "Erro ao buscar a lista de vacinas." }),
+      JSON.stringify({ message: "Erro ao buscar vacina." }),
       { status: 500 }
     );
   }
 }
 
-export async function POST(request: Request) {
+export async function PUT(request: Request, { params }: Params) {
   try {
+    const { id } = await params;
     const body = await request.json();
 
-    const validation = createVaccineSchema.safeParse(body);
+    const validation = updateVaccineSchema.safeParse(body);
     if (!validation.success) {
       return new NextResponse(
         JSON.stringify({
@@ -45,9 +53,8 @@ export async function POST(request: Request) {
       payload.name = payload.name.charAt(0).toUpperCase() + payload.name.slice(1);
     }
 
-    const { data } = await api.post("/vaccines", payload);
-
-    return NextResponse.json(data, { status: 201 });
+    const { data } = await api.put(`/vaccines/${id}`, payload);
+    return NextResponse.json(data);
   } catch (error) {
     if (error instanceof AxiosError) {
       return new NextResponse(
@@ -57,7 +64,28 @@ export async function POST(request: Request) {
     }
 
     return new NextResponse(
-      JSON.stringify({ message: "Erro inesperado ao criar vacina." }),
+      JSON.stringify({ message: "Erro ao atualizar vacina." }),
+      { status: 500 }
+    );
+  }
+}
+
+export async function DELETE(request: Request, { params }: Params) {
+  try {
+    const { id } = await params;
+    const api = await createBaseApi();
+    await api.delete(`/vaccines/${id}`);
+    return new Response(null, { status: 204 });
+  } catch (error) {
+    if (error instanceof AxiosError) {
+      return new NextResponse(
+        JSON.stringify(error.response?.data || { message: error.message }),
+        { status: error.response?.status || 500 }
+      );
+    }
+
+    return new NextResponse(
+      JSON.stringify({ message: "Erro ao excluir vacina." }),
       { status: 500 }
     );
   }
