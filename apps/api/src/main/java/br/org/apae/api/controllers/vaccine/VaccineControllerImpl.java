@@ -1,9 +1,12 @@
 package br.org.apae.api.controllers.vaccine;
 
 import br.org.apae.api.patient.application.interfaces.VaccineApplicationService;
+import br.org.apae.api.common.dto.patient.request.vaccine.UpdateVaccineDTO;
+import br.org.apae.api.common.dto.patient.request.vaccine.VaccineNameDTO;
 import br.org.apae.api.common.dto.patient.response.vaccine.VaccineResponseDTO;
 import br.org.apae.api.patient.interfaces.controllers.VaccineController;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import java.util.List;
 import java.util.UUID;
 import org.springframework.http.ResponseEntity;
@@ -17,6 +20,12 @@ public class VaccineControllerImpl implements VaccineController {
     @Autowired
     public VaccineControllerImpl(VaccineApplicationService vaccineService) {
         this.vaccineService = vaccineService;
+    }
+
+    @Override
+    public ResponseEntity<VaccineResponseDTO> createVaccine(VaccineNameDTO dto) {
+        VaccineResponseDTO vaccine = vaccineService.createVaccine(dto);
+        return ResponseEntity.status(HttpStatus.CREATED).body(vaccine);
     }
 
     @Override
@@ -36,4 +45,17 @@ public class VaccineControllerImpl implements VaccineController {
         VaccineResponseDTO vaccine = vaccineService.findVaccineByName(name);
         return ResponseEntity.ok(vaccine);
     }
+
+    @Override
+    public ResponseEntity<VaccineResponseDTO> updateVaccine(UUID id, UpdateVaccineDTO dto) {
+        VaccineResponseDTO vaccine = vaccineService.updateVaccine(id, dto);
+        return ResponseEntity.ok(vaccine);
+    }
+
+    @Override
+    public ResponseEntity<Void> deleteVaccine(UUID id) {
+        vaccineService.deleteVaccine(id);
+        return ResponseEntity.noContent().build();
+    }
 }
+
