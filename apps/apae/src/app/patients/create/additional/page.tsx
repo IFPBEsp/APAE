@@ -37,9 +37,10 @@ import { useFetchServiceAreas } from "@/hooks/service-area/use-fetch-service-are
 
 import { CreateCareDialog } from "@/domains/patients/components/dialogs/CreateCareDialog";
 import { CreateDisorderDialog } from "@/domains/patients/components/dialogs/CreateDisorderDialog";
+import { CreateVaccineDialog } from "@/domains/patients/components/dialogs/CreateVaccineDialog";
 
 export default function MembersRegisterAdditionalsPage() {
-  const [modal, setModal] = useState<"disorder" | "care" | null>(
+  const [modal, setModal] = useState<"disorder" | "vaccine" | "care" | null>(
     null,
   );
   const [refreshKey, setRefreshKey] = useState(0);
@@ -137,6 +138,20 @@ export default function MembersRegisterAdditionalsPage() {
           }
         }}
       />
+      <CreateVaccineDialog
+        open={modal === "vaccine"}
+        onOpenChange={(value: boolean) => setModal(value ? "vaccine" : null)}
+        onSuccess={(newName: string) => {
+          const currentValues = form.getValues("vaccines") || [];
+          if (!currentValues.includes(newName)) {
+            form.setValue("vaccines", [...currentValues, newName], {
+              shouldDirty: true,
+              shouldValidate: true,
+            });
+            setRefreshKey((k) => k + 1);
+          }
+        }}
+      />
       <Form {...form}>
         <MembersRegisterForm
           title={
@@ -204,6 +219,7 @@ export default function MembersRegisterAdditionalsPage() {
                           .map((val: string) => ({ label: val, value: val })),
                       ]}
                       onValueChange={field.onChange}
+                      onCreate={() => setModal("vaccine")}
                       placeholder="Selecione as vacinas"
                       hideSelectAll={true}
                     />
