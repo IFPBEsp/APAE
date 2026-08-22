@@ -43,6 +43,7 @@ export function useVaccinesList() {
   }, []);
 
 <<<<<<< HEAD
+<<<<<<< HEAD
   useEffect(() => {
     loadVaccines();
   }, [loadVaccines]);
@@ -51,6 +52,9 @@ export function useVaccinesList() {
 }
 =======
 const deleteVaccine = useCallback(
+=======
+  const deleteVaccine = useCallback(
+>>>>>>> a034b3e5 (fix(vaccines): corrigir a indentação e a formatação no hook useVaccinesList)
     async (id: string) => {
       try {
         await deleteVaccineApi({ id });
@@ -64,7 +68,9 @@ const deleteVaccine = useCallback(
     },
     [loadVaccines]
   );
-
+  useEffect(() => {
+    loadVaccines();
+  }, [loadVaccines]);
 
   return { vaccines, loading, deleteVaccine };
 }
