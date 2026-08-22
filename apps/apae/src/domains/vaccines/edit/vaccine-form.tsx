@@ -29,7 +29,6 @@ export function VaccineEditForm({ id }: { id: string }) {
     defaultValues: { name: "" },
   });
 
-  // Preenche o formulário assim que a vacina for carregada da API
   useEffect(() => {
     if (vaccine) {
       form.reset({ name: vaccine.name });
