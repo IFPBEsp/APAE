@@ -2,6 +2,11 @@ function limit(value: string, max: number) {
   return value.length <= max ? value : value.slice(0, max);
 }
 
+export function capitalizeFirst(value: string) {
+  if (!value) return value;
+  return value.charAt(0).toUpperCase() + value.slice(1);
+}
+
 export function formatCPF(value: string) {
   const numbers = limit(value.replace(/\D/g, ""), 11);
   return numbers

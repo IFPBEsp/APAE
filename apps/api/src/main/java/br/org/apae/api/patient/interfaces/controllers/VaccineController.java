@@ -1,5 +1,10 @@
 package br.org.apae.api.patient.interfaces.controllers;
 
+<<<<<<< HEAD
+=======
+import br.org.apae.api.common.dto.patient.request.vaccine.CreateVaccineDTO;
+import br.org.apae.api.common.dto.patient.request.vaccine.UpdateVaccineDTO;
+>>>>>>> ea1a7055 (feat(vaccines): refatorar os formulários de criação e edição de vacinas)
 import br.org.apae.api.common.dto.patient.response.vaccine.VaccineResponseDTO;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -36,4 +41,27 @@ public interface VaccineController {
         })
         @GetMapping("/search/by-name")
         ResponseEntity<VaccineResponseDTO> findByName(@RequestParam String name);
+<<<<<<< HEAD
 }
+=======
+
+        @Operation(summary = "Atualizar uma vacina", description = "Atualiza os dados de uma vacina existente a partir do seu ID.")
+        @ApiResponses(value = {
+                        @ApiResponse(responseCode = "200", description = "Vacina atualizada com sucesso"),
+                        @ApiResponse(responseCode = "400", description = "Dados inválidos fornecidos"),
+                        @ApiResponse(responseCode = "404", description = "Vacina não encontrada"),
+                        @ApiResponse(responseCode = "409", description = "O nome informado já está em uso por outra vacina")
+        })
+        @PutMapping("/{id}")
+        ResponseEntity<VaccineResponseDTO> updateVaccine(@PathVariable UUID id,
+                        @RequestBody @Valid UpdateVaccineDTO vaccineDTO);
+
+        @Operation(summary = "Excluir uma vacina", description = "Remove uma vacina do sistema a partir do seu ID.")
+        @ApiResponses(value = {
+                        @ApiResponse(responseCode = "204", description = "Vacina excluída com sucesso"),
+                        @ApiResponse(responseCode = "404", description = "Vacina não encontrada")
+        })
+        @DeleteMapping("/{id}")
+        ResponseEntity<Void> deleteVaccine(@PathVariable UUID id);
+}
+>>>>>>> ea1a7055 (feat(vaccines): refatorar os formulários de criação e edição de vacinas)
