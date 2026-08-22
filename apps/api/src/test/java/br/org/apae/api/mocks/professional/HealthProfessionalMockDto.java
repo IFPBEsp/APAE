@@ -133,4 +133,12 @@ public final class HealthProfessionalMockDto {
             createProfessionalResponse2()
         );
     }
+    public static MockMultipartFile profilePhoto() {
+        return new MockMultipartFile(
+                "profilePhoto",
+                "profile-photo.jpg",
+                org.springframework.http.MediaType.IMAGE_JPEG_VALUE,
+                "fake-image-content".getBytes()
+        );
+    }
 }

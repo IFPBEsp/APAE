@@ -1,5 +1,5 @@
 package br.org.apae.api.controllers.professional;
-
+import org.springframework.web.multipart.MultipartFile;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.isNull;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -89,21 +89,56 @@ class HealthProfessionalControllerTest {
  @DisplayName("Cenários de Criação (POST)")
  class Criacao {
   @Test
-  @DisplayName("Deve criar profissional com sucesso (201)")
+  @DisplayName("Deve criar profissional sem foto com sucesso (201)")
   void shouldCreateProfessionalSuccessfully() throws Exception {
    var request = HealthProfessionalMockDto.createHealthProfessionalRequest();
    var response = HealthProfessionalMockDto.createProfessionalResponse1();
 
-   Mockito.when(service.createProfessional(any(CreateHealthProfessionalDTO.class), any(CreateProfessionalDocumentsDTO.class))).thenReturn(response);
+   Mockito.when(service.createProfessional(
+           any(CreateHealthProfessionalDTO.class),
+           any(CreateProfessionalDocumentsDTO.class),
+           any(MultipartFile.class)
+   )).thenReturn(response);
 
    var professionalPart = new MockMultipartFile("professional", "", MediaType.APPLICATION_JSON_VALUE, objectMapper.writeValueAsBytes(request));
 
-   mockMvc.perform(multipart("/professionals").file(professionalPart).file(HealthProfessionalMockDto.volunteerAgreementFile())
-       .file(HealthProfessionalMockDto.curriculumFile()).file(HealthProfessionalMockDto.attachmentAnyFile())
-       .header("Authorization", AuthTestHelper.bearerToken()).contentType(MediaType.MULTIPART_FORM_DATA))
-     .andExpect(status().isCreated());
+   mockMvc.perform(multipart("/professionals")
+                   .file(professionalPart)
+                   .file(HealthProfessionalMockDto.volunteerAgreementFile())
+                   .file(HealthProfessionalMockDto.curriculumFile())
+                   .file(HealthProfessionalMockDto.attachmentAnyFile())
+                   .header("Authorization", AuthTestHelper.bearerToken())
+                   .contentType(MediaType.MULTIPART_FORM_DATA))
+           .andExpect(status().isCreated());
 
-   Mockito.verify(service).createProfessional(any(), any());
+   Mockito.verify(service).createProfessional(any(), any(), any());
+  }
+
+  @Test
+  @DisplayName("Deve criar profissional com foto com sucesso (201)")
+  void shouldCreateProfessionalWithPhotoSuccessfully() throws Exception {
+   var request = HealthProfessionalMockDto.createHealthProfessionalRequest();
+   var response = HealthProfessionalMockDto.createProfessionalResponse1();
+
+   Mockito.when(service.createProfessional(
+           any(CreateHealthProfessionalDTO.class),
+           any(CreateProfessionalDocumentsDTO.class),
+           any(MultipartFile.class)
+   )).thenReturn(response);
+
+   var professionalPart = new MockMultipartFile("professional", "", MediaType.APPLICATION_JSON_VALUE, objectMapper.writeValueAsBytes(request));
+
+   mockMvc.perform(multipart("/professionals")
+                   .file(professionalPart)
+                   .file(HealthProfessionalMockDto.volunteerAgreementFile())
+                   .file(HealthProfessionalMockDto.curriculumFile())
+                   .file(HealthProfessionalMockDto.attachmentAnyFile())
+                   .file(HealthProfessionalMockDto.profilePhoto())
+                   .header("Authorization", AuthTestHelper.bearerToken())
+                   .contentType(MediaType.MULTIPART_FORM_DATA))
+           .andExpect(status().isCreated());
+
+   Mockito.verify(service).createProfessional(any(), any(), any());
   }
  }
 
