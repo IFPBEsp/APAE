@@ -88,8 +88,3 @@ export function formatCNS(value: string) {
     .replace(/(\d{4})(\d)/, "$1 $2")
     .replace(/(\d{4})(\d)/, "$1 $2");
 }
-
-export function capitalizeFirst(value: string): string {
-  if (!value) return value;
-  return value.charAt(0).toUpperCase() + value.slice(1);
-}

@@ -1,22 +1,5 @@
 "use client";
 
-<<<<<<< HEAD
-import type { Vaccine } from "../vaccines.types";
-
-interface VaccineListItemProps {
-  vaccine: Vaccine;
-}
-
-export function VaccineListItem({ vaccine }: VaccineListItemProps) {
-  return (
-    <div className="flex items-center p-4 border-b hover:bg-gray-50 transition-colors">
-      <div className="flex-1">
-        <h3 className="font-bold text-base text-[#003B93]">{vaccine.name}</h3>
-      </div>
-    </div>
-  );
-}
-=======
 import { Button } from "@/components/ui/button";
 import { ConfirmModal } from "@/components/ui/confirm-modal";
 import { Edit, Trash2 } from "lucide-react";
@@ -106,4 +89,3 @@ export function VaccineListItem({
     </div>
   );
 }
->>>>>>> ea1a7055 (feat(vaccines): refatorar os formulários de criação e edição de vacinas)

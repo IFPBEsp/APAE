@@ -1,8 +1,6 @@
 import { createBaseApi } from "@/lib/axios";
 import { createVaccineSchema } from "@/domains/vaccines/vaccines.schema";
 import { NextResponse } from "next/server";
-<<<<<<< HEAD
-=======
 import { AxiosError } from "axios";
 
 function handleApiError(error: unknown, defaultMessage: string) {
@@ -15,7 +13,6 @@ function handleApiError(error: unknown, defaultMessage: string) {
 
   return NextResponse.json({ message: defaultMessage }, { status: 500 });
 }
->>>>>>> ea1a7055 (feat(vaccines): refatorar os formulários de criação e edição de vacinas)
 
 export async function GET() {
   try {
@@ -42,9 +39,6 @@ export async function POST(request: Request) {
         { status: 400 }
       );
     }
-<<<<<<< HEAD
-}
-=======
 
     const payload = validation.data;
 
@@ -60,4 +54,3 @@ export async function POST(request: Request) {
     return handleApiError(error, "Erro inesperado ao criar vacina.");
   }
 }
->>>>>>> ea1a7055 (feat(vaccines): refatorar os formulários de criação e edição de vacinas)
