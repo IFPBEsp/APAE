@@ -1,23 +1,31 @@
 package br.org.apae.api.patient.interfaces.controllers;
 
-<<<<<<< HEAD
-=======
 import br.org.apae.api.common.dto.patient.request.vaccine.CreateVaccineDTO;
 import br.org.apae.api.common.dto.patient.request.vaccine.UpdateVaccineDTO;
->>>>>>> ea1a7055 (feat(vaccines): refatorar os formulários de criação e edição de vacinas)
 import br.org.apae.api.common.dto.patient.response.vaccine.VaccineResponseDTO;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
 import java.util.List;
 import java.util.UUID;
 
 @RequestMapping("/vaccines")
-@Tag(name = "Vaccines", description = "Endpoints para consulta de vacinas")
+@Tag(name = "Vaccines", description = "Endpoints para gerenciamento de vacinas")
 public interface VaccineController {
+
+        @Operation(summary = "Cadastrar uma nova vacina", description = "Cria uma nova vacina no sistema.")
+        @ApiResponses(value = {
+                        @ApiResponse(responseCode = "201", description = "Vacina cadastrada com sucesso"),
+                        @ApiResponse(responseCode = "400", description = "Dados inválidos fornecidos"),
+                        @ApiResponse(responseCode = "409", description = "Já existe uma vacina com este nome")
+        })
+        @PostMapping
+        ResponseEntity<VaccineResponseDTO> createVaccine(@RequestBody @Valid CreateVaccineDTO vaccineDTO);
 
         @Operation(summary = "Buscar vacina por ID", description = "Retorna os dados de uma vacina específica pelo seu ID.")
         @ApiResponses(value = {
@@ -41,9 +49,6 @@ public interface VaccineController {
         })
         @GetMapping("/search/by-name")
         ResponseEntity<VaccineResponseDTO> findByName(@RequestParam String name);
-<<<<<<< HEAD
-}
-=======
 
         @Operation(summary = "Atualizar uma vacina", description = "Atualiza os dados de uma vacina existente a partir do seu ID.")
         @ApiResponses(value = {
@@ -64,4 +69,3 @@ public interface VaccineController {
         @DeleteMapping("/{id}")
         ResponseEntity<Void> deleteVaccine(@PathVariable UUID id);
 }
->>>>>>> ea1a7055 (feat(vaccines): refatorar os formulários de criação e edição de vacinas)

@@ -1,19 +1,17 @@
 package br.org.apae.api.patient.application.internal;
 
+import br.org.apae.api.patient.domain.exceptions.VaccineConflictException;
+import br.org.apae.api.patient.domain.exceptions.VaccineInUseException;
 import br.org.apae.api.patient.domain.exceptions.VaccineMismatchException;
 import br.org.apae.api.patient.domain.exceptions.VaccineNotFoundException;
 import br.org.apae.api.patient.domain.model.Vaccine;
 import br.org.apae.api.patient.domain.repository.PatientRepository;
 import br.org.apae.api.patient.domain.repository.VaccineRepository;
-<<<<<<< HEAD
-import br.org.apae.api.common.dto.patient.request.vaccine.VaccineNameDTO;
-import br.org.apae.api.common.dto.patient.response.vaccine.VaccineResponseDTO;
-=======
 import br.org.apae.api.common.dto.patient.request.vaccine.CreateVaccineDTO;
 import br.org.apae.api.common.dto.patient.request.vaccine.UpdateVaccineDTO;
+import br.org.apae.api.common.dto.patient.request.vaccine.VaccineNameDTO;
 import br.org.apae.api.common.dto.patient.response.vaccine.VaccineResponseDTO;
 import org.springframework.dao.DataIntegrityViolationException;
->>>>>>> ea1a7055 (feat(vaccines): refatorar os formulários de criação e edição de vacinas)
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -21,11 +19,11 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Set;
+import java.util.UUID;
+import java.util.stream.Collectors;
 
 import br.org.apae.api.patient.application.interfaces.VaccineApplicationService;
 import br.org.apae.api.patient.application.mappers.VaccineMapper;
-import java.util.UUID;
-import java.util.stream.Collectors;
 
 @Service
 public class VaccineApplicationServiceImpl implements VaccineApplicationService {
@@ -42,25 +40,19 @@ public class VaccineApplicationServiceImpl implements VaccineApplicationService 
     }
 
     @Override
-<<<<<<< HEAD
-=======
     @Transactional
     public VaccineResponseDTO createVaccine(CreateVaccineDTO vaccineDTO) {
-        Optional<Vaccine> existingVaccine = vaccineRepository.findByName(vaccineDTO.name());
-
-        if (existingVaccine.isPresent()) {
+        if (vaccineRepository.existsByNameIgnoreCase(vaccineDTO.name())) {
             throw new VaccineConflictException();
         }
 
         Vaccine newVaccine = vaccineMapper.toEntity(vaccineDTO);
-
         Vaccine vaccineSaved = vaccineRepository.save(newVaccine);
 
         return vaccineMapper.toResponseDTO(vaccineSaved);
     }
 
     @Override
->>>>>>> ea1a7055 (feat(vaccines): refatorar os formulários de criação e edição de vacinas)
     @Transactional(readOnly = true)
     public VaccineResponseDTO findVaccineById(UUID id) {
         Vaccine vaccine = vaccineRepository.findById(id)
@@ -73,8 +65,7 @@ public class VaccineApplicationServiceImpl implements VaccineApplicationService 
     @Transactional(readOnly = true)
     public VaccineResponseDTO findVaccineByName(String name) {
         Vaccine vaccine = vaccineRepository.findByName(name)
-                .orElseThrow(
-                        () -> new VaccineNotFoundException(name));
+                .orElseThrow(() -> new VaccineNotFoundException(name));
 
         return vaccineMapper.toResponseDTO(vaccine);
     }
@@ -84,7 +75,7 @@ public class VaccineApplicationServiceImpl implements VaccineApplicationService 
     public List<VaccineResponseDTO> findAllVaccines() {
         List<Vaccine> vaccines = vaccineRepository.findAll();
 
-        return vaccines.stream().map( vaccine -> {
+        return vaccines.stream().map(vaccine -> {
             boolean inUse = patientRepository.isVaccineInUse(vaccine.getId());
             return new VaccineResponseDTO(vaccine.getId(), vaccine.getName(), inUse);
         }).toList();
@@ -93,7 +84,7 @@ public class VaccineApplicationServiceImpl implements VaccineApplicationService 
     @Override
     @Transactional(readOnly = true)
     public Set<VaccineResponseDTO> findVaccines(Set<VaccineNameDTO> vaccineNames) {
-        Set<String> names = vaccineNames.stream().map(dto -> dto.name())
+        Set<String> names = vaccineNames.stream().map(VaccineNameDTO::name)
                 .collect(Collectors.toSet());
 
         Set<Vaccine> vaccines = vaccineRepository.findByNameInIgnoreCase(names);
@@ -104,9 +95,6 @@ public class VaccineApplicationServiceImpl implements VaccineApplicationService 
 
         return vaccineMapper.toResponseDTOSet(vaccines);
     }
-<<<<<<< HEAD
-}
-=======
 
     @Override
     @Transactional
@@ -133,13 +121,9 @@ public class VaccineApplicationServiceImpl implements VaccineApplicationService 
 
         try {
             vaccineRepository.deleteById(id);
-            // Oculto, mas poderoso: o flush() obriga o Spring a testar a deleção no banco AGORA,
-            // permitindo que o catch capture o erro de integridade se o banco recusar!
             vaccineRepository.flush();
         } catch (DataIntegrityViolationException e) {
-            // Adeus, gambiarra! Olá, código limpo e com semântica.
             throw new VaccineInUseException();
         }
     }
 }
->>>>>>> ea1a7055 (feat(vaccines): refatorar os formulários de criação e edição de vacinas)
