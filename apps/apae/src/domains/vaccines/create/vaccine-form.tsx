@@ -75,8 +75,7 @@ export function VaccineCreateForm() {
                 <Button
                   type="submit"
                   disabled={isSubmitting}
-                  className="!bg-[#0D4F97] !hover:bg-[#0b427d] text-white"
-                >
+                  className="bg-[#0D4F97]! hover:bg-[#0b427d]! text-white"                >
                   {isSubmitting ? "Salvando..." : "Salvar"}
                 </Button>
               </div>

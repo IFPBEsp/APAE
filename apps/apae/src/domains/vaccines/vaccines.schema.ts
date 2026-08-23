@@ -6,12 +6,18 @@ export const vaccineSchema = z.object({
   hasPatient: z.boolean(),
 });
 
+const vaccineNameSchema = z
+  .string()
+  .trim()
+  .min(2, "O nome da vacina deve ter entre 2 e 100 caracteres.")
+  .max(100, "O nome da vacina deve ter entre 2 e 100 caracteres.");
+
 export const createVaccineSchema = z.object({
-  name: z.string().min(1, "O nome é obrigatório."),
+  name: vaccineNameSchema,
 });
 
 export const updateVaccineSchema = z.object({
-  name: z.string().min(1, "O nome é obrigatório."),
+  name: vaccineNameSchema,
 });
 
 export type CreateVaccineFormData = z.infer<typeof createVaccineSchema>;

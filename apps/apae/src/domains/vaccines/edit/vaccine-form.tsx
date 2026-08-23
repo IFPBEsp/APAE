@@ -101,8 +101,7 @@ export function VaccineEditForm({ id }: VaccineEditFormProps) {
                 <Button
                   type="submit"
                   disabled={isSubmitting}
-                  className="!bg-[#0D4F97] !hover:bg-[#0b427d] text-white"
-                >
+                  className="bg-[#0D4F97]! hover:bg-[#0b427d]! text-white"                >
                   {isSubmitting ? "Atualizando..." : "Atualizar"}
                 </Button>
               </div>
@@ -113,3 +112,4 @@ export function VaccineEditForm({ id }: VaccineEditFormProps) {
     </div>
   );
 }
+
