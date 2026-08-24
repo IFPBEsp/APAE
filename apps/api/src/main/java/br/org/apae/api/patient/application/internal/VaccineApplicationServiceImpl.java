@@ -45,7 +45,7 @@ public class VaccineApplicationServiceImpl implements VaccineApplicationService 
     @Override
     @Transactional
     public VaccineResponseDTO createVaccine(CreateVaccineDTO dto) {
-        if (vaccineRepository.findByName(dto.name()).isPresent()) {
+        if (vaccineRepository.findByNameIgnoreCase(dto.name()).isPresent()) {
             throw new VaccineConflictException(dto.name());
         }
 
@@ -101,7 +101,7 @@ public class VaccineApplicationServiceImpl implements VaccineApplicationService 
     @Override
     @Transactional(readOnly = true)
     public VaccineResponseDTO findVaccineByName(String name) {
-        Vaccine vaccine = vaccineRepository.findByName(name)
+        Vaccine vaccine = vaccineRepository.findByNameIgnoreCase(name)
                 .orElseThrow(
                         () -> new VaccineNotFoundException(name));
 
