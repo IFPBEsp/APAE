@@ -1,0 +1,18 @@
+[config]
+model = "gpt-4o"
+model_turbo = "gpt-4o-mini"
+response_language = "pt-BR"
+
+[github_action_config]
+auto_review = true
+auto_describe = false
+auto_improve = true
+pr_actions = ["opened", "reopened", "ready_for_review", "review_requested"]
+
+[pr_reviewer]
+num_code_suggestions = 3
+inline_code_comments = true
+persistent_comment = false
+
+[ignore]
+glob = ["*.lock", "pnpm-lock.yaml", "package-lock.json"]
