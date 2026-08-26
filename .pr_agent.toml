@@ -1,17 +1,17 @@
 [config]
-model = "openrouter/meta-llama/llama-3.3-70b-instruct:free"
-model_turbo = "openrouter/meta-llama/llama-3.3-70b-instruct:free"
+model = "gemini/gemini-2.0-flash"
+model_turbo = "gemini/gemini-1.5-flash"
 response_language = "pt-BR"
 
 [github_action_config]
 auto_review = true
 auto_describe = false
-auto_improve = false
+auto_improve = true
 pr_actions = ["opened", "reopened", "synchronize", "ready_for_review"]
 
 [pr_reviewer]
 num_code_suggestions = 3
-inline_code_comments = false
+inline_code_comments = true
 persistent_comment = false
 
 [ignore]

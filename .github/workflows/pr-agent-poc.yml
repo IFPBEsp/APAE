@@ -23,11 +23,11 @@ jobs:
       - id: pr-agent
         uses: Codium-ai/pr-agent@main
         env:
-          OPENROUTER__KEY: ${{ secrets.OPENROUTER_API_KEY }}
-          OPENROUTER_KEY: ${{ secrets.OPENROUTER_API_KEY }}
-          OPENAI_KEY: ${{ secrets.OPENROUTER_API_KEY }}
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          GOOGLE_API_KEY: ${{ secrets.GEMINI_API_KEY }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          CONFIG__MODEL: "openrouter/meta-llama/llama-3.3-70b-instruct:free"
+          CONFIG__MODEL: "gemini/gemini-2.0-flash"
+          CONFIG__FALLBACK_MODELS: '["gemini/gemini-1.5-flash"]'
           CONFIG__RESPONSE_LANGUAGE: "pt-BR"
           GITHUB_ACTION_CONFIG__AUTO_REVIEW: "true"
           GITHUB_ACTION_CONFIG__AUTO_IMPROVE: "true"
