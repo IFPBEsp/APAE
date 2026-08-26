@@ -101,62 +101,84 @@ Configurações validadas experimentalmente na POC:
 ### Workflow — `.github/workflows/pr-agent-poc.yml`
 
 ```yaml
-name: PR-Agent POC (Experimental)  # Nome exibido na aba Actions do repositório
+# Nome exibido na aba de Actions do repositório GitHub
+name: PR-Agent POC (Experimental)
 
+# Define quais eventos do GitHub disparam esta workflow
 on:
-  pull_request:  # Dispara quando um PR é aberto, sincronizado ou reaberto
+  # Executa quando um PR é aberto, reaberto ou sincronizado (novos commits)
+  pull_request:
     types: [opened, reopened, synchronize]
-  issue_comment:  # Permite ativar comandos manuais via comentários (ex: /review)
+  # Executa quando um comentário é criado ou editado em um issue/PR
+  issue_comment:
     types: [created, edited]
 
+# Permissões concedidas ao GITHUB_TOKEN para esta execução
 permissions:
-  pull-requests: write  # Necessário para o bot publicar comentários nos PRs
-  issues: write  # Necessário para interagir com issues (ex: /describe)
-  contents: write  # Necessário para ler o conteúdo do repositório
+  pull-requests: write   # Permite criar/modificar comentários nos PRs
+  issues: write          # Permite interagir com issues (necessário para comandos via /ask)
+  contents: write        # Permite ler o conteúdo do repositório (diffs e arquivos)
 
+# Definição dos jobs (processos de execução)
 jobs:
+  # Job principal que roda o PR-Agent
   pr_agent_job:
-    if: ${{ github.event.sender.type != 'Bot' }}  # Evita loops infinitos entre bots
-    runs-on: ubuntu-latest  # Executor padrão do GitHub Actions
-    name: Run PR Agent  # Nome exibido na UI do workflow
+    # Ignora execuções disparadas por bots (evita loop infinito entre bots)
+    if: ${{ github.event.sender.type != 'Bot' }}
+    # Ambiente de execução: máquina virtual Ubuntu mais recente da GitHub
+    runs-on: ubuntu-latest
+    # Nome exibido na interface de Actions durante a execução
+    name: Run PR Agent
+    # Etapas sequenciais do job
     steps:
+      # Etapa 1: Clona o repositório para a máquina de execução
       - name: Checkout PR code
-        uses: actions/checkout@v4  # Clona o repositório para o runner
+        uses: actions/checkout@v4  # Action oficial da GitHub para checkout (v4 = versão estável)
 
-      - id: pr-agent
-        uses: Codium-ai/pr-agent@main  # Action oficial do PR-Agent (versão latest)
+      # Etapa 2: Executa o PR-Agent como uma GitHub Action
+      - id: pr-agent  # Identificador único desta etapa para referência em logs
+        uses: Codium-ai/pr-agent@main  # Usa a versão principal (latest) do PR-Agent da CodiumAI
+        # Variáveis de ambiente configuradas para o PR-Agent
         env:
-          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}  # Chave da API do Google Gemini para autenticação
-          GOOGLE_API_KEY: ${{ secrets.GEMINI_API_KEY }}  # Alias necessário para algumas versões do PR-Agent
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Token padrão do GitHub para operações de leitura/escrita
-          CONFIG__MODEL: "gemini/gemini-3.6-flash"  # Modelo de LLM utilizado para geração das revisões
-          CONFIG__RESPONSE_LANGUAGE: "pt-BR"  # Idioma das respostas geradas pelo agente
-          GITHUB_ACTION_CONFIG__AUTO_REVIEW: "true"  # Habilita revisão automática ao abrir/atualizar PR
-          GITHUB_ACTION_CONFIG__AUTO_IMPROVE: "true"  # Habilita sugestões de melhoria automáticas
-          GITHUB_ACTION_CONFIG__PR_ACTIONS: '["opened", "reopened", "synchronize", "ready_for_review"]'  # Eventos que disparam a ação automática
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}       # Chave da API do Google Gemini (para autenticação)
+          GOOGLE_API_KEY: ${{ secrets.GEMINI_API_KEY }}       # Chave da API do Google (sinônimo, alguns SDKs usam este nome)
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}           # Token automático do GitHub (para postar comentários no PR)
+          CONFIG__MODEL: "gemini/gemini-3.6-flash"             # Modelo de LLM a ser utilizado nas revisões
+          CONFIG__RESPONSE_LANGUAGE: "pt-BR"                  # Idioma das respostas geradas (português brasileiro)
+          GITHUB_ACTION_CONFIG__AUTO_REVIEW: "true"           # Habilita revisão automática ao abrir/atualizar PR
+          GITHUB_ACTION_CONFIG__AUTO_IMPROVE: "true"          # Habilita sugestões de melhoria automáticas
+          GITHUB_ACTION_CONFIG__AUTO_DESCRIBE: "false"        # Desabilita geração automática de descrição do PR
+          PR_DESCRIPTION__ENABLE_PR_DESCRIPTION: "false"       # Desabilita a feature de descrição do PR (evita ruído)
+          # Lista de eventos que disparam o agente via comentário no PR
+          GITHUB_ACTION_CONFIG__PR_ACTIONS: '["opened", "reopened", "synchronize", "ready_for_review"]'
 ```
 
 ### Arquivo de Configuração — `.pr_agent.toml`
 
 ```toml
+# Seção de configuração geral do PR-Agent
 [config]
-model = "gemini/gemini-3.6-flash"  # Modelo principal de LLM (gratuito via Google AI Studio)
-model_turbo = "gemini/gemini-3.6-flash"  # Modelo para tarefas que exigem resposta mais rápida
-response_language = "pt-BR"  # Idioma das revisões e sugestões geradas
+model = "gemini/gemini-3.6-flash"              # Modelo principal de LLM (gratuito via Google AI Studio)
+model_turbo = "gemini/gemini-3.6-flash"         # Modelo para tarefas que exigem resposta mais rápida (turbo)
+response_language = "pt-BR"                     # Idioma das revisões e sugestões geradas (português brasileiro)
 
+# Seção de configuração específica para integração com GitHub Actions
 [github_action_config]
-auto_review = true  # Executa /review automaticamente ao abrir PR
-auto_describe = false  # Não gera descrição automática (evita ruído)
-auto_improve = true  # Executa /improve automaticamente ao abrir PR
-pr_actions = ["opened", "reopened", "synchronize", "ready_for_review"]  # Eventos que disparam o agente
+auto_review = true                             # Executa /review automaticamente ao abrir/atualizar PR
+auto_describe = false                           # Não gera descrição automática (evita ruído de notificações)
+auto_improve = true                             # Executa /improve automaticamente ao abrir/atualizar PR
+# Lista de eventos do GitHub que disparam o agente
+pr_actions = ["opened", "reopened", "synchronize", "ready_for_review"]
 
+# Seção de configuração do revisor de PRs
 [pr_reviewer]
-num_code_suggestions = 3  # Limita a 3 sugestões para evitar spam de notificações
-inline_code_comments = true  # Mostra sugestões diretamente nas linhas do código alterado
-persistent_comment = false  # Cria novos comentários a cada atualização (não reutiliza)
+num_code_suggestions = 3                        # Limita a 3 sugestões por revisão para evitar spam
+inline_code_comments = true                     # Mostra sugestões diretamente nas linhas do código alterado
+persistent_comment = false                       # Cria novos comentários a cada atualização (não reutiliza os anteriores)
 
+# Seção de arquivos ignorados pela revisão
 [ignore]
-glob = ["*.lock", "pnpm-lock.yaml", "package-lock.json"]  # Arquivos ignorados pela revisão (lockfiles)
+glob = ["*.lock", "pnpm-lock.yaml", "package-lock.json"]  # Arquivos ignorados (lockfiles e dependências geradas)
 ```
 
 ---
