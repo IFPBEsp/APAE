@@ -1,0 +1,22 @@
+<?xml version="1.0"?>
+<ruleset name="apae-conservative"
+    xmlns="http://pmd.sourceforge.net/ruleset/2.0.0"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://pmd.sourceforge.net/ruleset/2.0.0 https://pmd.sourceforge.io/ruleset_2_0_0.xsd">
+
+    <description>
+        Ruleset conservador: bugs comuns e código morto, sem regras de estilo
+        que gerem falso positivo em massa.
+    </description>
+
+    <rule ref="category/java/errorprone.xml/EmptyCatchBlock"/>
+    <rule ref="category/java/errorprone.xml/AvoidCatchingThrowable"/>
+
+    <rule ref="category/java/bestpractices.xml/UnusedPrivateField"/>
+    <rule ref="category/java/bestpractices.xml/UnusedLocalVariable"/>
+    <rule ref="category/java/bestpractices.xml/UnusedPrivateMethod"/>
+
+    <rule ref="category/java/design.xml/AvoidDeeplyNestedIfStmts"/>
+
+    <rule ref="category/java/codestyle.xml/EmptyMethodInAbstractClassShouldBeAbstract"/>
+</ruleset>

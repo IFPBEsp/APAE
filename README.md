@@ -28,6 +28,10 @@ Projeto em desenvolvimento, fruto de uma parceria entre o IFPB (Campus Esperanç
       - [GitFlow](#gitflow)
       - [Outras Labels Úteis](#outras-labels-úteis)
     - [Raia do Kanban](#raia-do-kanban)
+  - [Qualidade de Código](#qualidade-de-código)
+    - [Hooks de Pre-commit](#hooks-de-pre-commit)
+    - [Formatação Manual](#formatação-manual)
+    - [Checkstyle e PMD (apps/api)](#checkstyle-e-pmd-appsapi)
   - [Configuração do Projeto](#configuração-do-projeto)
     - [Variáveis de Ambiente (Opcional)](#variáveis-de-ambiente-opcional)
     - [Como configurar](#como-configurar)
@@ -253,6 +257,54 @@ O Kanban é usado para organizar as **issues** no processo de desenvolvimento. A
 - **Aguardando PR**: Issues concluídas, aguardando revisão e aprovação via Pull Request (PR).
 - **Homologação**: Issues em testes no ambiente de homologação.
 - **Disponível para Deploy**: Issues prontas para produção, após revisão e testes.
+
+---
+
+## Qualidade de Código
+
+O repositório usa **Husky + lint-staged** para formatar e lintar automaticamente apenas os arquivos staged em cada commit, nos três apps:
+
+- `apps/apae` e `apps/management-app`: Prettier (formatação) + ESLint (`--fix`).
+- `apps/api`: Checkstyle (`checkstyle:check`) e PMD (`pmd:check`) via Maven — apenas **verificam**, não reformatam arquivos `.java`.
+
+> ℹ️ O gate foi ligado sem uma reformatação retroativa de todo o repositório: arquivos antigos só serão formatados conforme forem tocados em commits futuros. `pnpm --filter apae run format:check` (e o equivalente em `management-app`) ainda vai acusar diferenças em arquivos legados até que sejam commitados novamente.
+
+### Hooks de Pre-commit
+
+Rodando `pnpm install` na raiz do monorepo, o script `prepare` do Husky instala o hook automaticamente (`.husky/pre-commit`, que executa `pnpm exec lint-staged`).
+
+Se, após clonar o repositório, o hook não disparar ao commitar:
+
+1. Confirme que rodou `pnpm install` na **raiz** (não dentro de `apps/*`).
+2. Rode manualmente `pnpm exec husky` para reinstalar os hooks.
+3. Verifique se `core.hooksPath` do Git aponta para `.husky` (`git config core.hooksPath` deve retornar `.husky`).
+
+O hook pode ser burlado com `git commit --no-verify` — isso é aceitável localmente (conveniência do dev), mas por isso o CI (`backend.yml`/`frontend.yml`) também roda lint, Checkstyle e PMD; o hook local não substitui o gate do servidor.
+
+### Formatação Manual
+
+```bash
+# apps/apae ou apps/management-app
+pnpm --filter apae run format          # aplica o Prettier
+pnpm --filter apae run format:check    # apenas verifica (usado no CI)
+
+pnpm --filter management-app run format
+pnpm --filter management-app run format:check
+```
+
+Ambos os apps reaproveitam o `.prettierrc`/`.prettierignore` da raiz e o binário do Prettier instalado como devDependency do workspace — não é necessário instalar o Prettier de novo em cada app.
+
+O `.editorconfig` na raiz cobre `.ts`/`.tsx`, `.java`, `.json`, `.yml`/`.yaml` e `.md`, garantindo indentação e fim de linha consistentes entre editores/SOs.
+
+### Checkstyle e PMD (apps/api)
+
+```bash
+cd apps/api
+./mvnw checkstyle:check   # falha se houver violação de estilo (ver checkstyle.xml)
+./mvnw pmd:check          # falha se houver violação de análise estática (ver pmd-ruleset.xml)
+```
+
+Os dois plugins estão presos à fase `validate`, então também rodam em qualquer `./mvnw compile|test|package`. Reformatação automática de Java (Spotless) está fora do escopo atual — Checkstyle e PMD **bloqueiam**, não corrigem.
 
 ---
 

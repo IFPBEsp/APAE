@@ -13,13 +13,17 @@
     "dev:apae": "bash ./.scripts/run-app.sh frontend apae",
     "dev": "pnpm dev:infra && bash ./.scripts/run-app.sh both apae",
     "test:api": "cd apps/api && ./mvnw package",
-    "db:seed": "bash ./.scripts/setup.sh"
+    "db:seed": "bash ./.scripts/setup.sh",
+    "prepare": "husky"
   },
   "workspaces": [
     "apps/*"
   ],
   "devDependencies": {
     "@types/node": "^25.5.0",
-    "concurrently": "^9.2.1"
+    "concurrently": "^9.2.1",
+    "husky": "^9.1.7",
+    "lint-staged": "^17.3.0",
+    "prettier": "^3.9.6"
   }
 }
