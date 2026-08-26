@@ -1,6 +1,6 @@
 [config]
-model = "gemini/gemini-2.0-flash"
-model_turbo = "gemini/gemini-1.5-flash"
+model = "gemini/gemini-3.6-flash"
+model_turbo = "gemini/gemini-3.6-flash"
 response_language = "pt-BR"
 
 [github_action_config]

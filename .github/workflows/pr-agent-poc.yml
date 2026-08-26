@@ -26,8 +26,8 @@ jobs:
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
           GOOGLE_API_KEY: ${{ secrets.GEMINI_API_KEY }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          CONFIG__MODEL: "gemini/gemini-2.0-flash"
-          CONFIG__FALLBACK_MODELS: '["gemini/gemini-1.5-flash"]'
+          CONFIG__MODEL: "gemini/gemini-3.6-flash"
+          CONFIG__FALLBACK_MODELS: '["gemini/gemini-2.5-flash"]'
           CONFIG__RESPONSE_LANGUAGE: "pt-BR"
           GITHUB_ACTION_CONFIG__AUTO_REVIEW: "true"
           GITHUB_ACTION_CONFIG__AUTO_IMPROVE: "true"
