@@ -41,15 +41,19 @@ export function VaccineListItem({
                 </Button>
 
                 {vaccine.hasPatient ? (
-                    <Button
-                        variant="ghost"
-                        size="icon"
-                        disabled
-                        className="h-8 w-8"
+                    <span
                         title="Esta vacina está vinculada a pacientes e não pode ser excluída."
+                        className="cursor-not-allowed"
                     >
-                        <Lock className="h-4 w-4 text-gray-400" />
-                    </Button>
+                        <Button
+                            variant="ghost"
+                            size="icon"
+                            disabled
+                            className="h-8 w-8 pointer-events-none"
+                        >
+                            <Lock className="h-4 w-4 text-gray-400" />
+                        </Button>
+                    </span>
                 ) : (
                     <AlertDialog>
                         <AlertDialogTrigger asChild>
