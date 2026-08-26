@@ -1,13 +1,17 @@
 package br.org.apae.api.controllers.vaccine;
 
-import br.org.apae.api.patient.application.interfaces.VaccineApplicationService;
+import br.org.apae.api.common.dto.patient.request.vaccine.CreateVaccineDTO;
+import br.org.apae.api.common.dto.patient.request.vaccine.UpdateVaccineDTO;
 import br.org.apae.api.common.dto.patient.response.vaccine.VaccineResponseDTO;
+import br.org.apae.api.patient.application.interfaces.VaccineApplicationService;
 import br.org.apae.api.patient.interfaces.controllers.VaccineController;
+
 import org.springframework.beans.factory.annotation.Autowired;
-import java.util.List;
-import java.util.UUID;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.List;
+import java.util.UUID;
 
 @RestController
 public class VaccineControllerImpl implements VaccineController {
@@ -20,20 +24,41 @@ public class VaccineControllerImpl implements VaccineController {
     }
 
     @Override
+    public ResponseEntity<VaccineResponseDTO> createVaccine(CreateVaccineDTO dto) {
+        VaccineResponseDTO vaccine = vaccineService.createVaccine(dto);
+        return ResponseEntity.status(201).body(vaccine);
+    }
+
+    @Override
+    public ResponseEntity<List<VaccineResponseDTO>> getAllVaccines() {
+        List<VaccineResponseDTO> vaccines = vaccineService.findAllVaccines();
+        return ResponseEntity.ok(vaccines);
+    }
+
+    @Override
+    public ResponseEntity<Void> deleteVaccine(UUID id) {
+        vaccineService.deleteVaccine(id);
+        return ResponseEntity.noContent().build();
+    }
+
+    @Override
     public ResponseEntity<VaccineResponseDTO> findById(UUID id) {
         VaccineResponseDTO vaccine = vaccineService.findVaccineById(id);
         return ResponseEntity.ok(vaccine);
     }
 
     @Override
-    public ResponseEntity<List<VaccineResponseDTO>> findAll() {
-        List<VaccineResponseDTO> vaccines = vaccineService.findAllVaccines();
-        return ResponseEntity.ok(vaccines);
+    public ResponseEntity<VaccineResponseDTO> findByName(String name) {
+        VaccineResponseDTO vaccine = vaccineService.findVaccineByName(name);
+        return ResponseEntity.ok(vaccine);
     }
 
     @Override
-    public ResponseEntity<VaccineResponseDTO> findByName(String name) {
-        VaccineResponseDTO vaccine = vaccineService.findVaccineByName(name);
+    public ResponseEntity<VaccineResponseDTO> updateVaccine(
+            UUID id,
+            UpdateVaccineDTO dto) {
+
+        VaccineResponseDTO vaccine = vaccineService.updateVaccine(id, dto);
         return ResponseEntity.ok(vaccine);
     }
 }
