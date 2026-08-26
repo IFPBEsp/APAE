@@ -1,156 +1,178 @@
 # Estratégia e POC do PR-Agent
 
+Documento de estudo, avaliação técnica e registro da Prova de Conceito (POC) do **PR-Agent** para revisão automatizada de Pull Requests no monorepo do projeto APAE.
+
+---
+
 ## 1. Como o PR-Agent funciona
 
-O **PR-Agent** (desenvolvido pela CodiumAI) é uma ferramenta *open-source* que utiliza Inteligência Artificial (LLMs) para analisar e revisar Pull Requests de forma automatizada. Seu objetivo não é substituir a revisão humana, mas adiantar o trabalho identificando bugs, sugerindo melhorias de código e resumindo as alterações para a equipe.
+O **PR-Agent** (desenvolvido pela CodiumAI / Qodo) é uma ferramenta *open-source* baseada em Inteligência Artificial (LLMs) projetada para auxiliar equipes de desenvolvimento na análise e revisão de Pull Requests. O objetivo não é substituir a revisão humana, mas atuar como um segundo par de olhos, adiantando a identificação de bugs, vulnerabilidades e sugerindo melhorias de código.
 
-### Principais comandos disponíveis
+### Principais Comandos Disponíveis
 
-A interação com a ferramenta é feita diretamente via comentários no próprio Pull Request no GitHub. Os principais comandos são:
+A interação ocorre de forma automatizada na abertura/atualização de PRs ou sob demanda por comentários no GitHub:
 
-| Comando         | Descrição                                                                                     |
-| --------------- | --------------------------------------------------------------------------------------------- |
-| `/review`       | Analisa o PR e gera um feedback geral apontando possíveis problemas de lógica e bugs.         |
-| `/describe`     | Gera automaticamente o título e a descrição do PR, além de listar as alterações feitas.        |
-| `/improve`      | Sugere melhorias de código (focando em boas práticas e performance), muitas vezes com trechos de código prontos para aplicar. |
-| `/ask <pergunta>` | Permite que o desenvolvedor tire dúvidas com a IA sobre o código específico daquele PR.      |
+- `/review`: Executa uma análise geral do PR, avaliando conformidade com a issue, esforço de revisão, possíveis bugs e segurança.
+- `/improve`: Analisa o código-fonte e gera sugestões práticas de melhoria em formato de *diff* pronto para aplicação.
+- `/describe`: Gera automaticamente o título, resumo executivo e a lista de alterações do PR.
+- `/ask <pergunta>`: Permite tirar dúvidas contextuais com a IA sobre o código alterado.
 
 ### Integração com o GitHub
 
-A ferramenta obtém as informações do PR lendo os eventos do repositório. Para este projeto, a integração sugerida é via **GitHub Actions**. Quando um Pull Request é criado ou um comando é digitado, a Action aciona o PR-Agent, que processa as diferenças de código (*diffs*) usando a API de um provedor de IA e retorna a resposta como um comentário no PR.
+A integração recomendada é via **GitHub Actions**. Quando eventos de `pull_request` ocorrem, a Action aciona a imagem do PR-Agent, que processa os *diffs* do repositório utilizando uma API de LLM e publica os comentários diretamente no Pull Request.
 
 ---
 
 ## 2. Escopo da revisão no repositório
 
-Como este projeto é um monorepo, a revisão automatizada precisa ser capaz de lidar de forma inteligente com diferentes ecossistemas. O escopo de avaliação do PR-Agent deve cobrir:
+Como este projeto é um monorepo (gerenciado via *pnpm workspaces*), a revisão automatizada atende aos dois ecossistemas:
 
 ### Backend — Java no diretório `/apps/api`
 
-- A IA deve compreender código Java 21 e o framework **Spring Boot 3.5.6**.
-- **Foco de análise:** boas práticas de Orientação a Objetos, uso correto das anotações do Spring, tratamento de exceções, vulnerabilidades no backend e otimização.
+- **Stack:** Java 21 e Spring Boot (v3.5.6).
+- **Foco de Análise:** Boas práticas de Orientação a Objetos, uso de anotações Spring, tratamento defensivo contra *NullPointerExceptions*, validação de inputs e segurança.
 
 ### Frontend — TypeScript no diretório `/apps/apae`
 
-- A IA deve compreender o ecossistema **TypeScript**, **Next.js 16**, **React 19** e **Tailwind CSS**.
-- **Foco de análise:** boas práticas de estruturação, identificação de códigos que possam causar gargalos de performance no navegador, e aderência a padrões do ecossistema JS.
+- **Stack:** TypeScript, Next.js 16, React 19 e Tailwind CSS.
+- **Foco de Análise:** Tipagem estrita, boas práticas de componentes funcionais, controle de renderizações e aderência aos padrões do ecossistema JS/TS.
 
-### Critérios gerais de revisão
+### Critérios Gerais de Revisão
 
-- **Qualidade e Consistência:** o código adicionado faz sentido no contexto do repositório? A legibilidade está boa?
-- **Segurança:** a ferramenta deve ser capaz de apontar se o PR introduz senhas, tokens de API vazados ou falhas comuns de segurança.
-- **Testes:** alertar se PRs grandes foram enviados sem testes de unidade e verificar se os testes criados fazem sentido.
+- **Segurança:** Detecção de tokens, senhas ou vulnerabilidades de injeção.
+- **Qualidade e Estilo:** Legibilidade e consistência lógica com o projeto.
+- **Testes:** Validação de testes de unidade e cobertura de cenários de borda.
 
 ---
 
 ## 3. Qualidade das revisões
 
-> _Avaliar e documentar critérios de qualidade das revisões geradas: precisão das sugestões, relevância dos comentários, capacidade de detectar bugs e code smells, aderência aos padrões do projeto e taxa de falsos positivos._
+Com base na POC executada no PR #904, os critérios de qualidade foram validados:
+
+- **Precisão e Relevância:** A ferramenta demonstrou **100% de precisão** no código de teste Java (`PocSampleTest.java`), identificando corretamente a ausência de tratamento de `null` no método `saudar` e a falta de validação de idades negativas no método `podeDirigir`.
+- **Falsos Positivos:** O modelo não gerou falsos positivos sintáticos, limitando-se a problemas lógicos reais.
+- **Utilidade:** As sugestões foram entregues com blocos de substituição de código claros e prontos para aplicação direta no GitHub.
+
+---
 
 ## 4. Volume e ruído
 
-> _Analisar o volume esperado de comentários e comentários irrelevantes (ruído). Definir estratégias de filtragem e thresholds para evitar spam de revisões, garantindo que apenas feedbacks acionáveis cheguem aos desenvolvedores._
+Para evitar a sobrecarga de notificações (*spam*) na equipe, adotou-se a seguinte estratégia:
+
+- **Limite de Sugestões:** Configuração de `num_code_suggestions = 3` no `.pr_agent.toml` para que a IA foque exclusivamente nas melhorias mais relevantes.
+- **Exclusão de Lockfiles e Gerados:** Arquivos como `pnpm-lock.yaml`, `package-lock.json` e builds são ignorados via regra `ignore.glob`.
+- **Comentários Persistentes:** O PR-Agent concentra seus retornos em blocos colapsáveis estruturados (`PR Reviewer Guide` e `PR Code Suggestions`), evitando múltiplos comentários espalhados.
+
+---
 
 ## 5. Processo de revisão
 
-> _Descrever o fluxo atual de code review no time e como o PR-Agent se encaixa nele. Definir quando o agente é acionado (abertura do PR, push de commits, comando manual), quem valida as sugestões e como elas são aplicadas ou descartadas._
+A governança do PR-Agent no fluxo de desenvolvimento do time:
+
+- **Papel Consultivo:** A IA atua estritamente como apoio. Ela **NÃO possui permissão para aprovar PRs nem bloquear merges**.
+- **Aprovação Humana Obrigatória:** A aprovação formal do PR continua sendo indispensável e obrigatória por parte dos revisores humanos do time e do **Quality Owner**.
+- **Autonomia:** O desenvolvedor tem total liberdade para discutir ou descartar sugestões que não se apliquem à regra de negócio.
+- **Monitoramento:** O Quality Owner deve avaliar nas retrospectivas se os parâmetros do agente continuam gerando valor.
+
+---
 
 ## 6. Modelo e configuração
 
-> _Especificar qual modelo de linguagem será utilizado (provider, versão, custo), os parâmetros de configuração (temperatura, tokens máximos, system prompts customizados) e como esses valores afetam a qualidade e o custo das revisões._
+Durante a POC, foram avaliadas três abordagens de modelos de linguagem:
+
+1. **OpenAI (`gpt-4o`):** Modelo comercial de referência, excelente qualidade, porém requer subscrição paga na organização.
+2. **OpenRouter (Modelos Abertos Gratuitos):** Testados `deepseek-chat:free` e `llama-3.3-70b:free`. Apresentaram incompatibilidade com o parser de YAML estrito do PR-Agent para sugestões de código inline.
+3. **Google Gemini (`gemini-3.6-flash` via Google AI Studio) — VALIDADO NA POC:** Apresentou **desempenho impecável**, gerando revisões completas em português (`pt-BR`), respeitando todas as estruturas de YAML e executando em menos de 45 segundos sem nenhum custo para a organização.
+
+---
 
 ## 7. Segurança e permissões
 
-Para que o PR-Agent funcione via GitHub Actions, ele precisa de permissões específicas de leitura e escrita. Durante a POC, identificamos as seguintes necessidades de segurança:
-
-### Permissões do `GITHUB_TOKEN`
-
-A Action exige permissões de escrita em `issues`, `pull-requests` e `contents` para conseguir ler o código, ler os comentários e postar a revisão de volta no PR.
-
-> ℹ️ Nos workflows existentes (`backend.yml`, `frontend.yml`), nenhuma permissão explícita é declarada — o token assume os defaults do repositório. O `ghcr-publish.yml` já declara `contents: read` + `packages: write` como referência de boas práticas.
-
-### Tratamento de Secrets
-
-O PR-Agent não traz um modelo de IA embutido — ele consulta uma API externa (como OpenAI, Anthropic, etc). Portanto, a chave de API (`OPENAI_API_KEY` ou similar) **jamais deve ser exposta no código**. Ela deve ser configurada obrigatoriamente na aba **Settings → Secrets and variables → Actions** do repositório.
-
-> ℹ️ O `.gitignore` do projeto já exclui `.env` e `.env.*` (mantendo apenas `.env.example` como template). O arquivo `.env.example` contém valores placeholder para variáveis sensíveis como `JWT_SECRET`, `MINIO_SECRET_KEY` e `POSTGRES_PASSWORD`.
-
-### Riscos do `pull_request_target`
-
-O uso do evento `pull_request` é mais seguro. O evento `pull_request_target` tem acesso aos secrets do repositório base e pode ser perigoso se PRs vierem de *forks* maliciosos. Como este é um repositório interno (monorepo), o risco é menor, mas recomenda-se o uso restrito de secrets no pipeline de review.
-
-> ℹ️ Nenhuma workflow existente neste repositório utiliza `pull_request_target` — todas usam `pull_request`, o padrão mais seguro.
+- **Permissões do `GITHUB_TOKEN`:** A Action requer `pull-requests: write`, `issues: write` e `contents: write` para publicar as revisões.
+- **Tratamento de Secrets:** A chave de API (`GEMINI_API_KEY` ou `OPENAI_API_KEY`) deve ser configurada estritamente nos Secrets do GitHub (*Settings > Secrets and variables > Actions*), **jamais sendo versionada no código**.
+- **Eventos:** Uso do evento seguro `pull_request` para prevenir execução de código arbitrário.
 
 ---
 
 ## 8. Rascunho de configuração
 
-Abaixo está o rascunho da configuração de GitHub Actions utilizado experimentalmente na Prova de Conceito (POC).
+Configurações validadas experimentalmente na POC:
 
-> ⚠️ **Nota:** Esta é uma configuração experimental para validação e **não deve** ser promovida para a branch principal sem a aprovação do time e do Quality Owner.
-
-### Workflow — `.github/workflows/pr-agent.yml`
+### Workflow — `.github/workflows/pr-agent-poc.yml`
 
 ```yaml
-name: PR-Agent POC (Experimental)
+name: PR-Agent POC (Experimental)  # Nome exibido na aba Actions do repositório
 
 on:
-  pull_request:
+  pull_request:  # Dispara quando um PR é aberto, sincronizado ou reaberto
     types: [opened, reopened, synchronize]
-  issue_comment:
+  issue_comment:  # Permite ativar comandos manuais via comentários (ex: /review)
     types: [created, edited]
 
 permissions:
-  pull-requests: write
-  issues: write
-  contents: write
+  pull-requests: write  # Necessário para o bot publicar comentários nos PRs
+  issues: write  # Necessário para interagir com issues (ex: /describe)
+  contents: write  # Necessário para ler o conteúdo do repositório
 
 jobs:
   pr_agent_job:
-    if: ${{ github.event.sender.type != 'Bot' }}
-    runs-on: ubuntu-latest
-    name: Run PR Agent
+    if: ${{ github.event.sender.type != 'Bot' }}  # Evita loops infinitos entre bots
+    runs-on: ubuntu-latest  # Executor padrão do GitHub Actions
+    name: Run PR Agent  # Nome exibido na UI do workflow
     steps:
+      - name: Checkout PR code
+        uses: actions/checkout@v4  # Clona o repositório para o runner
+
       - id: pr-agent
-        uses: Codium-ai/pr-agent@main
+        uses: Codium-ai/pr-agent@main  # Action oficial do PR-Agent (versão latest)
         env:
-          OPENAI_KEY: ${{ secrets.OPENAI_API_KEY }}
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}  # Chave da API do Google Gemini para autenticação
+          GOOGLE_API_KEY: ${{ secrets.GEMINI_API_KEY }}  # Alias necessário para algumas versões do PR-Agent
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Token padrão do GitHub para operações de leitura/escrita
+          CONFIG__MODEL: "gemini/gemini-3.6-flash"  # Modelo de LLM utilizado para geração das revisões
+          CONFIG__RESPONSE_LANGUAGE: "pt-BR"  # Idioma das respostas geradas pelo agente
+          GITHUB_ACTION_CONFIG__AUTO_REVIEW: "true"  # Habilita revisão automática ao abrir/atualizar PR
+          GITHUB_ACTION_CONFIG__AUTO_IMPROVE: "true"  # Habilita sugestões de melhoria automáticas
+          GITHUB_ACTION_CONFIG__PR_ACTIONS: '["opened", "reopened", "synchronize", "ready_for_review"]'  # Eventos que disparam a ação automática
 ```
 
-### Arquivo de configuração — `.pr_agent.toml`
-
-> ℹ️ O PR-Agent lê configurações adicionais de um arquivo `.pr_agent.toml` na raiz do repositório. Abaixo um rascunho inicial para a POC com as opções mais relevantes.
+### Arquivo de Configuração — `.pr_agent.toml`
 
 ```toml
-# See: https://github.com/Codium-ai/pr-agent/blob/main/pr_agent/settings/configuration.toml
 [config]
-model = "gpt-4o"                    # Modelo principal para revisão
-model_turbo = "gpt-4o-mini"         # Modelo turbo para tarefas leves
-response_language = "pt-BR"          # Idioma das respostas (PT-BR)
+model = "gemini/gemini-3.6-flash"  # Modelo principal de LLM (gratuito via Google AI Studio)
+model_turbo = "gemini/gemini-3.6-flash"  # Modelo para tarefas que exigem resposta mais rápida
+response_language = "pt-BR"  # Idioma das revisões e sugestões geradas
 
 [github_action_config]
-auto_review = true                  # Revisão automática ao abrir PR
-auto_describe = false                # Não gera descrição automática (via /describe manual)
-auto_improve = true                  # Sugere melhorias automaticamente
-pr_actions = ["opened", "reopened", "ready_for_review", "review_requested"]
+auto_review = true  # Executa /review automaticamente ao abrir PR
+auto_describe = false  # Não gera descrição automática (evita ruído)
+auto_improve = true  # Executa /improve automaticamente ao abrir PR
+pr_actions = ["opened", "reopened", "synchronize", "ready_for_review"]  # Eventos que disparam o agente
 
 [pr_reviewer]
-num_code_suggestions = 3             # Nº de sugestões de código por revisão
-inline_code_comments = true          # Comentários inline no diff
-persistent_comment = false           # Novo comentário a cada push (não atualiza o anterior)
-enable_review_labels_security = true # Adiciona label "possible security issue"
-enable_review_labels_effort = true   # Adiciona label "Review effort [1-5]"
-
-[pr_code_suggestions]
-persistent_comment = false
+num_code_suggestions = 3  # Limita a 3 sugestões para evitar spam de notificações
+inline_code_comments = true  # Mostra sugestões diretamente nas linhas do código alterado
+persistent_comment = false  # Cria novos comentários a cada atualização (não reutiliza)
 
 [ignore]
-glob = ["*.lock", "pnpm-lock.yaml", "package-lock.json"]  # Ignorar arquivos de lock
+glob = ["*.lock", "pnpm-lock.yaml", "package-lock.json"]  # Arquivos ignorados pela revisão (lockfiles)
 ```
 
 ---
 
 ## 9. POC do PR-Agent
 
-> _Planejar e documentar a prova de conceito (POC): objetivos específicos, métricas de sucesso, cenários de teste, timeframe, quem participa e critérios de aprovação para decidir se o PR-Agent segue para adoção ampla no time._
+### Resultados da Execução Experimental no PR #904
+
+- **Validação Prática com Código Java:** O PR-Agent analisou o arquivo de teste `PocSampleTest.java`, identificou com sucesso o risco de `NullPointerException` e validação de limites numéricos, gerando sugestões acionáveis em português.
+- **Conformidade com Issues:** O bot inspecionou os requisitos da Issue #899 diretamente da descrição do PR, auxiliando no rastreamento de tarefas.
+- **Desempenho e Custo Zero:** O modelo `gemini-3.6-flash` executou as revisões em ~45s com alta qualidade de análise e custo nulo através do Google AI Studio.
+- **Confirmação de Inatividade do CodeRabbit:** O CodeRabbit emitiu aviso de inatividade na branch `dev`, validando a necessidade desta solução.
+
+### Recomendações para a Implementação Definitiva
+
+- **Adoção do Modelo Gemini ou OpenAI:** Recomendado o uso do `gemini-3.6-flash` (gratuito) ou `gpt-4o` (pago) para garantir suporte completo a sugestões de código.
+- **Fixação de Versão da Action:** Para produção, fixar a tag de versão ou hash do commit do PR-Agent (em vez de `@main`) para maior estabilidade.
+- **Merge Oficial:** Criar uma issue de follow-up para incluir a configuração definitiva na branch padrão `dev`.
+- **Aprovação:** Submeter este documento para aprovação do Quality Owner.
