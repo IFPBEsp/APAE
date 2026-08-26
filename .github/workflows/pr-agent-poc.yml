@@ -20,8 +20,11 @@ jobs:
       - id: pr-agent
         uses: Codium-ai/pr-agent@main
         env:
-          OPENAI_KEY: ${{ secrets.OPENROUTER_API_KEY }}
-          OPENAI_API_BASE: "https://openrouter.ai/api/v1"
+          OPENROUTER__KEY: ${{ secrets.OPENROUTER_API_KEY }}
+          OPENROUTER_KEY: ${{ secrets.OPENROUTER_API_KEY }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          github_action_config.auto_review: "true"
-          github_action_config.auto_improve: "true"
+          CONFIG__MODEL: "openrouter/deepseek/deepseek-chat:free"
+          CONFIG__RESPONSE_LANGUAGE: "pt-BR"
+          GITHUB_ACTION_CONFIG__AUTO_REVIEW: "true"
+          GITHUB_ACTION_CONFIG__AUTO_IMPROVE: "true"
+          GITHUB_ACTION_CONFIG__PR_ACTIONS: '["opened", "reopened", "synchronize", "ready_for_review"]'
