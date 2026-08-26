@@ -1,13 +1,14 @@
 [config]
-model = "gpt-4o"
-model_turbo = "gpt-4o-mini"
+model = "openrouter/deepseek/deepseek-chat:free"
+model_turbo = "openrouter/deepseek/deepseek-chat:free"
+fallback_models = ["openrouter/meta-llama/llama-3.3-70b-instruct:free", "openrouter/free"]
 response_language = "pt-BR"
 
 [github_action_config]
 auto_review = true
 auto_describe = false
 auto_improve = true
-pr_actions = ["opened", "reopened", "ready_for_review", "review_requested"]
+pr_actions = ["opened", "reopened", "synchronize", "ready_for_review"]
 
 [pr_reviewer]
 num_code_suggestions = 3
