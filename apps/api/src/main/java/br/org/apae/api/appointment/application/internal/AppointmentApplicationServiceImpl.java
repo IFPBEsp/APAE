@@ -293,7 +293,7 @@ public class AppointmentApplicationServiceImpl implements AppointmentApplication
 
         List<GeneratedAppointment> generated = new ArrayList<>();
         for (LocalDateTime dt : dates) {
-            if (dt.isBefore(startDt) || dt.isAfter(endDt)) continue;
+            if (dt.isBefore(startDt) || dt.isAfter(endDt)) { continue; }
 
             GeneratedAppointment existing = generatedRepo
                     .findByAppointmentIdAndScheduledDateTime(activeRule.getId(), dt)
@@ -458,7 +458,7 @@ public class AppointmentApplicationServiceImpl implements AppointmentApplication
     public GeneratedAppointmentResponseDTO cancel(UUID generatedId, String reason) {
         GeneratedAppointment appt = generatedRepo.findById(generatedId)
                 .orElseThrow(() -> new IllegalArgumentException(APPOINTMENT_NOT_FOUND));
-        if (Boolean.TRUE.equals(appt.getCancelled())) throw new AppointmentAlreadyCancelledException();
+        if (Boolean.TRUE.equals(appt.getCancelled())) { throw new AppointmentAlreadyCancelledException(); }
         appt.setCancelled(true);
         appt.setCancellationReason(reason);
         return mapper.toGeneratedResponse(generatedRepo.save(appt));

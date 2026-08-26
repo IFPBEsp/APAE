@@ -37,14 +37,16 @@ public class DocumentReferenceBuilder {
     }
 
     public static String buildDocumentPrefix(DocumentCategory category, Year year) {
-        if (year == null)
+        if (year == null) {
             return buildDocumentPrefix(category);
+        }
         return String.format("%s_%s/%s", REFERENCE_PREFIX, category, year);
     }
 
     public static String buildDocumentPrefix(DocumentCategory category, Year year, DocumentType type) {
-        if (year == null || type == null)
+        if (year == null || type == null) {
             return buildDocumentPrefix(category, year);
+        }
         return String.format("%s_%s/%s/%s", REFERENCE_PREFIX, category, year, type);
     }
 }

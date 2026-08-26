@@ -21,8 +21,6 @@ import br.org.apae.api.documents.application.interfaces.DocumentApplicationServi
 import br.org.apae.api.documents.domain.enums.DocumentCategory;
 import br.org.apae.api.documents.interfaces.dto.DocumentDTO;
 import br.org.apae.api.documents.interfaces.dto.PutDocumentArgsDTO;
-import br.org.apae.api.documents.interfaces.dto.PutDocumentArgsDTO;
-import br.org.apae.api.documents.domain.enums.DocumentCategory;
 import br.org.apae.api.documents.domain.enums.DocumentType;
 
 import org.springframework.data.domain.Page;
@@ -256,7 +254,7 @@ public class HealthProfessionalApplicationServiceImpl implements HealthProfessio
             default        -> null;
         };
 
-        if (requestedDay == null) return List.of();
+        if (requestedDay == null) { return List.of(); }
 
         boolean worksManha = professional.getAvailabilities().stream()
                 .anyMatch(a -> a.getDay().equals(requestedDay) && a.getShift().equals(Shift.MANHA));

@@ -7,7 +7,6 @@ import java.util.stream.Collectors;
 import br.org.apae.api.common.dto.servicearea.response.ServiceAreaResponseDTO;
 import br.org.apae.api.servicearea.application.mappers.ServiceAreaMapper;
 import br.org.apae.api.servicearea.domain.model.ServiceArea;
-import org.jspecify.annotations.NonNull;
 import org.springframework.stereotype.Component;
 
 import br.org.apae.api.common.dto.patient.request.annualregistry.CreateAnnualRegistryDTO;

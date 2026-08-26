@@ -54,14 +54,18 @@ public class MinioDocumentApplicationService implements DocumentApplicationServi
     }
 
     private static RuntimeException translateMinioException(MinioException exception) {
-        if (exception instanceof io.minio.errors.InvalidResponseException)
+        if (exception instanceof io.minio.errors.InvalidResponseException) {
             return new InvalidResponseException();
-        if (exception instanceof io.minio.errors.ServerException)
+        }
+        if (exception instanceof io.minio.errors.ServerException) {
             return new ServerException();
-        if (exception instanceof io.minio.errors.ErrorResponseException)
+        }
+        if (exception instanceof io.minio.errors.ErrorResponseException) {
             return new ErrorResponseException();
-        if (exception instanceof io.minio.errors.XmlParserException)
+        }
+        if (exception instanceof io.minio.errors.XmlParserException) {
             return new XmlParserException();
+        }
         return new InternalException();
     }
 

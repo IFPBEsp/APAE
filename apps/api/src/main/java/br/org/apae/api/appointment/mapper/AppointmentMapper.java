@@ -5,7 +5,6 @@ import java.util.List;
 
 import org.springframework.stereotype.Component;
 
-import br.org.apae.api.address.domain.model.Address;
 import br.org.apae.api.appointment.domain.model.Appointment;
 import br.org.apae.api.appointment.domain.model.GeneratedAppointment;
 import br.org.apae.api.common.dto.address.AddressResponseDTO;

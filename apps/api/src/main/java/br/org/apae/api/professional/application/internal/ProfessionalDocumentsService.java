@@ -32,7 +32,7 @@ public class ProfessionalDocumentsService {
     }
 
     private void storeDocument(HealthProfessional professional, DocumentType type, MultipartFile file) {
-        if (file == null || file.isEmpty()) return;
+        if (file == null || file.isEmpty()) { return; }
 
         try {
             this.documentService.putDocument(
@@ -57,7 +57,7 @@ public class ProfessionalDocumentsService {
     }
 
     public void updateProfessionalDocuments(HealthProfessional professional, UpdateProfessionalDocumentsDTO documents) {
-        if (documents == null) return;
+        if (documents == null) { return; }
         if (documents.curriculum() != null && !documents.curriculum().isEmpty()) {
             removeAllByType(professional, DocumentType.CURRICULUM);
             storeDocument(professional, DocumentType.CURRICULUM, documents.curriculum());

@@ -4,7 +4,6 @@ import jakarta.persistence.*;
 import jakarta.persistence.ForeignKey;
 import jakarta.persistence.Index;
 import jakarta.persistence.Table;
-import org.checkerframework.common.aliasing.qual.Unique;
 import org.hibernate.annotations.*;
 
 import java.time.LocalDate;

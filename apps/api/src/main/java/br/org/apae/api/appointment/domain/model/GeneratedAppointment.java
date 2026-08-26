@@ -52,7 +52,7 @@ public class GeneratedAppointment {
 
     @PrePersist
     @PreUpdate
-    private void syncPatientId() {
+    private void syncPatientId() { // NOPMD - JPA lifecycle callback, invoked via reflection
         if (appointment != null
                 && appointment.getAnnualRegistration() != null
                 && appointment.getAnnualRegistration().getPatientId() != null) {
