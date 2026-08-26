@@ -17,14 +17,18 @@ jobs:
     runs-on: ubuntu-latest
     name: Run PR Agent
     steps:
+      - name: Checkout PR code
+        uses: actions/checkout@v4
+
       - id: pr-agent
         uses: Codium-ai/pr-agent@main
         env:
           OPENROUTER__KEY: ${{ secrets.OPENROUTER_API_KEY }}
           OPENROUTER_KEY: ${{ secrets.OPENROUTER_API_KEY }}
+          OPENAI_KEY: ${{ secrets.OPENROUTER_API_KEY }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           CONFIG__MODEL: "openrouter/meta-llama/llama-3.3-70b-instruct:free"
           CONFIG__RESPONSE_LANGUAGE: "pt-BR"
           GITHUB_ACTION_CONFIG__AUTO_REVIEW: "true"
-          GITHUB_ACTION_CONFIG__AUTO_IMPROVE: "false"
+          GITHUB_ACTION_CONFIG__AUTO_IMPROVE: "true"
           GITHUB_ACTION_CONFIG__PR_ACTIONS: '["opened", "reopened", "synchronize", "ready_for_review"]'
