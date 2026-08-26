@@ -1,18 +1,17 @@
 [config]
-model = "openrouter/deepseek/deepseek-chat:free"
-model_turbo = "openrouter/deepseek/deepseek-chat:free"
-fallback_models = ["openrouter/meta-llama/llama-3.3-70b-instruct:free", "openrouter/free"]
+model = "openrouter/meta-llama/llama-3.3-70b-instruct:free"
+model_turbo = "openrouter/meta-llama/llama-3.3-70b-instruct:free"
 response_language = "pt-BR"
 
 [github_action_config]
 auto_review = true
 auto_describe = false
-auto_improve = true
+auto_improve = false
 pr_actions = ["opened", "reopened", "synchronize", "ready_for_review"]
 
 [pr_reviewer]
 num_code_suggestions = 3
-inline_code_comments = true
+inline_code_comments = false
 persistent_comment = false
 
 [ignore]
