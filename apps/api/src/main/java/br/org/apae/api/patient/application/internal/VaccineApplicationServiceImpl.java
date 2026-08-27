@@ -23,7 +23,6 @@ import java.util.stream.Collectors;
 import br.org.apae.api.common.dto.patient.request.vaccine.CreateVaccineDTO;
 import br.org.apae.api.patient.domain.exceptions.VaccineConflictException;
 import br.org.apae.api.patient.domain.exceptions.VaccineInUseException;
-import br.org.apae.api.patient.domain.exceptions.VaccineNotFoundException;
 import org.springframework.dao.DataIntegrityViolationException;
 
 @Service
@@ -88,12 +87,14 @@ public class VaccineApplicationServiceImpl implements VaccineApplicationService 
     @Override
     @Transactional
     public VaccineResponseDTO createVaccine(CreateVaccineDTO vaccineDTO) {
-        vaccineRepository.findByNameIgnoreCase(vaccineDTO.name())
+        String normalizedName = vaccineDTO.name().trim();
+
+        vaccineRepository.findByNameIgnoreCase(normalizedName)
                 .ifPresent(existing -> {
-                    throw new VaccineConflictException(vaccineDTO.name());
+                    throw new VaccineConflictException(normalizedName);
                 });
 
-        Vaccine newVaccine = vaccineMapper.toEntity(vaccineDTO);
+        Vaccine newVaccine = new Vaccine(normalizedName);
         Vaccine saved = vaccineRepository.save(newVaccine);
         return vaccineMapper.toResponseDTO(saved);
     }
@@ -101,17 +102,19 @@ public class VaccineApplicationServiceImpl implements VaccineApplicationService 
     @Override
     @Transactional
     public VaccineResponseDTO updateVaccine(UUID id, CreateVaccineDTO vaccineDTO) {
+        String normalizedName = vaccineDTO.name().trim();
+
         Vaccine vaccineToUpdate = vaccineRepository.findById(id)
                 .orElseThrow(VaccineNotFoundException::new);
 
-        vaccineRepository.findByNameIgnoreCase(vaccineDTO.name())
+        vaccineRepository.findByNameIgnoreCase(normalizedName)
                 .ifPresent(existing -> {
                     if (!existing.getId().equals(id)) {
-                        throw new VaccineConflictException(vaccineDTO.name());
+                        throw new VaccineConflictException(normalizedName);
                     }
                 });
 
-        vaccineToUpdate.updateName(vaccineDTO.name());
+        vaccineToUpdate.updateName(normalizedName);
         Vaccine updated = vaccineRepository.save(vaccineToUpdate);
         return vaccineMapper.toResponseDTO(updated);
     }
