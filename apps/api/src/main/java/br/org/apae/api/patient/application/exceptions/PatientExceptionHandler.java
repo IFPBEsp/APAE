@@ -245,10 +245,15 @@ public class PatientExceptionHandler {
           MethodArgumentNotValidException ex,
           HttpServletRequest request
   ) {
+    String friendlyMessage = ex.getBindingResult().getFieldErrors().stream()
+            .findFirst()
+            .map(fieldError -> fieldError.getDefaultMessage())
+            .orElse("Dados inválidos na requisição.");
+
     ErrorResponse error = new ErrorResponse(
             HttpStatus.BAD_REQUEST.value(),
             HttpStatus.BAD_REQUEST.getReasonPhrase(),
-            ex.getMessage(),
+            friendlyMessage,
             request.getRequestURI()
     );
 
