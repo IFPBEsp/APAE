@@ -10,6 +10,8 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 
+import jakarta.validation.Valid;
+
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -45,7 +47,7 @@ public interface VaccineController {
     )
     @PostMapping
     ResponseEntity<VaccineResponseDTO> createVaccine(
-            @RequestBody CreateVaccineDTO dto
+            @Valid @RequestBody CreateVaccineDTO dto
     );
 
     @Operation(
@@ -162,6 +164,6 @@ public interface VaccineController {
     @PutMapping("/{id}")
     ResponseEntity<VaccineResponseDTO> updateVaccine(
             @PathVariable UUID id,
-            @RequestBody UpdateVaccineDTO dto
+            @Valid @RequestBody UpdateVaccineDTO dto
     );
 }

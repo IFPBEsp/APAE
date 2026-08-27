@@ -45,7 +45,7 @@ public class VaccineApplicationServiceImpl implements VaccineApplicationService 
     @Transactional
     public VaccineResponseDTO createVaccine(CreateVaccineDTO createVaccineDto) {
 
-        if (vaccineRepository.findByName(createVaccineDto.name()).isPresent()) {
+        if (vaccineRepository.existsByNameIgnoreCase(createVaccineDto.name())) {
             throw new VaccineConflictException();
         }
 
