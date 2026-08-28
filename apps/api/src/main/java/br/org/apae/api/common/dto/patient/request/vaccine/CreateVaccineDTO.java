@@ -8,4 +8,9 @@ public record CreateVaccineDTO(
         @Size(min = 2, max = 100, message = "O nome da vacina deve ter entre 2 e 100 caracteres.")
         String name
 ) {
+    public CreateVaccineDTO {
+        if (name != null) {
+            name = name.trim();
+        }
+    }
 }
