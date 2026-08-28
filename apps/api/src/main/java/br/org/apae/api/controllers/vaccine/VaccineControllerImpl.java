@@ -6,6 +6,8 @@ import br.org.apae.api.common.dto.patient.response.vaccine.VaccineResponseDTO;
 import br.org.apae.api.patient.application.interfaces.VaccineApplicationService;
 import br.org.apae.api.patient.interfaces.controllers.VaccineController;
 
+import jakarta.validation.Valid;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
@@ -24,7 +26,7 @@ public class VaccineControllerImpl implements VaccineController {
     }
 
     @Override
-    public ResponseEntity<VaccineResponseDTO> createVaccine(CreateVaccineDTO dto) {
+    public ResponseEntity<VaccineResponseDTO> createVaccine(@Valid CreateVaccineDTO dto) {
         VaccineResponseDTO vaccine = vaccineService.createVaccine(dto);
         return ResponseEntity.status(201).body(vaccine);
     }
@@ -56,7 +58,7 @@ public class VaccineControllerImpl implements VaccineController {
     @Override
     public ResponseEntity<VaccineResponseDTO> updateVaccine(
             UUID id,
-            UpdateVaccineDTO dto) {
+            @Valid UpdateVaccineDTO dto) {
 
         VaccineResponseDTO vaccine = vaccineService.updateVaccine(id, dto);
         return ResponseEntity.ok(vaccine);
