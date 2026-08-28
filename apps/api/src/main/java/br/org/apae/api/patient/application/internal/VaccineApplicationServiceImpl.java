@@ -108,7 +108,7 @@ public class VaccineApplicationServiceImpl implements VaccineApplicationService 
             if (vaccineRepository.existsByNameIgnoreCaseAndIdNot(dto.name(), id)) {
                 throw new VaccineConflictException(dto.name());
             }
-            vaccine.setName(dto.name());
+            vaccine.updateName(dto.name());
         }
 
         Vaccine updatedVaccine = vaccineRepository.save(vaccine);
