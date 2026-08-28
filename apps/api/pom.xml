@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <parent>
@@ -64,7 +63,7 @@
             <artifactId>postgresql</artifactId>
             <scope>runtime</scope>
         </dependency>
-        <dependency>    
+        <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-test</artifactId>
             <scope>test</scope>
@@ -128,11 +127,13 @@
                 <version>0.8.14</version>
                 <configuration>
                     <includes>
-                        <include>br/org/apae/api/controllers/patient/**</include>
-                        <include>br/org/apae/api/controllers/annual_registry/**</include>
-                        <include>br/org/apae/api/controllers/vaccine/**</include>
-                        <include>br/org/apae/api/controllers/disorder/**</include>
+                        <include>br/org/apae/api/**</include>
                     </includes>
+                    <excludes>
+                        <exclude>br/org/apae/api/ApiApplication.class</exclude>
+                        <exclude>br/org/apae/api/**/*DTO.*</exclude>
+                        <exclude>br/org/apae/api/**/documents/infrastructure/MinioConfiguration.class</exclude>
+                    </excludes>
                 </configuration>
                 <executions>
                     <execution>
@@ -141,7 +142,6 @@
                             <goal>prepare-agent</goal>
                         </goals>
                     </execution>
-
                     <execution>
                         <id>report</id>
                         <phase>prepare-package</phase>
