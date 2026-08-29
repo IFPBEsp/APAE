@@ -81,7 +81,7 @@ public final class HealthProfessionalMockDto {
                 new CreateAvailabilityDTO("SEGUNDA", "MANHA"),
                 new CreateAvailabilityDTO("TERCA", "TARDE")
             ),
-            "http://example.com/photo.jpg" // Adicionado o parâmetro faltante do CreateHealthProfessionalDTO
+            "http://example.com/photo.jpg"
         );
     }
 
@@ -111,7 +111,7 @@ public final class HealthProfessionalMockDto {
                 new AvailabilityResponseDTO(UUID.randomUUID(), "SEGUNDA", "MANHA"),
                 new AvailabilityResponseDTO(UUID.randomUUID(), "TERCA", "TARDE")
             ),
-            "http://example.com/photo1.jpg" // Adicionado o parâmetro faltante do HealthProfessionalResponseDTO
+            "http://example.com/photo1.jpg"
         );
     }
 
@@ -130,7 +130,7 @@ public final class HealthProfessionalMockDto {
             createAddressResponse2(),
             createServiceAreaResponsePsychology(),
             List.of(),
-            null // Adicionado o parâmetro faltante (null) do HealthProfessionalResponseDTO
+            null
         );
     }
 
@@ -138,6 +138,15 @@ public final class HealthProfessionalMockDto {
         return List.of(
             createProfessionalResponse1(),
             createProfessionalResponse2()
+        );
+    }
+
+    public static MockMultipartFile profilePhoto() {
+        return new MockMultipartFile(
+                "profilePhoto",
+                "profile-photo.jpg",
+                MediaType.IMAGE_JPEG_VALUE,
+                "fake-image-content".getBytes()
         );
     }
 }
