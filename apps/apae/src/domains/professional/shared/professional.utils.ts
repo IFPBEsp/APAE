@@ -27,6 +27,7 @@ export function mapProfessionalToForm(professional: any) {
   return {
     fullName: professional.name,
     email: professional.email,
+    cpf: professional.cpf ?? "",
     professionalDocument: professional.professionalDocument ?? "",
     serviceArea: professional.serviceArea.area,
     phone: professional.phoneNumber,
@@ -48,6 +49,7 @@ export function buildUpdatePayload(values: any, availabilities: any[]) {
     phoneNumber: values.phone,
     professionalDocument: values.professionalDocument?.trim() || null,
     email: values.email.trim(),
+    cpf: values.cpf.trim(),
     name: values.fullName.trim(),
     identityDocument: values.rg.trim(),
     address: {
@@ -73,6 +75,7 @@ export function buildRegisterPayload(values: any) {
     phoneNumber: values.phone,
     professionalDocument: values.professionalDocument?.trim() || null,
     email: values.email.trim(),
+    cpf: values.cpf.trim(),
     name: values.fullName.trim(),
     identityDocument: values.rg.trim(),
     address: {

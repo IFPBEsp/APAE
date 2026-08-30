@@ -5,35 +5,75 @@ services:
     image: postgres:15
     container_name: ${POSTGRES_CONTAINER:-apae-postgres}
     environment:
-      POSTGRES_DB: ${POSTGRES_DB}
-      POSTGRES_USER: ${POSTGRES_USER}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB:-apae}
+      POSTGRES_USER: ${POSTGRES_USER:-user}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-pass}
     ports:
-      - "${POSTGRES_PORT}:5432"
+      - "${POSTGRES_PORT:-5200}:5432"
     volumes:
       - apae-postgres-data:/var/lib/postgresql/data
     networks:
       - apae-network
     restart: unless-stopped
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-user} -d ${POSTGRES_DB:-apae}"]
       interval: 10s
       timeout: 5s
       retries: 5
+
+  db-migrate:
+    image: flyway/flyway:11.7.2
+    command:
+      - -url=jdbc:postgresql://db:5432/${POSTGRES_DB:-apae}
+      - -user=${POSTGRES_USER:-user}
+      - -password=${POSTGRES_PASSWORD:-pass}
+      - -schemas=apae_geral
+      - -defaultSchema=apae_geral
+      - -createSchemas=true
+      - -locations=filesystem:/flyway/sql
+      - -connectRetries=20
+      - migrate
+    volumes:
+      - ./apps/api/src/main/resources/db/migration:/flyway/sql:ro,z
+    depends_on:
+      db:
+        condition: service_healthy
+    networks:
+      - apae-network
+    restart: "no"
+
+  db-seed:
+    image: postgres:15
+    profiles: ["tools"]
+    environment:
+      PGHOST: db
+      PGPORT: 5432
+      PGDATABASE: ${POSTGRES_DB:-apae}
+      PGUSER: ${POSTGRES_USER:-user}
+      PGPASSWORD: ${POSTGRES_PASSWORD:-pass}
+    command: ["psql", "-v", "ON_ERROR_STOP=1", "-f", "/seed/local-development.sql"]
+    volumes:
+      - ./.scripts/seed/local-development.sql:/seed/local-development.sql:ro,z
+    depends_on:
+      db-migrate:
+        condition: service_completed_successfully
+    networks:
+      - apae-network
+    restart: "no"
 
   minio:
     image: quay.io/minio/minio
     container_name: minio_docs_apae
     ports:
-      - "${MINIO_API_PORT}:9000"
-      - "${MINIO_CONSOLE_PORT}:9001"
+      - "${MINIO_API_PORT:-9000}:9000"
+      - "${MINIO_CONSOLE_PORT:-9001}:9001"
     environment:
-      MINIO_ROOT_USER: ${MINIO_ROOT_USER}
-      MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD}
+      MINIO_ROOT_USER: ${MINIO_ROOT_USER:-ROOTUSER}
+      MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD:-CHANGEME123}
     volumes:
       - apae-minio-data:/data
     user: root
-    command: server /data --console-address ":${MINIO_CONSOLE_PORT}"
+    command: server /data --console-address ":9001"
     networks:
       - apae-network
     restart: unless-stopped
@@ -42,28 +82,28 @@ services:
     image: ${BACKEND_IMAGE:-ghcr.io/ifpbesp/apae-geral-backend}:${IMAGE_TAG:-dev}
     container_name: apae-geral-backend
     ports:
-      - "${API_PORT:-8080}:8080"
+      - "${API_PORT:-8090}:8080"
     environment:
       - API_PORT=8080
-      - DB_URL=jdbc:postgresql://db:5432/${POSTGRES_DB}
-      - DB_USERNAME=${DB_USERNAME}
-      - DB_PASSWORD=${DB_PASSWORD}
+      - DB_URL=jdbc:postgresql://db:5432/${POSTGRES_DB:-apae}
+      - DB_USERNAME=${POSTGRES_USER:-user}
+      - DB_PASSWORD=${POSTGRES_PASSWORD:-pass}
       - MINIO_URL=http://minio:9000
       - MINIO_PUBLIC_URL=${MINIO_PUBLIC_URL:-http://localhost:9000}
-      - MINIO_ACCESS_KEY=${MINIO_ACCESS_KEY}
-      - MINIO_SECRET_KEY=${MINIO_SECRET_KEY}
-      - JWT_SECRET=${JWT_SECRET}
-      - JWT_EXPIRATION_HOURS=${JWT_EXPIRATION_HOURS}
-      - MAIL_HOST=${MAIL_HOST}
-      - MAIL_PORT=${MAIL_PORT}
-      - MAIL_USERNAME=${MAIL_USERNAME}
-      - MAIL_PASSWORD=${MAIL_PASSWORD}
-      - CORS_ALLOWED_ORIGINS=${CORS_ALLOWED_ORIGINS}
-      - APP_FRONTEND_RESET_PASSWORD_URL=${APP_FRONTEND_RESET_PASSWORD_URL}
+      - MINIO_ACCESS_KEY=${MINIO_ACCESS_KEY:-ROOTUSER}
+      - MINIO_SECRET_KEY=${MINIO_SECRET_KEY:-CHANGEME123}
+      - JWT_SECRET=${JWT_SECRET:-U29tZVNlY3JldEF0TGVhc3QtMjU2Qml0cw==}
+      - JWT_EXPIRATION_HOURS=${JWT_EXPIRATION_HOURS:-24}
+      - MAIL_HOST=${MAIL_HOST:-}
+      - MAIL_PORT=${MAIL_PORT:-0}
+      - MAIL_USERNAME=${MAIL_USERNAME:-}
+      - MAIL_PASSWORD=${MAIL_PASSWORD:-}
+      - CORS_ALLOWED_ORIGINS=${CORS_ALLOWED_ORIGINS:-http://localhost:3000}
+      - APP_FRONTEND_RESET_PASSWORD_URL=${APP_FRONTEND_RESET_PASSWORD_URL:-http://localhost:3000/apae-geral/auth/reset-password}
       - MANAGEMENT_HEALTH_MAIL_ENABLED=false
     depends_on:
-      db:
-        condition: service_healthy
+      db-migrate:
+        condition: service_completed_successfully
       minio:
         condition: service_started
     networks:

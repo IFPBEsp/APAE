@@ -56,7 +56,10 @@ export default function ViewProfessional() {
 
       <div className="flex flex-col items-center sm:flex-row sm:items-center gap-4 sm:gap-6 mb-10">
         <Avatar className="h-24 w-24 border-2 border-[#0D4F97]">
-          <AvatarImage src={photoDoc?.url || ""} alt={professional.name} />
+          <AvatarImage
+            src={photoDoc?.url || professional.profilePhotoUrl || professional.profilePhoto || ""}
+            alt={professional.name}
+          />
           <AvatarFallback className="text-xl font-bold bg-[#B2D7EC] text-[#0D4F97]">
             {professional.name?.charAt(0) || "P"}
           </AvatarFallback>
@@ -79,6 +82,10 @@ export default function ViewProfessional() {
               <div>
                 <p className="font-semibold text-sm">Email</p>
                 <p className="text-base text-gray-700">{professional.email || "—"}</p>
+              </div>
+              <div>
+                <p className="font-semibold text-sm">CPF</p>
+                <p className="text-base text-gray-700">{professional.cpf || "—"}</p>
               </div>
               <div>
                 <p className="font-semibold text-sm">Telefone</p>

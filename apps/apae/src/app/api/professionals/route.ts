@@ -35,7 +35,9 @@ export async function POST(req: Request) {
     const body = await req.formData();
 
     const api = await createBaseApi();
-    const response = await api.post("/professionals", body, {headers:{'Content-Type':undefined}});
+    const response = await api.post("/professionals", body, {
+      headers: { "Content-Type": undefined },
+    });
 
     return NextResponse.json(response.data, { status: 201 });
   } catch (error) {

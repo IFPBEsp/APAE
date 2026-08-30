@@ -25,13 +25,15 @@ public class UserService {
   }
 
   public void createUser(String email, String password, String cpf, String fullName) {
-    boolean exists = userRepository.existsByEmail(email);
-
-    if (exists) {
+    if (userRepository.existsByEmail(email)) {
       throw new UserConflictException();
     }
 
-    User user = new User(email, password, cpf, fullName, UserRole.ADMIN);
+    if (cpf != null && !cpf.isBlank() && userRepository.existsByCpf(cpf)) {
+      throw new UserConflictException();
+    }
+
+    User user = User.createAuthenticatedUser(email, password, cpf, fullName, UserRole.APAE_GERAL);
     userRepository.save(user);
   }
 

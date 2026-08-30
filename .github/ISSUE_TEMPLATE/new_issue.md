@@ -1,8 +1,7 @@
 ---
----
 name: "Nova Issue"
 about: "Use este template para criar uma nova issue"
-title: ""
+title: "[ISSUE] "
 labels: []
 assignees: []
 ---
@@ -25,7 +24,6 @@ Descreva o que se espera como solução ou melhoria.
 * [ ] {critério_1}
 * [ ] {critério_2}
 * [ ] {critério_3}
-
 
 ## Artefatos
 

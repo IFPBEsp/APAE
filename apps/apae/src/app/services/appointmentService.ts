@@ -163,18 +163,29 @@ export interface CancelGeneratedAppointmentDTO {
 
 export interface Professional {
   id: string;
-  healthSector: string;
-  phoneNumber: string;
-  professionalDocument: string;
+  serviceArea?: {
+    id?: string | number;
+    area?: string;
+  };
+  healthSector?: string | null;
+  phoneNumber?: string;
+  professionalDocument?: string | null;
   email: string;
+  cpf?: string;
   name: string;
-  identityDocument: string;
-  address: Address;
+  identityDocument?: string;
+  address?: Address;
 }
 
 export interface Disorder {
   id: UUID;
   name: string;
+}
+
+export function getProfessionalAreaName(
+  professional?: Pick<Professional, "serviceArea" | "healthSector"> | null,
+): string {
+  return professional?.serviceArea?.area ?? professional?.healthSector ?? "";
 }
 
 function ensurePageFormat<T>(data: unknown): Page<T> {

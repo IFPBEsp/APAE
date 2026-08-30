@@ -71,7 +71,7 @@ class AuthControllerTest {
             SignUpDTO requestDto = new SignUpDTO(
                     "joao@email.com",
                     "Senha123",
-                    "12345678901",
+                    "52998224725",
                     "João Silva"
             );
 
@@ -89,7 +89,7 @@ class AuthControllerTest {
             SignUpDTO requestDto = new SignUpDTO(
                     "joao@email.com",
                     "Senha123",
-                    "12345678901",
+                    "52998224725",
                     "João Silva"
             );
 

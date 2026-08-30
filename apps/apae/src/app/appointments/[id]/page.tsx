@@ -25,6 +25,7 @@ import { Button } from '@/components/ui/button';
 import {
   getAppointmentById,
   Appointment,
+  getProfessionalAreaName,
 } from '@/app/services/appointmentService';
 import { AppointmentForm } from '@/components/forms/AppointmentForm';
 import TrashButton from '@/components/buttons/trashButton';
@@ -187,7 +188,7 @@ export default function ViewAppointment() {
                 </div>
                 <div className="flex">
                   <p className="font-medium mr-2">Área de atendimento:</p>
-                  <p>{appointment.professional.healthSector || '—'}</p>
+                  <p>{getProfessionalAreaName(appointment.professional) || '—'}</p>
                 </div>
                 <div className="flex">
                   <p className="font-medium mr-2">Status:</p>

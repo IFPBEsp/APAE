@@ -10,8 +10,6 @@ import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { InputMask } from "@react-input/mask";
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { User } from "lucide-react";
 
 
 import { useGetByIdProfessional } from "@/hooks/profissional/use-get-by-id-profissional";
@@ -23,7 +21,6 @@ import { STATES } from "@/lib/states";
 import HealthAreaSelect from "@/components/shared/HealthAreaSelect";
 import Availability from "@/components/forms/AvailabilityForm";
 
-import { ProfessionalPhoto } from "@/domains/professional/components/ProfessionalPhoto";
 import { ProfessionalDocuments } from "@/domains/professional/components/ProfessionalDocuments";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -47,8 +44,6 @@ export default function ProfessionalUpdate(): JSX.Element {
     setSelectedPhoto,
     photoPreviewUrl,
     photoError,
-    photoSuccess,
-    clearPhoto,
     uploadPhoto,
   } = useProfessionalPhoto();
 
@@ -79,7 +74,7 @@ export default function ProfessionalUpdate(): JSX.Element {
   const form = useForm<UpdateFormValues>({
     resolver: zodResolver(updateProfessionalSchema),
     defaultValues: {
-      fullName: "", email: "", professionalDocument: "", serviceArea: "",
+      fullName: "", email: "", cpf: "", professionalDocument: "", serviceArea: "",
       phone: "", rg: "", state: "", city: "", neighborhood: "",
       street: "", number: "", complement: "", cep: "", availability: [],
     },
@@ -141,6 +136,12 @@ export default function ProfessionalUpdate(): JSX.Element {
 
           <FormField control={form.control} name="email" render={({ field }) => (
             <FormItem><FormLabel>Email *</FormLabel><FormControl><Input type="email" placeholder="profissional@exemplo.com" {...field} /></FormControl><FormMessage /></FormItem>
+          )} />
+
+          <Controller control={form.control} name="cpf" render={({ field, fieldState }) => (
+            <FormItem><FormLabel>CPF *</FormLabel><FormControl>
+              <InputMask mask="___.___.___-__" replacement={{ _: /\d/ }} value={field.value ?? ""} onChange={(e) => field.onChange(e.target.value)} onBlur={field.onBlur} placeholder="000.000.000-00" className="w-full rounded-md border px-3 py-2" />
+            </FormControl><FormMessage>{fieldState.error?.message}</FormMessage></FormItem>
           )} />
 
           <div className="grid grid-cols-2 gap-4">
@@ -266,16 +267,18 @@ export default function ProfessionalUpdate(): JSX.Element {
                       onClick={() => fileInputRef.current?.click()}
                       className="relative group mr-auto rounded-full transition-transform hover:scale-105"
                     >
-                      <Avatar className="w-32 h-32 border-2 border-dashed border-gray-300 bg-gray-50 cursor-pointer flex items-center justify-center">
-                        <AvatarImage
-                          src={photoPreviewUrl || groupedDocs.photo?.url || undefined}
-                          alt="Foto do profissional"
-                        />
-
-                        <AvatarFallback className="bg-transparent">
-                          <User className="w-12 h-12 text-gray-400" />
-                        </AvatarFallback>
-                      </Avatar>
+                      <div className="w-32 h-32 overflow-hidden rounded-full border-2 border-dashed border-gray-300 bg-gray-50 flex items-center justify-center">
+                        {photoPreviewUrl || groupedDocs.photo?.url || professional?.profilePhotoUrl || professional?.profilePhoto ? (
+                          // eslint-disable-next-line @next/next/no-img-element
+                          <img
+                            src={photoPreviewUrl || groupedDocs.photo?.url || professional?.profilePhotoUrl || professional?.profilePhoto || undefined}
+                            alt="Foto do profissional"
+                            className="h-full w-full object-cover"
+                          />
+                        ) : (
+                          <span className="text-xs text-gray-500">Sem foto</span>
+                        )}
+                      </div>
 
                       <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity bg-black/20 rounded-full">
                         <span className="bg-white text-black text-[10px] font-bold px-2 py-1 rounded shadow-sm cursor-pointer">

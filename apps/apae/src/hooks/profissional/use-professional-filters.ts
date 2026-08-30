@@ -5,7 +5,8 @@ type StatusFilter = "activate" | "inactivate";
 interface Professional {
   id: string;
   name: string;
-  professionalDocument?: string;
+  cpf?: string | null;
+  professionalDocument?: string | null;
   serviceArea: { area: string };
   phoneNumber: string;
 }
@@ -19,8 +20,9 @@ export function useProfessionalFilters(professionals: Professional[]) {
     return professionals.filter((prof) => {
       const name = prof.name?.toLowerCase() || "";
       const document = prof.professionalDocument?.toLowerCase() || "";
+      const cpf = prof.cpf?.toLowerCase() || "";
       const term = searchTerm.toLowerCase();
-      const matchesSearch = name.includes(term) || document.includes(term);
+      const matchesSearch = name.includes(term) || document.includes(term) || cpf.includes(term);
       const matchesArea = areaFilter === "all" || prof.serviceArea.area === areaFilter;
       return matchesSearch && matchesArea;
     });

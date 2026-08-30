@@ -56,8 +56,9 @@ export default function VisualizationProfessionalPage() {
   const displayList = professionals.filter((prof) => {
     const name = prof.name?.toLowerCase() || "";
     const document = prof.professionalDocument?.toLowerCase() || "";
+    const cpf = prof.cpf?.toLowerCase() || "";
     const term = searchTerm.toLowerCase();
-    const matchesSearch = name.includes(term) || document.includes(term);
+    const matchesSearch = name.includes(term) || document.includes(term) || cpf.includes(term);
     const matchesArea = areaFilter === "all" || prof.serviceArea.area === areaFilter;
     return matchesSearch && matchesArea;
   });
@@ -76,7 +77,7 @@ export default function VisualizationProfessionalPage() {
 
         <div className="mb-6 flex flex-col gap-4 md:flex-row">
           <Input
-            placeholder="Buscar por nome ou documento..."
+            placeholder="Buscar por nome, CPF ou documento..."
             className="flex-grow border-[#0D4F97]"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}

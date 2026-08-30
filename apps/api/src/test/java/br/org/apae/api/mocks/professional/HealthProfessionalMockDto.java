@@ -22,6 +22,8 @@ public final class HealthProfessionalMockDto {
 
     public static final UUID PROFESSIONAL_ID_1 = UUID.fromString("11111111-1111-1111-1111-111111111111");
     public static final UUID PROFESSIONAL_ID_2 = UUID.fromString("22222222-2222-2222-2222-222222222222");
+    public static final UUID USER_ID_1 = UUID.fromString("33333333-3333-3333-3333-333333333333");
+    public static final UUID USER_ID_2 = UUID.fromString("44444444-4444-4444-4444-444444444444");
     public static final UUID ADDRESS_ID_1 = UUID.fromString("aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa");
     public static final UUID ADDRESS_ID_2 = UUID.fromString("bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb");
     
@@ -71,6 +73,7 @@ public final class HealthProfessionalMockDto {
             "11999999999",
             "CRP-12345",
             "teste@apae.org.br",
+            "123.456.789-09",
             "João da Silva",
             "123456789",
             createAddressRequest(),
@@ -78,7 +81,7 @@ public final class HealthProfessionalMockDto {
                 new CreateAvailabilityDTO("SEGUNDA", "MANHA"),
                 new CreateAvailabilityDTO("TERCA", "TARDE")
             ),
-            "http://example.com/photo.jpg" // Adicionado o parâmetro faltante do CreateHealthProfessionalDTO
+            "http://example.com/photo.jpg"
         );
     }
 
@@ -93,8 +96,10 @@ public final class HealthProfessionalMockDto {
     public static HealthProfessionalResponseDTO createProfessionalResponse1() {
         return new HealthProfessionalResponseDTO(
             PROFESSIONAL_ID_1,
+            USER_ID_1,
             "João da Silva",
             "teste@apae.org.br",
+            "123.456.789-09",
             "CREFITO-12345",
             "123456789",
             "11999999999",
@@ -106,15 +111,17 @@ public final class HealthProfessionalMockDto {
                 new AvailabilityResponseDTO(UUID.randomUUID(), "SEGUNDA", "MANHA"),
                 new AvailabilityResponseDTO(UUID.randomUUID(), "TERCA", "TARDE")
             ),
-            "http://example.com/photo1.jpg" // Adicionado o parâmetro faltante do HealthProfessionalResponseDTO
+            "http://example.com/photo1.jpg"
         );
     }
 
     public static HealthProfessionalResponseDTO createProfessionalResponse2() {
         return new HealthProfessionalResponseDTO(
             PROFESSIONAL_ID_2,
+            USER_ID_2,
             "Maria Souza",
             "maria@apae.org.br",
+            "987.654.321-00",
             "CRP-54321",
             "987654321",
             "11888888888",
@@ -123,7 +130,7 @@ public final class HealthProfessionalMockDto {
             createAddressResponse2(),
             createServiceAreaResponsePsychology(),
             List.of(),
-            null // Adicionado o parâmetro faltante (null) do HealthProfessionalResponseDTO
+            null
         );
     }
 
@@ -133,11 +140,12 @@ public final class HealthProfessionalMockDto {
             createProfessionalResponse2()
         );
     }
+
     public static MockMultipartFile profilePhoto() {
         return new MockMultipartFile(
                 "profilePhoto",
                 "profile-photo.jpg",
-                org.springframework.http.MediaType.IMAGE_JPEG_VALUE,
+                MediaType.IMAGE_JPEG_VALUE,
                 "fake-image-content".getBytes()
         );
     }
