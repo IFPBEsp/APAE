@@ -19,10 +19,16 @@ export default {
   ],
   "apps/(apae|management-app)/**/*.{json,css}": (files) => scoped(files, "prettier --write"),
   "apps/api/**/*.java": (files) => {
-    const includes = files.map((f) => relative("apps/api", f)).join(",");
+    // maven-checkstyle-plugin's `checkstyle.includes` is resolved relative to
+    // ${project.build.sourceDirectory} (src/main/java), not to the module root —
+    // passing a module-relative path silently matches zero files (no violations
+    // "found", check passes vacuously). maven-pmd-plugin's `includes`, on the
+    // other hand, accepts a module-relative path just fine.
+    const checkstyleIncludes = files.map((f) => relative("apps/api/src/main/java", f)).join(",");
+    const pmdIncludes = files.map((f) => relative("apps/api", f)).join(",");
     return [
-      `apps/api/mvnw -q -f apps/api/pom.xml checkstyle:check -Dcheckstyle.includes=${includes}`,
-      `apps/api/mvnw -q -f apps/api/pom.xml pmd:check -Dincludes=${includes}`,
+      `apps/api/mvnw -q -f apps/api/pom.xml checkstyle:check -Dcheckstyle.includes=${checkstyleIncludes}`,
+      `apps/api/mvnw -q -f apps/api/pom.xml pmd:check -Dincludes=${pmdIncludes}`,
     ];
   },
   "*.{md,yml,yaml}": ["prettier --write"],
