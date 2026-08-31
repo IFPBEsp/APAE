@@ -78,12 +78,23 @@ A governança do PR-Agent no fluxo de desenvolvimento do time:
 
 ## 6. Modelo e configuração
 
-Durante a POC, foram avaliadas três abordagens de modelos de linguagem:
+Durante a realização da POC, o foco principal foi identificar e validar **modelos com chave de API 100% gratuita** para o projeto, além de avaliar a viabilidade de agregadores e referências de mercado:
 
-1. **OpenAI (`gpt-4o`):** Modelo comercial de referência, excelente qualidade, porém requer subscrição paga na organização.
-2. **OpenRouter (Modelos Abertos Gratuitos):** Testados `deepseek-chat:free` e `llama-3.3-70b:free`. Apresentaram incompatibilidade com o parser de YAML estrito do PR-Agent para sugestões de código inline.
-3. **Google Gemini (`gemini-3.6-flash` via Google AI Studio) — VALIDADO NA POC:** Apresentou **desempenho impecável**, gerando revisões completas em português (`pt-BR`), respeitando todas as estruturas de YAML e executando em menos de 45 segundos sem nenhum custo para a organização.
+### 1. Google Gemini (`gemini-3.6-flash` via Google AI Studio) — RECOMENDAÇÃO PRINCIPAL (Custo Zero)
+- **Custo e Acesso:** Chave de API 100% gratuita fornecida pelo Google AI Studio para desenvolvedores, sem necessidade de cartão de crédito.
+- **Desempenho Validado na POC:** Executou as revisões no PR #904 em menos de 45 segundos, apresentando **100% de compatibilidade** com o gerador de sugestões de código, analisando classes Java, apontando bugs de *NullPointerException* e gerando diffs em português (`pt-BR`).
+- **Conclusão:** É a escolha oficial e mais recomendada para o repositório por unir custo zero e estabilidade em saídas estruturadas.
 
+### 2. OpenRouter (Agregador Multi-Modelo Gratuito) — Análise Técnica de Viabilidade
+- **Compatibilidade Técnica:** O PR-Agent suporta o OpenRouter via biblioteca *LiteLLM* (usando a variável `OPENROUTER__KEY` ou o endpoint `https://openrouter.ai/api/v1`).
+- **Diagnóstico dos Testes Gratuitos (`:free`):** Nos testes com `deepseek-chat:free` e `llama-3.3-70b:free`, a esteira conectou com sucesso, mas os modelos falharam na geração de sugestões inline (`Failed to generate code suggestions`). Isso ocorre porque modelos comunitários gratuitos possuem oscilação de schema e não seguem estritamente a gramática YAML exigida pelo parser interno do PR-Agent.
+- **Formas de Contorno Identificadas:**
+    1. Utilizar modelos abertos focados estritamente em código (ex: `openrouter/qwen/qwen-2.5-coder-32b-instruct`).
+    2. Restringir modelos gratuitos comunitários ao comando `/review` (onde o formato Markdown livre é tolerante), evitando o comando estruturado `/improve`.
+    3. Declarar limites explícitos de tokens (`custom_model_max_tokens`) para evitar que a resposta seja cortada por provedores públicos.
+
+### 3. OpenAI (`gpt-4o` / `gpt-4o-mini`) — Referência Comercial de Mercado
+- Avaliado apenas como comparativo comercial. Embora possua excelente aderência técnica, não é prioritário para este projeto por exigir subscrição corporativa paga.
 ---
 
 ## 7. Segurança e permissões
