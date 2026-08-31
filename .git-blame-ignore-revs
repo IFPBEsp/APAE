@@ -1,0 +1,4 @@
+# Reformatação única com `prettier --write .` ao ligar o gate de lint (issue #895).
+# Use com: git blame --ignore-revs-file=.git-blame-ignore-revs <arquivo>
+# ou configure uma vez: git config blame.ignoreRevsFile .git-blame-ignore-revs
+88978c1b6d3a6c745ea547de903c76618920c8eb

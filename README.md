@@ -296,6 +296,12 @@ Ambos os apps reaproveitam o `.prettierrc`/`.prettierignore` da raiz e o binári
 
 O `.editorconfig` na raiz cobre `.ts`/`.tsx`, `.java`, `.json`, `.yml`/`.yaml` e `.md`, garantindo indentação e fim de linha consistentes entre editores/SOs.
 
+O repositório passou por uma reformatação única com Prettier ao ligar o gate (commit registrado em `.git-blame-ignore-revs`). Para que `git blame` pule esse commit:
+
+```bash
+git config blame.ignoreRevsFile .git-blame-ignore-revs
+```
+
 ### Checkstyle e PMD (apps/api)
 
 ```bash
