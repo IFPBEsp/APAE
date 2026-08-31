@@ -52,9 +52,7 @@ import { CreateCareDialog } from "@/domains/patients/components/dialogs/CreateCa
 import { CreateDisorderDialog } from "@/domains/patients/components/dialogs/CreateDisorderDialog";
 
 export default function MembersRegisterAdditionalsPage() {
-  const [modal, setModal] = useState<"disorder" | "vaccine" | "care" | null>(
-    null,
-  );
+  const [modal, setModal] = useState<"disorder" | "vaccine" | "care" | null>(null);
   const [refreshKey, setRefreshKey] = useState(0);
 
   const { areas: cares, fetchCares } = useFetchServiceAreas();
@@ -81,14 +79,10 @@ export default function MembersRegisterAdditionalsPage() {
   const [isInitialized, setIsInitialized] = useState(false);
 
   useEffect(() => {
-    if (
-      isEditing &&
-      !isInitialized &&
-      (additionals.diseases || additionals.vaccines.length > 0)
-    ) {
+    if (isEditing && !isInitialized && (additionals.diseases || additionals.vaccines.length > 0)) {
       form.reset(additionals as AdditionalsData);
       setIsInitialized(true);
-      setRefreshKey(prev => prev + 1);
+      setRefreshKey((prev) => prev + 1);
     }
   }, [additionals, form, isEditing, isInitialized]);
 
@@ -113,7 +107,7 @@ export default function MembersRegisterAdditionalsPage() {
       const err = error as { response?: { data?: Record<string, string[]> } };
       if (err.response?.data) {
         handleBackendValidationErrors(err.response.data, form.setError);
-      };
+      }
     } finally {
       setIsLoading(false);
     }
@@ -167,11 +161,7 @@ export default function MembersRegisterAdditionalsPage() {
 
       <Form {...form}>
         <MembersRegisterForm
-          title={
-            isEditing
-              ? "Editar Informações Adicionais"
-              : "Informações Adicionais"
-          }
+          title={isEditing ? "Editar Informações Adicionais" : "Informações Adicionais"}
           onSubmit={form.handleSubmit(onSubmit)}
           buttons={
             <>
@@ -225,10 +215,7 @@ export default function MembersRegisterAdditionalsPage() {
                           value: vac.name,
                         })),
                         ...(field.value || [])
-                          .filter(
-                            (val: string) =>
-                              !vaccines.some((v) => v.name === val),
-                          )
+                          .filter((val: string) => !vaccines.some((v) => v.name === val))
                           .map((val: string) => ({ label: val, value: val })),
                       ]}
                       onValueChange={field.onChange}
@@ -295,10 +282,7 @@ export default function MembersRegisterAdditionalsPage() {
                           value: dis.name,
                         })),
                         ...(field.value || [])
-                          .filter(
-                            (val: string) =>
-                              !disorders.some((d) => d.name === val),
-                          )
+                          .filter((val: string) => !disorders.some((d) => d.name === val))
                           .map((val: string) => ({ label: val, value: val })),
                       ]}
                       onValueChange={field.onChange}
@@ -318,8 +302,7 @@ export default function MembersRegisterAdditionalsPage() {
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>
-                    Laudo da Deficiência{" "}
-                    {isEditing ? "(Opcional na edição)" : "*"}
+                    Laudo da Deficiência {isEditing ? "(Opcional na edição)" : "*"}
                   </FormLabel>
                   <FormControl>
                     <FileInputButton
@@ -332,10 +315,7 @@ export default function MembersRegisterAdditionalsPage() {
                       }}
                     >
                       {field.value instanceof File ? (
-                        <span
-                          className="truncate text-left"
-                          title={field.value.name}
-                        >
+                        <span className="truncate text-left" title={field.value.name}>
                           Arquivo: {field.value.name}
                         </span>
                       ) : (
@@ -366,10 +346,7 @@ export default function MembersRegisterAdditionalsPage() {
                         })),
                         ...(field.value || [])
                           .filter(
-                            (val: string) =>
-                              !cares.some(
-                                (c: { area: string }) => c.area === val,
-                              ),
+                            (val: string) => !cares.some((c: { area: string }) => c.area === val),
                           )
                           .map((val: string) => ({ label: val, value: val })),
                       ]}
@@ -389,9 +366,7 @@ export default function MembersRegisterAdditionalsPage() {
               name="care.referral"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>
-                    Encaminhamento {isEditing ? "(Opcional na edição)" : "*"}
-                  </FormLabel>
+                  <FormLabel>Encaminhamento {isEditing ? "(Opcional na edição)" : "*"}</FormLabel>
                   <FormControl>
                     <FileInputButton
                       id={field.name}
@@ -403,10 +378,7 @@ export default function MembersRegisterAdditionalsPage() {
                       }}
                     >
                       {field.value instanceof File ? (
-                        <span
-                          className="truncate text-left"
-                          title={field.value.name}
-                        >
+                        <span className="truncate text-left" title={field.value.name}>
                           Arquivo: {field.value.name}
                         </span>
                       ) : (
@@ -430,9 +402,7 @@ export default function MembersRegisterAdditionalsPage() {
                       placeholder="R$ 2.100,00"
                       maxLength={15}
                       value={field.value}
-                      onChange={(e) =>
-                        field.onChange(formatCurrency(e.target.value))
-                      }
+                      onChange={(e) => field.onChange(formatCurrency(e.target.value))}
                     />
                   </FormControl>
                   <FormMessage />

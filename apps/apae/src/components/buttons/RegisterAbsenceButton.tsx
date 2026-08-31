@@ -17,7 +17,7 @@ import { AbsenceForm } from "../forms/AbsenceForm";
 
 interface RegisterAbsenceButtonProps {
   generatedAppointmentId: string;
-  patientId: string,
+  patientId: string;
   absenceDate: string;
   disabled?: boolean;
   onSuccess?: () => void;
@@ -47,11 +47,14 @@ export function RegisterAbsenceButton({
       <DialogContent className="sm:max-w-[500px]">
         <DialogHeader>
           <DialogTitle>Registrar Falta</DialogTitle>
-          <DialogDescription>
-            Confirme o registro da falta para o agendamento.
-          </DialogDescription>
+          <DialogDescription>Confirme o registro da falta para o agendamento.</DialogDescription>
         </DialogHeader>
-        <AbsenceForm generatedAppointmentId={generatedAppointmentId} absenceDate={absenceDate} onSuccess={onSuccess} patientId={patientId} />
+        <AbsenceForm
+          generatedAppointmentId={generatedAppointmentId}
+          absenceDate={absenceDate}
+          onSuccess={onSuccess}
+          patientId={patientId}
+        />
       </DialogContent>
     </Dialog>
   );

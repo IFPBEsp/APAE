@@ -2,11 +2,9 @@
 @import "tailwindcss";
 @import "tw-animate-css";
 
-
-.font-baloo{
-   font-family: "Baloo 2", sans-serif;
+.font-baloo {
+  font-family: "Baloo 2", sans-serif;
   font-optical-sizing: auto;
-  
 }
 
 @custom-variant dark (&:is(.dark *));

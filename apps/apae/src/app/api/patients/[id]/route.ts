@@ -4,10 +4,7 @@ import { createBaseApi } from "@/lib/axios";
 import { AxiosError } from "axios";
 import { NextRequest, NextResponse } from "next/server";
 
-export async function GET(
-  request: NextRequest,
-  { params }: { params: Promise<{ id: string }> },
-) {
+export async function GET(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
 
   try {
@@ -26,10 +23,7 @@ export async function GET(
   }
 }
 
-export async function PUT(
-  request: NextRequest,
-  { params }: { params: Promise<{ id: string }> },
-) {
+export async function PUT(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
 
   try {
@@ -43,10 +37,7 @@ export async function PUT(
     return NextResponse.json(response.data);
   } catch (error) {
     const err = error as AxiosError;
-    console.error(
-      `[ERRO PUT PESSOA/${id}]:`,
-      err.response?.data || err.message,
-    );
+    console.error(`[ERRO PUT PESSOA/${id}]:`, err.response?.data || err.message);
 
     return NextResponse.json(
       { message: err.response?.data || "Erro ao atualizar paciente" },

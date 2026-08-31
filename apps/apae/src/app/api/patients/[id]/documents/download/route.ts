@@ -2,10 +2,7 @@ import { createBaseApi } from "@/lib/axios";
 import { AxiosError } from "axios";
 import { NextRequest, NextResponse } from "next/server";
 
-export async function GET(
-  request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
-) {
+export async function GET(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   const { id: patientId } = await params;
   const documentName = request.nextUrl.searchParams.get("name");
 
@@ -15,15 +12,12 @@ export async function GET(
 
   try {
     const api = await createBaseApi();
-    
-    const response = await api.get(
-      `/patients/${patientId}/documents/download`,
-      {
-        params: { documentName },
-        responseType: "stream", 
-      }
-    );
-    
+
+    const response = await api.get(`/patients/${patientId}/documents/download`, {
+      params: { documentName },
+      responseType: "stream",
+    });
+
     const contentDisposition = response.headers["content-disposition"];
     let filename = "download.bin";
     if (contentDisposition) {
@@ -32,17 +26,19 @@ export async function GET(
     }
 
     const headers = new Headers();
-    headers.set("Content-Type", String(response.headers["content-type"] || "application/octet-stream"));
+    headers.set(
+      "Content-Type",
+      String(response.headers["content-type"] || "application/octet-stream"),
+    );
     headers.set("Content-Disposition", `attachment; filename="${filename}"`);
 
     return new NextResponse(response.data, { headers });
-
   } catch (error) {
     const err = error as AxiosError;
     console.error("Erro download:", err);
     return NextResponse.json(
       { message: "Erro ao baixar documento" },
-      { status: err.response?.status || 500 }
+      { status: err.response?.status || 500 },
     );
   }
 }

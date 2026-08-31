@@ -1,6 +1,6 @@
-'use client';
-import React from 'react';
-import { User, ClipboardPlus, LibraryBigIcon } from 'lucide-react';
+"use client";
+import React from "react";
+import { User, ClipboardPlus, LibraryBigIcon } from "lucide-react";
 
 interface Categoria {
   label: string;
@@ -16,9 +16,9 @@ interface DocumentCategoriesCardProps {
 const DocumentCategoriesCard: React.FC<DocumentCategoriesCardProps> = ({
   onClickCategoria,
   categorias = [
-    { label: 'Pessoais', icon: <User />, tipo: 'pessoais' },
-    { label: 'Médicos', icon: <ClipboardPlus />, tipo: 'medicos' },
-    { label: 'Escolares', icon: <LibraryBigIcon />, tipo: 'escolares' },
+    { label: "Pessoais", icon: <User />, tipo: "pessoais" },
+    { label: "Médicos", icon: <ClipboardPlus />, tipo: "medicos" },
+    { label: "Escolares", icon: <LibraryBigIcon />, tipo: "escolares" },
   ],
 }) => {
   return (

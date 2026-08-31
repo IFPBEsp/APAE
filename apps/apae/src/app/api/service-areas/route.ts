@@ -12,17 +12,13 @@ export async function GET() {
     if (error instanceof AxiosError) {
       return NextResponse.json(
         {
-          message:
-            error.response?.data?.message || "Erro ao buscar áreas de atendimento",
+          message: error.response?.data?.message || "Erro ao buscar áreas de atendimento",
         },
-        { status: error.response?.status || 500 }
+        { status: error.response?.status || 500 },
       );
     }
 
-    return NextResponse.json(
-      { message: "Erro interno do servidor" },
-      { status: 500 }
-    );
+    return NextResponse.json({ message: "Erro interno do servidor" }, { status: 500 });
   }
 }
 
@@ -39,16 +35,12 @@ export async function POST(req: Request) {
       const data = error.response?.data;
       return NextResponse.json(
         {
-          message:
-            data?.message || "Erro ao criar área de atendimento"
+          message: data?.message || "Erro ao criar área de atendimento",
         },
-        { status: error.response?.status || 500 }
+        { status: error.response?.status || 500 },
       );
     }
 
-    return NextResponse.json(
-      { message: "Erro interno do servidor" },
-      { status: 500 }
-    );
+    return NextResponse.json({ message: "Erro interno do servidor" }, { status: 500 });
   }
 }

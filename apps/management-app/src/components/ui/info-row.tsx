@@ -9,8 +9,8 @@ interface InfoRowProps {
 export const InfoRow: React.FC<InfoRowProps> = ({ label, value, isCurrency = false }) => {
   let displayValue: string | number = value || "Não informado";
 
-  if (isCurrency && typeof value === 'number') {
-    displayValue = value.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+  if (isCurrency && typeof value === "number") {
+    displayValue = value.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
   } else if (!value) {
     displayValue = "Não informado";
   }

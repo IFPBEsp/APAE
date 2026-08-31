@@ -1,14 +1,14 @@
-"use client"
+"use client";
 
-import * as React from "react"
-import { ChevronDownIcon } from "lucide-react"
-import { format } from "date-fns"
+import * as React from "react";
+import { ChevronDownIcon } from "lucide-react";
+import { format } from "date-fns";
 
-import { Button } from "@/components/ui/button"
-import { Calendar } from "@/components/ui/calendar"
-import { Input } from "@/components/ui/input"
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
-import { ptBR } from "date-fns/locale"
+import { Button } from "@/components/ui/button";
+import { Calendar } from "@/components/ui/calendar";
+import { Input } from "@/components/ui/input";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { ptBR } from "date-fns/locale";
 
 interface DateTimePickerProps {
   value?: Date;
@@ -24,13 +24,13 @@ export function DateTimePicker({ value, onChange }: DateTimePickerProps) {
     // Use current time if no dateTime is defined
     const hours = dateTime ? dateTime.getHours() : new Date().getHours();
     const minutes = dateTime ? dateTime.getMinutes() : new Date().getMinutes();
-    
+
     const newDateTime = new Date(
       selectedDate.getFullYear(),
       selectedDate.getMonth(),
       selectedDate.getDate(),
       hours,
-      minutes
+      minutes,
     );
 
     setDateTime(newDateTime);
@@ -39,16 +39,16 @@ export function DateTimePicker({ value, onChange }: DateTimePickerProps) {
 
   const handleTimeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const timeValue = e.target.value;
-    let [hours, minutes] = timeValue.split(':');
+    let [hours, minutes] = timeValue.split(":");
     hours = hours ? hours.padStart(0, "2") : "0";
     minutes = minutes ? minutes.padStart(0, "2") : "0";
-    
+
     // Use current date if no dateTime is defined
     const currentDateTime = dateTime || new Date();
 
     const newDateTime = new Date(currentDateTime);
     newDateTime.setHours(parseInt(hours), parseInt(minutes) || 0);
-    
+
     setDateTime(newDateTime);
     onChange(newDateTime);
   };
@@ -88,10 +88,9 @@ export function DateTimePicker({ value, onChange }: DateTimePickerProps) {
           id="time-picker"
           defaultValue={dateTime ? format(dateTime, "HH:mm") : "12:00"}
           onChange={handleTimeChange}
-                    className="bg-background appearance-none [&::-webkit-calendar-picker-indicator]:hidden [&::-webkit-calendar-picker-indicator]:appearance-none  px-3 py-2 text-sm border border-input rounded-md w-28"
-
+          className="bg-background appearance-none [&::-webkit-calendar-picker-indicator]:hidden [&::-webkit-calendar-picker-indicator]:appearance-none  px-3 py-2 text-sm border border-input rounded-md w-28"
         />
       </div>
     </div>
-  )
+  );
 }

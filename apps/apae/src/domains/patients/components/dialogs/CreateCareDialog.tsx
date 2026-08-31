@@ -1,7 +1,20 @@
 import React from "react";
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -16,12 +29,7 @@ export type DialogProps = Readonly<{
   onConfirm?: () => Promise<void>;
 }>;
 
-export function CreateCareDialog({
-  open,
-  onOpenChange,
-  onSuccess,
-  onConfirm,
-}: DialogProps) {
+export function CreateCareDialog({ open, onOpenChange, onSuccess, onConfirm }: DialogProps) {
   const { create } = useCreateServiceArea();
   const form = useForm<z.infer<typeof CreateCare>>({
     resolver: zodResolver(CreateCare),

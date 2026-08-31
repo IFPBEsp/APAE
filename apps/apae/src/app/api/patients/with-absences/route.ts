@@ -17,10 +17,7 @@ export async function GET(request: NextRequest) {
     return NextResponse.json(response.data);
   } catch (err) {
     const error = err as AxiosError;
-    console.error(
-      "[ERRO API PATIENT WITH ABSENCES]:",
-      error.response?.data || error.message,
-    );
+    console.error("[ERRO API PATIENT WITH ABSENCES]:", error.response?.data || error.message);
 
     return NextResponse.json(
       { message: error.response?.data || "Erro interno no servidor" },

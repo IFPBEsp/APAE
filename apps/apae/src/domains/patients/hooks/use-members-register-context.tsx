@@ -40,11 +40,7 @@ const fileToBase64 = (file: File): Promise<string> => {
   });
 };
 
-const base64ToFile = (
-  base64: string,
-  filename: string,
-  mimeType: string,
-): File => {
+const base64ToFile = (base64: string, filename: string, mimeType: string): File => {
   const arr = base64.split(",");
   const bstr = atob(arr[1]);
   let n = bstr.length;
@@ -86,15 +82,9 @@ function isDraftAttachment(value: unknown): value is DraftAttachment {
   );
 }
 
-const MembersRegisterContext = createContext<
-  MembersRegisterContextData | undefined
->(undefined);
+const MembersRegisterContext = createContext<MembersRegisterContextData | undefined>(undefined);
 
-export function MembersRegisterProvider({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+export function MembersRegisterProvider({ children }: { children: React.ReactNode }) {
   const [state, dispatch] = useReducer(membersRegisterReducer, initialState);
   const params = useParams();
   const hasHydrated = useRef(false);
@@ -129,50 +119,41 @@ export function MembersRegisterProvider({
       );
     }
     if (obj.personal?.rg?.issuing?.date) {
-      obj.personal.rg.issuing.date =
-        parseCivilDate(obj.personal.rg.issuing.date) || new Date();
+      obj.personal.rg.issuing.date = parseCivilDate(obj.personal.rg.issuing.date) || new Date();
     }
     if (obj.personal?.birth?.date) {
-      obj.personal.birth.date =
-        parseCivilDate(obj.personal.birth.date) || new Date();
+      obj.personal.birth.date = parseCivilDate(obj.personal.birth.date) || new Date();
     }
     return obj;
   }, []);
 
   const setters = {
     setPersonalData: useCallback(
-      (data: Partial<PersonalData>) =>
-        dispatch({ type: "SET_PERSONAL_DATA", payload: data }),
+      (data: Partial<PersonalData>) => dispatch({ type: "SET_PERSONAL_DATA", payload: data }),
       [],
     ),
     setKinshipsData: useCallback(
-      (data: KinshipData[]) =>
-        dispatch({ type: "SET_KINSHIPS_DATA", payload: data }),
+      (data: KinshipData[]) => dispatch({ type: "SET_KINSHIPS_DATA", payload: data }),
       [],
     ),
     setAddressData: useCallback(
-      (data: Partial<AddressData>) =>
-        dispatch({ type: "SET_ADDRESS_DATA", payload: data }),
+      (data: Partial<AddressData>) => dispatch({ type: "SET_ADDRESS_DATA", payload: data }),
       [],
     ),
     setAdditionalsData: useCallback(
-      (data: Partial<AdditionalsData>) =>
-        dispatch({ type: "SET_ADDITIONALS_DATA", payload: data }),
+      (data: Partial<AdditionalsData>) => dispatch({ type: "SET_ADDITIONALS_DATA", payload: data }),
       [],
     ),
     setGuardianData: useCallback(
-      (data: Partial<GuardianData>) =>
-        dispatch({ type: "SET_GUARDIAN_DATA", payload: data }),
+      (data: Partial<GuardianData>) => dispatch({ type: "SET_GUARDIAN_DATA", payload: data }),
       [],
     ),
     setProfileData: useCallback(
-      (data: Partial<ProfileData>) =>
-        dispatch({ type: "SET_PROFILE_DATA", payload: data }),
+      (data: Partial<ProfileData>) => dispatch({ type: "SET_PROFILE_DATA", payload: data }),
       [],
     ),
     setStep: useCallback(
-      (step: MembersRegisterStep) =>
-        dispatch({ type: "SET_STEP", payload: step }),
+      (step: MembersRegisterStep) => dispatch({ type: "SET_STEP", payload: step }),
       [],
     ),
     loadAllData: useCallback((apiData: MembersRegisterState) => {
@@ -237,10 +218,7 @@ export function MembersRegisterProvider({
 
         localStorage.setItem(STORAGE_KEY, JSON.stringify(draft));
       } catch (error: unknown) {
-        if (
-          error instanceof DOMException &&
-          error.name === "QuotaExceededError"
-        ) {
+        if (error instanceof DOMException && error.name === "QuotaExceededError") {
           console.warn("Aviso: Limite do LocalStorage excedido.");
         } else {
           console.error("Erro ao salvar rascunho:", error);
@@ -262,8 +240,6 @@ export function MembersRegisterProvider({
 export function useMembersRegisterContext() {
   const context = useContext(MembersRegisterContext);
   if (!context)
-    throw new Error(
-      "useMembersRegisterContext must be used within a MembersRegisterProvider",
-    );
+    throw new Error("useMembersRegisterContext must be used within a MembersRegisterProvider");
   return context;
 }

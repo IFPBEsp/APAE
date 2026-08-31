@@ -1,4 +1,9 @@
-import type { Disorder, CreateDisorderParams, UpdateDisorderParams, DeleteDisorderParams } from "./disorders.types";
+import type {
+  Disorder,
+  CreateDisorderParams,
+  UpdateDisorderParams,
+  DeleteDisorderParams,
+} from "./disorders.types";
 
 const BASE_URL = "/apae-geral/api/disorders";
 

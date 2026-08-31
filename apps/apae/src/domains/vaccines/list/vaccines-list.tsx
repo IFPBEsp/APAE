@@ -14,9 +14,7 @@ export function VaccinesList() {
   const { vaccines, loading, deleteVaccine } = useVaccinesList();
   const router = useRouter();
 
-  const filtered = vaccines.filter((v) =>
-    v.name.toLowerCase().includes(searchName.toLowerCase()),
-  );
+  const filtered = vaccines.filter((v) => v.name.toLowerCase().includes(searchName.toLowerCase()));
 
   return (
     <div className="!bg-slate-100 min-h-screen">
@@ -24,10 +22,10 @@ export function VaccinesList() {
         <Button
           variant="ghost"
           onClick={() => router.push("/patients")}
-          className="mb-4 text-sm text-[#003B93] hover:bg-blue-50" 
+          className="mb-4 text-sm text-[#003B93] hover:bg-blue-50"
         >
-          <ArrowLeft className="h-4 w-4 mr-2"/>
-            Voltar
+          <ArrowLeft className="h-4 w-4 mr-2" />
+          Voltar
         </Button>
         <div className="bg-white rounded-xl shadow-md border-2 p-6 mb-4">
           <SearchFilters searchName={searchName} setSearchName={setSearchName} />
@@ -51,7 +49,9 @@ export function VaccinesList() {
             </div>
           ) : filtered.length === 0 ? (
             <p className="text-center text-gray-500 p-10">
-              {searchName ? `Nenhuma vacina encontrada para "${searchName}".` : "Nenhuma vacina cadastrada."}
+              {searchName
+                ? `Nenhuma vacina encontrada para "${searchName}".`
+                : "Nenhuma vacina cadastrada."}
             </p>
           ) : (
             <>

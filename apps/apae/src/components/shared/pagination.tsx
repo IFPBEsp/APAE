@@ -34,9 +34,7 @@ export function Pagination({
   return (
     <div className="mt-6 flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
       <div className="flex items-center gap-3">
-        <p className="text-sm text-gray-600">
-          Total de registros: {totalElements}
-        </p>
+        <p className="text-sm text-gray-600">Total de registros: {totalElements}</p>
 
         <div className="flex items-center gap-2">
           <span className="text-sm text-gray-600">Itens por página</span>
@@ -68,9 +66,7 @@ export function Pagination({
             <Button variant="outline" onClick={() => onPageChange(0)}>
               1
             </Button>
-            {start > 1 && (
-              <span className="px-1 text-sm text-gray-500">...</span>
-            )}
+            {start > 1 && <span className="px-1 text-sm text-gray-500">...</span>}
           </>
         )}
 
@@ -87,13 +83,8 @@ export function Pagination({
 
         {end < totalPages - 1 && (
           <>
-            {end < totalPages - 2 && (
-              <span className="px-1 text-sm text-gray-500">...</span>
-            )}
-            <Button
-              variant="outline"
-              onClick={() => onPageChange(totalPages - 1)}
-            >
+            {end < totalPages - 2 && <span className="px-1 text-sm text-gray-500">...</span>}
+            <Button variant="outline" onClick={() => onPageChange(totalPages - 1)}>
               {totalPages}
             </Button>
           </>

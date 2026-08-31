@@ -21,15 +21,18 @@ export const StringMultiSelect = ({ value, onChange, placeholder }: StringMultiS
   const [inputValue, setInputValue] = useState("");
   const getSelectValue = (): Option[] => {
     if (!value) return [];
-    return value.split(",").map((item) => {
-      const trimmed = item.trim();
-      if (!trimmed) return null;
-      return { label: trimmed, value: trimmed };
-    }).filter((item): item is Option => item !== null);
+    return value
+      .split(",")
+      .map((item) => {
+        const trimmed = item.trim();
+        if (!trimmed) return null;
+        return { label: trimmed, value: trimmed };
+      })
+      .filter((item): item is Option => item !== null);
   };
 
   const handleChange = (newValue: MultiValue<Option>) => {
-    const uniqueValues = Array.from(new Set(newValue.map(opt => opt.value)));
+    const uniqueValues = Array.from(new Set(newValue.map((opt) => opt.value)));
     onChange(uniqueValues.join(", "));
   };
 
@@ -38,10 +41,10 @@ export const StringMultiSelect = ({ value, onChange, placeholder }: StringMultiS
     if (!normalized) return;
 
     const currentOptions = getSelectValue();
-    const exists = currentOptions.some(opt => opt.value === normalized);
-    
+    const exists = currentOptions.some((opt) => opt.value === normalized);
+
     if (!exists) {
-      const newValues = [...currentOptions.map(o => o.value), normalized];
+      const newValues = [...currentOptions.map((o) => o.value), normalized];
       onChange(newValues.join(", "));
     }
     setInputValue("");
@@ -58,22 +61,22 @@ export const StringMultiSelect = ({ value, onChange, placeholder }: StringMultiS
       backgroundColor: "white",
       "&:hover": { borderColor: "#cbd5e1" },
       ...(state.isFocused && {
-        borderColor: "black", 
+        borderColor: "black",
         borderWidth: "1px",
-        outline: "1px solid black"
-      })
+        outline: "1px solid black",
+      }),
     }),
     placeholder: (base) => ({
-        ...base,
-        color: "#64748b",
-        fontSize: "0.875rem",
+      ...base,
+      color: "#64748b",
+      fontSize: "0.875rem",
     }),
     menu: (base) => ({
-        ...base,
-        borderRadius: "0.375rem",
-        border: "1px solid #e2e8f0",
-        boxShadow: "0 4px 6px -1px rgb(0 0 0 / 0.1)",
-        zIndex: 9999
+      ...base,
+      borderRadius: "0.375rem",
+      border: "1px solid #e2e8f0",
+      boxShadow: "0 4px 6px -1px rgb(0 0 0 / 0.1)",
+      zIndex: 9999,
     }),
     multiValue: (base) => ({
       ...base,
@@ -87,10 +90,10 @@ export const StringMultiSelect = ({ value, onChange, placeholder }: StringMultiS
       fontSize: "0.75rem",
     }),
     multiValueRemove: (base) => ({
-        ...base,
-        color: "#0D4F97",
-        ":hover": { backgroundColor: "#dbeafe", color: "#1e3a8a" },
-    })
+      ...base,
+      color: "#0D4F97",
+      ":hover": { backgroundColor: "#dbeafe", color: "#1e3a8a" },
+    }),
   };
 
   return (

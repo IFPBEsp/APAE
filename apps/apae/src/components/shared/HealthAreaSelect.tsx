@@ -10,11 +10,7 @@ import {
   CommandItem,
   CommandList,
 } from "@/components/ui/command";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Input } from "@/components/ui/input";
 import { Plus, Check, X } from "lucide-react";
 import { useFetchServiceAreas } from "@/hooks/service-area/use-fetch-service-areas";
@@ -26,17 +22,9 @@ interface HealthAreaSelectProps {
   className?: string;
 }
 
-export default function HealthAreaSelect({
-  value,
-  onChange,
-  className,
-}: HealthAreaSelectProps) {
+export default function HealthAreaSelect({ value, onChange, className }: HealthAreaSelectProps) {
   const { areas, loading, error } = useFetchServiceAreas();
-  const {
-    create,
-    loading: creating,
-    error: errorCreate,
-  } = useCreateServiceArea();
+  const { create, loading: creating, error: errorCreate } = useCreateServiceArea();
 
   const [open, setOpen] = React.useState(false);
   const [creatingMode, setCreatingMode] = React.useState(false);
@@ -47,9 +35,7 @@ export default function HealthAreaSelect({
   }, [areas]);
 
   const formatArea = (s: string) =>
-    s.trim().length === 0
-      ? ""
-      : s.trim()[0].toUpperCase() + s.trim().slice(1).toLowerCase();
+    s.trim().length === 0 ? "" : s.trim()[0].toUpperCase() + s.trim().slice(1).toLowerCase();
 
   const handleCreate = async () => {
     const formatted = formatArea(newArea);
@@ -124,9 +110,7 @@ export default function HealthAreaSelect({
               </Button>
             </div>
 
-            {errorCreate && (
-              <p className="text-red-600 text-sm">{errorCreate}</p>
-            )}
+            {errorCreate && <p className="text-red-600 text-sm">{errorCreate}</p>}
           </div>
         ) : (
           <Command>
@@ -143,9 +127,7 @@ export default function HealthAreaSelect({
             </div>
 
             <CommandList>
-              {error && (
-                <CommandEmpty>Erro ao carregar áreas da saúde.</CommandEmpty>
-              )}
+              {error && <CommandEmpty>Erro ao carregar áreas da saúde.</CommandEmpty>}
 
               {!error && (
                 <>
@@ -160,9 +142,7 @@ export default function HealthAreaSelect({
                         className="flex items-center justify-between"
                       >
                         <Check
-                          className={`h-4 w-4 ${
-                            area === value ? "opacity-100" : "opacity-0"
-                          }`}
+                          className={`h-4 w-4 ${area === value ? "opacity-100" : "opacity-0"}`}
                         />
                         {area}
                       </CommandItem>

@@ -29,9 +29,7 @@ export async function removeSessionCookie(): Promise<void> {
   }
 }
 
-export async function setSessionCookie(payload: {
-  accessToken: string;
-}): Promise<void> {
+export async function setSessionCookie(payload: { accessToken: string }): Promise<void> {
   try {
     const cookieStore = await cookies();
 

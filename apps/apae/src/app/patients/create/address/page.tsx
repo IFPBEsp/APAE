@@ -43,7 +43,7 @@ export default function MembersRegisterAddressPage() {
     resolver: zodResolver(currentSchema),
     defaultValues: {
       ...address,
-      noNumber: address.number === "SN" || false
+      noNumber: address.number === "SN" || false,
     },
   });
 
@@ -64,7 +64,7 @@ export default function MembersRegisterAddressPage() {
     if (address && Object.keys(address).length > 0) {
       form.reset({
         ...address,
-        noNumber: address.number === "SN" || false
+        noNumber: address.number === "SN" || false,
       });
     }
   }, [address, form]);
@@ -74,8 +74,8 @@ export default function MembersRegisterAddressPage() {
     try {
       const dataToSave = {
         ...values,
-        number: values.noNumber ? "SN" : values.number
-      }
+        number: values.noNumber ? "SN" : values.number,
+      };
       setAddressData(dataToSave);
 
       if (isEditing) {
@@ -163,7 +163,9 @@ export default function MembersRegisterAddressPage() {
                         }
                       }}
                     />
-                    <label htmlFor="noNumber" className="text-sm text-gray-600">Sem número? </label>
+                    <label htmlFor="noNumber" className="text-sm text-gray-600">
+                      Sem número?{" "}
+                    </label>
                   </div>
                 )}
               />

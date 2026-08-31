@@ -1,5 +1,10 @@
 import { Checkbox } from "@/components/ui/checkbox";
-import { DAYS, SHIFTS, DAY_LABEL, SHIFT_LABEL } from "@/domains/professional/constants/availability.constants";
+import {
+  DAYS,
+  SHIFTS,
+  DAY_LABEL,
+  SHIFT_LABEL,
+} from "@/domains/professional/constants/availability.constants";
 
 interface AvailabilityEntry {
   day?: string;

@@ -43,18 +43,17 @@ export function SearchFilters({
   setCity,
   serviceArea,
   setServiceArea,
-  disorderOptions = [], 
+  disorderOptions = [],
   yearOptions = [],
   cityOptions = [],
-  serviceAreaOptions = []
+  serviceAreaOptions = [],
 }: SearchFiltersProps) {
-  
   const dropdownTriggerStyle = cn(
-    "bg-white border border-gray-300 rounded-[5px] h-[36px]", 
-    "justify-between text-gray-600", 
-    "hover:bg-slate-50 hover:text-gray-700", 
+    "bg-white border border-gray-300 rounded-[5px] h-[36px]",
+    "justify-between text-gray-600",
+    "hover:bg-slate-50 hover:text-gray-700",
     "data-[state=open]:bg-slate-50",
-    "flex"
+    "flex",
   );
 
   const showDisorderFilter = setDisorder !== undefined;
@@ -69,20 +68,17 @@ export function SearchFilters({
         <Input
           placeholder="Busque por nome"
           className="pl-10 h-[36px] border-2 border-[#0D4F97] rounded-[5px] placeholder-[#0D4F97]"
-          value={searchName} 
+          value={searchName}
           onChange={(e) => setSearchName?.(e.target.value)}
         />
       </div>
 
       {(showDisorderFilter || showYearFilter || showCityFilter || showServiceAreaFilter) && (
         <div className="flex flex-shrink-0 items-center gap-2">
-
           {showServiceAreaFilter && (
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button
-                  className={cn(dropdownTriggerStyle, "w-[150px]")}
-                >
+                <Button className={cn(dropdownTriggerStyle, "w-[150px]")}>
                   <span className="flex-1 w-0 truncate text-left">
                     {serviceArea || "Tipo de Atendimento"}
                   </span>
@@ -90,9 +86,7 @@ export function SearchFilters({
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end" className="w-[--radix-dropdown-menu-trigger-width]">
-                <DropdownMenuItem onClick={() => setServiceArea?.("")}>
-                  Qualquer
-                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => setServiceArea?.("")}>Qualquer</DropdownMenuItem>
                 {serviceAreaOptions.map((option) => (
                   <DropdownMenuItem
                     key={option}
@@ -105,23 +99,17 @@ export function SearchFilters({
               </DropdownMenuContent>
             </DropdownMenu>
           )}
-          
+
           {showDisorderFilter && (
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button
-                  className={cn(dropdownTriggerStyle, "w-[150px]")}
-                >
-                  <span className="flex-1 w-0 truncate text-left">
-                    {disorder || "Transtorno"}
-                  </span>
+                <Button className={cn(dropdownTriggerStyle, "w-[150px]")}>
+                  <span className="flex-1 w-0 truncate text-left">{disorder || "Transtorno"}</span>
                   <ChevronDown className="h-4 w-4" />
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end" className="w-[--radix-dropdown-menu-trigger-width]">
-                <DropdownMenuItem onClick={() => setDisorder?.("")}>
-                  Qualquer
-                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => setDisorder?.("")}>Qualquer</DropdownMenuItem>
                 {disorderOptions.map((option) => (
                   <DropdownMenuItem
                     key={option}
@@ -138,19 +126,13 @@ export function SearchFilters({
           {showYearFilter && (
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button
-                  className={cn(dropdownTriggerStyle, "w-[90px]")}
-                >
-                  <span className="flex-1 w-0 truncate text-left">
-                    {year || "Ano"}
-                  </span>
+                <Button className={cn(dropdownTriggerStyle, "w-[90px]")}>
+                  <span className="flex-1 w-0 truncate text-left">{year || "Ano"}</span>
                   <ChevronDown className="h-4 w-4" />
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end" className="w-[100px]">
-                <DropdownMenuItem onClick={() => setYear?.("")}>
-                  Qualquer
-                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => setYear?.("")}>Qualquer</DropdownMenuItem>
                 {yearOptions.map((option) => (
                   <DropdownMenuItem
                     key={option}
@@ -163,23 +145,17 @@ export function SearchFilters({
               </DropdownMenuContent>
             </DropdownMenu>
           )}
-          
+
           {showCityFilter && (
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button
-                  className={cn(dropdownTriggerStyle, "w-[150px]")}
-                >
-                  <span className="flex-1 w-0 truncate text-left">
-                    {city || "Cidade"}
-                  </span>
+                <Button className={cn(dropdownTriggerStyle, "w-[150px]")}>
+                  <span className="flex-1 w-0 truncate text-left">{city || "Cidade"}</span>
                   <ChevronDown className="h-4 w-4" />
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end" className="w-[--radix-dropdown-menu-trigger-width]">
-                <DropdownMenuItem onClick={() => setCity?.("")}>
-                  Qualquer
-                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => setCity?.("")}>Qualquer</DropdownMenuItem>
                 {cityOptions.map((option) => (
                   <DropdownMenuItem
                     key={option}
@@ -192,7 +168,6 @@ export function SearchFilters({
               </DropdownMenuContent>
             </DropdownMenu>
           )}
-
         </div>
       )}
     </div>

@@ -20,12 +20,7 @@ import React from "react";
 import { useFieldArray, useForm } from "react-hook-form";
 
 import z from "zod";
-import {
-  DoubleCheckboxFormField,
-  DoubleColumn,
-  FormButton,
-  MembersRegisterForm,
-} from "../form";
+import { DoubleCheckboxFormField, DoubleColumn, FormButton, MembersRegisterForm } from "../form";
 import { Button } from "@/components/ui/button";
 
 export default function MembersRegisterKinshipsPage() {
@@ -59,10 +54,7 @@ export default function MembersRegisterKinshipsPage() {
         onSubmit={form.handleSubmit(onSubmit)}
         buttons={
           <>
-            <FormButton
-              type="button"
-              onClick={() => setStep(MembersRegisterStep.PERSONAL)}
-            >
+            <FormButton type="button" onClick={() => setStep(MembersRegisterStep.PERSONAL)}>
               Voltar
             </FormButton>
 
@@ -79,10 +71,7 @@ export default function MembersRegisterKinshipsPage() {
                 <FormItem>
                   <FormLabel>Nome Completo *</FormLabel>
                   <FormControl>
-                    <Input
-                      placeholder="Digite o nome completo do parente"
-                      {...field}
-                    />
+                    <Input placeholder="Digite o nome completo do parente" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -133,9 +122,7 @@ export default function MembersRegisterKinshipsPage() {
                       placeholder="000.000.000-00"
                       maxLength={14}
                       value={field.value}
-                      onChange={(e) =>
-                        field.onChange(formatCPF(e.target.value))
-                      }
+                      onChange={(e) => field.onChange(formatCPF(e.target.value))}
                     />
                   </FormControl>
                   <FormMessage />

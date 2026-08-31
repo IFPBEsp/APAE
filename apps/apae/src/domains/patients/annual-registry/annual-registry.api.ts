@@ -23,7 +23,10 @@ export async function uploadDocumentApi(patientId: string, formData: FormData): 
   if (!response.ok) throw new Error("Erro ao enviar documento.");
 }
 
-export async function createAnnualRegistryApi(patientId: string, payload: unknown): Promise<Response> {
+export async function createAnnualRegistryApi(
+  patientId: string,
+  payload: unknown,
+): Promise<Response> {
   return fetch(`${BASE_URL}/${patientId}/registro-anual`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
@@ -31,7 +34,11 @@ export async function createAnnualRegistryApi(patientId: string, payload: unknow
   });
 }
 
-export async function updateAnnualRegistryApi(patientId: string, registryId: string, payload: unknown): Promise<Response> {
+export async function updateAnnualRegistryApi(
+  patientId: string,
+  registryId: string,
+  payload: unknown,
+): Promise<Response> {
   return fetch(`${BASE_URL}/${patientId}/registro-anual/${registryId}`, {
     method: "PUT",
     headers: { "Content-Type": "application/json" },

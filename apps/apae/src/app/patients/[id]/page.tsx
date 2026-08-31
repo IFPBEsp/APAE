@@ -1,6 +1,5 @@
 "use client";
 
-
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -25,20 +24,20 @@ const InfoRow: React.FC<InfoRowProps> = ({ label, value }) => {
   if (value === null || value === undefined || value === "") {
     displayValue = "Não informado";
   } else if (label === "Recebe BPC?") {
-    displayValue = (value === true || String(value).toLowerCase() === 'true') ? "Sim" : "Não";
-  } else if (label === "Renda Familiar" && typeof value === 'number') {
-    displayValue = value.toLocaleString('pt-BR', {
-      style: 'currency',
-      currency: 'BRL',
+    displayValue = value === true || String(value).toLowerCase() === "true" ? "Sim" : "Não";
+  } else if (label === "Renda Familiar" && typeof value === "number") {
+    displayValue = value.toLocaleString("pt-BR", {
+      style: "currency",
+      currency: "BRL",
     });
-  } else if (typeof value === 'boolean') {
+  } else if (typeof value === "boolean") {
     displayValue = value ? "Sim" : "Não";
   } else {
     displayValue = value;
   }
 
   return (
-    <div className="mb-2 overflow-hidden"> 
+    <div className="mb-2 overflow-hidden">
       <span className="text-sm font-semibold text-gray-500">{label}</span>
       <p className="text-base text-black break-all">{displayValue}</p>
     </div>
@@ -64,55 +63,61 @@ export default function PersonDetailsPage() {
   }
 
   const [person, setPerson] = useState<PatientResponse | null>(null);
-  const [annualRegistry , setAnnualRegistry] = useState<AnnualRegistry | null>(null);
-  
+  const [annualRegistry, setAnnualRegistry] = useState<AnnualRegistry | null>(null);
+
   const [existingYears, setExistingYears] = useState<string[]>([]);
   const [selectedYear, setSelectedYear] = useState<string>(new Date().getFullYear().toString());
-  
+
   const [loadingPerson, setLoadingPerson] = useState(true);
   const [loadingRegistry, setLoadingRegistry] = useState(false);
 
-  const fetchPerson = useCallback(async (silent = false) => {
-    try {
-      if (!silent) setLoadingPerson(true); 
-      const response = await fetch(`/apae-geral/api/patients/${id}`);
-      if (!response.ok) throw new Error("Falha ao buscar dados do paciente.");
-      const data: PatientResponse = await response.json();
-      setPerson(data);
-    } catch (err: unknown) {
-      const errorMessage = err instanceof Error ? err.message : "Erro ao buscar dados do paciente.";
-      console.error(err);
-      toast.error(errorMessage);
-      router.push("/patients");
-    } finally {
-      if (!silent) setLoadingPerson(false);
-    }
-  }, [id, router]);
+  const fetchPerson = useCallback(
+    async (silent = false) => {
+      try {
+        if (!silent) setLoadingPerson(true);
+        const response = await fetch(`/apae-geral/api/patients/${id}`);
+        if (!response.ok) throw new Error("Falha ao buscar dados do paciente.");
+        const data: PatientResponse = await response.json();
+        setPerson(data);
+      } catch (err: unknown) {
+        const errorMessage =
+          err instanceof Error ? err.message : "Erro ao buscar dados do paciente.";
+        console.error(err);
+        toast.error(errorMessage);
+        router.push("/patients");
+      } finally {
+        if (!silent) setLoadingPerson(false);
+      }
+    },
+    [id, router],
+  );
 
   const fetchYears = useCallback(async () => {
     try {
-        const res = await fetch(`/apae-geral/api/patients/${id}/registro-anual/years-list`);
-        let yearsData: number[] = [];
-        
-        if (res.ok) {
-            yearsData = await res.json();
-        }
+      const res = await fetch(`/apae-geral/api/patients/${id}/registro-anual/years-list`);
+      let yearsData: number[] = [];
 
-        const currentYearStr = new Date().getFullYear().toString();
+      if (res.ok) {
+        yearsData = await res.json();
+      }
 
-        if (yearsData.length > 0) {
-            const sortedYears = yearsData.map(y => y.toString()).sort((a, b) => parseInt(b) - parseInt(a));
-            setExistingYears(sortedYears);
-            
-            if (!sortedYears.includes(selectedYear)) {
-                setSelectedYear(sortedYears[0]);
-            }
-        } else {
-            setExistingYears([currentYearStr]);
-            setSelectedYear(currentYearStr);
+      const currentYearStr = new Date().getFullYear().toString();
+
+      if (yearsData.length > 0) {
+        const sortedYears = yearsData
+          .map((y) => y.toString())
+          .sort((a, b) => parseInt(b) - parseInt(a));
+        setExistingYears(sortedYears);
+
+        if (!sortedYears.includes(selectedYear)) {
+          setSelectedYear(sortedYears[0]);
         }
+      } else {
+        setExistingYears([currentYearStr]);
+        setSelectedYear(currentYearStr);
+      }
     } catch (error) {
-        console.error("Erro ao buscar anos:", error);
+      console.error("Erro ao buscar anos:", error);
     }
   }, [id, selectedYear]);
 
@@ -134,14 +139,14 @@ export default function PersonDetailsPage() {
 
   useEffect(() => {
     if (id) {
-        fetchPerson();
-        fetchYears();
+      fetchPerson();
+      fetchYears();
     }
   }, [id, fetchPerson, fetchYears]);
 
   useEffect(() => {
     if (id && selectedYear) {
-        fetchRecord();
+      fetchRecord();
     }
   }, [id, selectedYear, fetchRecord]);
 
@@ -156,17 +161,17 @@ export default function PersonDetailsPage() {
   };
 
   const handleModalClose = (savedYear?: string) => {
-      setIsModalOpen(false);
-      if (savedYear) {
-          fetchYears().then(() => {
-              setSelectedYear(savedYear);
-              fetchPerson(true); 
-          });
-      } else {
-          fetchYears();
-          fetchRecord();
-          fetchPerson(true);
-      }
+    setIsModalOpen(false);
+    if (savedYear) {
+      fetchYears().then(() => {
+        setSelectedYear(savedYear);
+        fetchPerson(true);
+      });
+    } else {
+      fetchYears();
+      fetchRecord();
+      fetchPerson(true);
+    }
   };
 
   if (loadingPerson) {
@@ -179,7 +184,12 @@ export default function PersonDetailsPage() {
 
   if (!person) {
     return (
-      <div className="text-center mt-10"><p>Paciente não encontrado.</p><Button asChild variant="link"><Link href="/patients">Voltar</Link></Button></div>
+      <div className="text-center mt-10">
+        <p>Paciente não encontrado.</p>
+        <Button asChild variant="link">
+          <Link href="/patients">Voltar</Link>
+        </Button>
+      </div>
     );
   }
 
@@ -196,19 +206,25 @@ export default function PersonDetailsPage() {
       <div className="flex flex-col items-center gap-y-4 w-full mb-6">
         <Avatar className="h-40 w-40 border">
           <AvatarImage src={person?.photoUrl} alt={person?.fullName ?? "Foto do paciente"} />
-          <AvatarFallback className="font-baloo font-bold text-[32px]">{person?.fullName?.charAt(0) ?? "P"}</AvatarFallback>
+          <AvatarFallback className="font-baloo font-bold text-[32px]">
+            {person?.fullName?.charAt(0) ?? "P"}
+          </AvatarFallback>
         </Avatar>
         <h3 className="font-baloo font-bold text-[#0D4F97] text-[24px]">{person?.fullName}</h3>
       </div>
 
-      <DocumentCategoriesCard onClickCategory={(tipo: string) => { router.push(`/patients/${id}/documents/${tipo}`); }} />
-      
-      
+      <DocumentCategoriesCard
+        onClickCategory={(tipo: string) => {
+          router.push(`/patients/${id}/documents/${tipo}`);
+        }}
+      />
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-6">
         {/* Card Dados Pessoais */}
         <Card className="w-full relative font-nunito">
-          <CardHeader><CardTitle className="text-[#0D4F97]">Dados Pessoais</CardTitle></CardHeader>
+          <CardHeader>
+            <CardTitle className="text-[#0D4F97]">Dados Pessoais</CardTitle>
+          </CardHeader>
           <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-x-4">
             <InfoRow label="Nome Completo" value={person.fullName} />
             <InfoRow label="Data de Nasc." value={person.birthDate} />
@@ -222,7 +238,9 @@ export default function PersonDetailsPage() {
 
         {/* Card Documentação */}
         <Card className="w-full relative font-nunito">
-          <CardHeader><CardTitle className="text-[#0D4F97]">Documentação</CardTitle></CardHeader>
+          <CardHeader>
+            <CardTitle className="text-[#0D4F97]">Documentação</CardTitle>
+          </CardHeader>
           <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-x-4">
             <InfoRow label="CPF" value={person.cpf} />
             <InfoRow label="RG" value={person.rg} />
@@ -239,7 +257,9 @@ export default function PersonDetailsPage() {
 
         {/* Card Endereço */}
         <Card className="w-full relative font-nunito">
-          <CardHeader><CardTitle className="text-[#0D4F97]">Endereço Residencial</CardTitle></CardHeader>
+          <CardHeader>
+            <CardTitle className="text-[#0D4F97]">Endereço Residencial</CardTitle>
+          </CardHeader>
           <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-x-4">
             <InfoRow label="Rua" value={person.address?.street} />
             <InfoRow label="Número" value={person.address?.number} />
@@ -253,7 +273,9 @@ export default function PersonDetailsPage() {
 
         {/* Card Responsáveis */}
         <Card className="w-full relative font-nunito">
-          <CardHeader><CardTitle className="text-[#0D4F97]">Responsáveis</CardTitle></CardHeader>
+          <CardHeader>
+            <CardTitle className="text-[#0D4F97]">Responsáveis</CardTitle>
+          </CardHeader>
           <CardContent>
             {person.guardian && (
               <div className="mb-4 p-2 border rounded-md">
@@ -275,7 +297,7 @@ export default function PersonDetailsPage() {
                 <p className="font-bold text-base">Parentes</p>
                 <InfoRow label="Nome" value={parent.name} />
                 <InfoRow label="CPF" value={parent.cpf} />
-                <InfoRow label="Parentesco" value={parent.kinship}/>
+                <InfoRow label="Parentesco" value={parent.kinship} />
                 <InfoRow label="Profissão" value={parent.profession} />
                 <InfoRow label="Vivo?" value={parent.isAlive} />
               </div>
@@ -290,83 +312,122 @@ export default function PersonDetailsPage() {
             <div className="flex flex-wrap items-center gap-2">
               <TooltipProvider>
                 <Tooltip>
-                    <TooltipTrigger asChild>
-                        <Button size="sm" onClick={handleCreateClick} className="gap-1 bg-green-600 hover:bg-green-700 text-white border-0 h-8">
-                            <Plus className="h-4 w-4" /> Novo Ano
-                        </Button>
-                    </TooltipTrigger>
-                    <TooltipContent><p>Adicionar registro para um novo ano</p></TooltipContent>
+                  <TooltipTrigger asChild>
+                    <Button
+                      size="sm"
+                      onClick={handleCreateClick}
+                      className="gap-1 bg-green-600 hover:bg-green-700 text-white border-0 h-8"
+                    >
+                      <Plus className="h-4 w-4" /> Novo Ano
+                    </Button>
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    <p>Adicionar registro para um novo ano</p>
+                  </TooltipContent>
                 </Tooltip>
               </TooltipProvider>
               <TooltipProvider>
                 <Tooltip>
-                    <TooltipTrigger asChild>
-                         <span tabIndex={0}>
-                            <Button
-                                size="sm"
-                                onClick={handleEditClick}
-                                disabled={!hasRegistry || loadingRegistry}
-                                className="gap-1 hover:!bg-gray-100 text-[#0D4F97] border-0 disabled:opacity-50 disabled:cursor-not-allowed h-8"
-                                variant="outline"
-                            >
-                                <SquarePen className="h-4 w-4" /> {loadingRegistry ? "..." : "Editar"}
-                            </Button>
-                        </span>
-                    </TooltipTrigger>
-                    {!hasRegistry && !loadingRegistry && (<TooltipContent><p>Não existe registro para este ano.</p></TooltipContent>)}
+                  <TooltipTrigger asChild>
+                    <span tabIndex={0}>
+                      <Button
+                        size="sm"
+                        onClick={handleEditClick}
+                        disabled={!hasRegistry || loadingRegistry}
+                        className="gap-1 hover:!bg-gray-100 text-[#0D4F97] border-0 disabled:opacity-50 disabled:cursor-not-allowed h-8"
+                        variant="outline"
+                      >
+                        <SquarePen className="h-4 w-4" /> {loadingRegistry ? "..." : "Editar"}
+                      </Button>
+                    </span>
+                  </TooltipTrigger>
+                  {!hasRegistry && !loadingRegistry && (
+                    <TooltipContent>
+                      <p>Não existe registro para este ano.</p>
+                    </TooltipContent>
+                  )}
                 </Tooltip>
               </TooltipProvider>
               <div className="flex items-center gap-1 border border-gray-300 rounded-md px-2 py-1 h-8">
-                 <label htmlFor="year-select" className="text-sm font-semibold text-gray-600">Ano:</label>
+                <label htmlFor="year-select" className="text-sm font-semibold text-gray-600">
+                  Ano:
+                </label>
                 <select
-                    id="year-select"
-                    value={selectedYear}
-                    onChange={(e) => setSelectedYear(e.target.value)}
-                    className="text-sm focus:outline-none bg-transparent"
+                  id="year-select"
+                  value={selectedYear}
+                  onChange={(e) => setSelectedYear(e.target.value)}
+                  className="text-sm focus:outline-none bg-transparent"
                 >
-                    {existingYears.length > 0 ? (
-                        existingYears.map((year) => <option key={year} value={year}>{year}</option>)
-                    ) : (
-                        <option value={new Date().getFullYear()}>{new Date().getFullYear()}</option>
-                    )}
+                  {existingYears.length > 0 ? (
+                    existingYears.map((year) => (
+                      <option key={year} value={year}>
+                        {year}
+                      </option>
+                    ))
+                  ) : (
+                    <option value={new Date().getFullYear()}>{new Date().getFullYear()}</option>
+                  )}
                 </select>
               </div>
             </div>
           </CardHeader>
-          
+
           <CardContent>
             <InfoRow label="Alergias" value={person.allergies} />
             <InfoRow label="Vacinas" value={person.vaccineNames?.map((v) => v.name).join(", ")} />
-            
-            <h3 className="font-bold text-base mt-4 pt-4 border-t text-[#0D4F97]">Registro Anual ({selectedYear})</h3>
+
+            <h3 className="font-bold text-base mt-4 pt-4 border-t text-[#0D4F97]">
+              Registro Anual ({selectedYear})
+            </h3>
 
             {loadingRegistry ? (
-              <div className="py-4 flex justify-center"><Loader2 className="h-6 w-6 animate-spin text-[#0D4F97]" /></div>
-            ) : annualRegistry  ? (
+              <div className="py-4 flex justify-center">
+                <Loader2 className="h-6 w-6 animate-spin text-[#0D4F97]" />
+              </div>
+            ) : annualRegistry ? (
               <div className="mt-2 animate-in fade-in slide-in-from-bottom-2">
-                <InfoRow label="Recebe BPC?" value={annualRegistry .bpc} />
-                <InfoRow label="Renda Familiar" value={annualRegistry .familyIncome} />
-                <InfoRow label="Tipo de Atendimento" value={annualRegistry .serviceAreas?.map((atendimento) => atendimento.area).join(", ")} />
-                <InfoRow label="Doenças" value={annualRegistry .diseases} />
-                <InfoRow label="Medicamentos Contínuos" value={annualRegistry .continuousMedication} />
-                <InfoRow label="Transtornos" value={annualRegistry.disorders?.map((d) => d.name).join(", ")} />
+                <InfoRow label="Recebe BPC?" value={annualRegistry.bpc} />
+                <InfoRow label="Renda Familiar" value={annualRegistry.familyIncome} />
+                <InfoRow
+                  label="Tipo de Atendimento"
+                  value={annualRegistry.serviceAreas
+                    ?.map((atendimento) => atendimento.area)
+                    .join(", ")}
+                />
+                <InfoRow label="Doenças" value={annualRegistry.diseases} />
+                <InfoRow
+                  label="Medicamentos Contínuos"
+                  value={annualRegistry.continuousMedication}
+                />
+                <InfoRow
+                  label="Transtornos"
+                  value={annualRegistry.disorders?.map((d) => d.name).join(", ")}
+                />
               </div>
             ) : (
               <div className="text-center py-6 bg-slate-50 rounded-lg mt-2 border border-dashed border-slate-200">
-                <p className="text-sm text-gray-500 mb-2">Nenhum registro encontrado para {selectedYear}.</p>
-                <Button variant="link" onClick={handleCreateClick} className="text-[#0D4F97] h-auto p-0 text-sm">Clique para criar um registro</Button>
+                <p className="text-sm text-gray-500 mb-2">
+                  Nenhum registro encontrado para {selectedYear}.
+                </p>
+                <Button
+                  variant="link"
+                  onClick={handleCreateClick}
+                  className="text-[#0D4F97] h-auto p-0 text-sm"
+                >
+                  Clique para criar um registro
+                </Button>
               </div>
             )}
           </CardContent>
         </Card>
-        
-        <AnnualRegistryEditModal 
-          isOpen={isModalOpen} 
+
+        <AnnualRegistryEditModal
+          isOpen={isModalOpen}
           onClose={handleModalClose}
-          patientId={id} 
+          patientId={id}
           currentYear={selectedYear}
-          initialData={modalMode === "edit" ? annualRegistry  : null}
-          mode={modalMode} 
+          initialData={modalMode === "edit" ? annualRegistry : null}
+          mode={modalMode}
         />
       </div>
     </main>

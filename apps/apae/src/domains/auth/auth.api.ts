@@ -1,9 +1,7 @@
 import axios from "axios";
 import { FormLogin } from "./authSchema";
 
-const API_URL =
-  process.env.NEXT_PUBLIC_API_URL ||
-  "http://localhost:8090/apae-geral/api";
+const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8090/apae-geral/api";
 
 export async function login(data: FormLogin) {
   const response = await fetch("/apae-geral/api/auth/login", {
@@ -18,10 +16,7 @@ export async function login(data: FormLogin) {
 }
 
 export async function requestPasswordRecovery(email: string) {
-  return axios.post(
-    `${API_URL}/auth/password-recovery/request`,
-    { email }
-  );
+  return axios.post(`${API_URL}/auth/password-recovery/request`, { email });
 }
 
 export async function resetPassword(data: {
@@ -29,8 +24,5 @@ export async function resetPassword(data: {
   newPassword: string;
   confirmPassword: string;
 }) {
-  return axios.post(
-    `${API_URL}/auth/password-recovery/reset`,
-    data
-  );
+  return axios.post(`${API_URL}/auth/password-recovery/reset`, data);
 }

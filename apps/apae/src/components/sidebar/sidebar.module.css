@@ -1,69 +1,71 @@
 .sidebar {
-    background-color: rgba(178, 215, 236, 0.75) !important; 
-    color: #0D4F97;
-    border-radius: 24px !important;
-    
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
+  background-color: rgba(178, 215, 236, 0.75) !important;
+  color: #0d4f97;
+  border-radius: 24px !important;
+
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
 }
 
 .header {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    position: relative;
-    margin-top: 10px;
-    margin-left: 10px;
-    margin-bottom: 10px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  margin-top: 10px;
+  margin-left: 10px;
+  margin-bottom: 10px;
 }
 
 .logoContainer {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
 .textContainer {
-    text-align: center;
+  text-align: center;
 }
 
 .logo {
-    padding: 5px;
-    margin-bottom: 8px;
+  padding: 5px;
+  margin-bottom: 8px;
 }
 
 .title {
-    font-weight: bold;
-    color: #0D4F97;
+  font-weight: bold;
+  color: #0d4f97;
 }
 
 .subtitle {
-    color: #0D4F97;
-    font-size: 14px;
+  color: #0d4f97;
+  font-size: 14px;
 }
 
 .listItem:active {
-    background-color: #FFFFFF;
-    color: #000000;
+  background-color: #ffffff;
+  color: #000000;
 }
 
 .listItem:hover {
-    background-color: #0D4F97;
-    color: #FFFFFF;
+  background-color: #0d4f97;
+  color: #ffffff;
 }
 
 .menuButton {
-    color: #0D4F97;
-    transition: background-color 0.2s, color 0.2s;
+  color: #0d4f97;
+  transition:
+    background-color 0.2s,
+    color 0.2s;
 }
 
 .closeButton {
-    position: absolute;
-    top: 5px;
-    left: 5px;
-    background: transparent;
-    border: none;
-    color: #0D4F97;
-    cursor: pointer;
+  position: absolute;
+  top: 5px;
+  left: 5px;
+  background: transparent;
+  border: none;
+  color: #0d4f97;
+  cursor: pointer;
 }

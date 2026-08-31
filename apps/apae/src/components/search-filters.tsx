@@ -71,10 +71,7 @@ export function SearchFilters({
         />
       </div>
 
-      {(showDisorderFilter ||
-        showYearFilter ||
-        showCityFilter ||
-        showServiceAreaFilter) && (
+      {(showDisorderFilter || showYearFilter || showCityFilter || showServiceAreaFilter) && (
         <div className="flex flex-wrap sm:flex-nowrap items-center gap-2 w-full sm:w-auto">
           {showServiceAreaFilter && (
             <DropdownMenu>
@@ -86,13 +83,8 @@ export function SearchFilters({
                   <ChevronDown className="h-4 w-4" />
                 </Button>
               </DropdownMenuTrigger>
-              <DropdownMenuContent
-                align="end"
-                className="w-[--radix-dropdown-menu-trigger-width]"
-              >
-                <DropdownMenuItem onClick={() => setServiceArea?.("")}>
-                  Qualquer
-                </DropdownMenuItem>
+              <DropdownMenuContent align="end" className="w-[--radix-dropdown-menu-trigger-width]">
+                <DropdownMenuItem onClick={() => setServiceArea?.("")}>Qualquer</DropdownMenuItem>
                 {serviceAreaOptions.map((option) => (
                   <DropdownMenuItem
                     key={option}
@@ -112,19 +104,12 @@ export function SearchFilters({
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button className={cn(dropdownTriggerStyle, "w-full sm:w-[150px]")}>
-                  <span className="flex-1 w-0 truncate text-left">
-                    {disorder || "Transtorno"}
-                  </span>
+                  <span className="flex-1 w-0 truncate text-left">{disorder || "Transtorno"}</span>
                   <ChevronDown className="h-4 w-4" />
                 </Button>
               </DropdownMenuTrigger>
-              <DropdownMenuContent
-                align="end"
-                className="w-[--radix-dropdown-menu-trigger-width]"
-              >
-                <DropdownMenuItem onClick={() => setDisorder?.("")}>
-                  Qualquer
-                </DropdownMenuItem>
+              <DropdownMenuContent align="end" className="w-[--radix-dropdown-menu-trigger-width]">
+                <DropdownMenuItem onClick={() => setDisorder?.("")}>Qualquer</DropdownMenuItem>
                 {disorderOptions.map((option) => (
                   <DropdownMenuItem
                     key={option}
@@ -142,16 +127,12 @@ export function SearchFilters({
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button className={cn(dropdownTriggerStyle, "w-full sm:w-[90px]")}>
-                  <span className="flex-1 w-0 truncate text-left">
-                    {year || "Ano"}
-                  </span>
+                  <span className="flex-1 w-0 truncate text-left">{year || "Ano"}</span>
                   <ChevronDown className="h-4 w-4" />
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end" className="w-[100px]">
-                <DropdownMenuItem onClick={() => setYear?.("")}>
-                  Qualquer
-                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => setYear?.("")}>Qualquer</DropdownMenuItem>
                 {yearOptions.map((option) => (
                   <DropdownMenuItem
                     key={option}
@@ -169,19 +150,12 @@ export function SearchFilters({
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button className={cn(dropdownTriggerStyle, "w-full sm:w-[150px]")}>
-                  <span className="flex-1 w-0 truncate text-left">
-                    {city || "Cidade"}
-                  </span>
+                  <span className="flex-1 w-0 truncate text-left">{city || "Cidade"}</span>
                   <ChevronDown className="h-4 w-4" />
                 </Button>
               </DropdownMenuTrigger>
-              <DropdownMenuContent
-                align="end"
-                className="w-[--radix-dropdown-menu-trigger-width]"
-              >
-                <DropdownMenuItem onClick={() => setCity?.("")}>
-                  Qualquer
-                </DropdownMenuItem>
+              <DropdownMenuContent align="end" className="w-[--radix-dropdown-menu-trigger-width]">
+                <DropdownMenuItem onClick={() => setCity?.("")}>Qualquer</DropdownMenuItem>
                 {cityOptions.map((option) => (
                   <DropdownMenuItem
                     key={option}

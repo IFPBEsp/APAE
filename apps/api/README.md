@@ -8,12 +8,12 @@ A API é construída com **Java** e **Spring Boot**, responsável por todas as r
 
 Antes de escrever qualquer linha de código, seu ambiente precisa estar preparado. Por favor, instale as ferramentas abaixo.
 
-| Ferramenta | Descrição | Como Instalar / Verificar                                                                                                                                                                                                                                                                                                                                                                                                           |
-| :--- | :--- |:------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| **Java (JDK)** | A linguagem de programação base do projeto. | **Versão 21 ou superior.** <br/> 1. Verifique se já tem: `java -version` <br/> 2. [Link para instalar](https://www.oracle.com/java/technologies/downloads/)                                                                                                                                                                                                                                                                         |
-| **Git** | Sistema de controle de versão para baixar o código. | 1. Verifique se já tem: `git --version` <br/> 2. [Link para instalar](https://git-scm.com/downloads)                                                                                                                                                                                                                                                                                                                                |
-| **Docker** | Plataforma para rodar nosso banco de dados em um contêiner. | 1. O **Docker Desktop** (Windows/Mac) já inclui o `docker compose`. <br/> 2. [Link para instalar (Windows)](https://docs.docker.com/desktop/install/windows-install/) <br/> 3. [Link para instalar (Mac)](https://docs.docker.com/desktop/install/mac-install/) <br/> 4. [Link para instalar (Linux)](https://docs.docker.com/engine/install/ubuntu/) e ([docker-compose separado](https://docs.docker.com/compose/install/linux/)) |
-| **IDE** | Um editor de código para facilitar o desenvolvimento. | **Altamente recomendado:** <br/> 1. [IntelliJ IDEA Community (Gratuito)](https://www.jetbrains.com/idea/download/) <br/> 2. [Visual Studio Code (com Java Extension Pack)](https://code.visualstudio.com/docs/java/java-tutorial)                                                                                                                                                                                                   |
+| Ferramenta     | Descrição                                                   | Como Instalar / Verificar                                                                                                                                                                                                                                                                                                                                                                                                           |
+| :------------- | :---------------------------------------------------------- | :---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Java (JDK)** | A linguagem de programação base do projeto.                 | **Versão 21 ou superior.** <br/> 1. Verifique se já tem: `java -version` <br/> 2. [Link para instalar](https://www.oracle.com/java/technologies/downloads/)                                                                                                                                                                                                                                                                         |
+| **Git**        | Sistema de controle de versão para baixar o código.         | 1. Verifique se já tem: `git --version` <br/> 2. [Link para instalar](https://git-scm.com/downloads)                                                                                                                                                                                                                                                                                                                                |
+| **Docker**     | Plataforma para rodar nosso banco de dados em um contêiner. | 1. O **Docker Desktop** (Windows/Mac) já inclui o `docker compose`. <br/> 2. [Link para instalar (Windows)](https://docs.docker.com/desktop/install/windows-install/) <br/> 3. [Link para instalar (Mac)](https://docs.docker.com/desktop/install/mac-install/) <br/> 4. [Link para instalar (Linux)](https://docs.docker.com/engine/install/ubuntu/) e ([docker-compose separado](https://docs.docker.com/compose/install/linux/)) |
+| **IDE**        | Um editor de código para facilitar o desenvolvimento.       | **Altamente recomendado:** <br/> 1. [IntelliJ IDEA Community (Gratuito)](https://www.jetbrains.com/idea/download/) <br/> 2. [Visual Studio Code (com Java Extension Pack)](https://code.visualstudio.com/docs/java/java-tutorial)                                                                                                                                                                                                   |
 
 ---
 
@@ -56,7 +56,7 @@ docker ps
 
 Você deve ver alguns contêineres com os seguintes nomes: `minio_docs_apae`, `apae-postgres`, `api-db-1`.
 
------
+---
 
 ## ▶️ Sobre a Execução da Aplicação
 
@@ -84,7 +84,7 @@ Se você prefere usar a interface gráfica da sua IDE:
     `src/main/java/br/org/apae/api/ApiApplication.java`
 4.  Clique no ícone de "Play" (▶) ao lado do nome da classe ou dentro do arquivo para iniciar a aplicação.
 
------
+---
 
 ## 📚 Verificando se Tudo Funcionou (Swagger)
 
@@ -99,29 +99,27 @@ Abra seu navegador e acesse:
 
 Você deverá ver a interface do Swagger listando todos os "Controllers" (como Patient, Auth, Appointment, etc.) e seus respectivos endpoints.
 
------
+---
 
 ## 🤯 Solução de Problemas Comuns (Troubleshooting)
 
 **Problema:** O comando `docker compose up -d` falha com um erro `port is already allocated` (ou "porta já em uso").
 **Solução:** Outro programa em sua máquina (talvez outra instância de um banco de dados) está usando a porta (ex: `5432`). Você tem duas opções:
-1\.  Pare o outro programa.
-2\.  Altere a porta no `docker-compose.yml` (ex: de `"5432:5432"` para `"5433:5432"`) e atualize o `application.properties` (`localhost:5432` para `localhost:5433`).
+1\. Pare o outro programa.
+2\. Altere a porta no `docker-compose.yml` (ex: de `"5432:5432"` para `"5433:5432"`) e atualize o `application.properties` (`localhost:5432` para `localhost:5433`).
 
 **Problema:** O comando `./mvnw spring-boot:run` falha com `Permission denied` (no Linux/Mac).
 **Solução:** O script não tem permissão de execução. Rode `chmod +x mvnw` e tente novamente.
 
 **Problema:** A aplicação inicia, mas falha com erros de `Connection refused` (Conexão recusada) no log.
 **Solução:** A API não conseguiu se conectar ao banco de dados. Verifique:
-1\.  O Docker está rodando? Rode `docker ps` para confirmar que o contêiner do banco está `Up`.
+1\. O Docker está rodando? Rode `docker ps` para confirmar que o contêiner do banco está `Up`.
 
 **Problema:** A IDE (IntelliJ/VSCode) mostra erros em todos os arquivos e não encontra as classes (como `RestController`, `Autowired`, etc).
 **Solução:** A IDE não importou o projeto como um projeto Maven.
-1\.  Feche o projeto.
-2\.  Selecione "Open" ou "Import Project".
-3\.  Selecione a pasta `apps/api` (e não a `APAE`).
-4\.  Se a IDE perguntar, confirme que você quer abrir como um projeto "Maven".
+1\. Feche o projeto.
+2\. Selecione "Open" ou "Import Project".
+3\. Selecione a pasta `apps/api` (e não a `APAE`).
+4\. Se a IDE perguntar, confirme que você quer abrir como um projeto "Maven".
 
 ---
-
-

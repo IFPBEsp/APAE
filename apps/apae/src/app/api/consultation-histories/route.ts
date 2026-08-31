@@ -15,18 +15,13 @@ export async function POST(req: Request) {
     if (error instanceof AxiosError) {
       return NextResponse.json(
         {
-          message:
-            error.response?.data?.message ||
-            "Erro ao registrar histórico de consulta",
+          message: error.response?.data?.message || "Erro ao registrar histórico de consulta",
         },
-        { status: error.response?.status || 500 }
+        { status: error.response?.status || 500 },
       );
     }
 
-    return NextResponse.json(
-      { message: "Erro interno do servidor" },
-      { status: 500 }
-    );
+    return NextResponse.json({ message: "Erro interno do servidor" }, { status: 500 });
   }
 }
 
@@ -55,13 +50,10 @@ export async function GET(req: Request) {
 
       return NextResponse.json(
         { message: "Erro ao buscar histórico de consultas" },
-        { status: error.response?.status || 500 }
+        { status: error.response?.status || 500 },
       );
     }
 
-    return NextResponse.json(
-      { message: "Erro interno do servidor" },
-      { status: 500 }
-    );
+    return NextResponse.json({ message: "Erro interno do servidor" }, { status: 500 });
   }
 }

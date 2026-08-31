@@ -46,10 +46,7 @@ export default function MembersRegisterGuardianPage() {
         onSubmit={form.handleSubmit(onSubmit)}
         buttons={
           <>
-            <FormButton
-              type="button"
-              onClick={() => setStep(MembersRegisterStep.ADDITIONALS)}
-            >
+            <FormButton type="button" onClick={() => setStep(MembersRegisterStep.ADDITIONALS)}>
               Voltar
             </FormButton>
 
@@ -65,10 +62,7 @@ export default function MembersRegisterGuardianPage() {
               <FormItem>
                 <FormLabel>Nome Completo *</FormLabel>
                 <FormControl>
-                  <Input
-                    placeholder="Digite o nome completo do responsável"
-                    {...field}
-                  />
+                  <Input placeholder="Digite o nome completo do responsável" {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -82,10 +76,7 @@ export default function MembersRegisterGuardianPage() {
               <FormItem>
                 <FormLabel>Contato de Emergência *</FormLabel>
                 <FormControl>
-                  <Input
-                    placeholder="Número de telefone, email e etc."
-                    {...field}
-                  />
+                  <Input placeholder="Número de telefone, email e etc." {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>

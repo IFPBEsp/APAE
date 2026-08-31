@@ -22,6 +22,14 @@
       "@/*": ["./src/*"]
     }
   },
-  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts", "../next-app/src/app/components/ButtonWrapper.tsx", "../next-app/src/components/ui/avatar.tsx", "../agendamento/src/app/visualization-patients/page.tsx"],
+  "include": [
+    "next-env.d.ts",
+    "**/*.ts",
+    "**/*.tsx",
+    ".next/types/**/*.ts",
+    "../next-app/src/app/components/ButtonWrapper.tsx",
+    "../next-app/src/components/ui/avatar.tsx",
+    "../agendamento/src/app/visualization-patients/page.tsx"
+  ],
   "exclude": ["node_modules"]
 }

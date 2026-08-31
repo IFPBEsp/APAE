@@ -1,4 +1,9 @@
-import type { Vaccine, CreateVaccineParams, UpdateVaccineParams, DeleteVaccineParams } from "./vaccines.types";
+import type {
+  Vaccine,
+  CreateVaccineParams,
+  UpdateVaccineParams,
+  DeleteVaccineParams,
+} from "./vaccines.types";
 
 const BASE_URL = "/apae-geral/api/vaccines";
 

@@ -5,18 +5,12 @@ import { toast } from "react-toastify";
 
 import { resetPassword } from "../auth.api";
 
-import {
-  FormNewPasswordSchema,
-} from "../authSchema";
+import { FormNewPasswordSchema } from "../authSchema";
 
-export function useResetPassword(
-  token: string
-) {
+export function useResetPassword(token: string) {
   const router = useRouter();
 
-  async function submit(
-    data: FormNewPasswordSchema
-  ) {
+  async function submit(data: FormNewPasswordSchema) {
     try {
       await resetPassword({
         token,
@@ -24,9 +18,7 @@ export function useResetPassword(
         confirmPassword: data.confirmPassword,
       });
 
-      toast.success(
-        "Senha alterada com sucesso."
-      );
+      toast.success("Senha alterada com sucesso.");
 
       router.push("/auth/login");
     } catch {

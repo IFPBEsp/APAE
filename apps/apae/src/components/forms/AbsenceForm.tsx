@@ -45,7 +45,6 @@ export function AbsenceForm({
   absenceDate,
   onSuccess,
 }: AbsenceFormProps) {
-
   const form = useForm<FormDataType>({
     defaultValues: {
       hasJustification: "",
@@ -89,9 +88,7 @@ export function AbsenceForm({
         absenceDate,
         isJustified: data.hasJustification === "yes",
         justification:
-          data.hasJustification === "yes"
-            ? data.justificationText
-            : "Sem justificativa",
+          data.hasJustification === "yes" ? data.justificationText : "Sem justificativa",
         justificationDocumentId: documentId,
       };
 
@@ -118,7 +115,6 @@ export function AbsenceForm({
       }
 
       window.location.reload();
-
     } catch (error: any) {
       toast.error(error.message || "Erro ao registrar falta");
     }
@@ -129,7 +125,6 @@ export function AbsenceForm({
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)}>
           <CardContent className="space-y-6">
-
             <FormField
               control={form.control}
               name="hasJustification"
@@ -137,26 +132,18 @@ export function AbsenceForm({
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>
-                    Possui justificativa?{" "}
-                    <span className="text-red-500">*</span>
+                    Possui justificativa? <span className="text-red-500">*</span>
                   </FormLabel>
 
                   <FormControl>
-                    <Select
-                      onValueChange={field.onChange}
-                      value={field.value}
-                    >
+                    <Select onValueChange={field.onChange} value={field.value}>
                       <SelectTrigger>
                         <SelectValue placeholder="Selecione uma opção" />
                       </SelectTrigger>
 
                       <SelectContent>
-                        <SelectItem value="yes">
-                          Com justificativa
-                        </SelectItem>
-                        <SelectItem value="no">
-                          Sem justificativa
-                        </SelectItem>
+                        <SelectItem value="yes">Com justificativa</SelectItem>
+                        <SelectItem value="no">Sem justificativa</SelectItem>
                       </SelectContent>
                     </Select>
                   </FormControl>
@@ -168,16 +155,12 @@ export function AbsenceForm({
 
             {hasJustification === "yes" && (
               <div className="space-y-4">
-
                 <FormField
                   control={form.control}
                   name="justificationText"
                   rules={{
                     validate: (value) => {
-                      if (
-                        form.getValues("hasJustification") === "yes" &&
-                        !value?.trim()
-                      ) {
+                      if (form.getValues("hasJustification") === "yes" && !value?.trim()) {
                         return "Obrigatório";
                       }
                       return true;
@@ -188,10 +171,7 @@ export function AbsenceForm({
                       <FormLabel>Descrição da justificativa</FormLabel>
 
                       <FormControl>
-                        <Textarea
-                          placeholder="Descreva a justificativa"
-                          {...field}
-                        />
+                        <Textarea placeholder="Descreva a justificativa" {...field} />
                       </FormControl>
 
                       <FormMessage />
@@ -214,9 +194,7 @@ export function AbsenceForm({
 
                   {file && (
                     <div className="flex items-center justify-between text-sm">
-                      <span className="text-muted-foreground">
-                        {file.name}
-                      </span>
+                      <span className="text-muted-foreground">{file.name}</span>
 
                       <Button
                         type="button"
@@ -236,7 +214,6 @@ export function AbsenceForm({
                     </div>
                   )}
                 </div>
-
               </div>
             )}
 
@@ -245,7 +222,6 @@ export function AbsenceForm({
                 Registrar Falta
               </Button>
             </div>
-
           </CardContent>
         </form>
       </Form>

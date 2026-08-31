@@ -31,8 +31,7 @@ export async function GET(
   if (!year || !category) {
     return NextResponse.json(
       {
-        error:
-          "Os parâmetros 'year' e 'category' são obrigatórios e estão faltando",
+        error: "Os parâmetros 'year' e 'category' são obrigatórios e estão faltando",
       },
       { status: 400 },
     );
@@ -41,33 +40,22 @@ export async function GET(
   const endpointSuffix = categoryMap[category];
 
   if (!endpointSuffix) {
-    return NextResponse.json(
-      { error: "Categoria de documento inválida" },
-      { status: 400 },
-    );
+    return NextResponse.json({ error: "Categoria de documento inválida" }, { status: 400 });
   }
 
   const parsedYear = Number.parseInt(year, 10);
 
   if (Number.isNaN(parsedYear)) {
-    return NextResponse.json(
-      { error: "O parâmetro 'year' deve ser numérico" },
-      { status: 400 },
-    );
+    return NextResponse.json({ error: "O parâmetro 'year' deve ser numérico" }, { status: 400 });
   }
 
   try {
     const api = await createDocumentsAPI();
-    const response = await api.get(
-      `/patients/${patientId}/documents/${endpointSuffix}`,
-      {
-        params: { year: parsedYear },
-      },
-    );
+    const response = await api.get(`/patients/${patientId}/documents/${endpointSuffix}`, {
+      params: { year: parsedYear },
+    });
 
-    const documents = Array.isArray(response.data)
-      ? (response.data as DocumentSummary[])
-      : [];
+    const documents = Array.isArray(response.data) ? (response.data as DocumentSummary[]) : [];
 
     const filteredDocuments = type
       ? documents.filter((document) => document.type?.toUpperCase() === type)
@@ -81,9 +69,6 @@ export async function GET(
     }
 
     console.error("Erro na API:", axiosError.response?.data || error);
-    return NextResponse.json(
-      { error: "Erro ao buscar documentos" },
-      { status: 500 },
-    );
+    return NextResponse.json({ error: "Erro ao buscar documentos" }, { status: 500 });
   }
 }

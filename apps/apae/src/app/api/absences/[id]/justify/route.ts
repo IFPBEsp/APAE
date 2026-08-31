@@ -2,14 +2,11 @@ import { NextResponse } from "next/server";
 import { createBaseApi } from "@/lib/axios";
 import { AxiosError } from "axios";
 
-export async function PATCH(
-  req: Request,
-  { params }: { params: Promise<{ id: string }> }
-) {
+export async function PATCH(req: Request, { params }: { params: Promise<{ id: string }> }) {
   try {
     const { id } = await params;
     const body = await req.json();
-    
+
     const api = await createBaseApi();
     const response = await api.patch(`/absences/${id}/justify`, body);
 
@@ -18,7 +15,7 @@ export async function PATCH(
     if (error instanceof AxiosError) {
       return NextResponse.json(
         { message: error.response?.data?.message || "Erro ao justificar falta" },
-        { status: error.response?.status || 500 }
+        { status: error.response?.status || 500 },
       );
     }
     return NextResponse.json({ message: "Erro interno do servidor" }, { status: 500 });

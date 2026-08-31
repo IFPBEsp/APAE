@@ -1,21 +1,17 @@
-'use client';
+"use client";
 
 import {
   CalendarDays,
   SearchIcon,
   Users,
-  AlertTriangle // Icon Import
-} from 'lucide-react';
-import { useEffect, useState, useRef } from 'react';
+  AlertTriangle, // Icon Import
+} from "lucide-react";
+import { useEffect, useState, useRef } from "react";
 
-import { Button } from '@/components/ui/button';
-import { Calendar } from '@/components/ui/calendar';
-import { Card, CardContent } from '@/components/ui/card';
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from '@/components/ui/popover';
+import { Button } from "@/components/ui/button";
+import { Calendar } from "@/components/ui/calendar";
+import { Card, CardContent } from "@/components/ui/card";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import {
   Table,
   TableBody,
@@ -23,9 +19,9 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from '@/components/ui/table';
-import { AppointmentForm } from '@/components/forms/AppointmentForm';
-import { InfoCard } from '@/components/shared/InfoCard';
+} from "@/components/ui/table";
+import { AppointmentForm } from "@/components/forms/AppointmentForm";
+import { InfoCard } from "@/components/shared/InfoCard";
 import {
   Dialog,
   DialogContent,
@@ -33,23 +29,22 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from '@/components/ui/dialog';
-import { Input } from '@/components/ui/input';
+} from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
 import {
-  Select, SelectContent,
-  SelectGroup, SelectItem, SelectLabel,
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectLabel,
   SelectTrigger,
-  SelectValue
-} from '@/components/ui/select';
-import { formatDatePTBR } from '@/lib/utils';
-import { ptBR } from 'date-fns/locale';
+  SelectValue,
+} from "@/components/ui/select";
+import { formatDatePTBR } from "@/lib/utils";
+import { ptBR } from "date-fns/locale";
 import Link from "next/link";
-import {
-  Appointment,
-  getAppointments,
-  getServiceAreas,
-} from "../../services/appointmentService";
-import {Tooltip, TooltipContent, TooltipProvider, TooltipTrigger} from "@radix-ui/react-tooltip";
+import { Appointment, getAppointments, getServiceAreas } from "../../services/appointmentService";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@radix-ui/react-tooltip";
 
 type Area = {
   id: number;
@@ -58,90 +53,83 @@ type Area = {
 
 export default function AllApointments() {
   const [selectedDate, setSelectedDate] = useState<Date | undefined>(undefined);
-  const [selectedArea, setSelectedArea] = useState('');
-  const [selectedStatus, setSelectedStatus] = useState('');
-  const [searchName, setSearchName] = useState('');
+  const [selectedArea, setSelectedArea] = useState("");
+  const [selectedStatus, setSelectedStatus] = useState("");
+  const [searchName, setSearchName] = useState("");
   const [areas, setAreas] = useState<Area[]>([]);
   const [appointments, setAppointments] = useState<Appointment[]>([]);
   const [alertPatientIds, setAlertPatientIds] = useState<Set<string>>(new Set()); // ALERT STATE
   const initialized = useRef(false);
   const [isCreateOpen, setIsCreateOpen] = useState(false);
 
-useEffect(() => {
-  if (appointments.length > 0) return;
-  
-  const fetchAppointments = async () => {
+  useEffect(() => {
+    if (appointments.length > 0) return;
 
-    if (initialized.current) return;
-    try {
-      initialized.current = true;
+    const fetchAppointments = async () => {
+      if (initialized.current) return;
+      try {
+        initialized.current = true;
 
-      const response = await getAppointments(undefined, undefined, 0, 100);
+        const response = await getAppointments(undefined, undefined, 0, 100);
 
-      setAppointments(response.content as Appointment[])
+        setAppointments(response.content as Appointment[]);
 
-      const areasData = await getServiceAreas();
-      const existingAreas: Area[] = areasData.map(
-        (area, index) => ({ id: index, name: area })
-      );
-      setAreas(existingAreas);
+        const areasData = await getServiceAreas();
+        const existingAreas: Area[] = areasData.map((area, index) => ({ id: index, name: area }));
+        setAreas(existingAreas);
 
-      // Direct fetch to API (working logic)
-      const absencesResponse = await fetch('/apae-geral/api/patients/with-absences?minAbsences=3');
-      
-      if (!absencesResponse.ok) {
-        throw new Error('Erro ao buscar pacientes com faltas');
+        // Direct fetch to API (working logic)
+        const absencesResponse = await fetch(
+          "/apae-geral/api/patients/with-absences?minAbsences=3",
+        );
+
+        if (!absencesResponse.ok) {
+          throw new Error("Erro ao buscar pacientes com faltas");
+        }
+
+        const absencesData = await absencesResponse.json();
+        const absencesList = absencesData.content || [];
+        const idsSet = new Set<string>(absencesList.map((item: any) => item.patient.id));
+
+        setAlertPatientIds(idsSet);
+      } catch (error) {
+        console.error(error);
+        initialized.current = false;
       }
+    };
 
-      const absencesData = await absencesResponse.json();
-      const absencesList = absencesData.content || [];
-      const idsSet = new Set<string>(absencesList.map((item: any) => item.patient.id));
-      
-      setAlertPatientIds(idsSet);
-
-    } catch (error) {
-      console.error(error);
-      initialized.current = false;
-    }
-  };
-  
-  fetchAppointments();
-}, [appointments]);
+    fetchAppointments();
+  }, [appointments]);
 
   const filteredAppointments = appointments.filter((appointment) => {
     const matchesDate = selectedDate
-      ? formatDatePTBR(appointment.initialDate) ===
-        formatDatePTBR(selectedDate.toString())
+      ? formatDatePTBR(appointment.initialDate) === formatDatePTBR(selectedDate.toString())
       : true;
 
     const search = searchName.toLowerCase();
 
     const matchesSearch =
-      appointment.annualRegistration.patient.fullName
-        .toLowerCase()
-        .includes(search) ||
-      appointment.professional.name
-        .toLowerCase()
-        .includes(search);
+      appointment.annualRegistration.patient.fullName.toLowerCase().includes(search) ||
+      appointment.professional.name.toLowerCase().includes(search);
 
     const matchesArea = selectedArea
       ? appointment.professional.healthSector === selectedArea
-        : true;
+      : true;
 
     const matchesStatus = selectedStatus
-        ? selectedStatus === 'ativo'
-            ? appointment.isActive === true
-            : appointment.isActive === false
-        : true;
+      ? selectedStatus === "ativo"
+        ? appointment.isActive === true
+        : appointment.isActive === false
+      : true;
 
     return matchesDate && matchesSearch && matchesArea && matchesStatus;
   });
 
   const clearFilter = () => {
-    setSelectedArea('');
-    setSearchName('');
+    setSelectedArea("");
+    setSearchName("");
     setSelectedDate(undefined);
-    setSelectedStatus('');
+    setSelectedStatus("");
   };
 
   const getTooltip = (item: Appointment) => {
@@ -151,16 +139,14 @@ useEffect(() => {
     if (item.isActive && item.updatedFromDate) {
       return `Atualizado a partir do agendamento de ${formatDatePTBR(item.updatedFromDate)}`;
     }
-    return 'Agendamento ativo';
+    return "Agendamento ativo";
   };
 
   return (
     <div className="min-h-screen w-full text-sm overflow-x-hidden">
       <main className="flex-1 p-3 sm:p-6 w-full max-w-none">
         <div className="mb-4 flex flex-col justify-between gap-3 sm:mb-6 sm:flex-row sm:items-center">
-          <h1 className="text-lg font-bold sm:text-2xl text-[#0D4F97]">
-            Todos os Agendamentos
-          </h1>
+          <h1 className="text-lg font-bold sm:text-2xl text-[#0D4F97]">Todos os Agendamentos</h1>
           <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
             <Popover>
               <PopoverTrigger asChild>
@@ -169,7 +155,11 @@ useEffect(() => {
                   className="w-full justify-start bg-white text-left font-normal text-xs sm:w-[220px] sm:text-sm border-[#0D4F97]"
                 >
                   <CalendarDays className="mr-2 h-4 w-4 text-[#0D4F97]" />
-                  {selectedDate ? (formatDatePTBR(selectedDate.toString())) : (<span className="text-[#0D4F97]">Escolha uma data</span>)}
+                  {selectedDate ? (
+                    formatDatePTBR(selectedDate.toString())
+                  ) : (
+                    <span className="text-[#0D4F97]">Escolha uma data</span>
+                  )}
                 </Button>
               </PopoverTrigger>
               <PopoverContent className="w-auto p-0 bg-white">
@@ -189,9 +179,7 @@ useEffect(() => {
               </DialogTrigger>
               <DialogContent className="w-full sm:max-w-[425px]">
                 <DialogHeader>
-                  <DialogTitle className="text-[#0D4F97]">
-                    Cadastrar Novo Agendamento
-                  </DialogTitle>
+                  <DialogTitle className="text-[#0D4F97]">Cadastrar Novo Agendamento</DialogTitle>
                   <DialogDescription className="text-[#0D4F97] opacity-50">
                     Preencha os detalhes abaixo para agendar uma consulta.
                   </DialogDescription>
@@ -219,8 +207,8 @@ useEffect(() => {
               placeholder="Buscar paciente ou profissional..."
               className="pl-10 pr-3 border-[#0D4F97]"
               value={searchName}
-              onChange={e => {
-                setSearchName(e.target.value)
+              onChange={(e) => {
+                setSearchName(e.target.value);
               }}
             />
           </div>
@@ -232,7 +220,7 @@ useEffect(() => {
             <SelectContent>
               <SelectGroup>
                 <SelectLabel>Áreas da saúde</SelectLabel>
-                {areas.map(area => (
+                {areas.map((area) => (
                   <SelectItem key={area.id} value={area.name}>
                     {area.name}
                   </SelectItem>
@@ -289,11 +277,13 @@ useEffect(() => {
               <TableBody>
                 {filteredAppointments.map((item, index) => {
                   return (
-                    <TableRow key={index} className={!item.isActive ? 'text-gray-400' : ''}>
+                    <TableRow key={index} className={!item.isActive ? "text-gray-400" : ""}>
                       <TableCell className="px-3 py-2 text-xs sm:px-4 sm:py-3 sm:text-sm">
                         <div className="flex items-center gap-2">
-                          <span className="truncate">{item.annualRegistration.patient.fullName}</span>
-                          
+                          <span className="truncate">
+                            {item.annualRegistration.patient.fullName}
+                          </span>
+
                           {/* CROSS-REFERENCES TABLE PATIENT ID WITH ABSENCE SET */}
                           {alertPatientIds.has(item.annualRegistration.patient.id) && (
                             <TooltipProvider>
@@ -309,7 +299,9 @@ useEffect(() => {
                           )}
                         </div>
                       </TableCell>
-                      <TableCell className={`px-3 py-2 text-xs sm:px-4 sm:py-3 sm:text-sm ${!item.isActive ? 'text-gray-400' : 'text-gray-800'}`}>
+                      <TableCell
+                        className={`px-3 py-2 text-xs sm:px-4 sm:py-3 sm:text-sm ${!item.isActive ? "text-gray-400" : "text-gray-800"}`}
+                      >
                         {formatDatePTBR(item.initialDate)}
                       </TableCell>
                       <TableCell className="px-3 py-2 text-xs sm:px-4 sm:py-3 sm:text-sm">
@@ -317,9 +309,15 @@ useEffect(() => {
                       </TableCell>
                       <TableCell>
                         <div className="flex items-center gap-1">
-                            <span className={item.isActive ? 'text-green-600 font-medium' : 'text-red-400 font-medium'}>
-                              {item.isActive ? 'Ativo' : 'Inativo'}
-                            </span>
+                          <span
+                            className={
+                              item.isActive
+                                ? "text-green-600 font-medium"
+                                : "text-red-400 font-medium"
+                            }
+                          >
+                            {item.isActive ? "Ativo" : "Inativo"}
+                          </span>
                           <TooltipProvider>
                             <Tooltip>
                               <TooltipTrigger asChild>
@@ -331,11 +329,17 @@ useEffect(() => {
                                     {item.professional.name.charAt(0)}
                                   </div>
                                   <div className="flex flex-col">
-                                    <span className="text-xs font-semibold text-gray-800">{item.professional.name}</span>
-                                    <span className="text-[10px] text-gray-400">{formatDatePTBR(item.initialDate)}</span>
+                                    <span className="text-xs font-semibold text-gray-800">
+                                      {item.professional.name}
+                                    </span>
+                                    <span className="text-[10px] text-gray-400">
+                                      {formatDatePTBR(item.initialDate)}
+                                    </span>
                                   </div>
                                 </div>
-                                <p className="text-xs text-gray-600 break-words whitespace-normal">{getTooltip(item)}</p>
+                                <p className="text-xs text-gray-600 break-words whitespace-normal">
+                                  {getTooltip(item)}
+                                </p>
                               </TooltipContent>
                             </Tooltip>
                           </TooltipProvider>

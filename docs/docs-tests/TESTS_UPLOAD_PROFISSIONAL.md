@@ -89,11 +89,13 @@ Invoke-RestMethod -Uri "http://localhost:8090/api/professionals/$professionalId/
 ### 2.4 Resposta Esperada
 
 **Sucesso (200 OK)**:
+
 ```json
 {}
 ```
 
 **Erro - Profissional não encontrado (404)**:
+
 ```json
 {
   "status": 404,
@@ -119,6 +121,7 @@ curl -X POST http://localhost:8090/api/professionals/{PROFESSIONAL_ID}/documents
 ```
 
 **Resposta esperada**: Status 400 Bad Request
+
 ```json
 {
   "status": 400,
@@ -159,6 +162,7 @@ curl -X POST http://localhost:8090/api/professionals/{PROFESSIONAL_ID}/documents
 ### 4.1 Criar Arquivo Grande para Teste (> 10MB)
 
 **Windows PowerShell**:
+
 ```powershell
 # Criar arquivo de 11MB
 $bytes = New-Object byte[] (11 * 1024 * 1024)
@@ -166,6 +170,7 @@ $bytes = New-Object byte[] (11 * 1024 * 1024)
 ```
 
 **Linux/Mac**:
+
 ```bash
 # Criar arquivo de 11MB
 dd if=/dev/zero of=arquivo_grande.pdf bs=1M count=11
@@ -180,6 +185,7 @@ curl -X POST http://localhost:8090/api/professionals/{PROFESSIONAL_ID}/documents
 ```
 
 **Resposta esperada**: Status 400 Bad Request
+
 ```json
 {
   "status": 400,
@@ -212,6 +218,7 @@ curl -X POST http://localhost:8090/api/professionals/{PROFESSIONAL_ID}/documents
 ```
 
 **Resposta esperada**: Status 400 Bad Request
+
 ```json
 {
   "status": 400,
@@ -245,6 +252,7 @@ curl -X GET "http://localhost:9000/{PROFESSIONAL_ID}/" \
 ### 6.3 Verificar Logs da Aplicação
 
 Os logs devem mostrar:
+
 ```
 INFO: Recebida requisição de upload de documentos para profissional ID: {id}
 INFO: Iniciando armazenamento de X documento(s) para profissional ID: {id}
@@ -365,16 +373,16 @@ echo "Testes concluídos!"
 
 ## Resumo dos Testes
 
-| Teste | Método | Endpoint | Status Esperado |
-|-------|--------|----------|-----------------|
-| Upload válido (PDF) | POST | `/professionals/{id}/documents` | 200 OK |
-| Upload válido (JPG) | POST | `/professionals/{id}/documents` | 200 OK |
-| Upload válido (PNG) | POST | `/professionals/{id}/documents` | 200 OK |
-| Upload válido (DOCX) | POST | `/professionals/{id}/documents` | 200 OK |
-| Formato inválido | POST | `/professionals/{id}/documents` | 400 Bad Request |
-| Arquivo muito grande | POST | `/professionals/{id}/documents` | 400 Bad Request |
-| Lista vazia | POST | `/professionals/{id}/documents` | 400 Bad Request |
-| Profissional não existe | POST | `/professionals/{id}/documents` | 404 Not Found |
+| Teste                   | Método | Endpoint                        | Status Esperado |
+| ----------------------- | ------ | ------------------------------- | --------------- |
+| Upload válido (PDF)     | POST   | `/professionals/{id}/documents` | 200 OK          |
+| Upload válido (JPG)     | POST   | `/professionals/{id}/documents` | 200 OK          |
+| Upload válido (PNG)     | POST   | `/professionals/{id}/documents` | 200 OK          |
+| Upload válido (DOCX)    | POST   | `/professionals/{id}/documents` | 200 OK          |
+| Formato inválido        | POST   | `/professionals/{id}/documents` | 400 Bad Request |
+| Arquivo muito grande    | POST   | `/professionals/{id}/documents` | 400 Bad Request |
+| Lista vazia             | POST   | `/professionals/{id}/documents` | 400 Bad Request |
+| Profissional não existe | POST   | `/professionals/{id}/documents` | 404 Not Found   |
 
 ---
 
@@ -387,4 +395,3 @@ Para verificar se os arquivos foram persistidos corretamente:
 3. **API de listagem**: Use o endpoint de listagem de documentos (se disponível)
 
 Os arquivos devem estar organizados em buckets por profissional (bucket = UUID do profissional).
-

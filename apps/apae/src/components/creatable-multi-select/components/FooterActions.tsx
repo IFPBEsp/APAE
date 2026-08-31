@@ -9,12 +9,7 @@ interface FooterActionsProps {
   onClose: () => void;
 }
 
-export function FooterActions({
-  hasSelection,
-  onClear,
-  onCreate,
-  onClose,
-}: FooterActionsProps) {
+export function FooterActions({ hasSelection, onClear, onCreate, onClose }: FooterActionsProps) {
   return (
     <>
       <CommandSeparator />
@@ -22,10 +17,7 @@ export function FooterActions({
         <div className="flex items-center justify-between">
           {hasSelection && (
             <>
-              <CommandItem
-                onSelect={onClear}
-                className="flex-1 justify-center cursor-pointer"
-              >
+              <CommandItem onSelect={onClear} className="flex-1 justify-center cursor-pointer">
                 Limpar
               </CommandItem>
               <Separator orientation="vertical" className="flex min-h-6 h-full" />
@@ -41,10 +33,7 @@ export function FooterActions({
 
           <Separator orientation="vertical" className="flex min-h-6 h-full" />
 
-          <CommandItem
-            onSelect={onClose}
-            className="flex-1 justify-center cursor-pointer"
-          >
+          <CommandItem onSelect={onClose} className="flex-1 justify-center cursor-pointer">
             Fechar
           </CommandItem>
         </div>

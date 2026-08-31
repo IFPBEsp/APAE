@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 
-export function useProfessionalRegisterPhoto(photoFile: File | null| undefined) {
+export function useProfessionalRegisterPhoto(photoFile: File | null | undefined) {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
 

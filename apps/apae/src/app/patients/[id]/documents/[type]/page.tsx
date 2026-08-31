@@ -58,15 +58,11 @@ export default function DocumentTypePage() {
 
   const category = params?.type as keyof typeof documentCategory;
 
-  const [yearFilter, _setYearFilter] = React.useState<string>(
-    new Date().getFullYear().toString(),
-  );
+  const [yearFilter, _setYearFilter] = React.useState<string>(new Date().getFullYear().toString());
   const [typeFilter, _setTypeFilter] = React.useState<string>("");
   const [files, setFiles] = React.useState<FileItem[]>([]);
   const [replaceOpen, setReplaceOpen] = React.useState(false);
-  const [replaceTarget, setReplaceTarget] = React.useState<FileItem | null>(
-    null,
-  );
+  const [replaceTarget, setReplaceTarget] = React.useState<FileItem | null>(null);
   const [replaceFile, setReplaceFile] = React.useState<File | null>(null);
   const [replaceLoading, setReplaceLoading] = React.useState(false);
 
@@ -104,10 +100,7 @@ export default function DocumentTypePage() {
       setFiles(data);
     } catch (err: unknown) {
       console.error("Erro ao buscar documentos:", err);
-      const errorMessage =
-        err instanceof Error
-          ? err.message
-          : "Erro ao processar resposta da API";
+      const errorMessage = err instanceof Error ? err.message : "Erro ao processar resposta da API";
       toast.error(errorMessage);
     }
   }, [patientId, category, yearFilter, typeFilter]);
@@ -119,8 +112,7 @@ export default function DocumentTypePage() {
   const brandColor = "text-[#0d4f97]";
   const pageTitle = documentCategory[category] || "Documentos";
   const isReplaceableDocument = (file: FileItem) =>
-    file.category === "MEDICAL" &&
-    ["MEDICAL_REPORT", "REFERRAL"].includes(file.type);
+    file.category === "MEDICAL" && ["MEDICAL_REPORT", "REFERRAL"].includes(file.type);
 
   const openReplaceModal = (file: FileItem) => {
     setReplaceTarget(file);
@@ -162,10 +154,7 @@ export default function DocumentTypePage() {
       closeReplaceModal();
       await fetchDocuments();
     } catch (error: unknown) {
-      const message =
-        error instanceof Error
-          ? error.message
-          : "Erro ao substituir o documento";
+      const message = error instanceof Error ? error.message : "Erro ao substituir o documento";
       toast.error(message);
     } finally {
       setReplaceLoading(false);
@@ -174,9 +163,7 @@ export default function DocumentTypePage() {
 
   return (
     <main className="pt-6 md:pt-12 px-4 py-6 max-w-7xl mx-auto font-baloo">
-      <div
-        className={`flex flex-col mt-6 md:hidden ${brandColor} items-center`}
-      >
+      <div className={`flex flex-col mt-6 md:hidden ${brandColor} items-center`}>
         <div className="flex items-center justify-between bg-white rounded-4xl shadow-md mb-4 gap-4 border w-full p-4">
           <Button
             variant="ghost"
@@ -228,9 +215,7 @@ export default function DocumentTypePage() {
       {/* --- Lista de Arquivos --- */}
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-4 mt-4">
         {files.length === 0 ? (
-          <p className="col-span-full text-center text-gray-500">
-            Nenhum arquivo encontrado.
-          </p>
+          <p className="col-span-full text-center text-gray-500">Nenhum arquivo encontrado.</p>
         ) : (
           files.map((file: FileItem) => (
             <FileCard
@@ -242,11 +227,7 @@ export default function DocumentTypePage() {
                 type: file.type,
               }}
               canReplace={isReplaceableDocument(file)}
-              onReplace={
-                isReplaceableDocument(file)
-                  ? () => openReplaceModal(file)
-                  : undefined
-              }
+              onReplace={isReplaceableDocument(file) ? () => openReplaceModal(file) : undefined}
             />
           ))
         )}

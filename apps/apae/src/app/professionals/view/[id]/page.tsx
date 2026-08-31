@@ -36,8 +36,13 @@ export default function ViewProfessional() {
   if (!professional) return <p className="p-6">Profissional não encontrado.</p>;
 
   const address = professional.address || {
-    street: "—", number: "—", neighborhood: "—",
-    city: "—", state: "—", cep: "—", complement: "—",
+    street: "—",
+    number: "—",
+    neighborhood: "—",
+    city: "—",
+    state: "—",
+    cep: "—",
+    complement: "—",
   };
 
   return (
@@ -69,12 +74,16 @@ export default function ViewProfessional() {
 
       <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
         <Card className="shadow-lg border-2 border-[#E0E7FF] text-[#0D4F97]">
-          <CardHeader><CardTitle className="text-lg font-semibold">Informação de perfil</CardTitle></CardHeader>
+          <CardHeader>
+            <CardTitle className="text-lg font-semibold">Informação de perfil</CardTitle>
+          </CardHeader>
           <CardContent className="space-y-2">
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-4">
               <div className="col-span-1 sm:col-span-2">
                 <p className="font-semibold text-sm">Documento profissional</p>
-                <p className="text-base text-gray-700">{professional.professionalDocument || "—"}</p>
+                <p className="text-base text-gray-700">
+                  {professional.professionalDocument || "—"}
+                </p>
               </div>
               <div>
                 <p className="font-semibold text-sm">Email</p>
@@ -93,7 +102,9 @@ export default function ViewProfessional() {
         </Card>
 
         <Card className="shadow-lg border-2 border-[#E0E7FF] text-[#0D4F97]">
-          <CardHeader><CardTitle className="text-lg font-semibold">Informação de endereço</CardTitle></CardHeader>
+          <CardHeader>
+            <CardTitle className="text-lg font-semibold">Informação de endereço</CardTitle>
+          </CardHeader>
           <CardContent className="space-y-2">
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-4">
               <div className="col-span-1 sm:col-span-2">
@@ -121,14 +132,18 @@ export default function ViewProfessional() {
         </Card>
 
         <Card className="shadow-lg border-2 border-[#E0E7FF] text-[#0D4F97] md:col-span-2">
-          <CardHeader><CardTitle className="text-lg font-semibold">Disponibilidade</CardTitle></CardHeader>
+          <CardHeader>
+            <CardTitle className="text-lg font-semibold">Disponibilidade</CardTitle>
+          </CardHeader>
           <CardContent className="space-y-3">
             <AvailabilityGrid matrix={availabilityMatrix} />
           </CardContent>
         </Card>
 
         <Card className="shadow-lg border-2 border-[#E0E7FF] text-[#0D4F97] md:col-span-2">
-          <CardHeader><CardTitle className="text-lg font-semibold">Documentos anexados</CardTitle></CardHeader>
+          <CardHeader>
+            <CardTitle className="text-lg font-semibold">Documentos anexados</CardTitle>
+          </CardHeader>
           <CardContent className="space-y-3">
             {loadingDocs ? (
               <p className="text-gray-700">Carregando documentos...</p>
@@ -139,12 +154,22 @@ export default function ViewProfessional() {
             ) : (
               <ul className="space-y-2">
                 {documents.map((doc) => (
-                  <li key={doc.id} className="flex items-center justify-between rounded-md border p-3">
+                  <li
+                    key={doc.id}
+                    className="flex items-center justify-between rounded-md border p-3"
+                  >
                     <div>
                       <p className="font-medium text-sm">{doc.name}</p>
-                      <p className="text-xs text-gray-500">{doc.type} • {doc.year}</p>
+                      <p className="text-xs text-gray-500">
+                        {doc.type} • {doc.year}
+                      </p>
                     </div>
-                    <a href={doc.url} target="_blank" rel="noopener noreferrer" className="text-sm font-medium text-[#0D4F97] hover:underline">
+                    <a
+                      href={doc.url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-sm font-medium text-[#0D4F97] hover:underline"
+                    >
                       Visualizar
                     </a>
                   </li>

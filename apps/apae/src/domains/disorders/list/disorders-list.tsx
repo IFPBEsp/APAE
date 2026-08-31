@@ -14,9 +14,7 @@ export function DisordersList() {
   const { disorders, loading, deleteDisorder } = useDisordersList();
   const router = useRouter();
 
-  const filtered = disorders.filter((d) =>
-    d.name.toLowerCase().includes(searchName.toLowerCase()),
-  );
+  const filtered = disorders.filter((d) => d.name.toLowerCase().includes(searchName.toLowerCase()));
 
   return (
     <div className="!bg-slate-100 min-h-screen">
@@ -26,7 +24,7 @@ export function DisordersList() {
           onClick={() => router.push("/patients")}
           className="mb-4 text-sm text-[#003B93] hover:bg-blue-50"
         >
-          <ArrowLeft className="h-4 w-4 mr-2"/>
+          <ArrowLeft className="h-4 w-4 mr-2" />
           Voltar
         </Button>
         <div className="bg-white rounded-xl shadow-md border-2 p-6 mb-4">
@@ -51,11 +49,15 @@ export function DisordersList() {
             </div>
           ) : filtered.length === 0 ? (
             <p className="text-center text-gray-500 p-10">
-              {searchName ? `Nenhum transtorno encontrado para "${searchName}".` : "Nenhum transtorno cadastrado."}
+              {searchName
+                ? `Nenhum transtorno encontrado para "${searchName}".`
+                : "Nenhum transtorno cadastrado."}
             </p>
           ) : (
             <>
-              <p className="text-sm text-gray-500 mb-4">{filtered.length} transtornos encontrados</p>
+              <p className="text-sm text-gray-500 mb-4">
+                {filtered.length} transtornos encontrados
+              </p>
               <div className="space-y-2">
                 {filtered.map((disorder) => (
                   <DisorderListItem

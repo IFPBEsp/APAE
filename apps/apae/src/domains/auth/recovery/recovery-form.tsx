@@ -4,12 +4,7 @@ import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 
-import {
-  Card,
-  CardContent,
-  CardFooter,
-  CardHeader,
-} from "@/components/ui/card";
+import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card";
 
 import {
   Form,
@@ -40,10 +35,7 @@ export function RecoveryForm() {
 
   return (
     <Form {...form}>
-      <form
-        onSubmit={form.handleSubmit(submit)}
-        className="w-full h-full flex justify-center"
-      >
+      <form onSubmit={form.handleSubmit(submit)} className="w-full h-full flex justify-center">
         <Card
           className="min-w-[326px] w-[30vw] max-h-[90vh]
           bg-white rounded-[20px] overflow-hidden flex flex-col gap-y-1"

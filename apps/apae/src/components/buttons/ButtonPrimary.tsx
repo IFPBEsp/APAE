@@ -9,13 +9,7 @@ interface PrimaryButtonProps {
   readonly disabled?: boolean;
   readonly loading?: boolean;
   readonly type?: "button" | "submit" | "reset";
-  readonly variant?:
-    | "default"
-    | "destructive"
-    | "outline"
-    | "secondary"
-    | "ghost"
-    | "link";
+  readonly variant?: "default" | "destructive" | "outline" | "secondary" | "ghost" | "link";
   readonly size?: "default" | "sm" | "lg" | "icon";
   readonly className?: string;
   readonly fullWidth?: boolean;
@@ -34,9 +28,7 @@ export function PrimaryButton({
   ...props
 }: PrimaryButtonProps) {
   return (
-    <div
-      className={cn("flex justify-center mt-6 sm:mt-12", fullWidth && "w-full")}
-    >
+    <div className={cn("flex justify-center mt-6 sm:mt-12", fullWidth && "w-full")}>
       <Button
         type={type}
         variant={variant}
@@ -52,7 +44,7 @@ export function PrimaryButton({
           "disabled:!opacity-50 disabled:!cursor-not-allowed",
           "focus:!outline-none focus:!ring-2 focus:!ring-[#0D4F97]/50 focus:!ring-offset-2",
           "[&]:!bg-[#0D4F97] [&:hover]:!bg-[#0D4F97]/90 [&:active]:!bg-[#0D4F97]/80",
-          className
+          className,
         )}
         style={{
           backgroundColor: "#0D4F97",
@@ -68,9 +60,7 @@ export function PrimaryButton({
             <span>Carregando...</span>
           </div>
         ) : (
-          <span className="font-medium text-[16px] leading-[20px]">
-            {children}
-          </span>
+          <span className="font-medium text-[16px] leading-[20px]">{children}</span>
         )}
       </Button>
     </div>

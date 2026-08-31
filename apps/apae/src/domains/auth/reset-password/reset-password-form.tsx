@@ -18,17 +18,9 @@ import {
 import { PasswordInput } from "@/components/forms/PasswordInputs";
 import { PrimaryButton } from "@/components/buttons/ButtonPrimary";
 
-import {
-  Card,
-  CardContent,
-  CardFooter,
-  CardHeader,
-} from "@/components/ui/card";
+import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card";
 
-import {
-  newPasswordSchema,
-  FormNewPasswordSchema,
-} from "../authSchema";
+import { newPasswordSchema, FormNewPasswordSchema } from "../authSchema";
 
 import { useResetPassword } from "./use-reset-password";
 
@@ -68,9 +60,7 @@ export function ResetPasswordForm() {
               name="password"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className="font-bold text-gray-700">
-                    Nova senha
-                  </FormLabel>
+                  <FormLabel className="font-bold text-gray-700">Nova senha</FormLabel>
 
                   <FormControl>
                     <PasswordInput
@@ -90,9 +80,7 @@ export function ResetPasswordForm() {
               name="confirmPassword"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className="font-bold text-gray-700">
-                    Confirmar senha
-                  </FormLabel>
+                  <FormLabel className="font-bold text-gray-700">Confirmar senha</FormLabel>
 
                   <FormControl>
                     <PasswordInput
@@ -109,17 +97,11 @@ export function ResetPasswordForm() {
           </CardContent>
 
           <CardFooter className="w-full flex flex-col items-center">
-            <PrimaryButton
-              type="submit"
-              className="w-full py-6 text-lg"
-            >
+            <PrimaryButton type="submit" className="w-full py-6 text-lg">
               Enviar
             </PrimaryButton>
 
-            <Link
-              href="/auth/login"
-              className="mt-4 text-[#F2994A] font-bold underline text-sm"
-            >
+            <Link href="/auth/login" className="mt-4 text-[#F2994A] font-bold underline text-sm">
               Voltar para tela de login.
             </Link>
           </CardFooter>

@@ -15,7 +15,9 @@ export async function GET(request: Request, { params }: IParams) {
     return NextResponse.json(data);
   } catch (error) {
     if (error instanceof AxiosError) {
-      return new NextResponse(JSON.stringify(error.response?.data || { message: error.message }), { status: error.response?.status || 500 });
+      return new NextResponse(JSON.stringify(error.response?.data || { message: error.message }), {
+        status: error.response?.status || 500,
+      });
     }
     return new NextResponse(JSON.stringify({ message: "Erro ao buscar dados." }), { status: 500 });
   }
@@ -26,7 +28,8 @@ export async function PUT(request: Request, { params }: IParams) {
     const { id } = await params;
     const body = await request.json();
     const validation = updateDisorderSchema.safeParse(body);
-    if (!validation.success) return NextResponse.json({ errors: validation.error.flatten() }, { status: 400 });
+    if (!validation.success)
+      return NextResponse.json({ errors: validation.error.flatten() }, { status: 400 });
 
     const api = await createBaseApi();
 
@@ -39,9 +42,13 @@ export async function PUT(request: Request, { params }: IParams) {
     return NextResponse.json(data);
   } catch (error) {
     if (error instanceof AxiosError) {
-      return new NextResponse(JSON.stringify(error.response?.data || { message: error.message }), { status: error.response?.status || 500 });
+      return new NextResponse(JSON.stringify(error.response?.data || { message: error.message }), {
+        status: error.response?.status || 500,
+      });
     }
-    return new NextResponse(JSON.stringify({ message: "Erro ao atualizar dados." }), { status: 500 });
+    return new NextResponse(JSON.stringify({ message: "Erro ao atualizar dados." }), {
+      status: 500,
+    });
   }
 }
 
@@ -53,7 +60,9 @@ export async function DELETE(request: Request, { params }: IParams) {
     return NextResponse.json(data);
   } catch (error) {
     if (error instanceof AxiosError) {
-      return new NextResponse(JSON.stringify(error.response?.data || { message: error.message }), { status: error.response?.status || 500 });
+      return new NextResponse(JSON.stringify(error.response?.data || { message: error.message }), {
+        status: error.response?.status || 500,
+      });
     }
     return new NextResponse(JSON.stringify({ message: "Erro ao excluir dados." }), { status: 500 });
   }

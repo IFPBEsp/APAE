@@ -14,7 +14,7 @@ export async function POST(request: Request) {
           message: "Dados inválidos.",
           errors: validation.error.flatten().fieldErrors,
         }),
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -28,23 +28,23 @@ export async function POST(request: Request) {
     const { data } = await api.post("/disorders", payload);
 
     return NextResponse.json(data, { status: 201 });
-
-  } catch (error) {    
+  } catch (error) {
     if (error instanceof AxiosError) {
       if (error.response?.status === 409) {
         return new NextResponse(
-          JSON.stringify({ message: "Transtorno já existente, prosseguindo." }), 
-          { status: 200 }
+          JSON.stringify({ message: "Transtorno já existente, prosseguindo." }),
+          { status: 200 },
         );
       }
 
-      return new NextResponse(
-        JSON.stringify(error.response?.data || { message: error.message }),
-        { status: error.response?.status || 500 } 
-      );
+      return new NextResponse(JSON.stringify(error.response?.data || { message: error.message }), {
+        status: error.response?.status || 500,
+      });
     }
-    
-    return new NextResponse(JSON.stringify({ message: "Erro inesperado ao criar dados" }), { status: 500 });
+
+    return new NextResponse(JSON.stringify({ message: "Erro inesperado ao criar dados" }), {
+      status: 500,
+    });
   }
 }
 
@@ -55,9 +55,13 @@ export async function GET() {
     return NextResponse.json(data);
   } catch (error) {
     if (error instanceof AxiosError) {
-      return new NextResponse(JSON.stringify(error.response?.data || { message: error.message }), { status: error.response?.status || 500 });
+      return new NextResponse(JSON.stringify(error.response?.data || { message: error.message }), {
+        status: error.response?.status || 500,
+      });
     }
 
-    return new NextResponse(JSON.stringify({ message: "Erro ao buscar transtornos." }), { status: 500 });
+    return new NextResponse(JSON.stringify({ message: "Erro ao buscar transtornos." }), {
+      status: 500,
+    });
   }
 }

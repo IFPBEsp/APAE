@@ -5,7 +5,10 @@ import { MembersRegisterProvider } from "@/domains/patients/hooks/use-members-re
 import { PageOrchestrator } from "./orchestrator";
 import { Nunito } from "next/font/google";
 import { VaccinesProvider } from "@/hooks/use-vaccines";
-import { useMembersRegisterContext, MembersRegisterStep } from "@/domains/patients/hooks/use-members-register-context";
+import {
+  useMembersRegisterContext,
+  MembersRegisterStep,
+} from "@/domains/patients/hooks/use-members-register-context";
 import { CheckCircle2, Circle } from "lucide-react";
 import { DisordersProvider } from "@/hooks/use-disorders";
 
@@ -15,7 +18,9 @@ const nunito = Nunito({
 });
 
 function SidebarSteps() {
-  const { state: { step } } = useMembersRegisterContext();
+  const {
+    state: { step },
+  } = useMembersRegisterContext();
 
   const stepsList = [
     { id: MembersRegisterStep.PERSONAL, label: "Dados Pessoais" },
@@ -29,7 +34,9 @@ function SidebarSteps() {
   const currentStepIndex = stepsList.findIndex((s) => s.id === step);
 
   return (
-    <div className={`relative flex flex-col w-full h-full justify-center text-left text-white px-12 ${nunito.className}`}>
+    <div
+      className={`relative flex flex-col w-full h-full justify-center text-left text-white px-12 ${nunito.className}`}
+    >
       <h1 className="text-4xl font-bold mb-4">BEM-VINDO</h1>
       <p className="text-lg font-semibold mb-12 text-blue-100">Progresso do cadastro:</p>
 
@@ -39,15 +46,22 @@ function SidebarSteps() {
           const isCurrent = index === currentStepIndex;
 
           return (
-            <div key={s.id} className={`flex items-center gap-4 transition-all ${isCurrent ? "opacity-100 scale-105" : "opacity-60"}`}>
+            <div
+              key={s.id}
+              className={`flex items-center gap-4 transition-all ${isCurrent ? "opacity-100 scale-105" : "opacity-60"}`}
+            >
               {isCompleted ? (
                 <CheckCircle2 className="w-8 h-8 text-green-400" />
               ) : isCurrent ? (
-                <div className="w-8 h-8 rounded-full bg-white flex items-center justify-center text-[#0D4F97] font-bold shadow-lg">{index + 1}</div>
+                <div className="w-8 h-8 rounded-full bg-white flex items-center justify-center text-[#0D4F97] font-bold shadow-lg">
+                  {index + 1}
+                </div>
               ) : (
                 <Circle className="w-8 h-8 text-blue-300" />
               )}
-              <span className={`text-lg font-bold ${isCurrent ? "text-white" : "text-blue-200"}`}>{s.label}</span>
+              <span className={`text-lg font-bold ${isCurrent ? "text-white" : "text-blue-200"}`}>
+                {s.label}
+              </span>
             </div>
           );
         })}
@@ -57,7 +71,9 @@ function SidebarSteps() {
 }
 
 function MobileStepIndicator() {
-  const { state: { step } } = useMembersRegisterContext();
+  const {
+    state: { step },
+  } = useMembersRegisterContext();
 
   const stepsList = [
     { id: MembersRegisterStep.PERSONAL, label: "Dados Pessoais", shortLabel: "Pessoal" },
@@ -82,11 +98,15 @@ function MobileStepIndicator() {
               {isCompleted ? (
                 <CheckCircle2 className="w-5 h-5 text-green-400" />
               ) : isCurrent ? (
-                <div className="w-5 h-5 rounded-full bg-white flex items-center justify-center text-[#0D4F97] text-xs font-bold">{index + 1}</div>
+                <div className="w-5 h-5 rounded-full bg-white flex items-center justify-center text-[#0D4F97] text-xs font-bold">
+                  {index + 1}
+                </div>
               ) : (
                 <Circle className="w-5 h-5 text-blue-300" />
               )}
-              <span className={`text-[10px] ${isCurrent ? "text-white font-semibold" : "text-blue-200"}`}>
+              <span
+                className={`text-[10px] ${isCurrent ? "text-white font-semibold" : "text-blue-200"}`}
+              >
                 {s.shortLabel}
               </span>
             </div>
@@ -94,9 +114,7 @@ function MobileStepIndicator() {
         })}
       </div>
       <div className="mt-2 text-center">
-        <p className="text-sm text-white font-semibold">
-          {stepsList[currentStepIndex]?.label}
-        </p>
+        <p className="text-sm text-white font-semibold">{stepsList[currentStepIndex]?.label}</p>
       </div>
     </div>
   );

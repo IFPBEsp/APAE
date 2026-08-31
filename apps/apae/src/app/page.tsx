@@ -1,13 +1,9 @@
-'use client';
+"use client";
 
-import { Button } from '@/components/ui/button';
-import { Calendar } from '@/components/ui/calendar';
-import { Card, CardContent } from '@/components/ui/card';
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from '@/components/ui/popover';
+import { Button } from "@/components/ui/button";
+import { Calendar } from "@/components/ui/calendar";
+import { Card, CardContent } from "@/components/ui/card";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import {
   Table,
   TableBody,
@@ -15,24 +11,13 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from '@/components/ui/table';
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from '@/components/ui/tooltip';
-import { Page } from '@/types/pagination';
-import { format } from 'date-fns';
-import { ptBR } from 'date-fns/locale';
-import {
-  CalendarDays,
-  Users,
-  UserRoundCheck,
-  UserRoundX,
-  AlertTriangle
-  } from 'lucide-react';
-import { useEffect, useState, useRef } from 'react';
+} from "@/components/ui/table";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import { Page } from "@/types/pagination";
+import { format } from "date-fns";
+import { ptBR } from "date-fns/locale";
+import { CalendarDays, Users, UserRoundCheck, UserRoundX, AlertTriangle } from "lucide-react";
+import { useEffect, useState, useRef } from "react";
 
 import {
   Dialog,
@@ -41,22 +26,22 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from '@/components/ui/dialog';
-import { TodayAppointment } from '@/types/appointment';
+} from "@/components/ui/dialog";
+import { TodayAppointment } from "@/types/appointment";
 import {
   getAppointments,
   listTodayAppointment,
   markAsPerformed,
   UUID,
   type AppointmentResponseDTO,
-} from './services/appointmentService';
-import AbsenceService from './services/absenceService'; // Added service
+} from "./services/appointmentService";
+import AbsenceService from "./services/absenceService"; // Added service
 
-import { AppointmentForm } from '@/components/forms/AppointmentForm';
-import { InfoCard } from '@/components/shared/InfoCard';
-import Link from 'next/link';
+import { AppointmentForm } from "@/components/forms/AppointmentForm";
+import { InfoCard } from "@/components/shared/InfoCard";
+import Link from "next/link";
 
-import { RegisterAbsenceButton} from '@/components/buttons/RegisterAbsenceButton';
+import { RegisterAbsenceButton } from "@/components/buttons/RegisterAbsenceButton";
 
 export default function DashboardPage() {
   const [selectedDate, setSelectedDate] = useState<Date>(new Date());
@@ -68,55 +53,49 @@ export default function DashboardPage() {
   const [alertPatientIds, setAlertPatientIds] = useState<Set<string>>(new Set());
   const lastFetchedDate = useRef<string | null>(null);
 
-
   const fetchTodayAppointments = async () => {
-    const formattedDate = format(selectedDate, 'yyyy-MM-dd');  
-    const todayAppointmentsPage: Page<TodayAppointment> =
-      await listTodayAppointment(formattedDate); 
-      
+    const formattedDate = format(selectedDate, "yyyy-MM-dd");
+    const todayAppointmentsPage: Page<TodayAppointment> = await listTodayAppointment(formattedDate);
+
     setTodayAppointments(todayAppointmentsPage.content || []);
   };
 
   const fetchAllAppointments = async () => {
-    const allAppointmentsPage: Page<AppointmentResponseDTO> =
-      await getAppointments();
+    const allAppointmentsPage: Page<AppointmentResponseDTO> = await getAppointments();
     setAllAppointments(allAppointmentsPage.content || []);
   };
 
   const fetchAbsences = async () => {
-      try {
-        // We make a direct fetch to the API, filtering by 3 absences
-        const response = await fetch('/apae-geral/api/patients/with-absences?minAbsences=3');
-        
-        if (!response.ok) {
-          throw new Error('Erro ao buscar pacientes com faltas');
-        }
+    try {
+      // We make a direct fetch to the API, filtering by 3 absences
+      const response = await fetch("/apae-geral/api/patients/with-absences?minAbsences=3");
 
-        const data = await response.json();
-        
-        // We map the patient IDs that come within the "content" list (pagination pattern)
-        // If your API returns an array directly, use: data.map(...)
-        const absencesList = data.content || [];
-        const idsSet = new Set<string>(absencesList.map((item: any) => item.patient.id));
-        
-        setAlertPatientIds(idsSet);
-      } catch (error) {
-        console.error("Erro ao buscar faltas:", error);
+      if (!response.ok) {
+        throw new Error("Erro ao buscar pacientes com faltas");
       }
-    };
+
+      const data = await response.json();
+
+      // We map the patient IDs that come within the "content" list (pagination pattern)
+      // If your API returns an array directly, use: data.map(...)
+      const absencesList = data.content || [];
+      const idsSet = new Set<string>(absencesList.map((item: any) => item.patient.id));
+
+      setAlertPatientIds(idsSet);
+    } catch (error) {
+      console.error("Erro ao buscar faltas:", error);
+    }
+  };
 
   const fetchTodayAppointmentsByStatus = async () => {
     if (!allAppointments.length) return;
 
-    setActiveAppointments(allAppointments.filter(a => a.isActive === true) as any);
-    setInactiveAppointments(allAppointments.filter(a => a.isActive === false) as any);
+    setActiveAppointments(allAppointments.filter((a) => a.isActive === true) as any);
+    setInactiveAppointments(allAppointments.filter((a) => a.isActive === false) as any);
   };
 
-
-
   useEffect(() => {
-
-    const dateKey = format(selectedDate, 'yyyy-MM-dd');
+    const dateKey = format(selectedDate, "yyyy-MM-dd");
 
     if (lastFetchedDate.current === dateKey) return;
 
@@ -140,9 +119,7 @@ export default function DashboardPage() {
     <div className="min-h-screen w-full text-sm overflow-x-hidden">
       <main className="flex-1 p-3 sm:p-6 max-w-[100vw] mx-auto">
         <div className="mb-4 flex flex-col justify-between gap-3 sm:mb-6 sm:flex-row sm:items-center">
-          <h1 className="text-lg font-bold sm:text-2xl text-[#0D4F97]">
-            Agendamentos do Dia
-          </h1>
+          <h1 className="text-lg font-bold sm:text-2xl text-[#0D4F97]">Agendamentos do Dia</h1>
           <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
             <Popover>
               <PopoverTrigger asChild>
@@ -172,7 +149,7 @@ export default function DashboardPage() {
               </PopoverContent>
             </Popover>
 
-            <Dialog open={isCreateOpen} onOpenChange = {setIsCreateOpen}>
+            <Dialog open={isCreateOpen} onOpenChange={setIsCreateOpen}>
               <DialogTrigger asChild>
                 <Button className="w-full bg-[#0D4F97] text-white hover:bg-blue-900 text-xs sm:w-auto sm:text-sm">
                   Novo agendamento
@@ -180,9 +157,7 @@ export default function DashboardPage() {
               </DialogTrigger>
               <DialogContent className="w-full sm:max-w-[425px]">
                 <DialogHeader>
-                  <DialogTitle className="text-[#0D4F97]">
-                    Cadastrar Novo Agendamento
-                  </DialogTitle>
+                  <DialogTitle className="text-[#0D4F97]">Cadastrar Novo Agendamento</DialogTitle>
                   <DialogDescription className="text-[#0D4F97] opacity-50">
                     Preencha os detalhes abaixo para agendar uma consulta.
                   </DialogDescription>
@@ -198,12 +173,11 @@ export default function DashboardPage() {
             title="Agendados pro dia"
             icon={Users}
             value={todayAppointments.length}
-            subtitle={`${todayAppointments.filter(a => a.performed).length} realizados`}
+            subtitle={`${todayAppointments.filter((a) => a.performed).length} realizados`}
             titleClassName="text-[#0D4F97]"
             valueClassName="text-[#0D4F97]"
           />
           <InfoCard
-          
             title="Todos os agendamentos"
             icon={Users}
             value={allAppointments.length}
@@ -213,14 +187,14 @@ export default function DashboardPage() {
           <InfoCard
             title="Ativos"
             icon={UserRoundCheck}
-            value={allAppointments.filter(a => a.isActive).length}
+            value={allAppointments.filter((a) => a.isActive).length}
             titleClassName="text-[#0D4F97]"
             valueClassName="text-[#0D4F97]"
           />
           <InfoCard
             title="Inativos"
             icon={UserRoundX}
-            value={allAppointments.filter(a => !a.isActive).length}
+            value={allAppointments.filter((a) => !a.isActive).length}
             titleClassName="text-[#0D4F97]"
             valueClassName="text-[#0D4F97]"
           />
@@ -255,10 +229,11 @@ export default function DashboardPage() {
                 {todayAppointments.map((item, index) => (
                   <TableRow key={index}>
                     <TableCell className="px-3 py-2 font-bold text-[#0D4F97] text-xs sm:px-4 sm:py-3 sm:text-sm">
-                      {item.effectiveDateTime ? format(new Date(item.effectiveDateTime), 'HH:mm') : '—'}
+                      {item.effectiveDateTime
+                        ? format(new Date(item.effectiveDateTime), "HH:mm")
+                        : "—"}
                     </TableCell>
                     <TableCell className="px-3 py-2 text-xs sm:px-4 sm:py-3 sm:text-sm">
-                      
                       {/* CROSS-REFERENCES TABLE PATIENT ID WITH ABSENCE SET */}
                       <div className="flex items-center gap-2">
                         <span className="truncate">{item.patient.fullName}</span>
@@ -275,7 +250,6 @@ export default function DashboardPage() {
                           </TooltipProvider>
                         )}
                       </div>
-
                     </TableCell>
                     <TableCell className="px-3 py-2 text-xs sm:px-4 sm:py-3 sm:text-sm">
                       {item.professional.name}
@@ -288,23 +262,17 @@ export default function DashboardPage() {
                         Detalhes
                       </Link>
                     </TableCell>
-                    <TableCell className="px-3 py-2">
-                      {item.hasAbsence ? 'Sim' : 'Não'}
-                    </TableCell>
+                    <TableCell className="px-3 py-2">{item.hasAbsence ? "Sim" : "Não"}</TableCell>
                     <TableCell className="px-3 py-2 text-xs sm:px-4 sm:py-3 sm:text-sm">
                       <RegisterAbsenceButton
                         generatedAppointmentId={item.id}
                         patientId={item.patient.id}
-                        absenceDate={format(selectedDate, 'yyyy-MM-dd')}
+                        absenceDate={format(selectedDate, "yyyy-MM-dd")}
                         disabled={item.hasAbsence}
                         onSuccess={() => {
-                          setTodayAppointments(prev =>
-                            prev.map(a =>
-                              a.id === item.id
-                                ? { ...a, hasAbsence: true }
-                                : a
-                            )
-                          )
+                          setTodayAppointments((prev) =>
+                            prev.map((a) => (a.id === item.id ? { ...a, hasAbsence: true } : a)),
+                          );
                         }}
                       />
                     </TableCell>

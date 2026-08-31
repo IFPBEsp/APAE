@@ -23,12 +23,7 @@ import { useFieldArray, useForm } from "react-hook-form";
 import { handleBackendValidationErrors } from "@/lib/utils/form-errors";
 
 import z from "zod";
-import {
-  DoubleCheckboxFormField,
-  DoubleColumn,
-  FormButton,
-  MembersRegisterForm,
-} from "../form";
+import { DoubleCheckboxFormField, DoubleColumn, FormButton, MembersRegisterForm } from "../form";
 import { Button } from "@/components/ui/button";
 import { usePathname } from "next/navigation";
 import { UseFormReturn } from "react-hook-form";
@@ -88,9 +83,7 @@ export default function MembersRegisterKinshipsPage() {
     try {
       setKinshipsData(values.kinships);
 
-      const legalGuardianKinship = values.kinships.find(
-        (k) => k.isLegalGuardian,
-      );
+      const legalGuardianKinship = values.kinships.find((k) => k.isLegalGuardian);
 
       if (legalGuardianKinship) {
         if (isEditing) {
@@ -218,9 +211,7 @@ export default function MembersRegisterKinshipsPage() {
                       placeholder="000.000.000-00"
                       maxLength={14}
                       value={field.value}
-                      onChange={(e) =>
-                        field.onChange(formatCPF(e.target.value))
-                      }
+                      onChange={(e) => field.onChange(formatCPF(e.target.value))}
                     />
                   </FormControl>
                   <FormMessage />

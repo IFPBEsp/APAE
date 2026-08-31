@@ -6,11 +6,7 @@ const nunito = Nunito({
   weight: ["400", "600", "700", "900"],
 });
 
-export default function Layout({
-  children,
-}: {
-  readonly children: React.ReactNode;
-}) {
+export default function Layout({ children }: { readonly children: React.ReactNode }) {
   return (
     <div className="m-5 rounded-lg mx-6 relative grid grid-cols-1 md:grid-cols-[1fr_2fr] gap-x-4 antialiased overflow-hidden">
       <div
@@ -34,8 +30,7 @@ export default function Layout({
       >
         <h1 className="text-4xl">BEM-VINDO</h1>
         <p className="text-3xl px-28 py-12">
-          Atualize os dados ao lado para manter o cadastro do profissional
-          sempre correto.
+          Atualize os dados ao lado para manter o cadastro do profissional sempre correto.
         </p>
       </div>
 
@@ -43,9 +38,7 @@ export default function Layout({
         className="relative flex flex-col w-full h-full p-8 bg-muted overflow-y-auto"
         style={{ backgroundColor: "#F5F5F5" }}
       >
-        <h1 className="text-2xl font-bold text-blue-900 mb-4">
-          Atualização de Profissional
-        </h1>
+        <h1 className="text-2xl font-bold text-blue-900 mb-4">Atualização de Profissional</h1>
         {children}
       </div>
     </div>

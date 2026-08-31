@@ -47,10 +47,7 @@ export default function FileFilter({
         </SelectContent>
       </Select>
 
-      <Select
-        onValueChange={(value) => onTypeChange(value)}
-        value={type.toLowerCase()}
-      >
+      <Select onValueChange={(value) => onTypeChange(value)} value={type.toLowerCase()}>
         <SelectTrigger className={`${selectStyle} ${textColor}`}>
           <SelectValue className={textColor} placeholder="Tipo" />
         </SelectTrigger>

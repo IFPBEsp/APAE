@@ -68,7 +68,6 @@ export default function EditServiceTypePage() {
     );
   }
 
-
   return (
     <div className="!bg-slate-100 min-h-screen">
       <main className="container mx-auto p-4 md:p-6">
@@ -81,30 +80,24 @@ export default function EditServiceTypePage() {
             <ArrowLeft className="h-4 w-4 mr-2" />
             Voltar
           </Button>
-          
+
           <h1 className="text-2xl font-bold mb-6 text-[#003B93]">Editar tipo de atendimento</h1>
-          
+
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
             <div>
               <Label htmlFor="area" className="font-semibold text-[#003B93]">
                 Nome do tipo de atendimento
               </Label>
-              <Input
-                id="area"
-                {...register("area")}
-                className="mt-1 block w-full"
-              />
-              {errors.area && (
-                <p className="mt-1 text-sm text-red-600">{errors.area.message}</p>
-              )}
+              <Input id="area" {...register("area")} className="mt-1 block w-full" />
+              {errors.area && <p className="mt-1 text-sm text-red-600">{errors.area.message}</p>}
             </div>
 
             <div className="flex justify-end gap-2 pt-4">
               <Button type="button" variant="outline" onClick={() => router.back()}>
                 Cancelar
               </Button>
-              <Button 
-                type="submit" 
+              <Button
+                type="submit"
                 disabled={isSubmitting}
                 className="!bg-[#0D4F97] !hover:bg-[#0b427d] text-white"
               >

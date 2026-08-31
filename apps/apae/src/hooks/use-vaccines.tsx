@@ -1,30 +1,24 @@
 "use client";
 
-import {
-  createContext,
-  useCallback,
-  useContext,
-  useEffect,
-  useState,
-} from "react";
+import { createContext, useCallback, useContext, useEffect, useState } from "react";
 
 type Vaccine = Readonly<{
-    id: string;
-    name: string;
-    hasPatient: boolean;
+  id: string;
+  name: string;
+  hasPatient: boolean;
 }>;
 
 type FetchVaccineParams = Readonly<{
-    id: string;
+  id: string;
 }>;
 
 type CreateVaccineParams = Readonly<{
-    name: string;
+  name: string;
 }>;
 
 type UpdateVaccineParams = Readonly<{
-    id: string;
-    name: string;
+  id: string;
+  name: string;
 }>;
 
 type DeleteVaccineParams = Readonly<{
@@ -38,28 +32,26 @@ type Feedback = Readonly<{
 }>;
 
 interface VaccinesContextData {
-    loading: boolean;
-    feedback: Feedback;
-    vaccines: Vaccine[];
-    fetchVaccine: (params: FetchVaccineParams) => Promise<Vaccine>;
-    createVaccine: (params: CreateVaccineParams) => Promise<void>;
-    updateVaccine: (params: UpdateVaccineParams) => Promise<void>;
-    deleteVaccine: (params: DeleteVaccineParams) => Promise<void>;
+  loading: boolean;
+  feedback: Feedback;
+  vaccines: Vaccine[];
+  fetchVaccine: (params: FetchVaccineParams) => Promise<Vaccine>;
+  createVaccine: (params: CreateVaccineParams) => Promise<void>;
+  updateVaccine: (params: UpdateVaccineParams) => Promise<void>;
+  deleteVaccine: (params: DeleteVaccineParams) => Promise<void>;
 }
 
-const VaccinesContext = createContext<VaccinesContextData | undefined>(
-    undefined,
-);
+const VaccinesContext = createContext<VaccinesContextData | undefined>(undefined);
 
 type WithFeedbackMessages = {
-    success?: string;
+  success?: string;
 };
 
 function withFeedback<TArgs extends readonly unknown[], TReturn>(
-    fn: (...args: TArgs) => Promise<TReturn>,
-    setLoading: (loading: boolean) => void,
-    setFeedback: (feedback: Feedback) => void,
-    messages?: WithFeedbackMessages,
+  fn: (...args: TArgs) => Promise<TReturn>,
+  setLoading: (loading: boolean) => void,
+  setFeedback: (feedback: Feedback) => void,
+  messages?: WithFeedbackMessages,
 ) {
   return async (...args: TArgs): Promise<TReturn> => {
     setLoading(true);
@@ -78,8 +70,7 @@ function withFeedback<TArgs extends readonly unknown[], TReturn>(
 
       return result;
     } catch (error) {
-      const message =
-        error instanceof Error ? error.message : "Erro desconhecido.";
+      const message = error instanceof Error ? error.message : "Erro desconhecido.";
       setFeedback({
         message,
         success: false,
@@ -198,9 +189,7 @@ function VaccinesProvider({
 
           if (!response.ok) {
             const errorData = await response.json().catch(() => null);
-            throw new Error(
-              errorData?.message || "Ocorreu um erro ao excluir a vacina.",
-            );
+            throw new Error(errorData?.message || "Ocorreu um erro ao excluir a vacina.");
           }
 
           await fetchVaccines();
@@ -239,18 +228,10 @@ function VaccinesProvider({
 function useVaccinesContext() {
   const context = useContext(VaccinesContext);
   if (!context) {
-    throw new Error(
-      "useVaccinesContext must be used within a VaccinesProvider",
-    );
+    throw new Error("useVaccinesContext must be used within a VaccinesProvider");
   }
   return context;
 }
 
-export type {
-  Vaccine,
-  Feedback,
-  CreateVaccineParams,
-  UpdateVaccineParams,
-  DeleteVaccineParams,
-};
+export type { Vaccine, Feedback, CreateVaccineParams, UpdateVaccineParams, DeleteVaccineParams };
 export { useVaccinesContext, VaccinesProvider };

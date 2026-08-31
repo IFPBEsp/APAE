@@ -13,7 +13,7 @@ export async function POST(request: Request) {
           message: "Dados inválidos.",
           errors: validation.error.flatten().fieldErrors,
         }),
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -23,10 +23,9 @@ export async function POST(request: Request) {
 
     return NextResponse.json(data);
   } catch (error: any) {
-    return new NextResponse(
-      JSON.stringify(error.response?.data || { message: error.message }),
-      { status: error.response?.status || 500 }
-    );
+    return new NextResponse(JSON.stringify(error.response?.data || { message: error.message }), {
+      status: error.response?.status || 500,
+    });
   }
 }
 
@@ -36,9 +35,8 @@ export async function GET() {
     const { data } = await api.get("/service-areas");
     return NextResponse.json(data);
   } catch (error: any) {
-    return new NextResponse(
-      JSON.stringify(error.response?.data || { message: error.message }),
-      { status: error.response?.status || 500 }
-    );
+    return new NextResponse(JSON.stringify(error.response?.data || { message: error.message }), {
+      status: error.response?.status || 500,
+    });
   }
 }

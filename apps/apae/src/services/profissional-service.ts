@@ -76,7 +76,6 @@ export async function getProfessionalDocuments(id: string) {
   }
 }
 
-
 export async function updateProfessionalDocuments(id: string, formData: FormData) {
   return fetch(`/apae-geral/api/professionals/${id}/documents`, {
     method: "PATCH",
@@ -84,10 +83,7 @@ export async function updateProfessionalDocuments(id: string, formData: FormData
   });
 }
 
-export async function removeProfessionalDocument(
-  professionalId: string,
-  documentId: string,
-) {
+export async function removeProfessionalDocument(professionalId: string, documentId: string) {
   const response = await fetch(
     `/apae-geral/api/professionals/${professionalId}/documents/${documentId}`,
     { method: "DELETE" },
@@ -96,5 +92,5 @@ export async function removeProfessionalDocument(
   if (!response.ok) {
     const data = await response.json().catch(() => ({}));
     throw new Error(data.message || "Erro ao remover documento");
-  } 
+  }
 }

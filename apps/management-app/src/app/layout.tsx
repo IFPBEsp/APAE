@@ -6,13 +6,13 @@ import ToastProvider from "@/components/ToastProvider";
 export const baloo2 = Baloo_2({
   subsets: ["latin"],
   weight: ["700"], // bold
-  variable: "--font-baloo2"
+  variable: "--font-baloo2",
 });
 
 export const nunito = Nunito({
   subsets: ["latin"],
   weight: ["400", "600"], // regular e semi-bold
-  variable: "--font-nunito"
+  variable: "--font-nunito",
 });
 
 const geistSans = Geist({
@@ -37,9 +37,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-      >
+      <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
         <ToastProvider>{children}</ToastProvider>
       </body>
     </html>

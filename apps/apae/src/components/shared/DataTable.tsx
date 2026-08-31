@@ -35,9 +35,7 @@ export function DataTable<T>({ columns, data, actions }: DataTableProps<T>) {
         {data.map((row, i) => (
           <TableRow key={i}>
             {columns.map((col, j) => (
-              <TableCell key={j}>
-                {row[col.accessor] as React.ReactNode}
-              </TableCell>
+              <TableCell key={j}>{row[col.accessor] as React.ReactNode}</TableCell>
             ))}
             {actions && <TableCell>{actions(row)}</TableCell>}
           </TableRow>

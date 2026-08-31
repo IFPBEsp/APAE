@@ -42,8 +42,12 @@ export function ProfessionalPhoto({
             accept="image/png,image/jpeg,image/jpg,image/webp"
             onChange={(e) => {
               const file = e.target.files?.[0];
-              if (!file) { setValue("photo", null); clearPhoto(); return; }
-              const allowed = ["image/png","image/jpeg","image/jpg","image/webp"];
+              if (!file) {
+                setValue("photo", null);
+                clearPhoto();
+                return;
+              }
+              const allowed = ["image/png", "image/jpeg", "image/jpg", "image/webp"];
               if (!allowed.includes(file.type) || file.size <= 0 || file.size > 5 * 1024 * 1024) {
                 alert("Apenas imagens PNG, JPG ou WEBP até 5MB são permitidas");
                 clearPhoto();
@@ -60,20 +64,33 @@ export function ProfessionalPhoto({
             className="relative group mr-auto rounded-full transition-transform hover:scale-105"
           >
             <Avatar className="w-32 h-32 border-2 border-dashed border-gray-300 bg-gray-50">
-              <AvatarImage src={photoPreviewUrl ?? profilePhotoUrl ?? undefined} alt="Foto do profissional" />
+              <AvatarImage
+                src={photoPreviewUrl ?? profilePhotoUrl ?? undefined}
+                alt="Foto do profissional"
+              />
               <AvatarFallback className="bg-transparent">
                 <User className="w-12 h-12 text-gray-400" />
               </AvatarFallback>
             </Avatar>
             <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity bg-black/20 rounded-full">
-              <span className="bg-white text-black text-[10px] font-bold px-2 py-1 rounded shadow-sm">Escolher foto</span>
+              <span className="bg-white text-black text-[10px] font-bold px-2 py-1 rounded shadow-sm">
+                Escolher foto
+              </span>
             </div>
           </button>
           <p className="text-xs text-gray-500">PNG, JPG ou WEBP até 5MB</p>
           {selectedPhoto && (
             <div className="flex items-center gap-2">
               <p className="text-xs text-gray-600">Selecionado: {selectedPhoto.name}</p>
-              <Button type="button" variant="outline" size="sm" onClick={() => { clearPhoto(); setValue("photo", null); }}>
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                onClick={() => {
+                  clearPhoto();
+                  setValue("photo", null);
+                }}
+              >
                 Remover
               </Button>
             </div>

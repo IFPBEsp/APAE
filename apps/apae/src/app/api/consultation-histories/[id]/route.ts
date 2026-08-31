@@ -2,10 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { createBaseApi } from "@/lib/axios";
 import { AxiosError } from "axios";
 
-export async function GET(
-  req: NextRequest,
-  context: { params: Promise<{ id: string }> },
-) {
+export async function GET(req: NextRequest, context: { params: Promise<{ id: string }> }) {
   try {
     const { id } = await context.params;
     const api = await createBaseApi();
@@ -28,17 +25,11 @@ export async function GET(
       );
     }
 
-    return NextResponse.json(
-      { message: "Erro interno do servidor" },
-      { status: 500 },
-    );
+    return NextResponse.json({ message: "Erro interno do servidor" }, { status: 500 });
   }
 }
 
-export async function DELETE(
-  req: NextRequest,
-  context: { params: Promise<{ id: string }> },
-) {
+export async function DELETE(req: NextRequest, context: { params: Promise<{ id: string }> }) {
   try {
     const { id } = await context.params;
     const api = await createBaseApi();
@@ -64,9 +55,6 @@ export async function DELETE(
       );
     }
 
-    return NextResponse.json(
-      { message: "Erro interno do servidor" },
-      { status: 500 },
-    );
+    return NextResponse.json({ message: "Erro interno do servidor" }, { status: 500 });
   }
 }

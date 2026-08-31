@@ -12,17 +12,12 @@ export async function GET() {
     if (error instanceof AxiosError) {
       return NextResponse.json(
         {
-          message:
-            error.response?.data?.message ||
-            "Erro ao buscar faltas",
+          message: error.response?.data?.message || "Erro ao buscar faltas",
         },
-        { status: error.response?.status || 500 }
+        { status: error.response?.status || 500 },
       );
     }
-    return NextResponse.json(
-      { message: "Erro interno do servidor" },
-      { status: 500 }
-    );
+    return NextResponse.json({ message: "Erro interno do servidor" }, { status: 500 });
   }
 }
 
@@ -38,18 +33,11 @@ export async function POST(req: Request) {
     if (error instanceof AxiosError) {
       return NextResponse.json(
         {
-          message:
-            error.response?.data?.message ||
-            "Erro ao criar falta",
+          message: error.response?.data?.message || "Erro ao criar falta",
         },
-        { status: error.response?.status || 500 }
+        { status: error.response?.status || 500 },
       );
     }
-    return NextResponse.json(
-      { message: "Erro interno do servidor" },
-      { status: 500 }
-    );
+    return NextResponse.json({ message: "Erro interno do servidor" }, { status: 500 });
   }
 }
-
-

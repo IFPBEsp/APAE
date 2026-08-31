@@ -27,11 +27,7 @@ export default function FileCard({ file }: Props) {
         onClick={() => setOpen(true)}
       >
         <p className="truncate">{file.fileName}</p>
-        <img
-          src={file.link}
-          alt={file.fileName}
-          className="w-full h-32 object-contain mt-2"
-        />
+        <img src={file.link} alt={file.fileName} className="w-full h-32 object-contain mt-2" />
       </div>
 
       <Dialog open={open} onOpenChange={setOpen}>
@@ -47,10 +43,7 @@ export default function FileCard({ file }: Props) {
             />
           </div>
           <DialogFooter>
-            <Button
-              variant="secondary"
-              onClick={() => window.open(file.link, file.fileName)}
-            >
+            <Button variant="secondary" onClick={() => window.open(file.link, file.fileName)}>
               Instalar o arquivo
             </Button>
           </DialogFooter>

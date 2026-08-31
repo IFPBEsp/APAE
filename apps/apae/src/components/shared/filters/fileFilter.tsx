@@ -23,12 +23,7 @@ const selectStyle =
   "w-48 border-2 border-[#0d4f97] rounded-md focus:outline-none focus:ring-2 focus:ring-[#0d4f97]";
 const textColor = "text-[#0d4f97]";
 
-export default function FileFilter({
-  year,
-  type,
-  onYearChange,
-  onTypeChange,
-}: FileFilterProps) {
+export default function FileFilter({ year, type, onYearChange, onTypeChange }: FileFilterProps) {
   console.log(type);
   return (
     <div className="flex justify-center gap-4 items-center">
@@ -45,10 +40,7 @@ export default function FileFilter({
         </SelectContent>
       </Select>
 
-      <Select
-        onValueChange={(value) => onTypeChange(value)}
-        value={type.toLowerCase()}
-      >
+      <Select onValueChange={(value) => onTypeChange(value)} value={type.toLowerCase()}>
         <SelectTrigger className={`${selectStyle} ${textColor}`}>
           <SelectValue className={textColor} placeholder="Tipo" />
         </SelectTrigger>

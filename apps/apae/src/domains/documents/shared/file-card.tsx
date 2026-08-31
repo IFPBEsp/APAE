@@ -2,12 +2,7 @@
 
 import * as React from "react";
 import { FileText, ExternalLink } from "lucide-react";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 
 interface FileCardProps {
@@ -61,7 +56,10 @@ export default function FileCard({ file, canReplace = false, onReplace }: FileCa
             type="button"
             variant="secondary"
             className="mt-3 w-full border border-blue-100 bg-blue-50 text-blue-900 hover:bg-blue-100"
-            onClick={(e) => { e.stopPropagation(); onReplace(); }}
+            onClick={(e) => {
+              e.stopPropagation();
+              onReplace();
+            }}
           >
             Substituir
           </Button>
@@ -89,7 +87,11 @@ export default function FileCard({ file, canReplace = false, onReplace }: FileCa
           </div>
 
           <div className="flex justify-center mt-4 pb-2">
-            <Button variant="default" onClick={() => window.open(file.link, "_blank")} className="gap-2">
+            <Button
+              variant="default"
+              onClick={() => window.open(file.link, "_blank")}
+              className="gap-2"
+            >
               <ExternalLink size={18} />
               Abrir em nova guia
             </Button>

@@ -21,18 +21,13 @@ export function OptionItem({ option, isSelected, onToggle }: OptionItemProps) {
       aria-label={`${option.label}${isSelected ? ", selected" : ", not selected"}${
         option.disabled ? ", disabled" : ""
       }`}
-      className={cn(
-        "cursor-pointer",
-        option.disabled && "opacity-50 cursor-not-allowed",
-      )}
+      className={cn("cursor-pointer", option.disabled && "opacity-50 cursor-not-allowed")}
       disabled={option.disabled}
     >
       <div
         className={cn(
           "mr-2 flex h-4 w-4 items-center justify-center rounded-sm border border-primary",
-          isSelected
-            ? "bg-primary text-primary-foreground"
-            : "opacity-50 [&_svg]:invisible",
+          isSelected ? "bg-primary text-primary-foreground" : "opacity-50 [&_svg]:invisible",
         )}
         aria-hidden="true"
       >
@@ -40,10 +35,7 @@ export function OptionItem({ option, isSelected, onToggle }: OptionItemProps) {
       </div>
 
       {option.icon && (
-        <option.icon
-          className="mr-2 h-4 w-4 text-muted-foreground"
-          aria-hidden="true"
-        />
+        <option.icon className="mr-2 h-4 w-4 text-muted-foreground" aria-hidden="true" />
       )}
 
       <span>{option.label}</span>

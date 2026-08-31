@@ -45,8 +45,8 @@ export default function MembersRegisterGuardianPage() {
       ...guardian,
       address: {
         ...guardian.address,
-        noNumber: guardian.address?.number === "SN"
-      }
+        noNumber: guardian.address?.number === "SN",
+      },
     },
   });
 
@@ -65,13 +65,12 @@ export default function MembersRegisterGuardianPage() {
 
   useEffect(() => {
     if (guardian && guardian.name !== "") {
-
       form.reset({
         ...guardian,
         address: {
           ...guardian.address,
-          noNumber: guardian.address?.number === "SN"
-        }
+          noNumber: guardian.address?.number === "SN",
+        },
       });
     }
   }, [guardian, form]);
@@ -84,8 +83,8 @@ export default function MembersRegisterGuardianPage() {
         address: {
           ...values.address,
           number: values.address.noNumber ? "SN" : values.address.number,
-          district: (values.address as any).district || ""
-        }
+          district: (values.address as any).district || "",
+        },
       };
 
       setGuardianData(dataToSave);
@@ -113,10 +112,12 @@ export default function MembersRegisterGuardianPage() {
                 const currentValues = form.getValues();
                 const dataToSave = {
                   ...currentValues,
-                  address: currentValues.address ? {
-                    ...currentValues.address,
-                    district: (currentValues.address as any).district || ""
-                  } : undefined
+                  address: currentValues.address
+                    ? {
+                        ...currentValues.address,
+                        district: (currentValues.address as any).district || "",
+                      }
+                    : undefined,
                 };
                 setGuardianData(dataToSave as any);
                 setStep(MembersRegisterStep.KINSHIPS);
@@ -232,7 +233,8 @@ export default function MembersRegisterGuardianPage() {
                         </FormControl>
                         <label
                           htmlFor="noNumber"
-                          className="text-[10px] font-bold uppercase text-slate-500 cursor-pointer select-none">
+                          className="text-[10px] font-bold uppercase text-slate-500 cursor-pointer select-none"
+                        >
                           Sem número?
                         </label>
                       </div>
@@ -241,7 +243,8 @@ export default function MembersRegisterGuardianPage() {
                 </div>
                 <FormControl>
                   <Input
-                    placeholder={isNoNumber ? "Sem número" : "49"} {...field}
+                    placeholder={isNoNumber ? "Sem número" : "49"}
+                    {...field}
                     disabled={isNoNumber}
                     className={isNoNumber ? "bg-slate-50 italic text-slate-400" : ""}
                   />

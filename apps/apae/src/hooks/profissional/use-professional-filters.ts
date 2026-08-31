@@ -26,15 +26,18 @@ export function useProfessionalFilters(professionals: Professional[]) {
     });
   }, [professionals, searchTerm, areaFilter]);
 
-  const uniqueAreas = useMemo(() => [
-    "all",
-    ...Array.from(new Set(professionals.map((p) => p.serviceArea.area))),
-  ], [professionals]);
+  const uniqueAreas = useMemo(
+    () => ["all", ...Array.from(new Set(professionals.map((p) => p.serviceArea.area)))],
+    [professionals],
+  );
 
   return {
-    searchTerm, setSearchTerm,
-    areaFilter, setAreaFilter,
-    statusFilter, setStatusFilter,
+    searchTerm,
+    setSearchTerm,
+    areaFilter,
+    setAreaFilter,
+    statusFilter,
+    setStatusFilter,
     filteredProfessionals,
     uniqueAreas,
   };

@@ -1,6 +1,4 @@
-export function parseCivilDate(
-  value: string | Date | null | undefined,
-): Date | null {
+export function parseCivilDate(value: string | Date | null | undefined): Date | null {
   if (!value) return null;
 
   if (value instanceof Date) {
@@ -26,9 +24,7 @@ export function parseCivilDate(
   return new Date(year, month - 1, day);
 }
 
-export function formatCivilDateDisplayValue(
-  value: string | Date | null | undefined,
-): string {
+export function formatCivilDateDisplayValue(value: string | Date | null | undefined): string {
   const date = parseCivilDate(value);
   if (!date) return "";
 
@@ -38,9 +34,7 @@ export function formatCivilDateDisplayValue(
   return `${day}/${month}/${year}`;
 }
 
-export function serializeCivilDate(
-  value: string | Date | null | undefined,
-): string | null {
+export function serializeCivilDate(value: string | Date | null | undefined): string | null {
   const date = parseCivilDate(value);
   if (!date) return null;
 

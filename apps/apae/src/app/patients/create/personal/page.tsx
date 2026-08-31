@@ -88,11 +88,7 @@ export default function MembersRegisterPersonalPage() {
         onSubmit={form.handleSubmit(onSubmit)}
         buttons={
           <div className="flex gap-4">
-            <FormButton
-              type="button"
-              disabled={isLoading}
-              onClick={() => router.push("/patients")}
-            >
+            <FormButton type="button" disabled={isLoading} onClick={() => router.push("/patients")}>
               Voltar
             </FormButton>
 

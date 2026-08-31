@@ -22,16 +22,19 @@ export function useVaccinesList() {
     }
   }, []);
 
-  const deleteVaccine = useCallback(async (id: string) => {
-    try {
-      await deleteVaccineApi({ id });
-      toast.success("Vacina excluída com sucesso.");
-      await loadVaccines();
-    } catch (error) {
-      const message = error instanceof Error ? error.message : "Erro ao excluir vacina.";
-      toast.error(message);
-    }
-  }, [loadVaccines]);
+  const deleteVaccine = useCallback(
+    async (id: string) => {
+      try {
+        await deleteVaccineApi({ id });
+        toast.success("Vacina excluída com sucesso.");
+        await loadVaccines();
+      } catch (error) {
+        const message = error instanceof Error ? error.message : "Erro ao excluir vacina.";
+        toast.error(message);
+      }
+    },
+    [loadVaccines],
+  );
 
   useEffect(() => {
     loadVaccines();

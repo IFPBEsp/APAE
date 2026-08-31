@@ -14,9 +14,7 @@ export default function Header() {
 
       <div className="flex-1 flex items-center justify-center">
         <img src={Logo.src} alt="logo apae" className="h-10 w-8 mr-3" />
-        <span className="text-white font-medium text-lg hidden md:block">
-          Apae Esperança
-        </span>
+        <span className="text-white font-medium text-lg hidden md:block">Apae Esperança</span>
       </div>
 
       <div className="flex items-center">

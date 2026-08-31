@@ -20,8 +20,7 @@ interface GenericDatabaseSelectProps<T> {
   menuPlacement?: "auto" | "bottom" | "top";
 }
 
-const capitalize = (s: string) =>
-  s.charAt(0).toUpperCase() + s.slice(1).toLowerCase();
+const capitalize = (s: string) => s.charAt(0).toUpperCase() + s.slice(1).toLowerCase();
 
 export const GenericDatabaseSelect = <T extends { id?: string | number }>({
   value,
@@ -93,9 +92,7 @@ export const GenericDatabaseSelect = <T extends { id?: string | number }>({
 
     if (existingOption) {
       const isAlreadySelected = currentSelected.some(
-        (s) =>
-          s.id === existingOption.id ||
-          String(s[labelKey] ?? "") === existingOption.value,
+        (s) => s.id === existingOption.id || String(s[labelKey] ?? "") === existingOption.value,
       );
 
       if (!isAlreadySelected) {
@@ -191,17 +188,13 @@ export const GenericDatabaseSelect = <T extends { id?: string | number }>({
       value={getCurrentValue()}
       styles={customStyles}
       placeholder={placeholder}
-      formatCreateLabel={(inputValue) =>
-        `Criar ${labelSingular} "${capitalize(inputValue)}"`
-      }
-      noOptionsMessage={() =>
-        `Nenhum(a) ${labelSingular.toLowerCase()} encontrado(a)`
-      }
+      formatCreateLabel={(inputValue) => `Criar ${labelSingular} "${capitalize(inputValue)}"`}
+      noOptionsMessage={() => `Nenhum(a) ${labelSingular.toLowerCase()} encontrado(a)`}
       createOptionPosition="first"
       menuPlacement={menuPlacement}
       captureMenuScroll={false} // Avoids scrolling bugs in the modal.
       closeMenuOnSelect={false} // Good for MultiSelect
-      tabSelectsValue={false}   // Improve keyboard-free accessibility
+      tabSelectsValue={false} // Improve keyboard-free accessibility
     />
   );
 };

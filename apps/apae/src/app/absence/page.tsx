@@ -18,9 +18,7 @@ interface PaginationInfo {
 
 export default function AbsenceDetails() {
   const [searchName, setSearchName] = useState("");
-  const [patientsWithAbsences, setPatientsWithAbsences] = useState<
-    PatientWithAbsences[]
-  >([]);
+  const [patientsWithAbsences, setPatientsWithAbsences] = useState<PatientWithAbsences[]>([]);
   const [loading, setLoading] = useState(true);
   const [expandedPatient, setExpandedPatient] = useState<string | null>(null);
   const [pagination, setPagination] = useState<PaginationInfo>({
@@ -34,7 +32,10 @@ export default function AbsenceDetails() {
     totalPatientsWithAbsences: 0,
   });
 
-  const [justifyingAbsence, setJustifyingAbsence] = useState<{ id: string, patientId: string } | null>(null);
+  const [justifyingAbsence, setJustifyingAbsence] = useState<{
+    id: string;
+    patientId: string;
+  } | null>(null);
   const [justificationText, setJustificationText] = useState("");
   const [isSubmittingJustification, setIsSubmittingJustification] = useState(false);
   const [file, setFile] = useState<File | null>(null);
@@ -54,10 +55,13 @@ export default function AbsenceDetails() {
         docFormData.append("type", "ATTACHMENTANY");
         docFormData.append("year", String(new Date().getFullYear()));
 
-        const docResponse = await fetch(`/apae-geral/api/patients/${justifyingAbsence.patientId}/documents`, {
-          method: "POST",
-          body: docFormData,
-        });
+        const docResponse = await fetch(
+          `/apae-geral/api/patients/${justifyingAbsence.patientId}/documents`,
+          {
+            method: "POST",
+            body: docFormData,
+          },
+        );
 
         if (!docResponse.ok) {
           const errorData = await docResponse.json();
@@ -155,9 +159,7 @@ export default function AbsenceDetails() {
     <div className="min-h-screen w-full text-sm overflow-x-hidden">
       <main className="flex-1 p-3 sm:p-6 w-full max-w-none">
         <div className="mb-4 flex flex-col justify-between gap-3 sm:mb-6 sm:flex-row sm:items-center">
-          <h1 className="text-lg font-bold sm:text-2xl text-[#0D4F97]">
-            Controle de Faltas
-          </h1>
+          <h1 className="text-lg font-bold sm:text-2xl text-[#0D4F97]">Controle de Faltas</h1>
         </div>
 
         <div className="mb-6 grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
@@ -192,9 +194,7 @@ export default function AbsenceDetails() {
 
         <div className="bg-white rounded-lg shadow p-6">
           <div className="flex justify-between items-center mb-4">
-            <h2 className="text-lg font-semibold text-gray-900">
-              Pacientes com 3 ou mais faltas
-            </h2>
+            <h2 className="text-lg font-semibold text-gray-900">Pacientes com 3 ou mais faltas</h2>
             <div className="text-sm text-gray-500">
               {pagination.totalItems} paciente(s) no total
             </div>
@@ -205,9 +205,7 @@ export default function AbsenceDetails() {
           ) : patientsWithAbsences.length === 0 ? (
             <div className="text-center py-12 text-gray-500">
               <Users className="mx-auto h-12 w-12 text-gray-400 mb-4" />
-              <p className="text-lg font-medium mb-2">
-                Nenhum paciente encontrado.
-              </p>
+              <p className="text-lg font-medium mb-2">Nenhum paciente encontrado.</p>
             </div>
           ) : (
             <>
@@ -215,15 +213,11 @@ export default function AbsenceDetails() {
                 <table className="w-full min-w-[700px]">
                   <thead>
                     <tr className="border-b border-gray-200">
-                      <th className="text-left py-3 px-4 font-medium text-gray-700">
-                        Paciente
-                      </th>
+                      <th className="text-left py-3 px-4 font-medium text-gray-700">Paciente</th>
                       <th className="text-center py-3 px-4 font-medium text-gray-700">
                         Total de Faltas
                       </th>
-                      <th className="text-center py-3 px-4 font-medium text-gray-700">
-                        Ações
-                      </th>
+                      <th className="text-center py-3 px-4 font-medium text-gray-700">Ações</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -231,12 +225,8 @@ export default function AbsenceDetails() {
                       <React.Fragment key={p.patient.id}>
                         <tr className="border-b border-gray-100 hover:bg-gray-50 transition-colors">
                           <td className="py-3 px-4">
-                            <div className="font-medium text-gray-900">
-                              {p.patient.fullName}
-                            </div>
-                            <div className="text-sm text-gray-500">
-                              {p.patient.contact}
-                            </div>
+                            <div className="font-medium text-gray-900">{p.patient.fullName}</div>
+                            <div className="text-sm text-gray-500">{p.patient.contact}</div>
                           </td>
                           <td className="py-3 px-4 text-center">
                             <span
@@ -251,16 +241,12 @@ export default function AbsenceDetails() {
                               size="sm"
                               onClick={() =>
                                 setExpandedPatient(
-                                  expandedPatient === p.patient.id
-                                    ? null
-                                    : p.patient.id!,
+                                  expandedPatient === p.patient.id ? null : p.patient.id!,
                                 )
                               }
                               className="text-[#0D4F97] border-[#0D4F97] hover:bg-[#0D4F97] hover:text-white"
                             >
-                              {expandedPatient === p.patient.id
-                                ? "Ocultar"
-                                : "Ver Faltas"}
+                              {expandedPatient === p.patient.id ? "Ocultar" : "Ver Faltas"}
                             </Button>
                           </td>
                         </tr>
@@ -284,17 +270,23 @@ export default function AbsenceDetails() {
                                       </span>
                                     </div>
                                     <div className="flex items-center gap-2 flex-wrap">
-
                                       {abs.isJustified ? (
                                         <div className="text-sm text-gray-600 max-w-md break-words whitespace-pre-wrap">
-                                          <span className="font-medium text-green-600">Falta Justificada: </span>
+                                          <span className="font-medium text-green-600">
+                                            Falta Justificada:{" "}
+                                          </span>
                                           {abs.justification}
                                         </div>
                                       ) : (
                                         <div className="flex items-center gap-3">
                                           {abs.justification && (
-                                            <div className="text-sm text-gray-500 max-w-xs truncate" title={abs.justification}>
-                                              <span className="font-medium text-gray-700">Motivo original: </span>
+                                            <div
+                                              className="text-sm text-gray-500 max-w-xs truncate"
+                                              title={abs.justification}
+                                            >
+                                              <span className="font-medium text-gray-700">
+                                                Motivo original:{" "}
+                                              </span>
                                               {abs.justification}
                                             </div>
                                           )}
@@ -303,7 +295,12 @@ export default function AbsenceDetails() {
                                             size="sm"
                                             variant="outline"
                                             className="text-orange-600 border-orange-600 hover:bg-orange-600 hover:text-white"
-                                            onClick={() => setJustifyingAbsence({ id: abs.id, patientId: p.patient.id! })}
+                                            onClick={() =>
+                                              setJustifyingAbsence({
+                                                id: abs.id,
+                                                patientId: p.patient.id!,
+                                              })
+                                            }
                                           >
                                             Justificar Falta
                                           </Button>
@@ -324,7 +321,6 @@ export default function AbsenceDetails() {
                                           Baixar documento
                                         </Button>
                                       )}
-
                                     </div>
                                   </div>
                                 ))}
@@ -341,30 +337,22 @@ export default function AbsenceDetails() {
               {pagination.totalPages > 1 && (
                 <div className="flex justify-between items-center mt-6 pt-4 border-t border-gray-200">
                   <div className="text-sm text-gray-500">
-                    Página {pagination.currentPage + 1} de{" "}
-                    {pagination.totalPages}
+                    Página {pagination.currentPage + 1} de {pagination.totalPages}
                   </div>
                   <div className="flex gap-2">
                     <Button
                       variant="outline"
                       size="sm"
                       disabled={pagination.currentPage === 0 || loading}
-                      onClick={() =>
-                        fetchData(pagination.currentPage - 1, searchName)
-                      }
+                      onClick={() => fetchData(pagination.currentPage - 1, searchName)}
                     >
                       Anterior
                     </Button>
                     <Button
                       variant="outline"
                       size="sm"
-                      disabled={
-                        pagination.currentPage === pagination.totalPages - 1 ||
-                        loading
-                      }
-                      onClick={() =>
-                        fetchData(pagination.currentPage + 1, searchName)
-                      }
+                      disabled={pagination.currentPage === pagination.totalPages - 1 || loading}
+                      onClick={() => fetchData(pagination.currentPage + 1, searchName)}
                     >
                       Próxima
                     </Button>
@@ -378,7 +366,6 @@ export default function AbsenceDetails() {
         {justifyingAbsence && (
           <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
             <div className="bg-white rounded-xl p-6 max-w-md w-full shadow-2xl border border-gray-100">
-
               <div className="mb-6">
                 <h3 className="text-xl font-bold text-[#0D4F97] mb-2">Justificar Falta</h3>
                 <p className="text-sm text-gray-500">
@@ -400,7 +387,9 @@ export default function AbsenceDetails() {
                 </div>
 
                 <div className="space-y-2">
-                  <label className="text-sm font-medium text-gray-700">Anexar documento (Opcional)</label>
+                  <label className="text-sm font-medium text-gray-700">
+                    Anexar documento (Opcional)
+                  </label>
                   <Input
                     ref={fileInputRef}
                     type="file"
@@ -457,7 +446,6 @@ export default function AbsenceDetails() {
                   {isSubmittingJustification ? "Salvando..." : "Registrar Justificativa"}
                 </Button>
               </div>
-
             </div>
           </div>
         )}

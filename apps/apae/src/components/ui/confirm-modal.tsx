@@ -29,13 +29,13 @@ export function ConfirmModal({
       <AlertDialogContent>
         <AlertDialogHeader>
           <AlertDialogTitle>{title}</AlertDialogTitle>
-          <AlertDialogDescription className="text-black">
-            {description}
-          </AlertDialogDescription>
+          <AlertDialogDescription className="text-black">{description}</AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
           <AlertDialogCancel>Cancelar</AlertDialogCancel>
-          <AlertDialogAction className={`bg-[#0D4F97]`} onClick={onConfirm}>Confirmar</AlertDialogAction>
+          <AlertDialogAction className={`bg-[#0D4F97]`} onClick={onConfirm}>
+            Confirmar
+          </AlertDialogAction>
         </AlertDialogFooter>
       </AlertDialogContent>
     </AlertDialog>

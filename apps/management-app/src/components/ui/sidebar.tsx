@@ -16,12 +16,7 @@ import { Sheet, SheetContent } from "@/components/ui/sheet";
 import { NAV } from "@/lib/routes";
 import Logo from "@/app/assets/logo.png";
 
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { removeSessionCookie } from "@/lib/cookies";
 
 const SIDEBAR_COOKIE_NAME = "sidebar_state";
@@ -79,7 +74,7 @@ function SidebarProvider({
       }
       document.cookie = `${SIDEBAR_COOKIE_NAME}=${openState}; path=/; max-age=${SIDEBAR_COOKIE_MAX_AGE}`;
     },
-    [setOpenProp, open]
+    [setOpenProp, open],
   );
 
   const toggleSidebar = React.useCallback(() => {
@@ -88,10 +83,7 @@ function SidebarProvider({
 
   React.useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
-      if (
-        event.key === SIDEBAR_KEYBOARD_SHORTCUT &&
-        (event.metaKey || event.ctrlKey)
-      ) {
+      if (event.key === SIDEBAR_KEYBOARD_SHORTCUT && (event.metaKey || event.ctrlKey)) {
         event.preventDefault();
         toggleSidebar();
       }
@@ -112,7 +104,7 @@ function SidebarProvider({
       setOpenMobile,
       toggleSidebar,
     }),
-    [state, open, setOpen, isMobile, openMobile, setOpenMobile, toggleSidebar]
+    [state, open, setOpen, isMobile, openMobile, setOpenMobile, toggleSidebar],
   );
 
   return (
@@ -128,7 +120,7 @@ function SidebarProvider({
           }
           className={cn(
             "group/sidebar-wrapper flex min-h-svh w-full has-[[data-variant=inset]]:bg-sidebar",
-            className
+            className,
           )}
           {...props}
         >
@@ -159,7 +151,7 @@ function Sidebar({
         data-sidebar="sidebar"
         className={cn(
           "flex h-full w-96 flex-col bg-[#B2D7EC] text-[#0D4F97] rounded-r-3xl",
-          className
+          className,
         )}
         {...props}
       >
@@ -175,9 +167,7 @@ function Sidebar({
           data-sidebar="sidebar"
           data-mobile="true"
           className="top-2 bottom-2 z-50 w-[var(--sidebar-width)] bg-[#B2D7EC] p-0 text-[#0D4F97] rounded-r-3xl overflow-hidden [&>button]:hidden"
-          style={
-            { "--sidebar-width": SIDEBAR_WIDTH_MOBILE } as React.CSSProperties
-          }
+          style={{ "--sidebar-width": SIDEBAR_WIDTH_MOBILE } as React.CSSProperties}
           side={side}
         >
           <div className="flex h-full w-full flex-col">{children}</div>
@@ -200,7 +190,7 @@ function Sidebar({
           "group-data-[side=right]:rotate-180",
           variant === "floating" || variant === "inset"
             ? "group-data-[collapsible=icon]:w-[calc(var(--sidebar-width-icon)+theme(spacing.4))]"
-            : "group-data-[collapsible=icon]:w-[--sidebar-width-icon]"
+            : "group-data-[collapsible=icon]:w-[--sidebar-width-icon]",
         )}
       />
       <div
@@ -211,7 +201,7 @@ function Sidebar({
             : "right-0 group-data-[collapsible=offcanvas]:right-[calc(var(--sidebar-width)*-1)]",
           variant === "floating" || variant === "inset"
             ? "p-2 group-data-[collapsible=icon]:w-[calc(var(--sidebar-width-icon)+theme(spacing.4)+2px)]"
-            : "group-data-[collapsible=icon]:w-[--sidebar-width-icon]"
+            : "group-data-[collapsible=icon]:w-[--sidebar-width-icon]",
         )}
         {...props}
       >
@@ -260,7 +250,7 @@ function SidebarInset({ className, ...props }: React.ComponentProps<"main">) {
         "relative flex min-h-svh flex-1 flex-col bg-background",
         "peer-data-[variant=inset]:min-h-[calc(100svh-theme(spacing.4))] md:peer-data-[variant=inset]:m-2 md:peer-data-[variant=inset]:ml-0 md:peer-data-[variant=inset]:rounded-xl md:peer-data-[variant=inset]:shadow",
         "md:peer-data-[state=collapsed]:peer-data-[variant=inset]:ml-2",
-        className
+        className,
       )}
       {...props}
     />
@@ -269,28 +259,17 @@ function SidebarInset({ className, ...props }: React.ComponentProps<"main">) {
 
 function SidebarHeader({ className, ...props }: React.ComponentProps<"div">) {
   return (
-    <div
-      data-sidebar="header"
-      className={cn("flex flex-col gap-2 p-2", className)}
-      {...props}
-    />
+    <div data-sidebar="header" className={cn("flex flex-col gap-2 p-2", className)} {...props} />
   );
 }
 
 function SidebarFooter({ className, ...props }: React.ComponentProps<"div">) {
   return (
-    <div
-      data-sidebar="footer"
-      className={cn("flex flex-col gap-2 p-2", className)}
-      {...props}
-    />
+    <div data-sidebar="footer" className={cn("flex flex-col gap-2 p-2", className)} {...props} />
   );
 }
 
-function SidebarSeparator({
-  className,
-  ...props
-}: React.ComponentProps<typeof Separator>) {
+function SidebarSeparator({ className, ...props }: React.ComponentProps<typeof Separator>) {
   return (
     <Separator
       data-sidebar="separator"
@@ -306,7 +285,7 @@ function SidebarContent({ className, ...props }: React.ComponentProps<"div">) {
       data-sidebar="content"
       className={cn(
         "flex min-h-0 flex-1 flex-col gap-2 overflow-auto group-data-[collapsible=icon]:overflow-hidden",
-        className
+        className,
       )}
       {...props}
     />
@@ -335,23 +314,16 @@ function SidebarGroupLabel({
       className={cn(
         "duration-200 flex h-8 shrink-0 items-center rounded-md px-2 text-xs font-medium text-sidebar-foreground/70 outline-none ring-sidebar-ring transition-[margin,opacity] ease-linear focus-visible:ring-2 [&>svg]:size-4 [&>svg]:shrink-0",
         "group-data-[collapsible=icon]:-mt-8 group-data-[collapsible=icon]:opacity-0",
-        className
+        className,
       )}
       {...props}
     />
   );
 }
 
-function SidebarGroupContent({
-  className,
-  ...props
-}: React.ComponentProps<"div">) {
+function SidebarGroupContent({ className, ...props }: React.ComponentProps<"div">) {
   return (
-    <div
-      data-sidebar="group-content"
-      className={cn("w-full text-sm", className)}
-      {...props}
-    />
+    <div data-sidebar="group-content" className={cn("w-full text-sm", className)} {...props} />
   );
 }
 
@@ -367,11 +339,7 @@ function SidebarMenu({ className, ...props }: React.ComponentProps<"ul">) {
 
 function SidebarMenuItem({ className, ...props }: React.ComponentProps<"li">) {
   return (
-    <li
-      data-sidebar="menu-item"
-      className={cn("group/menu-item relative", className)}
-      {...props}
-    />
+    <li data-sidebar="menu-item" className={cn("group/menu-item relative", className)} {...props} />
   );
 }
 
@@ -394,7 +362,7 @@ const sidebarMenuButtonVariants = cva(
       variant: "default",
       size: "default",
     },
-  }
+  },
 );
 
 function SidebarMenuButton({
@@ -457,7 +425,7 @@ function AppSidebar() {
         "[&[data-sidebar=sidebar]]:!h-[calc(100svh)]",
         "[&[data-sidebar=sidebar]]:shadow-lg",
         "[&[data-sidebar=sidebar]]:overflow-hidden",
-        "[&[data-sidebar=sidebar]]:!my-0"
+        "[&[data-sidebar=sidebar]]:!my-0",
       )}
     >
       <SidebarHeader className="pt-2">
@@ -499,9 +467,7 @@ function AppSidebar() {
             <SidebarMenu>
               {NAV.map((item) => {
                 const Icon = item.icon;
-                const active =
-                  pathname === item.href ||
-                  pathname.startsWith(item.href + "/");
+                const active = pathname === item.href || pathname.startsWith(item.href + "/");
                 return (
                   <SidebarMenuItem key={item.href}>
                     <SidebarMenuButton
@@ -511,13 +477,10 @@ function AppSidebar() {
                         "h-10 transition-colors",
                         active
                           ? "bg-[#0D4F97] text-white"
-                          : "text-[#0D4F97] hover:bg-[#0D4F97] hover:text-white"
+                          : "text-[#0D4F97] hover:bg-[#0D4F97] hover:text-white",
                       )}
                     >
-                      <Link
-                        href={item.href}
-                        className="flex items-center gap-2"
-                      >
+                      <Link href={item.href} className="flex items-center gap-2">
                         <Icon className="h-5 w-5" />
                         <span>{item.label}</span>
                       </Link>
@@ -548,9 +511,7 @@ function AppSidebar() {
                 }}
               >
                 <LogOut className="h-5 w-5" />
-                <span className="group-data-[collapsible=icon]:hidden">
-                  Sair
-                </span>
+                <span className="group-data-[collapsible=icon]:hidden">Sair</span>
               </button>
             </SidebarMenuButton>
           </SidebarMenuItem>

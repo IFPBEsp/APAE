@@ -5,10 +5,7 @@ interface A11yRegionProps {
   assertiveMessage: string;
 }
 
-export function A11yRegion({
-  politeMessage,
-  assertiveMessage,
-}: A11yRegionProps) {
+export function A11yRegion({ politeMessage, assertiveMessage }: A11yRegionProps) {
   return (
     <div className="sr-only">
       <div aria-live="polite" aria-atomic="true" role="status">

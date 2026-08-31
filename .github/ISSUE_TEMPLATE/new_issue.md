@@ -1,5 +1,6 @@
 ---
 ---
+
 name: "Nova Issue"
 about: "Use este template para criar uma nova issue"
 title: ""
@@ -13,8 +14,8 @@ Descreva o problema ou necessidade que essa issue está abordando.
 
 ## Tarefas Relacionadas
 
-* PR relacionado: {pr_link}
-* Outras issues: {issue_link}
+- PR relacionado: {pr_link}
+- Outras issues: {issue_link}
 
 ## Objetivo da Solução
 
@@ -22,10 +23,9 @@ Descreva o que se espera como solução ou melhoria.
 
 ## Critérios de Aceite
 
-* [ ] {critério_1}
-* [ ] {critério_2}
-* [ ] {critério_3}
-
+- [ ] {critério_1}
+- [ ] {critério_2}
+- [ ] {critério_3}
 
 ## Artefatos
 

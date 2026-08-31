@@ -14,9 +14,7 @@ export function formatPhone(value: string) {
   const numbers = value.replace(/\D/g, "");
 
   if (numbers.length <= 10) {
-    return numbers
-      .replace(/(\d{2})(\d)/, "($1) $2")
-      .replace(/(\d{4})(\d)/, "$1-$2");
+    return numbers.replace(/(\d{2})(\d)/, "($1) $2").replace(/(\d{4})(\d)/, "$1-$2");
   }
 
   return numbers
@@ -27,9 +25,7 @@ export function formatPhone(value: string) {
 
 export function formatRG(value: string) {
   const numbers = limit(value.replace(/\D/g, ""), 7);
-  return numbers
-    .replace(/(\d{1})(\d)/, "$1.$2")
-    .replace(/(\d{3})(\d)/, "$1.$2");
+  return numbers.replace(/(\d{1})(\d)/, "$1.$2").replace(/(\d{3})(\d)/, "$1.$2");
 }
 
 export function formatIssuingBody(value: string) {

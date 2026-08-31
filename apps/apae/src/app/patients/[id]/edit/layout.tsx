@@ -73,9 +73,7 @@ function EditPatientDataLoader({ children }: { children: React.ReactNode }) {
           additionals: {
             diseases: data.annualRegistry?.diseases || "",
             medications: data.annualRegistry?.continuousMedication || "",
-            vaccines:
-              data.vaccineNames?.map((v: { name?: string }) => v.name || "") ||
-              [],
+            vaccines: data.vaccineNames?.map((v: { name?: string }) => v.name || "") || [],
             allergies: data.allergies || "",
             disability: { types: [], report: undefined },
             care: { types: [], referral: undefined },
@@ -109,8 +107,7 @@ function EditPatientDataLoader({ children }: { children: React.ReactNode }) {
               alive: p.isAlive ?? true,
               type: p.kinship || "",
               isLegalGuardian:
-                p.name === data.guardian?.name &&
-                p.kinship === data.guardian?.kinship,
+                p.name === data.guardian?.name && p.kinship === data.guardian?.kinship,
             })) || [],
           profile: {
             role: data.isStudent ? "student" : "patient",
@@ -132,9 +129,7 @@ function EditPatientDataLoader({ children }: { children: React.ReactNode }) {
     return (
       <div className="flex h-screen items-center justify-center flex-col gap-4">
         <Loader2 className="animate-spin text-[#0D4F97] h-10 w-10" />
-        <p className="text-gray-500 font-medium">
-          Carregando dados para edição...
-        </p>
+        <p className="text-gray-500 font-medium">Carregando dados para edição...</p>
       </div>
     );
   }
@@ -190,10 +185,7 @@ function MobileStepIndicator() {
           const isCurrent = index === currentStepIndex;
 
           return (
-            <div
-              key={s.id}
-              className="flex flex-col items-center gap-1 flex-shrink-0"
-            >
+            <div key={s.id} className="flex flex-col items-center gap-1 flex-shrink-0">
               {isCompleted ? (
                 <CheckCircle2 className="w-5 h-5 text-green-400" />
               ) : isCurrent ? (
@@ -213,19 +205,13 @@ function MobileStepIndicator() {
         })}
       </div>
       <div className="mt-2 text-center">
-        <p className="text-sm text-white font-semibold">
-          {stepsList[currentStepIndex]?.label}
-        </p>
+        <p className="text-sm text-white font-semibold">{stepsList[currentStepIndex]?.label}</p>
       </div>
     </div>
   );
 }
 
-export default function EditPatientLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+export default function EditPatientLayout({ children }: { children: React.ReactNode }) {
   return (
     <VaccinesProvider>
       <DisordersProvider>

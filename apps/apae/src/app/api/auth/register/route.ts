@@ -7,10 +7,7 @@ export async function POST(req: Request) {
     const { email, fullName, cpf, password } = await req.json();
 
     if (!email || !fullName || !cpf || !password) {
-      return NextResponse.json(
-        { message: "Todos os campos são obrigatórios" },
-        { status: 406 },
-      );
+      return NextResponse.json({ message: "Todos os campos são obrigatórios" }, { status: 406 });
     }
 
     const api = await createBaseApi();
@@ -28,10 +25,7 @@ export async function POST(req: Request) {
       );
     }
 
-    return NextResponse.json(
-      { message: "Cadastro bem-sucedido" },
-      { status: 201 },
-    );
+    return NextResponse.json({ message: "Cadastro bem-sucedido" }, { status: 201 });
   } catch (error) {
     console.error(error);
 
@@ -46,8 +40,7 @@ export async function POST(req: Request) {
       {
         message: `Erro: ${
           error && (error as AxiosError).response?.data
-            ? ((error as AxiosError).response?.data as { message?: string })
-                .message
+            ? ((error as AxiosError).response?.data as { message?: string }).message
             : "Erro ao cadastrar usuário"
         }`,
       },

@@ -35,12 +35,9 @@ function Page() {
   const formatCPF = (value: string) => {
     const numbers = value.replace(/\D/g, "");
     if (numbers.length <= 3) return numbers;
-    if (numbers.length <= 6)
-      return `${numbers.slice(0, 3)}.${numbers.slice(3)}`;
+    if (numbers.length <= 6) return `${numbers.slice(0, 3)}.${numbers.slice(3)}`;
     if (numbers.length <= 9)
-      return `${numbers.slice(0, 3)}.${numbers.slice(3, 6)}.${numbers.slice(
-        6,
-      )}`;
+      return `${numbers.slice(0, 3)}.${numbers.slice(3, 6)}.${numbers.slice(6)}`;
     return `${numbers.slice(0, 3)}.${numbers.slice(3, 6)}.${numbers.slice(
       6,
       9,
@@ -73,16 +70,13 @@ function Page() {
     <div className="w-full p-4 md:p-6">
       <div className="mx-auto w-full max-w-[1200px]">
         <div className="mb-6">
-          <h1 className="text-lg font-bold sm:text-2xl text-[#0D4F97]">
-            Cadastrar Novo Usuário
-          </h1>
+          <h1 className="text-lg font-bold sm:text-2xl text-[#0D4F97]">Cadastrar Novo Usuário</h1>
         </div>
 
         <div className="bg-white rounded-[20px] border border-gray-100 p-8 shadow-sm">
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-6">
-                
                 <FormField
                   control={form.control}
                   name="fullName"
@@ -90,9 +84,9 @@ function Page() {
                     <FormItem>
                       <FormLabel className="text-[#0D4F97] font-semibold">Nome Completo</FormLabel>
                       <FormControl>
-                        <Input 
-                          {...field} 
-                          placeholder="Digite o nome completo" 
+                        <Input
+                          {...field}
+                          placeholder="Digite o nome completo"
                           className="h-12 border-[#0D4F97]/20 focus:border-[#0D4F97] focus-visible:ring-0"
                         />
                       </FormControl>
@@ -108,10 +102,10 @@ function Page() {
                     <FormItem>
                       <FormLabel className="text-[#0D4F97] font-semibold">Email</FormLabel>
                       <FormControl>
-                        <Input 
-                          {...field} 
-                          type="email" 
-                          placeholder="exemplo@email.com" 
+                        <Input
+                          {...field}
+                          type="email"
+                          placeholder="exemplo@email.com"
                           className="h-12 border-[#0D4F97]/20 focus:border-[#0D4F97] focus-visible:ring-0"
                         />
                       </FormControl>
@@ -148,9 +142,9 @@ function Page() {
                       <FormItem>
                         <FormLabel className="text-[#0D4F97] font-semibold">Senha</FormLabel>
                         <FormControl>
-                          <PasswordInput 
-                            {...field} 
-                            placeholder="Crie uma senha" 
+                          <PasswordInput
+                            {...field}
+                            placeholder="Crie uma senha"
                             className="h-12 border-[#0D4F97]/20 focus:border-[#0D4F97] focus-visible:ring-0"
                           />
                         </FormControl>
@@ -164,11 +158,13 @@ function Page() {
                     name="confirmPassword"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel className="text-[#0D4F97] font-semibold">Confirmar Senha</FormLabel>
+                        <FormLabel className="text-[#0D4F97] font-semibold">
+                          Confirmar Senha
+                        </FormLabel>
                         <FormControl>
-                          <PasswordInput 
-                            {...field} 
-                            placeholder="Repita a senha" 
+                          <PasswordInput
+                            {...field}
+                            placeholder="Repita a senha"
                             className="h-12 border-[#0D4F97]/20 focus:border-[#0D4F97] focus-visible:ring-0"
                           />
                         </FormControl>

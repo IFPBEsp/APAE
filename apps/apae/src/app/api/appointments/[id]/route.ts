@@ -2,10 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { createBaseApi } from "@/lib/axios";
 import { AxiosError } from "axios";
 
-export async function GET(
-  req: NextRequest,
-  context: { params: Promise<{ id: string }> },
-) {
+export async function GET(req: NextRequest, context: { params: Promise<{ id: string }> }) {
   try {
     const { id } = await context.params;
 
@@ -16,10 +13,7 @@ export async function GET(
   } catch (error) {
     if (error instanceof AxiosError) {
       if (error.response?.status === 404) {
-        return NextResponse.json(
-          { message: "Agendamento não encontrado" },
-          { status: 404 },
-        );
+        return NextResponse.json({ message: "Agendamento não encontrado" }, { status: 404 });
       }
 
       return NextResponse.json(
@@ -28,17 +22,11 @@ export async function GET(
       );
     }
 
-    return NextResponse.json(
-      { message: "Erro interno do servidor" },
-      { status: 500 },
-    );
+    return NextResponse.json({ message: "Erro interno do servidor" }, { status: 500 });
   }
 }
 
-export async function PATCH(
-  req: NextRequest,
-  context: { params: Promise<{ id: string }> },
-) {
+export async function PATCH(req: NextRequest, context: { params: Promise<{ id: string }> }) {
   try {
     const { id } = await context.params;
     const body = await req.json();
@@ -51,10 +39,7 @@ export async function PATCH(
   } catch (error: unknown) {
     if (error instanceof AxiosError) {
       if (error.response?.status === 404) {
-        return NextResponse.json(
-          { message: "Agendamento não encontrado" },
-          { status: 404 },
-        );
+        return NextResponse.json({ message: "Agendamento não encontrado" }, { status: 404 });
       }
 
       return NextResponse.json(
@@ -63,17 +48,11 @@ export async function PATCH(
       );
     }
 
-    return NextResponse.json(
-      { message: "Erro interno do servidor" },
-      { status: 500 },
-    );
+    return NextResponse.json({ message: "Erro interno do servidor" }, { status: 500 });
   }
 }
 
-export async function PUT(
-  req: NextRequest,
-  context: { params: Promise<{ id: string }> },
-) {
+export async function PUT(req: NextRequest, context: { params: Promise<{ id: string }> }) {
   try {
     const { id } = await context.params;
     const body = await req.json();
@@ -86,48 +65,32 @@ export async function PUT(
     if (error instanceof AxiosError) {
       return NextResponse.json(
         {
-          message:
-            error.response?.data?.message || "Erro ao atualizar agendamento",
+          message: error.response?.data?.message || "Erro ao atualizar agendamento",
         },
         { status: error.response?.status || 500 },
       );
     }
-    return NextResponse.json(
-      { message: "Erro interno do servidor" },
-      { status: 500 },
-    );
+    return NextResponse.json({ message: "Erro interno do servidor" }, { status: 500 });
   }
 }
 
-export async function DELETE(
-  req: NextRequest,
-  context: { params: Promise<{ id: string }> },
-) {
+export async function DELETE(req: NextRequest, context: { params: Promise<{ id: string }> }) {
   try {
     const { id } = await context.params;
     const api = await createBaseApi();
     await api.delete(`/appointments/${id}`);
 
-    return NextResponse.json(
-      { message: "Agendamento excluído com sucesso" },
-      { status: 200 },
-    );
+    return NextResponse.json({ message: "Agendamento excluído com sucesso" }, { status: 200 });
   } catch (error) {
     if (error instanceof AxiosError) {
       if (error.response?.status === 404) {
-        return NextResponse.json(
-          { message: "Agendamento não encontrado" },
-          { status: 404 },
-        );
+        return NextResponse.json({ message: "Agendamento não encontrado" }, { status: 404 });
       }
       return NextResponse.json(
         { message: "Erro ao excluir agendamento" },
         { status: error.response?.status || 500 },
       );
     }
-    return NextResponse.json(
-      { message: "Erro interno do servidor" },
-      { status: 500 },
-    );
+    return NextResponse.json({ message: "Erro interno do servidor" }, { status: 500 });
   }
 }

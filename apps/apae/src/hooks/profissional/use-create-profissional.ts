@@ -25,7 +25,7 @@ export function useCreateProfessional() {
       setSuccess(true);
       router.push("/professionals");
     } catch (err: unknown) {
-      if(err instanceof Error) {
+      if (err instanceof Error) {
         setError(err.message || "Erro inesperado");
       } else {
         setError("Erro inesperado");

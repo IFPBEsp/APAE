@@ -1,11 +1,6 @@
 "use server";
 
-import axios, {
-  AxiosError,
-  AxiosInstance,
-  AxiosResponse,
-  InternalAxiosRequestConfig,
-} from "axios";
+import axios, { AxiosError, AxiosInstance, AxiosResponse, InternalAxiosRequestConfig } from "axios";
 import { redirect } from "next/navigation";
 import { getTokenFromCookie, removeSessionCookie } from "./cookies";
 
@@ -26,9 +21,7 @@ function getBaseApiURL() {
 }
 
 function getDocumentsApiBaseURL() {
-  const documentsApiURL = trimTrailingSlash(
-    process.env.NEXT_PUBLIC_DOCUMENTS_API_URL,
-  );
+  const documentsApiURL = trimTrailingSlash(process.env.NEXT_PUBLIC_DOCUMENTS_API_URL);
 
   if (!documentsApiURL) {
     return getBaseApiURL();

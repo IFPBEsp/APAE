@@ -17,11 +17,7 @@ import { Calendar } from "@/components/ui/calendar";
 import { Card, CardContent } from "@/components/ui/card";
 import { Combobox } from "@/components/ui/combobox";
 import { Label } from "@/components/ui/label";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import {
   Select,
   SelectContent,
@@ -81,19 +77,13 @@ export function AppointmentForm({ editAppointment }: AppointmentFormProps) {
   const [professional, setProfessional] = useState<Option>(() => {
     const prof = editAppointment?.professional;
 
-    return prof
-      ? { value: prof.id, label: prof.name }
-      : { value: "", label: "" };
+    return prof ? { value: prof.id, label: prof.name } : { value: "", label: "" };
   });
 
   const [listPatients, setListPatients] = useState<Option[]>([]);
   const [listaProfessional, setListaProfessionals] = useState<Option[]>([]);
-  const [frequencyDays, setFrequencyDays] = useState<number>(
-    editAppointment?.frequencyDays || 0,
-  );
-  const [availabilities, setAvailabilities] = useState<
-    { day: string; shift: string }[]
-  >([]);
+  const [frequencyDays, setFrequencyDays] = useState<number>(editAppointment?.frequencyDays || 0);
+  const [availabilities, setAvailabilities] = useState<{ day: string; shift: string }[]>([]);
 
   const [validationErrors, setValidationErrors] = useState({
     date: false,
@@ -114,13 +104,9 @@ export function AppointmentForm({ editAppointment }: AppointmentFormProps) {
           getHealthProfessionals(),
         ]);
 
-        setListPatients(
-          patients.map((p) => ({ value: p.id, label: p.fullName })),
-        );
+        setListPatients(patients.map((p) => ({ value: p.id, label: p.fullName })));
 
-        setListaProfessionals(
-          professionals.map((p) => ({ value: p.id, label: p.name })),
-        );
+        setListaProfessionals(professionals.map((p) => ({ value: p.id, label: p.name })));
       } catch (error) {
         console.error("Erro ao carregar dados do formulário:", error);
         dataFetched.current = false;
@@ -187,12 +173,10 @@ export function AppointmentForm({ editAppointment }: AppointmentFormProps) {
     if (dayOfWeek === 0 || dayOfWeek === 6) return true;
 
     const dayName = mapDayOfWeek[dayOfWeek];
-    
-    const isPast = day.getTime() < today.getTime(); 
-    
-    const professionalWorksThisDay = availabilities.some(
-      (a) => a.day === dayName,
-    );
+
+    const isPast = day.getTime() < today.getTime();
+
+    const professionalWorksThisDay = availabilities.some((a) => a.day === dayName);
 
     if (editAppointment?.initialDate) {
       const [y, m, d] = editAppointment.initialDate.split("-").map(Number);
@@ -208,7 +192,7 @@ export function AppointmentForm({ editAppointment }: AppointmentFormProps) {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setSubmitError(null); 
+    setSubmitError(null);
 
     const errors = {
       date: !date || !isValid(date),
@@ -250,20 +234,20 @@ export function AppointmentForm({ editAppointment }: AppointmentFormProps) {
     }
   };
 
-  const isToday = date && format(date, "yyyy-MM-dd") === format(new Date(), "yyyy-MM-dd");  
-  const validTimeSlots = availableTimeSlots.filter(slot => {
+  const isToday = date && format(date, "yyyy-MM-dd") === format(new Date(), "yyyy-MM-dd");
+  const validTimeSlots = availableTimeSlots.filter((slot) => {
     if (!isToday) return true;
 
     if (editAppointment && editAppointment.hour.startsWith(slot)) return true;
 
-    const [slotHour, slotMinute] = slot.split(':').map(Number);
+    const [slotHour, slotMinute] = slot.split(":").map(Number);
     const now = new Date();
     const currentHour = now.getHours();
     const currentMinute = now.getMinutes();
 
     if (slotHour > currentHour) return true;
     if (slotHour === currentHour && slotMinute > currentMinute) return true;
-    
+
     return false;
   });
 
@@ -288,9 +272,7 @@ export function AppointmentForm({ editAppointment }: AppointmentFormProps) {
                 className="w-full"
               />
 
-              {validationErrors.patient && (
-                <p className="text-sm text-red-500">Obrigatório.</p>
-              )}
+              {validationErrors.patient && <p className="text-sm text-red-500">Obrigatório.</p>}
             </div>
           )}
 
@@ -310,9 +292,7 @@ export function AppointmentForm({ editAppointment }: AppointmentFormProps) {
               className="w-full"
             />
 
-            {validationErrors.professional && (
-              <p className="text-sm text-red-500">Obrigatório.</p>
-            )}
+            {validationErrors.professional && <p className="text-sm text-red-500">Obrigatório.</p>}
           </div>
 
           <div className="space-y-4">
@@ -329,10 +309,7 @@ export function AppointmentForm({ editAppointment }: AppointmentFormProps) {
                 <div className="flex flex-col space-y-2">
                   <Label className="text-xs">Data de Início</Label>
 
-                  <Popover
-                    open={isCalendarOpen}
-                    onOpenChange={setIsCalendarOpen}
-                  >
+                  <Popover open={isCalendarOpen} onOpenChange={setIsCalendarOpen}>
                     <PopoverTrigger asChild>
                       <Button
                         variant={"outline"}
@@ -373,23 +350,12 @@ export function AppointmentForm({ editAppointment }: AppointmentFormProps) {
                 <div className="flex flex-col space-y-2">
                   <Label className="text-xs">Horário</Label>
 
-                  <Select
-                    disabled={!date}
-                    onValueChange={setSelectedTime}
-                    value={selectedTime}
-                  >
+                  <Select disabled={!date} onValueChange={setSelectedTime} value={selectedTime}>
                     <SelectTrigger
-                      className={cn(
-                        "w-full",
-                        validationErrors.time && "border-red-500",
-                      )}
+                      className={cn("w-full", validationErrors.time && "border-red-500")}
                     >
                       <SelectValue
-                        placeholder={
-                          date
-                            ? "Escolha o horário"
-                            : "Selecione a data primeiro"
-                        }
+                        placeholder={date ? "Escolha o horário" : "Selecione a data primeiro"}
                       />
                     </SelectTrigger>
 
@@ -422,10 +388,7 @@ export function AppointmentForm({ editAppointment }: AppointmentFormProps) {
               value={frequencyDays > 0 ? String(frequencyDays) : undefined}
             >
               <SelectTrigger
-                className={cn(
-                  "w-full",
-                  validationErrors.frequencyDays && "border-red-500",
-                )}
+                className={cn("w-full", validationErrors.frequencyDays && "border-red-500")}
               >
                 <SelectValue placeholder="Selecione a frequência" />
               </SelectTrigger>
@@ -437,9 +400,7 @@ export function AppointmentForm({ editAppointment }: AppointmentFormProps) {
             </Select>
 
             {validationErrors.frequencyDays && (
-              <p className="text-sm text-red-500">
-                Selecione uma frequência válida.
-              </p>
+              <p className="text-sm text-red-500">Selecione uma frequência válida.</p>
             )}
           </div>
 

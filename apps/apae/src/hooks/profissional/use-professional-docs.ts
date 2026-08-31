@@ -1,5 +1,8 @@
 import { useCallback, useMemo, useState } from "react";
-import { getProfessionalDocuments, removeProfessionalDocument } from "@/services/profissional-service";
+import {
+  getProfessionalDocuments,
+  removeProfessionalDocument,
+} from "@/services/profissional-service";
 import { DocumentWithUrl } from "@/types/document";
 import { isValidFile } from "@/domains/professional/shared/professional.utils";
 
@@ -31,11 +34,14 @@ export function useProfessionalDocs(professionalId: string | undefined) {
     }
   }, []);
 
-  const groupedDocs = useMemo(() => ({
-    curriculum: docs.find((d) => d.type === "CURRICULUM"),
-    volunteer: docs.find((d) => d.type === "VOLUNTEER_AGREEMENT"),
-    attachments: docs.filter((d) => d.type === "ATTACHMENTANY"),
-  }), [docs]);
+  const groupedDocs = useMemo(
+    () => ({
+      curriculum: docs.find((d) => d.type === "CURRICULUM"),
+      volunteer: docs.find((d) => d.type === "VOLUNTEER_AGREEMENT"),
+      attachments: docs.filter((d) => d.type === "ATTACHMENTANY"),
+    }),
+    [docs],
+  );
 
   function openRemoveModal(doc: DocumentWithUrl) {
     setDocToRemove(doc);
@@ -54,7 +60,11 @@ export function useProfessionalDocs(professionalId: string | undefined) {
     } catch (e: unknown) {
       alert((e as Error)?.message ?? "Erro ao remover documento");
     } finally {
-      setRemovingIds((prev) => { const s = new Set(prev); s.delete(idStr); return s; });
+      setRemovingIds((prev) => {
+        const s = new Set(prev);
+        s.delete(idStr);
+        return s;
+      });
     }
   }
 
@@ -75,14 +85,20 @@ export function useProfessionalDocs(professionalId: string | undefined) {
   const isConfirmBusy = !!docToRemove && removingIds.has(String(docToRemove.id));
 
   return {
-    docs, docsLoading, docsError,
+    docs,
+    docsLoading,
+    docsError,
     groupedDocs,
-    curriculumFile, setCurriculumFile,
-    volunteerFile, setVolunteerFile,
-    attachmentFiles, setAttachmentFiles,
+    curriculumFile,
+    setCurriculumFile,
+    volunteerFile,
+    setVolunteerFile,
+    attachmentFiles,
+    setAttachmentFiles,
     hasAnyUpload,
     removingIds,
-    removeModalOpen, setRemoveModalOpen,
+    removeModalOpen,
+    setRemoveModalOpen,
     docToRemove,
     isConfirmBusy,
     openRemoveModal,

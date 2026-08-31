@@ -1,11 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
-import {
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-} from "@/components/ui/form";
+import { FormControl, FormField, FormItem, FormLabel } from "@/components/ui/form";
 import { cn } from "@/lib/utils";
 import React from "react";
 import { ControllerProps, FieldPath, FieldValues } from "react-hook-form";
@@ -23,23 +18,12 @@ function MembersRegisterForm({
   return (
     <div className="relative w-full">
       <h2 className="text-xl font-bold text-blue-900/50 mb-4">{title}</h2>
-      
-      <form
-        onSubmit={onSubmit}
-        className={cn(
-          "flex flex-col w-full", 
-          className,
-        )}
-      >
-        <div className="pb-32 space-y-7">
-          {children}
-        </div>
 
-        <div className="fixed bottom-8 right-12 md:right-24 z-[99] pointer-events-none">          
-          <div className="flex gap-4 pointer-events-auto">
-            {buttons}
-          </div>
-          
+      <form onSubmit={onSubmit} className={cn("flex flex-col w-full", className)}>
+        <div className="pb-32 space-y-7">{children}</div>
+
+        <div className="fixed bottom-8 right-12 md:right-24 z-[99] pointer-events-none">
+          <div className="flex gap-4 pointer-events-auto">{buttons}</div>
         </div>
       </form>
     </div>
@@ -47,11 +31,7 @@ function MembersRegisterForm({
 }
 
 function DoubleColumn({ className, children }: React.ComponentProps<"div">) {
-  return (
-    <div className={cn("grid grid-cols-1 md:grid-cols-2 gap-6", className)}>
-      {children}
-    </div>
-  );
+  return <div className={cn("grid grid-cols-1 md:grid-cols-2 gap-6", className)}>{children}</div>;
 }
 
 function FileInputButton({
@@ -61,16 +41,11 @@ function FileInputButton({
   ...props
 }: Readonly<
   Required<Pick<React.ComponentProps<"input">, "onChange" | "id">> &
-  Omit<React.ComponentProps<"button">, "onChange" | "onClick">
+    Omit<React.ComponentProps<"button">, "onChange" | "onClick">
 >) {
   return (
     <div className="w-full overflow-hidden">
-      <input
-        type="file"
-        id={`${id}-upload`}
-        className="hidden"
-        onChange={onChange}
-      />
+      <input type="file" id={`${id}-upload`} className="hidden" onChange={onChange} />
 
       <Button
         type="button"
@@ -107,10 +82,7 @@ function DoubleCheckboxFormField<
               return (
                 <FormItem className="flex flex-row items-center">
                   <FormControl>
-                    <Checkbox
-                      checked={field.value}
-                      onCheckedChange={() => field.onChange(true)}
-                    />
+                    <Checkbox checked={field.value} onCheckedChange={() => field.onChange(true)} />
                   </FormControl>
                   <FormLabel>{labels.true}</FormLabel>
                 </FormItem>
@@ -141,11 +113,7 @@ function DoubleCheckboxFormField<
   );
 }
 
-function FormButton({
-  className,
-  children,
-  ...props
-}: React.ComponentProps<"button">) {
+function FormButton({ className, children, ...props }: React.ComponentProps<"button">) {
   return (
     <Button
       className={cn(
@@ -160,10 +128,4 @@ function FormButton({
   );
 }
 
-export {
-  MembersRegisterForm,
-  DoubleColumn,
-  DoubleCheckboxFormField,
-  FileInputButton,
-  FormButton,
-};
+export { MembersRegisterForm, DoubleColumn, DoubleCheckboxFormField, FileInputButton, FormButton };

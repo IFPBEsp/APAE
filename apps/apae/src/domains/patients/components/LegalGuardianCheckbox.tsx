@@ -62,8 +62,9 @@ export function LegalGuardianCheckbox({
 
   return (
     <FormItem
-      className={`flex flex-row items-center space-x-3 space-y-0 rounded-md border p-4 shadow-sm ${!isAlive ? "border-gray-200/40 opacity-50" : "border-gray-300/60"
-        }`}
+      className={`flex flex-row items-center space-x-3 space-y-0 rounded-md border p-4 shadow-sm ${
+        !isAlive ? "border-gray-200/40 opacity-50" : "border-gray-300/60"
+      }`}
     >
       <FormControl>
         <Checkbox

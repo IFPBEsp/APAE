@@ -5,8 +5,7 @@ import { serializeCivilDate } from "@/lib/date";
 export function useRegisterSubmission(state: MembersRegisterState, STORAGE_KEY: string) {
   return useCallback(
     async (id?: string) => {
-      const { personal, address, additionals, guardian, kinships, profile } =
-        state;
+      const { personal, address, additionals, guardian, kinships, profile } = state;
 
       const parseIncome = (val: string) => {
         const clean = String(val).replace(/[^\d]/g, "");

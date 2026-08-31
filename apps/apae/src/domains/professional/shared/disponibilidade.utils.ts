@@ -1,8 +1,4 @@
-import {
-  daysOfWeek,
-  AvailabilityType,
-  shifts,
-} from "@/types/profissional";
+import { daysOfWeek, AvailabilityType, shifts } from "@/types/profissional";
 
 export function generateAvailabilityMatrix(list: AvailabilityType[]) {
   return daysOfWeek.flatMap((day) =>

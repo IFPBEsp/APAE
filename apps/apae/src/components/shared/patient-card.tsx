@@ -68,16 +68,9 @@ export function PatientCard({ patient }: PatientCardProps) {
                 src={patient.photoUrl ?? undefined}
                 alt={patient.fullName ?? "Foto do paciente"}
               />
-              <AvatarFallback>
-                {patient.fullName?.charAt(0) ?? "P"}
-              </AvatarFallback>
+              <AvatarFallback>{patient.fullName?.charAt(0) ?? "P"}</AvatarFallback>
             </Avatar>
-            <p
-              className={cn(
-                "font-semibold text-sm",
-                statusTextStyles[patientStatus],
-              )}
-            >
+            <p className={cn("font-semibold text-sm", statusTextStyles[patientStatus])}>
               {patientStatus}
             </p>
           </div>
@@ -93,15 +86,9 @@ export function PatientCard({ patient }: PatientCardProps) {
               </h3>
               <div className="!text-[12px] text-[#235d9b] font-bold mt-1 space-y-0.5">
                 {/* 6. ADDED: 'truncate' to prevent bottom info from wrapping to a 2nd line */}
-                <p className="truncate">
-                  CPF: {patient.cpf ?? "Não informado"}
-                </p>
-                <p className="truncate">
-                  Contato: {patient.contact ?? "Não informado"}
-                </p>
-                <p className="truncate">
-                  Cidade: {patient.address?.city ?? "Não informado"}
-                </p>
+                <p className="truncate">CPF: {patient.cpf ?? "Não informado"}</p>
+                <p className="truncate">Contato: {patient.contact ?? "Não informado"}</p>
+                <p className="truncate">Cidade: {patient.address?.city ?? "Não informado"}</p>
               </div>
             </div>
 

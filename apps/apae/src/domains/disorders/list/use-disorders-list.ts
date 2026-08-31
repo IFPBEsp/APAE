@@ -22,16 +22,19 @@ export function useDisordersList() {
     }
   }, []);
 
-  const deleteDisorder = useCallback(async (id: string) => {
-    try {
-      await deleteDisorderApi({ id });
-      toast.success("Transtorno excluído com sucesso.");
-      await loadDisorders();
-    } catch (error) {
-      const message = error instanceof Error ? error.message : "Erro ao excluir transtorno.";
-      toast.error(message);
-    }
-  }, [loadDisorders]);
+  const deleteDisorder = useCallback(
+    async (id: string) => {
+      try {
+        await deleteDisorderApi({ id });
+        toast.success("Transtorno excluído com sucesso.");
+        await loadDisorders();
+      } catch (error) {
+        const message = error instanceof Error ? error.message : "Erro ao excluir transtorno.";
+        toast.error(message);
+      }
+    },
+    [loadDisorders],
+  );
 
   useEffect(() => {
     loadDisorders();

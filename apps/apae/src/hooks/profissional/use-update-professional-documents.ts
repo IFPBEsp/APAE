@@ -21,10 +21,9 @@ export function useUpdateProfessionalDocuments() {
       const response = await updateProfessionalDocuments(id, formData);
 
       const contentType = response.headers.get("content-type");
-      const data: ApiError =
-        contentType?.includes("application/json")
-          ? await response.json().catch(() => ({}))
-          : {};
+      const data: ApiError = contentType?.includes("application/json")
+        ? await response.json().catch(() => ({}))
+        : {};
 
       if (!response.ok) {
         throw new Error(data?.message || "Erro ao enviar documentos");

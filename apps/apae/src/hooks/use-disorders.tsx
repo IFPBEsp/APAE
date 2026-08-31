@@ -1,12 +1,6 @@
 "use client";
 
-import {
-  createContext,
-  useCallback,
-  useContext,
-  useEffect,
-  useState,
-} from "react";
+import { createContext, useCallback, useContext, useEffect, useState } from "react";
 
 type Disorder = Readonly<{
   id: string;
@@ -47,9 +41,7 @@ interface DisordersContextData {
   deleteDisorder: (params: DeleteDisorderParams) => Promise<void>;
 }
 
-const DisordersContext = createContext<DisordersContextData | undefined>(
-  undefined,
-);
+const DisordersContext = createContext<DisordersContextData | undefined>(undefined);
 
 type WithFeedbackMessages = {
   success: string;
@@ -72,8 +64,7 @@ function withFeedback<TArgs extends readonly unknown[], TReturn>(
       });
       return result;
     } catch (error) {
-      const message =
-        error instanceof Error ? error.message : "Erro desconhecido.";
+      const message = error instanceof Error ? error.message : "Erro desconhecido.";
       setFeedback({
         message,
         success: false,
@@ -198,9 +189,7 @@ function DisordersProvider({
 
           if (!response.ok) {
             const errorData = await response.json().catch(() => null);
-            throw new Error(
-              errorData?.message || "Ocorreu um erro ao excluir transtorno.",
-            );
+            throw new Error(errorData?.message || "Ocorreu um erro ao excluir transtorno.");
           }
 
           await fetchDisorders();
@@ -239,9 +228,7 @@ function DisordersProvider({
 function useDisordersContext() {
   const context = useContext(DisordersContext);
   if (!context) {
-    throw new Error(
-      "useDisordersContext must be used within a DisordersProvider",
-    );
+    throw new Error("useDisordersContext must be used within a DisordersProvider");
   }
   return context;
 }

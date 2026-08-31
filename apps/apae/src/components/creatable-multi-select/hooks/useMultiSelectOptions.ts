@@ -20,10 +20,7 @@ export function useMultiSelectOptions(
   searchable: boolean,
   deduplicateOptions: boolean,
 ): UseMultiSelectOptionsReturn {
-  const isGrouped = React.useMemo(
-    () => isGroupedOptions(options),
-    [options],
-  );
+  const isGrouped = React.useMemo(() => isGroupedOptions(options), [options]);
 
   const allOptions = React.useMemo((): MultiSelectOption[] => {
     if (options.length === 0) return [];

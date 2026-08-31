@@ -54,7 +54,7 @@ Este projeto tem como objetivo o desenvolvimento de dois sistemas para a APAE, o
 O projeto foi automatizado para rodar com o mínimo de comandos utilizando **pnpm Workspaces**. Siga os passos abaixo:
 
 > **Nota para Windows:** Utilize **GitBash** para executar os comandos.
-> 
+>
 > ℹ️ Algumas funcionalidades, como envio de e-mails, utilizam configuração opcional de variáveis de ambiente. Veja a seção [**Configuração do Projeto**](#configuração-do-projeto).
 
 #### Passo 1: Setup Inicial

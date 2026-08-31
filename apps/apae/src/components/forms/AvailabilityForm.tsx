@@ -1,12 +1,6 @@
 "use client";
 
-import {
-  FormField,
-  FormItem,
-  FormControl,
-  FormLabel,
-  FormDescription,
-} from "@/components/ui/form";
+import { FormField, FormItem, FormControl, FormLabel, FormDescription } from "@/components/ui/form";
 import {
   Table,
   TableBody,
@@ -24,7 +18,10 @@ type Props<T extends FieldValues> = {
   watch: UseFormWatch<T>;
 };
 
-export default function AvailabilityForm<T extends FieldValues>({ control, watch }: Readonly<Props<T>>) {
+export default function AvailabilityForm<T extends FieldValues>({
+  control,
+  watch,
+}: Readonly<Props<T>>) {
   const availability = watch("availability" as Path<T>) || [];
 
   return (
@@ -54,7 +51,7 @@ export default function AvailabilityForm<T extends FieldValues>({ control, watch
 
                 {daysOfWeek.map((day) => {
                   const index = availability.findIndex(
-                    (d: { day: string; shift: string }) => d.day === day.id && d.shift === shift.id
+                    (d: { day: string; shift: string }) => d.day === day.id && d.shift === shift.id,
                   );
 
                   return (
@@ -65,10 +62,7 @@ export default function AvailabilityForm<T extends FieldValues>({ control, watch
                         render={({ field }) => (
                           <FormItem className="flex items-center justify-center">
                             <FormControl>
-                              <Checkbox
-                                checked={field.value}
-                                onCheckedChange={field.onChange}
-                              />
+                              <Checkbox checked={field.value} onCheckedChange={field.onChange} />
                             </FormControl>
                           </FormItem>
                         )}

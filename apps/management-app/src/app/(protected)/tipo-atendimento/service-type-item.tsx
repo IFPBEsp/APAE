@@ -5,14 +5,11 @@ import { Edit } from "lucide-react";
 import { ServiceType } from "@/schemas/service-type-schemas";
 
 interface ServiceTypeListItemProps {
-  service: ServiceType; 
+  service: ServiceType;
   onEdit: () => void;
 }
 
-export function ServiceTypeListItemItem({
-  service,
-  onEdit,
-}: ServiceTypeListItemProps) {
+export function ServiceTypeListItemItem({ service, onEdit }: ServiceTypeListItemProps) {
   return (
     <div className="flex items-center justify-between p-4 border-b hover:bg-gray-50 transition-colors">
       <div className="flex-1">

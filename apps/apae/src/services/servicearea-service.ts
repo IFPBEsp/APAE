@@ -1,4 +1,3 @@
-
 export async function getAllServiceAreas() {
   return fetch(`/apae-geral/api/service-areas`, { method: "GET" });
 }

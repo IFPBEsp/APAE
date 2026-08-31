@@ -6,16 +6,8 @@ import { cn } from "@/lib/utils";
 import { Separator } from "@/components/ui/separator";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
-import {
-  Command,
-  CommandInput,
-  CommandList,
-} from "@/components/ui/command";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Command, CommandInput, CommandList } from "@/components/ui/command";
 
 import { A11yRegion } from "./components/A11yRegion";
 import { SelectionBadge } from "./components/SelectionBadge";
@@ -30,10 +22,7 @@ import { useMultiSelectOptions } from "./hooks/useMultiSelectOptions";
 import { multiSelectVariants } from "./shared/variants";
 import type { MultiSelectProps, MultiSelectRef } from "./types";
 
-export const CreatableMultiSelect = React.forwardRef<
-  MultiSelectRef,
-  MultiSelectProps
->(
+export const CreatableMultiSelect = React.forwardRef<MultiSelectRef, MultiSelectProps>(
   (
     {
       options,
@@ -64,9 +53,7 @@ export const CreatableMultiSelect = React.forwardRef<
     },
     ref,
   ) => {
-
-    const [selectedValues, setSelectedValues] =
-      React.useState<string[]>(defaultValue);
+    const [selectedValues, setSelectedValues] = React.useState<string[]>(defaultValue);
     const [isPopoverOpen, setIsPopoverOpen] = React.useState(false);
     const [isAnimating, setIsAnimating] = React.useState(false);
     const [searchValue, setSearchValue] = React.useState("");
@@ -74,8 +61,12 @@ export const CreatableMultiSelect = React.forwardRef<
     const screenSize = useScreenSize();
     const responsiveSettings = useResponsiveSettings(responsive, maxCount, screenSize);
     const { politeMessage, assertiveMessage, announce } = useA11yAnnouncer();
-    const { allOptions, filteredOptions, getOptionByValue, isGrouped } =
-      useMultiSelectOptions(options, searchValue, searchable, deduplicateOptions);
+    const { allOptions, filteredOptions, getOptionByValue, isGrouped } = useMultiSelectOptions(
+      options,
+      searchValue,
+      searchable,
+      deduplicateOptions,
+    );
 
     const multiSelectId = React.useId();
     const listboxId = `${multiSelectId}-listbox`;
@@ -127,8 +118,7 @@ export const CreatableMultiSelect = React.forwardRef<
     const toggleAll = () => {
       if (disabled) return;
       const all = allOptions.filter((o) => !o.disabled);
-      const next =
-        selectedValues.length === all.length ? [] : all.map((o) => o.value);
+      const next = selectedValues.length === all.length ? [] : all.map((o) => o.value);
       applyChange(next);
       if (closeOnSelect) setIsPopoverOpen(false);
     };
@@ -230,19 +220,11 @@ export const CreatableMultiSelect = React.forwardRef<
 
     return (
       <>
-        <A11yRegion
-          politeMessage={politeMessage}
-          assertiveMessage={assertiveMessage}
-        />
+        <A11yRegion politeMessage={politeMessage} assertiveMessage={assertiveMessage} />
 
-        <Popover
-          open={isPopoverOpen}
-          onOpenChange={setIsPopoverOpen}
-          modal={modalPopover}
-        >
+        <Popover open={isPopoverOpen} onOpenChange={setIsPopoverOpen} modal={modalPopover}>
           <div id={triggerDescriptionId} className="sr-only">
-            Multi-select dropdown. Use arrow keys to navigate, Enter to select,
-            and Escape to close.
+            Multi-select dropdown. Use arrow keys to navigate, Enter to select, and Escape to close.
           </div>
           <div id={selectedCountId} className="sr-only" aria-live="polite">
             {selectedValues.length === 0
@@ -285,9 +267,7 @@ export const CreatableMultiSelect = React.forwardRef<
                   <div
                     className={cn(
                       "flex items-center gap-1",
-                      singleLine
-                        ? "overflow-x-auto multiselect-singleline-scroll"
-                        : "flex-wrap",
+                      singleLine ? "overflow-x-auto multiselect-singleline-scroll" : "flex-wrap",
                       responsiveSettings.compactMode && "gap-0.5",
                     )}
                     style={singleLine ? { paddingBottom: 4 } : undefined}
@@ -343,7 +323,10 @@ export const CreatableMultiSelect = React.forwardRef<
                     <div
                       role="button"
                       tabIndex={0}
-                      onClick={(e) => { e.stopPropagation(); handleClear(); }}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleClear();
+                      }}
                       onKeyDown={(e) => {
                         if (e.key === "Enter" || e.key === " ") {
                           e.preventDefault();
@@ -357,7 +340,10 @@ export const CreatableMultiSelect = React.forwardRef<
                       <XIcon className="h-4 w-4" />
                     </div>
                     <Separator orientation="vertical" className="flex min-h-6 h-full" />
-                    <ChevronDown className="h-4 mx-2 cursor-pointer text-muted-foreground" aria-hidden="true" />
+                    <ChevronDown
+                      className="h-4 mx-2 cursor-pointer text-muted-foreground"
+                      aria-hidden="true"
+                    />
                   </div>
                 </div>
               ) : (
@@ -453,4 +439,9 @@ export const CreatableMultiSelect = React.forwardRef<
 
 CreatableMultiSelect.displayName = "CreatableMultiSelect";
 
-export type { MultiSelectOption, MultiSelectGroup, MultiSelectProps, MultiSelectRef } from "./types";
+export type {
+  MultiSelectOption,
+  MultiSelectGroup,
+  MultiSelectProps,
+  MultiSelectRef,
+} from "./types";

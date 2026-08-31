@@ -20,7 +20,6 @@ export type UpdateProfessionalDto = {
   availabilities?: { day?: string; shift?: string }[];
 };
 
-
 type ApiResponse = {
   message?: string;
 };

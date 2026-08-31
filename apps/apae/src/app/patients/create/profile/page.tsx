@@ -83,7 +83,7 @@ export default function MembersRegisterProfilePage() {
     if (profile.photo instanceof File) {
       const url = URL.createObjectURL(profile.photo);
       setPreviewUrl(url);
-    } else if (typeof profile.photo === 'string' && profile.photo) {
+    } else if (typeof profile.photo === "string" && profile.photo) {
       setPreviewUrl(profile.photo);
     } else {
       setPreviewUrl(null);
@@ -92,7 +92,7 @@ export default function MembersRegisterProfilePage() {
 
   useEffect(() => {
     return () => {
-      if (previewUrl && previewUrl.startsWith('blob:')) {
+      if (previewUrl && previewUrl.startsWith("blob:")) {
         URL.revokeObjectURL(previewUrl);
       }
     };
@@ -126,13 +126,9 @@ export default function MembersRegisterProfilePage() {
 
           if (res.status === 201 || res.status === 200 || res.status === 204) {
             toast.success(
-              isEditing
-                ? "Paciente atualizado com sucesso!"
-                : "Membro cadastrado com sucesso!",
+              isEditing ? "Paciente atualizado com sucesso!" : "Membro cadastrado com sucesso!",
             );
-            router.push(
-              isEditing ? `/patients/${id}` : "/patients",
-            );
+            router.push(isEditing ? `/patients/${id}` : "/patients");
             return;
           }
 
@@ -165,17 +161,27 @@ export default function MembersRegisterProfilePage() {
           }
 
           if (res.status === 400) {
-            const resData = res.data as { fields?: Array<{ field?: string; message?: string }> } | undefined;
+            const resData = res.data as
+              { fields?: Array<{ field?: string; message?: string }> } | undefined;
             const firstError = resData?.fields?.[0];
             const backendField = firstError?.field || "";
             const fieldLower = backendField.toLowerCase();
-            const errorMessage =
-              firstError?.message || getErrorMessage(res.data);
+            const errorMessage = firstError?.message || getErrorMessage(res.data);
 
             if (backendField) {
               if (
-                ["fullName", "cpf", "rg", "contact", "birth", "nationality", "cns", "nis", "phone", "name"]
-                  .some((f) => fieldLower.includes(f.toLowerCase()))
+                [
+                  "fullName",
+                  "cpf",
+                  "rg",
+                  "contact",
+                  "birth",
+                  "nationality",
+                  "cns",
+                  "nis",
+                  "phone",
+                  "name",
+                ].some((f) => fieldLower.includes(f.toLowerCase()))
               ) {
                 setStep(MembersRegisterStep.PERSONAL);
               } else if (fieldLower.includes("parents") || fieldLower.includes("kinships")) {
@@ -183,8 +189,14 @@ export default function MembersRegisterProfilePage() {
               } else if (fieldLower.includes("address") && !fieldLower.includes("guardian")) {
                 setStep(MembersRegisterStep.ADDRESS);
               } else if (
-                ["annualRegistry", "vaccine", "allergies", "diseases", "familyIncome", "householdIncome"]
-                  .some((f) => fieldLower.includes(f.toLowerCase()))
+                [
+                  "annualRegistry",
+                  "vaccine",
+                  "allergies",
+                  "diseases",
+                  "familyIncome",
+                  "householdIncome",
+                ].some((f) => fieldLower.includes(f.toLowerCase()))
               ) {
                 setStep(MembersRegisterStep.ADDITIONALS);
               } else if (fieldLower.includes("guardian")) {
@@ -236,11 +248,7 @@ export default function MembersRegisterProfilePage() {
             </FormButton>
 
             <FormButton type="submit" disabled={isLoading}>
-              {isLoading
-                ? "Salvando..."
-                : isEditing
-                  ? "Salvar Alterações"
-                  : "Salvar"}
+              {isLoading ? "Salvando..." : isEditing ? "Salvar Alterações" : "Salvar"}
             </FormButton>
           </>
         }
@@ -301,9 +309,7 @@ export default function MembersRegisterProfilePage() {
             name="role"
             render={({ field }) => (
               <FormItem className="space-y-3">
-                <FormLabel>
-                  Selecione qual função será ocupada na aplicação? *
-                </FormLabel>
+                <FormLabel>Selecione qual função será ocupada na aplicação? *</FormLabel>
                 <FormItem className="flex flex-row items-center gap-2">
                   <FormControl>
                     <Checkbox
@@ -319,9 +325,7 @@ export default function MembersRegisterProfilePage() {
                     <Checkbox
                       checked={field.value === "student"}
                       disabled={isLoading}
-                      onCheckedChange={(checked) =>
-                        field.onChange(checked ? "student" : "patient")
-                      }
+                      onCheckedChange={(checked) => field.onChange(checked ? "student" : "patient")}
                     />
                   </FormControl>
                   <FormLabel className="cursor-pointer">Aluno</FormLabel>

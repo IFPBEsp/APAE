@@ -1,4 +1,3 @@
-
 import * as React from "react";
 import { type VariantProps } from "class-variance-authority";
 import { multiSelectVariants } from "../shared/variants";
@@ -51,10 +50,8 @@ export interface ResolvedResponsiveSettings {
 }
 
 export interface MultiSelectProps
-  extends Omit<
-      React.ButtonHTMLAttributes<HTMLButtonElement>,
-      "animationConfig"
-    >,
+  extends
+    Omit<React.ButtonHTMLAttributes<HTMLButtonElement>, "animationConfig">,
     VariantProps<typeof multiSelectVariants> {
   options: MultiSelectOption[] | MultiSelectGroup[];
   onValueChange: (value: string[]) => void;

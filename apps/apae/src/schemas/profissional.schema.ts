@@ -3,8 +3,7 @@ import * as z from "zod";
 const nameRegex = /^[A-Za-zÀ-ÖØ-öø-ÿ ]{3,100}$/;
 const phoneRegex = /^\(\d{2}\) \d{5}-\d{4}$/;
 
-const rgRegex =
-  /^(\d{7,8}[\dXx]?|\d\.\d{3}\.\d{3}|\d{2}\.\d{3}\.\d{3}-[\dXx])$/;
+const rgRegex = /^(\d{7,8}[\dXx]?|\d\.\d{3}\.\d{3}|\d{2}\.\d{3}\.\d{3}-[\dXx])$/;
 const stateRegex = /^[A-Z]{2}$/;
 const cityRegex = /^[A-Za-zÀ-ÿ\s]+$/;
 const neighborhoodRegex = /^[A-Za-zÀ-ÿ\s]+$/;
@@ -16,32 +15,23 @@ const fileSchema = z
   .refine((file) => file.size > 0, "Arquivo não pode estar vazio")
   .refine(
     (file) =>
-      [
-        "application/pdf",
-        "image/png",
-        "image/jpeg",
-        "image/jpg",
-        "image/webp",
-      ].includes(file.type),
-    "Apenas imagens ou PDF são permitidos"
+      ["application/pdf", "image/png", "image/jpeg", "image/jpg", "image/webp"].includes(file.type),
+    "Apenas imagens ou PDF são permitidos",
   )
   .refine((file) => file.size <= 5 * 1024 * 1024, "Arquivo deve ser menor que 5MB");
 
-  const imageSchema = z
+const imageSchema = z
   .instanceof(File)
   .refine((file) => file.size <= 2 * 1024 * 1024, "A foto deve ser menor que 2MB")
   .refine(
     (file) => ["image/jpeg", "image/png", "image/jpg", "image/webp"].includes(file.type),
-    "Apenas formatos JPG, PNG ou WEBP são aceitos"
+    "Apenas formatos JPG, PNG ou WEBP são aceitos",
   );
 
 const baseSchema = z.object({
   fullName: z
     .string()
-    .regex(
-      nameRegex,
-      "Nome inválido. Use apenas letras e espaços, 3-100 caracteres"
-    ),
+    .regex(nameRegex, "Nome inválido. Use apenas letras e espaços, 3-100 caracteres"),
 
   email: z.email("Email inválido"),
 
@@ -62,16 +52,11 @@ const baseSchema = z.object({
 
   complement: z.string().optional(),
 
-  cep: z
-    .string()
-    .regex(/^\d{5}-\d{3}$/, "CEP inválido. Formato esperado: XXXXX-XXX"),
+  cep: z.string().regex(/^\d{5}-\d{3}$/, "CEP inválido. Formato esperado: XXXXX-XXX"),
 
   phone: z
     .string()
-    .regex(
-      phoneRegex,
-      "Telefone inválido. Formato esperado: (xx) xxxxx-xxxx"
-    )
+    .regex(phoneRegex, "Telefone inválido. Formato esperado: (xx) xxxxx-xxxx")
     .transform((val) => val.trim()),
 
   availability: z
@@ -80,7 +65,7 @@ const baseSchema = z.object({
         day: z.string(),
         shift: z.string(),
         checked: z.boolean(),
-      })
+      }),
     )
     .min(0),
 

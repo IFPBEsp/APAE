@@ -7,11 +7,7 @@ import {
 import { useRouter, usePathname } from "next/navigation";
 import { useEffect } from "react";
 
-export function PageOrchestrator({
-  children,
-}: {
-  readonly children: React.ReactNode;
-}) {
+export function PageOrchestrator({ children }: { readonly children: React.ReactNode }) {
   const router = useRouter();
   const pathname = usePathname();
   const {

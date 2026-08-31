@@ -30,18 +30,14 @@ export const signUpSchema = z
       .email({ message: "Email inválido" })
       .min(1, { message: "Email é obrigatório" }),
     cpf: cpfSchema,
-    password: z
-      .string()
-      .min(6, { message: "Senha deve ter pelo menos 6 caracteres" }),
-    confirmPassword: z
-      .string()
-      .min(6, { message: "Senha deve ter pelo menos 6 caracteres" }),
+    password: z.string().min(6, { message: "Senha deve ter pelo menos 6 caracteres" }),
+    confirmPassword: z.string().min(6, { message: "Senha deve ter pelo menos 6 caracteres" }),
   })
   .refine((data) => data.password === data.confirmPassword, {
     message: "As senhas não coincidem",
     path: ["confirmarSenha"],
   });
-''
+("");
 export type FormSignUp = z.infer<typeof signUpSchema>;
 
 export const loginSchema = z.object({
@@ -57,30 +53,26 @@ export const loginSchema = z.object({
       },
       {
         message: "Digite um email ou CPF válido.",
-      }
+      },
     ),
-  password: z
-    .string()
-    .min(6, { message: "Senha deve ter pelo menos 6 caracteres." }),
+  password: z.string().min(6, { message: "Senha deve ter pelo menos 6 caracteres." }),
 });
 
 export const recoverySchema = z.object({
-  email: z
-    .string()
-    .trim()
-    .min(1, "E-mail é obrigatório")
-    .email("Email inválido"),
+  email: z.string().trim().min(1, "E-mail é obrigatório").email("Email inválido"),
 });
 
 export type FormLogin = z.infer<typeof loginSchema>;
 
-export const newPasswordSchema = z.object({
-  password: z.string().min(6, "A senha deve ter pelo menos 6 caracteres"),
-  confirmPassword: z.string(),
-}).refine((data) => data.password === data.confirmPassword, {
-  message: "As senhas não coincidem",
-  path: ["confirmarSenha"],
-});
+export const newPasswordSchema = z
+  .object({
+    password: z.string().min(6, "A senha deve ter pelo menos 6 caracteres"),
+    confirmPassword: z.string(),
+  })
+  .refine((data) => data.password === data.confirmPassword, {
+    message: "As senhas não coincidem",
+    path: ["confirmarSenha"],
+  });
 
 export type FormNewPasswordSchema = z.infer<typeof newPasswordSchema>;
 

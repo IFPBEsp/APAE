@@ -2,11 +2,7 @@ import Image from "next/image";
 import BackgroundImage from "@/assets/background_image.jpg";
 import Logo from "@/assets/logo.png";
 
-export default function AuthLayout({
-  children,
-}: {
-  readonly children: React.ReactNode;
-}) {
+export default function AuthLayout({ children }: { readonly children: React.ReactNode }) {
   return (
     <div className="h-screen w-screen relative flex items-center justify-center overflow-hidden">
       <div
@@ -32,12 +28,7 @@ export default function AuthLayout({
                 bg-white rounded-t-full flex items-center justify-center overflow-hidden"
         >
           <div className="relative w-full">
-            <Image
-              src={Logo}
-              alt="Logo"
-              priority
-              className="w-full h-auto object-contain"
-            />
+            <Image src={Logo} alt="Logo" priority className="w-full h-auto object-contain" />
           </div>
         </div>
         {children}

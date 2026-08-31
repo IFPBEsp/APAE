@@ -3,13 +3,7 @@ import { generateAvailabilityMatrix } from "./disponibilidade.utils";
 type StatusFilter = "activate" | "inactivate";
 
 export function isValidFile(file: File): boolean {
-  const allowedTypes = [
-    "application/pdf",
-    "image/png",
-    "image/jpeg",
-    "image/jpg",
-    "image/webp",
-  ];
+  const allowedTypes = ["application/pdf", "image/png", "image/jpeg", "image/jpg", "image/webp"];
   const maxSize = 5 * 1024 * 1024;
   return allowedTypes.includes(file.type) && file.size > 0 && file.size <= maxSize;
 }
@@ -91,11 +85,10 @@ export function buildRegisterPayload(values: any) {
 export function getStatusActionConfig(statusFilter: StatusFilter) {
   return {
     label: statusFilter === "activate" ? "Inativar" : "Reativar",
-    itemClass: statusFilter === "activate"
-      ? "text-destructive focus:text-destructive"
-      : "text-green-600 focus:text-green-600",
-    buttonClass: statusFilter === "activate"
-      ? ""
-      : "bg-green-600 hover:bg-green-700 text-white",
+    itemClass:
+      statusFilter === "activate"
+        ? "text-destructive focus:text-destructive"
+        : "text-green-600 focus:text-green-600",
+    buttonClass: statusFilter === "activate" ? "" : "bg-green-600 hover:bg-green-700 text-white",
   };
 }

@@ -25,11 +25,7 @@ const NIS = z
   .length(11, "O NIS deve ter exatamente 11 dígitos")
   .regex(/^\d+$/, "O NIS deve conter apenas números");
 
-const civilDateSchema = (
-  futureMessage: string,
-  minYearsBack: number,
-  minMessage: string,
-) =>
+const civilDateSchema = (futureMessage: string, minYearsBack: number, minMessage: string) =>
   z.preprocess(
     (value) => parseCivilDate(value as string | Date | null | undefined),
     z
@@ -73,10 +69,7 @@ export const Personal = z
           .min(1, "Órgão emissor é obrigatório")
           .min(2, "Órgão emissor inválido")
           .max(10, "Órgão emissor muito longo")
-          .regex(
-            /^[A-Z]{2,4}\/[A-Z]{2}$/,
-            "Formato inválido. Use SSP/UF, PC/UF, etc.",
-          ),
+          .regex(/^[A-Z]{2,4}\/[A-Z]{2}$/, "Formato inválido. Use SSP/UF, PC/UF, etc."),
         date: civilDateSchema(
           "Data de emissão não pode ser futura",
           50,
@@ -132,30 +125,21 @@ export const Address = z.object({
   number: z
     .string()
     .min(1, "Número é obrigatório")
-    .regex(
-      /^(\d+|SN|sn|S\/N|s\/n)$/,
-      "Número deve conter apenas dígitos ou SN",
-    ),
+    .regex(/^(\d+|SN|sn|S\/N|s\/n)$/, "Número deve conter apenas dígitos ou SN"),
   complement: z.string().optional(),
 });
 
 export const Additionals = z.object({
   diseases: z.string().min(1, "O campo de doenças é obrigatório."),
   medications: z.string().min(1, "O campo de medicações é obrigatório."),
-  vaccines: z
-    .array(z.string().min(1))
-    .min(1, "O campo de vacinas é obrigatório."),
+  vaccines: z.array(z.string().min(1)).min(1, "O campo de vacinas é obrigatório."),
   allergies: z.string().min(1, "O campo de alergias é obrigatório."),
   disability: z.object({
-    types: z
-      .array(z.string().min(1))
-      .min(1, "O tipo de atendimento é obrigatório."),
+    types: z.array(z.string().min(1)).min(1, "O tipo de atendimento é obrigatório."),
     report: z.instanceof(File, { message: "O laudo é obrigatório." }),
   }),
   care: z.object({
-    types: z
-      .array(z.string().min(1))
-      .min(1, "O tipo de atendimento é obrigatório."),
+    types: z.array(z.string().min(1)).min(1, "O tipo de atendimento é obrigatório."),
     referral: z.instanceof(File, {
       message: "O encaminhamento é obrigatório.",
     }),

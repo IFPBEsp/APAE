@@ -36,7 +36,11 @@ export function DisorderCreateForm() {
     <div className="!bg-slate-100 min-h-screen">
       <main className="container mx-auto p-4 md:p-6">
         <div className="bg-white rounded-xl shadow-md border-2 p-6 mb-4">
-          <Button variant="ghost" onClick={() => router.back()} className="mb-4 text-sm text-[#003B93] hover:bg-blue-50">
+          <Button
+            variant="ghost"
+            onClick={() => router.back()}
+            className="mb-4 text-sm text-[#003B93] hover:bg-blue-50"
+          >
             <ArrowLeft className="h-4 w-4 mr-2" />
             Voltar
           </Button>
@@ -50,7 +54,9 @@ export function DisorderCreateForm() {
                 name="name"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel className="font-semibold text-[#003B93]">Nome do Transtorno</FormLabel>
+                    <FormLabel className="font-semibold text-[#003B93]">
+                      Nome do Transtorno
+                    </FormLabel>
                     <FormControl>
                       <Input
                         placeholder="Ex: TDAH"
@@ -63,8 +69,14 @@ export function DisorderCreateForm() {
                 )}
               />
               <div className="flex justify-end gap-2 pt-4">
-                <Button type="button" variant="outline" onClick={() => router.back()}>Cancelar</Button>
-                <Button type="submit" disabled={isSubmitting} className="!bg-[#0D4F97] !hover:bg-[#0b427d] text-white">
+                <Button type="button" variant="outline" onClick={() => router.back()}>
+                  Cancelar
+                </Button>
+                <Button
+                  type="submit"
+                  disabled={isSubmitting}
+                  className="!bg-[#0D4F97] !hover:bg-[#0b427d] text-white"
+                >
                   {isSubmitting ? "Salvando..." : "Salvar"}
                 </Button>
               </div>

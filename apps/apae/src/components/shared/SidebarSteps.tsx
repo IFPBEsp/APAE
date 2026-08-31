@@ -1,6 +1,9 @@
 "use client";
 
-import { useMembersRegisterContext, MembersRegisterStep } from "@/domains/patients/hooks/use-members-register-context";
+import {
+  useMembersRegisterContext,
+  MembersRegisterStep,
+} from "@/domains/patients/hooks/use-members-register-context";
 import { CheckCircle2, Circle } from "lucide-react";
 import { Nunito } from "next/font/google";
 import { usePathname } from "next/navigation";
@@ -8,7 +11,9 @@ import { usePathname } from "next/navigation";
 const nunito = Nunito({ subsets: ["latin"], weight: ["400", "600", "700", "900"] });
 
 export function SidebarSteps() {
-  const { state: { step } } = useMembersRegisterContext();
+  const {
+    state: { step },
+  } = useMembersRegisterContext();
   const pathname = usePathname();
   const isEditing = pathname.includes("/edit");
 
@@ -24,7 +29,9 @@ export function SidebarSteps() {
   const currentStepIndex = stepsList.findIndex((s) => s.id === step);
 
   return (
-    <div className={`relative flex flex-col w-full h-full justify-center text-left text-white px-8 md:px-16 ${nunito.className}`}>
+    <div
+      className={`relative flex flex-col w-full h-full justify-center text-left text-white px-8 md:px-16 ${nunito.className}`}
+    >
       <h1 className="text-3xl md:text-4xl font-bold mb-4">{isEditing ? "EDIÇÃO" : "BEM-VINDO"}</h1>
       <p className="text-base md:text-lg font-semibold mb-10 text-blue-100">
         {isEditing ? "Acompanhe o progresso da edição:" : "Acompanhe o progresso do seu cadastro:"}
@@ -36,7 +43,10 @@ export function SidebarSteps() {
           const isCurrent = index === currentStepIndex;
 
           return (
-            <div key={s.id} className={`flex items-center gap-4 transition-all duration-300 ${isCurrent ? "opacity-100 scale-105" : "opacity-60"}`}>
+            <div
+              key={s.id}
+              className={`flex items-center gap-4 transition-all duration-300 ${isCurrent ? "opacity-100 scale-105" : "opacity-60"}`}
+            >
               {/* The Dot Icon */}
               <div className="flex-shrink-0">
                 {isCompleted ? (
@@ -50,7 +60,9 @@ export function SidebarSteps() {
                 )}
               </div>
               {/* The Step Text */}
-              <span className={`text-base md:text-lg font-bold ${isCurrent ? "text-white" : "text-blue-200"}`}>
+              <span
+                className={`text-base md:text-lg font-bold ${isCurrent ? "text-white" : "text-blue-200"}`}
+              >
                 {s.label}
               </span>
             </div>

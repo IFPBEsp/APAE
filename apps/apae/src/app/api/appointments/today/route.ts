@@ -10,7 +10,7 @@ export async function GET(req: Request) {
     const size = searchParams.get("size") || "100";
 
     const api = await createBaseApi();
-    
+
     const response = await api.get("/appointments/today", {
       params: { date, page, size },
     });
@@ -20,7 +20,7 @@ export async function GET(req: Request) {
     if (error instanceof AxiosError) {
       return NextResponse.json(
         { message: error.response?.data?.message || "Erro ao buscar agendamentos de hoje" },
-        { status: error.response?.status || 500 }
+        { status: error.response?.status || 500 },
       );
     }
     return NextResponse.json({ message: "Erro interno do servidor" }, { status: 500 });

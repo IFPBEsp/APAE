@@ -21,10 +21,7 @@ export async function GET(request: NextRequest) {
   } catch (err) {
     const error = err as AxiosError;
 
-    console.error(
-      "[ERRO API DASHBOARD OVERVIEW]:",
-      error.response?.data || error.message,
-    );
+    console.error("[ERRO API DASHBOARD OVERVIEW]:", error.response?.data || error.message);
 
     return NextResponse.json(
       { message: error.response?.data || "Erro interno no servidor" },

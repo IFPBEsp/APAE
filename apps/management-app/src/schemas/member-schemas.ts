@@ -42,10 +42,7 @@ export const Personal = z.object({
         .min(1, "Órgão emissor é obrigatório")
         .min(2, "Órgão emissor inválido")
         .max(10, "Órgão emissor muito longo")
-        .regex(
-          /^[A-Z]{2,4}\/[A-Z]{2}$/,
-          "Formato inválido. Use SSP/UF, PC/UF, etc.",
-        ),
+        .regex(/^[A-Z]{2,4}\/[A-Z]{2}$/, "Formato inválido. Use SSP/UF, PC/UF, etc."),
       date: z.coerce
         .date({
           error: "Data de emissão inválida",
@@ -117,20 +114,14 @@ export const Address = z.object({
 export const Additionals = z.object({
   diseases: z.string().min(1, "O campo de doenças é obrigatório."),
   medications: z.string().min(1, "O campo de medicações é obrigatório."),
-  vaccines: z
-    .array(z.string().min(1))
-    .min(1, "O campo de vacinas é obrigatório."),
+  vaccines: z.array(z.string().min(1)).min(1, "O campo de vacinas é obrigatório."),
   allergies: z.string().min(1, "O campo de alergias é obrigatório."),
   disability: z.object({
-    types: z
-      .array(z.string().min(1))
-      .min(1, "O tipo de atendimento é obrigatório."),
+    types: z.array(z.string().min(1)).min(1, "O tipo de atendimento é obrigatório."),
     report: z.instanceof(File, { error: "O laudo é obrigatório." }),
   }),
   care: z.object({
-    types: z
-      .array(z.string().min(1))
-      .min(1, "O tipo de atendimento é obrigatório."),
+    types: z.array(z.string().min(1)).min(1, "O tipo de atendimento é obrigatório."),
     referral: z.instanceof(File, { error: "O encaminhamento é obrigatório." }),
   }),
   bpc: z.boolean(),

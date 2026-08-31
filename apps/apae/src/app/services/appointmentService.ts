@@ -218,9 +218,7 @@ export const parseTimeFromBackend = (timeString: string): string => {
   return timeString.substring(0, 5);
 };
 
-export async function saveAppointment(
-  dto: CreateAppointmentDTO,
-): Promise<void> {
+export async function saveAppointment(dto: CreateAppointmentDTO): Promise<void> {
   const res = await fetch(`/apae-geral/api/appointments`, {
     method: "POST",
     headers: {
@@ -270,9 +268,7 @@ export async function getAppointments(
   return ensurePageFormat<AppointmentResponseDTO>(res);
 }
 
-export async function getAppointmentById(
-  id: UUID,
-): Promise<AppointmentResponseDTO> {
+export async function getAppointmentById(id: UUID): Promise<AppointmentResponseDTO> {
   const response = await fetch(`/apae-geral/api/appointments/${id}`);
 
   if (!response.ok) {
@@ -344,9 +340,7 @@ export async function rescheduleGeneratedAppointment(
   return await response.json();
 }
 
-export async function markAsPerformed(
-  id: UUID,
-): Promise<GeneratedAppointmentResponseDTO> {
+export async function markAsPerformed(id: UUID): Promise<GeneratedAppointmentResponseDTO> {
   const response = await fetch(`/apae-geral/api/appointments/generated/${id}/performed`, {
     method: "PATCH",
   });
@@ -390,9 +384,7 @@ export async function listByPatient(
   if (start) query.append("start", start);
   if (end) query.append("end", end);
 
-  const response = await fetch(
-    `/apae-geral/api/appointments/patient/${patientId}?${query}`,
-  );
+  const response = await fetch(`/apae-geral/api/appointments/patient/${patientId}?${query}`);
 
   if (!response.ok) {
     throw new Error("Erro ao buscar agendamentos do paciente");
@@ -454,9 +446,7 @@ export async function getHealthProfessionals(): Promise<Professional[]> {
   return data.content || data || [];
 }
 
-export async function getHealthProfessional(
-  id: string,
-): Promise<Professional> {
+export async function getHealthProfessional(id: string): Promise<Professional> {
   const response = await fetch(`/apae-geral/api/professionals/${id}`);
 
   if (!response.ok) {
@@ -491,9 +481,7 @@ export const toggleConfirmation = async (id: UUID): Promise<void> => {
   await saveAppointment(dto);
 };
 
-export async function getTodayAppointmentById(
-  id: string,
-): Promise<TodayAppointment> {
+export async function getTodayAppointmentById(id: string): Promise<TodayAppointment> {
   const res = await fetch(`/apae-geral/api/appointments/today/${id}`);
 
   if (!res.ok) {
@@ -506,9 +494,8 @@ export async function getTodayAppointmentById(
 export async function listTodayAppointment(
   date?: string,
   page: number = 0,
-  size: number = 100 
+  size: number = 100,
 ): Promise<Page<TodayAppointment>> {
-  
   const query = new URLSearchParams({
     page: `${page}`,
     size: `${size}`,

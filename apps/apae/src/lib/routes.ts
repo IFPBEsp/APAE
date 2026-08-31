@@ -1,4 +1,13 @@
-import { Users, BarChart, SquareActivity, BriefcaseMedical, Calendar, UserCog, FileText, Stethoscope } from "lucide-react"
+import {
+  Users,
+  BarChart,
+  SquareActivity,
+  BriefcaseMedical,
+  Calendar,
+  UserCog,
+  FileText,
+  Stethoscope,
+} from "lucide-react";
 
 export const NAV = [
   { label: "Pacientes", href: "/patients", icon: Users },
@@ -9,4 +18,4 @@ export const NAV = [
   { label: "Vacinas", href: "/vaccines", icon: BriefcaseMedical },
   { label: "Tipos de atendimento", href: "/service-types", icon: Stethoscope },
   { label: "Documentos", href: "/documents", icon: FileText },
-]
+];

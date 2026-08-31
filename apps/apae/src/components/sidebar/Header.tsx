@@ -21,9 +21,7 @@ export default function Header() {
           height={40}
           className="mr-3 h-10 w-8 object-contain"
         />
-        <span className="text-white font-medium text-lg hidden md:block">
-          Apae Esperança
-        </span>
+        <span className="text-white font-medium text-lg hidden md:block">Apae Esperança</span>
       </div>
 
       <div className="flex items-center">

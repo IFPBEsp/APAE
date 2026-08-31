@@ -7,12 +7,24 @@ import * as z from "zod";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
 import { InputMask } from "@react-input/mask";
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { User } from "lucide-react";
-
 
 import { useGetByIdProfessional } from "@/hooks/profissional/use-get-by-id-profissional";
 import { useUpdateProfessional } from "@/hooks/profissional/use-update-profissional";
@@ -30,7 +42,10 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useEffect } from "react";
 import { useProfessionalPhoto } from "@/hooks/profissional/use-professional-photo";
 import { useProfessionalDocs } from "@/hooks/profissional/use-professional-docs";
-import { mapProfessionalToForm, buildUpdatePayload } from "@/domains/professional/shared/professional.utils";
+import {
+  mapProfessionalToForm,
+  buildUpdatePayload,
+} from "@/domains/professional/shared/professional.utils";
 
 type UpdateFormValues = z.infer<typeof updateProfessionalSchema>;
 
@@ -79,9 +94,20 @@ export default function ProfessionalUpdate(): JSX.Element {
   const form = useForm<UpdateFormValues>({
     resolver: zodResolver(updateProfessionalSchema),
     defaultValues: {
-      fullName: "", email: "", professionalDocument: "", serviceArea: "",
-      phone: "", rg: "", state: "", city: "", neighborhood: "",
-      street: "", number: "", complement: "", cep: "", availability: [],
+      fullName: "",
+      email: "",
+      professionalDocument: "",
+      serviceArea: "",
+      phone: "",
+      rg: "",
+      state: "",
+      city: "",
+      neighborhood: "",
+      street: "",
+      number: "",
+      complement: "",
+      cep: "",
+      availability: [],
     },
   });
 
@@ -110,7 +136,10 @@ export default function ProfessionalUpdate(): JSX.Element {
       .filter((d) => d?.checked)
       .map((d) => ({ day: d?.day, shift: d?.shift }));
 
-    const ok = await updateProfessional(professional.id, buildUpdatePayload(values, availabilities));
+    const ok = await updateProfessional(
+      professional.id,
+      buildUpdatePayload(values, availabilities),
+    );
     if (!ok) return;
 
     if (hasAnyUpload) {
@@ -134,71 +163,220 @@ export default function ProfessionalUpdate(): JSX.Element {
     <div className="p-0">
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6 w-full max-w-2xl">
+          <FormField
+            control={form.control}
+            name="fullName"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Nome completo *</FormLabel>
+                <FormControl>
+                  <Input placeholder="Ex: Maria da Silva" {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
 
-          <FormField control={form.control} name="fullName" render={({ field }) => (
-            <FormItem><FormLabel>Nome completo *</FormLabel><FormControl><Input placeholder="Ex: Maria da Silva" {...field} /></FormControl><FormMessage /></FormItem>
-          )} />
-
-          <FormField control={form.control} name="email" render={({ field }) => (
-            <FormItem><FormLabel>Email *</FormLabel><FormControl><Input type="email" placeholder="profissional@exemplo.com" {...field} /></FormControl><FormMessage /></FormItem>
-          )} />
+          <FormField
+            control={form.control}
+            name="email"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Email *</FormLabel>
+                <FormControl>
+                  <Input type="email" placeholder="profissional@exemplo.com" {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
 
           <div className="grid grid-cols-2 gap-4">
-            <FormField control={form.control} name="professionalDocument" render={({ field }) => (
-              <FormItem><FormLabel>Documento profissional</FormLabel><FormControl><Input placeholder="Ex: CRM/SP 123456" {...field} value={field.value || ""} /></FormControl><FormMessage /></FormItem>
-            )} />
-            <Controller control={form.control} name="serviceArea" render={({ field, fieldState }) => (
-              <FormItem><FormLabel>Área de atendimento *</FormLabel><FormControl><HealthAreaSelect value={field.value} onChange={field.onChange} /></FormControl><FormMessage>{fieldState.error?.message}</FormMessage></FormItem>
-            )} />
+            <FormField
+              control={form.control}
+              name="professionalDocument"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Documento profissional</FormLabel>
+                  <FormControl>
+                    <Input placeholder="Ex: CRM/SP 123456" {...field} value={field.value || ""} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <Controller
+              control={form.control}
+              name="serviceArea"
+              render={({ field, fieldState }) => (
+                <FormItem>
+                  <FormLabel>Área de atendimento *</FormLabel>
+                  <FormControl>
+                    <HealthAreaSelect value={field.value} onChange={field.onChange} />
+                  </FormControl>
+                  <FormMessage>{fieldState.error?.message}</FormMessage>
+                </FormItem>
+              )}
+            />
           </div>
 
           <div className="grid grid-cols-2 gap-4">
-            <FormField control={form.control} name="rg" render={({ field }) => (
-              <FormItem><FormLabel>RG *</FormLabel><FormControl><Input placeholder="Ex: 1234567" {...field} /></FormControl><FormMessage /></FormItem>
-            )} />
-            <Controller control={form.control} name="phone" render={({ field, fieldState }) => (
-              <FormItem><FormLabel>Telefone *</FormLabel><FormControl>
-                <InputMask mask="(__) _____-____" replacement={{ _: /\d/ }} value={field.value ?? ""} onChange={(e) => field.onChange(e.target.value)} onBlur={field.onBlur} placeholder="(xx) xxxxx-xxxx" className="w-full rounded-md border px-3 py-2" />
-              </FormControl><FormMessage>{fieldState.error?.message}</FormMessage></FormItem>
-            )} />
+            <FormField
+              control={form.control}
+              name="rg"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>RG *</FormLabel>
+                  <FormControl>
+                    <Input placeholder="Ex: 1234567" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <Controller
+              control={form.control}
+              name="phone"
+              render={({ field, fieldState }) => (
+                <FormItem>
+                  <FormLabel>Telefone *</FormLabel>
+                  <FormControl>
+                    <InputMask
+                      mask="(__) _____-____"
+                      replacement={{ _: /\d/ }}
+                      value={field.value ?? ""}
+                      onChange={(e) => field.onChange(e.target.value)}
+                      onBlur={field.onBlur}
+                      placeholder="(xx) xxxxx-xxxx"
+                      className="w-full rounded-md border px-3 py-2"
+                    />
+                  </FormControl>
+                  <FormMessage>{fieldState.error?.message}</FormMessage>
+                </FormItem>
+              )}
+            />
           </div>
 
           <div className="grid grid-cols-2 gap-4">
-            <Controller control={form.control} name="state" render={({ field, fieldState }) => (
-              <FormItem><FormLabel>Estado *</FormLabel><FormControl>
-                <Select onValueChange={field.onChange} value={field.value}>
-                  <SelectTrigger className={`w-full ${fieldState.invalid ? "border-red-500" : "border-gray-300"}`}><SelectValue placeholder="Selecione um estado" /></SelectTrigger>
-                  <SelectContent>{STATES.map((s) => <SelectItem key={s} value={s}>{s}</SelectItem>)}</SelectContent>
-                </Select>
-              </FormControl><FormMessage>{fieldState.error?.message}</FormMessage></FormItem>
-            )} />
-            <FormField control={form.control} name="city" render={({ field }) => (
-              <FormItem><FormLabel>Cidade *</FormLabel><FormControl><Input placeholder="Ex: João Pessoa" {...field} /></FormControl><FormMessage /></FormItem>
-            )} />
+            <Controller
+              control={form.control}
+              name="state"
+              render={({ field, fieldState }) => (
+                <FormItem>
+                  <FormLabel>Estado *</FormLabel>
+                  <FormControl>
+                    <Select onValueChange={field.onChange} value={field.value}>
+                      <SelectTrigger
+                        className={`w-full ${fieldState.invalid ? "border-red-500" : "border-gray-300"}`}
+                      >
+                        <SelectValue placeholder="Selecione um estado" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {STATES.map((s) => (
+                          <SelectItem key={s} value={s}>
+                            {s}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </FormControl>
+                  <FormMessage>{fieldState.error?.message}</FormMessage>
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="city"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Cidade *</FormLabel>
+                  <FormControl>
+                    <Input placeholder="Ex: João Pessoa" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
           </div>
 
-          <FormField control={form.control} name="street" render={({ field }) => (
-            <FormItem><FormLabel>Endereço *</FormLabel><FormControl><Input placeholder="Ex: Rua das Flores" {...field} /></FormControl><FormMessage /></FormItem>
-          )} />
+          <FormField
+            control={form.control}
+            name="street"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Endereço *</FormLabel>
+                <FormControl>
+                  <Input placeholder="Ex: Rua das Flores" {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <FormField control={form.control} name="neighborhood" render={({ field }) => (
-              <FormItem><FormLabel>Bairro *</FormLabel><FormControl><Input placeholder="Ex: Centro" {...field} /></FormControl><FormMessage /></FormItem>
-            )} />
-            <Controller control={form.control} name="cep" render={({ field, fieldState }) => (
-              <FormItem><FormLabel>CEP *</FormLabel><FormControl>
-                <InputMask mask="_____-___" replacement={{ _: /\d/ }} value={field.value ?? ""} onChange={(e) => field.onChange(e.target.value)} onBlur={field.onBlur} placeholder="12345-678" className="w-full rounded-md border px-3 py-2" />
-              </FormControl><FormMessage>{fieldState.error?.message}</FormMessage></FormItem>
-            )} />
+            <FormField
+              control={form.control}
+              name="neighborhood"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Bairro *</FormLabel>
+                  <FormControl>
+                    <Input placeholder="Ex: Centro" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <Controller
+              control={form.control}
+              name="cep"
+              render={({ field, fieldState }) => (
+                <FormItem>
+                  <FormLabel>CEP *</FormLabel>
+                  <FormControl>
+                    <InputMask
+                      mask="_____-___"
+                      replacement={{ _: /\d/ }}
+                      value={field.value ?? ""}
+                      onChange={(e) => field.onChange(e.target.value)}
+                      onBlur={field.onBlur}
+                      placeholder="12345-678"
+                      className="w-full rounded-md border px-3 py-2"
+                    />
+                  </FormControl>
+                  <FormMessage>{fieldState.error?.message}</FormMessage>
+                </FormItem>
+              )}
+            />
           </div>
 
           <div className="grid grid-cols-2 gap-4">
-            <FormField control={form.control} name="number" render={({ field }) => (
-              <FormItem><FormLabel>Número *</FormLabel><FormControl><Input placeholder="Ex: 123" {...field} /></FormControl><FormMessage /></FormItem>
-            )} />
-            <FormField control={form.control} name="complement" render={({ field }) => (
-              <FormItem><FormLabel>Complemento</FormLabel><FormControl><Input placeholder="Ex: Apt 101" {...field} /></FormControl><FormMessage /></FormItem>
-            )} />
+            <FormField
+              control={form.control}
+              name="number"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Número *</FormLabel>
+                  <FormControl>
+                    <Input placeholder="Ex: 123" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="complement"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Complemento</FormLabel>
+                  <FormControl>
+                    <Input placeholder="Ex: Apt 101" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
           </div>
 
           <Availability control={form.control} watch={form.watch} />
@@ -208,9 +386,7 @@ export default function ProfessionalUpdate(): JSX.Element {
             name="photo"
             render={({ field }) => (
               <FormItem>
-                <FormLabel className="text-sm font-medium">
-                  Selecione uma foto*
-                </FormLabel>
+                <FormLabel className="text-sm font-medium">Selecione uma foto*</FormLabel>
 
                 <FormControl>
                   <div className="flex flex-col items-start gap-4 w-full">
@@ -229,12 +405,7 @@ export default function ProfessionalUpdate(): JSX.Element {
                           return;
                         }
 
-                        const allowedTypes = [
-                          "image/png",
-                          "image/jpeg",
-                          "image/jpg",
-                          "image/webp",
-                        ];
+                        const allowedTypes = ["image/png", "image/jpeg", "image/jpg", "image/webp"];
 
                         const maxSize = 5 * 1024 * 1024;
 
@@ -243,9 +414,7 @@ export default function ProfessionalUpdate(): JSX.Element {
                           file.size <= 0 ||
                           file.size > maxSize
                         ) {
-                          alert(
-                            "Apenas imagens PNG, JPG ou WEBP até 5MB são permitidas",
-                          );
+                          alert("Apenas imagens PNG, JPG ou WEBP até 5MB são permitidas");
 
                           if (fileInputRef.current) {
                             fileInputRef.current.value = "";
@@ -284,15 +453,11 @@ export default function ProfessionalUpdate(): JSX.Element {
                       </div>
                     </button>
 
-                    <p className="text-xs text-gray-500">
-                      PNG, JPG ou WEBP até 5MB
-                    </p>
+                    <p className="text-xs text-gray-500">PNG, JPG ou WEBP até 5MB</p>
 
                     {field.value && (
                       <div className="flex items-center gap-2">
-                        <p className="text-xs text-gray-600">
-                          Selecionado: {field.value.name}
-                        </p>
+                        <p className="text-xs text-gray-600">Selecionado: {field.value.name}</p>
 
                         <Button
                           type="button"
@@ -344,15 +509,25 @@ export default function ProfessionalUpdate(): JSX.Element {
           />
 
           {(loading || loadingDocs) && (
-            <p className="text-blue-500">{loading ? "Salvando perfil..." : "Enviando documentos..."}</p>
+            <p className="text-blue-500">
+              {loading ? "Salvando perfil..." : "Enviando documentos..."}
+            </p>
           )}
           {error && <p className="text-red-500">{error}</p>}
           {photoError && <p className="text-red-500">{photoError}</p>}
           {success && <p className="text-green-600">Profissional atualizado com sucesso!</p>}
 
           <div className="flex justify-end gap-4">
-            <Button type="button" variant="outline" onClick={() => router.push("/professionals")}>Cancelar</Button>
-            <Button type="submit" className="bg-[#0D4F97] hover:bg-blue-900" disabled={form.formState.isSubmitting || loading || loadingDocs}>Salvar</Button>
+            <Button type="button" variant="outline" onClick={() => router.push("/professionals")}>
+              Cancelar
+            </Button>
+            <Button
+              type="submit"
+              className="bg-[#0D4F97] hover:bg-blue-900"
+              disabled={form.formState.isSubmitting || loading || loadingDocs}
+            >
+              Salvar
+            </Button>
           </div>
         </form>
       </Form>

@@ -1,6 +1,6 @@
-"use client"
+"use client";
 
-import React, { useState } from 'react';
+import React, { useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
@@ -16,29 +16,23 @@ export interface Appointment {
 }
 
 const patients = [
-  { value: 'joao-oliveira', label: 'João Oliveira' },
-  { value: 'maria-silva', label: 'Maria Silva' },
-  { value: 'pedro-almeida', label: 'Pedro Almeida' },
+  { value: "joao-oliveira", label: "João Oliveira" },
+  { value: "maria-silva", label: "Maria Silva" },
+  { value: "pedro-almeida", label: "Pedro Almeida" },
 ];
 
 const serviceAreas = [
-  { value: 'nutricao', label: 'Nutrição' },
-  { value: 'psicologia', label: 'Psicologia' },
-  { value: 'fisioterapia', label: 'Fisioterapia' },
+  { value: "nutricao", label: "Nutrição" },
+  { value: "psicologia", label: "Psicologia" },
+  { value: "fisioterapia", label: "Fisioterapia" },
 ];
 
-export function EditAppointmentForm({
-  appointment,
-}: {
-  appointment?: Appointment;
-}) {
-  const [dateTime, setDateTime] = useState<Date | undefined>(
-    appointment?.dateTime
-  );
-  const [patient, setPatient] = useState<string>(appointment?.patient || '');
-  const [area, setArea] = useState<string>(appointment?.area || '');
+export function EditAppointmentForm({ appointment }: { appointment?: Appointment }) {
+  const [dateTime, setDateTime] = useState<Date | undefined>(appointment?.dateTime);
+  const [patient, setPatient] = useState<string>(appointment?.patient || "");
+  const [area, setArea] = useState<string>(appointment?.area || "");
 
-  const [frequencyDays, setFrequencyDays] = useState<string | number>('');
+  const [frequencyDays, setFrequencyDays] = useState<string | number>("");
 
   const [validationErrors, setValidationErrors] = useState({
     dateTime: false,
@@ -54,10 +48,7 @@ export function EditAppointmentForm({
       dateTime: !dateTime,
       patient: !patient,
       area: !area,
-      frequencyDays:
-        !frequencyDays ||
-        isNaN(Number(frequencyDays)) ||
-        Number(frequencyDays) <= 0,
+      frequencyDays: !frequencyDays || isNaN(Number(frequencyDays)) || Number(frequencyDays) <= 0,
     };
 
     setValidationErrors(errors);
@@ -91,8 +82,8 @@ export function EditAppointmentForm({
               onChange={setPatient}
               placeholder="Pesquisar paciente"
               className={cn(
-                validationErrors.patient && 'border-red-500',
-                'font-normal text-gray-400'
+                validationErrors.patient && "border-red-500",
+                "font-normal text-gray-400",
               )}
             />
             {validationErrors.patient && (
@@ -109,10 +100,7 @@ export function EditAppointmentForm({
               value={area}
               onChange={setArea}
               placeholder="Pesquisar área de atendimento"
-              className={cn(
-                validationErrors.area && 'border-red-500',
-                'font-normal text-gray-400'
-              )}
+              className={cn(validationErrors.area && "border-red-500", "font-normal text-gray-400")}
             />
 
             {validationErrors.area && (
@@ -129,8 +117,8 @@ export function EditAppointmentForm({
               type="number"
               placeholder="Adicionar frequência"
               value={frequencyDays}
-              onChange={e => setFrequencyDays(e.target.value)}
-              className={cn(validationErrors.frequencyDays && 'border-red-500')}
+              onChange={(e) => setFrequencyDays(e.target.value)}
+              className={cn(validationErrors.frequencyDays && "border-red-500")}
             />
             {validationErrors.frequencyDays && (
               <p className="text-sm text-red-500">

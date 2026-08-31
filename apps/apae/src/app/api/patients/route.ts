@@ -18,14 +18,11 @@ export async function GET(request: NextRequest) {
     const { data } = await api.get(`/patients`, {
       params: { ...paramsObj, page, size, sort },
     });
-    
+
     return NextResponse.json(data);
   } catch (err) {
     const error = err as AxiosError;
-    console.error(
-      "[ERRO API PATIENTS]:",
-      error.response?.data || error.message,
-    );
+    console.error("[ERRO API PATIENTS]:", error.response?.data || error.message);
 
     return NextResponse.json(
       { message: error.response?.data || "Erro interno no servidor" },
@@ -45,10 +42,7 @@ export async function POST(req: Request) {
       return NextResponse.json(response.data, { status: response.status });
     }
 
-    return NextResponse.json(
-      { message: "Cadastro bem-sucedido" },
-      { status: 201 },
-    );
+    return NextResponse.json({ message: "Cadastro bem-sucedido" }, { status: 201 });
   } catch (error) {
     console.error("[API Route POST Error]:", error);
 
@@ -58,9 +52,6 @@ export async function POST(req: Request) {
       });
     }
 
-    return NextResponse.json(
-      { message: "Erro inesperado ao cadastrar pessoa" },
-      { status: 500 },
-    );
+    return NextResponse.json({ message: "Erro inesperado ao cadastrar pessoa" }, { status: 500 });
   }
 }

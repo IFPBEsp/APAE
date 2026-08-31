@@ -1,11 +1,7 @@
 import * as React from "react";
 import { CheckIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
-import {
-  CommandEmpty,
-  CommandGroup,
-  CommandItem,
-} from "@/components/ui/command";
+import { CommandEmpty, CommandGroup, CommandItem } from "@/components/ui/command";
 import { OptionItem } from "./OptionItem";
 import type { MultiSelectOption, MultiSelectGroup } from "../types";
 
@@ -53,9 +49,7 @@ export function OptionList({
             <div
               className={cn(
                 "mr-2 flex h-4 w-4 items-center justify-center rounded-sm border border-primary",
-                allSelected
-                  ? "bg-primary text-primary-foreground"
-                  : "opacity-50 [&_svg]:invisible",
+                allSelected ? "bg-primary text-primary-foreground" : "opacity-50 [&_svg]:invisible",
               )}
               aria-hidden="true"
             >
@@ -69,22 +63,10 @@ export function OptionList({
         </CommandGroup>
       )}
 
-      {isGrouped
-        ? (filteredOptions as MultiSelectGroup[]).map((group) => (
-            <CommandGroup key={group.heading} heading={group.heading}>
-              {group.options.map((option) => (
-                <OptionItem
-                  key={option.value}
-                  option={option}
-                  isSelected={selectedValues.includes(option.value)}
-                  onToggle={onToggle}
-                />
-              ))}
-            </CommandGroup>
-          ))
-        : (
-          <CommandGroup>
-            {(filteredOptions as MultiSelectOption[]).map((option) => (
+      {isGrouped ? (
+        (filteredOptions as MultiSelectGroup[]).map((group) => (
+          <CommandGroup key={group.heading} heading={group.heading}>
+            {group.options.map((option) => (
               <OptionItem
                 key={option.value}
                 option={option}
@@ -93,7 +75,19 @@ export function OptionList({
               />
             ))}
           </CommandGroup>
-        )}
+        ))
+      ) : (
+        <CommandGroup>
+          {(filteredOptions as MultiSelectOption[]).map((option) => (
+            <OptionItem
+              key={option.value}
+              option={option}
+              isSelected={selectedValues.includes(option.value)}
+              onToggle={onToggle}
+            />
+          ))}
+        </CommandGroup>
+      )}
     </>
   );
 }

@@ -5,9 +5,14 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { FormControl, FormItem, FormLabel } from "@/components/ui/form";
 import {
-  AlertDialog, AlertDialogAction, AlertDialogCancel,
-  AlertDialogContent, AlertDialogDescription,
-  AlertDialogFooter, AlertDialogHeader, AlertDialogTitle,
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import { DocumentWithUrl } from "@/types/document";
 
@@ -40,12 +45,27 @@ interface ProfessionalDocumentsProps {
 }
 
 export function ProfessionalDocuments({
-  groupedDocs, docsLoading, docsError,
-  removingIds, removeModalOpen, setRemoveModalOpen,
-  docToRemove, isConfirmBusy, openRemoveModal, confirmRemove,
-  curriculumFile, volunteerFile, attachmentFiles,
-  setCurriculumFile, setVolunteerFile, setAttachmentFiles,
-  isValidFile, errorDocs, successDocs, hasAnyUpload, loadingDocs,
+  groupedDocs,
+  docsLoading,
+  docsError,
+  removingIds,
+  removeModalOpen,
+  setRemoveModalOpen,
+  docToRemove,
+  isConfirmBusy,
+  openRemoveModal,
+  confirmRemove,
+  curriculumFile,
+  volunteerFile,
+  attachmentFiles,
+  setCurriculumFile,
+  setVolunteerFile,
+  setAttachmentFiles,
+  isValidFile,
+  errorDocs,
+  successDocs,
+  hasAnyUpload,
+  loadingDocs,
 }: ProfessionalDocumentsProps) {
   return (
     <div className="space-y-4">
@@ -81,34 +101,66 @@ export function ProfessionalDocuments({
           <div className="text-sm text-gray-700 space-y-2">
             <p>
               <span className="font-medium">Termo do voluntário: </span>
-              {groupedDocs.volunteer
-                ? <a className="text-[#0D4F97] hover:underline" href={groupedDocs.volunteer.url} target="_blank" rel="noreferrer">Visualizar</a>
-                : <span className="text-gray-500">não enviado</span>}
+              {groupedDocs.volunteer ? (
+                <a
+                  className="text-[#0D4F97] hover:underline"
+                  href={groupedDocs.volunteer.url}
+                  target="_blank"
+                  rel="noreferrer"
+                >
+                  Visualizar
+                </a>
+              ) : (
+                <span className="text-gray-500">não enviado</span>
+              )}
             </p>
             <p>
               <span className="font-medium">Currículo: </span>
-              {groupedDocs.curriculum
-                ? <a className="text-[#0D4F97] hover:underline" href={groupedDocs.curriculum.url} target="_blank" rel="noreferrer">Visualizar</a>
-                : <span className="text-gray-500">não enviado</span>}
+              {groupedDocs.curriculum ? (
+                <a
+                  className="text-[#0D4F97] hover:underline"
+                  href={groupedDocs.curriculum.url}
+                  target="_blank"
+                  rel="noreferrer"
+                >
+                  Visualizar
+                </a>
+              ) : (
+                <span className="text-gray-500">não enviado</span>
+              )}
             </p>
             <div>
               <p>
                 <span className="font-medium">Anexos: </span>
-                {groupedDocs.attachments.length > 0
-                  ? <span>{groupedDocs.attachments.length} arquivo(s)</span>
-                  : <span className="text-gray-500">nenhum</span>}
+                {groupedDocs.attachments.length > 0 ? (
+                  <span>{groupedDocs.attachments.length} arquivo(s)</span>
+                ) : (
+                  <span className="text-gray-500">nenhum</span>
+                )}
               </p>
               {groupedDocs.attachments.length > 0 && (
                 <ul className="mt-2 space-y-2">
                   {groupedDocs.attachments.map((a) => {
                     const busy = removingIds.has(String(a.id));
                     return (
-                      <li key={a.id} className="flex items-center justify-between rounded-md border px-3 py-2">
+                      <li
+                        key={a.id}
+                        className="flex items-center justify-between rounded-md border px-3 py-2"
+                      >
                         <p className="truncate text-sm text-gray-700">{a.name}</p>
                         <div className="flex items-center gap-2">
-                          <a className="text-[#0D4F97] hover:underline text-sm" href={a.url} target="_blank" rel="noreferrer">Visualizar</a>
+                          <a
+                            className="text-[#0D4F97] hover:underline text-sm"
+                            href={a.url}
+                            target="_blank"
+                            rel="noreferrer"
+                          >
+                            Visualizar
+                          </a>
                           <Button
-                            type="button" variant="outline" size="icon"
+                            type="button"
+                            variant="outline"
+                            size="icon"
                             className="h-8 w-8 text-muted-foreground hover:text-foreground"
                             disabled={busy || loadingDocs || docsLoading}
                             onClick={() => openRemoveModal(a)}
@@ -129,40 +181,78 @@ export function ProfessionalDocuments({
       <FormItem>
         <FormLabel>Termo do Voluntário</FormLabel>
         <FormControl>
-          <Input type="file" accept="image/*, application/pdf" onChange={(e) => {
-            const file = e.target.files?.[0];
-            if (!file) { setVolunteerFile(null); return; }
-            if (!isValidFile(file)) { alert("Apenas imagens ou PDF são permitidos"); e.target.value = ""; setVolunteerFile(null); return; }
-            setVolunteerFile(file);
-          }} />
+          <Input
+            type="file"
+            accept="image/*, application/pdf"
+            onChange={(e) => {
+              const file = e.target.files?.[0];
+              if (!file) {
+                setVolunteerFile(null);
+                return;
+              }
+              if (!isValidFile(file)) {
+                alert("Apenas imagens ou PDF são permitidos");
+                e.target.value = "";
+                setVolunteerFile(null);
+                return;
+              }
+              setVolunteerFile(file);
+            }}
+          />
         </FormControl>
-        {volunteerFile && <p className="text-xs text-gray-600 mt-1">Selecionado: {volunteerFile.name}</p>}
+        {volunteerFile && (
+          <p className="text-xs text-gray-600 mt-1">Selecionado: {volunteerFile.name}</p>
+        )}
       </FormItem>
 
       <FormItem>
         <FormLabel>Currículo</FormLabel>
         <FormControl>
-          <Input type="file" accept="image/*, application/pdf" onChange={(e) => {
-            const file = e.target.files?.[0];
-            if (!file) { setCurriculumFile(null); return; }
-            if (!isValidFile(file)) { alert("Apenas imagens ou PDF são permitidos"); e.target.value = ""; setCurriculumFile(null); return; }
-            setCurriculumFile(file);
-          }} />
+          <Input
+            type="file"
+            accept="image/*, application/pdf"
+            onChange={(e) => {
+              const file = e.target.files?.[0];
+              if (!file) {
+                setCurriculumFile(null);
+                return;
+              }
+              if (!isValidFile(file)) {
+                alert("Apenas imagens ou PDF são permitidos");
+                e.target.value = "";
+                setCurriculumFile(null);
+                return;
+              }
+              setCurriculumFile(file);
+            }}
+          />
         </FormControl>
-        {curriculumFile && <p className="text-xs text-gray-600 mt-1">Selecionado: {curriculumFile.name}</p>}
+        {curriculumFile && (
+          <p className="text-xs text-gray-600 mt-1">Selecionado: {curriculumFile.name}</p>
+        )}
       </FormItem>
 
       <FormItem>
         <FormLabel>Anexo qualquer</FormLabel>
         <FormControl>
-          <Input type="file" accept="image/*, application/pdf" multiple onChange={(e) => {
-            const files = Array.from(e.target.files ?? []);
-            const valid = files.filter(isValidFile);
-            if (valid.length !== files.length) alert("Alguns arquivos foram ignorados. Apenas imagens ou PDF são permitidos.");
-            setAttachmentFiles(valid);
-          }} />
+          <Input
+            type="file"
+            accept="image/*, application/pdf"
+            multiple
+            onChange={(e) => {
+              const files = Array.from(e.target.files ?? []);
+              const valid = files.filter(isValidFile);
+              if (valid.length !== files.length)
+                alert("Alguns arquivos foram ignorados. Apenas imagens ou PDF são permitidos.");
+              setAttachmentFiles(valid);
+            }}
+          />
         </FormControl>
-        {attachmentFiles.length > 0 && <p className="text-xs text-gray-600 mt-1">Selecionado(s): {attachmentFiles.length} arquivo(s)</p>}
+        {attachmentFiles.length > 0 && (
+          <p className="text-xs text-gray-600 mt-1">
+            Selecionado(s): {attachmentFiles.length} arquivo(s)
+          </p>
+        )}
       </FormItem>
 
       {(errorDocs || successDocs) && (
@@ -173,7 +263,9 @@ export function ProfessionalDocuments({
       )}
 
       {hasAnyUpload && (
-        <p className="text-xs text-gray-600">Ao salvar, também serão enviados os documentos selecionados.</p>
+        <p className="text-xs text-gray-600">
+          Ao salvar, também serão enviados os documentos selecionados.
+        </p>
       )}
     </div>
   );

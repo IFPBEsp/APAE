@@ -25,22 +25,14 @@ interface Props {
   onReplace?: () => void;
 }
 
-export default function FileCard({
-  file,
-  canReplace = false,
-  onReplace,
-}: Props) {
+export default function FileCard({ file, canReplace = false, onReplace }: Props) {
   const [open, setOpen] = React.useState(false);
 
   // State for the Modal (Large Preview)
-  const [modalViewType, setModalViewType] = React.useState<"img" | "iframe">(
-    "img",
-  );
+  const [modalViewType, setModalViewType] = React.useState<"img" | "iframe">("img");
 
   // NEW: Status for the Miniature (Small Card)
-  const [thumbnailView, setThumbnailView] = React.useState<"img" | "icon">(
-    "img",
-  );
+  const [thumbnailView, setThumbnailView] = React.useState<"img" | "icon">("img");
 
   React.useEffect(() => {
     if (open) {
@@ -69,11 +61,7 @@ export default function FileCard({
             />
           ) : (
             <>
-              <FileText
-                size={40}
-                strokeWidth={1.5}
-                className="mb-1 text-blue-800"
-              />
+              <FileText size={40} strokeWidth={1.5} className="mb-1 text-blue-800" />
               <span className="text-[10px] font-bold uppercase tracking-wider text-blue-800">
                 Documento
               </span>
@@ -115,11 +103,7 @@ export default function FileCard({
             )}
 
             {modalViewType === "iframe" && (
-              <iframe
-                src={file.link}
-                title={file.fileName}
-                className="w-full h-full border-0"
-              />
+              <iframe src={file.link} title={file.fileName} className="w-full h-full border-0" />
             )}
           </div>
 

@@ -1,11 +1,9 @@
-'use client';
+"use client";
 
-import { Check } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import {
-  markAsPerformed,
-} from '@/app/services/appointmentService';
-import { useRouter } from 'next/navigation';
+import { Check } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { markAsPerformed } from "@/app/services/appointmentService";
+import { useRouter } from "next/navigation";
 import {
   Dialog,
   DialogClose,
@@ -15,7 +13,7 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from '../ui/dialog';
+} from "../ui/dialog";
 
 export default function ConfirmCompletionButton({ id }: { id: string }) {
   const router = useRouter();
@@ -42,8 +40,7 @@ export default function ConfirmCompletionButton({ id }: { id: string }) {
         <DialogHeader>
           <DialogTitle>Confirmar realização da consulta?</DialogTitle>
           <DialogDescription>
-            Ao confirmar, a consulta será marcada como realizada. Deseja
-            continuar?
+            Ao confirmar, a consulta será marcada como realizada. Deseja continuar?
           </DialogDescription>
         </DialogHeader>
         <DialogFooter>

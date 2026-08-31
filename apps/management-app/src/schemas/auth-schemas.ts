@@ -32,12 +32,8 @@ export const signUpSchema = z
       .email({ message: "Email inválido" })
       .min(1, { message: "Email é obrigatório" }),
     cpf: cpfSchema,
-    password: z
-      .string()
-      .min(6, { message: "Senha deve ter pelo menos 6 caracteres" }),
-    confirmPassword: z
-      .string()
-      .min(6, { message: "Senha deve ter pelo menos 6 caracteres" }),
+    password: z.string().min(6, { message: "Senha deve ter pelo menos 6 caracteres" }),
+    confirmPassword: z.string().min(6, { message: "Senha deve ter pelo menos 6 caracteres" }),
   })
   .refine((data) => data.password === data.confirmPassword, {
     message: "As senhas não coincidem",
@@ -60,9 +56,7 @@ export const loginSchema = z.object({
         message: "Digite um email ou CPF válido",
       },
     ),
-  password: z
-    .string()
-    .min(6, { message: "Senha deve ter pelo menos 6 caracteres" }),
+  password: z.string().min(6, { message: "Senha deve ter pelo menos 6 caracteres" }),
 });
 
 export type FormLogin = z.infer<typeof loginSchema>;

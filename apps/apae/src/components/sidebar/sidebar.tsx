@@ -39,11 +39,7 @@ import {
   TasklistIcon,
 } from "@primer/octicons-react";
 import logo from "../../assets/logo.png";
-import {
-  Collapsible,
-  CollapsibleContent,
-  CollapsibleTrigger,
-} from "../ui/collapsible";
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "../ui/collapsible";
 import styles from "./sidebar.module.css";
 
 export function AppSidebar() {
@@ -70,13 +66,7 @@ export function AppSidebar() {
           <ArrowLeftIcon size={20} />
         </button>
         <div className={styles.logoContainer}>
-          <Image
-            className={styles.logo}
-            src={logo}
-            width={60}
-            height={60}
-            alt="Logo"
-          />
+          <Image className={styles.logo} src={logo} width={60} height={60} alt="Logo" />
           <div className={styles.textContainer}>
             <div className={styles.title}></div>
             <div className={styles.subtitle}>Agendamento</div>
@@ -87,9 +77,7 @@ export function AppSidebar() {
         <Collapsible defaultOpen={false} className="group/collapsible">
           <SidebarGroup>
             <SidebarGroupLabel asChild>
-              <CollapsibleTrigger
-                className={`${styles.menuButton} font-base gap-2`}
-              >
+              <CollapsibleTrigger className={`${styles.menuButton} font-base gap-2`}>
                 <ClockIcon size={20} />
                 <span className="text-base">Agendamentos</span>
                 <ChevronDownIcon
@@ -153,9 +141,7 @@ export function AppSidebar() {
         <Collapsible defaultOpen={false} className="group/collapsible">
           <SidebarGroup>
             <SidebarGroupLabel asChild>
-              <CollapsibleTrigger
-                className={`${styles.menuButton} font-base gap-2`}
-              >
+              <CollapsibleTrigger className={`${styles.menuButton} font-base gap-2`}>
                 <IdBadgeIcon size={20} />
                 <span className="text-base">Profissionais da Saúde</span>
                 <ChevronDownIcon
@@ -204,9 +190,7 @@ export function AppSidebar() {
         <Collapsible defaultOpen={false} className="group/collapsible">
           <SidebarGroup>
             <SidebarGroupLabel asChild>
-              <CollapsibleTrigger
-                className={`${styles.menuButton} font-base gap-2`}
-              >
+              <CollapsibleTrigger className={`${styles.menuButton} font-base gap-2`}>
                 <PersonIcon size={20} />
                 <span className="text-base">Pacientes</span>
                 <ChevronDownIcon
@@ -270,9 +254,7 @@ export function AppSidebar() {
         <Collapsible defaultOpen={false} className="group/collapsible">
           <SidebarGroup>
             <SidebarGroupLabel asChild>
-              <CollapsibleTrigger
-                className={`${styles.menuButton} font-base gap-2`}
-              >
+              <CollapsibleTrigger className={`${styles.menuButton} font-base gap-2`}>
                 <ShieldUser size={20} />
                 <span className="text-base">Área do Administrador</span>
                 <ChevronDownIcon

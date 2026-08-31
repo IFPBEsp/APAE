@@ -15,10 +15,7 @@ export async function PATCH(
     const file = incomingFormData.get("file");
 
     if (!file) {
-      return NextResponse.json(
-        { message: "Arquivo obrigatório" },
-        { status: 400 },
-      );
+      return NextResponse.json({ message: "Arquivo obrigatório" }, { status: 400 });
     }
 
     const backendFormData = new FormData();
@@ -40,16 +37,12 @@ export async function PATCH(
     if (error instanceof AxiosError) {
       return NextResponse.json(
         {
-          message:
-            error.response?.data?.message || "Erro ao substituir documento",
+          message: error.response?.data?.message || "Erro ao substituir documento",
         },
         { status: error.response?.status || 500 },
       );
     }
 
-    return NextResponse.json(
-      { message: "Erro interno do servidor" },
-      { status: 500 },
-    );
+    return NextResponse.json({ message: "Erro interno do servidor" }, { status: 500 });
   }
 }

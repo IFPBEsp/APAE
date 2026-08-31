@@ -10,13 +10,9 @@ export function usePasswordRecovery() {
     try {
       await requestPasswordRecovery(data.email);
 
-      toast.success(
-        "Se o e-mail existir, um link de recuperação foi enviado."
-      );
+      toast.success("Se o e-mail existir, um link de recuperação foi enviado.");
     } catch {
-      toast.error(
-        "Erro ao solicitar recuperação de senha."
-      );
+      toast.error("Erro ao solicitar recuperação de senha.");
     }
   }
 

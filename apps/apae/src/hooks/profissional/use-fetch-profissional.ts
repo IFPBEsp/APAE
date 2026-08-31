@@ -21,7 +21,7 @@ export function useFetchProfessionals(active: boolean) {
         setError(null);
 
         console.log("[useFetchProfessionals] disparou fetch com ativo =", active);
-        
+
         const response = await getAllProfessionals(active);
 
         const data: PaginatedResponse<Professional> = response.data;

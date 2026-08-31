@@ -54,11 +54,7 @@ export default function ServiceTypesPage() {
       return <p className="text-center text-red-500">{error}</p>;
     }
     if (filteredserviceTypes.length === 0) {
-      return (
-        <p className="text-center text-gray-500">
-          Nenhum tipo de atendimento encontrado.
-        </p>
-      );
+      return <p className="text-center text-gray-500">Nenhum tipo de atendimento encontrado.</p>;
     }
     return (
       <div className="space-y-2">
@@ -77,23 +73,16 @@ export default function ServiceTypesPage() {
     <div className="!bg-slate-100 min-h-screen">
       <main className="container mx-auto p-4 md:p-6">
         <div className="bg-white rounded-xl shadow-md border-2 p-6 mb-4">
-          <SearchFilters
-            searchName={searchName}
-            setSearchName={setSearchName}
-          />
+          <SearchFilters searchName={searchName} setSearchName={setSearchName} />
         </div>
 
         <section className="relative md:bg-white md:rounded-xl md:shadow-md md:border-2 md:p-6">
           <div className="hidden md:flex justify-between items-center mb-4">
-            <h2 className="text-xl font-bold text-[#003B93]">
-              Tipos de atendimentos cadastrados
-            </h2>
+            <h2 className="text-xl font-bold text-[#003B93]">Tipos de atendimentos cadastrados</h2>
           </div>
 
           <div className="mb-4 md:hidden">
-            <h2 className="text-xl font-bold text-[#003B93]">
-              Tipos de atendimentos cadastrados
-            </h2>
+            <h2 className="text-xl font-bold text-[#003B93]">Tipos de atendimentos cadastrados</h2>
           </div>
 
           <p className="text-sm text-gray-500 mb-4">

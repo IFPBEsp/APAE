@@ -37,12 +37,7 @@ function PatientsAndStudentsScreenContent() {
 
   const debouncedSearchName = useDebounce(query.name, 500);
 
-  const {
-    disorderOptions,
-    yearOptions,
-    cityOptions,
-    serviceAreaOptions,
-  } = usePatientFilters();
+  const { disorderOptions, yearOptions, cityOptions, serviceAreaOptions } = usePatientFilters();
 
   useEffect(() => {
     const controller = new AbortController();
@@ -73,10 +68,7 @@ function PatientsAndStudentsScreenContent() {
 
         if (!response.ok) {
           const errorData = await response.json();
-          console.error(
-            "[ERRO API PATIENTS]:",
-            errorData.response?.data || errorData.message,
-          );
+          console.error("[ERRO API PATIENTS]:", errorData.response?.data || errorData.message);
           throw new Error(errorData.message || "Erro ao buscar dados");
         }
 
@@ -97,10 +89,7 @@ function PatientsAndStudentsScreenContent() {
 
         console.error("Erro ao buscar dados (pacientes):", err);
 
-        const errorMsg =
-          err instanceof Error
-            ? err.message
-            : "Não foi possível carregar os dados.";
+        const errorMsg = err instanceof Error ? err.message : "Não foi possível carregar os dados.";
 
         setError(errorMsg);
         toast.error(errorMsg);
@@ -140,11 +129,7 @@ function PatientsAndStudentsScreenContent() {
     }
 
     if (patients.length === 0) {
-      return (
-        <p className="text-center text-gray-500">
-          Nenhum resultado encontrado.
-        </p>
-      );
+      return <p className="text-center text-gray-500">Nenhum resultado encontrado.</p>;
     }
 
     return (
@@ -176,38 +161,33 @@ function PatientsAndStudentsScreenContent() {
       <main className="container mx-auto p-4 md:p-6">
         <div className="mb-4 rounded-xl border-2 bg-white p-6 shadow-md">
           <SearchFilters
-          searchName={query.name}
-          setSearchName={(value) => {
-            updateQuery({
-              name: value || "",
-              page: 0,
-            });
-          }}
-          serviceArea={query.treatmentType}
-          setServiceArea={(value) => updateQuery({ treatmentType: value || "", page: 0 })}
-          serviceAreaOptions={serviceAreaOptions}
-          disorder={query.disorder}
-          setDisorder={(value) => updateQuery({ disorder: value || "", page: 0 })}
-          disorderOptions={disorderOptions}
-          year={query.year}
-          setYear={(value) => updateQuery({ year: value || "", page: 0 })}
-          yearOptions={yearOptions}
-          city={query.city}
-          setCity={(value) => updateQuery({ city: value || "", page: 0 })}
-          cityOptions={cityOptions}
-        />
+            searchName={query.name}
+            setSearchName={(value) => {
+              updateQuery({
+                name: value || "",
+                page: 0,
+              });
+            }}
+            serviceArea={query.treatmentType}
+            setServiceArea={(value) => updateQuery({ treatmentType: value || "", page: 0 })}
+            serviceAreaOptions={serviceAreaOptions}
+            disorder={query.disorder}
+            setDisorder={(value) => updateQuery({ disorder: value || "", page: 0 })}
+            disorderOptions={disorderOptions}
+            year={query.year}
+            setYear={(value) => updateQuery({ year: value || "", page: 0 })}
+            yearOptions={yearOptions}
+            city={query.city}
+            setCity={(value) => updateQuery({ city: value || "", page: 0 })}
+            cityOptions={cityOptions}
+          />
         </div>
 
         <section className="relative md:rounded-xl md:border-2 md:bg-white md:p-6 md:shadow-md">
           <div className="mb-4 hidden items-center justify-between md:flex">
-            <h2 className="text-xl font-bold text-[#003B93]">
-              Pacientes e Alunos
-            </h2>
+            <h2 className="text-xl font-bold text-[#003B93]">Pacientes e Alunos</h2>
 
-            <Button
-              asChild
-              className="!bg-[#0D4F97] text-white !hover:bg-[#0b427d]"
-            >
+            <Button asChild className="!bg-[#0D4F97] text-white !hover:bg-[#0b427d]">
               <Link href="/patients/create">Adicionar</Link>
             </Button>
           </div>
@@ -231,7 +211,13 @@ function PatientsAndStudentsScreenContent() {
 
 export default function PatientsAndStudentsScreen() {
   return (
-    <Suspense fallback={<div className="min-h-screen bg-slate-100 flex items-center justify-center">Carregando...</div>}>
+    <Suspense
+      fallback={
+        <div className="min-h-screen bg-slate-100 flex items-center justify-center">
+          Carregando...
+        </div>
+      }
+    >
       <PatientsAndStudentsScreenContent />
     </Suspense>
   );

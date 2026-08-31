@@ -3,15 +3,10 @@ import { XCircle } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
 import { multiSelectVariants } from "../shared/variants";
-import type {
-  MultiSelectOption,
-  AnimationConfig,
-  ResolvedResponsiveSettings,
-} from "../types";
+import type { MultiSelectOption, AnimationConfig, ResolvedResponsiveSettings } from "../types";
 import type { VariantProps } from "class-variance-authority";
 
-interface SelectionBadgeProps
-  extends VariantProps<typeof multiSelectVariants> {
+interface SelectionBadgeProps extends VariantProps<typeof multiSelectVariants> {
   option: MultiSelectOption;
   animation: number;
   animationConfig?: AnimationConfig;
@@ -64,19 +59,14 @@ export function SelectionBadge({
     >
       {IconComponent && !responsiveSettings.hideIcons && (
         <IconComponent
-          className={cn(
-            "h-4 w-4 mr-2",
-            responsiveSettings.compactMode && "h-3 w-3 mr-1",
-          )}
+          className={cn("h-4 w-4 mr-2", responsiveSettings.compactMode && "h-3 w-3 mr-1")}
           {...(customStyle?.iconColor && {
             style: { color: customStyle.iconColor },
           })}
         />
       )}
 
-      <span className={cn(screenSize === "mobile" && "truncate")}>
-        {option.label}
-      </span>
+      <span className={cn(screenSize === "mobile" && "truncate")}>{option.label}</span>
 
       <div
         role="button"
@@ -95,9 +85,7 @@ export function SelectionBadge({
         aria-label={`Remove ${option.label} from selection`}
         className="ml-2 h-4 w-4 cursor-pointer hover:bg-white/20 rounded-sm p-0.5 -m-0.5 focus:outline-none focus:ring-1 focus:ring-white/50"
       >
-        <XCircle
-          className={cn("h-3 w-3", responsiveSettings.compactMode && "h-2.5 w-2.5")}
-        />
+        <XCircle className={cn("h-3 w-3", responsiveSettings.compactMode && "h-2.5 w-2.5")} />
       </div>
     </Badge>
   );

@@ -27,9 +27,7 @@ export default function FileViewer() {
   const params = useParams();
   const patientId = params?.id as string;
   const category = params?.type as "personal" | "medical" | "school";
-  const [yearFilter, setYearFilter] = React.useState<string>(
-    new Date().getFullYear().toString()
-  );
+  const [yearFilter, setYearFilter] = React.useState<string>(new Date().getFullYear().toString());
   const [typeFilter, setTypeFilter] = React.useState<string>("LAUDO");
   const [files, setFiles] = React.useState<FileItem[]>([]);
 
@@ -40,22 +38,19 @@ export default function FileViewer() {
 
         const params = new URLSearchParams({
           category: category,
-          year: yearFilter, 
-          ...(typeFilter && { type: typeFilter }), 
+          year: yearFilter,
+          ...(typeFilter && { type: typeFilter }),
         });
 
-        const response = await fetch(
-          `/api/pessoa/${patientId}/documents?${params.toString()}`
-        );
-        
+        const response = await fetch(`/api/pessoa/${patientId}/documents?${params.toString()}`);
+
         if (!response.ok) {
           const errorData = await response.json();
           throw new Error(errorData.message || "Erro ao buscar os documentos");
         }
 
         const data = await response.json();
-        setFiles(data.urls); 
-
+        setFiles(data.urls);
       } catch (err: any) {
         console.error("Erro ao buscar documentos:", err);
         toast.error(err.message);
@@ -70,9 +65,7 @@ export default function FileViewer() {
 
   return (
     <main className="pt-6 md:pt-12 px-4 py-6 max-w-7xl mx-auto font-baloo">
-      <div
-        className={`flex flex-col mt-6 md:hidden ${brandColor} items-center`}
-      >
+      <div className={`flex flex-col mt-6 md:hidden ${brandColor} items-center`}>
         <div className="flex items-center justify-start bg-white rounded-4xl shadow-md mb-6 gap-6 border w-full p-4">
           <Button
             variant="ghost"
@@ -82,7 +75,7 @@ export default function FileViewer() {
           >
             <ArrowLeft size={20} />
           </Button>
-          
+
           <h1 className="text-xl font-bold">{documentCategory[category]}</h1>
         </div>
       </div>
@@ -90,10 +83,8 @@ export default function FileViewer() {
         <Button variant="ghost" size="icon" onClick={() => router.back()}>
           <ArrowLeft size={20} />
         </Button>
-        
-        <h1 className="text-xl font-bold whitespace-nowrap">
-          {documentCategory[category]}
-        </h1>
+
+        <h1 className="text-xl font-bold whitespace-nowrap">{documentCategory[category]}</h1>
       </div>
 
       <div className="grid grid-cols-2 lg:grid-cols-6 gap-4 mt-4">
@@ -101,10 +92,7 @@ export default function FileViewer() {
           <p>Nenhum arquivo encontrado.</p>
         ) : (
           files.map((file: any, index: number) => (
-            <FileCard
-              key={index}
-              file={{ fileName: file.fileName, link: file.link }}
-            />
+            <FileCard key={index} file={{ fileName: file.fileName, link: file.link }} />
           ))
         )}
       </div>

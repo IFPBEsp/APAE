@@ -8,7 +8,10 @@ export function useProfessionalPhoto() {
   const [photoSuccess, setPhotoSuccess] = useState(false);
 
   useEffect(() => {
-    if (!selectedPhoto) { setPhotoPreviewUrl(null); return; }
+    if (!selectedPhoto) {
+      setPhotoPreviewUrl(null);
+      return;
+    }
     const url = URL.createObjectURL(selectedPhoto);
     setPhotoPreviewUrl(url);
     return () => URL.revokeObjectURL(url);

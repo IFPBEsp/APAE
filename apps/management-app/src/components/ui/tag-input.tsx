@@ -11,7 +11,12 @@ interface TagInputProps {
 
 export function TagInput({ placeholder, value, onChange }: TagInputProps) {
   const [inputValue, setInputValue] = useState("");
-  const tags = value ? value.split(",").map((t) => t.trim()).filter(Boolean) : [];
+  const tags = value
+    ? value
+        .split(",")
+        .map((t) => t.trim())
+        .filter(Boolean)
+    : [];
 
   const addTag = (tag: string) => {
     const trimmed = tag.trim();
@@ -39,7 +44,10 @@ export function TagInput({ placeholder, value, onChange }: TagInputProps) {
   return (
     <div className="flex flex-wrap gap-2 p-2 border rounded-md bg-white focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-slate-400 border-slate-200 min-h-[2.5rem]">
       {tags.map((tag, index) => (
-        <span key={index} className="flex items-center gap-1 bg-blue-50 text-[#0D4F97] px-2 py-1 rounded-md text-sm font-semibold">
+        <span
+          key={index}
+          className="flex items-center gap-1 bg-blue-50 text-[#0D4F97] px-2 py-1 rounded-md text-sm font-semibold"
+        >
           {tag}
           <button
             type="button"
