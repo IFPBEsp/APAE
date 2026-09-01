@@ -14,4 +14,8 @@ public interface VaccineRepository extends JpaRepository<Vaccine, UUID> {
     Optional<Vaccine> findByName(String name);
 
     Set<Vaccine> findByNameInIgnoreCase(Collection<String> names);
+
+    boolean existsByNameIgnoreCase(String name);
+
+    boolean existsByNameIgnoreCaseAndIdNot(String name, UUID id);
 }
