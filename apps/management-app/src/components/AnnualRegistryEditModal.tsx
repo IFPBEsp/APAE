@@ -14,14 +14,8 @@ import { Loader2, Upload, FileText, RefreshCw, ExternalLink } from "lucide-react
 
 import { StringMultiSelect } from "@/components/StringMultiSelect";
 import { GenericDatabaseSelect } from "@/components/GenericDatabaseSelect";
-
-interface DocumentDTO {
-    id: string;
-    name: string;
-    category: string;
-    type: string;
-    url: string;
-}
+import { listPatientDocuments, uploadPatientDocument } from "@/domains/documents/documents.api";
+import type { PatientDocument } from "@/domains/documents/documents.types";
 
 interface AnnualRegistryEditModalProps {
     isOpen: boolean;
@@ -48,7 +42,7 @@ export default function AnnualRegistryEditModal({
     mode = "edit" 
 }: AnnualRegistryEditModalProps) {
     
-    const [documents, setDocuments] = useState<DocumentDTO[]>([]);
+    const [documents, setDocuments] = useState<PatientDocument[]>([]);
     const [isLoadingDocs, setIsLoadingDocs] = useState(false);
     const [isUploading, setIsUploading] = useState(false);
     const [docType, setDocType] = useState("MEDICAL_REPORT");
@@ -139,18 +133,15 @@ export default function AnnualRegistryEditModal({
     const fetchDocuments = async () => {
         setIsLoadingDocs(true);
         try {
-            const response = await fetch(`/api/patients/${patientId}/documents?category=medicos`);
-            if (response.ok) {
-                const data = await response.json().catch(() => []);
-                setDocuments(Array.isArray(data) ? data : []);
-            }
+            const data = await listPatientDocuments(patientId, { category: "medical" });
+            setDocuments(Array.isArray(data) ? data : []);
         } catch (error) { console.error("Erro fetch docs:", error); } 
         finally { setIsLoadingDocs(false); }
     };
 
     const fetchPatientData = async () => {
         try {
-            const response = await fetch(`/api/patients/${patientId}`);
+            const response = await fetch(`/api/pessoas/${patientId}`);
             if (response.ok) setFullPatientData(await response.json());
         } catch (error) { console.error(error); }
     };
@@ -159,13 +150,12 @@ export default function AnnualRegistryEditModal({
         const file = e.target.files?.[0];
         if (!file) return;
         setIsUploading(true);
-        const formData = new FormData();
-        formData.append("file", file);
-        formData.append("category", "MEDICAL");
-        formData.append("type", docType);
         try {
-            const res = await fetch(`/api/patients/${patientId}/documents`, { method: "POST", body: formData });
-            if (!res.ok) throw new Error("Falha no upload");
+            await uploadPatientDocument(patientId, {
+                file,
+                category: "MEDICAL",
+                type: docType,
+            });
             toast.success("Documento anexado!");
             fetchDocuments();
             if (fileInputRef.current) fileInputRef.current.value = "";
@@ -265,7 +255,7 @@ export default function AnnualRegistryEditModal({
                     })) ?? []
                 };
 
-                await fetch(`/api/patients/${patientId}`, {
+                await fetch(`/api/pessoas/${patientId}`, {
                     method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(patientPayload)
                 });
             }

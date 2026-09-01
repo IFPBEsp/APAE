@@ -40,6 +40,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 class ServiceAreaControllerTest {
 
     private static final String URI = "/service-areas";
+    private static final String SERVICE_TYPES_URI = "/service-types";
 
     @Autowired
     private MockMvc mockMvc;
@@ -147,6 +148,24 @@ class ServiceAreaControllerTest {
             mockMvc.perform(get(URI))
                     .andExpect(status().isOk())
                     .andExpect(jsonPath("$.length()").value(0));
+
+            verify(service).findAllServiceAreas();
+        }
+
+        @Test
+        @DisplayName("Deve listar areas de atendimento pela rota padronizada /service-types")
+        void shouldGetAllServiceAreasThroughServiceTypesRoute() throws Exception {
+            List<ServiceAreaResponseDTO> response = List.of(
+                    new ServiceAreaResponseDTO(1, "Fisioterapia")
+            );
+
+            when(service.findAllServiceAreas()).thenReturn(response);
+
+            mockMvc.perform(get(SERVICE_TYPES_URI))
+                    .andExpect(status().isOk())
+                    .andExpect(jsonPath("$.length()").value(1))
+                    .andExpect(jsonPath("$[0].id").value(1))
+                    .andExpect(jsonPath("$[0].area").value("Fisioterapia"));
 
             verify(service).findAllServiceAreas();
         }
