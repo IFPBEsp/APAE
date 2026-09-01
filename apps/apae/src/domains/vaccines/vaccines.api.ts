@@ -7,6 +7,22 @@ import type {
 
 const BASE_URL = "/apae-geral/api/vaccines";
 
+type ApiErrorResponse = {
+  message?: string;
+  error?: string;
+};
+
+async function getErrorMessage(
+  response: Response,
+  fallbackMessage: string,
+): Promise<string> {
+  const data = (await response
+    .json()
+    .catch(() => null)) as ApiErrorResponse | null;
+
+  return data?.message ?? data?.error ?? fallbackMessage;
+}
+
 export async function fetchVaccinesApi(): Promise<Vaccine[]> {
   const response = await fetch(BASE_URL);
 
@@ -41,7 +57,9 @@ export async function createVaccineApi(
   });
 
   if (!response.ok) {
-    throw new Error("Ocorreu um erro ao criar a vacina.");
+    throw new Error(
+      await getErrorMessage(response, "Ocorreu um erro ao criar a vacina."),
+    );
   }
 
   return response.json();
@@ -61,7 +79,9 @@ export async function updateVaccineApi(
   });
 
   if (!response.ok) {
-    throw new Error("Ocorreu um erro ao atualizar a vacina.");
+    throw new Error(
+      await getErrorMessage(response, "Ocorreu um erro ao atualizar a vacina."),
+    );
   }
 
   return response.json();
@@ -75,6 +95,8 @@ export async function deleteVaccineApi(
   });
 
   if (!response.ok) {
-    throw new Error("Ocorreu um erro ao excluir a vacina.");
+    throw new Error(
+      await getErrorMessage(response, "Ocorreu um erro ao excluir a vacina."),
+    );
   }
 }

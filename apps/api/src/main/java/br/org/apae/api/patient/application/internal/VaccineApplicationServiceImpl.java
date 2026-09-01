@@ -13,7 +13,6 @@ import br.org.apae.api.patient.domain.exceptions.VaccineNotFoundException;
 import br.org.apae.api.patient.domain.model.Vaccine;
 import br.org.apae.api.patient.domain.repository.PatientRepository;
 import br.org.apae.api.patient.domain.repository.VaccineRepository;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -96,12 +95,11 @@ public class VaccineApplicationServiceImpl implements VaccineApplicationService 
     @Override
     @Transactional
     public VaccineResponseDTO createVaccine(CreateVaccineDTO dto) {
-        if (vaccineRepository.findByName(dto.name()).isPresent()) {
+        if (vaccineRepository.existsByNameIgnoreCase(dto.name())) {
             throw new VaccineConflictException(dto.name());
         }
 
         Vaccine vaccine = vaccineMapper.toEntity(dto);
-
         Vaccine savedVaccine = vaccineRepository.save(vaccine);
 
         return vaccineMapper.toResponseDTO(savedVaccine);
