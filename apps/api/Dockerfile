@@ -1,35 +1,38 @@
 # syntax=docker/dockerfile:1.7
 
-# build
-FROM maven:3.9-eclipse-temurin-21-alpine AS builder
+FROM maven:3.9-eclipse-temurin-21-alpine@sha256:65353f527c86cb23187c8233475713e15067e8d36220d18863c379680698fe85 AS builder
+
 WORKDIR /workspace
 
-COPY pom.xml ./
-RUN mvn -B -q dependency:go-offline
-
+COPY pom.xml .
 COPY src ./src
-RUN mvn -B -q clean package -Dmaven.test.skip=true \
- && cp target/*.jar /workspace/app.jar
 
-# runtime
-FROM eclipse-temurin:21-jre-alpine AS runner
+RUN --mount=type=cache,id=apae-backend-m2,target=/root/.m2 \
+    mvn -B -q package -Dmaven.test.skip=true \
+    && cp target/*.jar /workspace/app.jar
+
+
+FROM gcr.io/distroless/java21-debian13:nonroot@sha256:bb0b3c7edc4417acdf76ea0f52bb5fae28881fe05aae6cc55af4cc4cb0200d2d AS runner
+
+ARG APP_VERSION
+ARG VCS_REF
+
+LABEL org.opencontainers.image.title="APAE Geral Backend" \
+      org.opencontainers.image.description="Backend do sistema APAE" \
+      org.opencontainers.image.source="https://github.com/IFPBEsp/APAE" \
+      org.opencontainers.image.licenses="MIT" \
+      org.opencontainers.image.version=$APP_VERSION \
+      org.opencontainers.image.revision=$VCS_REF
+
 WORKDIR /app
 
-RUN apk add --no-cache wget \
- && addgroup -S -g 1001 appgroup \
- && adduser  -S -u 1001 -G appgroup appuser
-
-COPY --from=builder --chown=appuser:appgroup /workspace/app.jar ./app.jar
+COPY --from=builder --chown=65532:65532 /workspace/app.jar ./app.jar
 
 ENV API_PORT=8080
-ENV JAVA_OPTS=""
 
-USER appuser
+USER 65532:65532
 
 EXPOSE 8080
 
-HEALTHCHECK --interval=30s --timeout=5s --start-period=40s --retries=3 \
-  CMD wget -qO- http://127.0.0.1:8080/apae-geral/actuator/health 2>/dev/null \
-      | grep -q '"status":"UP"' || exit 1
-
-ENTRYPOINT ["sh", "-c", "exec java $JAVA_OPTS -jar /app/app.jar"]
+ENTRYPOINT ["/usr/bin/java"]
+CMD ["-jar", "/app/app.jar"]
