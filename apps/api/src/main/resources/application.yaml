@@ -15,11 +15,9 @@ spring:
   jpa:
     hibernate:
       ddl-auto: none
-    show-sql: true
     properties:
       hibernate:
         default_schema: apae_geral
-        format_sql: true
 
   flyway:
     enabled: true
@@ -50,15 +48,7 @@ spring:
           starttls:
             enable: true
 
-logging:
-  level:
-    org:
-      hibernate:
-        SQL: DEBUG
-        type:
-          descriptor:
-            sql:
-              BasicBinder: TRACE
+
 
 app:
   token:
