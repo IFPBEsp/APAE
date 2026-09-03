@@ -6,7 +6,6 @@ import axios, {
   AxiosResponse,
   InternalAxiosRequestConfig,
 } from "axios";
-import { redirect } from "next/navigation";
 import { getTokenFromCookie, removeSessionCookie } from "./cookies";
 
 const LOCAL_API_BASE_URL = "http://localhost:8090/apae-geral/api";
@@ -16,8 +15,6 @@ function trimTrailingSlash(baseURL?: string) {
 }
 
 function getBaseApiURL() {
-  // Atualizado para englobar a lógica da branch fix:
-  // Tenta primeiro a URL absoluta do servidor, depois a pública, e cai no fallback
   return (
     trimTrailingSlash(process.env.API_URL) ||
     trimTrailingSlash(process.env.NEXT_PUBLIC_API_URL) ||
@@ -77,11 +74,7 @@ const makeInterceptors = (api: AxiosInstance) => {
     async (error: AxiosError) => {
       if (error.response?.status === 401) {
         console.warn("Token expirado ou inválido. Removendo sessão...");
-
         await removeSessionCookie();
-        if (typeof window === "undefined") {
-          redirect("/apae-geral/auth/login");
-        }
       }
 
       return Promise.reject(error);
@@ -97,9 +90,6 @@ export const createDocumentsAPI = async () => {
 };
 
 export const createBaseApi = async () => {
-  // Esta função roda no servidor ("use server"). Em produção/container o
-  // backend é alcançado por uma URL absoluta (API_URL), pois NEXT_PUBLIC_API_URL
-  // é relativa (/apae-geral/api) e o axios server-side não resolve URL relativa.
   const api = createAxiosInstance(getBaseApiURL());
 
   return makeInterceptors(api);

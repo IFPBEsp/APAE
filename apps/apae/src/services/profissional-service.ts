@@ -1,4 +1,5 @@
 import axios from "axios";
+import { clientApi } from "@/lib/axios-client";
 
 export async function getAllProfessionals(active?: boolean) {
   const url =
@@ -7,15 +8,8 @@ export async function getAllProfessionals(active?: boolean) {
       : `/apae-geral/api/professionals?ativo=${active}`;
 
   console.log("[getAllProfessionals] ativo:", active, "| url:", url);
-  return axios.get(url);
+  return clientApi.get(url);
 }
-
-/*export async function deleteProfessional(id: string) {
-  const response = await fetch(API_URL + `/professionals/${id}`, {
-    method: "DELETE",
-  });
-  return response;
-}*/
 
 export async function inactivateProfessional(id: string) {
   const response = await fetch(`/apae-geral/api/professionals/${id}/inactivate`, {
@@ -54,7 +48,7 @@ export async function updateProfessional(id: string, data: unknown) {
 
 export async function getProfessionalById(id: string) {
   try {
-    const response = await axios.get(`/apae-geral/api/professionals/${id}`);
+    const response = await clientApi.get(`/apae-geral/api/professionals/${id}`);
     return response.data;
   } catch (error) {
     if (axios.isAxiosError(error)) {
@@ -66,7 +60,7 @@ export async function getProfessionalById(id: string) {
 
 export async function getProfessionalDocuments(id: string) {
   try {
-    const response = await axios.get(`/apae-geral/api/professionals/${id}/documents`);
+    const response = await clientApi.get(`/apae-geral/api/professionals/${id}/documents`);
     return response.data || [];
   } catch (error) {
     if (axios.isAxiosError(error)) {
@@ -75,7 +69,6 @@ export async function getProfessionalDocuments(id: string) {
     throw error;
   }
 }
-
 
 export async function updateProfessionalDocuments(id: string, formData: FormData) {
   return fetch(`/apae-geral/api/professionals/${id}/documents`, {
