@@ -1,7 +1,7 @@
 import { AbsenceResponseDTO, CreateAbsenceDTO } from '@/types/absence';
 
 export class AbsenceService {
-  private static readonly API_PATH = '/absences'; 
+  private static readonly API_PATH = '/apae-geral/api/absences'; 
 
 
   private static async handleResponse<T>(response: Response): Promise<T> {
@@ -13,11 +13,14 @@ export class AbsenceService {
   }
 
   static async registerAbsence(dto: CreateAbsenceDTO): Promise<AbsenceResponseDTO> {
+    console.log("registerAbsence foi chamado");
     const response = await fetch(`${this.API_PATH}`, {
       method: 'POST',
       headers: {"Content-Type": "application/json",},
       body: JSON.stringify(dto),
     });
+
+    console.log("Status:", response.status);
 
     return this.handleResponse<AbsenceResponseDTO>(response);
   }
@@ -28,7 +31,7 @@ export class AbsenceService {
     justificationDocumentId?: string | null
   ): Promise<AbsenceResponseDTO> {
     
-    const response = await fetch(`/apae-geral/api/absences/${absenceId}/justify`, {
+    const response = await fetch(`${this.API_PATH}/${absenceId}/justify`, {
       method: 'PATCH',
       headers: {"Content-Type": "application/json",},
       body: JSON.stringify({ 
