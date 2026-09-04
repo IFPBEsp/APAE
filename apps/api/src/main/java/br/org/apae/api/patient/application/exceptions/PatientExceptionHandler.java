@@ -13,6 +13,8 @@ import br.org.apae.api.patient.domain.exceptions.PatientConflictException;
 import br.org.apae.api.patient.domain.exceptions.PatientNotFoundException;
 import br.org.apae.api.patient.domain.exceptions.RegistryNotFoundException;
 import br.org.apae.api.patient.domain.exceptions.RegistryOwnershipException;
+import br.org.apae.api.patient.domain.exceptions.VaccineConflictException;
+import br.org.apae.api.patient.domain.exceptions.VaccineInUseException;
 import br.org.apae.api.patient.domain.exceptions.VaccineMismatchException;
 import br.org.apae.api.patient.domain.exceptions.VaccineNotFoundException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -117,7 +119,6 @@ public class PatientExceptionHandler {
 
     return new ResponseEntity<>(error, HttpStatus.NOT_FOUND);
   }
-
   @ExceptionHandler(VaccineNotFoundException.class)
   public ResponseEntity<ErrorResponse> handleVaccineNotFound(
           VaccineNotFoundException ex,
@@ -148,6 +149,36 @@ public class PatientExceptionHandler {
     return new ResponseEntity<>(error, HttpStatus.NOT_FOUND);
   }
 
+  @ExceptionHandler(VaccineConflictException.class)
+  public ResponseEntity<ErrorResponse> handleVaccineConflict(
+          VaccineConflictException ex,
+          HttpServletRequest request
+  ) {
+    ErrorResponse error = new ErrorResponse(
+            HttpStatus.CONFLICT.value(),
+            HttpStatus.CONFLICT.getReasonPhrase(),
+            ex.getMessage(),
+            request.getRequestURI()
+    );
+
+    return new ResponseEntity<>(error, HttpStatus.CONFLICT);
+  }
+
+  @ExceptionHandler(VaccineInUseException.class)
+  public ResponseEntity<ErrorResponse> handleVaccineInUse(
+          VaccineInUseException ex,
+          HttpServletRequest request
+  ) {
+    ErrorResponse error = new ErrorResponse(
+            HttpStatus.CONFLICT.value(),
+            HttpStatus.CONFLICT.getReasonPhrase(),
+            ex.getMessage(),
+            request.getRequestURI()
+    );
+
+    return new ResponseEntity<>(error, HttpStatus.CONFLICT);
+  }
+
   @ExceptionHandler(DisorderConflictException.class)
   public ResponseEntity<ErrorResponse> handleDisorderConflict(
           DisorderConflictException ex,
@@ -162,7 +193,6 @@ public class PatientExceptionHandler {
 
     return new ResponseEntity<>(error, HttpStatus.CONFLICT);
   }
-
   @ExceptionHandler(DisorderNotFoundException.class)
   public ResponseEntity<ErrorResponse> handleDisorderNotFound(
           DisorderNotFoundException ex,
