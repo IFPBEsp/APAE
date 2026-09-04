@@ -107,7 +107,7 @@ export function AbsenceForm({
         fileInputRef.current.value = "";
       }
 
-      //window.location.reload();
+      window.location.reload();
 
     } catch (error: any) {
       toast.error(error.message || "Erro ao registrar falta");
