@@ -2,6 +2,19 @@ spring:
   application:
     name: api
 
+# Importa o arquivo .env como fonte de properties, permitindo executar a
+# aplicacao pela IDE ou via `pnpm dev:backend` sem exportar variaveis de
+# ambiente manualmente. E dele que vem tambem SPRING_PROFILES_ACTIVE=dev,
+# que ativa o application-dev.yaml (log de SQL) fora de producao.
+# Os dois caminhos cobrem a execucao a partir do modulo (apps/api) e da
+# raiz do monorepo, e ambos sao opcionais: em container o arquivo nao
+# existe e as variaveis de ambiente do SO, de maior precedencia,
+# fornecem os valores.
+  config:
+    import:
+      - optional:file:./.env[.properties]
+      - optional:file:../../.env[.properties]
+
   autoconfigure:
     exclude:
       - org.springframework.boot.actuate.autoconfigure.mail.MailHealthContributorAutoConfiguration
