@@ -13,5 +13,9 @@ import java.util.UUID;
 public interface VaccineRepository extends JpaRepository<Vaccine, UUID> {
     Optional<Vaccine> findByName(String name);
 
+    Optional<Vaccine> findByNameIgnoreCase(String name);
+
     Set<Vaccine> findByNameInIgnoreCase(Collection<String> names);
+
+    boolean existsByNameIgnoreCaseAndIdNot(String name, UUID id);
 }

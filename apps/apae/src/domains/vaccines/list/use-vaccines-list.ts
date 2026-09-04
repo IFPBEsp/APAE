@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useState } from "react";
 import { toast } from "react-toastify";
-import { fetchVaccinesApi } from "../vaccines.api";
+import { fetchVaccinesApi, deleteVaccineApi } from "../vaccines.api";
 import type { Vaccine } from "../vaccines.types";
 
 export function useVaccinesList() {
@@ -22,9 +22,20 @@ export function useVaccinesList() {
     }
   }, []);
 
+  const deleteVaccine = useCallback(async (id: string) => {
+    try {
+      await deleteVaccineApi({ id });
+      toast.success("Vacina excluída com sucesso.");
+      await loadVaccines();
+    } catch (error) {
+      const message = error instanceof Error ? error.message : "Erro ao excluir vacina.";
+      toast.error(message);
+    }
+  }, [loadVaccines]);
+
   useEffect(() => {
     loadVaccines();
   }, [loadVaccines]);
 
-  return { vaccines, loading };
+  return { vaccines, loading, deleteVaccine };
 }
