@@ -1,5 +1,10 @@
 package br.org.apae.api.patient.application.internal;
 
+import br.org.apae.api.common.dto.patient.request.vaccine.CreateVaccineDTO;
+import br.org.apae.api.common.dto.patient.request.vaccine.UpdateVaccineDTO;
+import br.org.apae.api.patient.domain.exceptions.VaccineConflictException;
+import br.org.apae.api.patient.domain.exceptions.VaccineInUseException;
+import org.springframework.dao.DataIntegrityViolationException;
 import br.org.apae.api.patient.domain.exceptions.VaccineMismatchException;
 import br.org.apae.api.patient.domain.exceptions.VaccineNotFoundException;
 import br.org.apae.api.patient.domain.model.Vaccine;
@@ -87,9 +92,9 @@ public class VaccineApplicationServiceImpl implements VaccineApplicationService 
         }
 
         Vaccine vaccine = vaccineMapper.toEntity(dto);
-        Vaccine saved = vaccineRepository.save(vaccine);
+        Vaccine savedVaccine = vaccineRepository.save(vaccine);
 
-        return new VaccineResponseDTO(saved.getId(), saved.getName(), false);
+        return new VaccineResponseDTO(savedVaccine.getId(), savedVaccine.getName(), false);
     }
 
     @Override
@@ -103,10 +108,10 @@ public class VaccineApplicationServiceImpl implements VaccineApplicationService 
         }
 
         vaccine.updateName(dto.name());
-        Vaccine saved = vaccineRepository.save(vaccine);
+        Vaccine savedVaccine = vaccineRepository.save(vaccine);
 
         boolean hasPatient = patientRepository.isVaccineInUse(id);
-        return new VaccineResponseDTO(saved.getId(), saved.getName(), hasPatient);
+        return new VaccineResponseDTO(savedVaccine.getId(), savedVaccine.getName(), hasPatient);
     }
 
     @Override
