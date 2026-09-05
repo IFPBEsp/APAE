@@ -1,8 +1,7 @@
 package br.org.apae.api.auth.infrastructure.security;
 
+import java.time.Duration;
 import java.time.Instant;
-import java.time.LocalDateTime;
-import java.time.ZoneOffset;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -25,8 +24,11 @@ public class JwtProvider implements TokenProvider {
   @Value("${app.token.issuer}")
   private String ISSUER;
 
+  @Value("${app.token.expiration-hours}")
+  private long expirationHours;
+
   private Instant genExpirationDate() {
-    return LocalDateTime.now().plusHours(24).toInstant(ZoneOffset.of("-03:00"));
+    return Instant.now().plus(Duration.ofHours(expirationHours));
   }
 
   @Override
