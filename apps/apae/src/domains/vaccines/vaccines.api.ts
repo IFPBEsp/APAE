@@ -8,6 +8,12 @@ export async function fetchVaccinesApi(): Promise<Vaccine[]> {
   return response.json();
 }
 
+export async function fetchVaccineApi(id: string): Promise<Vaccine> {
+  const response = await fetch(`${BASE_URL}/${id}`);
+  if (!response.ok) throw new Error("Ocorreu um erro ao carregar a vacina.");
+  return response.json();
+}
+
 export async function createVaccineApi(params: CreateVaccineParams): Promise<void> {
   const response = await fetch(BASE_URL, {
     method: "POST",
