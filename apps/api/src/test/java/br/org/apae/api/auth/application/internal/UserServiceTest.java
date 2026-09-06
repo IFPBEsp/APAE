@@ -31,6 +31,11 @@ class UserServiceTest {
   }
 
   @Test
+  void testePropositalGateCI() {
+      assertEquals(1, 2, "Teste proposital para validar o gate de CI");
+  }
+
+  @Test
   void createUserShouldRejectDuplicatedEmail() {
     when(userRepository.existsByEmail("admin@apae.org.br")).thenReturn(true);
 
