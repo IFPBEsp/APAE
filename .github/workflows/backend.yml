@@ -5,6 +5,8 @@ on:
     branches:
       - dev
       - main
+    paths:
+      - "apps/api/**"
 
 jobs:
   build:
