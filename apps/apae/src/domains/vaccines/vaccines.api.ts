@@ -20,7 +20,10 @@ export async function createVaccineApi(params: CreateVaccineParams): Promise<voi
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(params),
   });
-  if (!response.ok) throw new Error("Ocorreu um erro ao criar a vacina.");
+  if (!response.ok) {
+    const errorData = await response.json().catch(() => null);
+    throw new Error(errorData?.message || "Ocorreu um erro ao criar a vacina.");
+  }
 }
 
 export async function updateVaccineApi(params: UpdateVaccineParams): Promise<void> {
@@ -30,7 +33,10 @@ export async function updateVaccineApi(params: UpdateVaccineParams): Promise<voi
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(body),
   });
-  if (!response.ok) throw new Error("Ocorreu um erro ao atualizar a vacina.");
+  if (!response.ok) {
+    const errorData = await response.json().catch(() => null);
+    throw new Error(errorData?.message || "Ocorreu um erro ao atualizar a vacina.");
+  }
 }
 
 export async function deleteVaccineApi(params: DeleteVaccineParams): Promise<void> {
