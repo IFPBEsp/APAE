@@ -24,9 +24,9 @@ jobs:
           distribution: "temurin"
           cache: maven
 
-      - name: Compilar aplicação com Maven (sem testes)
+      - name: Compilar aplicação com Maven
         working-directory: ./apps/api
-        run: mvn clean package -Dmaven.test.skip=true
+        run: mvn clean package
 
       - name: Salvar artefato gerado
         uses: actions/upload-artifact@v4
