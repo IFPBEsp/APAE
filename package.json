@@ -15,13 +15,17 @@
     "test:api": "cd apps/api && ./mvnw package",
     "db:migrate": "docker compose up db-migrate",
     "db:seed": "bash ./.scripts/setup.sh",
-    "db:prepare": "pnpm db:seed && docker compose up -d minio"
+    "db:prepare": "pnpm db:seed && docker compose up -d minio",
+    "prepare": "husky"
   },
   "workspaces": [
     "apps/*"
   ],
   "devDependencies": {
     "@types/node": "^25.5.0",
-    "concurrently": "^9.2.1"
+    "concurrently": "^9.2.1",
+    "husky": "^9.1.7",
+    "lint-staged": "^17.5.0",
+    "prettier": "^3.9.6"
   }
 }
