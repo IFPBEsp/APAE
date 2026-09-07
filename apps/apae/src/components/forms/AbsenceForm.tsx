@@ -91,7 +91,7 @@ export function AbsenceForm({
         isJustified: data.hasJustification === "yes",
         justification:
           data.hasJustification === "yes"
-            ? data.justificationText
+            ? data.justificationText ?? ""
             : "Sem justificativa",
         justificationDocumentId: documentId,
       };
