@@ -168,6 +168,39 @@
                     </execution>
                 </executions>
             </plugin>
+            <!--
+                Checkstyle e PMD ficam configurados aqui mas SEM execution/phase:
+                não entram automaticamente em nenhum build (mvn compile/package/validate).
+                Rodam só quando chamados explicitamente:
+                  mvn checkstyle:check
+                  mvn pmd:check
+                A decisão de quando/como isso é acionado automaticamente (hook local,
+                CI, etc.) fica a cargo do repositório de devops.
+            -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-checkstyle-plugin</artifactId>
+                <version>3.6.0</version>
+                <configuration>
+                    <configLocation>checkstyle.xml</configLocation>
+                    <encoding>UTF-8</encoding>
+                    <consoleOutput>true</consoleOutput>
+                    <failOnViolation>true</failOnViolation>
+                    <violationSeverity>warning</violationSeverity>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-pmd-plugin</artifactId>
+                <version>3.27.0</version>
+                <configuration>
+                    <rulesets>
+                        <ruleset>pmd-ruleset.xml</ruleset>
+                    </rulesets>
+                    <linkXRef>false</linkXRef>
+                    <printFailingErrors>true</printFailingErrors>
+                </configuration>
+            </plugin>
         </plugins>
     </build>
 
