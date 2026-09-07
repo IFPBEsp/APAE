@@ -55,7 +55,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
         SpringDataWebConfiguration.class,
         SecurityConfiguration.class,
         GlobalExceptionHandler.class,
-        br.org.apae.api.patient.application.exceptions.PatientExceptionHandler.class 
+        br.org.apae.api.patient.application.exceptions.PatientExceptionHandler.class
       })
 @Tag("patient")
 @Tag("unit")

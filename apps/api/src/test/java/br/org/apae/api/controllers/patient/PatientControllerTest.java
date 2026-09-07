@@ -116,7 +116,7 @@ public class PatientControllerTest {
  void setupAuth() {
   AuthTestHelper.mockAuthenticatedUser(jwtProvider, userService);
  }
- 
+
  @AfterEach
  void tearDown() {
   Mockito.reset(patientService, disorderApplicationService, annualRegistryApplicationService, serviceAreaApplicationService, jwtProvider, userService);

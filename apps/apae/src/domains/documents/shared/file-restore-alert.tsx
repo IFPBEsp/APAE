@@ -7,7 +7,7 @@ export function FileRestoreAlert() {
       <div>
         <h4 className="text-sm font-bold text-amber-900">Rascunho recuperado</h4>
         <p className="mt-1 text-xs leading-relaxed text-amber-800">
-          Seus dados de texto foram restaurados, mas por segurança, 
+          Seus dados de texto foram restaurados, mas por segurança,
           <strong> arquivos e laudos precisam ser selecionados novamente.</strong>
         </p>
       </div>

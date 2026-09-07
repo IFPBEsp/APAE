@@ -4,21 +4,21 @@
 
 ## O que foi adicionado
 
-| Ferramenta   | Onde atua                          | O que faz                                                                                                 |
-| ------------ | ---------------------------------- | --------------------------------------------------------------------------------------------------------- |
-| Husky        | raiz do monorepo                   | Gerencia o hook `.husky/pre-commit`, que roda `lint-staged`                                               |
-| lint-staged  | raiz do monorepo                   | Roda comandos de lint/format só nos arquivos **staged** do commit, escopados por app                      |
-| Prettier     | `apps/apae`, `apps/management-app` | Formata `.ts`/`.tsx`/`.js`/`.jsx`/`.json`/`.css` automaticamente (`--write`)                              |
-| ESLint       | `apps/apae`, `apps/management-app` | Lint semântico, com autofix (`--fix`) quando possível                                                     |
-| EditorConfig | raiz (cobre os três apps)          | Indentação/charset/fim de linha consistentes entre editores, inclusive para `.java`                       |
-| Checkstyle   | `apps/api`                         | Verifica estilo Java (imports não usados, chaves obrigatórias em `if`, etc.) — só verifica, não reformata |
-| PMD          | `apps/api`                         | Análise estática Java (código morto, `catch` vazio, etc.) — só verifica, não corrige                      |
+| Ferramenta   | Onde atua                 | O que faz                                                                                                 |
+| ------------ | ------------------------- | --------------------------------------------------------------------------------------------------------- |
+| Husky        | raiz do monorepo          | Gerencia o hook `.husky/pre-commit`, que roda `lint-staged`                                               |
+| lint-staged  | raiz do monorepo          | Roda comandos de lint/format só nos arquivos **staged** do commit, escopados por app                      |
+| Prettier     | `apps/apae`               | Formata `.ts`/`.tsx`/`.js`/`.jsx`/`.json`/`.css` automaticamente (`--write`)                              |
+| ESLint       | `apps/apae`               | Lint semântico, com autofix (`--fix`) quando possível                                                     |
+| EditorConfig | raiz (cobre os dois apps) | Indentação/charset/fim de linha consistentes entre editores, inclusive para `.java`                       |
+| Checkstyle   | `apps/api`                | Verifica estilo Java (imports não usados, chaves obrigatórias em `if`, etc.) — só verifica, não reformata |
+| PMD          | `apps/api`                | Análise estática Java (código morto, `catch` vazio, etc.) — só verifica, não corrige                      |
 
 ## Como isso influencia a rotina do dia a dia
 
 - **`pnpm install` na raiz já instala o hook** (script `prepare` do Husky). Nada extra a fazer.
 - Ao rodar `git commit`, o hook dispara `lint-staged`, que só olha pros arquivos que você deu `git add`:
-  - Arquivo `.ts`/`.tsx`/`.js`/`.jsx` em `apps/apae` ou `apps/management-app` → é formatado com Prettier e lintado com ESLint (`--fix`). Se sobrar erro que o ESLint não consegue corrigir sozinho, o commit é **bloqueado** até você corrigir manualmente.
+  - Arquivo `.ts`/`.tsx`/`.js`/`.jsx` em `apps/apae` → é formatado com Prettier e lintado com ESLint (`--fix`). Se sobrar erro que o ESLint não consegue corrigir sozinho, o commit é **bloqueado** até você corrigir manualmente.
   - Arquivo `.java` em `apps/api` → roda `checkstyle:check` e `pmd:check` **só sobre esse arquivo**. Se ele tiver alguma violação, o commit é bloqueado (nenhum autofix acontece em Java).
   - Arquivo `.md`/`.yml`/`.yaml` na raiz → só passa pelo Prettier.
 - **O hook pode ser burlado com `git commit --no-verify`** — é uma conveniência local, não uma trava definitiva. A trava de verdade (se/quando for ligada) fica no CI do repositório de devops.
@@ -27,11 +27,9 @@
 ## Comandos manuais
 
 ```bash
-# Frontend — formatar/checar manualmente (apps/apae ou apps/management-app)
+# Frontend — formatar/checar manualmente
 pnpm --filter apae run format          # aplica o Prettier
 pnpm --filter apae run format:check    # só verifica, não escreve (uso em CI)
-pnpm --filter management-app run format
-pnpm --filter management-app run format:check
 
 # Backend — verificar manualmente (não roda sozinho em build)
 cd apps/api
@@ -39,7 +37,7 @@ cd apps/api
 ./mvnw pmd:check          # ver apps/api/pmd-ruleset.xml
 ```
 
-Os dois apps Next.js reaproveitam o `.prettierrc`/`.prettierignore` da raiz e o binário do Prettier instalado como devDependency do workspace — não precisa instalar o Prettier de novo em cada app.
+O app `apps/apae` reaproveita o `.prettierrc`/`.prettierignore` da raiz e o binário do Prettier instalado como devDependency do workspace — não precisa instalar o Prettier de novo no app.
 
 ## Troubleshooting
 

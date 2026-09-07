@@ -1,6 +1,6 @@
 import { relative } from "path";
 
-const FRONTEND_APPS = ["apps/apae", "apps/management-app"];
+const FRONTEND_APPS = ["apps/apae"];
 
 function scoped(files, command) {
   return FRONTEND_APPS.flatMap((app) => {
@@ -13,11 +13,11 @@ function scoped(files, command) {
 }
 
 export default {
-  "apps/(apae|management-app)/**/*.{ts,tsx,js,jsx}": (files) => [
+  "apps/apae/**/*.{ts,tsx,js,jsx}": (files) => [
     ...scoped(files, "prettier --write"),
     ...scoped(files, "eslint --fix"),
   ],
-  "apps/(apae|management-app)/**/*.{json,css}": (files) => scoped(files, "prettier --write"),
+  "apps/apae/**/*.{json,css}": (files) => scoped(files, "prettier --write"),
   "apps/api/**/*.java": (files) => {
     // maven-checkstyle-plugin's `checkstyle.includes` is resolved relative to
     // ${project.build.sourceDirectory} (src/main/java), not to the module root —
