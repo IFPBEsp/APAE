@@ -34,16 +34,26 @@ public class AddressMapper {
     }
 
     public Address updateEntityFromDto(Address address, UpdateAddressDTO dto) {
-        return new Address(
-                address.getId(),
+        if (address == null) {
+            return new Address(
+                    dto.city(),
+                    dto.cep(),
+                    dto.state(),
+                    dto.neighborhood(),
+                    dto.street(),
+                    dto.number(),
+                    dto.complement());
+        }
+
+        address.update(
                 dto.city(),
                 dto.cep(),
                 dto.state(),
                 dto.neighborhood(),
                 dto.street(),
                 dto.number(),
-                dto.complement()
-            );
+                dto.complement());
+        return address;
     }
 
     public AddressResponseDTO toResponseDTO(Address address) {

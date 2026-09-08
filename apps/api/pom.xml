@@ -65,8 +65,6 @@
             <scope>runtime</scope>
         </dependency>
         <dependency>
-<<<<<<< HEAD
-=======
             <groupId>org.flywaydb</groupId>
             <artifactId>flyway-core</artifactId>
         </dependency>
@@ -75,7 +73,6 @@
             <artifactId>flyway-database-postgresql</artifactId>
         </dependency>
         <dependency>    
->>>>>>> f34a7a45e1416338d3a8eeb6978fbe96fa381fce
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-test</artifactId>
             <scope>test</scope>

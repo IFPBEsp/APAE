@@ -67,7 +67,7 @@ public interface HealthProfessionalController {
   @GetMapping  
   ResponseEntity<Page<HealthProfessionalResponseDTO>> getAllHealthProfessional(
         @RequestParam(required = false) Boolean ativo,
-        @PageableDefault(sort = "name", direction = Sort.Direction.ASC) Pageable pageable
+        @PageableDefault(sort = "user.fullName", direction = Sort.Direction.ASC) Pageable pageable
     );
 
  /*  @Operation(summary = "Excluir profissional de saúde", description = "Remove um profissional de saúde pelo seu identificador (UUID).", responses = {

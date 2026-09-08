@@ -80,7 +80,7 @@ public interface AppointmentController {
   ResponseEntity<TodayAppointmentsResponseDTO> getTodayAppointmentById(@PathVariable UUID id);
 
   @Operation(
-        summary = "Listar agendamentos gerados por profissional", 
+        summary = "Listar agendamentos gerados por profissional",
         description = "Retorna todos os agendamentos gerados vinculados a um profissional específico. Ideal para integrações."
   )
   @GetMapping("/professional/{professionalId}/generated")

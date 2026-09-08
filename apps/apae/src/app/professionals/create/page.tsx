@@ -33,7 +33,7 @@ export default function ProfessionalRegister(): JSX.Element {
   const form = useForm<RegisterFormValues>({
     resolver: zodResolver(registerSchema),
     defaultValues: {
-      fullName: "", email: "", professionalDocument: "", serviceArea: "",
+      fullName: "", email: "", cpf: "", professionalDocument: "", serviceArea: "",
       phone: "", rg: "", state: "", city: "", neighborhood: "",
       street: "", number: "", complement: "", cep: "",
       availability: generateAvailabilityMatrix([]),
@@ -76,7 +76,7 @@ export default function ProfessionalRegister(): JSX.Element {
       "professional",
       new Blob([JSON.stringify(payload)], { type: "application/json" })
     );
-    
+
     if (values.photo) {
       formData.append("profilePhoto", values.photo);
     }
@@ -98,6 +98,12 @@ export default function ProfessionalRegister(): JSX.Element {
 
           <FormField control={form.control} name="email" render={({ field }) => (
             <FormItem><FormLabel>Email *</FormLabel><FormControl><Input type="email" placeholder="profissional@exemplo.com" {...field} /></FormControl><FormMessage /></FormItem>
+          )} />
+
+          <Controller control={form.control} name="cpf" render={({ field, fieldState }) => (
+            <FormItem><FormLabel>CPF *</FormLabel><FormControl>
+              <InputMask mask="___.___.___-__" replacement={{ _: /\d/ }} value={field.value ?? ""} onChange={(e) => field.onChange(e.target.value)} onBlur={field.onBlur} placeholder="000.000.000-00" className="w-full rounded-md border px-3 py-2" />
+            </FormControl><FormMessage>{fieldState.error?.message}</FormMessage></FormItem>
           )} />
 
           <div className="grid grid-cols-2 gap-4">

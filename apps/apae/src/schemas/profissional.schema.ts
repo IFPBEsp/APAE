@@ -2,6 +2,7 @@ import * as z from "zod";
 
 const nameRegex = /^[A-Za-zÀ-ÖØ-öø-ÿ ]{3,100}$/;
 const phoneRegex = /^\(\d{2}\) \d{5}-\d{4}$/;
+const cpfRegex = /^\d{3}\.\d{3}\.\d{3}-\d{2}$/;
 
 const rgRegex =
   /^(\d{7,8}[\dXx]?|\d\.\d{3}\.\d{3}|\d{2}\.\d{3}\.\d{3}-[\dXx])$/;
@@ -44,6 +45,8 @@ const baseSchema = z.object({
     ),
 
   email: z.email("Email inválido"),
+
+  cpf: z.string().regex(cpfRegex, "CPF inválido. Formato esperado: 999.999.999-99"),
 
   professionalDocument: z.string().optional().nullable(),
 

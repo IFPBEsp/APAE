@@ -1,5 +1,7 @@
 package br.org.apae.api.professional.application.internal;
 
+import br.org.apae.api.auth.domain.model.User;
+import br.org.apae.api.auth.domain.repository.UserRepository;
 import br.org.apae.api.common.dto.professional.request.CreateHealthProfessionalDTO;
 import br.org.apae.api.common.dto.professional.request.UpdateHealthProfessionalDTO;
 import br.org.apae.api.common.dto.professional.request.documents.CreateProfessionalDocumentsDTO;
@@ -8,6 +10,7 @@ import br.org.apae.api.common.dto.professional.response.HealthProfessionalRespon
 import br.org.apae.api.common.dto.servicearea.response.ServiceAreaResponseDTO;
 import br.org.apae.api.professional.application.interfaces.HealthProfessionalApplicationService;
 import br.org.apae.api.professional.application.mappers.HealthProfessionalMapper;
+import br.org.apae.api.professional.domain.exceptions.CpfConflictException;
 import br.org.apae.api.professional.domain.exceptions.EmailConflictException;
 import br.org.apae.api.professional.domain.exceptions.HealthProfessionalNotFoundException;
 import br.org.apae.api.professional.domain.exceptions.IdentityDocumentConflictException;
@@ -21,8 +24,6 @@ import br.org.apae.api.documents.application.interfaces.DocumentApplicationServi
 import br.org.apae.api.documents.domain.enums.DocumentCategory;
 import br.org.apae.api.documents.interfaces.dto.DocumentDTO;
 import br.org.apae.api.documents.interfaces.dto.PutDocumentArgsDTO;
-import br.org.apae.api.documents.interfaces.dto.PutDocumentArgsDTO;
-import br.org.apae.api.documents.domain.enums.DocumentCategory;
 import br.org.apae.api.documents.domain.enums.DocumentType;
 
 import org.springframework.data.domain.Page;
@@ -36,6 +37,7 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -46,15 +48,19 @@ public class HealthProfessionalApplicationServiceImpl implements HealthProfessio
     private final HealthProfessionalMapper mapper;
     private final ProfessionalDocumentsService documentsService;
     private final ServiceAreaApplicationService serviceAreaApplicationService;
+    private final UserRepository userRepository;
     private final DocumentApplicationService documentService;
 
     public HealthProfessionalApplicationServiceImpl(HealthProfessionalRepository repository,
             HealthProfessionalMapper mapper, ProfessionalDocumentsService documentsService,
-            ServiceAreaApplicationService serviceAreaApplicationService, DocumentApplicationService documentService) {
+            ServiceAreaApplicationService serviceAreaApplicationService,
+            UserRepository userRepository,
+            DocumentApplicationService documentService) {
         this.repository = repository;
         this.mapper = mapper;
         this.documentsService = documentsService;
         this.serviceAreaApplicationService = serviceAreaApplicationService;
+        this.userRepository = userRepository;
         this.documentService = documentService;
     }
 
@@ -68,25 +74,35 @@ public class HealthProfessionalApplicationServiceImpl implements HealthProfessio
         if (dto.professionalDocument() != null && repository.existsByProfessionalDocument(dto.professionalDocument())) {
             throw new ProfessionalDocumentConflictException();
         }
-        if (repository.existsByEmail(dto.email())) {
+        if (userRepository.existsByEmail(dto.email())) {
             throw new EmailConflictException();
         }
-        if (dto.professionalDocument() != null && repository.existsByIdentityDocument(dto.identityDocument())) {
+        if (userRepository.existsByCpf(dto.cpf())) {
+            throw new CpfConflictException();
+        }
+        if (dto.identityDocument() != null && userRepository.existsByIdentityDocument(dto.identityDocument())) {
             throw new IdentityDocumentConflictException();
         }
 
         ServiceAreaResponseDTO serviceAreaDto = serviceAreaApplicationService
                 .findServiceAreaByArea(dto.serviceArea().area());
 
-        HealthProfessional professionalToSave = mapper.toEntity(dto, serviceAreaDto);
-        HealthProfessional savedProfessional = repository.save(professionalToSave);
+        User user = User.createProfessionalUser(
+                dto.email(),
+                dto.cpf(),
+                dto.name(),
+                dto.phoneNumber(),
+                dto.identityDocument(),
+                null);
 
-        documentsService.storeProfessionalDocuments(professionalToSave, documentsDTO);
+        User savedUser = userRepository.save(user);
+        HealthProfessional professionalToSave = mapper.toEntity(dto, serviceAreaDto, savedUser);
+        HealthProfessional savedProfessional = repository.save(professionalToSave);
+        documentsService.storeProfessionalDocuments(savedProfessional, documentsDTO);
 
         if (profilePhoto != null && !profilePhoto.isEmpty()) {
             uploadProfessionalPhoto(savedProfessional.getId(), profilePhoto);
         }
-
         return mapper.toResponseDTO(savedProfessional);
     }
 
@@ -96,8 +112,21 @@ public class HealthProfessionalApplicationServiceImpl implements HealthProfessio
         HealthProfessional entityToUpdate = repository.findById(id)
                 .orElseThrow(HealthProfessionalNotFoundException::new);
 
-        if (!entityToUpdate.getEmail().equalsIgnoreCase(dto.email()) && repository.existsByEmail(dto.email())) {
-            throw new ProfessionalDocumentConflictException();
+        UUID userId = entityToUpdate.getUserId();
+
+        if (!entityToUpdate.getEmail().equalsIgnoreCase(dto.email())
+                && userRepository.existsByEmailAndIdNot(dto.email(), userId)) {
+            throw new EmailConflictException();
+        }
+
+        if (!Objects.equals(entityToUpdate.getCpf(), dto.cpf())
+                && userRepository.existsByCpfAndIdNot(dto.cpf(), userId)) {
+            throw new CpfConflictException();
+        }
+
+        if (dto.identityDocument() != null
+                && userRepository.existsByIdentityDocumentAndIdNot(dto.identityDocument(), userId)) {
+            throw new IdentityDocumentConflictException();
         }
 
         if (dto.professionalDocument() != null && existsByProfessionalDocumentAndIdNot(dto.professionalDocument(), id)){
@@ -223,7 +252,7 @@ public class HealthProfessionalApplicationServiceImpl implements HealthProfessio
             throw new RuntimeException("Erro ao salvar foto", e);
         }
     }
-    
+
     private List<LocalTime> generateSlots(LocalTime start, LocalTime end) {
         List<LocalTime> slots = new ArrayList<>();
 
