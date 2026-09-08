@@ -34,5 +34,4 @@ USER 65532:65532
 
 EXPOSE 8080
 
-ENTRYPOINT ["/usr/bin/java"]
-CMD ["-jar", "/app/app.jar"]
+CMD ["/app/app.jar"]
