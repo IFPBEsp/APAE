@@ -2,6 +2,11 @@ package br.org.apae.api.common.exceptions.handler;
 
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.UUID;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
@@ -18,6 +23,8 @@ import jakarta.servlet.http.HttpServletRequest;
 @ControllerAdvice
 @Order(Ordered.LOWEST_PRECEDENCE)
 public class GlobalExceptionHandler {
+
+  private static final Logger logger = LoggerFactory.getLogger(GlobalExceptionHandler.class);
 
   @ExceptionHandler(MethodArgumentNotValidException.class)
   public ResponseEntity<ErrorResponse> handleValidationException(MethodArgumentNotValidException ex, HttpServletRequest request) {
@@ -56,10 +63,14 @@ public class GlobalExceptionHandler {
 
   @ExceptionHandler(Exception.class)
   public ResponseEntity<ErrorResponse> handleGenericException(Exception ex, HttpServletRequest request) {
-    ErrorResponse errorResponse = new ErrorResponse(
+         String correlationId = UUID.randomUUID().toString();
+    
+        logger.error("Erro interno. CorrelationId={}", correlationId, ex);
+    
+        ErrorResponse errorResponse = new ErrorResponse(
             HttpStatus.INTERNAL_SERVER_ERROR.value(),
             HttpStatus.INTERNAL_SERVER_ERROR.getReasonPhrase(),
-            ex.getMessage(),
+            "Ocorreu um erro interno. Informe o código " + correlationId + " ao suporte.",
             request.getRequestURI());
     return new ResponseEntity<>(errorResponse, HttpStatus.INTERNAL_SERVER_ERROR);
   }
