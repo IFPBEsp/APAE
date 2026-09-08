@@ -9,6 +9,7 @@ export const vaccineSchema = z.object({
 export const createVaccineSchema = z.object({
   name: z
   .string()
+  .trim()
   .min(2, "O nome deve ter entre 2 e 100 caracteres.")
   .max(100, "O nome deve ter entre 2 e 100 caracteres."),
 });
@@ -16,6 +17,7 @@ export const createVaccineSchema = z.object({
 export const updateVaccineSchema = z.object({
   name: z
   .string()
+  .trim()
   .min(2, "O nome deve ter entre 2 e 100 caracteres.")
   .max(100, "O nome deve ter entre 2 e 100 caracteres."),
 });
