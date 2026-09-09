@@ -5,30 +5,46 @@ on:
     branches:
       - dev
       - main
-    paths:
-      - "apps/api/**"
 
 jobs:
+  changes:
+    name: Detectar mudanças
+    runs-on: ubuntu-latest
+    outputs:
+      backend: ${{ steps.filter.outputs.backend }}
+    steps:
+      - uses: actions/checkout@v5
+      - uses: dorny/paths-filter@v3
+        id: filter
+        with:
+          filters: |
+            backend:
+              - 'apps/api/**'
+
   build:
     name: Build do projeto back-end
+    needs: changes
     runs-on: ubuntu-latest
-
     steps:
       - name: Baixar repositório
+        if: needs.changes.outputs.backend == 'true'
         uses: actions/checkout@v5
 
       - name: Configurar JDK 21
+        if: needs.changes.outputs.backend == 'true'
         uses: actions/setup-java@v4
         with:
           java-version: "21"
           distribution: "temurin"
           cache: maven
 
-      - name: Compilar aplicação com Maven (sem testes)
+      - name: Compilar aplicação com Maven
+        if: needs.changes.outputs.backend == 'true'
         working-directory: ./apps/api
-        run: mvn clean package -Dmaven.test.skip=true
+        run: mvn clean package
 
       - name: Salvar artefato gerado
+        if: needs.changes.outputs.backend == 'true'
         uses: actions/upload-artifact@v4
         with:
           name: backend-build
