@@ -158,12 +158,6 @@
                         <goals>
                             <goal>report</goal>
                         </goals>
-                        <!-- CONFIGURAÇÃO PARA TESTES UNITÁRIOS DE CONTROLADORES -->
-                        <configuration>
-                            <includes>
-                                <include>br/org/apae/api/controllers/**</include>
-                            </includes>
-                        </configuration>
                     </execution>
                 </executions>
             </plugin>
