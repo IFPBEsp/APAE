@@ -1,16 +1,8 @@
 import { AbsenceResponseDTO, CreateAbsenceDTO } from '@/types/absence';
 
 export class AbsenceService {
-  private static readonly API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || '/apae-geral/api';
-  private static readonly API_PATH = '/absences'; 
+  private static readonly API_PATH = '/apae-geral/api/absences'; 
 
-  private static getAuthHeaders(): HeadersInit {
-    const token = localStorage.getItem('token');
-    return {
-      'Content-Type': 'application/json',
-      ...(token ? { Authorization: `Bearer ${token}` } : {}),
-    };
-  }
 
   private static async handleResponse<T>(response: Response): Promise<T> {
     if (!response.ok) {
@@ -21,11 +13,12 @@ export class AbsenceService {
   }
 
   static async registerAbsence(dto: CreateAbsenceDTO): Promise<AbsenceResponseDTO> {
-    const response = await fetch(`${this.API_BASE_URL}${this.API_PATH}`, {
+    const response = await fetch(`${this.API_PATH}`, {
       method: 'POST',
-      headers: this.getAuthHeaders(),
+      headers: {"Content-Type": "application/json",},
       body: JSON.stringify(dto),
     });
+
 
     return this.handleResponse<AbsenceResponseDTO>(response);
   }
@@ -36,9 +29,9 @@ export class AbsenceService {
     justificationDocumentId?: string | null
   ): Promise<AbsenceResponseDTO> {
     
-    const response = await fetch(`/apae-geral/api/absences/${absenceId}/justify`, {
+    const response = await fetch(`${this.API_PATH}/${absenceId}/justify`, {
       method: 'PATCH',
-      headers: this.getAuthHeaders(),
+      headers: {"Content-Type": "application/json",},
       body: JSON.stringify({ 
         justification,
         justificationDocumentId
