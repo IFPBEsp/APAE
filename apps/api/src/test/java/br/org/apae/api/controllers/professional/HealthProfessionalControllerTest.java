@@ -38,6 +38,7 @@ import br.org.apae.api.mocks.professional.HealthProfessionalMockDto;
 import br.org.apae.api.helpers.AuthTestHelper;
 import br.org.apae.api.professional.application.interfaces.HealthProfessionalApplicationService;
 import br.org.apae.api.professional.domain.exceptions.HealthProfessionalNotFoundException;
+import br.org.apae.api.common.dto.patient.response.documents.DocumentWithUrlResponseDTO;
 import br.org.apae.api.documents.application.interfaces.DocumentApplicationService;
 import br.org.apae.api.documents.interfaces.dto.DocumentDTO;
 import br.org.apae.api.documents.domain.enums.DocumentCategory;
@@ -253,7 +254,10 @@ class HealthProfessionalControllerTest {
    DocumentDTO docMock = new DocumentDTO(UUID.randomUUID(), "CRM_Doc", DocumentCategory.PROFESSIONAL, br.org.apae.api.documents.domain.enums.DocumentType.MEDICAL_REPORT, id.toString(), java.time.Year.of(2026));
 
    Mockito.when(documentApplicationService.listDocuments(any())).thenReturn(List.of(docMock));
-   Mockito.when(documentApplicationService.getPresignedDocumentUrl(any())).thenReturn("https://aws.s3.url/presigned");
+   Mockito.when(documentApplicationService.generatePresignedUrl(any(), any())).thenReturn(
+           new DocumentWithUrlResponseDTO(docMock.id(), "CRM_Doc", DocumentCategory.PROFESSIONAL,
+                   br.org.apae.api.documents.domain.enums.DocumentType.MEDICAL_REPORT,
+                   id.toString(), java.time.Year.of(2026), "https://aws.s3.url/presigned"));
 
    mockMvc.perform(get("/professionals/{id}/documents", id).header("Authorization", AuthTestHelper.bearerToken()))
      .andExpect(status().isOk())

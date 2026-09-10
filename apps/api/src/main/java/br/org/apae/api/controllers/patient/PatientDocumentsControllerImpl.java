@@ -121,31 +121,17 @@ public class PatientDocumentsControllerImpl implements PatientDocumentsControlle
                 throw new RuntimeException("Erro ao substituir o documento", removalError);
             }
 
-            return ResponseEntity.ok(generatePresignedUrl(uploadedDocument));
+            GetPresignedDocumentUrlArgsDTO args = GetPresignedDocumentUrlArgsDTO.builder()
+                    .name(uploadedDocument.name())
+                    .owner(uploadedDocument.owner())
+                    .expiry(1, TimeUnit.HOURS)
+                    .build();
+
+            return ResponseEntity.ok(this.documentService.generatePresignedUrl(uploadedDocument, args));
         } catch (ResponseStatusException e) {
             throw e;
         } catch (Exception e) {
             throw new RuntimeException("Erro ao substituir o documento", e);
-        }
-    }
-
-    private DocumentWithUrlResponseDTO generatePresignedUrl(DocumentDTO dto) {
-        try {
-            String url = this.documentService.getPresignedDocumentUrl(
-                    GetPresignedDocumentUrlArgsDTO.builder()
-                            .name(dto.name())
-                            .owner(dto.owner())
-                            .expiry(1, TimeUnit.HOURS)
-                            .build()
-            );
-
-            return new DocumentWithUrlResponseDTO(
-                    dto.id(), dto.name(), dto.category(),
-                    dto.type(), dto.owner(), dto.year(), url
-            );
-        } catch (Exception e) {
-            System.err.println("Falha ao gerar URL para documento: " + dto.name() + " - " + e.getMessage());
-            return null;
         }
     }
 
@@ -160,7 +146,14 @@ public class PatientDocumentsControllerImpl implements PatientDocumentsControlle
             );
 
             return StreamSupport.stream(documents.spliterator(), false)
-                    .map(this::generatePresignedUrl)
+                    .map(dto -> {
+                        GetPresignedDocumentUrlArgsDTO args = GetPresignedDocumentUrlArgsDTO.builder()
+                                .name(dto.name())
+                                .owner(dto.owner())
+                                .expiry(1, TimeUnit.HOURS)
+                                .build();
+                        return this.documentService.generatePresignedUrl(dto, args);
+                    })
                     .filter(Objects::nonNull)
                     .toList();
         } catch (Exception e) {
@@ -185,33 +178,28 @@ public class PatientDocumentsControllerImpl implements PatientDocumentsControlle
 
     @Override
     public ResponseEntity<DocumentWithUrlResponseDTO> findDocumentByName(UUID id, String documentName) {
-        try {
+        DocumentDTO dto = new DocumentDTO(
+                null,
+                documentName,
+                DocumentCategory.ABSENCE,
+                DocumentType.ATTACHMENTANY,
+                id.toString(),
+                Year.now()
+        );
 
-            String url = this.documentService.getPresignedDocumentUrl(
-                    GetPresignedDocumentUrlArgsDTO.builder()
-                            .name(documentName)
-                            .owner(id.toString())
-                            .category(DocumentCategory.ABSENCE)
-                            .year(Year.now())
-                            .type(DocumentType.ATTACHMENTANY)
-                            .expiry(1, TimeUnit.HOURS)
-                            .build()
-            );
+        GetPresignedDocumentUrlArgsDTO args = GetPresignedDocumentUrlArgsDTO.builder()
+                .name(documentName)
+                .owner(id.toString())
+                .category(DocumentCategory.ABSENCE)
+                .year(Year.now())
+                .type(DocumentType.ATTACHMENTANY)
+                .expiry(1, TimeUnit.HOURS)
+                .build();
 
-            return ResponseEntity.ok(
-                    new DocumentWithUrlResponseDTO(
-                            null,
-                            documentName,
-                            DocumentCategory.ABSENCE,
-                            DocumentType.ATTACHMENTANY,
-                            id.toString(),
-                            Year.now(),
-                            url
-                    )
-            );
-
-        } catch (Exception e) {
-            throw new RuntimeException("Erro ao gerar URL do documento", e);
+        DocumentWithUrlResponseDTO result = this.documentService.generatePresignedUrl(dto, args);
+        if (result == null) {
+            throw new RuntimeException("Erro ao gerar URL do documento");
         }
+        return ResponseEntity.ok(result);
     }
 }
