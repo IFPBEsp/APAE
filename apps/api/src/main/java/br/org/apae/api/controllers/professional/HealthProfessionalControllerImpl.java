@@ -90,55 +90,37 @@ public class HealthProfessionalControllerImpl implements HealthProfessionalContr
     }
 
     @Override
-    public ResponseEntity<List<DocumentWithUrlResponseDTO>> getProfessionalDocuments(UUID id) {
-        try {
-            Iterable<DocumentDTO> documents = this.documentService.listDocuments(
-                    ListDocumentsArgsDTO.builder()
-                            .owner(id.toString())
-                            .category(DocumentCategory.PROFESSIONAL)
-                            .build()
-            );
+        public ResponseEntity<List<DocumentWithUrlResponseDTO>> getProfessionalDocuments(UUID id) {
+            try {
+                Iterable<DocumentDTO> documents = this.documentService.listDocuments(
+                        ListDocumentsArgsDTO.builder()
+                                .owner(id.toString())
+                                .category(DocumentCategory.PROFESSIONAL)
+                                .build()
+                );
 
-            List<DocumentWithUrlResponseDTO> response = StreamSupport
-                    .stream(documents.spliterator(), false)
-                    .map(this::generatePresignedUrl)
-                    .filter(Objects::nonNull)
-                    .toList();
+                List<DocumentWithUrlResponseDTO> response = StreamSupport
+                        .stream(documents.spliterator(), false)
+                        .map(dto -> {
+                            GetPresignedDocumentUrlArgsDTO args = GetPresignedDocumentUrlArgsDTO.builder()
+                                    .name(dto.name())
+                                    .owner(dto.owner())
+                                    .category(dto.category())
+                                    .type(dto.type())
+                                    .year(dto.year())
+                                    .id(dto.id())
+                                    .expiry(1, TimeUnit.HOURS)
+                                    .build();
+                            return this.documentService.generatePresignedUrl(dto, args);
+                        })
+                        .filter(Objects::nonNull)
+                        .toList();
 
-            return ResponseEntity.ok(response);
-        } catch (Exception e) {
-            throw new RuntimeException("Erro ao buscar documentos do profissional", e);
+                return ResponseEntity.ok(response);
+            } catch (Exception e) {
+                throw new RuntimeException("Erro ao buscar documentos do profissional", e);
+            }
         }
-    }
-
-    private DocumentWithUrlResponseDTO generatePresignedUrl(DocumentDTO dto) {
-        try {
-            String url = this.documentService.getPresignedDocumentUrl(
-                    GetPresignedDocumentUrlArgsDTO.builder()
-                            .name(dto.name())
-                            .owner(dto.owner())
-                            .category(dto.category())
-                            .type(dto.type())
-                            .year(dto.year())
-                            .id(dto.id())
-                            .expiry(1, TimeUnit.HOURS)
-                            .build()
-            );
-
-            return new DocumentWithUrlResponseDTO(
-                    dto.id(),
-                    dto.name(),
-                    dto.category(),
-                    dto.type(),
-                    dto.owner(),
-                    dto.year(),
-                    url
-            );
-        } catch (Exception e) {
-            System.err.println("Falha ao gerar URL para documento: " + dto.name() + " - " + e.getMessage());
-            return null;
-        }
-    }
 
     @Override
     public ResponseEntity<Void> updateProfessionalDocuments(
