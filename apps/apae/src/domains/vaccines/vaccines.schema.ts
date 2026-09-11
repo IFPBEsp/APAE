@@ -1,11 +1,11 @@
 import { z } from "zod";
 
 export const createVaccineSchema = z.object({
-  name: z.string().min(1, "O nome da vacina é obrigatório.").max(100, "O nome deve ter no máximo 100 caracteres."),
+  name: z.string().min(2, "O nome da vacina deve ter pelo menos 2 caracteres.").max(100, "O nome deve ter no máximo 100 caracteres."),
 });
 
 export const updateVaccineSchema = z.object({
-  name: z.string().min(1, "O nome da vacina é obrigatório.").max(100, "O nome deve ter no máximo 100 caracteres."),
+  name: z.string().min(2, "O nome da vacina deve ter pelo menos 2 caracteres.").max(100, "O nome deve ter no máximo 100 caracteres."),
 });
 
 export type CreateVaccineFormData = z.infer<typeof createVaccineSchema>;
