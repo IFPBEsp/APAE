@@ -1,7 +1,7 @@
 import { FieldValues, Path, UseFormSetError } from "react-hook-form";
 
 /*
- * Interface que espelha o ValidationErrorResponse do Java.
+ * Interface that mirrors Java's ValidationErrorResponse.
  */
 
 interface ApiFieldError {
@@ -15,10 +15,10 @@ interface ApiErrorResponse {
 }
 
 /**
- * Mapeia erros de validação do backend para os campos do formulário no frontend.
- * Resolve nomes de campos aninhados e mapeia campos específicos de API para a UI.
- * * @param errorData Objeto de erro retornado pela API contendo a lista de campos.
- * @param setError Função setError proveniente do useForm do React Hook Form.
+ * Maps backend validation errors to frontend form fields.
+ * Resolves nested field names and maps API specific fields to the UI.
+ * * @param errorData Error object returned by the API containing the field list.
+ * @param setError setError function from React Hook Form's useForm.
  */
 export function handleBackendValidationErrors<T extends FieldValues>(
   errorData: ApiErrorResponse,

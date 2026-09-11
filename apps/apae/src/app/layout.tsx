@@ -20,7 +20,7 @@ export const metadata: Metadata = {
   title: "APAE-ESP APP",
   description: "Aplicação de gerenciamento da APAE",
   icons: {
-    icon: "/favicon.png",
+    icon: "apae-geral/favicon.png",
   },
 };
 

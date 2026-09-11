@@ -44,9 +44,11 @@ public interface HealthProfessionalController {
       @ApiResponse(responseCode = "500", description = "Erro interno no servidor", content = @Content)
   })
   @PostMapping(consumes = { MediaType.MULTIPART_FORM_DATA_VALUE })
-  ResponseEntity<HealthProfessionalResponseDTO> createHealthProfessional(@RequestPart("professional") CreateHealthProfessionalDTO dto,
-    @ModelAttribute @Valid CreateProfessionalDocumentsDTO documentsDTO);
-
+  ResponseEntity<HealthProfessionalResponseDTO> createHealthProfessional(
+    @RequestPart("professional") CreateHealthProfessionalDTO dto,
+    @ModelAttribute @Valid CreateProfessionalDocumentsDTO documentsDTO,
+    @RequestPart(value = "profilePhoto", required = false) MultipartFile profilePhoto
+    );
   @GetMapping("/{id}/documents")
   @Operation(
     summary = "Listar documentos do profissional",
@@ -65,7 +67,7 @@ public interface HealthProfessionalController {
   @GetMapping  
   ResponseEntity<Page<HealthProfessionalResponseDTO>> getAllHealthProfessional(
         @RequestParam(required = false) Boolean ativo,
-        @PageableDefault(sort = "name", direction = Sort.Direction.ASC) Pageable pageable
+        @PageableDefault(sort = "user.fullName", direction = Sort.Direction.ASC) Pageable pageable
     );
 
  /*  @Operation(summary = "Excluir profissional de saúde", description = "Remove um profissional de saúde pelo seu identificador (UUID).", responses = {

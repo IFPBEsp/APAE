@@ -6,10 +6,10 @@ import java.util.UUID;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import br.org.apae.api.common.dto.patient.request.annual_registry.CreateAnnualRegistryDTO;
-import br.org.apae.api.common.dto.patient.request.annual_registry.ReplaceAnnualRegistryDTO;
-import br.org.apae.api.common.dto.patient.request.annual_registry.UpdateAnnualRegistryDTO;
-import br.org.apae.api.common.dto.patient.response.annual_registry.AnnualRegistryResponseDTO;
+import br.org.apae.api.common.dto.patient.request.annualregistry.CreateAnnualRegistryDTO;
+import br.org.apae.api.common.dto.patient.request.annualregistry.ReplaceAnnualRegistryDTO;
+import br.org.apae.api.common.dto.patient.request.annualregistry.UpdateAnnualRegistryDTO;
+import br.org.apae.api.common.dto.patient.response.annualregistry.AnnualRegistryResponseDTO;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;

@@ -4,9 +4,9 @@ import { AxiosError } from "axios";
 
 export async function POST(req: Request) {
   try {
-    const { email, nomeCompleto, cpf, senha } = await req.json();
+    const { email, fullName, cpf, password } = await req.json();
 
-    if (!email || !nomeCompleto || !cpf || !senha) {
+    if (!email || !fullName || !cpf || !password) {
       return NextResponse.json(
         { message: "Todos os campos são obrigatórios" },
         { status: 406 },
@@ -15,8 +15,8 @@ export async function POST(req: Request) {
 
     const api = await createBaseApi();
     const response = await api.post("/auth/signup", {
-      fullName: nomeCompleto,
-      password: senha,
+      fullName: fullName,
+      password: password,
       email,
       cpf,
     });

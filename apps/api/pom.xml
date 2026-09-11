@@ -64,6 +64,14 @@
             <artifactId>postgresql</artifactId>
             <scope>runtime</scope>
         </dependency>
+        <dependency>
+            <groupId>org.flywaydb</groupId>
+            <artifactId>flyway-core</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.flywaydb</groupId>
+            <artifactId>flyway-database-postgresql</artifactId>
+        </dependency>
         <dependency>    
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-test</artifactId>
@@ -128,11 +136,14 @@
                 <version>0.8.14</version>
                 <configuration>
                     <includes>
-                        <include>br/org/apae/api/controllers/patient/**</include>
-                        <include>br/org/apae/api/controllers/annual_registry/**</include>
-                        <include>br/org/apae/api/controllers/vaccine/**</include>
-                        <include>br/org/apae/api/controllers/disorder/**</include>
+                        <include>br/org/apae/api/**</include>
                     </includes>
+                    <excludes>
+                        <exclude>br/org/apae/api/ApiApplication.class</exclude>
+                        <exclude>br/org/apae/api/**/*DTO.*</exclude>
+                        <exclude>br/org/apae/api/**/documents/infrastructure/MinioConfiguration.class</exclude>
+                        <exclude>br/org/apae/api/**/OpenApiConfig.class</exclude>
+                    </excludes>
                 </configuration>
                 <executions>
                     <execution>
@@ -141,19 +152,12 @@
                             <goal>prepare-agent</goal>
                         </goals>
                     </execution>
-
                     <execution>
                         <id>report</id>
                         <phase>prepare-package</phase>
                         <goals>
                             <goal>report</goal>
                         </goals>
-                        <!-- CONFIGURAÇÃO PARA TESTES UNITÁRIOS DE CONTROLADORES -->
-                        <configuration>
-                            <includes>
-                                <include>br/org/apae/api/controllers/**</include>
-                            </includes>
-                        </configuration>
                     </execution>
                 </executions>
             </plugin>

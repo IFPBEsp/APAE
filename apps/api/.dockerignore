@@ -1,40 +1,4 @@
-# Artefatos de build
-target/
-**/target/
-*.jar
-*.war
-
-# Wrapper Maven (usamos a imagem maven oficial)
-.mvn/wrapper/maven-wrapper.jar
-
-# IDEs e Sistema
-.idea
-.vscode
-.settings
-.classpath
-.project
-.factorypath
-*.iml
-*.iws
-*.ipr
-.DS_Store
-Thumbs.db
-
-# Git
-.git
-.gitignore
-.gitattributes
-
-# Docker
-Dockerfile
-.dockerignore
-
-# Ambiente local
-.env
-.env.*
-!.env.example
-
-# Logs e relatórios
-*.log
-HELP.md
-README.md
+**
+!pom.xml
+!src/
+!src/**

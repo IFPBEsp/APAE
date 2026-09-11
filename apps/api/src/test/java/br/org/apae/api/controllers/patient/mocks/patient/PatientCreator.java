@@ -2,7 +2,7 @@ package br.org.apae.api.controllers.patient.mocks.patient;
 
 import br.org.apae.api.common.dto.address.AddressResponseDTO;
 import br.org.apae.api.common.dto.address.CreateAddressDTO;
-import br.org.apae.api.common.dto.patient.request.annual_registry.CreateAnnualRegistryDTO;
+import br.org.apae.api.common.dto.patient.request.annualregistry.CreateAnnualRegistryDTO;
 import br.org.apae.api.common.dto.patient.request.disorder.CreateDisorderDTO;
 import br.org.apae.api.common.dto.patient.request.documents.CreateDocumentsDTO;
 import br.org.apae.api.common.dto.patient.request.guardian.CreateGuardianDTO;

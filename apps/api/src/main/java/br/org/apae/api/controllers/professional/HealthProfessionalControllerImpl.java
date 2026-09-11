@@ -46,9 +46,12 @@ public class HealthProfessionalControllerImpl implements HealthProfessionalContr
     @Override
     public ResponseEntity<HealthProfessionalResponseDTO> createHealthProfessional(
             CreateHealthProfessionalDTO dto,
-            CreateProfessionalDocumentsDTO documentsDTO
+            CreateProfessionalDocumentsDTO documentsDTO,
+            MultipartFile profilePhoto
     ) {
-        HealthProfessionalResponseDTO createdProfessional = this.service.createProfessional(dto, documentsDTO);
+        HealthProfessionalResponseDTO createdProfessional =
+                this.service.createProfessional(dto, documentsDTO, profilePhoto);
+
         return ResponseEntity.status(HttpStatus.CREATED).body(createdProfessional);
     }
 

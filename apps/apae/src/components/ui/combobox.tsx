@@ -18,7 +18,7 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover"
 
-// 💡 Defina a interface para as props do Combobox
+// 💡 Define the interface for Combobox props
 interface ComboboxProps {
   options: { value: string; label: string }[];
   value: string;
@@ -43,7 +43,7 @@ export function Combobox({ options, value, onChange, placeholder, className }: C
           role="combobox"
           aria-expanded={open}
           className={cn(
-            "w-[280px] justify-between", // Ajuste a largura conforme necessário
+            "w-[280px] justify-between", // Adjust width as necessary
             className
           )}
         >

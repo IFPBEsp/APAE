@@ -375,7 +375,7 @@ public class AppointmentApplicationServiceImpl implements AppointmentApplication
                 .orElseThrow(() -> new IllegalArgumentException("Rule not found"));
 
         if (!current.isActive()) {
-            throw new IllegalStateException("Only active rules can be edited");
+            throw new IllegalStateException("Apenas agendamentos ativos podem ser editados");
         }
 
         LocalDate startDate = dto.initialDate() != null ? dto.initialDate() : current.getInitialDate();
@@ -537,5 +537,13 @@ public class AppointmentApplicationServiceImpl implements AppointmentApplication
                         "Este paciente já está agendado para este dia com este profissional.");
             }
         }
+    }
+
+    @Override
+    public List<GeneratedAppointmentResponseDTO> listGeneratedByProfessional(UUID professionalId) {
+        return generatedRepo.findByAppointmentProfessionalId(professionalId)
+                .stream()
+                .map(mapper::toGeneratedResponse)
+                .toList();
     }
 }

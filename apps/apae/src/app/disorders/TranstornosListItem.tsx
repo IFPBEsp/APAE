@@ -8,20 +8,20 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@radix
 
 
 interface DisorderListItemProps {
-  transtorno: Disorder;
+  disorder: Disorder;
   onEdit: () => void;
   onDelete: () => void;
 }
 
-export function TranstornoListItem({
-  transtorno,
+export function DisorderListItem({
+  disorder,
   onEdit,
   onDelete,
 }: DisorderListItemProps) {
   return (
     <div className="flex items-center justify-between p-4 border-b hover:bg-gray-50 transition-colors">
       <div className="flex-1">
-        <h3 className="font-bold text-base text-[#003B93]">{transtorno.name}</h3>
+        <h3 className="font-bold text-base text-[#003B93]">{disorder.name}</h3>
       </div>
       <div className="flex items-center gap-2 ml-4">
         <Button
@@ -34,7 +34,7 @@ export function TranstornoListItem({
           <Edit className="h-4 w-4" />
         </Button>
 
-        {transtorno.hasPatient ? (
+        {disorder.hasPatient ? (
           <TooltipProvider>
             <Tooltip>
               <TooltipTrigger asChild>
@@ -58,7 +58,7 @@ export function TranstornoListItem({
         ) : (
             <ConfirmModal
               title="Tem certeza?"
-              description={<>Essa ação não pode ser desfeita. Isso irá excluir permanentemente o transtorno <strong>{transtorno.name}</strong>.</>}
+              description={<>Essa ação não pode ser desfeita. Isso irá excluir permanentemente o transtorno <strong>{disorder.name}</strong>.</>}
               onConfirm={onDelete}
               trigger={
                 <Button

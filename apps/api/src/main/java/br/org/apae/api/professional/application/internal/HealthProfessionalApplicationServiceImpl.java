@@ -1,5 +1,7 @@
 package br.org.apae.api.professional.application.internal;
 
+import br.org.apae.api.auth.domain.model.User;
+import br.org.apae.api.auth.domain.repository.UserRepository;
 import br.org.apae.api.common.dto.professional.request.CreateHealthProfessionalDTO;
 import br.org.apae.api.common.dto.professional.request.UpdateHealthProfessionalDTO;
 import br.org.apae.api.common.dto.professional.request.documents.CreateProfessionalDocumentsDTO;
@@ -8,6 +10,7 @@ import br.org.apae.api.common.dto.professional.response.HealthProfessionalRespon
 import br.org.apae.api.common.dto.servicearea.response.ServiceAreaResponseDTO;
 import br.org.apae.api.professional.application.interfaces.HealthProfessionalApplicationService;
 import br.org.apae.api.professional.application.mappers.HealthProfessionalMapper;
+import br.org.apae.api.professional.domain.exceptions.CpfConflictException;
 import br.org.apae.api.professional.domain.exceptions.EmailConflictException;
 import br.org.apae.api.professional.domain.exceptions.HealthProfessionalNotFoundException;
 import br.org.apae.api.professional.domain.exceptions.IdentityDocumentConflictException;
@@ -17,6 +20,11 @@ import br.org.apae.api.professional.domain.model.enums.Day;
 import br.org.apae.api.professional.domain.model.enums.Shift;
 import br.org.apae.api.professional.domain.repository.HealthProfessionalRepository;
 import br.org.apae.api.servicearea.application.interfaces.ServiceAreaApplicationService;
+import br.org.apae.api.documents.application.interfaces.DocumentApplicationService;
+import br.org.apae.api.documents.domain.enums.DocumentCategory;
+import br.org.apae.api.documents.interfaces.dto.DocumentDTO;
+import br.org.apae.api.documents.interfaces.dto.PutDocumentArgsDTO;
+import br.org.apae.api.documents.domain.enums.DocumentType;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -24,17 +32,14 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.IOException;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.UUID;
 import java.util.stream.Collectors;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 
 @Service
 public class HealthProfessionalApplicationServiceImpl implements HealthProfessionalApplicationService {
@@ -43,36 +48,61 @@ public class HealthProfessionalApplicationServiceImpl implements HealthProfessio
     private final HealthProfessionalMapper mapper;
     private final ProfessionalDocumentsService documentsService;
     private final ServiceAreaApplicationService serviceAreaApplicationService;
+    private final UserRepository userRepository;
+    private final DocumentApplicationService documentService;
 
     public HealthProfessionalApplicationServiceImpl(HealthProfessionalRepository repository,
             HealthProfessionalMapper mapper, ProfessionalDocumentsService documentsService,
-            ServiceAreaApplicationService serviceAreaApplicationService) {
+            ServiceAreaApplicationService serviceAreaApplicationService,
+            UserRepository userRepository,
+            DocumentApplicationService documentService) {
         this.repository = repository;
         this.mapper = mapper;
         this.documentsService = documentsService;
         this.serviceAreaApplicationService = serviceAreaApplicationService;
+        this.userRepository = userRepository;
+        this.documentService = documentService;
     }
 
     @Override
     @Transactional
-    public HealthProfessionalResponseDTO createProfessional(CreateHealthProfessionalDTO dto,
-            CreateProfessionalDocumentsDTO documentsDTO) {
+    public HealthProfessionalResponseDTO createProfessional(
+            CreateHealthProfessionalDTO dto,
+            CreateProfessionalDocumentsDTO documentsDTO,
+            MultipartFile profilePhoto
+    ) {
         if (dto.professionalDocument() != null && repository.existsByProfessionalDocument(dto.professionalDocument())) {
             throw new ProfessionalDocumentConflictException();
         }
-        if (repository.existsByEmail(dto.email())) {
+        if (userRepository.existsByEmail(dto.email())) {
             throw new EmailConflictException();
         }
-        if (dto.professionalDocument() != null && repository.existsByIdentityDocument(dto.identityDocument())) {
+        if (userRepository.existsByCpf(dto.cpf())) {
+            throw new CpfConflictException();
+        }
+        if (dto.identityDocument() != null && userRepository.existsByIdentityDocument(dto.identityDocument())) {
             throw new IdentityDocumentConflictException();
         }
 
         ServiceAreaResponseDTO serviceAreaDto = serviceAreaApplicationService
                 .findServiceAreaByArea(dto.serviceArea().area());
 
-        HealthProfessional professionalToSave = mapper.toEntity(dto, serviceAreaDto);
+        User user = User.createProfessionalUser(
+                dto.email(),
+                dto.cpf(),
+                dto.name(),
+                dto.phoneNumber(),
+                dto.identityDocument(),
+                null);
+
+        User savedUser = userRepository.save(user);
+        HealthProfessional professionalToSave = mapper.toEntity(dto, serviceAreaDto, savedUser);
         HealthProfessional savedProfessional = repository.save(professionalToSave);
-        documentsService.storeProfessionalDocuments(professionalToSave, documentsDTO);
+        documentsService.storeProfessionalDocuments(savedProfessional, documentsDTO);
+
+        if (profilePhoto != null && !profilePhoto.isEmpty()) {
+            uploadProfessionalPhoto(savedProfessional.getId(), profilePhoto);
+        }
         return mapper.toResponseDTO(savedProfessional);
     }
 
@@ -82,8 +112,21 @@ public class HealthProfessionalApplicationServiceImpl implements HealthProfessio
         HealthProfessional entityToUpdate = repository.findById(id)
                 .orElseThrow(HealthProfessionalNotFoundException::new);
 
-        if (!entityToUpdate.getEmail().equalsIgnoreCase(dto.email()) && repository.existsByEmail(dto.email())) {
-            throw new ProfessionalDocumentConflictException();
+        UUID userId = entityToUpdate.getUserId();
+
+        if (!entityToUpdate.getEmail().equalsIgnoreCase(dto.email())
+                && userRepository.existsByEmailAndIdNot(dto.email(), userId)) {
+            throw new EmailConflictException();
+        }
+
+        if (!Objects.equals(entityToUpdate.getCpf(), dto.cpf())
+                && userRepository.existsByCpfAndIdNot(dto.cpf(), userId)) {
+            throw new CpfConflictException();
+        }
+
+        if (dto.identityDocument() != null
+                && userRepository.existsByIdentityDocumentAndIdNot(dto.identityDocument(), userId)) {
+            throw new IdentityDocumentConflictException();
         }
 
         if (dto.professionalDocument() != null && existsByProfessionalDocumentAndIdNot(dto.professionalDocument(), id)){
@@ -97,8 +140,11 @@ public class HealthProfessionalApplicationServiceImpl implements HealthProfessio
                 : entityToUpdate.getServiceArea().getArea();
 
         ServiceAreaResponseDTO serviceAreaDto = serviceAreaApplicationService.findServiceAreaByArea(area);
+
         HealthProfessional updatedProfessional = mapper.updateEntityFromDto(entityToUpdate, dto, serviceAreaDto);
+
         repository.save(updatedProfessional);
+
         return mapper.toResponseDTO(updatedProfessional);
     }
 
@@ -134,6 +180,7 @@ public class HealthProfessionalApplicationServiceImpl implements HealthProfessio
         Page<HealthProfessional> page = ativo == null
                 ? repository.findAll(pageable)
                 : repository.findByAtivo(ativo, pageable);
+
         return page.map(mapper::toResponseDTO);
     }
 
@@ -142,6 +189,7 @@ public class HealthProfessionalApplicationServiceImpl implements HealthProfessio
     public void updateProfessionalDocuments(UUID id, UpdateProfessionalDocumentsDTO dto) {
         HealthProfessional professional = repository.findById(id)
                 .orElseThrow(HealthProfessionalNotFoundException::new);
+
         documentsService.updateProfessionalDocuments(professional, dto);
     }
 
@@ -150,6 +198,7 @@ public class HealthProfessionalApplicationServiceImpl implements HealthProfessio
     public void removeProfessionalDocument(UUID professionalId, UUID documentId) {
         HealthProfessional professional = repository.findById(professionalId)
                 .orElseThrow(HealthProfessionalNotFoundException::new);
+
         documentsService.removeProfessionalDocument(professional, documentId);
     }
 
@@ -183,58 +232,50 @@ public class HealthProfessionalApplicationServiceImpl implements HealthProfessio
             throw new RuntimeException("Arquivo excede 5MB");
         }
 
-        String fileName = UUID.randomUUID()
-            + "-"
-            + file.getOriginalFilename();
-
-        Path uploadPath = Paths.get("uploads");
-
         try {
 
-            Files.createDirectories(uploadPath);
+            DocumentDTO document = documentService.putDocument(
+                PutDocumentArgsDTO.builder()
+                    .stream(file.getInputStream())
+                    .category(DocumentCategory.PROFESSIONAL)
+                    .type(DocumentType.PHOTO)
+                    .contentType(file.getContentType())
+                    .owner(professional.getId().toString())
+                    .build()
+            );
 
-            if (professional.getProfilePhoto() != null) {
-
-                String oldFile = professional
-                    .getProfilePhoto()
-                    .replace("/uploads/", "");
-
-                Path oldFilePath = uploadPath.resolve(oldFile);
-
-                Files.deleteIfExists(oldFilePath);
-            }
-
-            Path filePath = uploadPath.resolve(fileName);
-
-            Files.copy(file.getInputStream(), filePath);
-
-            professional.setProfilePhoto("/uploads/" + fileName);
+            professional.setProfilePhoto(document.id().toString());
 
             repository.save(professional);
 
-        } catch (IOException e) {
-            throw new RuntimeException("Erro ao salvar foto");
+        } catch (Exception e) {
+            throw new RuntimeException("Erro ao salvar foto", e);
         }
     }
 
     private List<LocalTime> generateSlots(LocalTime start, LocalTime end) {
         List<LocalTime> slots = new ArrayList<>();
+
         LocalTime current = start;
+
         while (current.isBefore(end)) {
             slots.add(current);
             current = current.plusMinutes(30);
         }
+
         return slots;
     }
 
     @Override
     public List<LocalTime> getAvailableTimes(UUID professionalId, LocalDate date) {
+
         List<LocalTime> occupied = repository.findOccupiedHours(professionalId, date);
 
         HealthProfessional professional = repository.findById(professionalId)
                 .orElseThrow(HealthProfessionalNotFoundException::new);
 
         DayOfWeek dayOfWeek = date.getDayOfWeek();
+
         Day requestedDay = switch (dayOfWeek) {
             case MONDAY    -> Day.SEGUNDA;
             case TUESDAY   -> Day.TERCA;
@@ -248,15 +289,24 @@ public class HealthProfessionalApplicationServiceImpl implements HealthProfessio
 
         boolean worksManha = professional.getAvailabilities().stream()
                 .anyMatch(a -> a.getDay().equals(requestedDay) && a.getShift().equals(Shift.MANHA));
+
         boolean worksTarde = professional.getAvailabilities().stream()
                 .anyMatch(a -> a.getDay().equals(requestedDay) && a.getShift().equals(Shift.TARDE));
 
         List<LocalTime> allSlots = new ArrayList<>();
-        if (worksManha) allSlots.addAll(generateSlots(LocalTime.of(8, 0), LocalTime.of(12, 0)));
-        if (worksTarde) allSlots.addAll(generateSlots(LocalTime.of(13, 0), LocalTime.of(17, 0)));
+
+        if (worksManha) {
+            allSlots.addAll(generateSlots(LocalTime.of(8, 0), LocalTime.of(12, 0)));
+        }
+
+        if (worksTarde) {
+            allSlots.addAll(generateSlots(LocalTime.of(13, 0), LocalTime.of(17, 0)));
+        }
 
         if (date.isEqual(LocalDate.now())) {
+
             LocalTime now = LocalTime.now();
+
             allSlots = allSlots.stream()
                     .filter(slot -> slot.isAfter(now))
                     .collect(Collectors.toCollection(ArrayList::new));
