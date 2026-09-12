@@ -31,7 +31,7 @@ public @interface ValidFileFormat {
                 "image/jpeg",
                 "image/jpg",
                 "image/png",
-                "application/vnd.openxmlformats-officedocument.wordprocessingml.document" // DOCX
+                "application/vnd.openxmlformats-officedocument.wordprocessingml.document" 
         );
 
         private static final List<String> ALLOWED_EXTENSIONS = Arrays.asList(

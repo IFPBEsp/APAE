@@ -26,6 +26,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { toast } from "react-toastify";
 
 import { DocumentWithOutUrl } from "@/types/document";
+import AbsenceService from "@/app/services/absenceService";
 
 interface AbsenceFormProps {
   generatedAppointmentId: string;
@@ -90,23 +91,12 @@ export function AbsenceForm({
         isJustified: data.hasJustification === "yes",
         justification:
           data.hasJustification === "yes"
-            ? data.justificationText
+            ? data.justificationText ?? ""
             : "Sem justificativa",
         justificationDocumentId: documentId,
       };
 
-      const response = await fetch("/apae-geral/api/absences", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(absencePayload),
-      });
-
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.message);
-      }
+      await AbsenceService.registerAbsence(absencePayload);
 
       toast.success("Falta registrada com sucesso!");
 
