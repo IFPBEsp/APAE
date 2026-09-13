@@ -1,49 +1,20 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { toast } from "react-toastify";
 import { ServiceTypeListItemItem } from "./service-type-item";
-import { ServiceType } from "@/schemas/service-type-schemas";
 import { Loader2 } from "lucide-react";
 import { SearchFilters } from "@/components/search-filters";
+import { useServiceTypesList } from "@/hooks/service-types/use-service-types-list";
 
 export default function ServiceTypesPage() {
   const router = useRouter();
-  const [serviceTypes, setServiceTypes] = useState<ServiceType[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-
   const [searchName, setSearchName] = useState<string>("");
 
-  useEffect(() => {
-    async function fetchserviceTypes() {
-      try {
-        setIsLoading(true);
-        setError(null);
-        const response = await fetch("/apae-geral/api/service-types");
-        if (!response.ok) {
-          throw new Error("Falha ao buscar os tipos de atendimentos.");
-        }
-        const data = await response.json();
-        setServiceTypes(data);
-      } catch (err) {
-        const error = err as Error;
-        setError(error.message);
-        toast.error(error.message);
-      } finally {
-        setIsLoading(false);
-      }
-    }
-    fetchserviceTypes();
-  }, []);
-
-  const filteredserviceTypes = serviceTypes.filter((serviceType) =>
-    serviceType.area.toLowerCase().includes(searchName.toLowerCase()),
-  );
+  const { serviceTypes, loading, error } = useServiceTypesList(searchName);
 
   const renderContent = () => {
-    if (isLoading) {
+    if (loading) {
       return (
         <div className="flex justify-center items-center p-10">
           <Loader2 className="h-8 w-8 animate-spin text-gray-500" />
@@ -53,7 +24,7 @@ export default function ServiceTypesPage() {
     if (error) {
       return <p className="text-center text-red-500">{error}</p>;
     }
-    if (filteredserviceTypes.length === 0) {
+    if (serviceTypes.length === 0) {
       return (
         <p className="text-center text-gray-500">
           Nenhum tipo de atendimento encontrado.
@@ -62,7 +33,7 @@ export default function ServiceTypesPage() {
     }
     return (
       <div className="space-y-2">
-        {filteredserviceTypes.map((service) => (
+        {serviceTypes.map((service) => (
           <ServiceTypeListItemItem
             key={service.id}
             service={service}
@@ -97,7 +68,7 @@ export default function ServiceTypesPage() {
           </div>
 
           <p className="text-sm text-gray-500 mb-4">
-            {filteredserviceTypes.length} tipos de atendimentos encontrados
+            {serviceTypes.length} tipos de atendimentos encontrados
           </p>
           {renderContent()}
         </section>
