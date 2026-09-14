@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
+import java.time.Duration;
 
 import br.org.apae.api.common.dto.patient.response.documents.DocumentWithUrlResponseDTO;
 import br.org.apae.api.documents.interfaces.dto.DocumentDTO;
@@ -36,5 +37,5 @@ public interface DocumentApplicationService {
             throws InsufficientDataException, IOException, InvalidKeyException,
             InvalidResponseException, NoSuchAlgorithmException;
 
-    DocumentWithUrlResponseDTO generatePresignedUrl(DocumentDTO dto, GetPresignedDocumentUrlArgsDTO args);
+    DocumentWithUrlResponseDTO generatePresignedUrl(DocumentDTO dto, Duration expiry);
 }

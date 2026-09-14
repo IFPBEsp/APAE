@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -225,15 +226,25 @@ public class MinioDocumentApplicationService implements DocumentApplicationServi
     }
 
     @Override
-    public DocumentWithUrlResponseDTO generatePresignedUrl(DocumentDTO dto, GetPresignedDocumentUrlArgsDTO args) {
+    public DocumentWithUrlResponseDTO generatePresignedUrl(DocumentDTO dto, Duration expiry) {
         try {
+            GetPresignedDocumentUrlArgsDTO args = GetPresignedDocumentUrlArgsDTO.builder()
+                    .name(dto.name())
+                    .owner(dto.owner())
+                    .category(dto.category())
+                    .type(dto.type())
+                    .year(dto.year())
+                    .id(dto.id())
+                    .expiry((int) expiry.toSeconds(), java.util.concurrent.TimeUnit.SECONDS)
+                    .build();
+
             String url = this.getPresignedDocumentUrl(args);
 
-        return new DocumentWithUrlResponseDTO(
+            return new DocumentWithUrlResponseDTO(
                     dto.id(), dto.name(), dto.category(),
                     dto.type(), dto.owner(), dto.year(), url
             );
-            
+
         } catch (Exception e) {
             log.error("Falha ao gerar URL para documento: {} - {}", dto.name(), e.getMessage(), e);
             return null;

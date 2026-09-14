@@ -5,7 +5,6 @@ import br.org.apae.api.documents.application.interfaces.DocumentApplicationServi
 import br.org.apae.api.documents.domain.enums.DocumentCategory;
 import br.org.apae.api.documents.domain.enums.DocumentType;
 import br.org.apae.api.documents.interfaces.dto.DocumentDTO;
-import br.org.apae.api.documents.interfaces.dto.GetPresignedDocumentUrlArgsDTO;
 import br.org.apae.api.documents.interfaces.dto.ListDocumentsArgsDTO;
 import br.org.apae.api.documents.interfaces.dto.PutDocumentArgsDTO;
 import br.org.apae.api.documents.interfaces.dto.RemoveDocumentArgsDTO;
@@ -16,12 +15,12 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.time.Duration;
 import java.time.Year;
 import org.springframework.web.bind.annotation.RequestParam;
 import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
-import java.util.concurrent.TimeUnit;
 import java.util.stream.StreamSupport;
 
 @RestController
@@ -121,13 +120,7 @@ public class PatientDocumentsControllerImpl implements PatientDocumentsControlle
                 throw new RuntimeException("Erro ao substituir o documento", removalError);
             }
 
-            GetPresignedDocumentUrlArgsDTO args = GetPresignedDocumentUrlArgsDTO.builder()
-                    .name(uploadedDocument.name())
-                    .owner(uploadedDocument.owner())
-                    .expiry(1, TimeUnit.HOURS)
-                    .build();
-
-            return ResponseEntity.ok(this.documentService.generatePresignedUrl(uploadedDocument, args));
+            return ResponseEntity.ok(this.documentService.generatePresignedUrl(uploadedDocument, Duration.ofHours(1)));
         } catch (ResponseStatusException e) {
             throw e;
         } catch (Exception e) {
@@ -147,12 +140,7 @@ public class PatientDocumentsControllerImpl implements PatientDocumentsControlle
 
             return StreamSupport.stream(documents.spliterator(), false)
                     .map(dto -> {
-                        GetPresignedDocumentUrlArgsDTO args = GetPresignedDocumentUrlArgsDTO.builder()
-                                .name(dto.name())
-                                .owner(dto.owner())
-                                .expiry(1, TimeUnit.HOURS)
-                                .build();
-                        return this.documentService.generatePresignedUrl(dto, args);
+                        return this.documentService.generatePresignedUrl(dto, Duration.ofHours(1));
                     })
                     .filter(Objects::nonNull)
                     .toList();
@@ -187,16 +175,7 @@ public class PatientDocumentsControllerImpl implements PatientDocumentsControlle
                 Year.now()
         );
 
-        GetPresignedDocumentUrlArgsDTO args = GetPresignedDocumentUrlArgsDTO.builder()
-                .name(documentName)
-                .owner(id.toString())
-                .category(DocumentCategory.ABSENCE)
-                .year(Year.now())
-                .type(DocumentType.ATTACHMENTANY)
-                .expiry(1, TimeUnit.HOURS)
-                .build();
-
-        DocumentWithUrlResponseDTO result = this.documentService.generatePresignedUrl(dto, args);
+        DocumentWithUrlResponseDTO result = this.documentService.generatePresignedUrl(dto, Duration.ofHours(1));
         if (result == null) {
             throw new RuntimeException("Erro ao gerar URL do documento");
         }
