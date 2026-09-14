@@ -4,6 +4,7 @@ import br.org.apae.api.auth.application.internal.UserService;
 import br.org.apae.api.auth.infrastructure.security.JwtProvider;
 import br.org.apae.api.auth.infrastructure.security.SecurityConfiguration;
 import br.org.apae.api.common.exceptions.handler.GlobalExceptionHandler;
+import br.org.apae.api.common.dto.patient.response.documents.DocumentWithUrlResponseDTO;
 import br.org.apae.api.documents.application.interfaces.DocumentApplicationService;
 import br.org.apae.api.documents.domain.enums.DocumentCategory;
 import br.org.apae.api.documents.domain.enums.DocumentType;
@@ -156,7 +157,10 @@ public class PatientDocumentsControllerTest {
             UUID patientId = UUID.randomUUID();
 
             when(documentService.listDocuments(any())).thenReturn(List.of(document(patientId, category)));
-            when(documentService.getPresignedDocumentUrl(any())).thenReturn("http://presigned-url");
+            DocumentWithUrlResponseDTO urlResponse = new DocumentWithUrlResponseDTO(
+                    UUID.randomUUID(), "document.pdf", category,
+                    DocumentType.REFERRAL, patientId.toString(), Year.now(), "http://presigned-url");
+            when(documentService.generatePresignedUrl(any(), any())).thenReturn(urlResponse);
 
             mockMvc.perform(get(endpoint, patientId)
                             .header("Authorization", AuthTestHelper.bearerToken()))
@@ -171,7 +175,7 @@ public class PatientDocumentsControllerTest {
             UUID patientId = UUID.randomUUID();
 
             when(documentService.listDocuments(any())).thenReturn(List.of(document(patientId, category)));
-            when(documentService.getPresignedDocumentUrl(any())).thenThrow(new RuntimeException("MinIO unavailable"));
+            when(documentService.generatePresignedUrl(any(), any())).thenReturn(null);
 
             mockMvc.perform(get(endpoint, patientId)
                             .header("Authorization", AuthTestHelper.bearerToken()))
@@ -194,7 +198,10 @@ public class PatientDocumentsControllerTest {
             when(documentService.listDocuments(any())).thenReturn(List.of(existingDoc));
             when(documentService.putDocument(any())).thenReturn(replacedDoc);
             doNothing().when(documentService).removeDocument(any());
-            when(documentService.getPresignedDocumentUrl(any())).thenReturn("http://presigned-url");
+            DocumentWithUrlResponseDTO urlResponse = new DocumentWithUrlResponseDTO(
+                    replacedDoc.id(), replacedDoc.name(), replacedDoc.category(),
+                    replacedDoc.type(), patientId.toString(), replacedDoc.year(), "http://presigned-url");
+            when(documentService.generatePresignedUrl(any(), any())).thenReturn(urlResponse);
 
             MockMultipartFile file = new MockMultipartFile(
                     "file", "new-document.pdf", "application/pdf", "content".getBytes());
@@ -233,7 +240,10 @@ public class PatientDocumentsControllerTest {
             UUID patientId = UUID.randomUUID();
             String documentName = "laudo-medico.pdf";
 
-            when(documentService.getPresignedDocumentUrl(any())).thenReturn("http://presigned-url");
+            DocumentWithUrlResponseDTO urlResponse = new DocumentWithUrlResponseDTO(
+                    null, documentName, DocumentCategory.ABSENCE,
+                    DocumentType.ATTACHMENTANY, patientId.toString(), Year.now(), "http://presigned-url");
+            when(documentService.generatePresignedUrl(any(), any())).thenReturn(urlResponse);
 
             mockMvc.perform(get(BASE_URL + "/download", patientId)
                             .header("Authorization", AuthTestHelper.bearerToken())
@@ -248,8 +258,7 @@ public class PatientDocumentsControllerTest {
             void shouldReturnErrorWhenFindByNameServiceFails() throws Exception {
             UUID patientId = UUID.randomUUID();
 
-            when(documentService.getPresignedDocumentUrl(any()))
-                    .thenThrow(new RuntimeException("MinIO unavailable"));
+            when(documentService.generatePresignedUrl(any(), any())).thenReturn(null);
 
             mockMvc.perform(get(BASE_URL + "/download", patientId)
                             .header("Authorization", AuthTestHelper.bearerToken())

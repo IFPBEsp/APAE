@@ -9,7 +9,6 @@ import br.org.apae.api.common.dto.professional.response.HealthProfessionalRespon
 import br.org.apae.api.documents.application.interfaces.DocumentApplicationService;
 import br.org.apae.api.documents.domain.enums.DocumentCategory;
 import br.org.apae.api.documents.interfaces.dto.DocumentDTO;
-import br.org.apae.api.documents.interfaces.dto.GetPresignedDocumentUrlArgsDTO;
 import br.org.apae.api.documents.interfaces.dto.ListDocumentsArgsDTO;
 import br.org.apae.api.professional.application.interfaces.HealthProfessionalApplicationService;
 import br.org.apae.api.professional.interfaces.controllers.HealthProfessionalController;
@@ -21,12 +20,12 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
-import java.util.concurrent.TimeUnit;
 import java.util.stream.StreamSupport;
 
 @RestController
@@ -101,42 +100,13 @@ public class HealthProfessionalControllerImpl implements HealthProfessionalContr
 
             List<DocumentWithUrlResponseDTO> response = StreamSupport
                     .stream(documents.spliterator(), false)
-                    .map(this::generatePresignedUrl)
+                    .map(dto -> this.documentService.generatePresignedUrl(dto, Duration.ofHours(1)))
                     .filter(Objects::nonNull)
                     .toList();
 
             return ResponseEntity.ok(response);
         } catch (Exception e) {
             throw new RuntimeException("Erro ao buscar documentos do profissional", e);
-        }
-    }
-
-    private DocumentWithUrlResponseDTO generatePresignedUrl(DocumentDTO dto) {
-        try {
-            String url = this.documentService.getPresignedDocumentUrl(
-                    GetPresignedDocumentUrlArgsDTO.builder()
-                            .name(dto.name())
-                            .owner(dto.owner())
-                            .category(dto.category())
-                            .type(dto.type())
-                            .year(dto.year())
-                            .id(dto.id())
-                            .expiry(1, TimeUnit.HOURS)
-                            .build()
-            );
-
-            return new DocumentWithUrlResponseDTO(
-                    dto.id(),
-                    dto.name(),
-                    dto.category(),
-                    dto.type(),
-                    dto.owner(),
-                    dto.year(),
-                    url
-            );
-        } catch (Exception e) {
-            System.err.println("Falha ao gerar URL para documento: " + dto.name() + " - " + e.getMessage());
-            return null;
         }
     }
 
