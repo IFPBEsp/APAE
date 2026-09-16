@@ -148,11 +148,8 @@ public class VaccineApplicationServiceImpl implements VaccineApplicationService 
 
         try {
             vaccineRepository.deleteById(id);
-            // Oculto, mas poderoso: o flush() obriga o Spring a testar a deleção no banco AGORA,
-            // permitindo que o catch capture o erro de integridade se o banco recusar!
             vaccineRepository.flush();
         } catch (DataIntegrityViolationException e) {
-            // Adeus, gambiarra! Olá, código limpo e com semântica.
             throw new VaccineInUseException();
         }
     }
