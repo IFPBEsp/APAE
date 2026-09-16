@@ -127,7 +127,6 @@
                     <includes>
                         <include>**/*Test.java</include>
                         <include>**/*Suite.java</include>
-                        <include>**/*Tests.java</include>
                     </includes>
                 </configuration>
             </plugin>
