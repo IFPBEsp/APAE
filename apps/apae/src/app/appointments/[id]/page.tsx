@@ -28,13 +28,14 @@ import {
 } from '@/app/services/appointmentService';
 import { AppointmentForm } from '@/components/forms/AppointmentForm';
 import TrashButton from '@/components/buttons/trashButton';
-import { formatDatePTBR, separaETransformaEmNumero } from '@/lib/utils';
+import { separaETransformaEmNumero } from '@/lib/utils';
 import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
 } from '@/components/ui/tooltip';
+import { useAbsenceAlerts } from '@/hooks/use-absence-alerts';
 
 export default function ViewAppointment() {
   const { id } = useParams<{ id: string }>();
@@ -42,8 +43,8 @@ export default function ViewAppointment() {
   const [loading, setLoading] = useState(true);
   const initialized = useRef(false);
   const [isEditOpen, setIsEditOpen] = useState(false);
-  
-  const [alertPatientIds, setAlertPatientIds] = useState<Set<string>>(new Set());
+
+  const { alertPatientIds } = useAbsenceAlerts();
 
   useEffect(() => {
     if (!id) return;
@@ -56,15 +57,6 @@ export default function ViewAppointment() {
         // 1. Busca os dados do agendamento
         const appointmentData = await getAppointmentById(id);
         setAppointment(appointmentData);
-
-        // 2. Busca a lista de pacientes com faltas (fetch direto)
-        const response = await fetch('/apae-geral/api/patients/with-absences?minAbsences=3');
-        if (response.ok) {
-          const data = await response.json();
-          const absencesList = data.content || [];
-          const idsSet = new Set<string>(absencesList.map((item: any) => item.patient.id));
-          setAlertPatientIds(idsSet);
-        }
 
       } catch (error) {
         console.error("Erro ao carregar dados:", error);
