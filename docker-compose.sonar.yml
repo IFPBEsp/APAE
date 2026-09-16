@@ -1,6 +1,6 @@
 services:
   sonarqube:
-    image: sonarqube:10.7-community
+    image: sonarqube:26.3.0.120487-community
     container_name: apae-sonarqube
     ports:
       - "${SONAR_PORT:-9500}:9000"
