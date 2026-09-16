@@ -8,27 +8,10 @@ import {
   useState,
 } from "react";
 
-type Vaccine = Readonly<{
-    id: string;
-    name: string;
-    hasPatient: boolean;
-}>;
+import type { Vaccine, CreateVaccineParams, UpdateVaccineParams, DeleteVaccineParams } from "@/domains/vaccines/vaccines.types";
 
 type FetchVaccineParams = Readonly<{
     id: string;
-}>;
-
-type CreateVaccineParams = Readonly<{
-    name: string;
-}>;
-
-type UpdateVaccineParams = Readonly<{
-    id: string;
-    name: string;
-}>;
-
-type DeleteVaccineParams = Readonly<{
-  id: string;
 }>;
 
 type Feedback = Readonly<{
