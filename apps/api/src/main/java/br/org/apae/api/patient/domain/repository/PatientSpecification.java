@@ -19,7 +19,6 @@ public class PatientSpecification {
     public static Specification<Patient> filterBy(Map<String, String> filters) {
         return (root, query, criteriaBuilder) -> {
             List<Predicate> predicates = new ArrayList<>();
-            predicates.add(criteriaBuilder.isFalse(root.get("isDeleted")));
             filters.forEach((key, value) -> {
                 if (value != null && !value.isBlank()) {
                     switch (key) {
