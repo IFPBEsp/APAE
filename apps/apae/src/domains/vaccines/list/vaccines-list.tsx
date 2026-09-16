@@ -11,12 +11,9 @@ import { useVaccinesList } from "./use-vaccines-list";
 
 export function VaccinesList() {
   const [searchName, setSearchName] = useState("");
-  const { vaccines, loading, deleteVaccine } = useVaccinesList();
+  const { vaccines: filtered, loading, deleteVaccine } = useVaccinesList(searchName);
   const router = useRouter();
 
-  const filtered = vaccines.filter((v) =>
-    v.name.toLowerCase().includes(searchName.toLowerCase()),
-  );
 
   return (
     <div className="!bg-slate-100 min-h-screen">

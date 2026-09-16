@@ -22,6 +22,7 @@ type Feedback = Readonly<{
 
 interface VaccinesContextData {
     loading: boolean;
+    fetchVaccines: () => Promise<void>;
     feedback: Feedback;
     vaccines: Vaccine[];
     fetchVaccine: (params: FetchVaccineParams) => Promise<Vaccine>;
@@ -208,6 +209,7 @@ function VaccinesProvider({
         loading,
         feedback,
         vaccines,
+        fetchVaccines,
         fetchVaccine,
         createVaccine,
         updateVaccine,
