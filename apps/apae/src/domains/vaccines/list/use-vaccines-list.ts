@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect } from "react";
-import { toast } from "react-toastify";
 import { useVaccinesContext } from "@/hooks/use-vaccines";
 
 export function useVaccinesList(searchName: string) {
@@ -16,13 +15,7 @@ export function useVaccinesList(searchName: string) {
   );
 
   const deleteVaccine = async (id: string) => {
-    try {
-      await deleteVaccineFromContext({ id });
-      toast.success("Vacina excluída com sucesso.");
-    } catch (error) {
-      const message = error instanceof Error ? error.message : "Erro ao excluir vacina.";
-      toast.error(message);
-    }
+    await deleteVaccineFromContext({ id });
   };
 
   return { vaccines: filteredVaccines, loading, deleteVaccine };
