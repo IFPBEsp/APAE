@@ -13,6 +13,8 @@ import br.org.apae.api.documents.interfaces.dto.ListDocumentsArgsDTO;
 import br.org.apae.api.professional.application.interfaces.HealthProfessionalApplicationService;
 import br.org.apae.api.professional.interfaces.controllers.HealthProfessionalController;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
@@ -30,6 +32,8 @@ import java.util.stream.StreamSupport;
 
 @RestController
 public class HealthProfessionalControllerImpl implements HealthProfessionalController {
+
+    private static final Logger log = LoggerFactory.getLogger(HealthProfessionalControllerImpl.class);
 
     private final HealthProfessionalApplicationService service;
     private final DocumentApplicationService documentService;
@@ -109,6 +113,7 @@ public class HealthProfessionalControllerImpl implements HealthProfessionalContr
             throw new RuntimeException("Erro ao buscar documentos do profissional", e);
         }
     }
+
 
     @Override
     public ResponseEntity<Void> updateProfessionalDocuments(
