@@ -10,10 +10,10 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 
-import br.org.apae.api.common.dto.patient.request.annual_registry.CreateAnnualRegistryDTO;
-import br.org.apae.api.common.dto.patient.request.annual_registry.ReplaceAnnualRegistryDTO;
-import br.org.apae.api.common.dto.patient.request.annual_registry.UpdateAnnualRegistryDTO;
-import br.org.apae.api.common.dto.patient.response.annual_registry.AnnualRegistryResponseDTO;
+import br.org.apae.api.common.dto.patient.request.annualregistry.CreateAnnualRegistryDTO;
+import br.org.apae.api.common.dto.patient.request.annualregistry.ReplaceAnnualRegistryDTO;
+import br.org.apae.api.common.dto.patient.request.annualregistry.UpdateAnnualRegistryDTO;
+import br.org.apae.api.common.dto.patient.response.annualregistry.AnnualRegistryResponseDTO;
 import br.org.apae.api.patient.application.interfaces.AnnualRegistryApplicationService;
 import br.org.apae.api.patient.interfaces.controllers.AnnualRegistryController;
 import jakarta.validation.Valid;

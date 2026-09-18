@@ -7,15 +7,12 @@ export const dynamic = 'force-dynamic';
 
 
 const categoryMap: { [key: string]: string } = {
-  pessoal: "personals",
-  pessoais: "personals",
-  medico: "medicals",
-  medicos: "medicals",
-  escolar: "schools",
-  escolares: "schools",
-  personal: "personals",
-  medical: "medicals",
-  school: "schools",
+  personal: "personal",
+  personals: "personals",
+  medical: "medical",
+  medicals: "medicals",
+  school: "school",
+  schools: "schools",
 };
 
 

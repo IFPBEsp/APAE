@@ -32,12 +32,12 @@ export default function FileCard({
 }: Props) {
   const [open, setOpen] = React.useState(false);
 
-  // Estado para o Modal (Preview grande)
+  // State for the Modal (Large Preview)
   const [modalViewType, setModalViewType] = React.useState<"img" | "iframe">(
     "img",
   );
 
-  // NOVO: Estado para a Miniatura (Card pequeno)
+  // NEW: Status for the Miniature (Small Card)
   const [thumbnailView, setThumbnailView] = React.useState<"img" | "icon">(
     "img",
   );
@@ -56,15 +56,15 @@ export default function FileCard({
       >
         <p className="truncate mb-2 text-sm font-medium">{file.fileName}</p>
 
-        {/* ÁREA DA MINIATURA */}
+        {/* MINIATURE AREA */}
         <div className="flex flex-col items-center justify-center bg-blue-50 text-blue-900 rounded-md w-full h-32 border border-blue-100 overflow-hidden relative">
           {thumbnailView === "img" ? (
             <img
               src={file.link}
               alt={file.fileName}
-              // object-cover faz a imagem preencher o quadradinho todo de forma elegante
+              // Object-cover makes the image fill the entire square in an elegant way.
               className="w-full h-full object-cover"
-              // Se falhar (for PDF), troca para o ícone
+              // If it fails (for PDF), switch to the icon.
               onError={() => setThumbnailView("icon")}
             />
           ) : (
@@ -96,14 +96,14 @@ export default function FileCard({
         )}
       </div>
 
-      {/* Preview Modal (MANTIDO IGUAL AO QUE FUNCIONOU) */}
+      {/* Preview Modal (KEPT AS IT WORKED) */}
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogContent className="sm:max-w-[900px] max-h-[90vh] overflow-hidden bg-white">
           <DialogHeader className="flex flex-row items-center justify-between">
             <DialogTitle className="truncate pr-4">{file.fileName}</DialogTitle>
           </DialogHeader>
 
-          {/* Área de Preview grande */}
+          {/* Large Preview Area */}
           <div className="flex justify-center items-center w-full h-[60vh] bg-gray-50 rounded-lg overflow-hidden relative">
             {modalViewType === "img" && (
               <img
@@ -123,7 +123,7 @@ export default function FileCard({
             )}
           </div>
 
-          {/* Botão para abrir em nova guia */}
+          {/* Button to open in new tab */}
           <div className="flex justify-center mt-4 pb-2">
             <Button
               variant="default"

@@ -5,27 +5,30 @@ import br.org.apae.api.documents.application.interfaces.DocumentApplicationServi
 import br.org.apae.api.documents.domain.enums.DocumentCategory;
 import br.org.apae.api.documents.domain.enums.DocumentType;
 import br.org.apae.api.documents.interfaces.dto.DocumentDTO;
-import br.org.apae.api.documents.interfaces.dto.GetPresignedDocumentUrlArgsDTO;
 import br.org.apae.api.documents.interfaces.dto.ListDocumentsArgsDTO;
 import br.org.apae.api.documents.interfaces.dto.PutDocumentArgsDTO;
 import br.org.apae.api.documents.interfaces.dto.RemoveDocumentArgsDTO;
 import br.org.apae.api.patient.interfaces.controllers.PatientDocumentsController;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.time.Duration;
 import java.time.Year;
 import org.springframework.web.bind.annotation.RequestParam;
 import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
-import java.util.concurrent.TimeUnit;
 import java.util.stream.StreamSupport;
 
 @RestController
 public class PatientDocumentsControllerImpl implements PatientDocumentsController {
+
+    private static final Logger log = LoggerFactory.getLogger(PatientDocumentsControllerImpl.class);
 
     private final DocumentApplicationService documentService;
 
@@ -115,13 +118,13 @@ public class PatientDocumentsControllerImpl implements PatientDocumentsControlle
                                     .build()
                     );
                 } catch (Exception rollbackError) {
-                    System.err.println("Falha ao desfazer upload após erro de remoção: " + rollbackError.getMessage());
+                    log.error("Falha ao desfazer upload após erro de remoção", rollbackError);
                 }
 
                 throw new RuntimeException("Erro ao substituir o documento", removalError);
             }
 
-            return ResponseEntity.ok(generatePresignedUrl(uploadedDocument));
+            return ResponseEntity.ok(this.documentService.generatePresignedUrl(uploadedDocument, Duration.ofHours(1)));
         } catch (ResponseStatusException e) {
             throw e;
         } catch (Exception e) {
@@ -129,25 +132,6 @@ public class PatientDocumentsControllerImpl implements PatientDocumentsControlle
         }
     }
 
-    private DocumentWithUrlResponseDTO generatePresignedUrl(DocumentDTO dto) {
-        try {
-            String url = this.documentService.getPresignedDocumentUrl(
-                    GetPresignedDocumentUrlArgsDTO.builder()
-                            .name(dto.name())
-                            .owner(dto.owner())
-                            .expiry(1, TimeUnit.HOURS)
-                            .build()
-            );
-
-            return new DocumentWithUrlResponseDTO(
-                    dto.id(), dto.name(), dto.category(),
-                    dto.type(), dto.owner(), dto.year(), url
-            );
-        } catch (Exception e) {
-            System.err.println("Falha ao gerar URL para documento: " + dto.name() + " - " + e.getMessage());
-            return null;
-        }
-    }
 
     private List<DocumentWithUrlResponseDTO> findDocumentsByCategory(UUID ownerId, DocumentCategory category, Year year) {
         try {
@@ -160,7 +144,9 @@ public class PatientDocumentsControllerImpl implements PatientDocumentsControlle
             );
 
             return StreamSupport.stream(documents.spliterator(), false)
-                    .map(this::generatePresignedUrl)
+                    .map(dto -> {
+                        return this.documentService.generatePresignedUrl(dto, Duration.ofHours(1));
+                    })
                     .filter(Objects::nonNull)
                     .toList();
         } catch (Exception e) {
@@ -185,33 +171,19 @@ public class PatientDocumentsControllerImpl implements PatientDocumentsControlle
 
     @Override
     public ResponseEntity<DocumentWithUrlResponseDTO> findDocumentByName(UUID id, String documentName) {
-        try {
+        DocumentDTO dto = new DocumentDTO(
+                null,
+                documentName,
+                DocumentCategory.ABSENCE,
+                DocumentType.ATTACHMENTANY,
+                id.toString(),
+                Year.now()
+        );
 
-            String url = this.documentService.getPresignedDocumentUrl(
-                    GetPresignedDocumentUrlArgsDTO.builder()
-                            .name(documentName)
-                            .owner(id.toString())
-                            .category(DocumentCategory.ABSENCE)
-                            .year(Year.now())
-                            .type(DocumentType.ATTACHMENTANY)
-                            .expiry(1, TimeUnit.HOURS)
-                            .build()
-            );
-
-            return ResponseEntity.ok(
-                    new DocumentWithUrlResponseDTO(
-                            null,
-                            documentName,
-                            DocumentCategory.ABSENCE,
-                            DocumentType.ATTACHMENTANY,
-                            id.toString(),
-                            Year.now(),
-                            url
-                    )
-            );
-
-        } catch (Exception e) {
-            throw new RuntimeException("Erro ao gerar URL do documento", e);
+        DocumentWithUrlResponseDTO result = this.documentService.generatePresignedUrl(dto, Duration.ofHours(1));
+        if (result == null) {
+            throw new RuntimeException("Erro ao gerar URL do documento");
         }
+        return ResponseEntity.ok(result);
     }
 }

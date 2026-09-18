@@ -16,7 +16,11 @@ import java.util.UUID;
 
 public interface HealthProfessionalApplicationService {
 
-    HealthProfessionalResponseDTO createProfessional(CreateHealthProfessionalDTO dto, CreateProfessionalDocumentsDTO documentsDTO);
+    HealthProfessionalResponseDTO createProfessional(
+            CreateHealthProfessionalDTO dto,
+            CreateProfessionalDocumentsDTO documentsDTO,
+            MultipartFile profilePhoto
+    );
 
     Page<HealthProfessionalResponseDTO> findAllProfessionals(Boolean ativo, Pageable pageable);
 
@@ -25,7 +29,7 @@ public interface HealthProfessionalApplicationService {
     void activateProfessional(UUID id);
 
     void inactivateProfessional(UUID id);
-    
+
     void reactivateProfessional(UUID id);
 
     HealthProfessionalResponseDTO findProfessionalById(UUID id);

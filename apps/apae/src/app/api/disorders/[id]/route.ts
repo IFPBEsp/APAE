@@ -29,7 +29,13 @@ export async function PUT(request: Request, { params }: IParams) {
     if (!validation.success) return NextResponse.json({ errors: validation.error.flatten() }, { status: 400 });
 
     const api = await createBaseApi();
-    const { data } = await api.put(`/disorders/${id}`, validation.data);
+
+    const payload = validation.data;
+    if (payload && payload.name && payload.name.length > 0) {
+      payload.name = payload.name.charAt(0).toUpperCase() + payload.name.slice(1);
+    }
+
+    const { data } = await api.put(`/disorders/${id}`, payload);
     return NextResponse.json(data);
   } catch (error) {
     if (error instanceof AxiosError) {

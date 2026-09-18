@@ -1,8 +1,8 @@
 import { useState } from "react";
-import { createProfissional } from "@/services/profissional-service";
+import { createProfessional } from "@/services/profissional-service";
 import { useRouter } from "next/navigation";
 
-export function useCreateProfissional() {
+export function useCreateProfessional() {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -14,7 +14,7 @@ export function useCreateProfissional() {
     setSuccess(false);
 
     try {
-      const response = await createProfissional(formData);
+      const response = await createProfessional(formData);
       const data = await response.json();
 
       if (!response.ok) {

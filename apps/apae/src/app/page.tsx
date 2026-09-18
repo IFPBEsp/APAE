@@ -50,13 +50,13 @@ import {
   UUID,
   type AppointmentResponseDTO,
 } from './services/appointmentService';
-import AbsenceService from './services/absenceService'; // Serviço adicionado
+import AbsenceService from './services/absenceService'; // Added service
 
 import { AppointmentForm } from '@/components/forms/AppointmentForm';
 import { InfoCard } from '@/components/shared/InfoCard';
 import Link from 'next/link';
 
-import { RegistrarFaltaButton } from '@/components/buttons/RegistrarFaltaButton';
+import { RegisterAbsenceButton} from '@/components/buttons/RegisterAbsenceButton';
 
 export default function DashboardPage() {
   const [selectedDate, setSelectedDate] = useState<Date>(new Date());
@@ -85,7 +85,7 @@ export default function DashboardPage() {
 
   const fetchAbsences = async () => {
       try {
-        // Fazemos o fetch direto para a API, filtrando por 3 faltas
+        // We make a direct fetch to the API, filtering by 3 absences
         const response = await fetch('/apae-geral/api/patients/with-absences?minAbsences=3');
         
         if (!response.ok) {
@@ -94,8 +94,8 @@ export default function DashboardPage() {
 
         const data = await response.json();
         
-        // Mapeamos os IDs dos pacientes que vêm dentro da lista "content" (padrão de paginação)
-        // Se sua API retornar direto um array, use: data.map(...)
+        // We map the patient IDs that come within the "content" list (pagination pattern)
+        // If your API returns an array directly, use: data.map(...)
         const absencesList = data.content || [];
         const idsSet = new Set<string>(absencesList.map((item: any) => item.patient.id));
         
@@ -106,30 +106,13 @@ export default function DashboardPage() {
     };
 
   const fetchTodayAppointmentsByStatus = async () => {
-    if (!todayAppointments.length || !allAppointments.length) return;
+    if (!allAppointments.length) return;
 
-    const appointmentMap = new Map(
-      allAppointments.map(a => [a.id, a])
-    );
-
-    const active: TodayAppointment[] = [];
-    const inactive: TodayAppointment[] = [];
-
-    for (const today of todayAppointments) {
-      const related = appointmentMap.get(today.ruleId);
-
-      if (!related) continue;
-
-      if (related.isActive) {
-        active.push(today);
-      } else {
-        inactive.push(today);
-      }
-    }
-
-    setActiveAppointments(active);
-    setInactiveAppointments(inactive);
+    setActiveAppointments(allAppointments.filter(a => a.isActive === true) as any);
+    setInactiveAppointments(allAppointments.filter(a => a.isActive === false) as any);
   };
+
+
 
   useEffect(() => {
 
@@ -141,12 +124,12 @@ export default function DashboardPage() {
 
     fetchTodayAppointments();
     fetchAllAppointments();
-    fetchAbsences(); // Chamada do novo serviço de faltas
+    fetchAbsences(); // Call the new absences service
   }, [selectedDate]);
 
   useEffect(() => {
     fetchTodayAppointmentsByStatus();
-  }, [todayAppointments, allAppointments]);
+  }, [allAppointments]);
 
   const markAsPerformedHandle = async (id: UUID) => {
     await markAsPerformed(id);
@@ -230,14 +213,14 @@ export default function DashboardPage() {
           <InfoCard
             title="Ativos"
             icon={UserRoundCheck}
-            value={activeAppointments.length}
+            value={allAppointments.filter(a => a.isActive).length}
             titleClassName="text-[#0D4F97]"
             valueClassName="text-[#0D4F97]"
           />
           <InfoCard
             title="Inativos"
             icon={UserRoundX}
-            value={inactiveAppointments.length}
+            value={allAppointments.filter(a => !a.isActive).length}
             titleClassName="text-[#0D4F97]"
             valueClassName="text-[#0D4F97]"
           />
@@ -276,7 +259,7 @@ export default function DashboardPage() {
                     </TableCell>
                     <TableCell className="px-3 py-2 text-xs sm:px-4 sm:py-3 sm:text-sm">
                       
-                      {/* CRUZA O ID DO PACIENTE DA TABELA COM O SET DE FALTOSOS */}
+                      {/* CROSS-REFERENCES TABLE PATIENT ID WITH ABSENCE SET */}
                       <div className="flex items-center gap-2">
                         <span className="truncate">{item.patient.fullName}</span>
                         {alertPatientIds.has(item.patient.id) && (
@@ -309,7 +292,7 @@ export default function DashboardPage() {
                       {item.hasAbsence ? 'Sim' : 'Não'}
                     </TableCell>
                     <TableCell className="px-3 py-2 text-xs sm:px-4 sm:py-3 sm:text-sm">
-                      <RegistrarFaltaButton
+                      <RegisterAbsenceButton
                         generatedAppointmentId={item.id}
                         patientId={item.patient.id}
                         absenceDate={format(selectedDate, 'yyyy-MM-dd')}

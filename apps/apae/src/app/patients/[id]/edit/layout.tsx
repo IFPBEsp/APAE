@@ -5,7 +5,7 @@ import {
   useMembersRegisterContext,
   MembersRegisterState,
   MembersRegisterStep,
-} from "@/hooks/use-members-register-context";
+} from "@/domains/patients/hooks/use-members-register-context";
 import { VaccinesProvider } from "@/hooks/use-vaccines";
 import { DisordersProvider } from "@/hooks/use-disorders";
 import { useParams, usePathname } from "next/navigation";

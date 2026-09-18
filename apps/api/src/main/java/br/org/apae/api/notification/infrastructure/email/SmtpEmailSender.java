@@ -14,7 +14,7 @@ import br.org.apae.api.notification.domain.model.EmailMessage;
 @Service
 public class SmtpEmailSender implements EmailSender {
 
-  private static final Logger logger = LoggerFactory.getLogger(SmtpEmailSender.class);
+  private static final Logger log = LoggerFactory.getLogger(SmtpEmailSender.class);
 
   private final JavaMailSender mailSender;
 
@@ -37,7 +37,7 @@ public class SmtpEmailSender implements EmailSender {
   @Override
   public void send(EmailMessage emailMessage) {
     if (!isConfigured()) {
-      logger.info("SMTP não configurado. Envio de e-mail ignorado.");
+      log.info("SMTP não configurado. Envio de e-mail ignorado.");
       return;
     }
 

@@ -25,10 +25,11 @@ import { Button } from '@/components/ui/button';
 import {
   getAppointmentById,
   Appointment,
+  getProfessionalAreaName,
 } from '@/app/services/appointmentService';
 import { AppointmentForm } from '@/components/forms/AppointmentForm';
 import TrashButton from '@/components/buttons/trashButton';
-import { separaETransformaEmNumero } from '@/lib/utils';
+import { separateAndTransformIntoNumber } from '@/lib/utils';
 import {
   Tooltip,
   TooltipContent,
@@ -54,7 +55,7 @@ export default function ViewAppointment() {
       try {
         initialized.current = true;
         
-        // 1. Busca os dados do agendamento
+        // 1. Retrieve scheduling data
         const appointmentData = await getAppointmentById(id);
         setAppointment(appointmentData);
 
@@ -81,10 +82,10 @@ export default function ViewAppointment() {
   
   const hasAbsenceAlert = alertPatientIds.has(patient.id);
 
-  const [year, month, day] = separaETransformaEmNumero(appointment.initialDate, '-');
-  const [hour, minute, second] = separaETransformaEmNumero(appointment.hour, ':');
+  const [year, month, day] = separateAndTransformIntoNumber(appointment.initialDate, '-');
+  const [hour, minute, second] = separateAndTransformIntoNumber(appointment.hour, ':');
 
-  const dataHoraDate =
+  const dateTime =
     !isNaN(year) && !isNaN(month) && !isNaN(day) && !isNaN(hour) && !isNaN(minute) && !isNaN(second)
       ? new Date(year, month - 1, day, hour, minute, second)
       : null;
@@ -162,7 +163,7 @@ export default function ViewAppointment() {
                 </DialogContent>
               </Dialog>
               <div className="rounded-full overflow-hidden border-1 border-[#0D4F97]">
-                <TrashButton id={id} realizado={false} />
+                <TrashButton id={id} realized={false} hasHistory={!!(appointment.replacedByDate || appointment.updatedFromDate)}/>
               </div>
             </CardAction>
           </CardHeader>
@@ -171,15 +172,15 @@ export default function ViewAppointment() {
               <div className="flex flex-col gap-1">
                 <div className="flex">
                   <p className="font-medium mr-2">Data:</p>
-                  <p>{dataHoraDate ? new Intl.DateTimeFormat('pt-BR').format(dataHoraDate) : '—'}</p>
+                  <p>{dateTime ? new Intl.DateTimeFormat('pt-BR').format(dateTime) : '—'}</p>
                 </div>
                 <div className="flex">
                   <p className="font-medium mr-2">Horário:</p>
-                  <p>{dataHoraDate ? dataHoraDate.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' }) : '—'}</p>
+                  <p>{dateTime ? dateTime.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' }) : '—'}</p>
                 </div>
                 <div className="flex">
                   <p className="font-medium mr-2">Área de atendimento:</p>
-                  <p>{appointment.professional.healthSector || '—'}</p>
+                  <p>{getProfessionalAreaName(appointment.professional) || '—'}</p>
                 </div>
                 <div className="flex">
                   <p className="font-medium mr-2">Status:</p>

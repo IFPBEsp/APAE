@@ -199,9 +199,9 @@ export const GenericDatabaseSelect = <T extends { id?: string | number }>({
       }
       createOptionPosition="first"
       menuPlacement={menuPlacement}
-      captureMenuScroll={false} // Evita bugs de scroll no modal
-      closeMenuOnSelect={false} // Bom para MultiSelect
-      tabSelectsValue={false}   // Melhora a acessibilidade no teclado
+      captureMenuScroll={false} // Avoids scrolling bugs in the modal.
+      closeMenuOnSelect={false} // Good for MultiSelect
+      tabSelectsValue={false}   // Improve keyboard-free accessibility
     />
   );
 };

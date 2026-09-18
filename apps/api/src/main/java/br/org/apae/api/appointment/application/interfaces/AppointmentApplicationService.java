@@ -44,4 +44,6 @@ public interface AppointmentApplicationService {
   Page<TodayAppointmentsResponseDTO> listAppointmentForToday(LocalDate date, Pageable pageable);
 
   TodayAppointmentsResponseDTO findGeneratedAppointmentById(UUID id);
+
+  List<GeneratedAppointmentResponseDTO> listGeneratedByProfessional(UUID professionalId);
 }

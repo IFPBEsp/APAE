@@ -21,7 +21,7 @@ export function DateTimePicker({ value, onChange }: DateTimePickerProps) {
   const handleDateSelect = (selectedDate: Date | undefined) => {
     if (!selectedDate) return;
 
-    // Use a hora atual se não houver um dateTime definido
+    // Use current time if no dateTime is defined
     const hours = dateTime ? dateTime.getHours() : new Date().getHours();
     const minutes = dateTime ? dateTime.getMinutes() : new Date().getMinutes();
     
@@ -43,7 +43,7 @@ export function DateTimePicker({ value, onChange }: DateTimePickerProps) {
     hours = hours ? hours.padStart(0, "2") : "0";
     minutes = minutes ? minutes.padStart(0, "2") : "0";
     
-    // Use a data atual se não houver um dateTime definido
+    // Use current date if no dateTime is defined
     const currentDateTime = dateTime || new Date();
 
     const newDateTime = new Date(currentDateTime);

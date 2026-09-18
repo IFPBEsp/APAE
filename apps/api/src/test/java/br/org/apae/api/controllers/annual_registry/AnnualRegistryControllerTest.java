@@ -3,9 +3,10 @@ package br.org.apae.api.controllers.annual_registry;
 import br.org.apae.api.auth.application.internal.UserService;
 import br.org.apae.api.auth.infrastructure.security.JwtProvider;
 import br.org.apae.api.auth.infrastructure.security.SecurityConfiguration;
-import br.org.apae.api.common.dto.patient.request.annual_registry.CreateAnnualRegistryDTO;
-import br.org.apae.api.common.dto.patient.request.annual_registry.ReplaceAnnualRegistryDTO;
-import br.org.apae.api.common.dto.patient.response.annual_registry.AnnualRegistryResponseDTO;
+import br.org.apae.api.common.dto.patient.request.annualregistry.CreateAnnualRegistryDTO;
+import br.org.apae.api.common.dto.patient.request.annualregistry.ReplaceAnnualRegistryDTO;
+import br.org.apae.api.common.dto.patient.request.annualregistry.UpdateAnnualRegistryDTO;
+import br.org.apae.api.common.dto.patient.response.annualregistry.AnnualRegistryResponseDTO;
 import br.org.apae.api.common.exceptions.handler.GlobalExceptionHandler;
 import br.org.apae.api.helpers.AuthTestHelper;
 import br.org.apae.api.patient.application.interfaces.AnnualRegistryApplicationService;
@@ -16,10 +17,13 @@ import br.org.apae.api.patient.domain.exceptions.DisorderMismatchException;
 import br.org.apae.api.professional.domain.exceptions.ServiceAreaNotFoundException;
 import br.org.apae.api.patient.domain.exceptions.PatientNotFoundException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -50,343 +54,302 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @Import({
         SpringDataWebConfiguration.class,
         SecurityConfiguration.class,
-        GlobalExceptionHandler.class
-})
+        GlobalExceptionHandler.class,
+        br.org.apae.api.patient.application.exceptions.PatientExceptionHandler.class
+      })
 @Tag("patient")
 @Tag("unit")
 @Tag("controller")
 public class AnnualRegistryControllerTest {
 
-    @TestConfiguration
-    @EnableSpringDataWebSupport(pageSerializationMode = VIA_DTO)
-    static class ContextConfiguration {}
+ @TestConfiguration
+ @EnableSpringDataWebSupport(pageSerializationMode = VIA_DTO)
+ static class ContextConfiguration {}
 
-    @Autowired
-    private MockMvc mockMvc;
+ @Autowired
+ private MockMvc mockMvc;
 
-    @Autowired
-    private ObjectMapper objectMapper;
+ @Autowired
+ private ObjectMapper objectMapper;
 
-    @MockitoBean
-    private AnnualRegistryApplicationService annualRegistryService;
+ @MockitoBean
+ private AnnualRegistryApplicationService annualRegistryService;
 
-    @MockitoBean
-    private JwtProvider jwtProvider;
+ @MockitoBean
+ private JwtProvider jwtProvider;
 
-    @MockitoBean
-    private UserService userService;
+ @MockitoBean
+ private UserService userService;
 
-    private static final String BASE_URL = "/patients/{id}/annual-registry";
+ private static final String BASE_URL = "/patients/{id}/annual-registry";
 
-    @BeforeEach
-    void setupAuth() {
-        AuthTestHelper.mockAuthenticatedUser(jwtProvider, userService);
-    }
+ @BeforeEach
+ void setupAuth() {
+  AuthTestHelper.mockAuthenticatedUser(jwtProvider, userService);
+ }
 
-    @Test
-    @DisplayName("Deve criar registro com sucesso (201) quando todos dados e dependências (Patient, ServiceArea, Disorders) são válidos")
-    void shouldCreateRegistrySuccess() throws Exception {
-        UUID patientId = UUID.randomUUID();
-        CreateAnnualRegistryDTO requestDto = createValidCreateDTO();
-        AnnualRegistryResponseDTO responseDto = createResponseDTO(patientId, requestDto.year().getValue());
+ @AfterEach
+ void tearDown() {
+  Mockito.reset(annualRegistryService, jwtProvider, userService);
+ }
 
-        when(annualRegistryService.createRegistry(requestDto, patientId))
-                .thenReturn(responseDto);
+ private CreateAnnualRegistryDTO createValidCreateDTO() {
+  return new CreateAnnualRegistryDTO("123456", "Doença Teste", "Nenhum", BigDecimal.valueOf(2000.00), Year.of(2024), Collections.emptySet(), Collections.emptySet());
+ }
 
-        mockMvc.perform(post(BASE_URL, patientId)
-                        .header("Authorization", AuthTestHelper.bearerToken())
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(requestDto))
-                        .accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isCreated())
-                .andExpect(jsonPath("$.year").value(requestDto.year()))
-                .andExpect(jsonPath("$.patientId").value(patientId.toString()));
-    }
+ private ReplaceAnnualRegistryDTO createValidReplaceDTO() {
+  return new ReplaceAnnualRegistryDTO("987654", "Nova Doença", BigDecimal.valueOf(3000.00), "Novos Meds", Collections.emptySet(), Collections.emptySet());
+ }
 
-    @Test
-    @DisplayName("Deve retornar Erro de Validação quando campos obrigatórios do DTO são nulos")
-    void shouldReturnBadRequestWhenMandatoryFieldsAreNull() throws Exception {
-        UUID patientId = UUID.randomUUID();
-        CreateAnnualRegistryDTO invalidDto = new CreateAnnualRegistryDTO(
-                null,
-                null,
-                "Meds",
-                null,
-                null,
-                null,
-                null
-        );
+ private AnnualRegistryResponseDTO createResponseDTO(UUID patientId, Integer year) {
+  return new AnnualRegistryResponseDTO(UUID.randomUUID(), "123456", "Doença X", "Remedio Y", BigDecimal.valueOf(1500), year, patientId, new HashSet<>(), new HashSet<>());
+ }
 
-        mockMvc.perform(post(BASE_URL, patientId)
-                        .header("Authorization", AuthTestHelper.bearerToken())
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(invalidDto))
-                        .accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isBadRequest());
-    }
+ @Nested
+ @DisplayName("Cenários de Criação (POST)")
+ class Criacao {
+  @Test
+  @DisplayName("Deve criar registro com sucesso (201)")
+  void shouldCreateRegistrySuccess() throws Exception {
+   UUID patientId = UUID.randomUUID();
+   CreateAnnualRegistryDTO requestDto = createValidCreateDTO();
+   AnnualRegistryResponseDTO responseDto = createResponseDTO(patientId, requestDto.year().getValue());
 
-    @Test
-    @DisplayName("Deve retornar NotFound quando o Paciente não existe na criação")
-    void shouldReturnNotFoundWhenPatientDoesNotExistOnCreate() throws Exception {
-        UUID patientId = UUID.randomUUID();
-        CreateAnnualRegistryDTO requestDto = createValidCreateDTO();
+   when(annualRegistryService.createRegistry(any(), eq(patientId))).thenReturn(responseDto);
 
-        when(annualRegistryService.createRegistry(requestDto,patientId))
-                .thenThrow(new PatientNotFoundException());
+   mockMvc.perform(post(BASE_URL, patientId).header("Authorization", AuthTestHelper.bearerToken())
+       .contentType(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(requestDto)).accept(MediaType.APPLICATION_JSON))
+     .andExpect(status().isCreated())
+     .andExpect(jsonPath("$.year").value(requestDto.year().getValue()))
+     .andExpect(jsonPath("$.patientId").value(patientId.toString()));
+  }
 
-        mockMvc.perform(post(BASE_URL, patientId)
-                        .header("Authorization", AuthTestHelper.bearerToken())
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(requestDto)))
-                .andExpect(status().isNotFound());
-    }
+  @Test
+  @DisplayName("Deve retornar Erro de Validação quando campos obrigatórios do DTO são nulos")
+  void shouldReturnBadRequestWhenMandatoryFieldsAreNull() throws Exception {
+   UUID patientId = UUID.randomUUID();
+   CreateAnnualRegistryDTO invalidDto = new CreateAnnualRegistryDTO(null, null, "Meds", null, null, null, null);
 
-    @Test
-    @DisplayName("Deve retornar 404 quando Disorders enviadas não existem ou não batem")
-    void shouldReturnErrorWhenDisorderMismatch() throws Exception {
-        UUID patientId = UUID.randomUUID();
-        CreateAnnualRegistryDTO requestDto = createValidCreateDTO();
+   mockMvc.perform(post(BASE_URL, patientId).header("Authorization", AuthTestHelper.bearerToken())
+       .contentType(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(invalidDto)).accept(MediaType.APPLICATION_JSON))
+     .andExpect(status().isBadRequest());
+  }
 
-        when(annualRegistryService.createRegistry(requestDto, patientId))
-                .thenThrow(new DisorderMismatchException());
+  @Test
+  @DisplayName("Deve retornar NotFound quando o Paciente não existe na criação")
+  void shouldReturnNotFoundWhenPatientDoesNotExistOnCreate() throws Exception {
+   UUID patientId = UUID.randomUUID();
+   CreateAnnualRegistryDTO requestDto = createValidCreateDTO();
 
-        mockMvc.perform(post(BASE_URL, patientId)
-                        .header("Authorization", AuthTestHelper.bearerToken())
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(requestDto)))
-                .andExpect(status().isNotFound());
-    }
+   when(annualRegistryService.createRegistry(any(),eq(patientId))).thenThrow(new PatientNotFoundException());
 
-    @Test
-    @DisplayName("Deve retornar NotFound quando ServiceArea enviada não é encontrada")
-    void shouldReturnErrorWhenServiceAreaNotFound() throws Exception {
-        UUID patientId = UUID.randomUUID();
-        CreateAnnualRegistryDTO requestDto = createValidCreateDTO();
+   mockMvc.perform(post(BASE_URL, patientId).header("Authorization", AuthTestHelper.bearerToken())
+       .contentType(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(requestDto)))
+     .andExpect(status().isNotFound());
+  }
 
-        when(annualRegistryService.createRegistry(any(), eq(patientId)))
-                .thenThrow(new ServiceAreaNotFoundException());
+  @Test
+  @DisplayName("Deve retornar 404 quando Disorders enviadas não existem ou não batem")
+  void shouldReturnErrorWhenDisorderMismatch() throws Exception {
+   UUID patientId = UUID.randomUUID();
+   CreateAnnualRegistryDTO requestDto = createValidCreateDTO();
 
-        mockMvc.perform(post(BASE_URL, patientId)
-                        .header("Authorization", AuthTestHelper.bearerToken())
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(requestDto)))
-                .andExpect(status().isNotFound());
-    }
+   when(annualRegistryService.createRegistry(any(), eq(patientId))).thenThrow(new DisorderMismatchException());
 
-    @Test
-    @DisplayName("Deve retornar Conflict ao tentar criar registro para ano já existente")
-    void shouldReturnConflictWhenYearAlreadyExists() throws Exception {
-        UUID patientId = UUID.randomUUID();
-        CreateAnnualRegistryDTO requestDto = createValidCreateDTO();
+   mockMvc.perform(post(BASE_URL, patientId).header("Authorization", AuthTestHelper.bearerToken())
+       .contentType(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(requestDto)))
+     .andExpect(status().isNotFound());
+  }
 
-        when(annualRegistryService.createRegistry(requestDto, patientId))
-                .thenThrow(new AnnualRegistryConflictException(requestDto.year()));
+  @Test
+  @DisplayName("Deve retornar NotFound quando ServiceArea enviada não é encontrada")
+  void shouldReturnErrorWhenServiceAreaNotFound() throws Exception {
+   UUID patientId = UUID.randomUUID();
+   CreateAnnualRegistryDTO requestDto = createValidCreateDTO();
 
-        mockMvc.perform(post(BASE_URL, patientId)
-                        .header("Authorization", AuthTestHelper.bearerToken())
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(requestDto)))
-                .andExpect(status().isConflict());
-    }
+   when(annualRegistryService.createRegistry(any(), eq(patientId))).thenThrow(new ServiceAreaNotFoundException());
 
-    @Test
-    @DisplayName("Deve buscar registro por ano com sucesso")
-    void shouldGetRegistryByYearSuccess() throws Exception {
-        UUID patientId = UUID.randomUUID();
-        Integer year = 2024;
-        AnnualRegistryResponseDTO responseDto = createResponseDTO(patientId, year);
+   mockMvc.perform(post(BASE_URL, patientId).header("Authorization", AuthTestHelper.bearerToken())
+       .contentType(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(requestDto)))
+     .andExpect(status().isNotFound());
+  }
 
-        when(annualRegistryService.findRegistryByPatientAndYear(patientId, Year.of(year)))
-                .thenReturn(responseDto);
+  @Test
+  @DisplayName("Deve retornar Conflict ao tentar criar registro para ano já existente")
+  void shouldReturnConflictWhenYearAlreadyExists() throws Exception {
+   UUID patientId = UUID.randomUUID();
+   CreateAnnualRegistryDTO requestDto = createValidCreateDTO();
 
-        mockMvc.perform(get(BASE_URL + "/{year}", patientId, year)
-                        .header("Authorization", AuthTestHelper.bearerToken())
-                        .accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.year").value(year));
-    }
+   when(annualRegistryService.createRegistry(any(), eq(patientId))).thenThrow(new AnnualRegistryConflictException(requestDto.year()));
 
-    @Test
-    @DisplayName("Deve retornar NotFound (404) se registro para o ano não existir")
-    void shouldReturnNotFoundWhenRegistryByYearDoesNotExist() throws Exception {
-        UUID patientId = UUID.randomUUID();
-        Integer year = 2025;
+   mockMvc.perform(post(BASE_URL, patientId).header("Authorization", AuthTestHelper.bearerToken())
+       .contentType(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(requestDto)))
+     .andExpect(status().isConflict());
+  }
+ }
 
-        when(annualRegistryService.findRegistryByPatientAndYear(patientId, Year.of(year)))
-                .thenThrow(new RegistryNotFoundException(Year.of(year)));
+ @Nested
+ @DisplayName("Cenários de Busca (GET)")
+ class Buscas {
+  @Test
+  @DisplayName("Deve buscar registro por ano com sucesso")
+  void shouldGetRegistryByYearSuccess() throws Exception {
+   UUID patientId = UUID.randomUUID();
+   Integer year = 2024;
+   AnnualRegistryResponseDTO responseDto = createResponseDTO(patientId, year);
 
-        mockMvc.perform(get(BASE_URL + "/{year}", patientId, year)
-                        .header("Authorization", AuthTestHelper.bearerToken()))
-                .andExpect(status().isInternalServerError());
-    }
+   when(annualRegistryService.findRegistryByPatientAndYear(patientId, Year.of(year))).thenReturn(responseDto);
 
-    @Test
-    @DisplayName("Deve retornar NotFound (404) se paciente não existir na busca")
-    void shouldReturnNotFoundWhenPatientDoesNotExistOnGet() throws Exception {
-        UUID patientId = UUID.randomUUID();
-        Integer year = 2024;
+   mockMvc.perform(get(BASE_URL + "/{year}", patientId, year).header("Authorization", AuthTestHelper.bearerToken())
+       .accept(MediaType.APPLICATION_JSON))
+     .andExpect(status().isOk())
+     .andExpect(jsonPath("$.year").value(year));
+  }
 
-        when(annualRegistryService.findRegistryByPatientAndYear(patientId, Year.of(year)))
-                .thenThrow(new PatientNotFoundException());
+  @Test
+  @DisplayName("Deve retornar NotFound (404) se registro para o ano não existir")
+  void shouldReturnNotFoundWhenRegistryByYearDoesNotExist() throws Exception {
+   UUID patientId = UUID.randomUUID();
+   Integer year = 2025;
 
-        mockMvc.perform(get(BASE_URL + "/{year}", patientId, year)
-                        .header("Authorization", AuthTestHelper.bearerToken()))
-                .andExpect(status().isNotFound());
-    }
-/*
-    @Test
-    @DisplayName("PATCH - Deve atualizar parcialmente registro com sucesso")
-    void shouldUpdateRegistrySuccess() throws Exception {
-        UUID patientId = UUID.randomUUID();
-        UUID registryId = UUID.randomUUID();
-        UpdateAnnualRegistryDTO updateDto = new UpdateAnnualRegistryDTO(2025);
-        AnnualRegistryResponseDTO responseDto = createResponseDTO(patientId, 2025);
+   when(annualRegistryService.findRegistryByPatientAndYear(patientId, Year.of(year))).thenThrow(new RegistryNotFoundException(Year.of(year)));
 
-        when(annualRegistryService.updateRegistry(patientId, registryId, updateDto))
-                .thenReturn(responseDto);
+   mockMvc.perform(get(BASE_URL + "/{year}", patientId, year).header("Authorization", AuthTestHelper.bearerToken()))
+     .andExpect(status().isNotFound());
+  }
 
-        mockMvc.perform(patch(BASE_URL + "/{registryId}", patientId, registryId)
-                        .header("Authorization", AuthTestHelper.bearerToken())
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(updateDto)))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.year").value(2025));
-    }
+  @Test
+  @DisplayName("Deve retornar NotFound (404) se paciente não existir na busca")
+  void shouldReturnNotFoundWhenPatientDoesNotExistOnGet() throws Exception {
+   UUID patientId = UUID.randomUUID();
+   Integer year = 2024;
 
-    @Test
-    @DisplayName("PATCH - Deve retornar Conflict (409) se atualização causar duplicidade de ano")
-    void shouldReturnConflictOnUpdateWithExistingYear() throws Exception {
-        UUID patientId = UUID.randomUUID();
-        UUID registryId = UUID.randomUUID();
-        UpdateAnnualRegistryDTO updateDto = new UpdateAnnualRegistryDTO(2025);
+   when(annualRegistryService.findRegistryByPatientAndYear(patientId, Year.of(year))).thenThrow(new PatientNotFoundException());
 
-        when(annualRegistryService.updateRegistry(patientId, registryId, updateDto))
-                .thenThrow(new AnnualRegistryConflictException(2025));
+   mockMvc.perform(get(BASE_URL + "/{year}", patientId, year).header("Authorization", AuthTestHelper.bearerToken()))
+     .andExpect(status().isNotFound());
+  }
 
-        mockMvc.perform(patch(BASE_URL + "/{registryId}", patientId, registryId)
-                        .header("Authorization", AuthTestHelper.bearerToken())
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(updateDto)))
-                .andExpect(status().isConflict());
-    }
-*/
-    @Test
-    @DisplayName("PUT - Deve substituir registro totalmente com sucesso")
-    void shouldReplaceRegistrySuccess() throws Exception {
-        UUID patientId = UUID.randomUUID();
-        UUID registryId = UUID.randomUUID();
-        ReplaceAnnualRegistryDTO replaceDto = createValidReplaceDTO();
-        AnnualRegistryResponseDTO responseDto = createResponseDTO(patientId, 2024);
+  @Test
+  @DisplayName("Deve listar os anos de registro de um paciente com sucesso")
+  void shouldGetRegistryYearsSuccess() throws Exception {
+   UUID patientId = UUID.randomUUID();
+   List<Integer> expectedYears = List.of(2022, 2023, 2024);
+   when(annualRegistryService.listYearsByPatient(patientId)).thenReturn(expectedYears);
+   mockMvc.perform(get(BASE_URL + "/years", patientId).header("Authorization", AuthTestHelper.bearerToken())
+       .accept(MediaType.APPLICATION_JSON))
+     .andExpect(status().isOk())
+     .andExpect(jsonPath("$").isArray())
+     .andExpect(jsonPath("$.length()").value(3))
+     .andExpect(jsonPath("$[0]").value(2022));
+   verify(annualRegistryService).listYearsByPatient(patientId);
+  }
+ }
 
-        when(annualRegistryService.replaceRegistry(patientId, registryId, replaceDto))
-                .thenReturn(responseDto);
+ @Nested
+ @DisplayName("Cenários de Atualização (PATCH / PUT)")
+ class Atualizacao {
+  @Test
+  @DisplayName("PATCH - Deve atualizar parcialmente registro com sucesso")
+  void shouldUpdateRegistrySuccess() throws Exception {
+   UUID patientId = UUID.randomUUID();
+   UUID registryId = UUID.randomUUID();
+   UpdateAnnualRegistryDTO updateDto = new UpdateAnnualRegistryDTO("987654", "Doença Atualizada", BigDecimal.valueOf(2500.00), Year.of(2025), Collections.emptySet());
+   AnnualRegistryResponseDTO responseDto = createResponseDTO(patientId, 2025);
 
-        mockMvc.perform(put(BASE_URL + "/{registryId}", patientId, registryId)
-                        .header("Authorization", AuthTestHelper.bearerToken())
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(replaceDto)))
-                .andExpect(status().isOk());
-    }
+   when(annualRegistryService.updateRegistry(eq(patientId), eq(registryId), any())).thenReturn(responseDto);
 
-    @Test
-    @DisplayName("PUT - Deve retornar NotFound (404) se tentar substituir registro que não pertence ao paciente (Ownership)")
-    void shouldReturnNotFoundWhenRegistryOwnershipFail() throws Exception {
-        UUID patientId = UUID.randomUUID();
-        UUID registryId = UUID.randomUUID();
-        ReplaceAnnualRegistryDTO replaceDto = createValidReplaceDTO();
+   mockMvc.perform(patch(BASE_URL + "/{registryId}", patientId, registryId).header("Authorization", AuthTestHelper.bearerToken())
+       .contentType(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(updateDto)))
+     .andExpect(status().isOk())
+     .andExpect(jsonPath("$.year").value(2025));
+  }
 
-        when(annualRegistryService.replaceRegistry(any(), any(), any()))
-                .thenThrow(new RegistryOwnershipException(patientId, registryId));
+  @Test
+  @DisplayName("PATCH - Deve retornar Conflict (409) se atualização causar duplicidade de ano")
+  void shouldReturnConflictOnUpdateWithExistingYear() throws Exception {
+   UUID patientId = UUID.randomUUID();
+   UUID registryId = UUID.randomUUID();
+   UpdateAnnualRegistryDTO updateDto = new UpdateAnnualRegistryDTO("987654", "Doença Atualizada", BigDecimal.valueOf(2500.00), Year.of(2025), Collections.emptySet());
 
-        mockMvc.perform(put(BASE_URL + "/{registryId}", patientId, registryId)
-                        .header("Authorization", AuthTestHelper.bearerToken())
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(replaceDto)))
-                .andExpect(status().isInternalServerError());
-    }
+   when(annualRegistryService.updateRegistry(eq(patientId), eq(registryId), any())).thenThrow(new AnnualRegistryConflictException(Year.of(2025)));
 
-    @Test
-    @DisplayName("Deve deletar registro com sucesso (204)")
-    void shouldDeleteRegistrySuccess() throws Exception {
-        UUID patientId = UUID.randomUUID();
-        UUID registryId = UUID.randomUUID();
+   mockMvc.perform(patch(BASE_URL + "/{registryId}", patientId, registryId).header("Authorization", AuthTestHelper.bearerToken())
+       .contentType(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(updateDto)))
+     .andExpect(status().isConflict());
+  }
 
-        doNothing().when(annualRegistryService).deleteRegistry(patientId, registryId);
+  @Test
+  @DisplayName("PATCH - Deve retornar NotFound (404) ao tentar atualizar registro inexistente")
+  void shouldReturnNotFoundOnUpdateWhenRegistryDoesNotExist() throws Exception {
+   UUID patientId = UUID.randomUUID();
+   UUID registryId = UUID.randomUUID();
+   UpdateAnnualRegistryDTO updateDto = new UpdateAnnualRegistryDTO("987654", "Doença Atualizada", BigDecimal.valueOf(2500.00), Year.of(2025), Collections.emptySet());
 
-        mockMvc.perform(delete(BASE_URL + "/{registryId}", patientId, registryId)
-                        .header("Authorization", AuthTestHelper.bearerToken()))
-                .andExpect(status().isNoContent());
+   when(annualRegistryService.updateRegistry(eq(patientId), eq(registryId), any())).thenThrow(new RegistryNotFoundException(registryId));
 
-        verify(annualRegistryService).deleteRegistry(patientId, registryId);
-    }
+   mockMvc.perform(patch(BASE_URL + "/{registryId}", patientId, registryId).header("Authorization", AuthTestHelper.bearerToken())
+       .contentType(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(updateDto)))
+     .andExpect(status().isNotFound());
+  }
 
-    @Test
-    @DisplayName("Deve retornar NotFound (404) ao deletar registro inexistente")
-    void shouldReturnNotFoundWhenDeleteNonExistent() throws Exception {
-        UUID patientId = UUID.randomUUID();
-        UUID registryId = UUID.randomUUID();
+  @Test
+  @DisplayName("PUT - Deve substituir registro totalmente com sucesso")
+  void shouldReplaceRegistrySuccess() throws Exception {
+   UUID patientId = UUID.randomUUID();
+   UUID registryId = UUID.randomUUID();
+   ReplaceAnnualRegistryDTO replaceDto = createValidReplaceDTO();
+   AnnualRegistryResponseDTO responseDto = createResponseDTO(patientId, 2024);
 
-        doThrow(new RegistryNotFoundException(registryId))
-                .when(annualRegistryService).deleteRegistry(patientId, registryId);
+   when(annualRegistryService.replaceRegistry(eq(patientId), eq(registryId), any())).thenReturn(responseDto);
 
-        mockMvc.perform(delete(BASE_URL + "/{registryId}", patientId, registryId)
-                        .header("Authorization", AuthTestHelper.bearerToken()))
-                .andExpect(status().isInternalServerError());
-    }
+   mockMvc.perform(put(BASE_URL + "/{registryId}", patientId, registryId).header("Authorization", AuthTestHelper.bearerToken())
+       .contentType(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(replaceDto)))
+     .andExpect(status().isOk());
+  }
 
-    @Test
-    @DisplayName("Deve listar os anos de registro de um paciente com sucesso")
-    void shouldGetRegistryYearsSuccess() throws Exception {
-        UUID patientId = UUID.randomUUID();
-        List<Integer> expectedYears = List.of(2022, 2023, 2024);
-        when(annualRegistryService.listYearsByPatient(patientId))
-                .thenReturn(expectedYears);
-        mockMvc.perform(get(BASE_URL + "/years", patientId)
-                        .header("Authorization", AuthTestHelper.bearerToken())
-                        .accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$").isArray())
-                .andExpect(jsonPath("$.length()").value(3))
-                .andExpect(jsonPath("$[0]").value(2022))
-                .andExpect(jsonPath("$[1]").value(2023))
-                .andExpect(jsonPath("$[2]").value(2024));
-        verify(annualRegistryService).listYearsByPatient(patientId);
-    }
+  @Test
+  @DisplayName("PUT - Deve retornar NotFound (404) se tentar substituir registro que não pertence ao paciente (Ownership)")
+  void shouldReturnNotFoundWhenRegistryOwnershipFail() throws Exception {
+   UUID patientId = UUID.randomUUID();
+   UUID registryId = UUID.randomUUID();
+   ReplaceAnnualRegistryDTO replaceDto = createValidReplaceDTO();
 
-    private CreateAnnualRegistryDTO createValidCreateDTO() {
-        return new CreateAnnualRegistryDTO(
-                "123456",
-                "Doença Teste",
-                "Nenhum",
-                BigDecimal.valueOf(2000.00),
-                Year.of(2024),
-                Collections.emptySet(),
-                Collections.emptySet()
-        );
-    }
+   when(annualRegistryService.replaceRegistry(any(), any(), any())).thenThrow(new RegistryOwnershipException(patientId, registryId));
 
-    private ReplaceAnnualRegistryDTO createValidReplaceDTO() {
-        return new ReplaceAnnualRegistryDTO(
-                "987654",
-                "Nova Doença",
-                BigDecimal.valueOf(3000.00),
-                "Novos Meds",
-                Collections.emptySet(),
-                Collections.emptySet()
-        );
-    }
+   mockMvc.perform(put(BASE_URL + "/{registryId}", patientId, registryId).header("Authorization", AuthTestHelper.bearerToken())
+       .contentType(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(replaceDto)))
+     .andExpect(status().isNotFound());
+  }
+ }
 
-    private AnnualRegistryResponseDTO createResponseDTO(UUID patientId, Integer year) {
-        return new AnnualRegistryResponseDTO(
-                UUID.randomUUID(),
-                "123456",
-                "Doença X",
-                "Remedio Y",
-                BigDecimal.valueOf(1500),
-                year,
-                patientId,
-                new HashSet<>(),
-                new HashSet<>()
-        );
-    }
+ @Nested
+ @DisplayName("Cenários de Exclusão (DELETE)")
+ class Exclusao {
+  @Test
+  @DisplayName("Deve deletar registro com sucesso (204)")
+  void shouldDeleteRegistrySuccess() throws Exception {
+   UUID patientId = UUID.randomUUID();
+   UUID registryId = UUID.randomUUID();
+
+   doNothing().when(annualRegistryService).deleteRegistry(patientId, registryId);
+
+   mockMvc.perform(delete(BASE_URL + "/{registryId}", patientId, registryId).header("Authorization", AuthTestHelper.bearerToken()))
+     .andExpect(status().isNoContent());
+
+   verify(annualRegistryService).deleteRegistry(patientId, registryId);
+  }
+
+  @Test
+  @DisplayName("Deve retornar NotFound (404) ao deletar registro inexistente")
+  void shouldReturnNotFoundWhenDeleteNonExistent() throws Exception {
+   UUID patientId = UUID.randomUUID();
+   UUID registryId = UUID.randomUUID();
+
+   doThrow(new RegistryNotFoundException(registryId)).when(annualRegistryService).deleteRegistry(patientId, registryId);
+
+   mockMvc.perform(delete(BASE_URL + "/{registryId}", patientId, registryId).header("Authorization", AuthTestHelper.bearerToken()))
+     .andExpect(status().isNotFound());
+  }
+ }
 }

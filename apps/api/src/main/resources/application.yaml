@@ -2,6 +2,19 @@ spring:
   application:
     name: api
 
+# Importa o arquivo .env como fonte de properties, permitindo executar a
+# aplicacao pela IDE ou via `pnpm dev:backend` sem exportar variaveis de
+# ambiente manualmente. E dele que vem tambem SPRING_PROFILES_ACTIVE=dev,
+# que ativa o application-dev.yaml (log de SQL) fora de producao.
+# Os dois caminhos cobrem a execucao a partir do modulo (apps/api) e da
+# raiz do monorepo, e ambos sao opcionais: em container o arquivo nao
+# existe e as variaveis de ambiente do SO, de maior precedencia,
+# fornecem os valores.
+  config:
+    import:
+      - optional:file:./.env[.properties]
+      - optional:file:../../.env[.properties]
+
   autoconfigure:
     exclude:
       - org.springframework.boot.actuate.autoconfigure.mail.MailHealthContributorAutoConfiguration
@@ -14,12 +27,17 @@ spring:
 
   jpa:
     hibernate:
-      ddl-auto: update
-    show-sql: true
+      ddl-auto: none
     properties:
       hibernate:
-        globally_quoted_identifiers: true
-        format_sql: true
+        default_schema: apae_geral
+
+  flyway:
+    enabled: true
+    schemas: apae_geral
+    default-schema: apae_geral
+    create-schemas: true
+    locations: classpath:db/migration
 
   mvc:
     servlet:
@@ -43,19 +61,13 @@ spring:
           starttls:
             enable: true
 
-logging:
-  level:
-    org:
-      hibernate:
-        SQL: DEBUG
-        type:
-          descriptor:
-            sql:
-              BasicBinder: TRACE
+
 
 app:
   token:
     secret: ${JWT_SECRET}
+    issuer: apae-api
+    expiration-hours: ${JWT_EXPIRATION_HOURS:24}
   frontend:
     reset-password-url: ${APP_FRONTEND_RESET_PASSWORD_URL:http://localhost:3000/apae-geral/auth/reset-password}
 
