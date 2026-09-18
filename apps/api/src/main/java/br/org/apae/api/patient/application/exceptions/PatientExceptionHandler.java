@@ -21,7 +21,6 @@ import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
@@ -252,20 +251,5 @@ public class PatientExceptionHandler {
     );
 
     return new ResponseEntity<>(error, HttpStatus.NOT_FOUND);
-  }
-
-  @ExceptionHandler(MethodArgumentNotValidException.class)
-  public ResponseEntity<ErrorResponse> handleArgumentNotValidException(
-          MethodArgumentNotValidException ex,
-          HttpServletRequest request
-  ) {
-    ErrorResponse error = new ErrorResponse(
-            HttpStatus.BAD_REQUEST.value(),
-            HttpStatus.BAD_REQUEST.getReasonPhrase(),
-            ex.getMessage(),
-            request.getRequestURI()
-    );
-
-    return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
   }
 }

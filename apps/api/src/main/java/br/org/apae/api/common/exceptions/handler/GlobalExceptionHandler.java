@@ -7,7 +7,7 @@ import java.util.UUID;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-
+import org.springframework.web.HttpMediaTypeNotSupportedException;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpStatus;
@@ -15,6 +15,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.method.annotation.HandlerMethodValidationException;
 
 import br.org.apae.api.common.exceptions.types.ErrorResponse;
 import br.org.apae.api.common.exceptions.types.ValidationErrorResponse;
@@ -49,6 +50,34 @@ public class GlobalExceptionHandler {
     return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
   }
 
+   @ExceptionHandler(HandlerMethodValidationException.class)
+    public ResponseEntity<ErrorResponse> handleHandlerMethodValidationException(
+            HandlerMethodValidationException ex,
+            HttpServletRequest request) {
+
+        logger.info("ENTROU NO HANDLER HandlerMethodValidationException");
+        
+        List<ValidationErrorResponse.FieldError> fieldErrors = ex.getParameterValidationResults()
+                .stream()
+                .flatMap(result -> result.getResolvableErrors()
+                .stream()
+                .map(error -> new ValidationErrorResponse.FieldError(
+                                result.getMethodParameter().getParameterName(),
+                                error.getDefaultMessage()
+                )))
+                .collect(Collectors.toList());
+        ValidationErrorResponse errorResponse = new ValidationErrorResponse(
+                HttpStatus.BAD_REQUEST.value(),
+                HttpStatus.BAD_REQUEST.getReasonPhrase(),
+                "Erro de validação",
+                request.getRequestURI(),
+                fieldErrors
+        );
+
+        return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
+ }
+
+
   @ExceptionHandler(IllegalArgumentException.class)
   public ResponseEntity<ErrorResponse> handleIllegalArgumentException(
           IllegalArgumentException ex,
@@ -59,6 +88,20 @@ public class GlobalExceptionHandler {
             ex.getMessage(),
             request.getRequestURI());
     return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
+  }
+
+  @ExceptionHandler(HttpMediaTypeNotSupportedException.class)
+        public ResponseEntity<ErrorResponse> handleMediaTypeNotSupportedException(
+                HttpMediaTypeNotSupportedException ex,
+                HttpServletRequest request) {
+
+        ErrorResponse errorResponse = new ErrorResponse(
+                HttpStatus.UNSUPPORTED_MEDIA_TYPE.value(),
+                HttpStatus.UNSUPPORTED_MEDIA_TYPE.getReasonPhrase(),
+                "Tipo de mídia não suportado.",
+                request.getRequestURI());
+
+        return new ResponseEntity<>(errorResponse, HttpStatus.UNSUPPORTED_MEDIA_TYPE);
   }
 
   @ExceptionHandler(Exception.class)
