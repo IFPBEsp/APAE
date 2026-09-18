@@ -15,7 +15,7 @@ import java.util.List;
 
 @Target({ ElementType.FIELD, ElementType.PARAMETER })
 @Retention(RetentionPolicy.RUNTIME)
-@Constraint(validatedBy = ValidFileSize.Validator.class)
+@Constraint(validatedBy = { ValidFileSize.ListValidator.class, ValidFileSize.SingleFileValidator.class })
 @Documented
 public @interface ValidFileSize {
     String message() default "O tamanho do arquivo excede o limite máximo permitido";
@@ -27,9 +27,31 @@ public @interface ValidFileSize {
     /**
      * Tamanho máximo em bytes (padrão: 10MB)
      */
-    long maxSize() default 10 * 1024 * 1024; // 10MB
+    long maxSize() default 10 * 1024 * 1024;
 
-    class Validator implements ConstraintValidator<ValidFileSize, List<MultipartFile>> {
+    class ValidationHelper {
+        static boolean isValidFile(MultipartFile file, long maxSize, ConstraintValidatorContext context) {
+            if (file == null || file.isEmpty()) {
+                return true;
+            }
+
+            long fileSize = file.getSize();
+            if (fileSize > maxSize) {
+                context.disableDefaultConstraintViolation();
+                String maxSizeMB = String.format("%.2f", maxSize / (1024.0 * 1024.0));
+                String fileSizeMB = String.format("%.2f", fileSize / (1024.0 * 1024.0));
+                context.buildConstraintViolationWithTemplate(
+                        String.format("O arquivo '%s' possui %.2f MB e excede o limite máximo de %s MB",
+                                file.getOriginalFilename(), Double.parseDouble(fileSizeMB), maxSizeMB))
+                        .addConstraintViolation();
+                return false;
+            }
+
+            return true;
+        }
+    }
+
+    class ListValidator implements ConstraintValidator<ValidFileSize, List<MultipartFile>> {
         private long maxSize;
 
         @Override
@@ -40,29 +62,28 @@ public @interface ValidFileSize {
         @Override
         public boolean isValid(List<MultipartFile> files, ConstraintValidatorContext context) {
             if (files == null || files.isEmpty()) {
-                return true; // Deixar outras validações tratarem isso
+                return true;
             }
-
             for (MultipartFile file : files) {
-                if (file == null || file.isEmpty()) {
-                    continue;
-                }
-
-                long fileSize = file.getSize();
-                if (fileSize > maxSize) {
-                    context.disableDefaultConstraintViolation();
-                    String maxSizeMB = String.format("%.2f", maxSize / (1024.0 * 1024.0));
-                    String fileSizeMB = String.format("%.2f", fileSize / (1024.0 * 1024.0));
-                    context.buildConstraintViolationWithTemplate(
-                            String.format("O arquivo '%s' possui %.2f MB e excede o limite máximo de %s MB", 
-                                    file.getOriginalFilename(), fileSizeMB, maxSizeMB))
-                            .addConstraintViolation();
+                if (!ValidationHelper.isValidFile(file, maxSize, context)) {
                     return false;
                 }
             }
-
             return true;
         }
     }
-}
 
+    class SingleFileValidator implements ConstraintValidator<ValidFileSize, MultipartFile> {
+        private long maxSize;
+
+        @Override
+        public void initialize(ValidFileSize annotation) {
+            this.maxSize = annotation.maxSize();
+        }
+
+        @Override
+        public boolean isValid(MultipartFile file, ConstraintValidatorContext context) {
+            return ValidationHelper.isValidFile(file, maxSize, context);
+        }
+    }
+}

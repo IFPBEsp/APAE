@@ -7,6 +7,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.MediaType;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -19,6 +20,9 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.bind.annotation.DeleteMapping;
+import br.org.apae.api.documents.interfaces.validations.NotEmptyFiles;
+import br.org.apae.api.documents.interfaces.validations.ValidFileFormat;
+import br.org.apae.api.documents.interfaces.validations.ValidFileSize;
 
 import org.springframework.data.domain.Sort;
 import java.util.List;
@@ -36,6 +40,7 @@ import br.org.apae.api.common.dto.professional.response.HealthProfessionalRespon
 import jakarta.validation.Valid;
 import io.swagger.v3.oas.annotations.media.Schema;
 
+@Validated
 @RequestMapping("/professionals")
 public interface HealthProfessionalController {
   @Operation(summary = "Cadastrar profissional de saúde", description = "Cria um novo profissional de saúde no sistema.", responses = {
@@ -144,7 +149,7 @@ public interface HealthProfessionalController {
   )
   ResponseEntity<Void> uploadProfessionalPhoto(
       @PathVariable UUID id,
-      @RequestPart("file") MultipartFile file
+      @NotEmptyFiles @ValidFileSize @ValidFileFormat @RequestPart("file") MultipartFile file
   );
 
   @GetMapping("/{id}/available-times")
