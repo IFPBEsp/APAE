@@ -1,41 +1,21 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
-import { toast } from "react-toastify";
-import { fetchVaccinesApi, deleteVaccineApi } from "../vaccines.api";
-import type { Vaccine } from "../vaccines.types";
+import { useVaccinesContext } from "@/hooks/use-vaccines";
 
-export function useVaccinesList() {
-  const [vaccines, setVaccines] = useState<Vaccine[]>([]);
-  const [loading, setLoading] = useState(false);
+export function useVaccinesList(searchName: string) {
+  const { vaccines, loading, deleteVaccine: deleteVaccineFromContext } = useVaccinesContext();
 
-  const loadVaccines = useCallback(async () => {
+  const filteredVaccines = vaccines.filter((v) =>
+    v.name.toLowerCase().includes(searchName.toLowerCase()),
+  );
+
+  const deleteVaccine = async (id: string) => {
     try {
-      setLoading(true);
-      const data = await fetchVaccinesApi();
-      setVaccines(data);
-    } catch (error) {
-      const message = error instanceof Error ? error.message : "Erro ao carregar vacinas.";
-      toast.error(message);
-    } finally {
-      setLoading(false);
+      await deleteVaccineFromContext({ id });
+    } catch {
+      // Erro já é exibido via feedback do provider (VaccinesLayoutClient)
     }
-  }, []);
+  };
 
-  const deleteVaccine = useCallback(async (id: string) => {
-    try {
-      await deleteVaccineApi({ id });
-      toast.success("Vacina excluída com sucesso.");
-      await loadVaccines();
-    } catch (error) {
-      const message = error instanceof Error ? error.message : "Erro ao excluir vacina.";
-      toast.error(message);
-    }
-  }, [loadVaccines]);
-
-  useEffect(() => {
-    loadVaccines();
-  }, [loadVaccines]);
-
-  return { vaccines, loading, deleteVaccine };
+  return { vaccines: filteredVaccines, loading, deleteVaccine };
 }
