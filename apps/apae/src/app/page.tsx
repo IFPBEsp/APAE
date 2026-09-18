@@ -51,6 +51,7 @@ import {
   type AppointmentResponseDTO,
 } from './services/appointmentService';
 import AbsenceService from './services/absenceService'; // Added service
+import { useAbsenceAlerts } from '@/hooks/use-absence-alerts';
 
 import { AppointmentForm } from '@/components/forms/AppointmentForm';
 import { InfoCard } from '@/components/shared/InfoCard';
@@ -65,7 +66,7 @@ export default function DashboardPage() {
   const [activeAppointments, setActiveAppointments] = useState<TodayAppointment[]>([]);
   const [inactiveAppointments, setInactiveAppointments] = useState<TodayAppointment[]>([]);
   const [isCreateOpen, setIsCreateOpen] = useState(false);
-  const [alertPatientIds, setAlertPatientIds] = useState<Set<string>>(new Set());
+  const { alertPatientIds } = useAbsenceAlerts();
   const lastFetchedDate = useRef<string | null>(null);
 
 
@@ -83,27 +84,7 @@ export default function DashboardPage() {
     setAllAppointments(allAppointmentsPage.content || []);
   };
 
-  const fetchAbsences = async () => {
-      try {
-        // We make a direct fetch to the API, filtering by 3 absences
-        const response = await fetch('/apae-geral/api/patients/with-absences?minAbsences=3');
-        
-        if (!response.ok) {
-          throw new Error('Erro ao buscar pacientes com faltas');
-        }
 
-        const data = await response.json();
-        
-        // We map the patient IDs that come within the "content" list (pagination pattern)
-        // If your API returns an array directly, use: data.map(...)
-        const absencesList = data.content || [];
-        const idsSet = new Set<string>(absencesList.map((item: any) => item.patient.id));
-        
-        setAlertPatientIds(idsSet);
-      } catch (error) {
-        console.error("Erro ao buscar faltas:", error);
-      }
-    };
 
   const fetchTodayAppointmentsByStatus = async () => {
     if (!allAppointments.length) return;
@@ -124,7 +105,7 @@ export default function DashboardPage() {
 
     fetchTodayAppointments();
     fetchAllAppointments();
-    fetchAbsences(); // Call the new absences service
+
   }, [selectedDate]);
 
   useEffect(() => {
