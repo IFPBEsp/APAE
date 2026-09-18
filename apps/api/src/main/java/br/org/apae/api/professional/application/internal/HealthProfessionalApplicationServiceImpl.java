@@ -209,29 +209,6 @@ public class HealthProfessionalApplicationServiceImpl implements HealthProfessio
         HealthProfessional professional = repository.findById(id)
             .orElseThrow(HealthProfessionalNotFoundException::new);
 
-        if (file.isEmpty()) {
-            throw new RuntimeException("Arquivo vazio");
-        }
-
-        String contentType = file.getContentType();
-
-        List<String> allowedTypes = List.of(
-            "image/png",
-            "image/jpeg",
-            "image/jpg",
-            "image/webp"
-        );
-
-        if (!allowedTypes.contains(contentType)) {
-            throw new RuntimeException("Tipo de arquivo inválido");
-        }
-
-        long maxSize = 5 * 1024 * 1024;
-
-        if (file.getSize() > maxSize) {
-            throw new RuntimeException("Arquivo excede 5MB");
-        }
-
         try {
 
             DocumentDTO document = documentService.putDocument(
