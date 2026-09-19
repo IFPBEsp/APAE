@@ -55,7 +55,6 @@ export default function ViewAppointment() {
       try {
         initialized.current = true;
         
-        // 1. Retrieve scheduling data
         const appointmentData = await getAppointmentById(id);
         setAppointment(appointmentData);
 

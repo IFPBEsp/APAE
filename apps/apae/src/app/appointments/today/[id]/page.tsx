@@ -44,7 +44,6 @@ export default function ViewTodayAppointment() {
         initialized.current = true;
         setLoading(true);
         
-        // 1. Search for today's appointment
         const data = await getTodayAppointmentById(id as string);
         setAppointment(data);
 

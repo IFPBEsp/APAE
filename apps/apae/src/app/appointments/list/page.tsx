@@ -4,7 +4,7 @@ import {
   CalendarDays,
   SearchIcon,
   Users,
-  AlertTriangle // Icon Import
+  AlertTriangle
 } from 'lucide-react';
 import { useEffect, useState, useRef } from 'react';
 
@@ -256,7 +256,6 @@ useEffect(() => {
                         <div className="flex items-center gap-2">
                           <span className="truncate">{item.annualRegistration.patient.fullName}</span>
                           
-                          {/* CROSS-REFERENCES TABLE PATIENT ID WITH ABSENCE SET */}
                           {alertPatientIds.has(item.annualRegistration.patient.id) && (
                             <TooltipProvider>
                               <Tooltip>
