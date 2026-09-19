@@ -56,8 +56,6 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ErrorResponse> handleHandlerMethodValidationException(
             HandlerMethodValidationException ex,
             HttpServletRequest request) {
-
-        logger.info("ENTROU NO HANDLER HandlerMethodValidationException");
         
         List<ValidationErrorResponse.FieldError> fieldErrors = ex.getParameterValidationResults()
                 .stream()
