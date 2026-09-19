@@ -38,7 +38,6 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { CreateVaccine } from "@/schemas/vaccine-schemas";
 import { Button } from "@/components/ui/button";
 import { useDisordersContext } from "@/hooks/use-disorders";
 import { CreateDisorder } from "@/schemas/disorder-schemas";

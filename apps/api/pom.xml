@@ -28,6 +28,20 @@
         <url />
     </scm>
     <properties>
+        <sonar.projectKey>apae-geral-backend</sonar.projectKey>
+        <sonar.projectName>apae-geral-backend</sonar.projectName>
+        <sonar.host.url>http://localhost:9500</sonar.host.url>
+        <sonar.coverage.jacoco.xmlReportPaths>${project.build.directory}/site/jacoco/jacoco.xml</sonar.coverage.jacoco.xmlReportPaths>
+        <sonar.coverage.exclusions>
+            **/dto/**,
+            **/entity/**,
+            **/entities/**,
+            **/model/**,
+            **/config/**,
+            **/configuration/**
+        </sonar.coverage.exclusions>
+        <sonar-maven-plugin.version>5.0.0.4389</sonar-maven-plugin.version>
+
         <java.version>21</java.version>
         <jacoco.version>0.8.14</jacoco.version>
     </properties>
@@ -110,6 +124,15 @@
     </dependencies>
 
     <build>
+        <pluginManagement>
+            <plugins>
+                <plugin>
+                    <groupId>org.sonarsource.scanner.maven</groupId>
+                    <artifactId>sonar-maven-plugin</artifactId>
+                    <version>${sonar-maven-plugin.version}</version>
+                </plugin>
+            </plugins>
+        </pluginManagement>
         <plugins>
             <plugin>
                 <groupId>org.springframework.boot</groupId>
@@ -136,11 +159,14 @@
                 <version>0.8.14</version>
                 <configuration>
                     <includes>
-                        <include>br/org/apae/api/controllers/patient/**</include>
-                        <include>br/org/apae/api/controllers/annual_registry/**</include>
-                        <include>br/org/apae/api/controllers/vaccine/**</include>
-                        <include>br/org/apae/api/controllers/disorder/**</include>
+                        <include>br/org/apae/api/**</include>
                     </includes>
+                    <excludes>
+                        <exclude>br/org/apae/api/ApiApplication.class</exclude>
+                        <exclude>br/org/apae/api/**/*DTO.*</exclude>
+                        <exclude>br/org/apae/api/**/documents/infrastructure/MinioConfiguration.class</exclude>
+                        <exclude>br/org/apae/api/**/OpenApiConfig.class</exclude>
+                    </excludes>
                 </configuration>
                 <executions>
                     <execution>
@@ -149,19 +175,12 @@
                             <goal>prepare-agent</goal>
                         </goals>
                     </execution>
-
                     <execution>
                         <id>report</id>
                         <phase>prepare-package</phase>
                         <goals>
                             <goal>report</goal>
                         </goals>
-                        <!-- CONFIGURAÇÃO PARA TESTES UNITÁRIOS DE CONTROLADORES -->
-                        <configuration>
-                            <includes>
-                                <include>br/org/apae/api/controllers/**</include>
-                            </includes>
-                        </configuration>
                     </execution>
                 </executions>
             </plugin>
