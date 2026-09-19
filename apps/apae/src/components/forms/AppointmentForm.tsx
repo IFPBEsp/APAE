@@ -1,6 +1,6 @@
 "use client";
 
-import { format, getDay, isBefore, isValid, startOfDay } from "date-fns";
+import { format, getDay, isValid, startOfDay } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { CalendarIcon } from "lucide-react";
 import React, { useEffect, useRef, useState } from "react";
@@ -30,6 +30,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { cn } from "@/lib/utils";
+import { getValidTimeSlots } from "@/lib/appointment-utils";
 
 interface Option {
   value: string;
@@ -245,27 +246,16 @@ export function AppointmentForm({ editAppointment }: AppointmentFormProps) {
         });
       }
       window.location.reload();
-    } catch (error: any) {
-      setSubmitError(error.message || "Erro inesperado ao salvar o agendamento.");
+    } catch (error: unknown) {
+      setSubmitError((error as Error).message || "Erro inesperado ao salvar o agendamento.");
     }
   };
 
-  const isToday = date && format(date, "yyyy-MM-dd") === format(new Date(), "yyyy-MM-dd");  
-  const validTimeSlots = availableTimeSlots.filter(slot => {
-    if (!isToday) return true;
-
-    if (editAppointment && editAppointment.hour.startsWith(slot)) return true;
-
-    const [slotHour, slotMinute] = slot.split(':').map(Number);
-    const now = new Date();
-    const currentHour = now.getHours();
-    const currentMinute = now.getMinutes();
-
-    if (slotHour > currentHour) return true;
-    if (slotHour === currentHour && slotMinute > currentMinute) return true;
-    
-    return false;
-  });
+  const validTimeSlots = getValidTimeSlots(
+    availableTimeSlots,
+    date,
+    editAppointment?.hour
+  );
 
   return (
     <Card className="w-full mx-auto border-none shadow-none">
