@@ -172,6 +172,10 @@ public class PatientApplicationServiceImpl implements PatientApplicationService 
     public void deletePatient(UUID id) {
         Patient patient = patientDomainService.getByIdOrThrow(id);
 
+        guardianService.deleteGuardian(patient.getId());
+        parentService.deleteParents(patient.getId());
+        annualRegistryService.deleteAllRegistriesByPatient(patient.getId());
+
         patient.setDeleted(true);
         patientRepository.save(patient);
     }
