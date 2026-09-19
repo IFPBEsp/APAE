@@ -4,12 +4,15 @@ import jakarta.persistence.*;
 import java.time.LocalDate;
 import java.util.*;
 
+import org.hibernate.annotations.SQLRestriction;
+
 import br.org.apae.api.address.domain.model.Address;
 import br.org.apae.api.patient.domain.model.patient.BirthRecord;
 import br.org.apae.api.patient.domain.model.patient.Identification;
 import br.org.apae.api.patient.domain.model.patient.PersonalInfo;
 
 @Entity
+@SQLRestriction("is_apagado = false")
 @Table(name = "pacientes")
 public class Patient {
 
