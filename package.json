@@ -8,12 +8,14 @@
     "docker:up": "docker compose up -d",
     "docker:down": "docker compose down",
     "docker:drop": "docker compose down -v",
-    "dev:infra": "docker compose up -d db minio",
+    "dev:infra": "docker compose up -d db minio && docker compose up db-migrate",
     "dev:backend": "bash ./.scripts/run-app.sh backend",
     "dev:apae": "bash ./.scripts/run-app.sh frontend apae",
     "dev": "pnpm dev:infra && bash ./.scripts/run-app.sh both apae",
     "test:api": "cd apps/api && ./mvnw package",
-    "db:seed": "bash ./.scripts/setup.sh"
+    "db:migrate": "docker compose up db-migrate",
+    "db:seed": "bash ./.scripts/setup.sh",
+    "db:prepare": "pnpm db:seed && docker compose up -d minio"
   },
   "workspaces": [
     "apps/*"
