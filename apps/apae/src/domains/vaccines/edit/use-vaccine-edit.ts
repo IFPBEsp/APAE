@@ -3,13 +3,15 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { toast } from "react-toastify";
-import { fetchVaccineApi, updateVaccineApi } from "../vaccines.api";
+import { fetchVaccineApi } from "../vaccines.api";
+import { useVaccinesContext } from "@/hooks/use-vaccines";
 import type { Vaccine, UpdateVaccineParams } from "../vaccines.types";
 
 export function useVaccineEdit(id: string) {
   const [vaccine, setVaccine] = useState<Vaccine | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const router = useRouter();
+  const { updateVaccine: updateVaccineFromContext } = useVaccinesContext();
 
   useEffect(() => {
     if (!id) return;
@@ -28,12 +30,10 @@ export function useVaccineEdit(id: string) {
   const updateVaccine = async (params: UpdateVaccineParams) => {
     try {
       setIsSubmitting(true);
-      await updateVaccineApi(params);
-      toast.success("Vacina atualizada com sucesso.");
+      await updateVaccineFromContext(params);
       router.push("/vaccines");
-    } catch (error) {
-      const message = error instanceof Error ? error.message : "Erro ao atualizar vacina.";
-      toast.error(message);
+    } catch {
+      // Erro já é exibido via feedback do provider (VaccinesLayoutClient)
     } finally {
       setIsSubmitting(false);
     }

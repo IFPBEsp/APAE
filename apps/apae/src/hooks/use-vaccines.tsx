@@ -8,27 +8,10 @@ import {
   useState,
 } from "react";
 
-type Vaccine = Readonly<{
-    id: string;
-    name: string;
-    hasPatient: boolean;
-}>;
+import type { Vaccine, CreateVaccineParams, UpdateVaccineParams, DeleteVaccineParams } from "@/domains/vaccines/vaccines.types";
 
 type FetchVaccineParams = Readonly<{
     id: string;
-}>;
-
-type CreateVaccineParams = Readonly<{
-    name: string;
-}>;
-
-type UpdateVaccineParams = Readonly<{
-    id: string;
-    name: string;
-}>;
-
-type DeleteVaccineParams = Readonly<{
-  id: string;
 }>;
 
 type Feedback = Readonly<{
@@ -39,6 +22,7 @@ type Feedback = Readonly<{
 
 interface VaccinesContextData {
     loading: boolean;
+    fetchVaccines: () => Promise<void>;
     feedback: Feedback;
     vaccines: Vaccine[];
     fetchVaccine: (params: FetchVaccineParams) => Promise<Vaccine>;
@@ -225,6 +209,7 @@ function VaccinesProvider({
         loading,
         feedback,
         vaccines,
+        fetchVaccines,
         fetchVaccine,
         createVaccine,
         updateVaccine,
