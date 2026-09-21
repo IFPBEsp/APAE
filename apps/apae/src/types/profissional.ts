@@ -13,13 +13,13 @@ export const turnos = [
   { id: "tarde", label: "Tarde" },
 ];
 
-export type AvailabilityType = {
+export type AvailabilityMatrix = {
   dia: string;
   turno: string;
   checked: boolean;
 };
 
-export interface Availability {
+export interface AvailabilityDTO {
   day: string;
   shift: string;
 }
@@ -33,7 +33,7 @@ export interface Professional {
   name: string;
   identityDocument: string;
   address: Address;
-  availabilities: Availability[];
+  availabilities: AvailabilityDTO[];
   ativo: boolean;
   profilePhotoUrl?: string;
 }

@@ -50,6 +50,7 @@ import {
 import { useFetchProfessionals } from "@/hooks/profissional/use-fetch-profissional";
 import { useInactivateProfissional } from "@/hooks/profissional/use-inactivate-profissional";
 import { useActivateProfissional } from "@/hooks/profissional/use-activate-profissional";
+import { filterProfessionals } from "@/domains/professional/shared/professional.utils";
 
 type StatusFilter = "ativo" | "inativo";
 
@@ -83,19 +84,11 @@ export default function VisualizationProfessionalPage() {
     }
   };
 
-  const filteredProfissionais = profissionais.filter((prof) => {
-    const name = prof.name?.toLowerCase() || "";
-    const document = prof.professionalDocument?.toLowerCase() || "";
-    const term = searchTerm.toLowerCase();
-
-    const matchesSearch =
-      name.includes(term) || document.includes(term);
-
-    const matchesArea =
-      areaFilter === "all" || prof.serviceArea.area === areaFilter;
-
-    return matchesSearch && matchesArea;
-  });
+  const filteredProfissionais = filterProfessionals(
+    profissionais,
+    searchTerm,
+    areaFilter
+  );
 
   const uniqueAreas = [
     "all",

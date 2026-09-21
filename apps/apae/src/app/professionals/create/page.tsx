@@ -30,6 +30,7 @@ import { STATES } from "@/lib/states";
 import { useRef, useState, useEffect, JSX } from "react";
 import HealthAreaSelect from "@/components/shared/HealthAreaSelect";
 import { gerarMatrizDisponibilidade } from "@/domains/professional/shared/disponibilidade.utils";
+import { buildProfessionalPayload } from "@/domains/professional/shared/professional.utils";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 type CadastroFormValues = z.infer<typeof cadastroSchema>;
@@ -79,31 +80,7 @@ export default function CadastroProfissional(): JSX.Element {
   const onSubmit: SubmitHandler<CadastroFormValues> = async (values) => {
     const formData = new FormData();
 
-    const availabilities = values.disponibilidade
-      .filter((d) => d?.checked)
-      .map((d) => ({
-        day: d?.dia,
-        shift: d?.turno,
-      }));
-
-    const payload = {
-      serviceArea: { area: values.areaAtendimento },
-      phoneNumber: values.telefone,
-      professionalDocument: values.documentoProfissional?.trim() || null,
-      email: values.email.trim(),
-      name: values.nomeCompleto.trim(),
-      identityDocument: values.rg.trim(),
-      address: {
-        state: values.estado,
-        city: values.cidade.trim(),
-        neighborhood: values.bairro.trim(),
-        street: values.rua.trim(),
-        number: values.numero?.trim(),
-        complement: values.complemento?.trim() ?? "",
-        cep: values.cep,
-      },
-      availabilities,
-    };
+    const payload = buildProfessionalPayload(values);
 
     formData.append(
       "professional",

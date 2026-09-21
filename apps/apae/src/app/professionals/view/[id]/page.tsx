@@ -7,7 +7,8 @@ import { useGetByIdProfissional } from "@/hooks/profissional/use-get-by-id-profi
 import { useProfessionalDocuments } from "@/hooks/profissional/use-professional-documents";
 
 import { Checkbox } from "@/components/ui/checkbox";
-import { gerarMatrizDisponibilidade } from "@/domains/professional/shared/disponibilidade.utils";
+import { gerarMatrizDisponibilidadeFromBackend } from "@/domains/professional/shared/disponibilidade.utils";
+import { diasDaSemana, turnos } from "@/types/profissional";
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -25,15 +26,7 @@ export default function VisualizarProfissional() {
     useProfessionalDocuments(id);
 
   const disponibilidadeMatrix = useMemo(() => {
-    const avs = profissional?.availabilities ?? [];
-
-    return gerarMatrizDisponibilidade(
-      avs.map((a) => ({
-        dia: a.day?.toLowerCase(),
-        turno: a.shift?.toLowerCase(),
-        checked: true,
-      })),
-    );
+    return gerarMatrizDisponibilidadeFromBackend(profissional?.availabilities || []);
   }, [profissional?.availabilities]);
 
   if (!id) return <p className="p-6">ID inválido.</p>;
@@ -58,21 +51,7 @@ export default function VisualizarProfissional() {
 
   const handleEdit = () => router.push(`/professionals/edit/${id}`);
 
-  const DAYS = ["segunda", "terca", "quarta", "quinta", "sexta"] as const;
-  const SHIFTS = ["manha", "tarde"] as const;
 
-  const DAY_LABEL: Record<(typeof DAYS)[number], string> = {
-    segunda: "Segunda",
-    terca: "Terça",
-    quarta: "Quarta",
-    quinta: "Quinta",
-    sexta: "Sexta",
-  };
-
-  const SHIFT_LABEL: Record<(typeof SHIFTS)[number], string> = {
-    manha: "Manhã",
-    tarde: "Tarde",
-  };
 
   return (
     <div className="w-full max-w-5xl mx-auto p-4 sm:p-6 md:p-10">
@@ -196,32 +175,32 @@ export default function VisualizarProfissional() {
                       <th className="p-3 text-left font-semibold text-[#0D4F97]">
                         Turno
                       </th>
-                      {DAYS.map((day) => (
+                      {diasDaSemana.map((day) => (
                         <th
-                          key={day}
+                          key={day.id}
                           className="p-3 text-center font-semibold text-[#0D4F97]"
                         >
-                          {DAY_LABEL[day]}
+                          {day.label}
                         </th>
                       ))}
                     </tr>
                   </thead>
 
                   <tbody>
-                    {SHIFTS.map((shift) => (
-                      <tr key={shift} className="border-t">
+                    {turnos.map((shift) => (
+                      <tr key={shift.id} className="border-t">
                         <td className="p-3 font-medium text-gray-700">
-                          {SHIFT_LABEL[shift]}
+                          {shift.label}
                         </td>
 
-                        {DAYS.map((day) => {
+                        {diasDaSemana.map((day) => {
                           const cell = disponibilidadeMatrix.find(
-                            (d) => d?.dia === day && d?.turno === shift,
+                            (d) => d?.dia === day.id && d?.turno === shift.id,
                           );
 
                           return (
                             <td
-                              key={`${day}-${shift}`}
+                              key={`${day.id}-${shift.id}`}
                               className="p-3 text-center"
                             >
                               <Checkbox checked={Boolean(cell?.checked)} disabled />

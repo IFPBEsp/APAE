@@ -94,3 +94,5 @@ export const cadastroSchema = baseSchema.extend({
 });
 
 export const updateProfessionalSchema = baseSchema;
+
+export type ProfessionalFormValues = z.infer<typeof baseSchema>;

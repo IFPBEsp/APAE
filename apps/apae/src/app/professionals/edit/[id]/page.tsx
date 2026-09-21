@@ -46,7 +46,8 @@ import { STATES } from "@/lib/states";
 
 import HealthAreaSelect from "@/components/shared/HealthAreaSelect";
 import Disponibilidade from "@/components/forms/DisponibilidadeForm";
-import { gerarMatrizDisponibilidade } from "@/domains/professional/shared/disponibilidade.utils";
+import { gerarMatrizDisponibilidade, gerarMatrizDisponibilidadeFromBackend } from "@/domains/professional/shared/disponibilidade.utils";
+import { buildProfessionalPayload } from "@/domains/professional/shared/professional.utils";
 
 import {
   getProfessionalDocuments,
@@ -146,13 +147,7 @@ export default function AtualizarProfissional(): JSX.Element {
 
     const disponibilidadesBackend = profissional.availabilities || [];
 
-    const matrizCompleta = gerarMatrizDisponibilidade(
-      disponibilidadesBackend.map((a) => ({
-        dia: a.day.toLowerCase(),
-        turno: a.shift.toLowerCase(),
-        checked: true,
-      })),
-    );
+    const matrizCompleta = gerarMatrizDisponibilidadeFromBackend(disponibilidadesBackend);
 
     form.reset({
       nomeCompleto: profissional.name,
@@ -233,31 +228,7 @@ export default function AtualizarProfissional(): JSX.Element {
   const onSubmit: SubmitHandler<UpdateFormValues> = async (values) => {
     if (!profissional?.id) return;
 
-    const availabilities = values.disponibilidade
-      .filter((d) => d?.checked)
-      .map((d) => ({
-        day: d?.dia,
-        shift: d?.turno,
-      }));
-
-    const payload = {
-      serviceArea: { area: values.areaAtendimento },
-      phoneNumber: values.telefone,
-      professionalDocument: values.documentoProfissional?.trim() || null,
-      email: values.email.trim(),
-      name: values.nomeCompleto.trim(),
-      identityDocument: values.rg.trim(),
-      address: {
-        state: values.estado,
-        city: values.cidade.trim(),
-        neighborhood: values.bairro.trim(),
-        street: values.rua.trim(),
-        number: values.numero?.trim(),
-        complement: values.complemento?.trim() ?? "",
-        cep: values.cep,
-      },
-      availabilities,
-    };
+    const payload = buildProfessionalPayload(values);
 
     const ok = await updateProfissional(profissional.id, payload);
     if (!ok) return;

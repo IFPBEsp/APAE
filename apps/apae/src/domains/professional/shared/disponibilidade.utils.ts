@@ -1,10 +1,11 @@
 import {
   diasDaSemana,
-  AvailabilityType,
+  AvailabilityMatrix,
   turnos,
+  AvailabilityDTO
 } from "@/types/profissional";
 
-export function gerarMatrizDisponibilidade(lista: AvailabilityType[]) {
+export function gerarMatrizDisponibilidade(lista: AvailabilityMatrix[]) {
   return diasDaSemana.flatMap((dia) =>
     turnos.map((turno) => {
       const existente = lista.find((d) => {
@@ -20,4 +21,15 @@ export function gerarMatrizDisponibilidade(lista: AvailabilityType[]) {
       );
     }),
   );
+}
+
+export function gerarMatrizDisponibilidadeFromBackend(
+  avs: AvailabilityDTO[] = []
+): AvailabilityMatrix[] {
+  const lista: AvailabilityMatrix[] = avs.map((a) => ({
+    dia: a.day?.toLowerCase() || "",
+    turno: a.shift?.toLowerCase() || "",
+    checked: true,
+  }));
+  return gerarMatrizDisponibilidade(lista);
 }
