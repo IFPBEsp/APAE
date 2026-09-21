@@ -52,7 +52,7 @@ public interface HealthProfessionalController {
   ResponseEntity<HealthProfessionalResponseDTO> createHealthProfessional(
     @RequestPart("professional") CreateHealthProfessionalDTO dto,
     @ModelAttribute @Valid CreateProfessionalDocumentsDTO documentsDTO,
-    @RequestPart(value = "profilePhoto", required = false) MultipartFile profilePhoto
+    @RequestPart(value = "profilePhoto", required = false) @ValidFileSize @ValidFileFormat MultipartFile profilePhoto
     );
   @GetMapping("/{id}/documents")
   @Operation(

@@ -18,7 +18,7 @@ import java.util.List;
 @Constraint(validatedBy = { NotEmptyFiles.ListValidator.class, NotEmptyFiles.SingleFileValidator.class })
 @Documented
 public @interface NotEmptyFiles {
-    String message() default "O arquivo não pode estar vazio";
+    String message() default "A lista de arquivos não pode estar vazia";
 
     Class<?>[] groups() default {};
 
