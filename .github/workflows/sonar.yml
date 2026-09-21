@@ -1,0 +1,19 @@
+name: SonarQube
+
+on:
+  push:
+    branches: [ "dev", "main" ]
+  pull_request:
+    branches: [ "dev", "main" ]
+
+jobs:
+  call-sonar-fullstack:
+    uses: IFPBEsp/APAE-INFRA/.github/workflows/reusable-sonarqube-fullstack.yml@dev
+    with:
+      backend-project-key: "apae-geral-backend"
+      frontend-project-key: "apae-geral-frontend"
+      backend-dir: "apps/api"
+      frontend-dir: "apps/apae"
+      organization: "ifpbesp"
+    secrets:
+      SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
