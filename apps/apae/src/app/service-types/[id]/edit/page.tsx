@@ -1,66 +1,25 @@
 "use client";
 
-import { useRouter, useParams } from "next/navigation";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { updateserviceTypeSchema, UpdateserviceTypeDTO } from "@/schemas/service-type-schemas";
-import { toast } from "react-toastify";
+import { useParams } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { useEffect } from "react";
 import { Loader2, ArrowLeft } from "lucide-react";
+import { useServiceTypeEdit } from "@/hooks/service-types/use-service-type-edit";
 
 export default function EditServiceTypePage() {
   const router = useRouter();
   const params = useParams();
   const { id } = params;
 
+  const { form, isSubmitting, onSubmit } = useServiceTypeEdit(id);
+
   const {
     register,
     handleSubmit,
-    setValue,
-    formState: { errors, isSubmitting },
-  } = useForm<UpdateserviceTypeDTO>({
-    resolver: zodResolver(updateserviceTypeSchema),
-  });
-
-  useEffect(() => {
-    if (id) {
-      const fetchserviceType = async () => {
-        try {
-          const response = await fetch(`/apae-geral/api/service-types/${id}`);
-          if (!response.ok) throw new Error("Tipo de atendimento não encontrado.");
-          const data = await response.json();
-          setValue("area", data.area);
-        } catch (error) {
-          const err = error as Error;
-          toast.error(err.message);
-          router.push("/service-types");
-        }
-      };
-      fetchserviceType();
-    }
-  }, [id, setValue, router]);
-
-  const onSubmit = async (data: UpdateserviceTypeDTO) => {
-    try {
-      const response = await fetch(`/apae-geral/api/service-types/${id}`, {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(data),
-      });
-      if (!response.ok) {
-        throw new Error("Falha ao atualizar o tipo de atendimento.");
-      }
-      toast.success("Tipo de atendimento atualizado com sucesso!");
-      router.push("/service-types");
-      router.refresh();
-    } catch (error) {
-      const err = error as Error;
-      toast.error(err.message);
-    }
-  };
+    formState: { errors },
+  } = form;
 
   if (!id) {
     return (
@@ -69,7 +28,6 @@ export default function EditServiceTypePage() {
       </div>
     );
   }
-
 
   return (
     <div className="!bg-slate-100 min-h-screen">

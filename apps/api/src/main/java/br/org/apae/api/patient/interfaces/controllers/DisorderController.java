@@ -7,6 +7,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -50,5 +51,5 @@ public interface DisorderController {
             @ApiResponse(responseCode = "409", description = "Conflito (Nome já existe)", content = @Content)
     })
     @PutMapping("/{id}")
-    ResponseEntity<DisorderResponseDTO> updateDisorder(@PathVariable UUID id, @RequestBody UpdateDisorderDTO dto);
+    ResponseEntity<DisorderResponseDTO> updateDisorder(@PathVariable UUID id, @Valid @RequestBody UpdateDisorderDTO dto);
 }

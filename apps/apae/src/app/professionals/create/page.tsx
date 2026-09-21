@@ -2,9 +2,10 @@
 
 import { useForm, Controller, type SubmitHandler } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import * as z from "zod";
 import { InputMask } from "@react-input/mask";
 import { User } from "lucide-react";
+import type { JSX } from "react";
+import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -22,81 +23,60 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import { useRouter } from "next/navigation";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useCreateProfissional } from "@/hooks/profissional/use-create-profissional";
+import { useProfessionalRegisterPhoto } from "@/hooks/profissional/use-professional-register-photo";
 import Disponibilidade from "@/components/forms/DisponibilidadeForm";
-import { cadastroSchema } from "@/schemas/profissional.schema";
+import {
+  cadastroSchema,
+  type ProfessionalFormValues,
+} from "@/schemas/profissional.schema";
 import { STATES } from "@/lib/states";
-import { useRef, useState, useEffect, JSX } from "react";
 import HealthAreaSelect from "@/components/shared/HealthAreaSelect";
 import { gerarMatrizDisponibilidade } from "@/domains/professional/shared/disponibilidade.utils";
 import { buildProfessionalPayload } from "@/domains/professional/shared/professional.utils";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
-type CadastroFormValues = z.infer<typeof cadastroSchema>;
-
-export default function CadastroProfissional(): JSX.Element {
+export default function ProfessionalRegister(): JSX.Element {
   const router = useRouter();
-  const fileInputRef = useRef<HTMLInputElement>(null);
-  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const { create, loading, error, success } = useCreateProfissional();
 
-  const defaultValues: Partial<CadastroFormValues> = {
-    nomeCompleto: "",
-    email: "",
-    documentoProfissional: "",
-    areaAtendimento: "",
-    telefone: "",
-    rg: "",
-    estado: "",
-    cidade: "",
-    bairro: "",
-    rua: "",
-    numero: "",
-    complemento: "",
-    cep: "",
-    disponibilidade: gerarMatrizDisponibilidade([]),
-  };
-
-  const form = useForm<CadastroFormValues>({
+  const form = useForm<ProfessionalFormValues>({
     resolver: zodResolver(cadastroSchema),
-    defaultValues,
+    defaultValues: {
+      fullName: "",
+      email: "",
+      cpf: "",
+      professionalDocument: "",
+      serviceArea: "",
+      phone: "",
+      rg: "",
+      state: "",
+      city: "",
+      neighborhood: "",
+      street: "",
+      number: "",
+      complement: "",
+      cep: "",
+      availability: gerarMatrizDisponibilidade([]),
+    },
   });
 
   const photoFile = form.watch("photo");
+  const { fileInputRef, previewUrl } = useProfessionalRegisterPhoto(photoFile);
 
-  useEffect(() => {
-    if (photoFile instanceof File) {
-      const url = URL.createObjectURL(photoFile);
-      setPreviewUrl(url);
-      return () => URL.revokeObjectURL(url);
-    }
-  }, [photoFile]);
-
-  const onCancel = () => {
-    router.push("/professionals");
-  };
-
-  const onSubmit: SubmitHandler<CadastroFormValues> = async (values) => {
+  const onSubmit: SubmitHandler<ProfessionalFormValues> = async (values) => {
     const formData = new FormData();
-
     const payload = buildProfessionalPayload(values);
-
     formData.append(
       "professional",
       new Blob([JSON.stringify(payload)], { type: "application/json" })
     );
-    
-    // profilePhoto faz referência ao componente do back, deve estar alinhado quando for fazer a integração
     if (values.photo) {
       formData.append("profilePhoto", values.photo);
     }
-
-    formData.append("volunteerAgreement", values.termoVoluntariado);
-    formData.append("curriculum", values.curriculo);
-    if (values.anexoQualquer) {
-      formData.append("attachmentAny", values.anexoQualquer);
-    }
+    formData.append("volunteerAgreement", values.volunteerAgreement);
+    formData.append("curriculum", values.curriculum);
+    if (values.attachmentAny) formData.append("attachmentAny", values.attachmentAny);
     await create(formData);
   };
 
@@ -109,7 +89,7 @@ export default function CadastroProfissional(): JSX.Element {
         >
           <FormField
             control={form.control}
-            name="nomeCompleto"
+            name="fullName"
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Nome completo *</FormLabel>
@@ -120,6 +100,7 @@ export default function CadastroProfissional(): JSX.Element {
               </FormItem>
             )}
           />
+
           <FormField
             control={form.control}
             name="email"
@@ -127,20 +108,39 @@ export default function CadastroProfissional(): JSX.Element {
               <FormItem>
                 <FormLabel>Email *</FormLabel>
                 <FormControl>
-                  <Input
-                    type="email"
-                    placeholder="profissional@exemplo.com"
-                    {...field}
-                  />
+                  <Input type="email" placeholder="profissional@exemplo.com" {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
             )}
           />
+
+          <Controller
+            control={form.control}
+            name="cpf"
+            render={({ field, fieldState }) => (
+              <FormItem>
+                <FormLabel>CPF *</FormLabel>
+                <FormControl>
+                  <InputMask
+                    mask="___.___.___-__"
+                    replacement={{ _: /\d/ }}
+                    value={field.value ?? ""}
+                    onChange={(e) => field.onChange(e.target.value)}
+                    onBlur={field.onBlur}
+                    placeholder="000.000.000-00"
+                    className="w-full rounded-md border px-3 py-2"
+                  />
+                </FormControl>
+                <FormMessage>{fieldState.error?.message}</FormMessage>
+              </FormItem>
+            )}
+          />
+
           <div className="grid grid-cols-2 gap-4">
             <FormField
               control={form.control}
-              name="documentoProfissional"
+              name="professionalDocument"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Documento profissional</FormLabel>
@@ -151,18 +151,14 @@ export default function CadastroProfissional(): JSX.Element {
                 </FormItem>
               )}
             />
-
             <Controller
               control={form.control}
-              name="areaAtendimento"
+              name="serviceArea"
               render={({ field, fieldState }) => (
                 <FormItem>
                   <FormLabel>Área de atendimento *</FormLabel>
                   <FormControl>
-                    <HealthAreaSelect
-                      value={field.value}
-                      onChange={field.onChange}
-                    />
+                    <HealthAreaSelect value={field.value} onChange={field.onChange} />
                   </FormControl>
                   <FormMessage>{fieldState.error?.message}</FormMessage>
                 </FormItem>
@@ -186,7 +182,7 @@ export default function CadastroProfissional(): JSX.Element {
             />
             <Controller
               control={form.control}
-              name="telefone"
+              name="phone"
               render={({ field, fieldState }) => (
                 <FormItem>
                   <FormLabel>Telefone *</FormLabel>
@@ -210,18 +206,14 @@ export default function CadastroProfissional(): JSX.Element {
           <div className="grid grid-cols-2 gap-4">
             <Controller
               control={form.control}
-              name="estado"
+              name="state"
               render={({ field, fieldState }) => (
                 <FormItem>
                   <FormLabel>Estado *</FormLabel>
                   <FormControl>
                     <Select onValueChange={field.onChange} value={field.value}>
                       <SelectTrigger
-                        className={`w-full ${
-                          fieldState.invalid
-                            ? "border-red-500"
-                            : "border-gray-300"
-                        }`}
+                        className={`w-full ${fieldState.invalid ? "border-red-500" : "border-gray-300"}`}
                       >
                         <SelectValue placeholder="Selecione um estado" />
                       </SelectTrigger>
@@ -240,7 +232,7 @@ export default function CadastroProfissional(): JSX.Element {
             />
             <FormField
               control={form.control}
-              name="cidade"
+              name="city"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Cidade *</FormLabel>
@@ -255,7 +247,7 @@ export default function CadastroProfissional(): JSX.Element {
 
           <FormField
             control={form.control}
-            name="rua"
+            name="street"
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Endereço *</FormLabel>
@@ -270,7 +262,7 @@ export default function CadastroProfissional(): JSX.Element {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <FormField
               control={form.control}
-              name="bairro"
+              name="neighborhood"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Bairro *</FormLabel>
@@ -307,7 +299,7 @@ export default function CadastroProfissional(): JSX.Element {
           <div className="grid grid-cols-2 gap-4">
             <FormField
               control={form.control}
-              name="numero"
+              name="number"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Número *</FormLabel>
@@ -320,7 +312,7 @@ export default function CadastroProfissional(): JSX.Element {
             />
             <FormField
               control={form.control}
-              name="complemento"
+              name="complement"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Complemento</FormLabel>
@@ -338,37 +330,30 @@ export default function CadastroProfissional(): JSX.Element {
             name="photo"
             render={({ field }) => (
               <FormItem>
-                <FormLabel className="text-sm font-medium">
-                  Selecione uma foto*
-                </FormLabel>
+                <FormLabel className="text-sm font-medium">Selecione uma foto*</FormLabel>
                 <FormControl>
                   <div className="flex flex-col items-start gap-4 w-full">
                     <input
                       ref={fileInputRef}
                       type="file"
-                      id={`${field.name}-upload`}
                       className="hidden"
-                      accept="image/png, image/jpeg"
+                      accept="image/png,image/jpeg"
                       onChange={(e) => {
                         const file = e.target.files?.[0];
-                        if (file) {
-                          field.onChange(file);
-                        }
+                        if (file) field.onChange(file);
                       }}
                     />
-
                     <button
                       type="button"
                       onClick={() => fileInputRef.current?.click()}
                       className="relative group mr-auto rounded-full transition-transform hover:scale-105"
                     >
-                      <Avatar className="w-32 h-32 border-2 border-dashed border-gray-300 bg-gray-50 cursor-pointer flex items-center justify-center">
+                      <Avatar className="w-32 h-32 border-2 border-dashed border-gray-300 bg-gray-50">
                         <AvatarImage src={previewUrl || ""} alt="Foto do profissional" />
                         <AvatarFallback className="bg-transparent">
                           <User className="w-12 h-12 text-gray-400" />
                         </AvatarFallback>
                       </Avatar>
-
                       <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity bg-black/20 rounded-full">
                         <span className="bg-white text-black text-[10px] font-bold px-2 py-1 rounded shadow-sm">
                           Escolher foto
@@ -384,7 +369,7 @@ export default function CadastroProfissional(): JSX.Element {
 
           <FormField
             control={form.control}
-            name="termoVoluntariado"
+            name="volunteerAgreement"
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Termo do Voluntário *</FormLabel>
@@ -392,9 +377,7 @@ export default function CadastroProfissional(): JSX.Element {
                   <Input
                     type="file"
                     accept="image/*, application/pdf"
-                    onChange={(e) =>
-                      field.onChange(e.target.files?.[0] ?? null)
-                    }
+                    onChange={(e) => field.onChange(e.target.files?.[0] ?? null)}
                   />
                 </FormControl>
                 <FormMessage />
@@ -404,7 +387,7 @@ export default function CadastroProfissional(): JSX.Element {
 
           <FormField
             control={form.control}
-            name="curriculo"
+            name="curriculum"
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Currículo *</FormLabel>
@@ -412,19 +395,17 @@ export default function CadastroProfissional(): JSX.Element {
                   <Input
                     type="file"
                     accept="image/*, application/pdf"
-                    onChange={(e) =>
-                      field.onChange(e.target.files?.[0] ?? null)
-                    }
+                    onChange={(e) => field.onChange(e.target.files?.[0] ?? null)}
                   />
                 </FormControl>
                 <FormMessage />
               </FormItem>
             )}
           />
-          
+
           <FormField
             control={form.control}
-            name="anexoQualquer"
+            name="attachmentAny"
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Anexo qualquer</FormLabel>
@@ -432,9 +413,7 @@ export default function CadastroProfissional(): JSX.Element {
                   <Input
                     type="file"
                     accept="image/*, application/pdf"
-                    onChange={(e) =>
-                      field.onChange(e.target.files?.[0] ?? null)
-                    }
+                    onChange={(e) => field.onChange(e.target.files?.[0] ?? null)}
                   />
                 </FormControl>
                 <FormMessage />
@@ -446,11 +425,14 @@ export default function CadastroProfissional(): JSX.Element {
 
           {loading && <p className="text-blue-500">Salvando...</p>}
           {error && <p className="text-red-500">{error}</p>}
-          {success && (
-            <p className="text-green-600">Profissional criado com sucesso!</p>
-          )}
+          {success && <p className="text-green-600">Profissional criado com sucesso!</p>}
+
           <div className="flex justify-end gap-4">
-            <Button type="button" variant="outline" onClick={onCancel}>
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => router.push("/professionals")}
+            >
               Cancelar
             </Button>
             <Button

@@ -12,15 +12,15 @@ import { Input } from "@/components/ui/input";
 import {
   MembersRegisterStep,
   useMembersRegisterContext,
-} from "@/hooks/use-members-register-context";
-import { formatCEP } from "@/lib/formats";
-import { Guardian, GuardianData } from "@/schemas/member-schemas";
+} from "@/domains/patients/hooks/use-members-register-context";
+import { formatCEP, capitalizeFirst } from "@/lib/formats";
+import { Guardian, GuardianData } from "@/domains/patients/schemas/member-schemas";
 import { EditGuardian } from "@/schemas/edit-member-schemas";
 import { zodResolver } from "@hookform/resolvers/zod";
-import React, { useState, useEffect } from "react"; 
+import React, { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { handleBackendValidationErrors } from "@/lib/utils/form-errors";
-import { usePathname } from "next/navigation"; 
+import { usePathname } from "next/navigation";
 import { formatPhone } from "@/lib/formats";
 import { Checkbox } from "@/components/ui/checkbox";
 import z from "zod";
@@ -36,7 +36,7 @@ export default function MembersRegisterGuardianPage() {
 
   const pathname = usePathname();
   const isEditing = pathname.includes("/edit");
-  const currentSchema = isEditing ? EditGuardian : Guardian; 
+  const currentSchema = isEditing ? EditGuardian : Guardian;
 
   const form = useForm<z.infer<typeof Guardian>>({
     mode: "onBlur",
@@ -53,7 +53,7 @@ export default function MembersRegisterGuardianPage() {
   const isNoNumber = form.watch("address.noNumber");
 
   useEffect(() => {
-    if (isNoNumber){
+    if (isNoNumber) {
       form.setValue("address.number", "SN");
       form.clearErrors("address.number");
     } else {
@@ -64,7 +64,7 @@ export default function MembersRegisterGuardianPage() {
   }, [isNoNumber, form]);
 
   useEffect(() => {
-      if (guardian && guardian.name !== "") { 
+    if (guardian && guardian.name !== "") {
 
       form.reset({
         ...guardian,
@@ -91,10 +91,10 @@ export default function MembersRegisterGuardianPage() {
       setGuardianData(dataToSave);
       setStep(MembersRegisterStep.ADDRESS);
     } catch (error: unknown) {
-        const err = error as { response?: { data?: Record<string, string[]> } };
-        if (err.response?.data) {
-            handleBackendValidationErrors(err.response.data, form.setError);
-        }
+      const err = error as { response?: { data?: Record<string, string[]> } };
+      if (err.response?.data) {
+        handleBackendValidationErrors(err.response.data, form.setError);
+      }
     } finally {
       setIsLoading(false);
     }
@@ -144,6 +144,7 @@ export default function MembersRegisterGuardianPage() {
                   <Input
                     placeholder="Digite o nome completo do responsável"
                     {...field}
+                    onChange={(e) => field.onChange(capitalizeFirst(e.target.value))}
                   />
                 </FormControl>
                 <FormMessage />
@@ -183,6 +184,7 @@ export default function MembersRegisterGuardianPage() {
                   <Input
                     placeholder="Mãe, Pai, Irmã, etc."
                     {...field}
+                    onChange={(e) => field.onChange(capitalizeFirst(e.target.value))}
                   />
                 </FormControl>
                 <FormMessage />
@@ -197,7 +199,11 @@ export default function MembersRegisterGuardianPage() {
               <FormItem className="md:col-span-2">
                 <FormLabel>Rua *</FormLabel>
                 <FormControl>
-                  <Input placeholder="Rua exemplo" {...field} />
+                  <Input
+                    placeholder="Rua exemplo"
+                    {...field}
+                    onChange={(e) => field.onChange(capitalizeFirst(e.target.value))}
+                  />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -227,7 +233,7 @@ export default function MembersRegisterGuardianPage() {
                         <label
                           htmlFor="noNumber"
                           className="text-[10px] font-bold uppercase text-slate-500 cursor-pointer select-none">
-                            Sem número?
+                          Sem número?
                         </label>
                       </div>
                     )}
@@ -252,7 +258,11 @@ export default function MembersRegisterGuardianPage() {
               <FormItem>
                 <FormLabel>Complemento</FormLabel>
                 <FormControl>
-                  <Input placeholder="Apartamento 101" {...field} />
+                  <Input
+                    placeholder="Apartamento 101"
+                    {...field}
+                    onChange={(e) => field.onChange(capitalizeFirst(e.target.value))}
+                  />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -288,7 +298,11 @@ export default function MembersRegisterGuardianPage() {
               <FormItem>
                 <FormLabel>Estado *</FormLabel>
                 <FormControl>
-                  <Input placeholder="Paraíba" {...field} />
+                  <Input
+                    placeholder="Paraíba"
+                    {...field}
+                    onChange={(e) => field.onChange(capitalizeFirst(e.target.value))}
+                  />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -302,7 +316,11 @@ export default function MembersRegisterGuardianPage() {
               <FormItem>
                 <FormLabel>Cidade *</FormLabel>
                 <FormControl>
-                  <Input placeholder="Esperança" {...field} />
+                  <Input
+                    placeholder="Esperança"
+                    {...field}
+                    onChange={(e) => field.onChange(capitalizeFirst(e.target.value))}
+                  />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -316,7 +334,11 @@ export default function MembersRegisterGuardianPage() {
               <FormItem>
                 <FormLabel>Bairro *</FormLabel>
                 <FormControl>
-                  <Input placeholder="Centro" {...field} />
+                  <Input
+                    placeholder="Centro"
+                    {...field}
+                    onChange={(e) => field.onChange(capitalizeFirst(e.target.value))}
+                  />
                 </FormControl>
                 <FormMessage />
               </FormItem>

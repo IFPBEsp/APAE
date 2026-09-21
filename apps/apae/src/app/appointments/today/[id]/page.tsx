@@ -20,7 +20,10 @@ import {
   TooltipTrigger,
 } from '@/components/ui/tooltip';
 
-import { getTodayAppointmentById } from '@/app/services/appointmentService';
+import {
+  getProfessionalAreaName,
+  getTodayAppointmentById,
+} from '@/app/services/appointmentService';
 import { TodayAppointment } from '@/types/appointment';
 
 export default function ViewTodayAppointment() {
@@ -40,11 +43,11 @@ export default function ViewTodayAppointment() {
         initialized.current = true;
         setLoading(true);
         
-        // 1. Busca o agendamento de hoje
+        // 1. Search for today's appointment
         const data = await getTodayAppointmentById(id as string);
         setAppointment(data);
 
-        // 2. Busca pacientes com faltas via fetch direto
+        // 2. Search for patients with missed appointments via direct fetch.
         const response = await fetch('/apae-geral/api/patients/with-absences?minAbsences=3');
         
         if (response.ok) {
@@ -126,7 +129,10 @@ export default function ViewTodayAppointment() {
 
         <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-6 text-sm text-[#0D4F97]">
             <div className="space-y-2">
-              <p><strong>Área de atendimento:</strong> {appointment.professional.healthSector || '—'}</p>
+              <p>
+                <strong>Área de atendimento:</strong>{' '}
+                {getProfessionalAreaName(appointment.professional) || '—'}
+              </p>
               <p>
                 <strong>Status:</strong>{' '}
                 <span

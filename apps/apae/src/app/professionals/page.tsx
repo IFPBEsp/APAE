@@ -1,8 +1,10 @@
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { useState } from "react";
+import { UserX, UserCheck, MoreHorizontal, Edit, Eye } from "lucide-react";
+
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -20,13 +22,6 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import {
-  MoreHorizontal,
-  Edit,
-  Eye,
-  UserX,
-  UserCheck,
-} from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -48,71 +43,56 @@ import {
 } from "@/components/ui/alert-dialog";
 
 import { useFetchProfessionals } from "@/hooks/profissional/use-fetch-profissional";
-import { useInactivateProfissional } from "@/hooks/profissional/use-inactivate-profissional";
-import { useActivateProfissional } from "@/hooks/profissional/use-activate-profissional";
-import { filterProfessionals } from "@/domains/professional/shared/professional.utils";
-
-type StatusFilter = "ativo" | "inativo";
+import { useInactivateProfessional } from "@/hooks/profissional/use-inactivate-profissional";
+import { useActivateProfessional } from "@/hooks/profissional/use-activate-profissional";
+import {
+  filterProfessionals,
+  getStatusActionConfig,
+} from "@/domains/professional/shared/professional.utils";
 
 export default function VisualizationProfessionalPage() {
   const router = useRouter();
 
   const [searchTerm, setSearchTerm] = useState("");
-  const [areaFilter, setAreaFilter] = useState("all");
-  const [statusFilter, setStatusFilter] = useState<StatusFilter>("ativo");
+  const [areaFilter, setAreaFilter] = useState<string>("all");
+  const [statusFilter, setStatusFilter] = useState<"activate" | "inactivate">("activate");
 
-  const { profissionais, loading, error, setProfissionais } =
-    useFetchProfessionals(statusFilter === "ativo");
-
-  const { inactivate } = useInactivateProfissional();
-  const { activate } = useActivateProfissional();
-
-  const handleAddNew = () => router.push("/professionals/create");
-  const handleEdit = (id: string) => router.push(`/professionals/edit/${id}`);
-
-  const handleConfirm = async (id: string) => {
-    try {
-      if (statusFilter === "ativo") {
-        await inactivate(id);
-      } else {
-        await activate(id);
-      }
-
-      setProfissionais((prev) => prev.filter((p) => p.id !== id));
-    } catch (err) {
-      console.error(err);
-    }
-  };
-
-  const filteredProfissionais = filterProfessionals(
-    profissionais,
-    searchTerm,
-    areaFilter
+  const { professionals, loading, error, setProfessionals } = useFetchProfessionals(
+    statusFilter === "activate"
   );
 
-  const uniqueAreas = [
-    "all",
-    ...Array.from(new Set(profissionais.map((p) => p.serviceArea.area))),
-  ];
+  const { inactivate } = useInactivateProfessional();
+  const { activate } = useActivateProfessional();
 
-  const actionLabel = statusFilter === "ativo" ? "Inativar" : "Reativar";
+  const {
+    label: actionLabel,
+    itemClass: actionItemClass,
+    buttonClass: actionButtonClass,
+  } = getStatusActionConfig(statusFilter);
 
   const actionIcon =
-    statusFilter === "ativo" ? (
+    statusFilter === "activate" ? (
       <UserX className="mr-2 h-4 w-4" />
     ) : (
       <UserCheck className="mr-2 h-4 w-4" />
     );
 
-  const actionItemClass =
-    statusFilter === "ativo"
-      ? "text-destructive focus:text-destructive"
-      : "text-green-600 focus:text-green-600";
+  const handleConfirm = async (id: string) => {
+    try {
+      if (statusFilter === "activate") await inactivate(id);
+      else await activate(id);
+      setProfessionals((prev) => prev.filter((p) => p.id !== id));
+    } catch (err) {
+      console.error(err);
+    }
+  };
 
-  const actionButtonClass =
-    statusFilter === "ativo"
-      ? ""
-      : "bg-green-600 hover:bg-green-700 text-white";
+  const displayList = filterProfessionals(professionals, searchTerm, areaFilter);
+
+  const displayAreas = [
+    "all",
+    ...Array.from(new Set(professionals.map((p) => p.serviceArea.area))),
+  ];
 
   return (
     <div className="w-full bg-background p-4 md:p-6 lg:p-8">
@@ -122,8 +102,8 @@ export default function VisualizationProfessionalPage() {
             Profissionais da Saúde
           </h1>
           <Button
-            className="bg-[#0D4F97] hover:bg-blue-900"
-            onClick={handleAddNew}
+            className="bg-[#0D4F97] hover:bg-blue-900 cursor-pointer"
+            onClick={() => router.push("/professionals/create")}
           >
             Cadastrar Profissional
           </Button>
@@ -131,31 +111,29 @@ export default function VisualizationProfessionalPage() {
 
         <div className="mb-6 flex flex-col gap-4 md:flex-row">
           <Input
-            placeholder="Buscar por nome ou documento..."
+            placeholder="Buscar por nome, CPF ou documento..."
             className="flex-grow border-[#0D4F97]"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
           />
-
           <Select
             value={statusFilter}
-            onValueChange={(v) => setStatusFilter(v as StatusFilter)}
+            onValueChange={(v) => setStatusFilter(v as "activate" | "inactivate")}
           >
             <SelectTrigger className="w-full md:w-[200px] border-[#0D4F97] text-[#0D4F97]">
               <SelectValue placeholder="Situação" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="ativo">Ativo</SelectItem>
-              <SelectItem value="inativo">Inativo</SelectItem>
+              <SelectItem value="activate">Ativo</SelectItem>
+              <SelectItem value="inactivate">Inativo</SelectItem>
             </SelectContent>
           </Select>
-
           <Select value={areaFilter} onValueChange={setAreaFilter}>
             <SelectTrigger className="w-full md:w-[200px] border-[#0D4F97] text-[#0D4F97]">
               <SelectValue placeholder="Filtrar por área" />
             </SelectTrigger>
             <SelectContent>
-              {uniqueAreas.map((area) => (
+              {displayAreas.map((area) => (
                 <SelectItem key={area} value={area}>
                   {area === "all" ? "Todas as Áreas" : area}
                 </SelectItem>
@@ -175,19 +153,15 @@ export default function VisualizationProfessionalPage() {
                   <TableHead>Profissional</TableHead>
                   <TableHead>Documento</TableHead>
                   <TableHead>Área</TableHead>
-                  <TableHead className="hidden md:table-cell">
-                    Telefone
-                  </TableHead>
+                  <TableHead className="hidden md:table-cell">Telefone</TableHead>
                   <TableHead />
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {filteredProfissionais.length > 0 ? (
-                  filteredProfissionais.map((prof) => (
+                {displayList.length > 0 ? (
+                  displayList.map((prof) => (
                     <TableRow key={prof.id}>
-                      <TableCell className="font-medium">
-                        {prof.name}
-                      </TableCell>
+                      <TableCell className="font-medium">{prof.name}</TableCell>
                       <TableCell>{prof.professionalDocument}</TableCell>
                       <TableCell>{prof.serviceArea.area}</TableCell>
                       <TableCell className="hidden md:table-cell">
@@ -197,7 +171,7 @@ export default function VisualizationProfessionalPage() {
                         <AlertDialog>
                           <DropdownMenu>
                             <DropdownMenuTrigger asChild>
-                              <Button variant="ghost" className="h-8 w-8 p-0">
+                              <Button variant="ghost" className="h-8 w-8 p-0 cursor-pointer">
                                 <MoreHorizontal className="h-4 w-4" />
                               </Button>
                             </DropdownMenuTrigger>
@@ -209,9 +183,8 @@ export default function VisualizationProfessionalPage() {
                                   Visualizar Perfil
                                 </DropdownMenuItem>
                               </Link>
-
                               <DropdownMenuItem
-                                onClick={() => handleEdit(prof.id)}
+                                onClick={() => router.push(`/professionals/edit/${prof.id}`)}
                               >
                                 <Edit className="mr-2 h-4 w-4" />
                                 Editar
@@ -225,22 +198,17 @@ export default function VisualizationProfessionalPage() {
                               </AlertDialogTrigger>
                             </DropdownMenuContent>
                           </DropdownMenu>
-
                           <AlertDialogContent>
                             <AlertDialogHeader>
-                              <AlertDialogTitle>
-                                Você tem certeza?
-                              </AlertDialogTitle>
+                              <AlertDialogTitle>Você tem certeza?</AlertDialogTitle>
                               <AlertDialogDescription>
-                                {statusFilter === "ativo"
+                                {statusFilter === "activate"
                                   ? `Esta ação irá inativar o profissional ${prof.name}.`
                                   : `Esta ação irá reativar o profissional ${prof.name}.`}
                               </AlertDialogDescription>
                             </AlertDialogHeader>
                             <AlertDialogFooter>
-                              <AlertDialogCancel>
-                                Cancelar
-                              </AlertDialogCancel>
+                              <AlertDialogCancel>Cancelar</AlertDialogCancel>
                               <AlertDialogAction
                                 className={actionButtonClass}
                                 onClick={() => handleConfirm(prof.id)}

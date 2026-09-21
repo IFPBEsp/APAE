@@ -1,9 +1,9 @@
 import { useState, useEffect } from "react";
 import { useParams } from "next/navigation";
-import { getProfissionalById } from "@/services/profissional-service";
+import { getProfessionalById } from "@/services/profissional-service";
 import { Professional } from "@/types/profissional";
 
-export function useGetByIdProfissional() {
+export function useGetByIdProfessional() {
   const params = useParams();
   let id = params?.id;
   if (Array.isArray(id)) {
@@ -13,7 +13,7 @@ export function useGetByIdProfissional() {
     id = "";
   }
 
-  const [profissional, setProfissional] = useState<Professional | null>(null);
+  const [professional, setProfessional] = useState<Professional | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -23,9 +23,9 @@ export function useGetByIdProfissional() {
     setLoading(true);
     setError(null);
 
-    getProfissionalById(id)
+    getProfessionalById(id)
       .then((data: Professional) => {
-        setProfissional(data);
+        setProfessional(data);
       })
       .catch((err) => {
         setError(err.message || "Erro desconhecido");
@@ -35,5 +35,5 @@ export function useGetByIdProfissional() {
       });
   }, [id]);
 
-  return { profissional, loading, error };
+  return { professional, loading, error };
 }

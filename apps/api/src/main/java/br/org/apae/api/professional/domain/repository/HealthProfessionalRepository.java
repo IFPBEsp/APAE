@@ -19,18 +19,14 @@ public interface HealthProfessionalRepository extends JpaRepository<HealthProfes
 
     boolean existsByProfessionalDocument(String professionalDocument);
 
-    boolean existsByEmail(String email);
-
-    boolean existsByIdentityDocument(String identityDocument);
-
-        @Query("""
-            SELECT a.hour
-            FROM Appointment a
-            WHERE a.professional.id = :professionalId
-              AND a.initialDate = :date
-              AND a.isActive = true
-        """)
-        List<LocalTime> findOccupiedHours(UUID professionalId, LocalDate date);
+    @Query("""
+        SELECT a.hour
+        FROM Appointment a
+        WHERE a.professional.id = :professionalId
+          AND a.initialDate = :date
+          AND a.isActive = true
+    """)
+    List<LocalTime> findOccupiedHours(UUID professionalId, LocalDate date);
 
     boolean existsByProfessionalDocumentAndIdNot(String document, UUID professionalId);
 }

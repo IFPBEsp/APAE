@@ -1,4 +1,4 @@
-import { getAllProfissionais } from "@/services/profissional-service";
+import { getAllProfessionals } from "@/services/profissional-service";
 import { Professional } from "@/types/profissional";
 import { useEffect, useState } from "react";
 import axios from "axios";
@@ -9,8 +9,8 @@ interface PaginatedResponse<T> {
   totalElements: number;
 }
 
-export function useFetchProfessionals(ativo: boolean) {
-  const [profissionais, setProfissionais] = useState<Professional[]>([]);
+export function useFetchProfessionals(active: boolean) {
+  const [professionals, setProfessionals] = useState<Professional[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -20,12 +20,12 @@ export function useFetchProfessionals(ativo: boolean) {
         setLoading(true);
         setError(null);
 
-        console.log("[useFetchProfessionals] disparou fetch com ativo =", ativo);
+        console.log("[useFetchProfessionals] disparou fetch com ativo =", active);
         
-        const response = await getAllProfissionais(ativo);
+        const response = await getAllProfessionals(active);
 
         const data: PaginatedResponse<Professional> = response.data;
-        setProfissionais(data.content);
+        setProfessionals(data.content);
       } catch (err) {
         if (axios.isAxiosError(err)) {
           setError(err.response?.data?.message || err.message);
@@ -38,7 +38,7 @@ export function useFetchProfessionals(ativo: boolean) {
     }
 
     fetchProfessionals();
-  }, [ativo]);
+  }, [active]);
 
-  return { profissionais, loading, error, setProfissionais };
+  return { professionals, loading, error, setProfessionals };
 }

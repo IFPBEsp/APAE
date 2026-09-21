@@ -176,6 +176,7 @@ public class PatientApplicationServiceImpl implements PatientApplicationService 
         parentService.deleteParents(patient.getId());
         annualRegistryService.deleteAllRegistriesByPatient(patient.getId());
 
+        patient.setDeleted(true);
         patientRepository.save(patient);
     }
 

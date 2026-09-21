@@ -26,16 +26,20 @@ export interface AvailabilityDTO {
 
 export interface Professional {
   id: string;
+  userId?: string;
   serviceArea: ServiceArea;
   phoneNumber: string;
-  professionalDocument: string;
+  professionalDocument: string | null;
   email: string;
+  cpf: string;
   name: string;
   identityDocument: string;
   address: Address;
   availabilities: AvailabilityDTO[];
   ativo: boolean;
-  profilePhotoUrl?: string;
+  active?: boolean;
+  profilePhoto?: string | null;
+  profilePhotoUrl?: string | null;
 }
 
 export interface Address {

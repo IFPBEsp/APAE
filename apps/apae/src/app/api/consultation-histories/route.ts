@@ -33,7 +33,7 @@ export async function POST(req: Request) {
 export async function GET(req: Request) {
   try {
     const { searchParams } = new URL(req.url);
-    const agendamentoId = searchParams.get("agendamentoId");
+    const appointmentId = searchParams.get("appointmentId");
     const date = searchParams.get("date");
 
     const api = await createBaseApi();
@@ -41,7 +41,7 @@ export async function GET(req: Request) {
     const url = "/consultation-histories";
     const params: Record<string, string> = {};
 
-    if (agendamentoId) params.agendamentoId = agendamentoId;
+    if (appointmentId) params.appointmentId = appointmentId;
     if (date) params.date = date;
 
     const response = await api.get(url, { params });
