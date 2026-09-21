@@ -3,13 +3,13 @@ package br.org.apae.api.patient.application.internal;
 import java.time.Year;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import br.org.apae.api.documents.interfaces.dto.DocumentDTO;
 import br.org.apae.api.documents.interfaces.dto.GetPresignedDocumentUrlArgsDTO;
 import br.org.apae.api.documents.interfaces.dto.ListDocumentsArgsDTO;
 import br.org.apae.api.documents.interfaces.dto.RemoveDocumentArgsDTO;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -22,6 +22,9 @@ import br.org.apae.api.patient.domain.model.Patient;
 
 @Service
 class PatientDocumentsService {
+
+    private static final Logger log = LoggerFactory.getLogger(PatientDocumentsService.class);
+
     private final DocumentApplicationService documentService;
 
     public PatientDocumentsService(
@@ -48,9 +51,7 @@ class PatientDocumentsService {
                             .build());
 
         } catch (Exception error) {
-            Logger.getGlobal().log(Level.SEVERE,
-                    "Falha ao salvar documento [" + category + "/" + type + "] do paciente "
-                            + patient.getId() + ": " + error);
+            log.error("Falha ao salvar documento [{}/{}] do paciente {}", category, type, patient.getId(), error);
             throw new RuntimeException(
                     "Falha ao salvar documento " + type + " no armazenamento", error);
         }
@@ -105,7 +106,7 @@ class PatientDocumentsService {
                 );
             }
         } catch (Exception e) {
-            Logger.getGlobal().log(Level.WARNING, "Nao foi possivel remover foto anterior: " + e.getMessage());
+            log.warn("Nao foi possivel remover foto anterior", e);
         }
 
         this.storePatientDocument(patient, DocumentCategory.PERSONAL, DocumentType.PHOTO, photo);
@@ -131,7 +132,7 @@ class PatientDocumentsService {
             );
 
         } catch (Exception e) {
-            Logger.getGlobal().log(Level.SEVERE, e.toString());
+            log.error("Falha ao buscar foto do paciente {}", patientId, e);
         }
         return null;
     }

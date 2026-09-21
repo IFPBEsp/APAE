@@ -8,7 +8,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import z from "zod";
 import { capitalizeFirst } from "@/lib/formats";
 import { useVaccinesContext } from "@/hooks/use-vaccines";
-import { CreateVaccine } from "@/schemas/vaccine-schemas";
+import { createVaccineSchema } from "@/domains/vaccines/vaccines.schema";
 
 export type DialogProps = Readonly<{
   open: boolean;
@@ -18,12 +18,12 @@ export type DialogProps = Readonly<{
 
 export function CreateVaccineDialog({ open, onOpenChange, onSuccess }: DialogProps) {
   const { createVaccine } = useVaccinesContext();
-  const form = useForm<z.infer<typeof CreateVaccine>>({
-    resolver: zodResolver(CreateVaccine),
+  const form = useForm<z.infer<typeof createVaccineSchema>>({
+    resolver: zodResolver(createVaccineSchema),
     defaultValues: { name: "" },
   });
 
-  const onSubmit = async (data: z.infer<typeof CreateVaccine>) => {
+  const onSubmit = async (data: z.infer<typeof createVaccineSchema>) => {
     await createVaccine(data);
     onOpenChange(false);
     onSuccess?.(data.name);

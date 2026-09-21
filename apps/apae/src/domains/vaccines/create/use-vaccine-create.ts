@@ -2,23 +2,21 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { toast } from "react-toastify";
-import { createVaccineApi } from "../vaccines.api";
+import { useVaccinesContext } from "@/hooks/use-vaccines";
 import type { CreateVaccineParams } from "../vaccines.types";
 
 export function useVaccineCreate() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const router = useRouter();
+  const { createVaccine: createVaccineFromContext } = useVaccinesContext();
 
   const createVaccine = async (params: CreateVaccineParams) => {
     try {
       setIsSubmitting(true);
-      await createVaccineApi(params);
-      toast.success("Vacina criada com sucesso.");
+      await createVaccineFromContext(params);
       router.push("/vaccines");
-    } catch (error) {
-      const message = error instanceof Error ? error.message : "Erro ao criar vacina.";
-      toast.error(message);
+    } catch {
+      // Erro já é exibido via feedback do provider (VaccinesLayoutClient)
     } finally {
       setIsSubmitting(false);
     }

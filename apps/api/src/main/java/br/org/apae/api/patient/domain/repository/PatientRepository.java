@@ -15,7 +15,8 @@ import java.util.UUID;
 
 @Repository
 public interface PatientRepository extends JpaRepository<Patient, UUID>, JpaSpecificationExecutor<Patient> {
-  boolean existsByCpfOrRg(String cpf, String rg);
+    @Query(value = "SELECT EXISTS(SELECT 1 FROM apae_geral.pacientes WHERE cpf = :cpf OR rg = :rg)", nativeQuery = true)
+    boolean existsByCpfOrRg(@Param("cpf") String cpf, @Param("rg") String rg);
 
     @Query("SELECT DISTINCT p.address.city FROM Patient p WHERE p.address.city IS NOT NULL AND p.address.city <> '' ORDER BY p.address.city ASC")
     List<String> findDistinctCities();

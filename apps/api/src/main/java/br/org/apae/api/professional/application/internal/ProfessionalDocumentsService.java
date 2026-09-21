@@ -2,9 +2,9 @@ package br.org.apae.api.professional.application.internal;
 
 import java.util.Objects;
 import java.util.UUID;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -23,7 +23,7 @@ import br.org.apae.api.professional.domain.model.HealthProfessional;
 @Service
 public class ProfessionalDocumentsService {
 
-    private static final Logger LOGGER = Logger.getGlobal();
+    private static final Logger log = LoggerFactory.getLogger(ProfessionalDocumentsService.class);
 
     private final DocumentApplicationService documentService;
 
@@ -45,7 +45,7 @@ public class ProfessionalDocumentsService {
                     .build()
             );
         } catch (Exception error) {
-            LOGGER.log(Level.SEVERE, "Erro ao armazenar documento (" + type + "): " + error.getMessage());
+            log.error("Erro ao armazenar documento ({})", type, error);
             throw new RuntimeException("Erro ao armazenar documento (" + type + ").");
         }
     }
@@ -96,7 +96,7 @@ public class ProfessionalDocumentsService {
                 }
             }
         } catch (Exception e) {
-            LOGGER.log(Level.SEVERE, "Erro ao remover documentos antigos do tipo " + type + ": " + e.getMessage());
+            log.error("Erro ao remover documentos antigos do tipo {}", type, e);
             throw new RuntimeException("Erro ao remover documentos antigos do tipo " + type + ".");
         }
     }
@@ -135,7 +135,7 @@ public class ProfessionalDocumentsService {
         } catch (ProfessionalDocumentNotFoundException e) {
             throw e;
         } catch (Exception e) {
-            LOGGER.log(Level.SEVERE, "Erro ao remover documento do profissional: " + e.getMessage());
+            log.error("Erro ao remover documento do profissional", e);
             throw new RuntimeException("Erro ao remover documento do profissional.");
         }
     }
