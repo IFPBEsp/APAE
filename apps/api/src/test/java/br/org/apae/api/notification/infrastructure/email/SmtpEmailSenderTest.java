@@ -14,6 +14,7 @@ import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import static org.mockito.Mockito.verifyNoInteractions;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.test.util.ReflectionTestUtils;
@@ -68,14 +69,33 @@ class SmtpEmailSenderTest {
                 "Assunto",
                 "Corpo");
 
-        doThrow(new RuntimeException("Erro SMTP"))
+        RuntimeException cause = new RuntimeException("Erro SMTP");
+
+        doThrow(cause)
                 .when(javaMailSender)
                 .send(any(SimpleMailMessage.class));
 
-        assertThrows(
+        EmailSendingException exception = assertThrows(
                 EmailSendingException.class,
                 () -> smtpEmailSender.send(email));
+        
+        assertEquals(cause, exception.getCause());
 
         verify(javaMailSender).send(any(SimpleMailMessage.class));
     }
+
+    @Test
+    void shouldNotSendEmailWhenSmtpIsNotConfigured() {
+        SmtpEmailSender sender = new SmtpEmailSender(javaMailSender);
+
+        EmailMessage email = new EmailMessage(
+                List.of("teste@email.com"),
+                "Assunto",
+                "Corpo");
+
+        sender.send(email);
+
+        verifyNoInteractions(javaMailSender);
+    }
+    
 }
