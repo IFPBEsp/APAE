@@ -1,6 +1,6 @@
 import { ServiceArea } from "./service-area";
 
-export const diasDaSemana = [
+export const daysOfWeek = [
   { id: "segunda", label: "Segunda" },
   { id: "terca", label: "Terça" },
   { id: "quarta", label: "Quarta" },
@@ -8,14 +8,14 @@ export const diasDaSemana = [
   { id: "sexta", label: "Sexta" },
 ];
 
-export const turnos = [
+export const shifts = [
   { id: "manha", label: "Manhã" },
   { id: "tarde", label: "Tarde" },
 ];
 
-export type AvailabilityMatrix = {
-  dia: string;
-  turno: string;
+export type AvailabilityType = {
+  day: string;
+  shift: string;
   checked: boolean;
 };
 

@@ -1,6 +1,6 @@
-import { Professional } from "@/types/profissional";
+import { Professional, AvailabilityType } from "@/types/profissional";
 import { ProfessionalFormValues } from "@/schemas/profissional.schema";
-import { gerarMatrizDisponibilidadeFromBackend } from "./disponibilidade.utils";
+import { generateAvailabilityMatrix } from "./disponibilidade.utils";
 
 type StatusFilter = "activate" | "inactivate";
 
@@ -27,10 +27,10 @@ export function filterProfessionals(
 
 export function buildProfessionalPayload(values: ProfessionalFormValues) {
   const availabilities = (values.availability || [])
-    .filter((d) => d?.checked)
-    .map((d) => ({
-      day: d?.dia,
-      shift: d?.turno,
+    .filter((d: any) => d?.checked)
+    .map((d: any) => ({
+      day: d?.day,
+      shift: d?.shift,
     }));
 
   return {
@@ -70,8 +70,12 @@ export function mapProfessionalToForm(professional: Professional) {
     number: professional.address.number,
     complement: professional.address.complement ?? "",
     cep: professional.address.cep,
-    availability: gerarMatrizDisponibilidadeFromBackend(
-      professional.availabilities ?? []
+    availability: generateAvailabilityMatrix(
+      (professional.availabilities ?? []).map((a) => ({
+        day: a.day?.toLowerCase() || "",
+        shift: a.shift?.toLowerCase() || "",
+        checked: true,
+      }))
     ),
   };
 }

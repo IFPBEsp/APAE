@@ -99,3 +99,4 @@ export const registerSchema = baseSchema.extend({
 export const updateProfessionalSchema = baseSchema;
 
 export type ProfessionalFormValues = z.infer<typeof baseSchema>;
+export type RegisterProfessionalFormValues = z.infer<typeof registerSchema>;

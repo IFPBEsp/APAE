@@ -24,24 +24,24 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { useCreateProfissional } from "@/hooks/profissional/use-create-profissional";
+import { useCreateProfessional } from "@/hooks/profissional/use-create-profissional";
 import { useProfessionalRegisterPhoto } from "@/hooks/profissional/use-professional-register-photo";
-import Disponibilidade from "@/components/forms/DisponibilidadeForm";
+import Availability from "@/components/forms/AvailabilityForm";
 import {
-  cadastroSchema,
-  type ProfessionalFormValues,
+  registerSchema,
+  type RegisterProfessionalFormValues,
 } from "@/schemas/profissional.schema";
 import { STATES } from "@/lib/states";
 import HealthAreaSelect from "@/components/shared/HealthAreaSelect";
-import { gerarMatrizDisponibilidade } from "@/domains/professional/shared/disponibilidade.utils";
+import { generateAvailabilityMatrix } from "@/domains/professional/shared/disponibilidade.utils";
 import { buildProfessionalPayload } from "@/domains/professional/shared/professional.utils";
 
 export default function ProfessionalRegister(): JSX.Element {
   const router = useRouter();
-  const { create, loading, error, success } = useCreateProfissional();
+  const { create, loading, error, success } = useCreateProfessional();
 
-  const form = useForm<ProfessionalFormValues>({
-    resolver: zodResolver(cadastroSchema),
+  const form = useForm<RegisterProfessionalFormValues>({
+    resolver: zodResolver(registerSchema),
     defaultValues: {
       fullName: "",
       email: "",
@@ -57,14 +57,14 @@ export default function ProfessionalRegister(): JSX.Element {
       number: "",
       complement: "",
       cep: "",
-      availability: gerarMatrizDisponibilidade([]),
+      availability: generateAvailabilityMatrix([]),
     },
   });
 
   const photoFile = form.watch("photo");
   const { fileInputRef, previewUrl } = useProfessionalRegisterPhoto(photoFile);
 
-  const onSubmit: SubmitHandler<ProfessionalFormValues> = async (values) => {
+  const onSubmit: SubmitHandler<RegisterProfessionalFormValues> = async (values) => {
     const formData = new FormData();
     const payload = buildProfessionalPayload(values);
     formData.append(
@@ -421,7 +421,7 @@ export default function ProfessionalRegister(): JSX.Element {
             )}
           />
 
-          <Disponibilidade control={form.control} watch={form.watch} />
+          <Availability control={form.control} watch={form.watch} />
 
           {loading && <p className="text-blue-500">Salvando...</p>}
           {error && <p className="text-red-500">{error}</p>}
