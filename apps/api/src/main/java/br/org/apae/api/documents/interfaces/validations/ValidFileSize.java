@@ -54,7 +54,7 @@ public @interface ValidFileSize {
                     String maxSizeMB = String.format("%.2f", maxSize / (1024.0 * 1024.0));
                     String fileSizeMB = String.format("%.2f", fileSize / (1024.0 * 1024.0));
                     context.buildConstraintViolationWithTemplate(
-                            String.format("O arquivo '%s' possui %.2f MB e excede o limite máximo de %s MB", 
+                            String.format("O arquivo '%s' possui %s MB e excede o limite máximo de %s MB", 
                                     file.getOriginalFilename(), fileSizeMB, maxSizeMB))
                             .addConstraintViolation();
                     return false;

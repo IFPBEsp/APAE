@@ -29,6 +29,8 @@ public @interface CPF {
   class Validator implements ConstraintValidator<CPF, String> {
     private static final Pattern CPF_PATTERN = Pattern.compile(
         "^\\d{3}\\.?\\d{3}\\.?\\d{3}-?\\d{2}$");
+    private static final Pattern ALL_SAME_DIGITS_PATTERN = Pattern.compile(
+        "^(\\d)\\1{10}$");
     private static final Integer FIRST_DIGIT_INDEX = 9;
     private static final Integer SECOND_DIGIT_INDEX = 10;
 
@@ -81,8 +83,16 @@ public @interface CPF {
         return true;
       }
 
-      return CPF_PATTERN.matcher(cpf).matches() && validateVerificationDigits(
-          cpf.replaceAll("\\D", ""));
+      if (!CPF_PATTERN.matcher(cpf).matches()) {
+        return false;
+      }
+
+      String digits = cpf.replaceAll("\\D", "");
+      if (ALL_SAME_DIGITS_PATTERN.matcher(digits).matches()) {
+        return false;
+      }
+
+      return validateVerificationDigits(digits);
     }
   }
 }
