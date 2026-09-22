@@ -10,10 +10,6 @@ import br.org.apae.api.patient.domain.repository.VaccineRepository;
 import br.org.apae.api.common.dto.patient.request.vaccine.CreateVaccineDTO;
 import br.org.apae.api.common.dto.patient.response.vaccine.VaccineResponseDTO;
 import org.springframework.dao.DataIntegrityViolationException;
-import org.springframework.web.server.ResponseStatusException;
-import org.springframework.http.HttpStatus;
-
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -34,7 +30,6 @@ public class VaccineApplicationServiceImpl implements VaccineApplicationService 
     private final VaccineMapper vaccineMapper;
     private final PatientRepository patientRepository;
 
-    @Autowired
     public VaccineApplicationServiceImpl(VaccineRepository vaccineRepository, VaccineMapper vaccineMapper, PatientRepository patientRepository) {
         this.vaccineRepository = vaccineRepository;
         this.vaccineMapper = vaccineMapper;
