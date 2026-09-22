@@ -6,7 +6,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { SquarePen } from "lucide-react";
 import { cn } from "@/lib/utils";
 import Link from "next/link";
-import { PatientCardData } from "@/schemas/patientSchema";
+import type { PatientCardData } from "@/domains/patients/types/patient";
 
 interface PatientCardProps {
   patient: PatientCardData;

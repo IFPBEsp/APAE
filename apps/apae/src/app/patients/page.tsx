@@ -6,12 +6,13 @@ import { parseAsInteger, parseAsString, useQueryStates } from "nuqs";
 import { Button } from "@/components/ui/button";
 import { Plus } from "lucide-react";
 import { PatientCard } from "@/components/shared/patient-card";
-import { PatientCardData } from "@/schemas/patientSchema";
+import type { PatientCardData } from "@/domains/patients/types/patient";
 import { SearchFilters } from "@/components/search-filters";
 import { Pagination } from "@/components/shared/pagination";
 import { toast } from "react-toastify";
 import { useDebounce } from "@/hooks/use-debounce";
 import { usePatientFilters } from "@/hooks/use-patients-filters";
+import { buildPatientListQuery } from "@/domains/patients/shared/patient.utils";
 import type { Page } from "@/types/pagination";
 
 import { Suspense } from "react";
@@ -51,18 +52,15 @@ function PatientsAndStudentsScreenContent() {
       setIsLoading(true);
 
       try {
-        const params = new URLSearchParams();
-
-        if (debouncedSearchName) params.append("name", debouncedSearchName);
-        if (query.disorder) params.append("disorder", query.disorder);
-        if (query.year) params.append("year", query.year);
-        if (query.city) params.append("city", query.city);
-        if (query.treatmentType) {
-          params.append("treatmentType", query.treatmentType);
-        }
-
-        params.append("page", String(query.page));
-        params.append("size", String(query.size));
+        const params = buildPatientListQuery({
+          name: debouncedSearchName,
+          disorder: query.disorder,
+          year: query.year,
+          city: query.city,
+          treatmentType: query.treatmentType,
+          page: query.page,
+          size: query.size,
+        });
 
         const requestKey = params.toString();
         latestRequestKeyRef.current = requestKey;
