@@ -2,57 +2,6 @@ import { generateAvailabilityMatrix } from "./disponibilidade.utils";
 
 type StatusFilter = "activate" | "inactivate";
 
-export interface BackendAvailability {
-  day: string;
-  shift: string;
-}
-
-export interface AddressPayload {
-  state: string;
-  city: string;
-  neighborhood: string;
-  street: string;
-  number?: string;
-  complement?: string;
-  cep: string;
-}
-
-export interface ProfessionalPayload {
-  name: string;
-  email: string;
-  cpf?: string | null;
-  professionalDocument?: string | null;
-  serviceArea: { area: string };
-  phoneNumber: string;
-  identityDocument: string;
-  address: AddressPayload;
-  availabilities?: BackendAvailability[];
-}
-
-export interface FormAvailability {
-  day: string;
-  shift: string;
-  checked?: boolean;
-}
-
-export interface ProfessionalFormValues {
-  serviceArea: string;
-  phone: string;
-  professionalDocument?: string | null;
-  email: string;
-  cpf: string;
-  fullName: string;
-  rg: string;
-  state: string;
-  city: string;
-  neighborhood: string;
-  street: string;
-  number?: string | null;
-  complement?: string | null;
-  cep: string;
-  availability: FormAvailability[];
-}
-
 export function isValidFile(file: File): boolean {
   const allowedTypes = [
     "application/pdf",
@@ -65,10 +14,10 @@ export function isValidFile(file: File): boolean {
   return allowedTypes.includes(file.type) && file.size > 0 && file.size <= maxSize;
 }
 
-export function mapProfessionalToForm(professional: ProfessionalPayload) {
+export function mapProfessionalToForm(professional: any) {
   const backendAvailabilities = professional.availabilities || [];
   const fullMatrix = generateAvailabilityMatrix(
-    backendAvailabilities.map((a: BackendAvailability) => ({
+    backendAvailabilities.map((a: any) => ({
       day: a.day.toLowerCase(),
       shift: a.shift.toLowerCase(),
       checked: true,
@@ -94,7 +43,7 @@ export function mapProfessionalToForm(professional: ProfessionalPayload) {
   };
 }
 
-export function buildUpdatePayload(values: ProfessionalFormValues, availabilities: BackendAvailability[]) {
+export function buildUpdatePayload(values: any, availabilities: any[]) {
   return {
     serviceArea: { area: values.serviceArea },
     phoneNumber: values.phone,
@@ -116,10 +65,10 @@ export function buildUpdatePayload(values: ProfessionalFormValues, availabilitie
   };
 }
 
-export function buildRegisterPayload(values: ProfessionalFormValues) {
+export function buildRegisterPayload(values: any) {
   const availabilities = values.availability
-    .filter((d: FormAvailability) => d?.checked)
-    .map((d: FormAvailability) => ({ day: d?.day, shift: d?.shift }));
+    .filter((d: any) => d?.checked)
+    .map((d: any) => ({ day: d?.day, shift: d?.shift }));
 
   return {
     serviceArea: { area: values.serviceArea },

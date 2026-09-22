@@ -27,7 +27,7 @@ export default function TrashButton({
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
 
-  const deletarAgendamento = async () => {
+  const excludeAppointment = async () => {
     if (isLoading) return;
     try {
       setIsLoading(true);
@@ -74,7 +74,7 @@ export default function TrashButton({
           <DialogClose asChild>
             <Button variant="outline">Não</Button>
           </DialogClose>
-          <Button onClick={deletarAgendamento} type="submit" disabled={isLoading}>
+          <Button onClick={excludeAppointment} type="submit" disabled={isLoading}>
             {isLoading ? "Excluindo..." : "Sim"}
           </Button>
         </DialogFooter>
