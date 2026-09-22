@@ -129,6 +129,8 @@ public class GlobalExceptionHandler {
             "O arquivo excede o limite máximo permitido de 10MB",
             request.getRequestURI());
     return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
+}
+
   @ExceptionHandler(HttpMediaTypeNotSupportedException.class)
         public ResponseEntity<ErrorResponse> handleMediaTypeNotSupportedException(
                 HttpMediaTypeNotSupportedException ex,
