@@ -1,4 +1,4 @@
-name: SonarQube
+name: SonarQube Analysis
 
 on:
   push:
@@ -6,14 +6,28 @@ on:
   pull_request:
     branches: [ "dev", "main" ]
 
+permissions:
+  contents: read
+
 jobs:
-  call-sonar-fullstack:
-    uses: IFPBEsp/APAE-INFRA/.github/workflows/reusable-sonarqube-fullstack.yml@dev
+  sonar-backend:
+    name: Backend Analysis (Maven)
+    uses: IFPBEsp/APAE-INFRA/.github/workflows/reusable-sonarqube-maven.yml@main
     with:
-      backend-project-key: "apae-geral-backend"
-      frontend-project-key: "apae-geral-frontend"
-      backend-dir: "apps/api"
-      frontend-dir: "apps/apae"
+      project-key: "apae-geral-backend"
       organization: "ifpbesp"
+      working-directory: "apps/api"
+      java-version: "21"
+    secrets:
+      SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+
+  sonar-frontend:
+    name: Frontend Analysis (Node)
+    uses: IFPBEsp/APAE-INFRA/.github/workflows/reusable-sonarqube-node.yml@main
+    with:
+      project-key: "apae-geral-frontend"
+      organization: "ifpbesp"
+      working-directory: "apps/apae"
+      node-version: "22"
     secrets:
       SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
