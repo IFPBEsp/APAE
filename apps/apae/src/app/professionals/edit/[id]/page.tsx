@@ -4,7 +4,7 @@ import { useEffect, useMemo, JSX } from "react";
 import { useRouter } from "next/navigation";
 import { Controller, useForm, type SubmitHandler } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import * as z from "zod";
+
 import { InputMask } from "@react-input/mask";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -26,7 +26,7 @@ import {
 import { useGetByIdProfessional } from "@/hooks/profissional/use-get-by-id-profissional";
 import { useUpdateProfessional } from "@/hooks/profissional/use-update-profissional";
 import { useUpdateProfessionalDocuments } from "@/hooks/profissional/use-update-professional-documents";
-import { updateProfessionalSchema } from "@/schemas/profissional.schema";
+import { updateProfessionalSchema, UpdateProfessionalFormValues } from "@/schemas/profissional.schema";
 import { STATES } from "@/lib/states";
 import HealthAreaSelect from "@/components/shared/HealthAreaSelect";
 import Availability from "@/components/forms/AvailabilityForm";
@@ -35,10 +35,10 @@ import { useProfessionalPhoto } from "@/hooks/profissional/use-professional-phot
 import { useProfessionalDocs } from "@/hooks/profissional/use-professional-docs";
 import {
   mapProfessionalToForm,
-  buildUpdatePayload,
+  buildProfessionalPayload,
 } from "@/domains/professional/shared/professional.utils";
 
-type UpdateFormValues = z.infer<typeof updateProfessionalSchema>;
+
 
 export default function ProfessionalUpdate(): JSX.Element {
   const router = useRouter();
@@ -77,7 +77,7 @@ export default function ProfessionalUpdate(): JSX.Element {
     isValidFile,
   } = useProfessionalDocs(professional?.id);
 
-  const form = useForm<UpdateFormValues>({
+  const form = useForm<UpdateProfessionalFormValues>({
     resolver: zodResolver(updateProfessionalSchema),
     defaultValues: {
       fullName: "", email: "", cpf: "", professionalDocument: "", serviceArea: "",
@@ -104,14 +104,10 @@ export default function ProfessionalUpdate(): JSX.Element {
     return { curriculum, volunteer, attachments, photo: photoDoc };
   }, [docsList]);
 
-  const onSubmit: SubmitHandler<UpdateFormValues> = async (values) => {
+  const onSubmit: SubmitHandler<UpdateProfessionalFormValues> = async (values) => {
     if (!professional?.id) return;
 
-    const availabilities = values.availability
-      .filter((d) => d?.checked)
-      .map((d) => ({ day: d?.day, shift: d?.shift }));
-
-    const ok = await updateProfessional(professional.id, buildUpdatePayload(values, availabilities));
+    const ok = await updateProfessional(professional.id, buildProfessionalPayload(values));
     if (!ok) return;
 
     if (hasAnyUpload) {

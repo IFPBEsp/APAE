@@ -1,6 +1,6 @@
 import { Professional, AvailabilityType } from "@/types/profissional";
 import { ProfessionalFormValues } from "@/schemas/profissional.schema";
-import { generateAvailabilityMatrix } from "./disponibilidade.utils";
+import { buildAvailabilityMatrixFromDTOs } from "./disponibilidade.utils";
 
 type StatusFilter = "activate" | "inactivate";
 
@@ -27,8 +27,8 @@ export function filterProfessionals(
 
 export function buildProfessionalPayload(values: ProfessionalFormValues) {
   const availabilities = (values.availability || [])
-    .filter((d: any) => d?.checked)
-    .map((d: any) => ({
+    .filter((d) => d?.checked)
+    .map((d) => ({
       day: d?.day,
       shift: d?.shift,
     }));
@@ -70,38 +70,7 @@ export function mapProfessionalToForm(professional: Professional) {
     number: professional.address.number,
     complement: professional.address.complement ?? "",
     cep: professional.address.cep,
-    availability: generateAvailabilityMatrix(
-      (professional.availabilities ?? []).map((a) => ({
-        day: a.day?.toLowerCase() || "",
-        shift: a.shift?.toLowerCase() || "",
-        checked: true,
-      }))
-    ),
-  };
-}
-
-export function buildUpdatePayload(
-  values: ProfessionalFormValues,
-  availabilities: { day: string; shift: string }[]
-) {
-  return {
-    serviceArea: { area: values.serviceArea },
-    phoneNumber: values.phone,
-    professionalDocument: values.professionalDocument?.trim() || null,
-    email: values.email.trim(),
-    cpf: values.cpf.trim(),
-    name: values.fullName.trim(),
-    identityDocument: values.rg.trim(),
-    address: {
-      state: values.state,
-      city: values.city.trim(),
-      neighborhood: values.neighborhood.trim(),
-      street: values.street.trim(),
-      number: values.number?.trim(),
-      complement: values.complement?.trim() ?? "",
-      cep: values.cep,
-    },
-    availabilities,
+    availability: buildAvailabilityMatrixFromDTOs(professional.availabilities ?? []),
   };
 }
 

@@ -2,22 +2,35 @@ import {
   daysOfWeek,
   AvailabilityType,
   shifts,
+  AvailabilityDTO,
 } from "@/types/profissional";
 
-export function generateAvailabilityMatrix(lista: AvailabilityType[]): AvailabilityType[] {
+export function generateAvailabilityMatrix(list: AvailabilityType[]): AvailabilityType[] {
   return daysOfWeek.flatMap((day) =>
     shifts.map((shift) => {
-      const existente = lista.find((d) => {
+      const existing = list.find((d) => {
         return d.day === day.id && d.shift === shift.id;
       });
 
       return (
-        existente ?? {
+        existing ?? {
           day: day.id,
           shift: shift.id,
           checked: false,
         }
       );
     }),
+  );
+}
+
+export function buildAvailabilityMatrixFromDTOs(
+  avs: AvailabilityDTO[] = []
+): AvailabilityType[] {
+  return generateAvailabilityMatrix(
+    avs.map((a) => ({
+      day: a.day?.toLowerCase() || "",
+      shift: a.shift?.toLowerCase() || "",
+      checked: true,
+    })),
   );
 }

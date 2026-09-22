@@ -100,3 +100,4 @@ export const updateProfessionalSchema = baseSchema;
 
 export type ProfessionalFormValues = z.infer<typeof baseSchema>;
 export type RegisterProfessionalFormValues = z.infer<typeof registerSchema>;
+export type UpdateProfessionalFormValues = z.infer<typeof updateProfessionalSchema>;
