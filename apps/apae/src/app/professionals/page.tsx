@@ -15,28 +15,20 @@ import { useFetchProfessionals } from "@/hooks/profissional/use-fetch-profission
 import { useInactivateProfessional } from "@/hooks/profissional/use-inactivate-profissional";
 import { useActivateProfessional } from "@/hooks/profissional/use-activate-profissional";
 import { useProfessionalFilters } from "@/hooks/profissional/use-professional-filters";
-import {
-  filterProfessionals,
-  getProfessionalAreaOptions,
-  getStatusActionConfig,
-} from "@/domains/professional/shared/professional.utils";
+import { getStatusActionConfig } from "@/domains/professional/shared/professional.utils";
 
 export default function VisualizationProfessionalPage() {
   const router = useRouter();
 
-  const filterState = useProfessionalFilters([]);
-  const { professionals, loading, error, setProfessionals } = useFetchProfessionals(
-    filterState.statusFilter === "activate",
-  );
-
   const {
-    searchTerm,
-    setSearchTerm,
-    areaFilter,
-    setAreaFilter,
-    statusFilter,
-    setStatusFilter,
-  } = filterState;
+    searchTerm, setSearchTerm,
+    areaFilter, setAreaFilter,
+    statusFilter, setStatusFilter,
+    filteredProfessionals,
+    uniqueAreas,
+  } = useProfessionalFilters([]);
+
+  const { professionals, loading, error, setProfessionals } = useFetchProfessionals(statusFilter === "activate");
 
   const { inactivate } = useInactivateProfessional();
   const { activate } = useActivateProfessional();
@@ -57,11 +49,21 @@ export default function VisualizationProfessionalPage() {
     }
   };
 
-  const displayList = filterProfessionals(professionals, {
-    searchTerm,
-    areaFilter,
+  // rederiva filtros com a lista real
+  const { filteredProfessionals: filtered, uniqueAreas: areas } = useProfessionalFilters(professionals);
+
+  // sync estado externo
+  const displayList = professionals.filter((prof) => {
+    const name = prof.name?.toLowerCase() || "";
+    const document = prof.professionalDocument?.toLowerCase() || "";
+    const cpf = prof.cpf?.toLowerCase() || "";
+    const term = searchTerm.toLowerCase();
+    const matchesSearch = name.includes(term) || document.includes(term) || cpf.includes(term);
+    const matchesArea = areaFilter === "all" || prof.serviceArea.area === areaFilter;
+    return matchesSearch && matchesArea;
   });
-  const displayAreas = getProfessionalAreaOptions(professionals);
+
+  const displayAreas = ["all", ...Array.from(new Set(professionals.map((p) => p.serviceArea.area)))];
 
   return (
     <div className="w-full bg-background p-4 md:p-6 lg:p-8">

@@ -46,7 +46,31 @@ export default function ProfessionalRegister(): JSX.Element {
   const onSubmit: SubmitHandler<RegisterFormValues> = async (values) => {
     const formData = new FormData();
 
-    const payload = buildRegisterPayload(values);
+    const availabilities = values.availability
+      .filter((d) => d?.checked)
+      .map((d) => ({
+        day: d?.day,
+        shift: d?.shift,
+      }));
+
+    const payload = {
+      serviceArea: { area: values.serviceArea },
+      phoneNumber: values.phone,
+      professionalDocument: values.professionalDocument?.trim() || null,
+      email: values.email.trim(),
+      name: values.fullName.trim(),
+      identityDocument: values.rg.trim(),
+      address: {
+        state: values.state,
+        city: values.city.trim(),
+        neighborhood: values.neighborhood.trim(),
+        street: values.street.trim(),
+        number: values.number?.trim(),
+        complement: values.complement?.trim() ?? "",
+        cep: values.cep,
+      },
+      availabilities,
+    };
 
     formData.append(
       "professional",
