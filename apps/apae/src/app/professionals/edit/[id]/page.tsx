@@ -101,11 +101,7 @@ export default function ProfessionalUpdate(): JSX.Element {
   const onSubmit: SubmitHandler<UpdateFormValues> = async (values) => {
     if (!professional?.id) return;
 
-    const availabilities = values.availability
-      .filter((d) => d?.checked)
-      .map((d) => ({ day: d?.day, shift: d?.shift }));
-
-    const ok = await updateProfessional(professional.id, buildUpdatePayload(values, availabilities));
+    const ok = await updateProfessional(professional.id, buildUpdatePayload(values));
     if (!ok) return;
 
     if (hasAnyUpload) {

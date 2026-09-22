@@ -5,7 +5,7 @@ import { useParams, useRouter } from "next/navigation";
 
 import { useGetByIdProfessional } from "@/hooks/profissional/use-get-by-id-profissional";
 import { useProfessionalDocuments } from "@/hooks/profissional/use-professional-documents";
-import { generateAvailabilityMatrix } from "@/domains/professional/shared/disponibilidade.utils";
+import { toAvailabilityMatrix } from "@/domains/professional/shared/disponibilidade.utils";
 import { AvailabilityGrid } from "@/domains/professional/components/AvailabilityGrid";
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -23,12 +23,10 @@ export default function ViewProfessional() {
 
   const photoDoc = documents?.find((doc) => doc.type === "PHOTO");
 
-  const availabilityMatrix = useMemo(() => {
-    const avs = professional?.availabilities ?? [];
-    return generateAvailabilityMatrix(
-      avs.map((a) => ({ day: a.day?.toLowerCase(), shift: a.shift?.toLowerCase(), checked: true })),
-    );
-  }, [professional?.availabilities]);
+  const availabilityMatrix = useMemo(
+    () => toAvailabilityMatrix(professional?.availabilities ?? []),
+    [professional?.availabilities],
+  );
 
   if (!id) return <p className="p-6">ID inválido.</p>;
   if (loading) return <p className="p-6">Carregando detalhes do profissional...</p>;
