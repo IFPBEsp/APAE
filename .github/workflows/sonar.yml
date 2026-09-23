@@ -11,7 +11,7 @@ permissions:
 jobs:
   sonar-backend:
     name: Backend Analysis (Maven)
-    uses: IFPBEsp/APAE-INFRA/.github/workflows/reusable-sonarqube-maven.yml@c544e8497f26a9af319d721d706f76efbde5238a
+    uses: IFPBEsp/APAE-INFRA/.github/workflows/reusable-sonarqube-maven.yml@68d8153df46ca7ca8f9d9e1bdef936cc6678f233
     with:
       project-key: "teste-apae_apae-geral-backend"
       organization: "teste-apae"
@@ -23,7 +23,7 @@ jobs:
 
   sonar-frontend:
     name: Frontend Analysis (Node)
-    uses: IFPBEsp/APAE-INFRA/.github/workflows/reusable-sonarqube-node.yml@c544e8497f26a9af319d721d706f76efbde5238a
+    uses: IFPBEsp/APAE-INFRA/.github/workflows/reusable-sonarqube-node.yml@68d8153df46ca7ca8f9d9e1bdef936cc6678f233
     with:
       project-key: "teste-apae_apae-geral-frontend"
       organization: "teste-apae"
