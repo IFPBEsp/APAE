@@ -13,6 +13,7 @@
     "dev:apae": "bash ./.scripts/run-app.sh frontend apae",
     "dev": "pnpm dev:infra && bash ./.scripts/run-app.sh both apae",
     "test:api": "cd apps/api && ./mvnw package",
+    "test:front": "pnpm --filter agendamento test",
     "db:migrate": "docker compose up db-migrate",
     "db:seed": "bash ./.scripts/setup.sh",
     "db:prepare": "pnpm db:seed && docker compose up -d minio"
