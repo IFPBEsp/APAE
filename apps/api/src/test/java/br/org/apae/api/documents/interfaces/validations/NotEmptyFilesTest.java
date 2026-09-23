@@ -11,7 +11,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 class NotEmptyFilesTest {
 
-  private final NotEmptyFiles.Validator validator = new NotEmptyFiles.Validator();
+  private final NotEmptyFiles.ListValidator validator = new NotEmptyFiles.ListValidator();
 
   @Test
   @DisplayName("Deve rejeitar lista vazia")
@@ -41,5 +41,33 @@ class NotEmptyFilesTest {
         new byte[0]);
 
     assertFalse(validator.isValid(List.of(empty), null));
+  }
+
+  @Test
+  @DisplayName("SingleFileValidator deve rejeitar arquivo nulo")
+  void singleShouldRejectNullFile() {
+    NotEmptyFiles.SingleFileValidator single = new NotEmptyFiles.SingleFileValidator();
+
+    assertFalse(single.isValid(null, null));
+  }
+
+  @Test
+  @DisplayName("SingleFileValidator deve rejeitar arquivo vazio")
+  void singleShouldRejectEmptyFile() {
+    NotEmptyFiles.SingleFileValidator single = new NotEmptyFiles.SingleFileValidator();
+    MultipartFile empty = new MockMultipartFile("file", "doc.pdf", "application/pdf",
+        new byte[0]);
+
+    assertFalse(single.isValid(empty, null));
+  }
+
+  @Test
+  @DisplayName("SingleFileValidator deve aceitar arquivo com conteúdo")
+  void singleShouldAcceptFileWithContent() {
+    NotEmptyFiles.SingleFileValidator single = new NotEmptyFiles.SingleFileValidator();
+    MultipartFile file = new MockMultipartFile("file", "doc.pdf", "application/pdf",
+        "conteudo".getBytes());
+
+    assertTrue(single.isValid(file, null));
   }
 }

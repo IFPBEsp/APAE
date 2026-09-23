@@ -20,11 +20,11 @@ class ValidFileSizeTest {
 
   private static final long TEN_MB = 10L * 1024 * 1024;
 
-  private ValidFileSize.Validator validator;
+  private ValidFileSize.ListValidator validator;
 
   @BeforeEach
   void setUp() {
-    validator = new ValidFileSize.Validator();
+    validator = new ValidFileSize.ListValidator();
     validator.initialize(validFileSizeAnnotation(TEN_MB));
   }
 
@@ -50,7 +50,7 @@ class ValidFileSizeTest {
   @Test
   @DisplayName("Deve respeitar limite customizado via anotação")
   void shouldRespectCustomMaxSizeFromAnnotation() {
-    ValidFileSize.Validator custom = new ValidFileSize.Validator();
+    ValidFileSize.ListValidator custom = new ValidFileSize.ListValidator();
     custom.initialize(validFileSizeAnnotation(5));
 
     MultipartFile within = new MockMultipartFile("file", "ok.pdf", "application/pdf",
@@ -67,6 +67,56 @@ class ValidFileSizeTest {
   void shouldAcceptNullOrEmptyList() {
     assertTrue(validator.isValid(null, null));
     assertTrue(validator.isValid(List.of(), null));
+  }
+
+  @Test
+  @DisplayName("SingleFileValidator deve aceitar arquivo dentro do limite")
+  void singleShouldAcceptFileWithinLimit() {
+    ValidFileSize.SingleFileValidator single = new ValidFileSize.SingleFileValidator();
+    single.initialize(validFileSizeAnnotation(TEN_MB));
+    MultipartFile file = new MockMultipartFile("file", "documento.pdf", "application/pdf",
+        "conteudo pequeno".getBytes());
+
+    assertTrue(single.isValid(file, null));
+  }
+
+  @Test
+  @DisplayName("SingleFileValidator deve rejeitar arquivo acima do limite")
+  void singleShouldRejectFileAboveLimit() {
+    ValidFileSize.SingleFileValidator single = new ValidFileSize.SingleFileValidator();
+    single.initialize(validFileSizeAnnotation(TEN_MB));
+    byte[] bigContent = new byte[(int) TEN_MB + 1];
+    MultipartFile file = new MockMultipartFile("file", "grande.pdf", "application/pdf",
+        bigContent);
+
+    assertFalse(single.isValid(file, violationContext()));
+  }
+
+  @Test
+  @DisplayName("SingleFileValidator deve respeitar limite customizado via anotação")
+  void singleShouldRespectCustomMaxSizeFromAnnotation() {
+    ValidFileSize.SingleFileValidator single = new ValidFileSize.SingleFileValidator();
+    single.initialize(validFileSizeAnnotation(5));
+
+    MultipartFile within = new MockMultipartFile("file", "ok.pdf", "application/pdf",
+        new byte[5]);
+    MultipartFile above = new MockMultipartFile("file", "grande.pdf", "application/pdf",
+        new byte[6]);
+
+    assertTrue(single.isValid(within, null));
+    assertFalse(single.isValid(above, violationContext()));
+  }
+
+  @Test
+  @DisplayName("SingleFileValidator deve aceitar arquivo nulo ou vazio")
+  void singleShouldAcceptNullOrEmptyFile() {
+    ValidFileSize.SingleFileValidator single = new ValidFileSize.SingleFileValidator();
+    single.initialize(validFileSizeAnnotation(TEN_MB));
+    MultipartFile empty = new MockMultipartFile("file", "vazio.pdf", "application/pdf",
+        new byte[0]);
+
+    assertTrue(single.isValid(null, null));
+    assertTrue(single.isValid(empty, null));
   }
 
   private static ValidFileSize validFileSizeAnnotation(long maxSize) {

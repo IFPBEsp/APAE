@@ -16,7 +16,7 @@ import jakarta.validation.ConstraintValidatorContext;
 
 class ValidFileFormatTest {
 
-  private final ValidFileFormat.Validator validator = new ValidFileFormat.Validator();
+  private final ValidFileFormat.ListValidator validator = new ValidFileFormat.ListValidator();
 
   @Test
   @DisplayName("Deve aceitar extensão e content-type permitidos")
@@ -55,6 +55,47 @@ class ValidFileFormatTest {
   void shouldAcceptNullOrEmptyList() {
     assertTrue(validator.isValid(null, null));
     assertTrue(validator.isValid(List.of(), null));
+  }
+
+  @Test
+  @DisplayName("SingleFileValidator deve aceitar extensão e content-type permitidos")
+  void singleShouldAcceptAllowedFormat() {
+    ValidFileFormat.SingleFileValidator single = new ValidFileFormat.SingleFileValidator();
+    MultipartFile pdf = new MockMultipartFile("file", "doc.pdf", "application/pdf",
+        "conteudo".getBytes());
+
+    assertTrue(single.isValid(pdf, null));
+  }
+
+  @Test
+  @DisplayName("SingleFileValidator deve rejeitar extensão não permitida")
+  void singleShouldRejectNotAllowedExtension() {
+    ValidFileFormat.SingleFileValidator single = new ValidFileFormat.SingleFileValidator();
+    MultipartFile exe = new MockMultipartFile("file", "malware.exe", "application/pdf",
+        "conteudo".getBytes());
+
+    assertFalse(single.isValid(exe, violationContext()));
+  }
+
+  @Test
+  @DisplayName("SingleFileValidator deve rejeitar content-type não permitido")
+  void singleShouldRejectNotAllowedContentType() {
+    ValidFileFormat.SingleFileValidator single = new ValidFileFormat.SingleFileValidator();
+    MultipartFile txt = new MockMultipartFile("file", "notas.txt", "text/plain",
+        "conteudo".getBytes());
+
+    assertFalse(single.isValid(txt, violationContext()));
+  }
+
+  @Test
+  @DisplayName("SingleFileValidator deve aceitar arquivo nulo ou vazio")
+  void singleShouldAcceptNullOrEmptyFile() {
+    ValidFileFormat.SingleFileValidator single = new ValidFileFormat.SingleFileValidator();
+    MultipartFile empty = new MockMultipartFile("file", "doc.pdf", "application/pdf",
+        new byte[0]);
+
+    assertTrue(single.isValid(null, null));
+    assertTrue(single.isValid(empty, null));
   }
 
   private static ConstraintValidatorContext violationContext() {
