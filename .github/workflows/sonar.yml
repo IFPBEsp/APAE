@@ -20,3 +20,16 @@ jobs:
       sonar-host-url: "https://sonarcloud.io"
     secrets:
       SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+
+  sonar-frontend:
+    name: Frontend Analysis (Node)
+    uses: IFPBEsp/APAE-INFRA/.github/workflows/reusable-sonarqube-node.yml@c544e8497f26a9af319d721d706f76efbde5238a
+    with:
+      project-key: "teste-apae_apae-geral-frontend"
+      organization: "teste-apae"
+      working-directory: "apps/apae"
+      node-version: "22"
+      sonar-host-url: "https://sonarcloud.io"
+      run-tests: true
+    secrets:
+      SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
