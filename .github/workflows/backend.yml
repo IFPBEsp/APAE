@@ -13,7 +13,7 @@ jobs:
 
     steps:
       - name: Baixar repositório
-        uses: actions/checkout@v5
+        uses: actions/checkout@v4
 
       - name: Configurar JDK 21
         uses: actions/setup-java@v4
@@ -24,7 +24,7 @@ jobs:
 
       - name: Compilar aplicação com Maven
         working-directory: ./apps/api
-        run: mvnw clean package
+        run: ./mvnw clean package
 
       - name: Salvar artefato gerado
         uses: actions/upload-artifact@v4
