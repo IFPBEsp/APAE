@@ -4,7 +4,8 @@ import java.time.LocalDate;
 
 import br.org.apae.api.patient.domain.exceptions.InvalidDataException;
 
-import static br.org.apae.api.patient.domain.validation.ValidationUtils.*;
+import static br.org.apae.api.patient.domain.validation.ValidationUtils.requireNonNull;
+import static br.org.apae.api.patient.domain.validation.ValidationUtils.requireNonNullOrEmpty;
 
 public class Identification {
   private final String cpf;
