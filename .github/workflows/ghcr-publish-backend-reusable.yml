@@ -1,0 +1,28 @@
+name: Test reusable Docker workflow - backend
+
+on:
+  push:
+    branches:
+      - 35-ci-testar-workflow-reutilizavel-docker
+    paths:
+      - "apps/api/**"
+      - ".github/workflows/ghcr-publish-backend-reusable.yml"
+
+permissions:
+  contents: read
+  packages: write
+
+jobs:
+  publish-backend:
+    name: Build, scan and publish backend
+    uses: IFPBEsp/APAE-INFRA/.github/workflows/docker-build-publish-image.yml@35-ci-criar-pipeline-reutilizavel-para-build-e-publicacao-de-imagens-docker-no-ghcr
+    with:
+      context: ./apps/api
+      dockerfile: ./apps/api/Dockerfile
+      image-name: apae-geral-backend
+      platforms: '["linux/amd64"]'
+      publish-latest: false
+      scan-severity: HIGH,CRITICAL
+      build-args: |
+        APP_VERSION=${{ github.sha }}
+        VCS_REF=${{ github.sha }}
