@@ -13,8 +13,13 @@ import org.springframework.web.bind.annotation.RestController;
 
 import br.org.apae.api.appointment.application.interfaces.AppointmentApplicationService;
 import br.org.apae.api.appointment.interfaces.controllers.AppointmentController;
-import br.org.apae.api.common.dto.appointment.request.appointment.*;
-import br.org.apae.api.common.dto.appointment.response.appointment.*;
+import br.org.apae.api.common.dto.appointment.request.appointment.CancelGeneratedAppointmentDTO;
+import br.org.apae.api.common.dto.appointment.request.appointment.CreateAppointmentDTO;
+import br.org.apae.api.common.dto.appointment.request.appointment.RescheduleGeneratedAppointmentDTO;
+import br.org.apae.api.common.dto.appointment.request.appointment.UpdateAppointmentDTO;
+import br.org.apae.api.common.dto.appointment.response.appointment.AppointmentResponseDTO;
+import br.org.apae.api.common.dto.appointment.response.appointment.GeneratedAppointmentResponseDTO;
+import br.org.apae.api.common.dto.appointment.response.appointment.TodayAppointmentsResponseDTO;
 import jakarta.validation.Valid;
 
 @RestController

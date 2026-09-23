@@ -3,7 +3,8 @@ package br.org.apae.api.patient.domain.model.patient;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 
-import static br.org.apae.api.patient.domain.validation.ValidationUtils.*;
+import static br.org.apae.api.patient.domain.validation.ValidationUtils.requireNonNull;
+import static br.org.apae.api.patient.domain.validation.ValidationUtils.requireNonNullOrEmpty;
 
 public class BirthRecord {
   private final String birthCertificateNumber;
