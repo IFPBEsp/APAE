@@ -24,7 +24,7 @@ jobs:
 
       - name: Compilar aplicação com Maven
         working-directory: ./apps/api
-        run: mvn clean package
+        run: mvnw clean package
 
       - name: Salvar artefato gerado
         uses: actions/upload-artifact@v4
