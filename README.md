@@ -15,7 +15,12 @@ Projeto em desenvolvimento, fruto de uma parceria entre o IFPB (Campus Esperanç
   - [Introdução](#introdução)
   - [Apresentação do Projeto](#apresentação-do-projeto)
     - [Como Executar](#como-executar)
-      - [Outros Comandos:](#outros-comandos)
+      - [Passo 1: Setup Inicial](#passo-1-setup-inicial)
+      - [Passo 2: Build do Backend](#passo-2-build-do-backend)
+      - [Passo 3: Build do Frontend](#passo-3-build-do-frontend)
+      - [Passo 4: Seed do Banco de Dados](#passo-4-seed-do-banco-de-dados)
+      - [Passo 5: Executar o Projeto](#passo-5-executar-o-projeto)
+      - [Outros Comandos Úteis:](#outros-comandos-úteis)
       - [Credenciais do usuário para testes:](#credenciais-do-usuário-para-testes)
   - [Fluxo de Trabalho](#fluxo-de-trabalho)
     - [Convenção de Commits](#convenção-de-commits)
@@ -28,7 +33,9 @@ Projeto em desenvolvimento, fruto de uma parceria entre o IFPB (Campus Esperanç
       - [GitFlow](#gitflow)
       - [Outras Labels Úteis](#outras-labels-úteis)
     - [Raia do Kanban](#raia-do-kanban)
+  - [Qualidade de Código](#qualidade-de-código)
   - [Configuração do Projeto](#configuração-do-projeto)
+    - [Configuração de Ambiente](#configuração-de-ambiente)
     - [Variáveis de Ambiente (Opcional)](#variáveis-de-ambiente-opcional)
     - [Como configurar](#como-configurar)
     - [Envio de e-mails](#envio-de-e-mails)
@@ -50,7 +57,7 @@ Este projeto tem como objetivo o desenvolvimento de dois sistemas para a APAE, o
 O projeto foi automatizado para rodar com o mínimo de comandos utilizando **pnpm Workspaces**. Siga os passos abaixo:
 
 > **Nota para Windows:** Utilize **GitBash** para executar os comandos.
-> 
+>
 > ℹ️ Algumas funcionalidades, como envio de e-mails, utilizam configuração opcional de variáveis de ambiente. Veja a seção [**Configuração do Projeto**](#configuração-do-projeto).
 
 #### Pré-requisitos
@@ -256,6 +263,14 @@ O Kanban é usado para organizar as **issues** no processo de desenvolvimento. A
 - **Aguardando PR**: Issues concluídas, aguardando revisão e aprovação via Pull Request (PR).
 - **Homologação**: Issues em testes no ambiente de homologação.
 - **Disponível para Deploy**: Issues prontas para produção, após revisão e testes.
+
+---
+
+## Qualidade de Código
+
+O repositório tem Husky + lint-staged + Prettier + EditorConfig (frontend) e Checkstyle + PMD (backend, `apps/api`) configurados para formatação e lint automáticos sobre os arquivos alterados em cada commit.
+
+`pnpm install` na raiz já instala o hook sozinho — nada extra a configurar. Veja o que roda automaticamente, como formatar/verificar manualmente e como isso influencia o dia a dia em [`docs/docs-quality/CODE_QUALITY.md`](./docs/docs-quality/CODE_QUALITY.md).
 
 ---
 
