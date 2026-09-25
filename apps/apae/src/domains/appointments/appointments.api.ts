@@ -1,192 +1,17 @@
-import { TodayAppointment } from "@/types/appointment";
-import { Page } from "@/types/pagination";
-
-export type UUID = string;
-
-export interface AnnualRegistry {
-  id: UUID;
-  bpc: string;
-  diseases: string;
-  familyIncome: number;
-  year: string;
-  patient: Patient;
-  disorders: Disorder;
-  endDate: string;
-}
-
-export interface Appointment {
-  id: UUID;
-  professional: Professional;
-  serviceId: UUID;
-  annualRegistration: AnnualRegistry;
-  frequencyDays: number;
-  hour: string;
-  initialDate: string;
-  endDate: string;
-  isActive: boolean;
-  creationDate: string;
-  replacedByDate?: string;
-  updatedFromDate?: string;
-}
-
-export interface CreateAppointmentDTO {
-  professionalId: UUID;
-  serviceId: UUID;
-  patientId: UUID;
-  frequencyDays: number;
-  initialDate: string;
-  hour: string;
-}
-
-export interface AppointmentResponseDTO {
-  id: UUID;
-  professional: Professional;
-  serviceId: UUID;
-  annualRegistration: AnnualRegistry;
-  frequencyDays: number;
-  hour: string;
-  initialDate: string;
-  endDate: string;
-  isActive: boolean;
-  creationDate: string;
-}
-
-export interface GeneratedAppointment {
-  id: UUID;
-  appointment?: Appointment;
-  scheduledDateTime: string;
-  overriddenDateTime: string;
-  performed: boolean;
-  cancelled: boolean;
-  cancellationReason: string;
-  patientId: UUID;
-}
-
-export interface GeneratedAppointmentResponseDTO {
-  id: UUID;
-  appointmentId: UUID;
-  scheduledDateTime: string;
-  overriddenDateTime: string;
-  performed: boolean;
-  cancelled: boolean;
-  cancellationReason: string;
-  patientId: UUID;
-  effectiveDateTime: string;
-}
-
-export interface Absence {
-  id: UUID;
-  generatedAppointment?: GeneratedAppointment;
-  absenceDate: string;
-  justification: string;
-  notified: boolean;
-}
-
-export interface Patient {
-  id: string;
-  name: string;
-  fullName: string;
-  birthplace: string;
-  birthDate: string;
-  contact: string;
-  birthCertificateNumber: string;
-  registryOffice: string;
-  fls: string;
-  book: string;
-  rg: string;
-  issueDate: string;
-  issuingAgency: string;
-  cpf: string;
-  cns: string;
-  nis: string;
-  registrationDate: string;
-  allergies: string;
-  isStudent: boolean;
-  address?: Address;
-  guardian?: Guardian;
-  parents?: Parent[];
-  vaccines?: Vaccine[];
-}
-
-export interface Address {
-  id: UUID;
-  city: string;
-  cep: string;
-  state: string;
-  neighborhood: string;
-  street: string;
-  number: string;
-  complement: string;
-}
-
-export interface Guardian {
-  id: UUID;
-  name: string;
-  contact: string;
-  kinship: string;
-  address?: Address;
-}
-
-export interface Parent {
-  id: UUID;
-  name: string;
-  rg: string;
-  cpf: string;
-  isAlive: boolean;
-  profession: string;
-  kinship: string;
-  patient?: Patient;
-}
-
-export interface Vaccine {
-  id: UUID;
-  name: string;
-}
-
-export interface UpdateAppointmentDTO {
-  professionalId?: string;
-  annualRegistrationId?: string;
-  serviceId?: string;
-  frequencyDays?: number;
-  initialDate?: string;
-  hour?: string;
-  endDate?: string;
-}
-
-export interface RescheduleGeneratedAppointmentDTO {
-  newDateTime: string;
-}
-
-export interface CancelGeneratedAppointmentDTO {
-  reason: string;
-}
-
-export interface Professional {
-  id: string;
-  serviceArea?: {
-    id?: string | number;
-    area?: string;
-  };
-  healthSector?: string | null;
-  phoneNumber?: string;
-  professionalDocument?: string | null;
-  email: string;
-  cpf?: string;
-  name: string;
-  identityDocument?: string;
-  address?: Address;
-}
-
-export interface Disorder {
-  id: UUID;
-  name: string;
-}
-
-export function getProfessionalAreaName(
-  professional?: Pick<Professional, "serviceArea" | "healthSector"> | null,
-): string {
-  return professional?.serviceArea?.area ?? professional?.healthSector ?? "";
-}
+import type {
+  UUID,
+  CreateAppointmentDTO,
+  AppointmentResponseDTO,
+  UpdateAppointmentDTO,
+  RescheduleGeneratedAppointmentDTO,
+  CancelGeneratedAppointmentDTO,
+  GeneratedAppointmentResponseDTO,
+  Absence,
+  Patient,
+  Professional,
+} from './types/appointments.types';
+import type { Page } from '@/types/pagination';
+import type { TodayAppointment } from '@/domains/appointments/types/appointments.types';
 
 function ensurePageFormat<T>(data: unknown): Page<T> {
   if (data && Array.isArray((data as Page<T>).content)) {
@@ -217,17 +42,6 @@ function ensurePageFormat<T>(data: unknown): Page<T> {
     length: data ? 1 : 0,
   } as Page<T>;
 }
-
-export const formatTimeForBackend = (timeString: string): string => {
-  if (timeString.length === 5) {
-    return `${timeString}:00`;
-  }
-  return timeString;
-};
-
-export const parseTimeFromBackend = (timeString: string): string => {
-  return timeString.substring(0, 5);
-};
 
 export async function saveAppointment(
   dto: CreateAppointmentDTO,
@@ -437,7 +251,7 @@ export async function registerAbsence(
   });
 
   if (!res.ok) {
-    throw new Error(`Erro ao registrar ausÃªncia`);
+    throw new Error(`Erro ao registrar ausência`);
   }
 
   return await res.json();
@@ -471,7 +285,7 @@ export async function getHealthProfessional(
   const response = await fetch(`/apae-geral/api/professionals/${id}`);
 
   if (!response.ok) {
-    throw new Error(`Profissional nÃ£o encontrado (ID: ${id})`);
+    throw new Error(`Profissional não encontrado (ID: ${id})`);
   }
 
   return await response.json();

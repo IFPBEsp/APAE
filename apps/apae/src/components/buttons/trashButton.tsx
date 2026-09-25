@@ -2,7 +2,7 @@
 import { toast } from "react-toastify";
 import { Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { deleteAppointment } from "@/app/services/appointmentService";
+import { deleteAppointment } from "@/domains/appointments/appointments.api";
 import { useRouter } from "next/navigation";
 import {
   Dialog,

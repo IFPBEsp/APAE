@@ -26,7 +26,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { toast } from "react-toastify";
 
 import { DocumentWithOutUrl } from "@/types/document";
-import AbsenceService from "@/app/services/absenceService";
+import { registerAbsence, justifyAbsence } from "@/domains/absences/absences.api";
 
 interface AbsenceFormProps {
   generatedAppointmentId: string;
@@ -96,7 +96,7 @@ export function AbsenceForm({
         justificationDocumentId: documentId,
       };
 
-      await AbsenceService.registerAbsence(absencePayload);
+      await registerAbsence(absencePayload);
 
       toast.success("Falta registrada com sucesso!");
 

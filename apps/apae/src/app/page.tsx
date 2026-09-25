@@ -42,15 +42,10 @@ import {
   DialogTitle,
   DialogTrigger,
 } from '@/components/ui/dialog';
-import { TodayAppointment } from '@/types/appointment';
-import {
-  getAppointments,
-  listTodayAppointment,
-  markAsPerformed,
-  UUID,
-  type AppointmentResponseDTO,
-} from './services/appointmentService';
-import AbsenceService from './services/absenceService'; // Added service
+import type { TodayAppointment } from '@/domains/appointments/types/appointments.types';
+import { getAppointments, listTodayAppointment, markAsPerformed } from "@/domains/appointments/appointments.api";
+import type { UUID, AppointmentResponseDTO } from "@/domains/appointments/types/appointments.types";
+import { registerAbsence, justifyAbsence } from '@/domains/absences/absences.api';
 
 import { AppointmentForm } from '@/components/forms/AppointmentForm';
 import { InfoCard } from '@/components/shared/InfoCard';
