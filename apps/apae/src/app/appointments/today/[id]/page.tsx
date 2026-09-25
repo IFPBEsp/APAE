@@ -4,6 +4,7 @@ import { format } from 'date-fns';
 import { useParams } from 'next/navigation';
 import { useEffect, useState, useRef } from 'react';
 import { AlertTriangle } from 'lucide-react';
+import { getProfessionalAreaName } from '@/domains/appointments/shared/formatters';
 
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
@@ -21,10 +22,9 @@ import {
 } from '@/components/ui/tooltip';
 
 import {
-  getProfessionalAreaName,
   getTodayAppointmentById,
-} from '@/app/services/appointmentService';
-import { TodayAppointment } from '@/types/appointment';
+} from '@/domains/appointments/appointments.api';
+import type { TodayAppointment } from '@/domains/appointments/types/appointments.types';
 
 export default function ViewTodayAppointment() {
   const { id } = useParams<{ id: string }>();

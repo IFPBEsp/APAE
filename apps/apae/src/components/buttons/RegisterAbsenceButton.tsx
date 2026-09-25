@@ -1,6 +1,6 @@
 "use client";
 
-import AbsenceService from "@/app/services/absenceService";
+import { registerAbsence } from "@/domains/absences/absences.api";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,

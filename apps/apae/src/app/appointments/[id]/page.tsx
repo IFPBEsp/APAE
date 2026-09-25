@@ -2,6 +2,7 @@
 
 import { useEffect, useState, useRef } from 'react';
 import { useParams } from 'next/navigation';
+import { getProfessionalAreaName } from '@/domains/appointments/shared/formatters';
 
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
@@ -22,11 +23,8 @@ import {
 } from '@/components/ui/dialog';
 import { Pencil, AlertTriangle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import {
-  getAppointmentById,
-  Appointment,
-  getProfessionalAreaName,
-} from '@/app/services/appointmentService';
+import { getAppointmentById } from '@/domains/appointments/appointments.api';
+import type { Appointment } from '@/domains/appointments/types/appointments.types';
 import { AppointmentForm } from '@/components/forms/AppointmentForm';
 import TrashButton from '@/components/buttons/trashButton';
 import { formatDatePTBR, separateAndTransformIntoNumber } from '@/lib/utils';

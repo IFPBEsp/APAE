@@ -44,11 +44,8 @@ import {
 import { formatDatePTBR } from '@/lib/utils';
 import { ptBR } from 'date-fns/locale';
 import Link from "next/link";
-import {
-  Appointment,
-  getAppointments,
-  getServiceAreas,
-} from "../../services/appointmentService";
+import { getAppointments, getServiceAreas } from "@/domains/appointments/appointments.api";
+import type { Appointment } from "@/domains/appointments/types/appointments.types";
 import {Tooltip, TooltipContent, TooltipProvider, TooltipTrigger} from "@radix-ui/react-tooltip";
 
 type Area = {
