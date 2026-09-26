@@ -109,8 +109,12 @@ export function AbsenceForm({
 
       window.location.reload();
 
-    } catch (error: any) {
-      toast.error(error.message || "Erro ao registrar falta");
+    } catch (error: unknown) {
+      const errorMessage =
+        error instanceof Error && error.message
+          ? error.message
+          : "Erro ao registrar falta";
+      toast.error(errorMessage);
     }
   };
 

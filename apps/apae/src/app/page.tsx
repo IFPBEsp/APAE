@@ -50,7 +50,7 @@ import {
   UUID,
   type AppointmentResponseDTO,
 } from './services/appointmentService';
-import AbsenceService from './services/absenceService'; // Added service
+import { useAbsenceAlerts } from '@/hooks/use-absence-alerts';
 
 import { AppointmentForm } from '@/components/forms/AppointmentForm';
 import { InfoCard } from '@/components/shared/InfoCard';
@@ -65,7 +65,7 @@ export default function DashboardPage() {
   const [activeAppointments, setActiveAppointments] = useState<TodayAppointment[]>([]);
   const [inactiveAppointments, setInactiveAppointments] = useState<TodayAppointment[]>([]);
   const [isCreateOpen, setIsCreateOpen] = useState(false);
-  const [alertPatientIds, setAlertPatientIds] = useState<Set<string>>(new Set());
+  const { alertPatientIds } = useAbsenceAlerts();
   const lastFetchedDate = useRef<string | null>(null);
 
 
@@ -83,36 +83,33 @@ export default function DashboardPage() {
     setAllAppointments(allAppointmentsPage.content || []);
   };
 
-  const fetchAbsences = async () => {
-      try {
-        // We make a direct fetch to the API, filtering by 3 absences
-        const response = await fetch('/apae-geral/api/patients/with-absences?minAbsences=3');
-        
-        if (!response.ok) {
-          throw new Error('Erro ao buscar pacientes com faltas');
-        }
 
-        const data = await response.json();
-        
-        // We map the patient IDs that come within the "content" list (pagination pattern)
-        // If your API returns an array directly, use: data.map(...)
-        const absencesList = data.content || [];
-        const idsSet = new Set<string>(absencesList.map((item: any) => item.patient.id));
-        
-        setAlertPatientIds(idsSet);
-      } catch (error) {
-        console.error("Erro ao buscar faltas:", error);
-      }
-    };
 
   const fetchTodayAppointmentsByStatus = async () => {
-    if (!allAppointments.length) return;
+    if (!todayAppointments.length || !allAppointments.length) return;
 
-    setActiveAppointments(allAppointments.filter(a => a.isActive === true) as any);
-    setInactiveAppointments(allAppointments.filter(a => a.isActive === false) as any);
+    const appointmentMap = new Map(
+      allAppointments.map(a => [a.id, a])
+    );
+
+    const active: TodayAppointment[] = [];
+    const inactive: TodayAppointment[] = [];
+
+    for (const today of todayAppointments) {
+      const related = appointmentMap.get(today.ruleId);
+
+      if (!related) continue;
+
+      if (related.isActive) {
+        active.push(today);
+      } else {
+        inactive.push(today);
+      }
+    }
+
+    setActiveAppointments(active);
+    setInactiveAppointments(inactive);
   };
-
-
 
   useEffect(() => {
 
@@ -124,12 +121,12 @@ export default function DashboardPage() {
 
     fetchTodayAppointments();
     fetchAllAppointments();
-    fetchAbsences(); // Call the new absences service
+
   }, [selectedDate]);
 
   useEffect(() => {
     fetchTodayAppointmentsByStatus();
-  }, [allAppointments]);
+  }, [todayAppointments, allAppointments]);
 
   const markAsPerformedHandle = async (id: UUID) => {
     await markAsPerformed(id);
@@ -259,7 +256,6 @@ export default function DashboardPage() {
                     </TableCell>
                     <TableCell className="px-3 py-2 text-xs sm:px-4 sm:py-3 sm:text-sm">
                       
-                      {/* CROSS-REFERENCES TABLE PATIENT ID WITH ABSENCE SET */}
                       <div className="flex items-center gap-2">
                         <span className="truncate">{item.patient.fullName}</span>
                         {alertPatientIds.has(item.patient.id) && (

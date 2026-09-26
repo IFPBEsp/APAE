@@ -4,7 +4,7 @@ import {
   CalendarDays,
   SearchIcon,
   Users,
-  AlertTriangle // Icon Import
+  AlertTriangle
 } from 'lucide-react';
 import { useEffect, useState, useRef } from 'react';
 
@@ -50,6 +50,8 @@ import {
   getServiceAreas,
 } from "../../services/appointmentService";
 import {Tooltip, TooltipContent, TooltipProvider, TooltipTrigger} from "@radix-ui/react-tooltip";
+import { useAbsenceAlerts } from '@/hooks/use-absence-alerts';
+import { useAppointmentFilters } from '@/hooks/use-appointment-filters';
 
 type Area = {
   id: number;
@@ -57,15 +59,24 @@ type Area = {
 };
 
 export default function AllApointments() {
-  const [selectedDate, setSelectedDate] = useState<Date | undefined>(undefined);
-  const [selectedArea, setSelectedArea] = useState('');
-  const [selectedStatus, setSelectedStatus] = useState('');
-  const [searchName, setSearchName] = useState('');
   const [areas, setAreas] = useState<Area[]>([]);
   const [appointments, setAppointments] = useState<Appointment[]>([]);
-  const [alertPatientIds, setAlertPatientIds] = useState<Set<string>>(new Set()); // ALERT STATE
   const initialized = useRef(false);
   const [isCreateOpen, setIsCreateOpen] = useState(false);
+
+  const { alertPatientIds } = useAbsenceAlerts();
+  const {
+    selectedDate,
+    setSelectedDate,
+    selectedArea,
+    setSelectedArea,
+    selectedStatus,
+    setSelectedStatus,
+    searchName,
+    setSearchName,
+    filteredAppointments,
+    clearFilter,
+  } = useAppointmentFilters(appointments);
 
 useEffect(() => {
   if (appointments.length > 0) return;
@@ -86,19 +97,6 @@ useEffect(() => {
       );
       setAreas(existingAreas);
 
-      // Direct fetch to API (working logic)
-      const absencesResponse = await fetch('/apae-geral/api/patients/with-absences?minAbsences=3');
-      
-      if (!absencesResponse.ok) {
-        throw new Error('Erro ao buscar pacientes com faltas');
-      }
-
-      const absencesData = await absencesResponse.json();
-      const absencesList = absencesData.content || [];
-      const idsSet = new Set<string>(absencesList.map((item: any) => item.patient.id));
-      
-      setAlertPatientIds(idsSet);
-
     } catch (error) {
       console.error(error);
       initialized.current = false;
@@ -107,42 +105,6 @@ useEffect(() => {
   
   fetchAppointments();
 }, [appointments]);
-
-  const filteredAppointments = appointments.filter((appointment) => {
-    const matchesDate = selectedDate
-      ? formatDatePTBR(appointment.initialDate) ===
-        formatDatePTBR(selectedDate.toString())
-      : true;
-
-    const search = searchName.toLowerCase();
-
-    const matchesSearch =
-      appointment.annualRegistration.patient.fullName
-        .toLowerCase()
-        .includes(search) ||
-      appointment.professional.name
-        .toLowerCase()
-        .includes(search);
-
-    const matchesArea = selectedArea
-      ? appointment.professional.healthSector === selectedArea
-        : true;
-
-    const matchesStatus = selectedStatus
-        ? selectedStatus === 'ativo'
-            ? appointment.isActive === true
-            : appointment.isActive === false
-        : true;
-
-    return matchesDate && matchesSearch && matchesArea && matchesStatus;
-  });
-
-  const clearFilter = () => {
-    setSelectedArea('');
-    setSearchName('');
-    setSelectedDate(undefined);
-    setSelectedStatus('');
-  };
 
   const getTooltip = (item: Appointment) => {
     if (!item.isActive && item.replacedByDate) {
@@ -294,7 +256,6 @@ useEffect(() => {
                         <div className="flex items-center gap-2">
                           <span className="truncate">{item.annualRegistration.patient.fullName}</span>
                           
-                          {/* CROSS-REFERENCES TABLE PATIENT ID WITH ABSENCE SET */}
                           {alertPatientIds.has(item.annualRegistration.patient.id) && (
                             <TooltipProvider>
                               <Tooltip>

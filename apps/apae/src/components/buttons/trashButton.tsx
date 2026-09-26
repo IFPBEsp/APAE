@@ -4,6 +4,7 @@ import { Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { deleteAppointment } from "@/app/services/appointmentService";
 import { useRouter } from "next/navigation";
+import { useState } from "react";
 import {
   Dialog,
   DialogClose,
@@ -24,10 +25,18 @@ export default function TrashButton({
   hasHistory: boolean
 }) {
   const router = useRouter();
+  const [isLoading, setIsLoading] = useState(false);
 
   const excludeAppointment = async () => {
-    await deleteAppointment(id);
-    router.back();
+    if (isLoading) return;
+    try {
+      setIsLoading(true);
+      await deleteAppointment(id);
+      router.back();
+    } catch (error) {
+      console.error(error);
+      setIsLoading(false);
+    }
   };
 
   if (hasHistory) {
@@ -65,8 +74,8 @@ export default function TrashButton({
           <DialogClose asChild>
             <Button variant="outline">Não</Button>
           </DialogClose>
-          <Button onClick={excludeAppointment} type="submit">
-            Sim
+          <Button onClick={excludeAppointment} type="submit" disabled={isLoading}>
+            {isLoading ? "Excluindo..." : "Sim"}
           </Button>
         </DialogFooter>
       </DialogContent>
