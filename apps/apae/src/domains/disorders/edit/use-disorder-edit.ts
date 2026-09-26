@@ -5,11 +5,13 @@ import { useRouter } from "next/navigation";
 import { toast } from "react-toastify";
 import { fetchDisorderApi, updateDisorderApi } from "../disorders.api";
 import type { Disorder, UpdateDisorderParams } from "../disorders.types";
+import { useDisordersContext } from "@/hooks/use-disorders";
 
 export function useDisorderEdit(id: string) {
   const [disorder, setDisorder] = useState<Disorder | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const router = useRouter();
+  const { fetchDisorders } = useDisordersContext();
 
   useEffect(() => {
     if (!id) return;
@@ -29,6 +31,7 @@ export function useDisorderEdit(id: string) {
     try {
       setIsSubmitting(true);
       await updateDisorderApi(params);
+      await fetchDisorders();
       toast.success("Transtorno atualizado com sucesso.");
       router.push("/disorders");
     } catch (error) {
