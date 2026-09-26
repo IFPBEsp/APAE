@@ -1,13 +1,11 @@
 "use client";
 
-import { useMemo } from "react";
-import { useParams, useRouter } from "next/navigation";
 
+import { useParams, useRouter } from "next/navigation";
 import { useGetByIdProfessional } from "@/hooks/profissional/use-get-by-id-profissional";
 import { useProfessionalDocuments } from "@/hooks/profissional/use-professional-documents";
-import { generateAvailabilityMatrix } from "@/domains/professional/shared/disponibilidade.utils";
+import { buildAvailabilityMatrixFromDTOs } from "@/domains/professional/shared/disponibilidade.utils";
 import { AvailabilityGrid } from "@/domains/professional/components/AvailabilityGrid";
-
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -17,18 +15,14 @@ export default function ViewProfessional() {
   const router = useRouter();
   const params = useParams<{ id: string }>();
   const id = params?.id;
-
   const { professional, loading, error } = useGetByIdProfessional();
   const { documents, loading: loadingDocs, error: errorDocs } = useProfessionalDocuments(id);
 
   const photoDoc = documents?.find((doc) => doc.type === "PHOTO");
 
-  const availabilityMatrix = useMemo(() => {
-    const avs = professional?.availabilities ?? [];
-    return generateAvailabilityMatrix(
-      avs.map((a) => ({ day: a.day?.toLowerCase(), shift: a.shift?.toLowerCase(), checked: true })),
-    );
-  }, [professional?.availabilities]);
+  const availabilityMatrix = buildAvailabilityMatrixFromDTOs(
+    professional?.availabilities
+  );
 
   if (!id) return <p className="p-6">ID inválido.</p>;
   if (loading) return <p className="p-6">Carregando detalhes do profissional...</p>;
@@ -36,14 +30,21 @@ export default function ViewProfessional() {
   if (!professional) return <p className="p-6">Profissional não encontrado.</p>;
 
   const address = professional.address || {
-    street: "—", number: "—", neighborhood: "—",
-    city: "—", state: "—", cep: "—", complement: "—",
+    street: "—",
+    number: "—",
+    neighborhood: "—",
+    city: "—",
+    state: "—",
+    cep: "—",
+    complement: "—",
   };
 
   return (
     <div className="w-full max-w-5xl mx-auto p-4 sm:p-6 md:p-10">
       <header className="flex flex-col sm:flex-row items-center sm:justify-between mb-8 gap-4">
-        <h1 className="text-2xl font-semibold text-foreground">Detalhes do profissional</h1>
+        <h1 className="text-2xl font-semibold text-foreground">
+          Detalhes do profissional
+        </h1>
         <Button
           variant="outline"
           className="text-[#0D4F97] border-[#0D4F97] hover:bg-slate-100"
@@ -72,7 +73,9 @@ export default function ViewProfessional() {
 
       <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
         <Card className="shadow-lg border-2 border-[#E0E7FF] text-[#0D4F97]">
-          <CardHeader><CardTitle className="text-lg font-semibold">Informação de perfil</CardTitle></CardHeader>
+          <CardHeader>
+            <CardTitle className="text-lg font-semibold">Informação de perfil</CardTitle>
+          </CardHeader>
           <CardContent className="space-y-2">
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-4">
               <div className="col-span-1 sm:col-span-2">
@@ -100,12 +103,16 @@ export default function ViewProfessional() {
         </Card>
 
         <Card className="shadow-lg border-2 border-[#E0E7FF] text-[#0D4F97]">
-          <CardHeader><CardTitle className="text-lg font-semibold">Informação de endereço</CardTitle></CardHeader>
+          <CardHeader>
+            <CardTitle className="text-lg font-semibold">Informação de endereço</CardTitle>
+          </CardHeader>
           <CardContent className="space-y-2">
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-4">
               <div className="col-span-1 sm:col-span-2">
                 <p className="font-semibold text-sm">Endereço</p>
-                <p className="text-base text-gray-700">{`${address.street}, ${address.number} - ${address.neighborhood}`}</p>
+                <p className="text-base text-gray-700">
+                  {`${address.street}, ${address.number} - ${address.neighborhood}`}
+                </p>
               </div>
               <div className="col-span-1 sm:col-span-2">
                 <p className="font-semibold text-sm">Complemento</p>
@@ -128,14 +135,18 @@ export default function ViewProfessional() {
         </Card>
 
         <Card className="shadow-lg border-2 border-[#E0E7FF] text-[#0D4F97] md:col-span-2">
-          <CardHeader><CardTitle className="text-lg font-semibold">Disponibilidade</CardTitle></CardHeader>
+          <CardHeader>
+            <CardTitle className="text-lg font-semibold">Disponibilidade</CardTitle>
+          </CardHeader>
           <CardContent className="space-y-3">
             <AvailabilityGrid matrix={availabilityMatrix} />
           </CardContent>
         </Card>
 
         <Card className="shadow-lg border-2 border-[#E0E7FF] text-[#0D4F97] md:col-span-2">
-          <CardHeader><CardTitle className="text-lg font-semibold">Documentos anexados</CardTitle></CardHeader>
+          <CardHeader>
+            <CardTitle className="text-lg font-semibold">Documentos anexados</CardTitle>
+          </CardHeader>
           <CardContent className="space-y-3">
             {loadingDocs ? (
               <p className="text-gray-700">Carregando documentos...</p>
@@ -146,12 +157,22 @@ export default function ViewProfessional() {
             ) : (
               <ul className="space-y-2">
                 {documents.map((doc) => (
-                  <li key={doc.id} className="flex items-center justify-between rounded-md border p-3">
+                  <li
+                    key={doc.id}
+                    className="flex items-center justify-between rounded-md border p-3"
+                  >
                     <div>
                       <p className="font-medium text-sm">{doc.name}</p>
-                      <p className="text-xs text-gray-500">{doc.type} • {doc.year}</p>
+                      <p className="text-xs text-gray-500">
+                        {doc.type} • {doc.year}
+                      </p>
                     </div>
-                    <a href={doc.url} target="_blank" rel="noopener noreferrer" className="text-sm font-medium text-[#0D4F97] hover:underline">
+                    <a
+                      href={doc.url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-sm font-medium text-[#0D4F97] hover:underline"
+                    >
                       Visualizar
                     </a>
                   </li>

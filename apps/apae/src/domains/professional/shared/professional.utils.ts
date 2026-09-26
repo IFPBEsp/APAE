@@ -1,29 +1,60 @@
-import { generateAvailabilityMatrix } from "./disponibilidade.utils";
+import { Professional, AvailabilityType } from "@/types/profissional";
+import { ProfessionalFormValues } from "@/schemas/profissional.schema";
+import { buildAvailabilityMatrixFromDTOs } from "./disponibilidade.utils";
 
 type StatusFilter = "activate" | "inactivate";
 
-export function isValidFile(file: File): boolean {
-  const allowedTypes = [
-    "application/pdf",
-    "image/png",
-    "image/jpeg",
-    "image/jpg",
-    "image/webp",
-  ];
-  const maxSize = 5 * 1024 * 1024;
-  return allowedTypes.includes(file.type) && file.size > 0 && file.size <= maxSize;
+export function filterProfessionals(
+  professionals: Professional[],
+  searchTerm: string,
+  areaFilter: string
+): Professional[] {
+  return professionals.filter((prof) => {
+    const name = prof.name?.toLowerCase() || "";
+    const document = prof.professionalDocument?.toLowerCase() || "";
+    const cpf = prof.cpf?.toLowerCase() || "";
+    const term = searchTerm.toLowerCase();
+
+    const matchesSearch =
+      name.includes(term) || document.includes(term) || cpf.includes(term);
+
+    const matchesArea =
+      areaFilter === "all" || prof.serviceArea.area === areaFilter;
+
+    return matchesSearch && matchesArea;
+  });
 }
 
-export function mapProfessionalToForm(professional: any) {
-  const backendAvailabilities = professional.availabilities || [];
-  const fullMatrix = generateAvailabilityMatrix(
-    backendAvailabilities.map((a: any) => ({
-      day: a.day.toLowerCase(),
-      shift: a.shift.toLowerCase(),
-      checked: true,
-    })),
-  );
+export function buildProfessionalPayload(values: ProfessionalFormValues) {
+  const availabilities = (values.availability || [])
+    .filter((d) => d?.checked)
+    .map((d) => ({
+      day: d?.day,
+      shift: d?.shift,
+    }));
 
+  return {
+    serviceArea: { area: values.serviceArea },
+    phoneNumber: values.phone,
+    professionalDocument: values.professionalDocument?.trim() || null,
+    email: values.email.trim(),
+    cpf: values.cpf.trim(),
+    name: values.fullName.trim(),
+    identityDocument: values.rg.trim(),
+    address: {
+      state: values.state,
+      city: values.city.trim(),
+      neighborhood: values.neighborhood.trim(),
+      street: values.street.trim(),
+      number: values.number?.trim() ?? "",
+      complement: values.complement?.trim() ?? "",
+      cep: values.cep,
+    },
+    availabilities,
+  };
+}
+
+export function mapProfessionalToForm(professional: Professional) {
   return {
     fullName: professional.name,
     email: professional.email,
@@ -39,66 +70,34 @@ export function mapProfessionalToForm(professional: any) {
     number: professional.address.number,
     complement: professional.address.complement ?? "",
     cep: professional.address.cep,
-    availability: fullMatrix,
+    availability: buildAvailabilityMatrixFromDTOs(professional.availabilities ?? []),
   };
 }
 
-export function buildUpdatePayload(values: any, availabilities: any[]) {
-  return {
-    serviceArea: { area: values.serviceArea },
-    phoneNumber: values.phone,
-    professionalDocument: values.professionalDocument?.trim() || null,
-    email: values.email.trim(),
-    cpf: values.cpf.trim(),
-    name: values.fullName.trim(),
-    identityDocument: values.rg.trim(),
-    address: {
-      state: values.state,
-      city: values.city.trim(),
-      neighborhood: values.neighborhood.trim(),
-      street: values.street.trim(),
-      number: values.number?.trim(),
-      complement: values.complement?.trim() ?? "",
-      cep: values.cep,
-    },
-    availabilities,
-  };
-}
-
-export function buildRegisterPayload(values: any) {
-  const availabilities = values.availability
-    .filter((d: any) => d?.checked)
-    .map((d: any) => ({ day: d?.day, shift: d?.shift }));
-
-  return {
-    serviceArea: { area: values.serviceArea },
-    phoneNumber: values.phone,
-    professionalDocument: values.professionalDocument?.trim() || null,
-    email: values.email.trim(),
-    cpf: values.cpf.trim(),
-    name: values.fullName.trim(),
-    identityDocument: values.rg.trim(),
-    address: {
-      state: values.state,
-      city: values.city.trim(),
-      neighborhood: values.neighborhood.trim(),
-      street: values.street.trim(),
-      number: values.number?.trim(),
-      complement: values.complement?.trim() ?? "",
-      cep: values.cep,
-    },
-    availabilities,
-  };
+export function isValidFile(file: File): boolean {
+  const allowedTypes = [
+    "application/pdf",
+    "image/png",
+    "image/jpeg",
+    "image/jpg",
+    "image/webp",
+  ];
+  const maxSize = 5 * 1024 * 1024;
+  return (
+    allowedTypes.includes(file.type) && file.size > 0 && file.size <= maxSize
+  );
 }
 
 export function getStatusActionConfig(statusFilter: StatusFilter) {
   return {
     label: statusFilter === "activate" ? "Inativar" : "Reativar",
-    itemClass: statusFilter === "activate"
-      ? "text-destructive focus:text-destructive"
-      : "text-green-600 focus:text-green-600",
-    buttonClass: statusFilter === "activate"
-      ? ""
-      : "bg-green-600 hover:bg-green-700 text-white",
+    itemClass:
+      statusFilter === "activate"
+        ? "text-destructive focus:text-destructive"
+        : "text-green-600 focus:text-green-600",
+    buttonClass:
+      statusFilter === "activate"
+        ? ""
+        : "bg-green-600 hover:bg-green-700 text-white",
   };
 }
