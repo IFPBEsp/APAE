@@ -15,12 +15,12 @@ export async function PATCH(
 
     await api.patch(
       `/professionals/${id}/photo`,
-      body,
-      {
-        headers: {
-          "Content-Type": undefined,
+        body,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
         },
-      },
     );
 
     return NextResponse.json(
