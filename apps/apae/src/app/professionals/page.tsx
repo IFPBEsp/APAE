@@ -46,6 +46,7 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 import { useFetchProfessionals } from "@/hooks/profissional/use-fetch-profissional";
 import { useInactivateProfissional } from "@/hooks/profissional/use-inactivate-profissional";
@@ -191,10 +192,18 @@ export default function VisualizationProfessionalPage() {
               <TableBody>
                 {filteredProfissionais.length > 0 ? (
                   filteredProfissionais.map((prof) => (
-                    <TableRow key={prof.id}>
-                      <TableCell className="font-medium">
-                        {prof.name}
-                      </TableCell>
+                      <TableRow key={prof.id}>
+                        <TableCell className="font-medium">
+                          <div className="flex items-center gap-3">
+                            <Avatar className="h-9 w-9 shrink-0">
+                              <AvatarImage src={prof.profilePhotoUrl} alt={prof.name} />
+                              <AvatarFallback className="bg-[#B2D7EC] font-semibold text-[#0D4F97]">
+                                {prof.name?.charAt(0) || "P"}
+                              </AvatarFallback>
+                            </Avatar>
+                            <span>{prof.name}</span>
+                          </div>
+                        </TableCell>
                       <TableCell>{prof.professionalDocument}</TableCell>
                       <TableCell>{prof.serviceArea.area}</TableCell>
                       <TableCell className="hidden md:table-cell">

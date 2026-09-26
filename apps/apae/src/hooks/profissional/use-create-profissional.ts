@@ -8,7 +8,7 @@ export function useCreateProfissional() {
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
 
-  async function create(formData: FormData) {
+  async function create(formData: FormData, photo?: File | null) {
     setLoading(true);
     setError(null);
     setSuccess(false);
@@ -20,6 +20,21 @@ export function useCreateProfissional() {
       if (!response.ok) {
         const errorMessage = data.message;
         throw new Error(errorMessage);
+      }
+
+      if (photo) {
+        const photoData = new FormData();
+        photoData.append("file", photo);
+
+        const photoResponse = await fetch(`/apae-geral/api/professionals/${data.id}/photo`, {
+          method: "PATCH",
+          body: photoData,
+        });
+
+        if (!photoResponse.ok) {
+          const photoError = await photoResponse.json().catch(() => ({}));
+          throw new Error(photoError.message || "Erro ao enviar foto");
+        }
       }
 
       setSuccess(true);
