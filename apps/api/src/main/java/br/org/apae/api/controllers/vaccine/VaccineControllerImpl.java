@@ -5,7 +5,6 @@ import br.org.apae.api.common.dto.patient.request.vaccine.CreateVaccineDTO;
 import br.org.apae.api.common.dto.patient.response.vaccine.VaccineResponseDTO;
 import br.org.apae.api.patient.interfaces.controllers.VaccineController;
 import jakarta.validation.Valid;
-import org.springframework.beans.factory.annotation.Autowired;
 import java.util.List;
 import java.util.UUID;
 import org.springframework.http.HttpStatus;
@@ -17,7 +16,6 @@ public class VaccineControllerImpl implements VaccineController {
 
     private final VaccineApplicationService vaccineService;
 
-    @Autowired
     public VaccineControllerImpl(VaccineApplicationService vaccineService) {
         this.vaccineService = vaccineService;
     }
