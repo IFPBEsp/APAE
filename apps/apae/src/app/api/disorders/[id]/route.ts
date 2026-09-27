@@ -1,5 +1,5 @@
 import { createBaseApi } from "@/lib/axios";
-import { updateDisorderSchema } from "@/schemas/transtornosSchema";
+import { updateDisorderSchema } from "@/domains/disorders/disorders.schema";
 import { NextResponse } from "next/server";
 import { AxiosError } from "axios";
 

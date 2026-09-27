@@ -1,41 +1,29 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { useCallback } from "react";
 import { toast } from "react-toastify";
-import { fetchDisordersApi, deleteDisorderApi } from "../disorders.api";
-import type { Disorder } from "../disorders.types";
+import { useDisordersContext } from "@/hooks/use-disorders";
 
 export function useDisordersList() {
-  const [disorders, setDisorders] = useState<Disorder[]>([]);
-  const [loading, setLoading] = useState(false);
+  const {
+    disorders,
+    loading,
+    deleteDisorder: deleteDisorderCtx,
+  } = useDisordersContext();
 
-  const loadDisorders = useCallback(async () => {
-    try {
-      setLoading(true);
-      const data = await fetchDisordersApi();
-      setDisorders(data);
-    } catch (error) {
-      const message = error instanceof Error ? error.message : "Erro ao carregar transtornos.";
-      toast.error(message);
-    } finally {
-      setLoading(false);
-    }
-  }, []);
-
-  const deleteDisorder = useCallback(async (id: string) => {
-    try {
-      await deleteDisorderApi({ id });
-      toast.success("Transtorno excluído com sucesso.");
-      await loadDisorders();
-    } catch (error) {
-      const message = error instanceof Error ? error.message : "Erro ao excluir transtorno.";
-      toast.error(message);
-    }
-  }, [loadDisorders]);
-
-  useEffect(() => {
-    loadDisorders();
-  }, [loadDisorders]);
+  const deleteDisorder = useCallback(
+    async (id: string) => {
+      try {
+        await deleteDisorderCtx({ id });
+        toast.success("Transtorno excluído com sucesso.");
+      } catch (error) {
+        const message =
+          error instanceof Error ? error.message : "Erro ao excluir transtorno.";
+        toast.error(message);
+      }
+    },
+    [deleteDisorderCtx],
+  );
 
   return { disorders, loading, deleteDisorder };
 }
