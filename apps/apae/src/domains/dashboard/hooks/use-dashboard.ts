@@ -14,8 +14,6 @@ export function useDashboard() {
   const [selectedDate, setSelectedDate] = useState<Date>(new Date());
   const [todayAppointments, setTodayAppointments] = useState<TodayAppointment[]>([]);
   const [allAppointments, setAllAppointments] = useState<AppointmentResponseDTO[]>([]);
-  const [activeAppointments, setActiveAppointments] = useState<AppointmentResponseDTO[]>([]);
-  const [inactiveAppointments, setInactiveAppointments] = useState<AppointmentResponseDTO[]>([]);
   const [isCreateOpen, setIsCreateOpen] = useState(false);
   const [alertPatientIds, setAlertPatientIds] = useState<Set<string>>(new Set());
   const lastFetchedDate = useRef<string | null>(null);
@@ -39,19 +37,12 @@ export function useDashboard() {
       .catch(console.error);
   }, [selectedDate]);
 
-  useEffect(() => {
-    setActiveAppointments(allAppointments.filter((a) => a.isActive === true));
-    setInactiveAppointments(allAppointments.filter((a) => a.isActive === false));
-  }, [allAppointments]);
-
   return {
     selectedDate,
     setSelectedDate,
     todayAppointments,
     setTodayAppointments,
     allAppointments,
-    activeAppointments,
-    inactiveAppointments,
     isCreateOpen,
     setIsCreateOpen,
     alertPatientIds,

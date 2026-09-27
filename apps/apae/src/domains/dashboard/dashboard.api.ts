@@ -23,5 +23,5 @@ export async function fetchPatientsWithAbsences(): Promise<Set<string>> {
 
   const data = await response.json();
   const list = data.content || [];
-  return new Set<string>(list.map((item: any) => item.patient.id));
+  return new Set<string>(list.map((item: {patient: {id: string}}) => item.patient.id));
 }
