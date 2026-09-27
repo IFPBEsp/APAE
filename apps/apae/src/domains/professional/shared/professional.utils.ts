@@ -1,4 +1,4 @@
-import { Professional, AvailabilityType } from "@/types/profissional";
+import { Professional } from "@/types/profissional";
 import { ProfessionalFormValues } from "@/schemas/profissional.schema";
 import { buildAvailabilityMatrixFromDTOs } from "./disponibilidade.utils";
 
