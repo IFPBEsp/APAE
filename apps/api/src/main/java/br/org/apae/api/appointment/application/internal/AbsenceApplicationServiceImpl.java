@@ -2,20 +2,21 @@ package br.org.apae.api.appointment.application.internal;
 
 import br.org.apae.api.appointment.application.interfaces.AbsenceApplicationService;
 import br.org.apae.api.appointment.domain.exceptions.AppointmentNotFoundException;
-import br.org.apae.api.appointment.domain.model.*;
-import br.org.apae.api.appointment.domain.repository.*;
+import br.org.apae.api.appointment.domain.model.Absence;
+import br.org.apae.api.appointment.domain.model.GeneratedAppointment;
+import br.org.apae.api.appointment.domain.repository.AbsenceRepository;
+import br.org.apae.api.appointment.domain.repository.GeneratedAppointmentRepository;
 import br.org.apae.api.appointment.mapper.AbsenceMapper;
 import br.org.apae.api.common.dto.appointment.request.absence.CreateAbsenceDTO;
 import br.org.apae.api.common.dto.appointment.response.absence.AbsenceResponseDTO;
 import br.org.apae.api.common.dto.appointment.response.absence.JustifyAbsenceDTO;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
+import java.util.UUID;
 import org.springframework.context.annotation.Primary;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-
-import java.util.*;
 
 @Service
 @Transactional

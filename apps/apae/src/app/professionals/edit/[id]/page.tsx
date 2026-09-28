@@ -1,43 +1,50 @@
 "use client";
 
-import { JSX, useMemo } from "react";
+import { useEffect, useMemo, JSX } from "react";
 import { useRouter } from "next/navigation";
-import { Controller, type SubmitHandler } from "react-hook-form";
-import * as z from "zod";
+import { Controller, useForm, type SubmitHandler } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
 
+import { InputMask } from "@react-input/mask";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
-import { InputMask } from "@react-input/mask";
-
-
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
 import { useGetByIdProfessional } from "@/hooks/profissional/use-get-by-id-profissional";
 import { useUpdateProfessional } from "@/hooks/profissional/use-update-profissional";
 import { useUpdateProfessionalDocuments } from "@/hooks/profissional/use-update-professional-documents";
-import { updateProfessionalSchema } from "@/schemas/profissional.schema";
+import { updateProfessionalSchema, UpdateProfessionalFormValues } from "@/schemas/profissional.schema";
 import { STATES } from "@/lib/states";
-
 import HealthAreaSelect from "@/components/shared/HealthAreaSelect";
 import Availability from "@/components/forms/AvailabilityForm";
-
 import { ProfessionalDocuments } from "@/domains/professional/components/ProfessionalDocuments";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useEffect } from "react";
 import { useProfessionalPhoto } from "@/hooks/profissional/use-professional-photo";
 import { useProfessionalDocs } from "@/hooks/profissional/use-professional-docs";
-import { mapProfessionalToForm, buildUpdatePayload } from "@/domains/professional/shared/professional.utils";
+import {
+  mapProfessionalToForm,
+  buildProfessionalPayload,
+} from "@/domains/professional/shared/professional.utils";
 
-type UpdateFormValues = z.infer<typeof updateProfessionalSchema>;
+
 
 export default function ProfessionalUpdate(): JSX.Element {
   const router = useRouter();
-
   const { professional, loading: loadingProf, error: errorProf } = useGetByIdProfessional();
   const { updateProfessional, loading, error, success } = useUpdateProfessional();
   const { upload, loadingDocs, errorDocs, successDocs } = useUpdateProfessionalDocuments();
-
   const {
     fileInputRef,
     selectedPhoto,
@@ -46,7 +53,6 @@ export default function ProfessionalUpdate(): JSX.Element {
     photoError,
     uploadPhoto,
   } = useProfessionalPhoto();
-
   const {
     docs: docsList,
     docsLoading,
@@ -71,7 +77,7 @@ export default function ProfessionalUpdate(): JSX.Element {
     isValidFile,
   } = useProfessionalDocs(professional?.id);
 
-  const form = useForm<UpdateFormValues>({
+  const form = useForm<UpdateProfessionalFormValues>({
     resolver: zodResolver(updateProfessionalSchema),
     defaultValues: {
       fullName: "", email: "", cpf: "", professionalDocument: "", serviceArea: "",
@@ -98,14 +104,10 @@ export default function ProfessionalUpdate(): JSX.Element {
     return { curriculum, volunteer, attachments, photo: photoDoc };
   }, [docsList]);
 
-  const onSubmit: SubmitHandler<UpdateFormValues> = async (values) => {
+  const onSubmit: SubmitHandler<UpdateProfessionalFormValues> = async (values) => {
     if (!professional?.id) return;
 
-    const availabilities = values.availability
-      .filter((d) => d?.checked)
-      .map((d) => ({ day: d?.day, shift: d?.shift }));
-
-    const ok = await updateProfessional(professional.id, buildUpdatePayload(values, availabilities));
+    const ok = await updateProfessional(professional.id, buildProfessionalPayload(values));
     if (!ok) return;
 
     if (hasAnyUpload) {
@@ -129,21 +131,17 @@ export default function ProfessionalUpdate(): JSX.Element {
     <div className="p-0">
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6 w-full max-w-2xl">
-
           <FormField control={form.control} name="fullName" render={({ field }) => (
             <FormItem><FormLabel>Nome completo *</FormLabel><FormControl><Input placeholder="Ex: Maria da Silva" {...field} /></FormControl><FormMessage /></FormItem>
           )} />
-
           <FormField control={form.control} name="email" render={({ field }) => (
             <FormItem><FormLabel>Email *</FormLabel><FormControl><Input type="email" placeholder="profissional@exemplo.com" {...field} /></FormControl><FormMessage /></FormItem>
           )} />
-
           <Controller control={form.control} name="cpf" render={({ field, fieldState }) => (
             <FormItem><FormLabel>CPF *</FormLabel><FormControl>
               <InputMask mask="___.___.___-__" replacement={{ _: /\d/ }} value={field.value ?? ""} onChange={(e) => field.onChange(e.target.value)} onBlur={field.onBlur} placeholder="000.000.000-00" className="w-full rounded-md border px-3 py-2" />
             </FormControl><FormMessage>{fieldState.error?.message}</FormMessage></FormItem>
           )} />
-
           <div className="grid grid-cols-2 gap-4">
             <FormField control={form.control} name="professionalDocument" render={({ field }) => (
               <FormItem><FormLabel>Documento profissional</FormLabel><FormControl><Input placeholder="Ex: CRM/SP 123456" {...field} value={field.value || ""} /></FormControl><FormMessage /></FormItem>
@@ -152,7 +150,6 @@ export default function ProfessionalUpdate(): JSX.Element {
               <FormItem><FormLabel>Área de atendimento *</FormLabel><FormControl><HealthAreaSelect value={field.value} onChange={field.onChange} /></FormControl><FormMessage>{fieldState.error?.message}</FormMessage></FormItem>
             )} />
           </div>
-
           <div className="grid grid-cols-2 gap-4">
             <FormField control={form.control} name="rg" render={({ field }) => (
               <FormItem><FormLabel>RG *</FormLabel><FormControl><Input placeholder="Ex: 1234567" {...field} /></FormControl><FormMessage /></FormItem>
@@ -163,7 +160,6 @@ export default function ProfessionalUpdate(): JSX.Element {
               </FormControl><FormMessage>{fieldState.error?.message}</FormMessage></FormItem>
             )} />
           </div>
-
           <div className="grid grid-cols-2 gap-4">
             <Controller control={form.control} name="state" render={({ field, fieldState }) => (
               <FormItem><FormLabel>Estado *</FormLabel><FormControl>
@@ -177,11 +173,9 @@ export default function ProfessionalUpdate(): JSX.Element {
               <FormItem><FormLabel>Cidade *</FormLabel><FormControl><Input placeholder="Ex: João Pessoa" {...field} /></FormControl><FormMessage /></FormItem>
             )} />
           </div>
-
           <FormField control={form.control} name="street" render={({ field }) => (
             <FormItem><FormLabel>Endereço *</FormLabel><FormControl><Input placeholder="Ex: Rua das Flores" {...field} /></FormControl><FormMessage /></FormItem>
           )} />
-
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <FormField control={form.control} name="neighborhood" render={({ field }) => (
               <FormItem><FormLabel>Bairro *</FormLabel><FormControl><Input placeholder="Ex: Centro" {...field} /></FormControl><FormMessage /></FormItem>
@@ -192,7 +186,6 @@ export default function ProfessionalUpdate(): JSX.Element {
               </FormControl><FormMessage>{fieldState.error?.message}</FormMessage></FormItem>
             )} />
           </div>
-
           <div className="grid grid-cols-2 gap-4">
             <FormField control={form.control} name="number" render={({ field }) => (
               <FormItem><FormLabel>Número *</FormLabel><FormControl><Input placeholder="Ex: 123" {...field} /></FormControl><FormMessage /></FormItem>
@@ -212,7 +205,6 @@ export default function ProfessionalUpdate(): JSX.Element {
                 <FormLabel className="text-sm font-medium">
                   Selecione uma foto*
                 </FormLabel>
-
                 <FormControl>
                   <div className="flex flex-col items-start gap-4 w-full">
                     <input
@@ -223,22 +215,18 @@ export default function ProfessionalUpdate(): JSX.Element {
                       accept="image/png,image/jpeg,image/jpg,image/webp"
                       onChange={(e) => {
                         const file = e.target.files?.[0];
-
                         if (!file) {
                           field.onChange(null);
                           setSelectedPhoto(null);
                           return;
                         }
-
                         const allowedTypes = [
                           "image/png",
                           "image/jpeg",
                           "image/jpg",
                           "image/webp",
                         ];
-
                         const maxSize = 5 * 1024 * 1024;
-
                         if (
                           !allowedTypes.includes(file.type) ||
                           file.size <= 0 ||
@@ -247,21 +235,17 @@ export default function ProfessionalUpdate(): JSX.Element {
                           alert(
                             "Apenas imagens PNG, JPG ou WEBP até 5MB são permitidas",
                           );
-
                           if (fileInputRef.current) {
                             fileInputRef.current.value = "";
                           }
-
                           field.onChange(null);
                           setSelectedPhoto(null);
                           return;
                         }
-
                         field.onChange(file);
                         setSelectedPhoto(file);
                       }}
                     />
-
                     <button
                       type="button"
                       onClick={() => fileInputRef.current?.click()}
@@ -279,24 +263,20 @@ export default function ProfessionalUpdate(): JSX.Element {
                           <span className="text-xs text-gray-500">Sem foto</span>
                         )}
                       </div>
-
                       <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity bg-black/20 rounded-full">
                         <span className="bg-white text-black text-[10px] font-bold px-2 py-1 rounded shadow-sm cursor-pointer">
                           Escolher foto
                         </span>
                       </div>
                     </button>
-
                     <p className="text-xs text-gray-500">
                       PNG, JPG ou WEBP até 5MB
                     </p>
-
                     {field.value && (
                       <div className="flex items-center gap-2">
                         <p className="text-xs text-gray-600">
                           Selecionado: {field.value.name}
                         </p>
-
                         <Button
                           type="button"
                           variant="outline"
@@ -304,7 +284,6 @@ export default function ProfessionalUpdate(): JSX.Element {
                           onClick={() => {
                             field.onChange(null);
                             setSelectedPhoto(null);
-
                             if (fileInputRef.current) {
                               fileInputRef.current.value = "";
                             }
@@ -316,7 +295,6 @@ export default function ProfessionalUpdate(): JSX.Element {
                     )}
                   </div>
                 </FormControl>
-
                 <FormMessage />
               </FormItem>
             )}

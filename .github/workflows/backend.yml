@@ -5,8 +5,6 @@ on:
     branches:
       - dev
       - main
-    paths:
-      - "apps/api/**"
 
 jobs:
   build:
@@ -15,7 +13,7 @@ jobs:
 
     steps:
       - name: Baixar repositório
-        uses: actions/checkout@v5
+        uses: actions/checkout@v4
 
       - name: Configurar JDK 21
         uses: actions/setup-java@v4
@@ -24,9 +22,9 @@ jobs:
           distribution: "temurin"
           cache: maven
 
-      - name: Compilar aplicação com Maven (sem testes)
+      - name: Compilar aplicação com Maven
         working-directory: ./apps/api
-        run: mvn clean package -Dmaven.test.skip=true
+        run: ./mvnw clean package
 
       - name: Salvar artefato gerado
         uses: actions/upload-artifact@v4
