@@ -13,7 +13,6 @@ jobs:
     uses: IFPBEsp/APAE-INFRA/.github/workflows/reusable-sonarqube-maven.yml@dev
     with:
       project-key: "apae-geral-backend"
-      organization: "ifpbesp"
       working-directory: "apps/api"
       java-version: "21"
     secrets:
@@ -24,7 +23,6 @@ jobs:
     uses: IFPBEsp/APAE-INFRA/.github/workflows/reusable-sonarqube-node.yml@dev
     with:
       project-key: "apae-geral-frontend"
-      organization: "ifpbesp"
       working-directory: "apps/apae"
       node-version: "22"
     secrets:
