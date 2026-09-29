@@ -58,6 +58,8 @@ app:
     secret: ${JWT_SECRET}
   frontend:
     reset-password-url: ${APP_FRONTEND_RESET_PASSWORD_URL:http://localhost:3000/apae-geral/auth/reset-password}
+  professional-photo-metadata-backfill:
+    enabled: false
 
 minio:
   access:

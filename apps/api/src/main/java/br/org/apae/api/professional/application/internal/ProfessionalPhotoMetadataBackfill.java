@@ -2,8 +2,9 @@ package br.org.apae.api.professional.application.internal;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.boot.context.event.ApplicationReadyEvent;
-import org.springframework.context.event.EventListener;
+import org.springframework.boot.ApplicationArguments;
+import org.springframework.boot.ApplicationRunner;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -16,7 +17,8 @@ import br.org.apae.api.professional.domain.model.HealthProfessional;
 import br.org.apae.api.professional.domain.repository.HealthProfessionalRepository;
 
 @Component
-class ProfessionalPhotoMetadataBackfill {
+@ConditionalOnProperty(name = "app.professional-photo-metadata-backfill.enabled", havingValue = "true")
+class ProfessionalPhotoMetadataBackfill implements ApplicationRunner {
     private static final Logger LOGGER = LoggerFactory.getLogger(ProfessionalPhotoMetadataBackfill.class);
 
     private final HealthProfessionalRepository repository;
@@ -28,9 +30,12 @@ class ProfessionalPhotoMetadataBackfill {
         this.documentService = documentService;
     }
 
-    @EventListener(ApplicationReadyEvent.class)
     @Transactional
-    public void backfill() {
+    public void run(ApplicationArguments args) {
+        backfill();
+    }
+
+    void backfill() {
         repository.findAll().stream()
                 .filter(this::hasLegacyProfilePhoto)
                 .forEach(this::backfillPhotoMetadata);
@@ -38,7 +43,7 @@ class ProfessionalPhotoMetadataBackfill {
 
     private boolean hasLegacyProfilePhoto(HealthProfessional professional) {
         return professional.getProfilePhoto() != null
-                && professional.getProfilePhotoName() == null;
+                && (professional.getProfilePhotoName() == null || professional.getProfilePhotoYear() == null);
     }
 
     private void backfillPhotoMetadata(HealthProfessional professional) {

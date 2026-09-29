@@ -17,6 +17,7 @@ Antes de escrever qualquer linha de código, seu ambiente precisa estar preparad
 
 ---
 
+
 ## ⚙️ Configuração do Projeto (Passo a Passo)
 
 Siga estes passos **na ordem exata** para evitar problemas.
@@ -84,6 +85,14 @@ Se você prefere usar a interface gráfica da sua IDE:
     `src/main/java/br/org/apae/api/ApiApplication.java`
 4.  Clique no ícone de "Play" (▶) ao lado do nome da classe ou dentro do arquivo para iniciar a aplicação.
 
+### Backfill único de metadados das fotos de profissionais
+
+Para migrar fotos legadas uma única vez, inicie a API com a propriedade abaixo. O backfill é desabilitado por padrão e não é executado nas inicializações normais.
+
+```bash
+./mvnw spring-boot:run -Dspring-boot.run.arguments="--app.professional-photo-metadata-backfill.enabled=true"
+```
+
 -----
 
 ## 📚 Verificando se Tudo Funcionou (Swagger)
@@ -123,5 +132,3 @@ Você deverá ver a interface do Swagger listando todos os "Controllers" (como P
 4\.  Se a IDE perguntar, confirme que você quer abrir como um projeto "Maven".
 
 ---
-
-

@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { createProfissional } from "@/services/profissional-service";
 import { useRouter } from "next/navigation";
+import { toast } from "react-toastify";
 
 export function useCreateProfissional() {
   const router = useRouter();
@@ -23,17 +24,23 @@ export function useCreateProfissional() {
       }
 
       if (photo) {
-        const photoData = new FormData();
-        photoData.append("file", photo);
+        try {
+          const photoData = new FormData();
+          photoData.append("file", photo);
 
-        const photoResponse = await fetch(`/apae-geral/api/professionals/${data.id}/photo`, {
-          method: "PATCH",
-          body: photoData,
-        });
+          const photoResponse = await fetch(`/apae-geral/api/professionals/${data.id}/photo`, {
+            method: "PATCH",
+            body: photoData,
+          });
 
-        if (!photoResponse.ok) {
-          const photoError = await photoResponse.json().catch(() => ({}));
-          throw new Error(photoError.message || "Erro ao enviar foto");
+          if (!photoResponse.ok) {
+            throw new Error("Erro ao enviar foto");
+          }
+        } catch {
+          toast.warning("Profissional cadastrado, mas a foto não foi enviada.");
+          setSuccess(true);
+          router.push("/professionals");
+          return;
         }
       }
 
