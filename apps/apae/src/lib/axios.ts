@@ -12,9 +12,6 @@ import { getTokenFromCookie, removeSessionCookie } from "./cookies";
 function createAxiosInstance(baseURL: string) {
   return axios.create({
     baseURL,
-    headers: {
-      "Content-Type": "application/json",
-    },
   });
 }
 

@@ -20,7 +20,8 @@ public record HealthProfessionalResponseDTO(
         AddressResponseDTO address,
         ServiceAreaResponseDTO serviceArea,
         List<AvailabilityResponseDTO> availabilities,
-        String profilePhoto
+        String profilePhoto,
+        String profilePhotoUrl
 ) {
 
     public HealthProfessionalResponseDTO(HealthProfessional entity,
@@ -39,7 +40,33 @@ public record HealthProfessionalResponseDTO(
                 address,
                 serviceArea,
                 availabilities,
-                entity.getProfilePhoto()
+                entity.getProfilePhoto(),
+                null
+        );
+    }
+
+    public HealthProfessionalResponseDTO(UUID id, String name, String email,
+            String professionalDocument, String identityDocument, String phoneNumber,
+            String healthSector, Boolean ativo, AddressResponseDTO address,
+            ServiceAreaResponseDTO serviceArea, List<AvailabilityResponseDTO> availabilities,
+            String profilePhoto) {
+        this(id, name, email, professionalDocument, identityDocument, phoneNumber, healthSector,
+                ativo, address, serviceArea, availabilities, profilePhoto, null);
+    }
+
+    public HealthProfessionalResponseDTO(UUID id, String name, String email,
+            String professionalDocument, String identityDocument, String phoneNumber,
+            String healthSector, Boolean ativo, AddressResponseDTO address,
+            ServiceAreaResponseDTO serviceArea, List<AvailabilityResponseDTO> availabilities) {
+        this(id, name, email, professionalDocument, identityDocument, phoneNumber, healthSector,
+                ativo, address, serviceArea, availabilities, null, null);
+    }
+
+    public HealthProfessionalResponseDTO withProfilePhotoUrl(String profilePhotoUrl) {
+        return new HealthProfessionalResponseDTO(
+                id, name, email, professionalDocument, identityDocument, phoneNumber,
+                healthSector, ativo, address, serviceArea, availabilities, profilePhoto,
+                profilePhotoUrl
         );
     }
 }

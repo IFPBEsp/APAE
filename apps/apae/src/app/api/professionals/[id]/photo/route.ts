@@ -16,11 +16,6 @@ export async function PATCH(
     await api.patch(
       `/professionals/${id}/photo`,
       body,
-      {
-        headers: {
-          "Content-Type": undefined,
-        },
-      },
     );
 
     return NextResponse.json(

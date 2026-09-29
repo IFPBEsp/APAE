@@ -6,6 +6,13 @@ import br.org.apae.api.common.dto.professional.request.documents.CreateProfessio
 import br.org.apae.api.common.dto.professional.request.documents.UpdateProfessionalDocumentsDTO;
 import br.org.apae.api.common.dto.professional.response.HealthProfessionalResponseDTO;
 import br.org.apae.api.common.dto.servicearea.response.ServiceAreaResponseDTO;
+import br.org.apae.api.documents.application.interfaces.DocumentApplicationService;
+import br.org.apae.api.documents.domain.enums.DocumentCategory;
+import br.org.apae.api.documents.domain.enums.DocumentType;
+import br.org.apae.api.documents.interfaces.dto.DocumentDTO;
+import br.org.apae.api.documents.interfaces.dto.GetPresignedDocumentUrlArgsDTO;
+import br.org.apae.api.documents.interfaces.dto.PutDocumentArgsDTO;
+import br.org.apae.api.documents.interfaces.dto.RemoveDocumentArgsDTO;
 import br.org.apae.api.professional.application.interfaces.HealthProfessionalApplicationService;
 import br.org.apae.api.professional.application.mappers.HealthProfessionalMapper;
 import br.org.apae.api.professional.domain.exceptions.EmailConflictException;
@@ -18,6 +25,8 @@ import br.org.apae.api.professional.domain.model.enums.Shift;
 import br.org.apae.api.professional.domain.repository.HealthProfessionalRepository;
 import br.org.apae.api.servicearea.application.interfaces.ServiceAreaApplicationService;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -28,29 +37,33 @@ import java.io.IOException;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.time.Year;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 
 @Service
 public class HealthProfessionalApplicationServiceImpl implements HealthProfessionalApplicationService {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(HealthProfessionalApplicationServiceImpl.class);
 
     private final HealthProfessionalRepository repository;
     private final HealthProfessionalMapper mapper;
     private final ProfessionalDocumentsService documentsService;
     private final ServiceAreaApplicationService serviceAreaApplicationService;
+    private final DocumentApplicationService documentService;
 
     public HealthProfessionalApplicationServiceImpl(HealthProfessionalRepository repository,
             HealthProfessionalMapper mapper, ProfessionalDocumentsService documentsService,
-            ServiceAreaApplicationService serviceAreaApplicationService) {
+            ServiceAreaApplicationService serviceAreaApplicationService,
+            DocumentApplicationService documentService) {
         this.repository = repository;
         this.mapper = mapper;
         this.documentsService = documentsService;
         this.serviceAreaApplicationService = serviceAreaApplicationService;
+        this.documentService = documentService;
     }
 
     @Override
@@ -99,14 +112,16 @@ public class HealthProfessionalApplicationServiceImpl implements HealthProfessio
         ServiceAreaResponseDTO serviceAreaDto = serviceAreaApplicationService.findServiceAreaByArea(area);
         HealthProfessional updatedProfessional = mapper.updateEntityFromDto(entityToUpdate, dto, serviceAreaDto);
         repository.save(updatedProfessional);
-        return mapper.toResponseDTO(updatedProfessional);
+        return mapper.toResponseDTO(updatedProfessional)
+                .withProfilePhotoUrl(generateProfilePhotoUrl(updatedProfessional));
     }
 
     @Override
     @Transactional(readOnly = true)
     public HealthProfessionalResponseDTO findProfessionalById(UUID id) {
         return repository.findById(id)
-                .map(mapper::toResponseDTO)
+                .map(professional -> mapper.toResponseDTO(professional)
+                        .withProfilePhotoUrl(generateProfilePhotoUrl(professional)))
                 .orElseThrow(HealthProfessionalNotFoundException::new);
     }
 
@@ -134,7 +149,33 @@ public class HealthProfessionalApplicationServiceImpl implements HealthProfessio
         Page<HealthProfessional> page = ativo == null
                 ? repository.findAll(pageable)
                 : repository.findByAtivo(ativo, pageable);
-        return page.map(mapper::toResponseDTO);
+
+        return page.map(professional -> mapper.toResponseDTO(professional)
+                .withProfilePhotoUrl(generateProfilePhotoUrl(professional)));
+    }
+
+    private String generateProfilePhotoUrl(HealthProfessional professional) {
+        if (professional.getProfilePhoto() == null
+                || professional.getProfilePhotoName() == null
+                || professional.getProfilePhotoYear() == null) {
+            return null;
+        }
+
+        try {
+            return documentService.getPresignedDocumentUrl(
+                    GetPresignedDocumentUrlArgsDTO.builder()
+                            .id(UUID.fromString(professional.getProfilePhoto()))
+                            .name(professional.getProfilePhotoName())
+                            .category(DocumentCategory.PROFESSIONAL)
+                            .type(DocumentType.PHOTO)
+                            .owner(professional.getId().toString())
+                            .year(Year.of(professional.getProfilePhotoYear()))
+                            .expiry(1, TimeUnit.HOURS)
+                            .build());
+        } catch (Exception e) {
+            LOGGER.warn("Não foi possível gerar a URL da foto do profissional {}", professional.getId(), e);
+            return null;
+        }
     }
 
     @Override
@@ -160,6 +201,10 @@ public class HealthProfessionalApplicationServiceImpl implements HealthProfessio
         HealthProfessional professional = repository.findById(id)
             .orElseThrow(HealthProfessionalNotFoundException::new);
 
+        String previousPhotoId = professional.getProfilePhoto();
+        String previousPhotoName = professional.getProfilePhotoName();
+        Integer previousPhotoYear = professional.getProfilePhotoYear();
+
         if (file.isEmpty()) {
             throw new RuntimeException("Arquivo vazio");
         }
@@ -183,37 +228,35 @@ public class HealthProfessionalApplicationServiceImpl implements HealthProfessio
             throw new RuntimeException("Arquivo excede 5MB");
         }
 
-        String fileName = UUID.randomUUID()
-            + "-"
-            + file.getOriginalFilename();
-
-        Path uploadPath = Paths.get("uploads");
-
         try {
+            DocumentDTO document = documentService.putDocument(
+                    PutDocumentArgsDTO.builder()
+                            .stream(file.getInputStream())
+                            .category(DocumentCategory.PROFESSIONAL)
+                            .type(DocumentType.PHOTO)
+                            .contentType(file.getContentType())
+                            .owner(professional.getId().toString())
+                            .build());
 
-            Files.createDirectories(uploadPath);
-
-            if (professional.getProfilePhoto() != null) {
-
-                String oldFile = professional
-                    .getProfilePhoto()
-                    .replace("/uploads/", "");
-
-                Path oldFilePath = uploadPath.resolve(oldFile);
-
-                Files.deleteIfExists(oldFilePath);
-            }
-
-            Path filePath = uploadPath.resolve(fileName);
-
-            Files.copy(file.getInputStream(), filePath);
-
-            professional.setProfilePhoto("/uploads/" + fileName);
+            professional.setProfilePhoto(document.id().toString());
+            professional.setProfilePhotoName(document.name());
+            professional.setProfilePhotoYear(document.year().getValue());
 
             repository.save(professional);
 
-        } catch (IOException e) {
-            throw new RuntimeException("Erro ao salvar foto");
+            if (previousPhotoId != null && previousPhotoName != null && previousPhotoYear != null) {
+                documentService.removeDocument(RemoveDocumentArgsDTO.builder()
+                        .id(UUID.fromString(previousPhotoId))
+                        .name(previousPhotoName)
+                        .category(DocumentCategory.PROFESSIONAL)
+                        .type(DocumentType.PHOTO)
+                        .owner(professional.getId().toString())
+                        .year(Year.of(previousPhotoYear))
+                        .build());
+            }
+
+        } catch (Exception e) {
+            throw new RuntimeException("Erro ao salvar foto", e);
         }
     }
 

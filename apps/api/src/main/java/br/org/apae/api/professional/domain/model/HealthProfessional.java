@@ -55,6 +55,12 @@ public class HealthProfessional {
     @Column(name = "foto_perfil")
     private String profilePhoto;
 
+    @Column(name = "foto_perfil_nome")
+    private String profilePhotoName;
+
+    @Column(name = "foto_perfil_ano")
+    private Integer profilePhotoYear;
+
     protected HealthProfessional() {
     }
 
@@ -174,5 +180,21 @@ public class HealthProfessional {
 
     public void setProfilePhoto(String profilePhoto) {
         this.profilePhoto = profilePhoto;
+    }
+
+    public String getProfilePhotoName() {
+        return profilePhotoName;
+    }
+
+    public void setProfilePhotoName(String profilePhotoName) {
+        this.profilePhotoName = profilePhotoName;
+    }
+
+    public Integer getProfilePhotoYear() {
+        return profilePhotoYear;
+    }
+
+    public void setProfilePhotoYear(Integer profilePhotoYear) {
+        this.profilePhotoYear = profilePhotoYear;
     }
 }
