@@ -93,6 +93,10 @@ Para migrar fotos legadas uma única vez, inicie a API com a propriedade abaixo.
 ./mvnw spring-boot:run -Dspring-boot.run.arguments="--app.professional-photo-metadata-backfill.enabled=true"
 ```
 
+Fotos no diretório local `uploads/` também são enviadas ao MinIO. Use
+`--app.professional-photo-metadata-backfill.legacy-uploads-directory=/caminho/para/uploads`
+caso esse diretório não seja o `uploads/` relativo à execução da API.
+
 -----
 
 ## 📚 Verificando se Tudo Funcionou (Swagger)
