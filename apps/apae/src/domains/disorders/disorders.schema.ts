@@ -6,13 +6,8 @@ export const disorderSchema = z.object({
   hasPatient: z.boolean(),
 });
 
-export const createDisorderSchema = z.object({
+export const disorderFormSchema = z.object({
   name: z.string().min(1, "O nome é obrigatório."),
 });
 
-export const updateDisorderSchema = z.object({
-  name: z.string().min(1, "O nome é obrigatório."),
-});
-
-export type CreateDisorderFormData = z.infer<typeof createDisorderSchema>;
-export type UpdateDisorderFormData = z.infer<typeof updateDisorderSchema>;
+export type DisorderFormData = z.infer<typeof disorderFormSchema>;
