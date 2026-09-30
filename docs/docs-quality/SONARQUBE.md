@@ -8,7 +8,8 @@ Para rodar a análise, você precisará ter instalados:
 
 * **Docker** (e Docker Compose)
 * **JDK 21**
-* **Maven** (`sudo apt install maven` no Linux/Ubuntu)
+
+**Nota sobre o Backend:** O projeto utiliza o **Maven Wrapper (`mvnw`)**, portanto **não é necessário ter o Maven instalado** na sua máquina — o wrapper baixa e utiliza a versão correta do Maven automaticamente.
 
 **Nota sobre o Frontend:** O scanner do frontend roda embutido em um container Docker, portanto **não é necessário ter o Node instalado** na sua máquina para esta etapa.
 
@@ -63,7 +64,7 @@ Para que os scanners consigam enviar os relatórios de código para o servidor, 
 1. Após logar com a nova senha, clique no ícone do seu perfil no canto superior direito e vá em **My Account** > **Security** > **Generate Tokens**.
 2. Preencha os campos da seguinte forma:
    * **Name:** Dê um nome de sua escolha (ex: `local-token`).
-   * **Type:** O campo vem em branco por padrão. Selecione obrigatoriamente **User Token** (ou "Token de usuário" / "Token de análise global").
+   * **Type:** O campo vem em branco por padrão. Você deve adicionar a preferência para a opção **"Token de usuário"** (User Token), pois é o tipo adequado para este fluxo de análise.
    * **Expires in:** Pode manter o padrão sugerido de 30 dias (ou escolher conforme preferir).
 3. Clique em **Generate** e copie o token gerado.
 
@@ -85,10 +86,10 @@ Como o código do backend Java está contido no módulo `apps/api`, navegue até
 cd apps/api
 ```
 
-Com o token na variável de ambiente e o servidor rodando, execute a análise com o comando Maven completo:
+Com o token na variável de ambiente e o servidor rodando, execute a análise com o Maven Wrapper (`mvnw`), que dispensa a instalação prévia do Maven na máquina:
 
 ```
-mvn clean verify sonar:sonar
+./mvnw clean verify sonar:sonar
 ```
 
 Após o término da execução com sucesso (`BUILD SUCCESS`), retorne para a raiz do repositório:
@@ -128,6 +129,14 @@ Ao clicar em qualquer um deles, você verá as abas de navegação:
 
 * A aba principal exibe o **Quality Gate**, onde fica o número que interessa em cada uma das métricas (Bugs, Vulnerabilidades, Code Smells, Cobertura, etc).
 * A aba **Issues** lista os detalhes específicos de cada problema encontrado no código analisado.
+
+**Significado de cada categoria de problema apontada no SonarQube:**
+
+* **Security:** Vulnerabilidades de segurança, ou seja, pontos onde o código está exposto a riscos concretos de exploração (ex: injeção, exposição de dados sensíveis).
+* **Reliability:** Confiabilidade e Bugs, apontando trechos que podem causar comportamentos inesperados ou falhas em tempo de execução.
+* **Maintainability:** Manutenibilidade, incluindo Code Smells e a dívida técnica acumulada, ou seja, trechos que dificultam a evolução do código no futuro.
+* **Security Hotspot:** Pontos de atenção de segurança que exigem revisão manual, pois o SonarQube identifica um padrão potencialmente arriscado que pode ou não se configurar como vulnerabilidade real.
+* **Duplications:** Porcentagem de código duplicado, indicando blocos repetidos que poderiam ser refatorados e reutilizados.
 
 ## 7. Cobertura
 
