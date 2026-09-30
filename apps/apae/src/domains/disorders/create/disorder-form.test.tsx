@@ -2,7 +2,8 @@ import { describe, it, expect, vi, beforeEach } from "vitest";
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import { toast } from "react-toastify";
 import { DisorderCreateForm } from "./disorder-form";
-import { createDisorderApi } from "../disorders.api";
+import { createDisorderApi, fetchDisordersApi } from "../disorders.api";
+import { DisordersProvider } from "@/hooks/use-disorders";
 
 vi.mock("../disorders.api");
 vi.mock("react-toastify", () => ({
@@ -18,12 +19,13 @@ vi.mock("next/navigation", () => ({
 describe("DisorderCreateForm", () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    vi.mocked(fetchDisordersApi).mockResolvedValue([]);
   });
 
   it("envio válido chama a criação com o nome informado", async () => {
     vi.mocked(createDisorderApi).mockResolvedValue(undefined);
 
-    render(<DisorderCreateForm />);
+    render(<DisorderCreateForm />, { wrapper: DisordersProvider });
 
     fireEvent.input(screen.getByLabelText("Nome do Transtorno"), {
       target: { value: "TEA" },
@@ -38,7 +40,7 @@ describe("DisorderCreateForm", () => {
   });
 
   it("envio com nome vazio exibe a mensagem de validação e não chama a API", async () => {
-    render(<DisorderCreateForm />);
+    render(<DisorderCreateForm />, { wrapper: DisordersProvider });
 
     fireEvent.click(screen.getByRole("button", { name: "Salvar" }));
 

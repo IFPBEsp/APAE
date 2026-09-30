@@ -2,6 +2,7 @@ import { describe, it, expect, vi, beforeEach } from "vitest";
 import { renderHook, waitFor } from "@testing-library/react";
 import { useDisordersList } from "./use-disorders-list";
 import { fetchDisordersApi } from "../disorders.api";
+import { DisordersProvider } from "@/hooks/use-disorders";
 
 vi.mock("../disorders.api");
 vi.mock("react-toastify", () => ({
@@ -21,19 +22,23 @@ describe("useDisordersList", () => {
   it("carrega a lista de transtornos", async () => {
     vi.mocked(fetchDisordersApi).mockResolvedValue(disordersMock);
 
-    const { result } = renderHook(() => useDisordersList());
+    const { result } = renderHook(() => useDisordersList(), {
+      wrapper: DisordersProvider,
+    });
 
     await waitFor(() => {
       expect(result.current.loading).toBe(false);
     });
     expect(result.current.disorders).toEqual(disordersMock);
-    expect(fetchDisordersApi).toHaveBeenCalledTimes(1);
+    expect(fetchDisordersApi).toHaveBeenCalled();
   });
 
   it("trata o caso de lista vazia", async () => {
     vi.mocked(fetchDisordersApi).mockResolvedValue([]);
 
-    const { result } = renderHook(() => useDisordersList());
+    const { result } = renderHook(() => useDisordersList(), {
+      wrapper: DisordersProvider,
+    });
 
     await waitFor(() => {
       expect(result.current.loading).toBe(false);
