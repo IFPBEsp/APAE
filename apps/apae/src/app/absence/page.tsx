@@ -7,8 +7,8 @@ import { PatientWithAbsences } from "@/types/absence";
 import { DashboardOverview } from "@/domains/dashboard/dashboard.types";
 import { Calendar, SearchIcon, Users } from "lucide-react";
 import React, { useEffect, useState, useCallback, useRef } from "react";
-import AbsenceService from "../services/absenceService";
-
+import AbsenceService from "@/domains/absence/absence.service";
+import { formatDateShortPTBR } from "@/lib/utils";
 interface PaginationInfo {
   currentPage: number;
   totalPages: number;
@@ -48,24 +48,7 @@ export default function AbsenceDetails() {
       let documentId: string | null = null;
 
       if (file) {
-        const docFormData = new FormData();
-        docFormData.append("file", file);
-        docFormData.append("category", "ABSENCE");
-        docFormData.append("type", "ATTACHMENTANY");
-        docFormData.append("year", String(new Date().getFullYear()));
-
-        const docResponse = await fetch(`/apae-geral/api/patients/${justifyingAbsence.patientId}/documents`, {
-          method: "POST",
-          body: docFormData,
-        });
-
-        if (!docResponse.ok) {
-          const errorData = await docResponse.json();
-          throw new Error(errorData.message || "Erro ao fazer upload do documento.");
-        }
-
-        const document = await docResponse.json();
-        documentId = document.name;
+        documentId = await AbsenceService.uploadJustificationDocument(justifyingAbsence.patientId, file);
       }
 
       await AbsenceService.justifyAbsence(justifyingAbsence.id, justificationText, documentId);
@@ -131,12 +114,6 @@ export default function AbsenceDetails() {
     }, 300);
     return () => clearTimeout(timer);
   }, [searchName, fetchData]);
-
-  const formatDate = (dateString: string) => {
-    return new Date(dateString + "Z").toLocaleDateString("pt-BR", {
-      timeZone: "UTC",
-    });
-  };
 
   const handleDownload = async (patientId: string, documentName: string) => {
     try {
@@ -280,7 +257,7 @@ export default function AbsenceDetails() {
                                     <div className="flex items-center gap-4">
                                       <Calendar className="h-4 w-4 text-red-500" />
                                       <span className="font-medium">
-                                        {formatDate(abs.absenceDate)}
+                                        {formatDateShortPTBR(abs.absenceDate)}
                                       </span>
                                     </div>
                                     <div className="flex items-center gap-2 flex-wrap">
