@@ -32,26 +32,42 @@ Para iniciar o SonarQube localmente, utilize o arquivo de composição do reposi
 docker compose -f docker-compose.sonar.yml up
 ```
 
-(Rodar sem a flag `-d` fará com que você veja os logs em tempo real. Aguarde até ver a mensagem indicando que o SonarQube está operacional).
+*(Rodar sem a flag `-d` fará com que você veja os logs em tempo real).*
 
-Como o servidor ficará rodando e ocupando este terminal, abra uma nova aba ou janela de terminal para executar os próximos passos.
+> ⚠️ **Aviso sobre containers órfãos:** Durante a inicialização, o Docker pode exibir o alerta `Found orphan containers ([minio_docs_apae apae-postgres])` e sugerir a flag `--remove-orphans`. **Não utilize essa flag**, pois ela derrubaria os containers de banco de dados e armazenamento do compose principal do projeto.
+
+**Aguardando o servidor:** No log, a mensagem `Web Server is operational` aparecerá primeiro, mas você deve aguardar até que a mensagem final **`SonarQube is operational`** seja exibida.
+
+Como o servidor ficará rodando e ocupando este terminal, **abra uma nova aba ou janela de terminal** para executar os passos seguintes.
 
 O painel do SonarQube estará disponível no endereço: <http://localhost:9500>
 
 **Por que a porta não é a 9000 (padrão)?**
 
-Neste repositório principal (APAE Geral), a porta 9000 já está em uso pelo serviço do MinIO. A porta 9500 foi escolhida como desvio para que o desenvolvedor possa ter os três servidores (Geral, Atendimento e Gestão Escolar) de pé ao mesmo tempo, além do MinIO, sem conflitos de porta.
+Neste repositório principal (APAE Geral), a porta 9000 já está em uso pelo serviço do **MinIO**. A porta 9500 foi escolhida como desvio para que o desenvolvedor possa ter os três servidores (Geral, Atendimento e Gestão Escolar) de pé ao mesmo tempo, além do MinIO, sem conflitos de porta.
 
 ## 3. Gerar o token
 
-Para que os scanners consigam enviar os relatórios de código para o servidor, você precisa de um token de acesso:
+Para que os scanners consigam enviar os relatórios de código para o servidor, você precisa realizar o primeiro acesso e gerar um token:
 
-1. Acesse <http://localhost:9500> e faça login (o padrão inicial é `admin/admin`).
-2. Clique no ícone do seu perfil no canto superior direito e vá em **My Account > Security > Generate Tokens**.
+### Primeiro login e troca de senha
 
-**Regra importante:** O token gerado precisa obrigatoriamente ser do tipo **User Token** (ou um token global com permissão para criar novos projetos).
+1. Acesse <http://localhost:9500> e faça login com o usuário e senha padrão: `admin` / `admin`.
+2. O SonarQube exigirá **obrigatoriamente a troca de senha** no primeiro acesso:
+   * No campo **Old Password**, digite `admin`.
+   * Defina uma nova senha que tenha **no mínimo 12 caracteres** e seja diferente de `admin`.
+   *(Nota: Caso você execute o comando de limpeza com perda de volumes `down -v` futuramente, a senha voltará ao padrão `admin/admin`)*.
 
-> ⚠️ **Não use o Project Analysis Token.** Esse tipo de token só funciona para projetos que já existem no painel. Como esta será a primeira vez que a análise rodará, os projetos ainda não existem e o scanner falhará ao tentar criá-los.
+### Gerando o token
+
+1. Após logar com a nova senha, clique no ícone do seu perfil no canto superior direito e vá em **My Account** > **Security** > **Generate Tokens**.
+2. Preencha os campos da seguinte forma:
+   * **Name:** Dê um nome de sua escolha (ex: `local-token`).
+   * **Type:** O campo vem em branco por padrão. Selecione obrigatoriamente **User Token** (ou "Token de usuário" / "Token de análise global").
+   * **Expires in:** Pode manter o padrão sugerido de 30 dias (ou escolher conforme preferir).
+3. Clique em **Generate** e copie o token gerado.
+
+> ⚠️ **Não use o *Project Analysis Token*.** Esse tipo de token só funciona para projetos que já existem no painel. Como esta será a primeira vez que a análise rodará, os projetos ainda não existem e o scanner falhará ao tentar criá-los.
 
 Após gerar o token, exporte-o para a variável de ambiente `SONAR_TOKEN` no seu terminal (na nova aba que você abriu):
 
@@ -59,7 +75,7 @@ Após gerar o token, exporte-o para a variável de ambiente `SONAR_TOKEN` no seu
 export SONAR_TOKEN="cole_seu_token_aqui"
 ```
 
-> ⚠️ **Atenção:** O token deve ir para a variável de ambiente `SONAR_TOKEN` e nunca para dentro de um arquivo versionado no repositório.
+> ⚠️ **Atenção:** O token deve ir para a variável de ambiente `SONAR_TOKEN` e **nunca** para dentro de um arquivo versionado no repositório.
 
 ## 4. Analisar o backend
 
@@ -83,7 +99,7 @@ cd ../..
 
 **Por que o `verify` é necessário?**
 
-A fase `verify` no Maven garante a compilação e os testes. Sem essa fase, a pasta `target/classes` não é criada, e sem os arquivos `.class` compilados, a análise de Java não acontece. O comando `sonar:sonar` sozinho não serve para analisar o projeto.
+A fase `verify` no Maven garante a compilação e a execução dos testes. Sem essa fase, a pasta `target/classes` não é criada, e sem os arquivos `.class` compilados, a análise de Java não acontece. O comando `sonar:sonar` sozinho não serve para analisar o projeto.
 
 ## 5. Analisar o frontend
 
@@ -93,7 +109,7 @@ Certifique-se de que está na raiz do projeto (`APAE/`) e execute o script prepa
 ./.scripts/sonar-scan-frontend.sh
 ```
 
-(Certifique-se de que a variável `SONAR_TOKEN` continua exportada no ambiente desse terminal).
+*(Certifique-se de que a variável `SONAR_TOKEN` continua exportada no ambiente desse terminal).*
 
 **O que o script faz por baixo?**
 
@@ -115,24 +131,27 @@ Ao clicar em qualquer um deles, você verá as abas de navegação:
 
 ## 7. Cobertura
 
-Atualmente, é possível que a cobertura do código apareça baixa ou zerada hoje (como observado no frontend com 0.0% e backend parcial).
+Atualmente, é esperado que a cobertura de código apareça baixa ou zerada:
 
-Isso acontece por um motivo específico: o arquivo `.xml` de relatório que o SonarQube precisa ler como configuração ainda não está sendo gerado ou as suítes de testes ainda estão em desenvolvimento. Isso deve ser lido como um trabalho futuro na cobertura de testes do projeto, e não como um erro de configuração do seu servidor local do SonarQube.
+* **Backend (`apae-geral-backend`):** O relatório de cobertura (`jacoco.xml`) é gerado durante a fase `verify` do Maven. A porcentagem reportada reflete o volume de testes unitários atualmente implementados no backend.
+* **Frontend (`apae-geral-frontend`):** O arquivo de configuração `sonar-project.properties` do módulo espera o relatório de testes no caminho `coverage/lcov.info`. Como os runners de testes do frontend ainda não estão configurados para gerar esse arquivo durante o fluxo local, a cobertura aparece como 0.0%.
+
+Isso deve ser lido como uma etapa futura de implementação das suítes de testes nos repositórios, e **não como um erro de configuração** do seu ambiente local do SonarQube.
 
 ## 8. Encerrar e limpar
 
 Quando finalizar seu trabalho e quiser derrubar o container, você tem duas opções:
 
-**Para derrubar o container mantendo o histórico de análises salvo para a próxima vez:**
+Para derrubar o container mantendo o histórico de análises salvo para a próxima vez:
 
 ```
 docker compose -f docker-compose.sonar.yml down
 ```
 
-**Para derrubar e apagar os volumes e o histórico:**
+Para derrubar e **apagar os volumes e o histórico**:
 
 ```
 docker compose -f docker-compose.sonar.yml down -v
 ```
 
-> ⚠️ O segundo comando (com o `-v`) **apaga os volumes do banco de dados e Elasticsearch**. Use apenas se precisar limpar configurações corrompidas e recomeçar do zero.
+> ⚠️ O segundo comando (com o `-v`) apaga os volumes do banco de dados e Elasticsearch. Isso apagará todo o histórico de análises e **resetará a senha do admin de volta para o padrão `admin/admin`**. Use apenas se precisar limpar configurações corrompidas e recomeçar do zero.
