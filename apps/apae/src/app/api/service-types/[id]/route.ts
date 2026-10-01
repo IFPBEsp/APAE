@@ -1,5 +1,5 @@
 import { createBaseApi } from "@/lib/axios";
-import { updateserviceTypeSchema } from "@/schemas/service-type-schemas";
+import { updateserviceTypeSchema } from "@/domains/service-types/service-type.schema";
 import { NextResponse } from "next/server";
 import { AxiosError } from "axios";
 

@@ -6,7 +6,7 @@ import { toast } from "react-toastify";
 import {
   updateserviceTypeSchema,
   UpdateserviceTypeDTO,
-} from "@/schemas/service-type-schemas";
+} from "../service-type.schema";
 
 export function useServiceTypeEdit(id: string | string[] | undefined) {
   const router = useRouter();

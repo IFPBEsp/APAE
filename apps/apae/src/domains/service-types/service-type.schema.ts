@@ -1,8 +1,8 @@
 import { z } from "zod";
-export type { ServiceType } from "@/types/service-type";
+export type { ServiceType } from "./service-types.types";
 
 export const serviceTypeSchema = z.object({
-  id: z.string(),
+  id: z.number(),
   area: z.string(),
 });
 
