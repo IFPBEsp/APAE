@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { SearchFilters } from "@/components/search-filters";
 import { ArrowLeft, Loader2, Plus } from "lucide-react";
 import { DisorderListItem } from "../shared/disorder-list-item";
+import { filterDisordersByName } from "../disorders.utils";
 import { useDisordersList } from "./use-disorders-list";
 
 export function DisordersList() {
@@ -14,9 +15,7 @@ export function DisordersList() {
   const { disorders, loading, deleteDisorder } = useDisordersList();
   const router = useRouter();
 
-  const filtered = disorders.filter((d) =>
-    d.name.toLowerCase().includes(searchName.toLowerCase()),
-  );
+  const filtered = filterDisordersByName(disorders, searchName);
 
   return (
     <div className="!bg-slate-100 min-h-screen">

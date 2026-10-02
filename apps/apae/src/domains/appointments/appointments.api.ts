@@ -293,7 +293,7 @@ export async function getHealthProfessional(
 
 export async function getServiceAreas(): Promise<string[]> {
   const professionals = await getHealthProfessionals();
-  const areas = professionals.map((p) => p.healthSector);
+  const areas = professionals.map((p) => p.serviceArea?.area);
   return [...new Set(areas)].filter(Boolean) as string[];
 }
 

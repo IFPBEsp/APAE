@@ -7,6 +7,7 @@ import {
   updateAppointment,
 } from "../appointments.api";
 import type { Appointment } from '@/domains/appointments/types/appointments.types';
+import { formatTimeForBackend, parseTimeFromBackend } from "../shared/formatters";
 
 interface Option { value: string; label: string; }
 
@@ -28,7 +29,7 @@ export function useAppointmentForm(editAppointment?: Appointment) {
     return undefined;
   });
   const [selectedTime, setSelectedTime] = useState<string>(() =>
-    editAppointment?.hour ? editAppointment.hour.slice(0, 5) : ""
+    editAppointment?.hour ? parseTimeFromBackend(editAppointment.hour) : ""
   );
   const [isCalendarOpen, setIsCalendarOpen] = useState(false);
   const [patient, setPatient] = useState<Option>(() => {
@@ -133,7 +134,7 @@ export function useAppointmentForm(editAppointment?: Appointment) {
     if (Object.values(errors).some(Boolean)) return;
     try {
       const initialDate = format(date!, "yyyy-MM-dd");
-      const hourStr = `${selectedTime}:00`;
+      const hourStr = formatTimeForBackend(selectedTime);
       if (editAppointment?.id) {
         await updateAppointment(editAppointment.id, {
           professionalId: professional.value,

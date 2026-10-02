@@ -1,6 +1,9 @@
 import type { Patient } from '@/domains/patients/types/patient';
 export type { Patient } from '@/domains/patients/types/patient';
 
+import type { Professional, Address } from '@/types/profissional';
+export type { Professional, Address } from '@/types/profissional';
+
 export type UUID = string;
 
 export interface AnnualRegistry {
@@ -102,31 +105,7 @@ export interface CancelGeneratedAppointmentDTO {
 
 // ATENÇÃO: MUDANÇA POSTERIOR
 
-export interface Professional {
-  id: string;
-  serviceArea?: {
-    id?: string | number;
-    area?: string;
-  };
-  healthSector?: string | null;
-  phoneNumber?: string;
-  professionalDocument?: string | null;
-  email: string;
-  cpf?: string;
-  name: string;
-  identityDocument?: string;
-  address?: Address;
-}
-export interface Address {
-  id: UUID;
-  city: string;
-  cep: string;
-  state: string;
-  neighborhood: string;
-  street: string;
-  number: string;
-  complement: string;
-}
+
 export interface Disorder {
   id: UUID;
   name: string;
@@ -141,15 +120,6 @@ export interface Guardian {
   contact: string;
   kinship: string;
   address?: Address;
-}
-export interface Parent {
-  id: UUID;
-  name: string;
-  rg: string;
-  cpf: string;
-  isAlive: boolean;
-  profession: string;
-  kinship: string;
 }
 
 export interface TodayAppointment {

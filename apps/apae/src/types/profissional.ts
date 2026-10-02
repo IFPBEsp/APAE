@@ -19,7 +19,7 @@ export type AvailabilityType = {
   checked: boolean;
 };
 
-export interface Availability {
+export interface AvailabilityDTO {
   day: string;
   shift: string;
 }
@@ -35,9 +35,9 @@ export interface Professional {
   name: string;
   identityDocument: string;
   address: Address;
-  availabilities: Availability[];
+  availabilities: AvailabilityDTO[];
+  ativo: boolean;
   active?: boolean;
-  ativo?: boolean;
   profilePhoto?: string | null;
   profilePhotoUrl?: string | null;
 }

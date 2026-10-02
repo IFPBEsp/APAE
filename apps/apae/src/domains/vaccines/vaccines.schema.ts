@@ -6,13 +6,8 @@ export const vaccineSchema = z.object({
   hasPatient: z.boolean(),
 });
 
-export const createVaccineSchema = z.object({
+export const vaccineFormSchema = z.object({
   name: z.string().min(1, "O nome é obrigatório."),
 });
 
-export const updateVaccineSchema = z.object({
-  name: z.string().min(1, "O nome é obrigatório."),
-});
-
-export type CreateVaccineFormData = z.infer<typeof createVaccineSchema>;
-export type UpdateVaccineFormData = z.infer<typeof updateVaccineSchema>;
+export type VaccineFormData = z.infer<typeof vaccineFormSchema>;

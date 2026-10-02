@@ -1,9 +1,9 @@
 import type { Professional } from '../types/appointments.types';
 
 export function getProfessionalAreaName(
-  professional?: Pick<Professional, 'serviceArea' | 'healthSector'> | null,
+  professional?: Pick<Professional, 'serviceArea'> | null,
 ): string {
-  return professional?.serviceArea?.area ?? professional?.healthSector ?? '';
+  return professional?.serviceArea?.area ?? '';
 }
 
 export const formatTimeForBackend = (timeString: string): string => {
