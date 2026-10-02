@@ -1,0 +1,29 @@
+name: SonarQube Analysis
+
+on:
+  pull_request:
+    branches: [ "dev" ]
+
+permissions:
+  contents: read
+
+jobs:
+  sonar-backend:
+    name: Backend Analysis (Maven)
+    uses: IFPBEsp/APAE-INFRA/.github/workflows/reusable-sonarqube-maven.yml@34-feat-adotar-sonarqube-para-análise-estática-de-código-nos-repositórios
+    with: 
+      project-key: "apae-geral-backend"
+      working-directory: "apps/api"
+      java-version: "21"
+    secrets:
+      SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+
+  sonar-frontend:
+    name: Frontend Analysis (Node)
+    uses: IFPBEsp/APAE-INFRA/.github/workflows/reusable-sonarqube-node.yml@34-feat-adotar-sonarqube-para-análise-estática-de-código-nos-repositórios
+    with:
+      project-key: "apae-geral-frontend"
+      working-directory: "apps/apae"
+      node-version: "22"
+    secrets:
+      SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
