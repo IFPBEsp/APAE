@@ -71,21 +71,21 @@ const makeInterceptors = (api: AxiosInstance) => {
   );
 
   api.interceptors.response.use(
-    (response: AxiosResponse) => {
-      return response;
-    },
-    async (error: AxiosError) => {
-      if (error.response?.status === 401) {
-        console.warn("Token expirado ou inválido. Removendo sessão...");
+      (response: AxiosResponse) => {
+        return response;
+      },
+      async (error: AxiosError) => {
+        if (error.response?.status === 401) {
+          console.warn("Token expirado ou inválido. Removendo sessão...");
 
-        await removeSessionCookie();
-        if (typeof window === "undefined") {
-          redirect("/apae-geral/auth/login");
+          await removeSessionCookie();
+          if (typeof window === "undefined") {
+            redirect("/apae-geral/auth/login");
+          }
         }
-      }
 
-      return Promise.reject(error);
-    },
+        throw error;
+      },
   );
 
   return api;
