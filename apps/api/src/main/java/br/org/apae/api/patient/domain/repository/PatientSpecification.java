@@ -68,6 +68,10 @@ public class PatientSpecification {
 
                             predicates.add(root.get("id").in(tipoSubQuery));
                             break;
+
+                        default:
+                            // Ignora parâmetros de busca desconhecidos para manter o comportamento atual
+                            break;
                     }
                 }
             });
