@@ -20,4 +20,4 @@ jobs:
       postgres-version: "15"
       flyway-version: "11.7.2"
       check-upgrade-path: true
-      fail-on-destructive: false
+      fail-on-destructive: true
