@@ -6,11 +6,14 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+import java.io.Serializable;
 import java.util.UUID;
 
 @Entity
 @Table(name = "enderecos")
-public class Address {
+public class Address implements Serializable {
+
+    private static final long serialVersionUID = 1L;
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
@@ -41,7 +44,7 @@ public class Address {
     }
 
     public Address(String city, String cep, String state, String neighborhood, String street, String number,
-            String complement) {
+                   String complement) {
         this.city = city;
         this.cep = cep;
         this.state = state;
@@ -52,7 +55,7 @@ public class Address {
     }
 
     public Address(UUID id, String city, String cep, String state, String neighborhood, String street, String number,
-            String complement) {
+                   String complement) {
         this.id = id;
         this.city = city;
         this.cep = cep;
@@ -96,7 +99,7 @@ public class Address {
     }
 
     public void update(String city, String cep, String state, String neighborhood, String street, String number,
-            String complement) {
+                       String complement) {
         this.city = city;
         this.cep = cep;
         this.state = state;
