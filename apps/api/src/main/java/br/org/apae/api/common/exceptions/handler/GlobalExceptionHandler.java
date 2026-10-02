@@ -23,6 +23,7 @@ import br.org.apae.api.common.exceptions.types.ValidationErrorResponse;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.ConstraintViolationException;
 import org.springframework.web.multipart.MaxUploadSizeExceededException;
+import org.springframework.web.server.ResponseStatusException;
 
 @ControllerAdvice
 @Order(Ordered.LOWEST_PRECEDENCE)
@@ -143,6 +144,36 @@ public class GlobalExceptionHandler {
                 request.getRequestURI());
 
         return new ResponseEntity<>(errorResponse, HttpStatus.UNSUPPORTED_MEDIA_TYPE);
+  }
+
+  @ExceptionHandler(ResponseStatusException.class)
+  public ResponseEntity<ErrorResponse> handleResponseStatusException(
+          ResponseStatusException ex,
+          HttpServletRequest request) {
+
+    HttpStatus status = ex.getStatusCode() instanceof HttpStatus httpStatus
+            ? httpStatus
+            : HttpStatus.INTERNAL_SERVER_ERROR;
+
+    String message = (ex.getReason() != null && !ex.getReason().isBlank())
+            ? ex.getReason()
+            : status.getReasonPhrase();
+
+    if (status.is4xxClientError()) {
+      logger.warn("Regra de negócio violada. status={} path={} message={}",
+              status.value(), request.getRequestURI(), message);
+    } else {
+      logger.error("Erro de servidor propagado como ResponseStatusException. status={} path={} message={}",
+              status.value(), request.getRequestURI(), message, ex);
+    }
+
+    ErrorResponse errorResponse = new ErrorResponse(
+            status.value(),
+            status.getReasonPhrase(),
+            message,
+            request.getRequestURI());
+
+    return new ResponseEntity<>(errorResponse, status);
   }
 
   @ExceptionHandler(Exception.class)
