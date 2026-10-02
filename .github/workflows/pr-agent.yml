@@ -1,0 +1,34 @@
+name: PR-Agent
+
+on:
+  pull_request:
+    types:
+      - opened
+      - reopened
+      - synchronize
+      - ready_for_review
+
+  issue_comment:
+    types:
+      - created
+
+jobs:
+  pr-agent:
+    uses: IFPBEsp/APAE-INFRA/.github/workflows/pr-agent-reusable.yml@7b2ed95ea0f0732b5d9d85b4ec5744006467187e
+    with:
+      model: "gemini/gemini-3.6-flash"
+      response-language: "pt-BR"
+      auto-review: true
+      auto-improve: true
+      auto-describe: false
+      num-code-suggestions: 3
+      ignore-globs: '["*.lock", "pnpm-lock.yaml", "package-lock.json"]'
+
+      extra-instructions: >
+        Monorepo com backend Java 21 e Spring Boot 3.5 em apps/api.
+        Frontends Next.js em apps/apae e apps/management-app.
+        Priorizar bugs, validacao de entradas, tratamento de null,
+        seguranca, legibilidade e aderencia aos padroes do projeto.
+
+    secrets:
+      LLM_API_KEY: ${{ secrets.GEMINI_API_KEY }}
