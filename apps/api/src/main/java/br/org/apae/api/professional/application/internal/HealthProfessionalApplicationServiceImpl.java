@@ -26,6 +26,8 @@ import br.org.apae.api.documents.interfaces.dto.DocumentDTO;
 import br.org.apae.api.documents.interfaces.dto.PutDocumentArgsDTO;
 import br.org.apae.api.documents.domain.enums.DocumentType;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -43,6 +45,10 @@ import java.util.stream.Collectors;
 
 @Service
 public class HealthProfessionalApplicationServiceImpl implements HealthProfessionalApplicationService {
+
+    @Autowired
+    @Lazy
+    private HealthProfessionalApplicationServiceImpl self;
 
     private final HealthProfessionalRepository repository;
     private final HealthProfessionalMapper mapper;
@@ -101,7 +107,7 @@ public class HealthProfessionalApplicationServiceImpl implements HealthProfessio
         documentsService.storeProfessionalDocuments(savedProfessional, documentsDTO);
 
         if (profilePhoto != null && !profilePhoto.isEmpty()) {
-            uploadProfessionalPhoto(savedProfessional.getId(), profilePhoto);
+            self.uploadProfessionalPhoto(savedProfessional.getId(), profilePhoto);
         }
         return mapper.toResponseDTO(savedProfessional);
     }
