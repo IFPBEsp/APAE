@@ -151,21 +151,32 @@ public class GlobalExceptionHandler {
           ResponseStatusException ex,
           HttpServletRequest request) {
 
-    HttpStatus status = ex.getStatusCode() instanceof HttpStatus httpStatus
-            ? httpStatus
-            : HttpStatus.INTERNAL_SERVER_ERROR;
+    HttpStatus status = HttpStatus.resolve(ex.getStatusCode().value());
+    if (status == null) {
+      status = HttpStatus.INTERNAL_SERVER_ERROR;
+    }
+
+    if (status.is5xxServerError()) {
+      String correlationId = UUID.randomUUID().toString();
+
+      logger.error("Erro de servidor propagado como ResponseStatusException. status={} path={} correlationId={}",
+              status.value(), request.getRequestURI(), correlationId, ex);
+
+      ErrorResponse errorResponse = new ErrorResponse(
+              status.value(),
+              status.getReasonPhrase(),
+              "Ocorreu um erro interno. Informe o código " + correlationId + " ao suporte.",
+              request.getRequestURI());
+
+      return new ResponseEntity<>(errorResponse, status);
+    }
 
     String message = (ex.getReason() != null && !ex.getReason().isBlank())
             ? ex.getReason()
             : status.getReasonPhrase();
 
-    if (status.is4xxClientError()) {
-      logger.warn("Regra de negócio violada. status={} path={} message={}",
-              status.value(), request.getRequestURI(), message);
-    } else {
-      logger.error("Erro de servidor propagado como ResponseStatusException. status={} path={} message={}",
-              status.value(), request.getRequestURI(), message, ex);
-    }
+    logger.warn("Regra de negócio violada. status={} path={} message={}",
+            status.value(), request.getRequestURI(), message);
 
     ErrorResponse errorResponse = new ErrorResponse(
             status.value(),
