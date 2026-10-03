@@ -42,8 +42,7 @@ import { Button } from "@/components/ui/button";
 import { useDisordersContext } from "@/hooks/use-disorders";
 import { createDisorderSchema as CreateDisorder } from "@/domains/disorders/disorders.schema";
 import { formatCurrency, capitalizeFirst } from "@/lib/formats";
-import { useCreateServiceArea } from "@/hooks/service-area/use-create-service-area";
-import { useFetchServiceAreas } from "@/hooks/service-area/use-fetch-service-areas";
+import { useFetchServiceTypes } from "@/domains/service-types";
 import { CreateCare } from "@/schemas/care-schemas";
 
 import { CreateVaccineDialog } from "@/domains/patients/components/dialogs/CreateVaccineDialog";
@@ -56,7 +55,7 @@ export default function MembersRegisterAdditionalsPage() {
   );
   const [refreshKey, setRefreshKey] = useState(0);
 
-  const { areas: cares, fetchCares } = useFetchServiceAreas();
+  const { serviceTypes, refetch } = useFetchServiceTypes();
   const { vaccines } = useVaccinesContext();
   const { disorders } = useDisordersContext();
 
@@ -122,7 +121,7 @@ export default function MembersRegisterAdditionalsPage() {
     <>
       <CreateCareDialog
         open={modal === "care"}
-        onConfirm={fetchCares}
+        onConfirm={refetch}
         onOpenChange={(value: boolean) => setModal(value ? "care" : null)}
         onSuccess={(newName: string) => {
           const currentValues = form.getValues("care.types") || [];
@@ -359,14 +358,14 @@ export default function MembersRegisterAdditionalsPage() {
                       defaultValue={field.value || []}
                       value={field.value || []}
                       options={[
-                        ...cares.map((care: { area: string }) => ({
+                        ...serviceTypes.map((care: { area: string }) => ({
                           label: care.area,
                           value: care.area,
                         })),
                         ...(field.value || [])
                           .filter(
                             (val: string) =>
-                              !cares.some(
+                              !serviceTypes.some(
                                 (c: { area: string }) => c.area === val,
                               ),
                           )

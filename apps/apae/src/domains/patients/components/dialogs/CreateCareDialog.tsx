@@ -6,7 +6,8 @@ import { Button } from "@/components/ui/button";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import z from "zod";
-import { useCreateServiceArea } from "@/hooks/service-area/use-create-service-area";
+import { useFetchServiceTypes } from "@/domains/service-types";
+import { useCreateServiceType } from "@/domains/service-types";
 import { CreateCare } from "@/schemas/care-schemas";
 
 export type DialogProps = Readonly<{
@@ -22,7 +23,7 @@ export function CreateCareDialog({
   onSuccess,
   onConfirm,
 }: DialogProps) {
-  const { create } = useCreateServiceArea();
+  const { create } = useCreateServiceType();
   const form = useForm<z.infer<typeof CreateCare>>({
     resolver: zodResolver(CreateCare),
     defaultValues: { name: "" },

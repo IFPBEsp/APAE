@@ -13,7 +13,7 @@ import {
   updateAnnualRegistryApi,
   updatePatientApi,
 } from "./annual-registry.api";
-import type { DocumentDTO, FullPatientData, AnnualRegistry, ServiceAreaItem } from "./annual-registry.types";
+import type { DocumentDTO, FullPatientData, AnnualRegistry, ServiceTypeItem } from "./annual-registry.types";
 
 interface UseAnnualRegistryModalParams {
   isOpen: boolean;
@@ -113,7 +113,7 @@ export function useAnnualRegistryModal({
 
       const sourceServiceAreas = initialData.serviceArea || initialData.serviceAreas || initialData.serviceTypes || [];
       const serviceTypeList = Array.isArray(sourceServiceAreas)
-        ? sourceServiceAreas.map((s: ServiceAreaItem) => ({ id: s.id, area: s.area || s.name, name: s.name || s.area }))
+        ? sourceServiceAreas.map((s: ServiceTypeItem) => ({ id: s.id, area: s.area || s.name, name: s.name || s.area }))
         : [];
 
       const medicationValue =

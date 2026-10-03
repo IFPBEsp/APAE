@@ -17,8 +17,8 @@ import {
 } from "@/components/ui/popover";
 import { Input } from "@/components/ui/input";
 import { Plus, Check, X } from "lucide-react";
-import { useFetchServiceAreas } from "@/hooks/service-area/use-fetch-service-areas";
-import { useCreateServiceArea } from "@/hooks/service-area/use-create-service-area";
+import { useFetchServiceTypes } from "@/domains/service-types";
+import { useCreateServiceType } from "@/domains/service-types";
 
 interface HealthAreaSelectProps {
   value?: string;
@@ -31,20 +31,20 @@ export default function HealthAreaSelect({
   onChange,
   className,
 }: HealthAreaSelectProps) {
-  const { areas, loading, error } = useFetchServiceAreas();
+  const { serviceTypes, loading, error } = useFetchServiceTypes();
   const {
     create,
     loading: creating,
     error: errorCreate,
-  } = useCreateServiceArea();
+  } = useCreateServiceType();
 
   const [open, setOpen] = React.useState(false);
   const [creatingMode, setCreatingMode] = React.useState(false);
   const [newArea, setNewArea] = React.useState("");
 
   const normalizedAreas = React.useMemo(() => {
-    return areas.map((a) => a.area);
-  }, [areas]);
+    return serviceTypes.map((a) => a.area);
+  }, [serviceTypes]);
 
   const formatArea = (s: string) =>
     s.trim().length === 0
