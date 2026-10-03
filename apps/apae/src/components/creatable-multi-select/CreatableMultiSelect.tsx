@@ -90,7 +90,10 @@ export const CreatableMultiSelect = React.forwardRef<
 
     const arraysEqual = (a: string[], b: string[]) => {
       if (a.length !== b.length) return false;
-      return [...a].sort().every((v, i) => v === [...b].sort()[i]);
+      const compare = (x: string, y: string) => x.localeCompare(y);
+      return [...a]
+        .sort(compare)
+        .every((v, i) => v === [...b].sort(compare)[i]);
     };
 
     const widthConstraints = React.useMemo(() => {
