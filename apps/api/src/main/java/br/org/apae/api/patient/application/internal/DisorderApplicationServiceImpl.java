@@ -8,6 +8,8 @@ import br.org.apae.api.patient.application.mappers.DisorderMapper;
 import br.org.apae.api.patient.domain.exceptions.DisorderConflictException;
 import br.org.apae.api.patient.domain.exceptions.DisorderInUseException;
 import br.org.apae.api.patient.domain.exceptions.DisorderNotFoundException;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.dao.DataIntegrityViolationException;
 import br.org.apae.api.patient.domain.model.Disorder;
 import br.org.apae.api.patient.domain.repository.AnnualRegistryRepository;
@@ -21,6 +23,10 @@ import java.util.stream.Collectors;
 
 @Service
 public class DisorderApplicationServiceImpl implements DisorderApplicationService {
+
+    @Autowired
+    @Lazy
+    private DisorderApplicationServiceImpl self;
 
     private final DisorderRepository repository;
     private final DisorderMapper mapper;
@@ -65,7 +71,7 @@ public class DisorderApplicationServiceImpl implements DisorderApplicationServic
                 .map(updateDto -> new CreateDisorderDTO(updateDto.name()))
                 .collect(Collectors.toSet());
 
-        return this.findDisorders(createDisorderDtos);
+        return self.findDisorders(createDisorderDtos);
     }
 
     @Override
