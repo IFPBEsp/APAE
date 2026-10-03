@@ -16,6 +16,7 @@ import java.util.Map;
 import java.util.UUID;
 
 public class PatientSpecification {
+    private static final String PATIENT_ID = "patientId";
     public static Specification<Patient> filterBy(Map<String, String> filters) {
         return (root, query, criteriaBuilder) -> {
             List<Predicate> predicates = new ArrayList<>();
@@ -36,7 +37,7 @@ public class PatientSpecification {
                                 Subquery<UUID> anoSubQuery = query.subquery(UUID.class);
                                 Root<AnnualRegistry> anoRoot = anoSubQuery.from(AnnualRegistry.class);
 
-                                anoSubQuery.select(anoRoot.get("patientId"))
+                                anoSubQuery.select(anoRoot.get(PATIENT_ID))
                                         .where(
                                                 criteriaBuilder.equal(anoRoot.get("year"), anoValor)
                                         );
@@ -50,7 +51,7 @@ public class PatientSpecification {
                             Subquery<UUID> transtornoSubQuery = query.subquery(UUID.class);
                             Root<AnnualRegistry> transtornoRoot = transtornoSubQuery.from(AnnualRegistry.class);
                             Join<AnnualRegistry, Disorder> disorderJoin = transtornoRoot.join("disorders");
-                            transtornoSubQuery.select(transtornoRoot.get("patientId"))
+                            transtornoSubQuery.select(transtornoRoot.get(PATIENT_ID))
                                     .where(
                                             criteriaBuilder.like(criteriaBuilder.lower(disorderJoin.get("name")), "%" + value.toLowerCase() + "%")
                                     );
@@ -61,7 +62,7 @@ public class PatientSpecification {
                             Subquery<UUID> tipoSubQuery = query.subquery(UUID.class);
                             Root<AnnualRegistry> tipoRoot = tipoSubQuery.from(AnnualRegistry.class);
                             Join<AnnualRegistry, ServiceArea> serviceAreaJoin = tipoRoot.join("serviceAreas");
-                            tipoSubQuery.select(tipoRoot.get("patientId"))
+                            tipoSubQuery.select(tipoRoot.get(PATIENT_ID))
                                     .where(criteriaBuilder.like(
                                             criteriaBuilder.lower(serviceAreaJoin.get("area")),
                                             "%" + value.toLowerCase() + "%"));
