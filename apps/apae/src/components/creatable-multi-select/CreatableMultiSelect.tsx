@@ -26,8 +26,15 @@ import { useScreenSize } from "./hooks/useScreenSize";
 import { useResponsiveSettings } from "./hooks/useResponsiveSettings";
 import { useA11yAnnouncer } from "./hooks/useA11yAnnouncer";
 import { useMultiSelectOptions } from "./hooks/useMultiSelectOptions";
+import { useSelectionAnnouncements } from "./hooks/useSelectionAnnouncements";
 
 import { multiSelectVariants } from "./shared/variants";
+import { getSelectedCountText } from "./shared/a11yMessages";
+import {
+  getPopoverContentClassName,
+  getPopoverContentStyle,
+  getTriggerClassName,
+} from "./shared/styles";
 import type { MultiSelectProps, MultiSelectRef } from "./types";
 
 export const CreatableMultiSelect = React.forwardRef<
@@ -84,9 +91,6 @@ export const CreatableMultiSelect = React.forwardRef<
 
     const buttonRef = React.useRef<HTMLButtonElement>(null);
     const prevDefaultValueRef = React.useRef<string[]>(defaultValue);
-    const prevSelectedCount = React.useRef(selectedValues.length);
-    const prevIsOpen = React.useRef(isPopoverOpen);
-    const prevSearchValue = React.useRef(searchValue);
 
     const arraysEqual = (a: string[], b: string[]) => {
       if (a.length !== b.length) return false;
@@ -187,46 +191,13 @@ export const CreatableMultiSelect = React.forwardRef<
       if (!isPopoverOpen) setSearchValue("");
     }, [isPopoverOpen]);
 
-    React.useEffect(() => {
-      const total = allOptions.filter((o) => !o.disabled).length;
-
-      if (selectedValues.length !== prevSelectedCount.current) {
-        const diff = selectedValues.length - prevSelectedCount.current;
-        if (diff > 0) {
-          const added = selectedValues
-            .slice(-diff)
-            .map((v) => allOptions.find((o) => o.value === v)?.label)
-            .filter(Boolean);
-          announce(
-            added.length === 1
-              ? `${added[0]} selected. ${selectedValues.length} of ${total} options selected.`
-              : `${added.length} options selected. ${selectedValues.length} of ${total} total selected.`,
-          );
-        } else {
-          announce(`Option removed. ${selectedValues.length} of ${total} options selected.`);
-        }
-        prevSelectedCount.current = selectedValues.length;
-      }
-
-      if (isPopoverOpen !== prevIsOpen.current) {
-        announce(
-          isPopoverOpen
-            ? `Dropdown opened. ${total} options available. Use arrow keys to navigate.`
-            : "Dropdown closed.",
-        );
-        prevIsOpen.current = isPopoverOpen;
-      }
-
-      if (searchValue !== prevSearchValue.current && isPopoverOpen) {
-        const count = allOptions.filter(
-          (o) =>
-            o.label.toLowerCase().includes(searchValue.toLowerCase()) ||
-            o.value.toLowerCase().includes(searchValue.toLowerCase()),
-        ).length;
-        announce(`${count} option${count === 1 ? "" : "s"} found for "${searchValue}"`);
-        prevSearchValue.current = searchValue;
-      }
-    }, [selectedValues, isPopoverOpen, searchValue, announce, allOptions]);
+    useSelectionAnnouncements({
+      selectedValues,
+      isPopoverOpen,
+      searchValue,
+      allOptions,
+      announce,
+    });
 
     return (
       <>
@@ -245,14 +216,7 @@ export const CreatableMultiSelect = React.forwardRef<
             and Escape to close.
           </div>
           <div id={selectedCountId} className="sr-only" aria-live="polite">
-            {selectedValues.length === 0
-              ? "No options selected"
-              : `${selectedValues.length} option${
-                  selectedValues.length === 1 ? "" : "s"
-                } selected: ${selectedValues
-                  .map((v) => getOptionByValue(v)?.label)
-                  .filter(Boolean)
-                  .join(", ")}`}
+            {getSelectedCountText(selectedValues, getOptionByValue)}
           </div>
 
           <PopoverTrigger asChild>
@@ -267,14 +231,13 @@ export const CreatableMultiSelect = React.forwardRef<
               aria-controls={isPopoverOpen ? listboxId : undefined}
               aria-describedby={`${triggerDescriptionId} ${selectedCountId}`}
               aria-label={`Multi-select: ${selectedValues.length} of ${allOptions.length} options selected. ${placeholder}`}
-              className={cn(
-                "flex p-1 rounded-md border min-h-10 h-auto items-center justify-between bg-inherit hover:bg-inherit [&_svg]:pointer-events-auto",
-                autoSize ? "w-auto" : "w-full",
-                responsiveSettings.compactMode && "min-h-8 text-sm",
-                screenSize === "mobile" && "min-h-12 text-base",
-                disabled && "opacity-50 cursor-not-allowed",
+              className={getTriggerClassName({
+                autoSize,
+                compactMode: responsiveSettings.compactMode,
+                screenSize,
+                disabled,
                 className,
-              )}
+              })}
               style={{
                 ...widthConstraints,
                 maxWidth: `min(${widthConstraints.maxWidth}, 100%)`,
@@ -374,18 +337,8 @@ export const CreatableMultiSelect = React.forwardRef<
             role="listbox"
             aria-multiselectable="true"
             aria-label="Available options"
-            className={cn(
-              "w-auto p-0",
-              screenSize === "mobile" && "w-[85vw] max-w-[280px]",
-              screenSize === "tablet" && "w-[70vw] max-w-md",
-              screenSize === "desktop" && "min-w-[300px]",
-              popoverClassName,
-            )}
-            style={{
-              maxWidth: `min(${widthConstraints.maxWidth}, 85vw)`,
-              maxHeight: screenSize === "mobile" ? "70vh" : "60vh",
-              touchAction: "manipulation",
-            }}
+            className={getPopoverContentClassName(screenSize, popoverClassName)}
+            style={getPopoverContentStyle(widthConstraints.maxWidth, screenSize)}
             align="start"
             onEscapeKeyDown={() => setIsPopoverOpen(false)}
           >
