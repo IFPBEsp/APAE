@@ -28,45 +28,46 @@ import org.springframework.web.multipart.MaxUploadSizeExceededException;
 @Order(Ordered.LOWEST_PRECEDENCE)
 public class GlobalExceptionHandler {
 
-    private static final Logger logger = LoggerFactory.getLogger(GlobalExceptionHandler.class);
-    private static final String VALIDATION_ERROR = "Erro de validação";
+  private static final Logger logger = LoggerFactory.getLogger(GlobalExceptionHandler.class);
+  private static final String VALIDATION_ERROR = VALIDATION_ERROR;
 
-    @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<ErrorResponse> handleValidationException(MethodArgumentNotValidException ex, HttpServletRequest request) {
 
-        List<ValidationErrorResponse.FieldError> fieldErrors = ex.getBindingResult()
-                .getFieldErrors()
-                .stream()
-                .map(error -> new ValidationErrorResponse.FieldError(
-                        error.getField(),
-                        error.getDefaultMessage()
-                ))
-                .collect(Collectors.toList());
+  @ExceptionHandler(MethodArgumentNotValidException.class)
+  public ResponseEntity<ErrorResponse> handleValidationException(MethodArgumentNotValidException ex, HttpServletRequest request) {
 
-        ValidationErrorResponse errorResponse = new ValidationErrorResponse(
-                HttpStatus.BAD_REQUEST.value(),
-                HttpStatus.BAD_REQUEST.getReasonPhrase(),
-                VALIDATION_ERROR,
-                request.getRequestURI(),
-                fieldErrors
-        );
+    List<ValidationErrorResponse.FieldError> fieldErrors = ex.getBindingResult()
+            .getFieldErrors()
+            .stream()
+            .map(error -> new ValidationErrorResponse.FieldError(
+                    error.getField(),
+                    error.getDefaultMessage()
+            ))
+            .collect(Collectors.toList());
 
-        return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
-    }
+    ValidationErrorResponse errorResponse = new ValidationErrorResponse(
+            HttpStatus.BAD_REQUEST.value(),
+            HttpStatus.BAD_REQUEST.getReasonPhrase(),
+            VALIDATION_ERROR,
+            request.getRequestURI(),
+            fieldErrors
+    );
 
-    @ExceptionHandler(HandlerMethodValidationException.class)
+    return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
+  }
+
+   @ExceptionHandler(HandlerMethodValidationException.class)
     public ResponseEntity<ErrorResponse> handleHandlerMethodValidationException(
             HandlerMethodValidationException ex,
             HttpServletRequest request) {
-
+        
         List<ValidationErrorResponse.FieldError> fieldErrors = ex.getParameterValidationResults()
                 .stream()
                 .flatMap(result -> result.getResolvableErrors()
-                        .stream()
-                        .map(error -> new ValidationErrorResponse.FieldError(
+                .stream()
+                .map(error -> new ValidationErrorResponse.FieldError(
                                 result.getMethodParameter().getParameterName(),
                                 error.getDefaultMessage()
-                        )))
+                )))
                 .collect(Collectors.toList());
         ValidationErrorResponse errorResponse = new ValidationErrorResponse(
                 HttpStatus.BAD_REQUEST.value(),
@@ -77,64 +78,64 @@ public class GlobalExceptionHandler {
         );
 
         return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
-    }
+ }
 
 
-    @ExceptionHandler(IllegalArgumentException.class)
-    public ResponseEntity<ErrorResponse> handleIllegalArgumentException(
-            IllegalArgumentException ex,
-            HttpServletRequest request) {
-        ErrorResponse errorResponse = new ErrorResponse(
-                HttpStatus.BAD_REQUEST.value(),
-                HttpStatus.BAD_REQUEST.getReasonPhrase(),
-                ex.getMessage(),
-                request.getRequestURI());
-        return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
-    }
+  @ExceptionHandler(IllegalArgumentException.class)
+  public ResponseEntity<ErrorResponse> handleIllegalArgumentException(
+          IllegalArgumentException ex,
+          HttpServletRequest request) {
+    ErrorResponse errorResponse = new ErrorResponse(
+            HttpStatus.BAD_REQUEST.value(),
+            HttpStatus.BAD_REQUEST.getReasonPhrase(),
+            ex.getMessage(),
+            request.getRequestURI());
+    return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
+  }
 
-    @ExceptionHandler(ConstraintViolationException.class)
-    public ResponseEntity<ErrorResponse> handleConstraintViolationException(
-            ConstraintViolationException ex,
-            HttpServletRequest request) {
+  @ExceptionHandler(ConstraintViolationException.class)
+  public ResponseEntity<ErrorResponse> handleConstraintViolationException(
+          ConstraintViolationException ex,
+          HttpServletRequest request) {
 
-        List<ValidationErrorResponse.FieldError> fieldErrors = ex.getConstraintViolations()
-                .stream()
-                .map(violation -> {
-                    String propertyPath = violation.getPropertyPath().toString();
-                    String field = propertyPath.contains(".")
-                            ? propertyPath.substring(propertyPath.lastIndexOf('.') + 1)
-                            : propertyPath;
-                    return new ValidationErrorResponse.FieldError(field, violation.getMessage());
-                })
-                .collect(Collectors.toList());
+    List<ValidationErrorResponse.FieldError> fieldErrors = ex.getConstraintViolations()
+            .stream()
+            .map(violation -> {
+                String propertyPath = violation.getPropertyPath().toString();
+                String field = propertyPath.contains(".")
+                        ? propertyPath.substring(propertyPath.lastIndexOf('.') + 1)
+                        : propertyPath;
+                return new ValidationErrorResponse.FieldError(field, violation.getMessage());
+            })
+            .collect(Collectors.toList());
 
-        ValidationErrorResponse errorResponse = new ValidationErrorResponse(
-                HttpStatus.BAD_REQUEST.value(),
-                HttpStatus.BAD_REQUEST.getReasonPhrase(),
-                VALIDATION_ERROR,
-                request.getRequestURI(),
-                fieldErrors
-        );
+    ValidationErrorResponse errorResponse = new ValidationErrorResponse(
+            HttpStatus.BAD_REQUEST.value(),
+            HttpStatus.BAD_REQUEST.getReasonPhrase(),
+            VALIDATION_ERROR,
+            request.getRequestURI(),
+            fieldErrors
+    );
 
-        return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
-    }
+    return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
+  }
 
-    @ExceptionHandler(MaxUploadSizeExceededException.class)
-    public ResponseEntity<ErrorResponse> handleMaxUploadSizeExceededException(
-            MaxUploadSizeExceededException ex,
-            HttpServletRequest request) {
-        ErrorResponse errorResponse = new ErrorResponse(
-                HttpStatus.BAD_REQUEST.value(),
-                HttpStatus.BAD_REQUEST.getReasonPhrase(),
-                "O arquivo excede o limite máximo permitido de 10MB",
-                request.getRequestURI());
-        return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
-    }
+  @ExceptionHandler(MaxUploadSizeExceededException.class)
+  public ResponseEntity<ErrorResponse> handleMaxUploadSizeExceededException(
+          MaxUploadSizeExceededException ex,
+          HttpServletRequest request) {
+    ErrorResponse errorResponse = new ErrorResponse(
+            HttpStatus.BAD_REQUEST.value(),
+            HttpStatus.BAD_REQUEST.getReasonPhrase(),
+            "O arquivo excede o limite máximo permitido de 10MB",
+            request.getRequestURI());
+    return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
+}
 
-    @ExceptionHandler(HttpMediaTypeNotSupportedException.class)
-    public ResponseEntity<ErrorResponse> handleMediaTypeNotSupportedException(
-            HttpMediaTypeNotSupportedException ex,
-            HttpServletRequest request) {
+  @ExceptionHandler(HttpMediaTypeNotSupportedException.class)
+        public ResponseEntity<ErrorResponse> handleMediaTypeNotSupportedException(
+                HttpMediaTypeNotSupportedException ex,
+                HttpServletRequest request) {
 
         ErrorResponse errorResponse = new ErrorResponse(
                 HttpStatus.UNSUPPORTED_MEDIA_TYPE.value(),
@@ -143,21 +144,21 @@ public class GlobalExceptionHandler {
                 request.getRequestURI());
 
         return new ResponseEntity<>(errorResponse, HttpStatus.UNSUPPORTED_MEDIA_TYPE);
-    }
+  }
 
-    @ExceptionHandler(Exception.class)
-    public ResponseEntity<ErrorResponse> handleGenericException(Exception ex, HttpServletRequest request) {
+  @ExceptionHandler(Exception.class)
+  public ResponseEntity<ErrorResponse> handleGenericException(Exception ex, HttpServletRequest request) {
 
-        String correlationId = UUID.randomUUID().toString();
-
+         String correlationId = UUID.randomUUID().toString();
+    
         logger.error("Erro interno. CorrelationId={}", correlationId, ex);
-
+    
         ErrorResponse errorResponse = new ErrorResponse(
 
-                HttpStatus.INTERNAL_SERVER_ERROR.value(),
-                HttpStatus.INTERNAL_SERVER_ERROR.getReasonPhrase(),
-                "Ocorreu um erro interno. Informe o código " + correlationId + " ao suporte.",
-                request.getRequestURI());
-        return new ResponseEntity<>(errorResponse, HttpStatus.INTERNAL_SERVER_ERROR);
-    }
+            HttpStatus.INTERNAL_SERVER_ERROR.value(),
+            HttpStatus.INTERNAL_SERVER_ERROR.getReasonPhrase(),
+            "Ocorreu um erro interno. Informe o código " + correlationId + " ao suporte.",
+            request.getRequestURI());
+    return new ResponseEntity<>(errorResponse, HttpStatus.INTERNAL_SERVER_ERROR);
+  }
 }
