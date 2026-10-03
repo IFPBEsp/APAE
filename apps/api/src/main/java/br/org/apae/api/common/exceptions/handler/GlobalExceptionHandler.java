@@ -29,7 +29,7 @@ import org.springframework.web.multipart.MaxUploadSizeExceededException;
 public class GlobalExceptionHandler {
 
   private static final Logger logger = LoggerFactory.getLogger(GlobalExceptionHandler.class);
-  private static final String VALIDATION_ERROR = VALIDATION_ERROR;
+  private static final String VALIDATION_ERROR = "Erro de validação";
 
 
   @ExceptionHandler(MethodArgumentNotValidException.class)

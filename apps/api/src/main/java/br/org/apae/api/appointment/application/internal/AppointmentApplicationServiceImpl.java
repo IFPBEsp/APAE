@@ -65,8 +65,8 @@ import jakarta.transaction.Transactional;
 public class AppointmentApplicationServiceImpl implements AppointmentApplicationService {
 
     public static final String APPOINTMENT_NOT_FOUND = "Appointment not found";
-    private static final String PATIENT_NOT_FOUND = PATIENT_NOT_FOUND;
-    private static final String RESPONSIBLE_NOT_FOUND = RESPONSIBLE_NOT_FOUND;
+    private static final String PATIENT_NOT_FOUND = "Paciente não encontrado para o agendamento ";
+    private static final String RESPONSIBLE_NOT_FOUND = "Responsável não encontrado para o paciente ";
     private final AppointmentRepository appointmentRepo;
     private final GeneratedAppointmentRepository generatedRepo;
     private final AnnualRegistryRepository registryRepo;

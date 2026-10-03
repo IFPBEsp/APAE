@@ -16,7 +16,7 @@ import java.util.Map;
 import java.util.UUID;
 
 public class PatientSpecification {
-    private static final String PATIENT_ID = PATIENT_ID;
+    private static final String PATIENT_ID = "patientId";
     public static Specification<Patient> filterBy(Map<String, String> filters) {
         return (root, query, criteriaBuilder) -> {
             List<Predicate> predicates = new ArrayList<>();
