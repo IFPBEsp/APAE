@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 
 import static org.hamcrest.Matchers.containsString;
+import static org.hamcrest.Matchers.matchesPattern;
 import static org.hamcrest.Matchers.not;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -65,6 +66,22 @@ class GlobalExceptionHandlerResponseStatusTest {
         public String erroGenerico() {
             throw new IllegalStateException("falha inesperada");
         }
+
+        @GetMapping(URI + "/erro-servidor")
+        public String erroServidor() {
+            throw new ResponseStatusException(HttpStatus.SERVICE_UNAVAILABLE,
+                    "Falha na conexão com o banco host=10.0.0.5 porta=5432");
+        }
+
+        @GetMapping(URI + "/status-numerico")
+        public String statusNumerico() {
+            throw new ResponseStatusException(422, "Dados inconsistentes", null);
+        }
+
+        @GetMapping(URI + "/status-desconhecido")
+        public String statusDesconhecido() {
+            throw new ResponseStatusException(599, "código interno 599 não mapeado", null);
+        }
     }
 
     @Test
@@ -108,5 +125,38 @@ class GlobalExceptionHandlerResponseStatusTest {
                 .andExpect(jsonPath("$.status").value(500))
                 .andExpect(jsonPath("$.message", containsString("Ocorreu um erro interno. Informe o código ")))
                 .andExpect(jsonPath("$.message", containsString(" ao suporte.")));
+    }
+
+    @Test
+    @DisplayName("Trata status 5xx como genérico: não expõe a reason e devolve correlationId")
+    void deveMascararReasonDeErroDeServidor() throws Exception {
+        mockMvc.perform(get(URI + "/erro-servidor"))
+                .andExpect(status().isServiceUnavailable())
+                .andExpect(jsonPath("$.status").value(503))
+                .andExpect(jsonPath("$.error").value("Service Unavailable"))
+                .andExpect(jsonPath("$.message").value(
+                        matchesPattern("Ocorreu um erro interno\\. Informe o código [0-9a-fA-F-]{36} ao suporte\\.")))
+                .andExpect(jsonPath("$.message", not(containsString("10.0.0.5"))))
+                .andExpect(jsonPath("$.path").value(URI + "/erro-servidor"));
+    }
+
+    @Test
+    @DisplayName("Resolve status criado só com código numérico em vez de converter para 500")
+    void devePreservarStatusCriadoComCodigoNumerico() throws Exception {
+        mockMvc.perform(get(URI + "/status-numerico"))
+                .andExpect(status().isUnprocessableEntity())
+                .andExpect(jsonPath("$.status").value(422))
+                .andExpect(jsonPath("$.error").value("Unprocessable Entity"))
+                .andExpect(jsonPath("$.message").value("Dados inconsistentes"));
+    }
+
+    @Test
+    @DisplayName("Código numérico fora do catálogo de status vira 500 genérico")
+    void deveUsarErroGenericoParaCodigoForaDoCatalogo() throws Exception {
+        mockMvc.perform(get(URI + "/status-desconhecido"))
+                .andExpect(status().isInternalServerError())
+                .andExpect(jsonPath("$.status").value(500))
+                .andExpect(jsonPath("$.message", containsString("Ocorreu um erro interno. Informe o código ")))
+                .andExpect(jsonPath("$.message", not(containsString("não mapeado"))));
     }
 }
