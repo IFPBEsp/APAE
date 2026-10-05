@@ -1,6 +1,13 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 interface PaginationProps {
   readonly currentPage: number;
@@ -40,17 +47,21 @@ export function Pagination({
 
         <div className="flex items-center gap-2">
           <span className="text-sm text-gray-600">Itens por página</span>
-          <select
-            className="h-9 rounded-md border border-gray-300 bg-white px-3 text-sm"
-            value={pageSize}
-            onChange={(e) => onPageSizeChange(Number(e.target.value))}
+          <Select
+            value={String(pageSize)}
+            onValueChange={(value) => onPageSizeChange(Number(value))}
           >
-            <option value={2}>2</option>
-            <option value={5}>5</option>
-            <option value={10}>10</option>
-            <option value={20}>20</option>
-            <option value={50}>50</option>
-          </select>
+            <SelectTrigger className="border-gray-300 bg-white">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="2">2</SelectItem>
+              <SelectItem value="5">5</SelectItem>
+              <SelectItem value="10">10</SelectItem>
+              <SelectItem value="20">20</SelectItem>
+              <SelectItem value="50">50</SelectItem>
+            </SelectContent>
+          </Select>
         </div>
       </div>
 
