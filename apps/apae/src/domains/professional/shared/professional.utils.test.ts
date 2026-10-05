@@ -161,6 +161,24 @@ describe("buildProfessionalPayload", () => {
     ]);
   });
 
+  it("ignora itens undefined na lista de availability sem quebrar", () => {
+    const checkedItem = {
+      day: daysOfWeek[0].id,
+      shift: shifts[0].id,
+      checked: true,
+    };
+
+    const payload = buildProfessionalPayload(
+      makeFormValues({
+        availability: [undefined, checkedItem],
+      }),
+    );
+
+    expect(payload.availabilities).toEqual([
+      { day: checkedItem.day, shift: checkedItem.shift },
+    ]);
+  });
+
   it("devolve availabilities vazia quando availability é undefined", () => {
     const payload = buildProfessionalPayload(
       makeFormValues({ availability: undefined }),

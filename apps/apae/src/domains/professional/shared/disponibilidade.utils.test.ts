@@ -51,25 +51,64 @@ describe("generateAvailabilityMatrix", () => {
     expect(result[0]).toEqual(input[0]);
   });
 
-  it("não quebra e ignora item de dia/turno que não existe em daysOfWeek/shifts", () => {
-    const input: AvailabilityType[] = [
-      { day: "dia-inexistente", shift: "turno-inexistente", checked: true },
-    ];
+  it("não quebra e ignora item de dia/turno que não existe, sem atrapalhar os itens válidos da mesma lista", () => {
+    const validItem: AvailabilityType = {
+      day: daysOfWeek[1].id,
+      shift: shifts[0].id,
+      checked: true,
+    };
+    const invalidItem: AvailabilityType = {
+      day: "dia-inexistente",
+      shift: "turno-inexistente",
+      checked: true,
+    };
+    const input = [invalidItem, validItem];
 
     expect(() => generateAvailabilityMatrix(input)).not.toThrow();
 
     const result = generateAvailabilityMatrix(input);
+
+    // a matriz continua completa e na ordem certa
     expect(result).toHaveLength(daysOfWeek.length * shifts.length);
+    expect(keysOf(result)).toEqual(expectedKeys);
+
+    // o inválido não aparece
     expect(result.some((i) => i.day === "dia-inexistente")).toBe(false);
-    expect(result.every((item) => item.checked === false)).toBe(true);
+
+    // o válido continua marcado, na posição esperada, e é o único checked
+    const expectedIndex = expectedKeys.indexOf(
+      `${validItem.day}|${validItem.shift}`,
+    );
+    expect(result[expectedIndex]).toEqual(validItem);
+    expect(result.filter((i) => i.checked)).toHaveLength(1);
   });
 
-  it("segue a ordem de daysOfWeek/shifts, não a da lista de entrada", () => {
-    const input = fullList(true).reverse();
+  it("segue a ordem de daysOfWeek/shifts, não a da lista de entrada, mantendo cada checked na célula certa", () => {
+    const targetDay = daysOfWeek[daysOfWeek.length - 1].id;
+    const targetShift = shifts[0].id;
+
+    // lista completa, só com um item marcado, e invertida
+    const input = fullList(false)
+      .map((item) =>
+        item.day === targetDay && item.shift === targetShift
+          ? { ...item, checked: true }
+          : item,
+      )
+      .reverse();
 
     const result = generateAvailabilityMatrix(input);
 
+    // a ordem segue daysOfWeek x shifts
     expect(keysOf(result)).toEqual(expectedKeys);
+
+    // o item marcado aparece na posição esperada, e só ele
+    const expectedIndex = expectedKeys.indexOf(`${targetDay}|${targetShift}`);
+    expect(result[expectedIndex]).toEqual({
+      day: targetDay,
+      shift: targetShift,
+      checked: true,
+    });
+    expect(result.filter((i) => i.checked)).toHaveLength(1);
   });
 });
 
