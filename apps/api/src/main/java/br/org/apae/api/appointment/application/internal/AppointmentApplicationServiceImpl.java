@@ -65,6 +65,8 @@ import jakarta.transaction.Transactional;
 public class AppointmentApplicationServiceImpl implements AppointmentApplicationService {
 
     public static final String APPOINTMENT_NOT_FOUND = "Appointment not found";
+    private static final String PATIENT_NOT_FOUND = "Paciente não encontrado para o agendamento ";
+    private static final String RESPONSIBLE_NOT_FOUND = "Responsável não encontrado para o paciente ";
     private final AppointmentRepository appointmentRepo;
     private final GeneratedAppointmentRepository generatedRepo;
     private final AnnualRegistryRepository registryRepo;
@@ -155,12 +157,12 @@ public class AppointmentApplicationServiceImpl implements AppointmentApplication
             Patient patient = patientRepo
                     .findById(appointment.getAnnualRegistration().getPatientId())
                     .orElseThrow(() -> new EntityNotFoundException(
-                            "Paciente não encontrado para o agendamento " + appointment.getId()));
+                            PATIENT_NOT_FOUND + appointment.getId()));
 
             Guardian guardian = guardianRepo
                     .findByPatientId(patient.getId())
                     .orElseThrow(() -> new EntityNotFoundException(
-                            "Responsável não encontrado para o paciente " + patient.getId()));
+                            RESPONSIBLE_NOT_FOUND + patient.getId()));
 
             List<Parent> pais = parentRepo.findAllByPatientId(patient.getId());
             AddressResponseDTO adto = new AddressResponseDTO(patient.getAddress());
@@ -182,12 +184,12 @@ public class AppointmentApplicationServiceImpl implements AppointmentApplication
             Patient patient = patientRepo
                     .findById(appointment.getAnnualRegistration().getPatientId())
                     .orElseThrow(() -> new EntityNotFoundException(
-                            "Paciente não encontrado para o agendamento " + appointment.getId()));
+                            PATIENT_NOT_FOUND + appointment.getId()));
 
             Guardian guardian = guardianRepo
                     .findByPatientId(patient.getId())
                     .orElseThrow(() -> new EntityNotFoundException(
-                            "Responsável não encontrado para o paciente " + patient.getId()));
+                            RESPONSIBLE_NOT_FOUND + patient.getId()));
 
             List<Parent> pais = parentRepo.findAllByPatientId(patient.getId());
             AddressResponseDTO adto = new AddressResponseDTO(patient.getAddress());
@@ -209,12 +211,12 @@ public class AppointmentApplicationServiceImpl implements AppointmentApplication
             Patient patient = patientRepo
                     .findById(appointment.getAnnualRegistration().getPatientId())
                     .orElseThrow(() -> new EntityNotFoundException(
-                            "Paciente não encontrado para o agendamento " + appointment.getId()));
+                            PATIENT_NOT_FOUND + appointment.getId()));
 
             Guardian guardian = guardianRepo
                     .findByPatientId(patient.getId())
                     .orElseThrow(() -> new EntityNotFoundException(
-                            "Responsável não encontrado para o paciente " + patient.getId()));
+                            RESPONSIBLE_NOT_FOUND + patient.getId()));
 
             List<Parent> pais = parentRepo.findAllByPatientId(patient.getId());
             AddressResponseDTO adto = new AddressResponseDTO(patient.getAddress());
@@ -248,12 +250,12 @@ public class AppointmentApplicationServiceImpl implements AppointmentApplication
         Patient patient = patientRepo
                 .findById(appointment.getAnnualRegistration().getPatientId())
                 .orElseThrow(() -> new EntityNotFoundException(
-                        "Paciente não encontrado para o agendamento " + appointment.getId()));
+                        PATIENT_NOT_FOUND + appointment.getId()));
 
         Guardian guardian = guardianRepo
                 .findByPatientId(patient.getId())
                 .orElseThrow(() -> new EntityNotFoundException(
-                        "Responsável não encontrado para o paciente " + patient.getId()));
+                        RESPONSIBLE_NOT_FOUND + patient.getId()));
 
         List<Parent> pais = parentRepo.findAllByPatientId(patient.getId());
         AddressResponseDTO adto = new AddressResponseDTO(patient.getAddress());
@@ -479,11 +481,11 @@ public class AppointmentApplicationServiceImpl implements AppointmentApplication
 
         Patient patient = patientRepo.findById(appointment.getPatientId())
                 .orElseThrow(() -> new EntityNotFoundException(
-                        "Paciente não encontrado para o agendamento " + appointment.getId()));
+                        PATIENT_NOT_FOUND + appointment.getId()));
 
         Guardian guardian = guardianRepo.findByPatientId(patient.getId())
                 .orElseThrow(() -> new EntityNotFoundException(
-                        "Responsável não encontrado para o paciente " + patient.getId()));
+                        RESPONSIBLE_NOT_FOUND + patient.getId()));
 
         List<Parent> pais = parentRepo.findAllByPatientId(patient.getId());
         AddressResponseDTO adto = new AddressResponseDTO(patient.getAddress());

@@ -37,6 +37,7 @@ import {
   mapProfessionalToForm,
   buildProfessionalPayload,
 } from "@/domains/professional/shared/professional.utils";
+import { MAX_FILE_SIZE_BYTES, MAX_FILE_SIZE_LABEL } from "@/lib/constants";
 
 
 
@@ -226,14 +227,14 @@ export default function ProfessionalUpdate(): JSX.Element {
                           "image/jpg",
                           "image/webp",
                         ];
-                        const maxSize = 5 * 1024 * 1024;
+                        const maxSize = MAX_FILE_SIZE_BYTES;
                         if (
                           !allowedTypes.includes(file.type) ||
                           file.size <= 0 ||
                           file.size > maxSize
                         ) {
                           alert(
-                            "Apenas imagens PNG, JPG ou WEBP até 5MB são permitidas",
+                            `Apenas imagens PNG, JPG ou WEBP até ${MAX_FILE_SIZE_LABEL} são permitidas`,
                           );
                           if (fileInputRef.current) {
                             fileInputRef.current.value = "";
@@ -270,7 +271,7 @@ export default function ProfessionalUpdate(): JSX.Element {
                       </div>
                     </button>
                     <p className="text-xs text-gray-500">
-                      PNG, JPG ou WEBP até 5MB
+                      PNG, JPG ou WEBP até {MAX_FILE_SIZE_LABEL}
                     </p>
                     {field.value && (
                       <div className="flex items-center gap-2">

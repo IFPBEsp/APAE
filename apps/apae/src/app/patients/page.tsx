@@ -127,7 +127,7 @@ function PatientsAndStudentsScreenContent() {
   ]);
 
   const updateQuery = (nextValues: Partial<typeof query>) => {
-    void setQuery(nextValues);
+    setQuery(nextValues);
   };
 
   const renderContent = () => {
