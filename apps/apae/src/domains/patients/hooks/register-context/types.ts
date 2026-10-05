@@ -47,6 +47,7 @@ export interface GuardianData {
   name: string;
   kinship: string;
   contact: string;
+  residesWithPatient?: boolean;
 }
 
 export interface ProfileData {

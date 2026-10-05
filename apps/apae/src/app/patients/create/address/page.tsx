@@ -28,7 +28,7 @@ import z from "zod";
 
 export default function MembersRegisterAddressPage() {
   const {
-    state: { address },
+    state: { address, guardian },
     setters: { setAddressData, setStep },
   } = useMembersRegisterContext();
 
@@ -68,6 +68,17 @@ export default function MembersRegisterAddressPage() {
       });
     }
   }, [address, form]);
+
+  useEffect(() => {
+    if (!guardian.residesWithPatient) return;
+
+    form.reset({
+      ...guardian.address,
+      noNumber: guardian.address.number === "SN",
+    });
+
+    setAddressData(guardian.address);
+  }, [guardian, form, setAddressData]);
 
   const onSubmit = async (values: z.infer<typeof Address>) => {
     setIsLoading(true);
