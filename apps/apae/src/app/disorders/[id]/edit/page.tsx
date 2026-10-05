@@ -9,8 +9,7 @@ import { useDisorderEdit } from "@/domains/disorders/edit/use-disorder-edit";
 export default function EditDisorderPage() {
   const params = useParams();
   const id = typeof params.id === "string" ? params.id : "";
-
-   const { disorder, updateDisorder, isSubmitting } = useDisorderEdit(id);
+  const { disorder, updateDisorder, isSubmitting } = useDisorderEdit(id);
 
   if (!disorder) {
     return (
