@@ -21,14 +21,17 @@ export interface PatientGuardian {
   address?: PatientGuardianAddress;
 }
 
-export interface PatientParent {
-  id?: string;
+export interface PatientParentPayload {
   name: string;
   rg: string;
   cpf: string;
   profession: string;
   isAlive: boolean;
   kinship: string;
+}
+
+export interface PatientParent extends PatientParentPayload {
+  id: string;
 }
 
 export interface PatientAnnualRegistry {
@@ -67,7 +70,7 @@ export interface PatientPayload {
     kinship: string;
     address: PatientGuardianAddress;
   };
-  parents: PatientParent[];
+  parents: PatientParentPayload[];
   vaccineNames: { name: string }[];
   annualRegistry: PatientAnnualRegistry;
 }
