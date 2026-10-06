@@ -23,12 +23,14 @@ import br.org.apae.api.common.exceptions.types.ValidationErrorResponse;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.ConstraintViolationException;
 import org.springframework.web.multipart.MaxUploadSizeExceededException;
+import org.springframework.web.server.ResponseStatusException;
 
 @ControllerAdvice
 @Order(Ordered.LOWEST_PRECEDENCE)
 public class GlobalExceptionHandler {
 
   private static final Logger logger = LoggerFactory.getLogger(GlobalExceptionHandler.class);
+  private static final String VALIDATION_ERROR = "Erro de validação";
 
 
   @ExceptionHandler(MethodArgumentNotValidException.class)
@@ -46,7 +48,7 @@ public class GlobalExceptionHandler {
     ValidationErrorResponse errorResponse = new ValidationErrorResponse(
             HttpStatus.BAD_REQUEST.value(),
             HttpStatus.BAD_REQUEST.getReasonPhrase(),
-            "Erro de validação",
+            VALIDATION_ERROR,
             request.getRequestURI(),
             fieldErrors
     );
@@ -71,7 +73,7 @@ public class GlobalExceptionHandler {
         ValidationErrorResponse errorResponse = new ValidationErrorResponse(
                 HttpStatus.BAD_REQUEST.value(),
                 HttpStatus.BAD_REQUEST.getReasonPhrase(),
-                "Erro de validação",
+                VALIDATION_ERROR,
                 request.getRequestURI(),
                 fieldErrors
         );
@@ -111,7 +113,7 @@ public class GlobalExceptionHandler {
     ValidationErrorResponse errorResponse = new ValidationErrorResponse(
             HttpStatus.BAD_REQUEST.value(),
             HttpStatus.BAD_REQUEST.getReasonPhrase(),
-            "Erro de validação",
+            VALIDATION_ERROR,
             request.getRequestURI(),
             fieldErrors
     );
@@ -143,6 +145,47 @@ public class GlobalExceptionHandler {
                 request.getRequestURI());
 
         return new ResponseEntity<>(errorResponse, HttpStatus.UNSUPPORTED_MEDIA_TYPE);
+  }
+
+  @ExceptionHandler(ResponseStatusException.class)
+  public ResponseEntity<ErrorResponse> handleResponseStatusException(
+          ResponseStatusException ex,
+          HttpServletRequest request) {
+
+    HttpStatus status = HttpStatus.resolve(ex.getStatusCode().value());
+    if (status == null) {
+      status = HttpStatus.INTERNAL_SERVER_ERROR;
+    }
+
+    if (status.is5xxServerError()) {
+      String correlationId = UUID.randomUUID().toString();
+
+      logger.error("Erro de servidor propagado como ResponseStatusException. status={} path={} correlationId={}",
+              status.value(), request.getRequestURI(), correlationId, ex);
+
+      ErrorResponse errorResponse = new ErrorResponse(
+              status.value(),
+              status.getReasonPhrase(),
+              "Ocorreu um erro interno. Informe o código " + correlationId + " ao suporte.",
+              request.getRequestURI());
+
+      return new ResponseEntity<>(errorResponse, status);
+    }
+
+    String message = (ex.getReason() != null && !ex.getReason().isBlank())
+            ? ex.getReason()
+            : status.getReasonPhrase();
+
+    logger.warn("Regra de negócio violada. status={} path={} message={}",
+            status.value(), request.getRequestURI(), message);
+
+    ErrorResponse errorResponse = new ErrorResponse(
+            status.value(),
+            status.getReasonPhrase(),
+            message,
+            request.getRequestURI());
+
+    return new ResponseEntity<>(errorResponse, status);
   }
 
   @ExceptionHandler(Exception.class)

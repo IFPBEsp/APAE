@@ -6,6 +6,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { FormControl, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { useFormContext } from "react-hook-form";
+import { MAX_FILE_SIZE_BYTES, MAX_FILE_SIZE_LABEL } from "@/lib/constants";
 
 interface ProfessionalPhotoProps {
   fileInputRef: RefObject<HTMLInputElement | null>;
@@ -44,8 +45,8 @@ export function ProfessionalPhoto({
               const file = e.target.files?.[0];
               if (!file) { setValue("photo", null); clearPhoto(); return; }
               const allowed = ["image/png","image/jpeg","image/jpg","image/webp"];
-              if (!allowed.includes(file.type) || file.size <= 0 || file.size > 5 * 1024 * 1024) {
-                alert("Apenas imagens PNG, JPG ou WEBP até 5MB são permitidas");
+              if (!allowed.includes(file.type) || file.size <= 0 || file.size > MAX_FILE_SIZE_BYTES) {
+                alert(`Apenas imagens PNG, JPG ou WEBP até ${MAX_FILE_SIZE_LABEL} são permitidas`);
                 clearPhoto();
                 setValue("photo", null);
                 return;
@@ -69,7 +70,7 @@ export function ProfessionalPhoto({
               <span className="bg-white text-black text-[10px] font-bold px-2 py-1 rounded shadow-sm">Escolher foto</span>
             </div>
           </button>
-          <p className="text-xs text-gray-500">PNG, JPG ou WEBP até 5MB</p>
+          <p className="text-xs text-gray-500">PNG, JPG ou WEBP até {MAX_FILE_SIZE_LABEL}</p>
           {selectedPhoto && (
             <div className="flex items-center gap-2">
               <p className="text-xs text-gray-600">Selecionado: {selectedPhoto.name}</p>
