@@ -49,4 +49,6 @@ public interface AppointmentApplicationService {
   TodayAppointmentsResponseDTO findGeneratedAppointmentById(UUID id);
 
   List<GeneratedAppointmentResponseDTO> listGeneratedByProfessional(UUID professionalId);
+
+  void deactivateAndRemoveFutureAppointments(UUID patientId);
 }

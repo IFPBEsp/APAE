@@ -11,6 +11,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 @Repository
@@ -43,4 +44,7 @@ public interface PatientRepository extends JpaRepository<Patient, UUID>, JpaSpec
 
     @Query("SELECT DISTINCT v.id FROM Patient p JOIN p.vaccines v WHERE p.id = :patientId")
     List<UUID> findVaccineIdsByPatientId(UUID patientId);
+
+    @Query(value = "SELECT * FROM apae_geral.pacientes WHERE id = :id", nativeQuery = true)
+    Optional<Patient> findByIdIncludingDeleted(@Param("id") UUID id);
 }

@@ -12,6 +12,4 @@ public interface GuardianApplicationService {
   GuardianResponseDTO findGuardianByPatientId(UUID patientId);
 
   GuardianResponseDTO updateGuardian(UpdateGuardianDTO updateGuardianDTO, UUID patientId);
-
-  void deleteGuardian(UUID patientId);
 }
