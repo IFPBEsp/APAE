@@ -9,6 +9,7 @@ import br.org.apae.api.documents.application.interfaces.DocumentApplicationServi
 import br.org.apae.api.documents.domain.enums.DocumentCategory;
 import br.org.apae.api.documents.domain.enums.DocumentType;
 import br.org.apae.api.documents.interfaces.dto.DocumentDTO;
+import br.org.apae.api.patient.application.internal.PatientDomainService;
 import br.org.apae.api.helpers.AuthTestHelper;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -68,6 +69,9 @@ public class PatientDocumentsControllerTest {
     private DocumentApplicationService documentService;
 
     @MockitoBean
+    private PatientDomainService patientDomainService;
+
+    @MockitoBean
     private JwtProvider jwtProvider;
 
     @MockitoBean
@@ -78,6 +82,7 @@ public class PatientDocumentsControllerTest {
     @BeforeEach
     void setupAuth() {
         AuthTestHelper.mockAuthenticatedUser(jwtProvider, userService);
+        when(patientDomainService.getByIdOrThrow(any())).thenReturn(null);
     }
 
     @AfterEach
@@ -112,6 +117,8 @@ public class PatientDocumentsControllerTest {
             UUID patientId = UUID.randomUUID();
             MockMultipartFile file = new MockMultipartFile(
                     "file", "document.pdf", "application/pdf", "content".getBytes());
+
+            when(patientDomainService.getByIdOrThrow(patientId)).thenReturn(null);
 
             mockMvc.perform(
                             multipart(BASE_URL, patientId)
@@ -272,7 +279,7 @@ public class PatientDocumentsControllerTest {
     class Login {
 
             @Test
-            @DisplayName("Deve falhar ao tentar fazer upload com categoria inválida")
+            @DisplayName("Deve falhar ao tentar fazer upload com categoria inválida (Retornar 400)")
             void shouldFailWhenCategoryIsInvalid() throws Exception {
             UUID patientId = UUID.randomUUID();
             MockMultipartFile file = new MockMultipartFile(
@@ -285,19 +292,19 @@ public class PatientDocumentsControllerTest {
                                     .param("type", "REFERRAL")
                                     .header("Authorization", AuthTestHelper.bearerToken())
                                     .with(csrf()))
-                    .andExpect(status().isInternalServerError());
+                    .andExpect(status().isBadRequest());
             }
 
-            @ParameterizedTest(name = "Deve retornar erro quando o paciente não for encontrado para o endpoint {0}")
+            @ParameterizedTest(name = "Deve retornar 404 quando o paciente não for encontrado para o endpoint {0}")
             @MethodSource("br.org.apae.api.controllers.patient.PatientDocumentsControllerTest#documentsEndpoints")
             void shouldReturnErrorWhenPatientNotFound(String endpoint, DocumentCategory category) throws Exception {
             UUID patientId = UUID.randomUUID();
 
-            when(documentService.listDocuments(any())).thenThrow(new RuntimeException("Patient not found"));
+            when(patientDomainService.getByIdOrThrow(patientId)).thenThrow(new br.org.apae.api.patient.domain.exceptions.PatientNotFoundException());
 
             mockMvc.perform(get(endpoint, patientId)
                             .header("Authorization", AuthTestHelper.bearerToken()))
-                    .andExpect(status().isInternalServerError());
+                    .andExpect(status().isNotFound());
             }
 
     }
