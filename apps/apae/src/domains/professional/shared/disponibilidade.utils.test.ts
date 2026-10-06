@@ -68,14 +68,11 @@ describe("generateAvailabilityMatrix", () => {
 
     const result = generateAvailabilityMatrix(input);
 
-    // a matriz continua completa e na ordem certa
     expect(result).toHaveLength(daysOfWeek.length * shifts.length);
     expect(keysOf(result)).toEqual(expectedKeys);
 
-    // o inválido não aparece
     expect(result.some((i) => i.day === "dia-inexistente")).toBe(false);
 
-    // o válido continua marcado, na posição esperada, e é o único checked
     const expectedIndex = expectedKeys.indexOf(
       `${validItem.day}|${validItem.shift}`,
     );
@@ -87,7 +84,6 @@ describe("generateAvailabilityMatrix", () => {
     const targetDay = daysOfWeek[daysOfWeek.length - 1].id;
     const targetShift = shifts[0].id;
 
-    // lista completa, só com um item marcado, e invertida
     const input = fullList(false)
       .map((item) =>
         item.day === targetDay && item.shift === targetShift
@@ -98,10 +94,8 @@ describe("generateAvailabilityMatrix", () => {
 
     const result = generateAvailabilityMatrix(input);
 
-    // a ordem segue daysOfWeek x shifts
     expect(keysOf(result)).toEqual(expectedKeys);
 
-    // o item marcado aparece na posição esperada, e só ele
     const expectedIndex = expectedKeys.indexOf(`${targetDay}|${targetShift}`);
     expect(result[expectedIndex]).toEqual({
       day: targetDay,
