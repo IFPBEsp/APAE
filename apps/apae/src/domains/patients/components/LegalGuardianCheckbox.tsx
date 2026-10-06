@@ -110,7 +110,7 @@ export function LegalGuardianCheckbox({
           <FormControl>
             <Checkbox
               className="border-zinc-300"
-              checked={residesWithPatient}
+              checked={!!residesWithPatient}
               onCheckedChange={(checked) => {
                 setGuardianData({
                   residesWithPatient: checked as boolean,

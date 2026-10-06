@@ -108,15 +108,7 @@ export function useRegisterSubmission(state: MembersRegisterState, STORAGE_KEY: 
         continuousMedication: additionals.medications || "Nenhum",
 
         isStudent: profile.role === "student",
-        address:guardian.residesWithPatient ? {
-          city: address.city || "Não informado",
-          cep: address.cep || "00000-000",
-          state: address.state || "Não informado",
-          neighborhood: address.neighborhood || "Não informado",
-          street: address.street || "Não informado",
-          number: address.number || "S/N",
-          complement: address.complement || "",
-        } : {
+        address:{
           city: address.city || "Não informado",
           cep: address.cep || "00000-000",
           state: address.state || "Não informado",
