@@ -1,4 +1,5 @@
 import * as z from "zod";
+import { MAX_FILE_SIZE_BYTES, MAX_FILE_SIZE_LABEL } from "@/lib/constants";
 
 const nameRegex = /^[A-Za-zÀ-ÖØ-öø-ÿ ]{3,100}$/;
 const phoneRegex = /^\(\d{2}\) \d{5}-\d{4}$/;
@@ -26,11 +27,11 @@ const fileSchema = z
       ].includes(file.type),
     "Apenas imagens ou PDF são permitidos"
   )
-  .refine((file) => file.size <= 5 * 1024 * 1024, "Arquivo deve ser menor que 5MB");
+  .refine((file) => file.size <= MAX_FILE_SIZE_BYTES, `Arquivo deve ser menor que ${MAX_FILE_SIZE_LABEL}`);
 
   const imageSchema = z
   .instanceof(File)
-  .refine((file) => file.size <= 2 * 1024 * 1024, "A foto deve ser menor que 2MB")
+  .refine((file) => file.size <= MAX_FILE_SIZE_BYTES, `A foto deve ser menor que ${MAX_FILE_SIZE_LABEL}`)
   .refine(
     (file) => ["image/jpeg", "image/png", "image/jpg", "image/webp"].includes(file.type),
     "Apenas formatos JPG, PNG ou WEBP são aceitos"

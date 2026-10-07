@@ -1,5 +1,5 @@
 import { createBaseApi } from "@/lib/axios";
-import { createDisorderSchema } from "@/domains/disorders/disorders.schema";
+import { disorderFormSchema } from "@/domains/disorders/disorders.schema";
 import { NextResponse } from "next/server";
 import { AxiosError } from "axios";
 
@@ -7,7 +7,7 @@ export async function POST(request: Request) {
   try {
     const body = await request.json();
 
-    const validation = createDisorderSchema.safeParse(body);
+    const validation = disorderFormSchema.safeParse(body);
     if (!validation.success) {
       return new NextResponse(
         JSON.stringify({
