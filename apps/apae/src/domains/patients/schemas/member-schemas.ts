@@ -219,6 +219,7 @@ export const Guardian = z.object({
 
   kinship: z.string().min(1, "Informar o parentesco é obrigatório."),
   address: Address,
+  residesWithPatient: z.boolean().optional(),
 });
 
 export const Profile = z.object({

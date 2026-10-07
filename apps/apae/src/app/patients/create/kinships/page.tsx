@@ -37,7 +37,7 @@ import { LegalGuardianCheckbox } from "@/domains/patients/components/LegalGuardi
 
 export default function MembersRegisterKinshipsPage() {
   const {
-    state: { kinships },
+    state: { kinships, guardian },
     setters: { setKinshipsData, setStep, setGuardianData },
   } = useMembersRegisterContext();
 
@@ -102,18 +102,6 @@ export default function MembersRegisterKinshipsPage() {
           setGuardianData({
             name: legalGuardianKinship.name,
             kinship: legalGuardianKinship.type,
-            contact: "",
-            address: {
-              cep: "",
-              state: "",
-              city: "",
-              neighborhood: "",
-              noNumber: false,
-              number: "",
-              district: "",
-              street: "",
-              complement: "",
-            },
           });
         }
       }
@@ -279,6 +267,7 @@ export default function MembersRegisterKinshipsPage() {
                   form={form}
                   index={index}
                   setGuardianData={setGuardianData}
+                  guardian={guardian}
                 />
               </div>
             )}
