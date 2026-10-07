@@ -72,13 +72,20 @@ export default function MembersRegisterAddressPage() {
   useEffect(() => {
     if (!guardian.residesWithPatient) return;
 
-    form.reset({
+    const isAddressEmpty = Object.values(address).every(
+      (value) => value === "" || value === false
+    );
+
+    if (!isAddressEmpty) return;
+
+    const guardianAddress = {
       ...guardian.address,
       noNumber: guardian.address.number === "SN",
-    });
+    };
 
-    setAddressData(guardian.address);
-  }, [guardian, form, setAddressData]);
+    form.reset(guardianAddress);
+    setAddressData(guardianAddress);
+  }, [address, guardian, form, setAddressData]);
 
   const onSubmit = async (values: z.infer<typeof Address>) => {
     setIsLoading(true);
