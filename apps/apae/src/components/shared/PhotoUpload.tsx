@@ -8,7 +8,8 @@ import { FormControl, FormItem, FormLabel, FormMessage } from "@/components/ui/f
 import { useFormContext } from "react-hook-form";
 import { MAX_FILE_SIZE_BYTES, MAX_FILE_SIZE_LABEL } from "@/lib/constants";
 
-interface ProfessionalPhotoProps {
+export interface PhotoUploadProps {
+  label?: string;
   fileInputRef: RefObject<HTMLInputElement | null>;
   selectedPhoto: File | null;
   photoPreviewUrl: string | null;
@@ -19,7 +20,8 @@ interface ProfessionalPhotoProps {
   clearPhoto: () => void;
 }
 
-export function ProfessionalPhoto({
+export function PhotoUpload({
+  label,
   fileInputRef,
   selectedPhoto,
   photoPreviewUrl,
@@ -28,12 +30,12 @@ export function ProfessionalPhoto({
   photoSuccess,
   setSelectedPhoto,
   clearPhoto,
-}: ProfessionalPhotoProps) {
+}: PhotoUploadProps) {
   const { setValue } = useFormContext();
 
   return (
     <FormItem>
-      <FormLabel className="text-sm font-medium">Selecione uma foto*</FormLabel>
+      <FormLabel className="text-sm font-medium">{label ?? "Selecione uma foto*"}</FormLabel>
       <FormControl>
         <div className="flex flex-col items-start gap-4 w-full">
           <input
@@ -61,7 +63,7 @@ export function ProfessionalPhoto({
             className="relative group mr-auto rounded-full transition-transform hover:scale-105"
           >
             <Avatar className="w-32 h-32 border-2 border-dashed border-gray-300 bg-gray-50">
-              <AvatarImage src={photoPreviewUrl ?? profilePhotoUrl ?? undefined} alt="Foto do profissional" />
+              <AvatarImage src={photoPreviewUrl ?? profilePhotoUrl ?? undefined} alt="Foto do perfil" />
               <AvatarFallback className="bg-transparent">
                 <User className="w-12 h-12 text-gray-400" />
               </AvatarFallback>

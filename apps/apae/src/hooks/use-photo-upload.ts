@@ -1,11 +1,17 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, useCallback } from "react";
 
-export function useProfessionalPhoto() {
+export function usePhotoUpload(options: { buildUrl: (id: string) => string; method: "PUT" | "PATCH"; fieldName?: string }) {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [selectedPhoto, setSelectedPhoto] = useState<File | null>(null);
   const [photoPreviewUrl, setPhotoPreviewUrl] = useState<string | null>(null);
   const [photoError, setPhotoError] = useState<string | null>(null);
   const [photoSuccess, setPhotoSuccess] = useState(false);
+
+  const selectedPhotoRef = useRef(selectedPhoto);
+  selectedPhotoRef.current = selectedPhoto;
+
+  const optionsRef = useRef(options);
+  optionsRef.current = options;
 
   useEffect(() => {
     if (!selectedPhoto) { setPhotoPreviewUrl(null); return; }
@@ -19,20 +25,28 @@ export function useProfessionalPhoto() {
     if (fileInputRef.current) fileInputRef.current.value = "";
   }
 
-  async function uploadPhoto(professionalId: string): Promise<boolean> {
-    if (!selectedPhoto) return true;
+  const uploadPhoto = useCallback(async (id: string): Promise<boolean> => {
+    if (!selectedPhotoRef.current) return true;
     setPhotoError(null);
     setPhotoSuccess(false);
     try {
       const photoData = new FormData();
-      photoData.append("file", selectedPhoto);
-      const response = await fetch(`/apae-geral/api/professionals/${professionalId}/photo`, {
-        method: "PATCH",
+      photoData.append(optionsRef.current.fieldName ?? "file", selectedPhotoRef.current);
+      const response = await fetch(optionsRef.current.buildUrl(id), {
+        method: optionsRef.current.method,
         body: photoData,
       });
       if (!response.ok) {
         const body = await response.json().catch(() => ({}));
-        throw new Error(body?.message ?? "Erro ao enviar foto");
+        let errMsg = "Erro ao enviar foto";
+        if (typeof body === "string") {
+            errMsg = body;
+        } else if (typeof body?.message === "string") {
+            errMsg = body.message;
+        } else if (typeof body?.message?.message === "string") {
+            errMsg = body.message.message;
+        }
+        throw new Error(errMsg);
       }
       setPhotoSuccess(true);
       setSelectedPhoto(null);
@@ -41,7 +55,7 @@ export function useProfessionalPhoto() {
       setPhotoError((e as Error)?.message ?? "Erro ao enviar foto");
       return false;
     }
-  }
+  }, []);
 
   return {
     fileInputRef,
