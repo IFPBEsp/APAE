@@ -4,7 +4,7 @@ import { Check } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import {
   markAsPerformed,
-} from '@/app/services/appointmentService';
+} from '@/domains/appointments/appointments.api';
 import { useRouter } from 'next/navigation';
 import {
   Dialog,
