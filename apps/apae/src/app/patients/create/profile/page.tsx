@@ -20,6 +20,11 @@ import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { User } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { handleBackendValidationErrors } from "@/lib/utils/form-errors";
+import {
+  getConflictError,
+  getStepForBackendField,
+  isSuccessStatus,
+} from "@/domains/patients/patient-register.utils";
 
 import z from "zod";
 import { FormButton, MembersRegisterForm } from "../form";
@@ -118,96 +123,77 @@ export default function MembersRegisterProfilePage() {
   }, [isEditing, id]);
 
   useEffect(() => {
-    if (submitted && profile) {
-      (async () => {
-        setIsLoading(true);
-        try {
-          const res = await register(id);
+    if (!submitted || !profile) return;
 
-          if (res.status === 201 || res.status === 200 || res.status === 204) {
-            toast.success(
-              isEditing
-                ? "Paciente atualizado com sucesso!"
-                : "Membro cadastrado com sucesso!",
-            );
-            router.push(
-              isEditing ? `/patients/${id}` : "/patients",
-            );
-            return;
-          }
+    type RegisterResponse = Awaited<ReturnType<typeof register>>;
 
-          if (res.status === 409) {
-            const msg = getErrorMessage(res.data);
-            const msgLower = msg.toLowerCase();
+    const handleSuccess = () => {
+      toast.success(
+        isEditing
+          ? "Paciente atualizado com sucesso!"
+          : "Membro cadastrado com sucesso!",
+      );
+      router.push(
+        isEditing ? `/patients/${id}` : "/patients",
+      );
+    };
 
-            let targetField = "cpf";
-            let displayMsg = "CPF ou documento já cadastrado no sistema.";
+    const handleConflict = (res: RegisterResponse) => {
+      const { field, message } = getConflictError(getErrorMessage(res.data));
 
-            if (msgLower.includes("rg") || msgLower.includes("identidade")) {
-              targetField = "rg.number";
-              displayMsg = "Este RG já está cadastrado no sistema.";
-            } else if (msgLower.includes("cns")) {
-              targetField = "cns";
-              displayMsg = "Este CNS já está cadastrado no sistema.";
-            } else if (msgLower.includes("cpf")) {
-              targetField = "cpf";
-              displayMsg = "Este CPF já está cadastrado no sistema.";
-            }
+      toast.error(message);
+      setStep(MembersRegisterStep.PERSONAL);
+      form.setError(field as any, {
+        type: "manual",
+        message,
+      });
+      setSubmitted(false);
+    };
 
-            toast.error(displayMsg);
-            setStep(MembersRegisterStep.PERSONAL);
-            form.setError(targetField as any, {
-              type: "manual",
-              message: displayMsg,
-            });
-            setSubmitted(false);
-            return;
-          }
+    const handleValidationError = (res: RegisterResponse) => {
+      const resData = res.data as { fields?: Array<{ field?: string; message?: string }> } | undefined;
+      const firstError = resData?.fields?.[0];
+      const backendField = firstError?.field || "";
+      const errorMessage =
+        firstError?.message || getErrorMessage(res.data);
 
-          if (res.status === 400) {
-            const resData = res.data as { fields?: Array<{ field?: string; message?: string }> } | undefined;
-            const firstError = resData?.fields?.[0];
-            const backendField = firstError?.field || "";
-            const fieldLower = backendField.toLowerCase();
-            const errorMessage =
-              firstError?.message || getErrorMessage(res.data);
+      const step = backendField ? getStepForBackendField(backendField) : undefined;
+      if (step) setStep(step);
 
-            if (backendField) {
-              if (
-                ["fullName", "cpf", "rg", "contact", "birth", "nationality", "cns", "nis", "phone", "name"]
-                  .some((f) => fieldLower.includes(f.toLowerCase()))
-              ) {
-                setStep(MembersRegisterStep.PERSONAL);
-              } else if (fieldLower.includes("parents") || fieldLower.includes("kinships")) {
-                setStep(MembersRegisterStep.KINSHIPS);
-              } else if (fieldLower.includes("address") && !fieldLower.includes("guardian")) {
-                setStep(MembersRegisterStep.ADDRESS);
-              } else if (
-                ["annualRegistry", "vaccine", "allergies", "diseases", "familyIncome", "householdIncome"]
-                  .some((f) => fieldLower.includes(f.toLowerCase()))
-              ) {
-                setStep(MembersRegisterStep.ADDITIONALS);
-              } else if (fieldLower.includes("guardian")) {
-                setStep(MembersRegisterStep.GUARDIAN);
-              }
-            }
+      toast.error(errorMessage);
+      handleBackendValidationErrors(res.data, form.setError);
+      setSubmitted(false);
+    };
 
-            toast.error(errorMessage);
-            handleBackendValidationErrors(res.data, form.setError);
-            setSubmitted(false);
-            return;
-          }
+    const handleResponse = (res: RegisterResponse) => {
+      if (isSuccessStatus(res.status)) {
+        handleSuccess();
+        return;
+      }
+      if (res.status === 409) {
+        handleConflict(res);
+        return;
+      }
+      if (res.status === 400) {
+        handleValidationError(res);
+        return;
+      }
 
-          toast.error(getErrorMessage(res.data));
-          setSubmitted(false);
-        } catch (error) {
-          toast.error("Falha na conexão com o servidor.");
-          setSubmitted(false);
-        } finally {
-          setIsLoading(false);
-        }
-      })();
-    }
+      toast.error(getErrorMessage(res.data));
+      setSubmitted(false);
+    };
+
+    (async () => {
+      setIsLoading(true);
+      try {
+        handleResponse(await register(id));
+      } catch (error) {
+        toast.error("Falha na conexão com o servidor.");
+        setSubmitted(false);
+      } finally {
+        setIsLoading(false);
+      }
+    })();
   }, [submitted, profile, register, router, form, setStep, id, isEditing]);
 
   const onSubmit = async (values: z.infer<typeof currentSchema>) => {
