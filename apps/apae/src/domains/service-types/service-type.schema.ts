@@ -6,11 +6,11 @@ export const serviceTypeSchema = z.object({
   area: z.string(),
 });
 
-export const createserviceTypeSchema = z.object({
+export const createServiceTypeSchema = z.object({
   area: z.string().min(1, "A área é obrigatória."),
 });
 
-export const updateserviceTypeSchema = createserviceTypeSchema;
+export const updateServiceTypeSchema = createServiceTypeSchema;
 
-export type CreateserviceTypeDTO = z.infer<typeof createserviceTypeSchema>;
-export type UpdateserviceTypeDTO = z.infer<typeof updateserviceTypeSchema>;
+export type CreateServiceTypeDTO = z.infer<typeof createServiceTypeSchema>;
+export type UpdateServiceTypeDTO = z.infer<typeof updateServiceTypeSchema>;

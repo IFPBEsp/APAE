@@ -111,7 +111,7 @@ export function useAnnualRegistryModal({
         ? fullPatientData.vaccineNames.map((v: unknown) => (typeof v === "string" ? { name: v } : v))
         : [];
 
-      const sourceServiceAreas = initialData.serviceArea || initialData.serviceAreas || initialData.serviceTypes || [];
+      const sourceServiceAreas = initialData.serviceAreas ?? [];
       const serviceTypeList = Array.isArray(sourceServiceAreas)
         ? sourceServiceAreas.map((s: ServiceTypeItem) => ({ id: s.id, area: s.area || s.name, name: s.name || s.area }))
         : [];

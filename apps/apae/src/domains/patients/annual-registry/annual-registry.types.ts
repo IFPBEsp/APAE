@@ -32,8 +32,6 @@ export interface AnnualRegistry {
   medication?: string;
   disorders?: DisorderItem[];
   serviceAreas?: ServiceTypeItem[];
-  serviceArea?: ServiceTypeItem[];
-  serviceTypes?: ServiceTypeItem[];
 }
 
 export interface FullPatientData {

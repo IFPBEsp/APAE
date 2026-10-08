@@ -4,15 +4,15 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "react-toastify";
 import {
-  updateserviceTypeSchema,
-  UpdateserviceTypeDTO,
+  updateServiceTypeSchema,
+  UpdateServiceTypeDTO,
 } from "../service-type.schema";
 
 export function useServiceTypeEdit(id: string | string[] | undefined) {
   const router = useRouter();
 
-  const form = useForm<UpdateserviceTypeDTO>({
-    resolver: zodResolver(updateserviceTypeSchema),
+  const form = useForm<UpdateServiceTypeDTO>({
+    resolver: zodResolver(updateServiceTypeSchema),
   });
 
   const { setValue, formState: { isSubmitting } } = form;
@@ -36,7 +36,7 @@ export function useServiceTypeEdit(id: string | string[] | undefined) {
     fetchServiceType();
   }, [id, setValue, router]);
 
-  async function onSubmit(data: UpdateserviceTypeDTO) {
+  async function onSubmit(data: UpdateServiceTypeDTO) {
     try {
       const response = await fetch(`/apae-geral/api/service-types/${id}`, {
         method: "PUT",
