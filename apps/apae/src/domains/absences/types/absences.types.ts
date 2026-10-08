@@ -5,6 +5,8 @@ export interface CreateAbsenceDTO {
   generatedAppointmentId: UUID;
   absenceDate: string;
   justification: string;
+  isJustified: boolean;
+  justificationDocumentId: string | null;
 }
 
 export interface AbsenceResponseDTO {
@@ -24,4 +26,16 @@ export interface PatientWithAbsences {
   absenceCount: number;
   lastAbsenceDate: string;
   absences: AbsenceResponseDTO[];
+}
+
+export type FormDataType = {
+  hasJustification: string;
+  justificationText?: string;
+};
+
+export interface PaginationInfo {
+  currentPage: number;
+  totalPages: number;
+  totalItems: number;
+  itemsPerPage: number;
 }

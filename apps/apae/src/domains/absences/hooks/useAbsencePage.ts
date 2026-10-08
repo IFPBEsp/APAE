@@ -1,14 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
-import { PatientWithAbsences } from "@/domains/absences/types/absences.types";
+import type { PaginationInfo, PatientWithAbsences } from "@/domains/absences/types/absences.types";
 import { DashboardOverview } from "@/domains/dashboard/dashboard.types";
-import { justifyAbsence } from "@/domains/absences/absences.api";
-
-interface PaginationInfo {
-  currentPage: number;
-  totalPages: number;
-  totalItems: number;
-  itemsPerPage: number;
-}
+import { justifyAbsence, uploadJustificationDocument } from "@/domains/absences/absences.api";
 
 export function useAbsencePage() {
   const [searchName, setSearchName] = useState("");
@@ -76,9 +69,6 @@ export function useAbsencePage() {
     return () => clearTimeout(timer);
   }, [searchName, fetchData]);
 
-  const formatDate = (dateString: string) =>
-    new Date(dateString + "Z").toLocaleDateString("pt-BR", { timeZone: "UTC" });
-
   const handleDownload = async (patientId: string, documentName: string) => {
     try {
       const res = await fetch(
@@ -99,24 +89,7 @@ export function useAbsencePage() {
       let documentId: string | null = null;
 
       if (file) {
-        const docFormData = new FormData();
-        docFormData.append("file", file);
-        docFormData.append("category", "ABSENCE");
-        docFormData.append("type", "ATTACHMENTANY");
-        docFormData.append("year", String(new Date().getFullYear()));
-
-        const docResponse = await fetch(
-          `/apae-geral/api/patients/${justifyingAbsence.patientId}/documents`,
-          { method: "POST", body: docFormData },
-        );
-
-        if (!docResponse.ok) {
-          const errorData = await docResponse.json();
-          throw new Error(errorData.message || "Erro ao fazer upload do documento.");
-        }
-
-        const document = await docResponse.json();
-        documentId = document.name;
+        documentId = await uploadJustificationDocument(justifyingAbsence.patientId, file);
       }
 
       await justifyAbsence(justifyingAbsence.id, justificationText, documentId);
@@ -144,7 +117,6 @@ export function useAbsencePage() {
     isSubmittingJustification,
     file, setFile,
     fileInputRef,
-    formatDate,
     handleDownload,
     handleJustifyAbsence,
   };

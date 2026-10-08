@@ -6,6 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Calendar, SearchIcon, Users } from "lucide-react";
 import React from "react";
 import { useAbsencePage } from "@/domains/absences/hooks/useAbsencePage";
+import { formatDateShortPTBR } from "@/lib/utils";
 
 export default function AbsenceDetails() {
   const {
@@ -20,7 +21,6 @@ export default function AbsenceDetails() {
     isSubmittingJustification,
     file, setFile,
     fileInputRef,
-    formatDate,
     handleDownload,
     handleJustifyAbsence,
   } = useAbsencePage();
@@ -97,7 +97,9 @@ export default function AbsenceDetails() {
                                   <div key={abs.id} className="flex flex-col md:flex-row md:items-start md:justify-between gap-4 p-3 bg-white rounded border">
                                     <div className="flex items-center gap-4">
                                       <Calendar className="h-4 w-4 text-red-500" />
-                                      <span className="font-medium">{formatDate(abs.absenceDate)}</span>
+                                      <span className="font-medium">
+                                        {formatDateShortPTBR(abs.absenceDate)}
+                                      </span>
                                     </div>
                                     <div className="flex items-center gap-2 flex-wrap">
                                       {abs.isJustified ? (

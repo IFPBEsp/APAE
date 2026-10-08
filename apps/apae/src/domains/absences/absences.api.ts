@@ -1,4 +1,6 @@
 import type { CreateAbsenceDTO, AbsenceResponseDTO } from './types/absences.types';
+import type { DocumentWithOutUrl } from '@/types/document';
+import { ABSENCE_DOCUMENT_CATEGORY, ABSENCE_DOCUMENT_TYPE } from './absences.constants';
 
 const API_PATH = '/apae-geral/api/absences';
 
@@ -34,4 +36,28 @@ export async function justifyAbsence(
   }
 
   return response.json();
+}
+
+export async function uploadJustificationDocument(
+  patientId: string,
+  file: File,
+): Promise<string> {
+  const formData = new FormData();
+  formData.append('file', file);
+  formData.append('category', ABSENCE_DOCUMENT_CATEGORY);
+  formData.append('type', ABSENCE_DOCUMENT_TYPE);
+  formData.append('year', String(new Date().getFullYear()));
+
+  const response = await fetch(`/apae-geral/api/patients/${patientId}/documents`, {
+    method: 'POST',
+    body: formData,
+  });
+
+  if (!response.ok) {
+    const errorData = await response.json();
+    throw new Error(errorData.message || 'Erro ao fazer upload do documento.');
+  }
+
+  const uploadedDocument = (await response.json()) as DocumentWithOutUrl;
+  return uploadedDocument.name;
 }
