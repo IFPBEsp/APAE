@@ -1,0 +1,18 @@
+[config]
+model = "gemini/gemini-3.6-flash"
+model_turbo = "gemini/gemini-3.6-flash"
+response_language = "pt-BR"
+
+[github_action_config]
+auto_review = true
+auto_describe = false
+auto_improve = true
+pr_actions = ["opened", "reopened", "synchronize", "ready_for_review"]
+
+[pr_reviewer]
+num_code_suggestions = 3
+inline_code_comments = true
+persistent_comment = false
+
+[ignore]
+glob = ["*.lock", "pnpm-lock.yaml", "package-lock.json"]
