@@ -14,13 +14,10 @@ on:
 
 jobs:
   pr-agent:
-    uses: IFPBEsp/APAE-INFRA/.github/workflows/pr-agent-reusable.yml@7b2ed95ea0f0732b5d9d85b4ec5744006467187e
+    uses: IFPBEsp/APAE-INFRA/.github/workflows/pr-agent-reusable.yml@76cf0df118f945e40af5c7f26938aea9fcd84a21
     with:
       model: "gemini/gemini-3.6-flash"
       response-language: "pt-BR"
-      auto-review: true
-      auto-improve: true
-      auto-describe: false
       num-code-suggestions: 3
       ignore-globs: '["*.lock", "pnpm-lock.yaml", "package-lock.json"]'
 
