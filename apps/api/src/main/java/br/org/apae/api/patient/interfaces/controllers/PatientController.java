@@ -125,6 +125,23 @@ public interface PatientController {
                 Pageable pageable
         );
 
+        @Operation(
+                summary = "Listar ids de pacientes com alerta de faltas",
+                description = "Retorna, sem paginação, apenas os ids dos pacientes com pelo menos o número mínimo de faltas não justificadas informado."
+        )
+        @ApiResponses(value = {
+                @ApiResponse(responseCode = "200", description = "Lista de ids retornada com sucesso"),
+                @ApiResponse(responseCode = "400", description = "Parâmetro de requisição inválido")
+        })
+        @GetMapping("/absence-alert-ids")
+        ResponseEntity<List<UUID>> findAbsenceAlertPatientIds(
+                @Parameter(
+                        description = "Número mínimo de faltas não justificadas",
+                        example = "3"
+                )
+                @RequestParam(defaultValue = "3") Integer minAbsences
+        );
+
         @Operation(summary = "Lista os tipos de atendimento para o filtro")
         @GetMapping("/filtros/tipos-atendimento")
         ResponseEntity<List<String>> getTiposAtendimento();

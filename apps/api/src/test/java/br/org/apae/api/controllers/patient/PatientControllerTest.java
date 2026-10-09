@@ -302,6 +302,19 @@ public class PatientControllerTest {
   }
 
   @Test
+  @DisplayName("Deve retornar os ids dos pacientes com alerta de faltas (200)")
+  void shouldReturnAbsenceAlertPatientIds() throws Exception {
+   UUID first = UUID.randomUUID();
+   UUID second = UUID.randomUUID();
+   when(patientService.findAbsenceAlertPatientIds(3)).thenReturn(List.of(first, second));
+
+   mockMvc.perform(get(BASE_URL + "/absence-alert-ids").header("Authorization", AuthTestHelper.bearerToken()).param("minAbsences", "3").accept(MediaType.APPLICATION_JSON))
+     .andExpect(status().isOk())
+     .andExpect(jsonPath("$", hasSize(2)))
+     .andExpect(jsonPath("$[0]").value(first.toString()));
+  }
+
+  @Test
   @DisplayName("Deve retornar pacientes com faltas com sucesso (200)")
   void shouldReturnPatientsWithAbsences() throws Exception {
    when(patientService.findPatientsWithAbsences(any(), any(), any())).thenReturn(Page.empty());
