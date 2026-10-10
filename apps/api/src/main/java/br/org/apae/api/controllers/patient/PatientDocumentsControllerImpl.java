@@ -8,6 +8,7 @@ import br.org.apae.api.documents.interfaces.dto.DocumentDTO;
 import br.org.apae.api.documents.interfaces.dto.ListDocumentsArgsDTO;
 import br.org.apae.api.documents.interfaces.dto.PutDocumentArgsDTO;
 import br.org.apae.api.documents.interfaces.dto.RemoveDocumentArgsDTO;
+import br.org.apae.api.patient.application.internal.PatientDomainService;
 import br.org.apae.api.patient.interfaces.controllers.PatientDocumentsController;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -31,18 +32,23 @@ public class PatientDocumentsControllerImpl implements PatientDocumentsControlle
     private static final Logger log = LoggerFactory.getLogger(PatientDocumentsControllerImpl.class);
 
     private final DocumentApplicationService documentService;
+    private final PatientDomainService patientDomainService;
 
-    public PatientDocumentsControllerImpl(DocumentApplicationService documentService) {
+    public PatientDocumentsControllerImpl(DocumentApplicationService documentService,
+                                          PatientDomainService patientDomainService) {
         this.documentService = documentService;
+        this.patientDomainService = patientDomainService;
     }
 
     @Override
     public ResponseEntity<DocumentDTO> uploadDocument(UUID id, MultipartFile file, String category, String type, @RequestParam(required = false) Integer year) {
-        try {
-            DocumentCategory docCategory = DocumentCategory.valueOf(category);
-            DocumentType docType = DocumentType.valueOf(type);
-            Year docYear = year != null ? Year.of(year) : Year.now();
+        this.patientDomainService.getByIdOrThrow(id);
 
+        DocumentCategory docCategory = parseCategory(category);
+        DocumentType docType = parseType(type);
+        Year docYear = year != null ? Year.of(year) : Year.now();
+
+        try {
             PutDocumentArgsDTO args = PutDocumentArgsDTO.builder()
                     .owner(id.toString())
                     .category(docCategory)
@@ -55,16 +61,33 @@ public class PatientDocumentsControllerImpl implements PatientDocumentsControlle
             DocumentDTO documentDTO = this.documentService.putDocument(args);
 
             return ResponseEntity.status(HttpStatus.CREATED).body(documentDTO);
-
-        } catch (IllegalArgumentException e) {
-            throw new RuntimeException("Categoria ou Tipo de documento inválido: " + category + " / " + type, e);
         } catch (Exception e) {
             throw new RuntimeException("Erro ao fazer upload do documento", e);
         }
     }
 
+    private DocumentCategory parseCategory(String category) {
+        for (DocumentCategory value : DocumentCategory.values()) {
+            if (value.name().equals(category)) {
+                return value;
+            }
+        }
+        throw new IllegalArgumentException("Categoria de documento inválida: " + category);
+    }
+
+    private DocumentType parseType(String type) {
+        for (DocumentType value : DocumentType.values()) {
+            if (value.name().equals(type)) {
+                return value;
+            }
+        }
+        throw new IllegalArgumentException("Tipo de documento inválido: " + type);
+    }
+
     @Override
     public ResponseEntity<DocumentWithUrlResponseDTO> replaceDocument(UUID id, UUID documentId, MultipartFile file) {
+        this.patientDomainService.getByIdOrThrow(id);
+
         try {
             Iterable<DocumentDTO> documents = this.documentService.listDocuments(
                     ListDocumentsArgsDTO.builder()
@@ -134,6 +157,8 @@ public class PatientDocumentsControllerImpl implements PatientDocumentsControlle
 
 
     private List<DocumentWithUrlResponseDTO> findDocumentsByCategory(UUID ownerId, DocumentCategory category, Year year) {
+        this.patientDomainService.getByIdOrThrow(ownerId);
+
         try {
             Iterable<DocumentDTO> documents = this.documentService.listDocuments(
                     ListDocumentsArgsDTO.builder()
@@ -171,6 +196,8 @@ public class PatientDocumentsControllerImpl implements PatientDocumentsControlle
 
     @Override
     public ResponseEntity<DocumentWithUrlResponseDTO> findDocumentByName(UUID id, String documentName) {
+        this.patientDomainService.getByIdOrThrow(id);
+
         DocumentDTO dto = new DocumentDTO(
                 null,
                 documentName,
