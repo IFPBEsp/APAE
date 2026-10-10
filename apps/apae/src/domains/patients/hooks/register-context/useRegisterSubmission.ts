@@ -20,15 +20,6 @@ export function useRegisterSubmission(state: MembersRegisterState, STORAGE_KEY: 
           localStorage.removeItem(STORAGE_KEY);
         }
 
-        if (profile.photo instanceof File && res.ok) {
-          const photoFormData = new FormData();
-          photoFormData.append("photo", profile.photo);
-          await fetch(`/apae-geral/api/patients/${id}/photo`, {
-            method: "PUT",
-            body: photoFormData,
-          });
-        }
-
         const data = await res.json().catch(() => ({}));
         return { status: res.status, data };
       }

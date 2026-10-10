@@ -6,7 +6,6 @@ import {
   FormField,
   FormItem,
   FormLabel,
-  FormMessage,
 } from "@/components/ui/form";
 import {
   MembersRegisterStep,
@@ -15,14 +14,14 @@ import {
 import { Profile } from "@/domains/patients/schemas/member-schemas";
 import { EditProfile } from "@/schemas/edit-member-schemas";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useEffect, useState, useRef } from "react";
-import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
-import { User } from "lucide-react";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { handleBackendValidationErrors } from "@/lib/utils/form-errors";
 
 import z from "zod";
 import { FormButton, MembersRegisterForm } from "../form";
+import { usePhotoUpload } from "@/hooks/use-photo-upload";
+import { PhotoUpload } from "@/components/shared/PhotoUpload";
 import { Checkbox } from "@/components/ui/checkbox";
 import { useRouter, useParams, usePathname } from "next/navigation";
 import { toast } from "react-toastify";
@@ -36,8 +35,17 @@ export default function MembersRegisterProfilePage() {
 
   const [submitted, setSubmitted] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
-  const fileInputRef = useRef<HTMLInputElement>(null);
+  
+  const {
+    fileInputRef,
+    selectedPhoto,
+    setSelectedPhoto,
+    photoPreviewUrl,
+    photoError,
+    photoSuccess,
+    clearPhoto,
+    uploadPhoto,
+  } = usePhotoUpload({ buildUrl: (patientId) => `/apae-geral/api/patients/${patientId}/photo`, method: "PUT", fieldName: "photo" });
   const router = useRouter();
 
   const params = useParams();
@@ -80,23 +88,10 @@ export default function MembersRegisterProfilePage() {
   }, [profile, form]);
 
   useEffect(() => {
-    if (profile.photo instanceof File) {
-      const url = URL.createObjectURL(profile.photo);
-      setPreviewUrl(url);
-    } else if (typeof profile.photo === 'string' && profile.photo) {
-      setPreviewUrl(profile.photo);
-    } else {
-      setPreviewUrl(null);
+    if (photoError) {
+      toast.error(photoError);
     }
-  }, [profile.photo]);
-
-  useEffect(() => {
-    return () => {
-      if (previewUrl && previewUrl.startsWith('blob:')) {
-        URL.revokeObjectURL(previewUrl);
-      }
-    };
-  }, [previewUrl]);
+  }, [photoError]);
 
   // Fetches the patient's current photo when entering edit mode
   useEffect(() => {
@@ -108,7 +103,6 @@ export default function MembersRegisterProfilePage() {
         const res = await fetch(`/apae-geral/api/patients/${id}`);
         const data = await res.json();
         if (data?.photoUrl) {
-          setPreviewUrl(data.photoUrl);
           setProfileData({ photo: data.photoUrl });
         }
       } catch (e) {
@@ -118,13 +112,44 @@ export default function MembersRegisterProfilePage() {
   }, [isEditing, id]);
 
   useEffect(() => {
+    if (selectedPhoto instanceof File) {
+      setProfileData({ photo: selectedPhoto });
+      return;
+    }
+    // selectedPhoto virou null (foto removida): limpa o contexto
+    // APENAS se ele guarda um File local — nunca apaga a URL (string)
+    // da foto existente carregada do servidor na edição.
+    if (profile.photo instanceof File) {
+      setProfileData({ photo: undefined });
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [selectedPhoto, setProfileData]);
+
+  useEffect(() => {
+    if (profile?.photo instanceof File && !selectedPhoto) {
+      setSelectedPhoto(profile.photo);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  useEffect(() => {
     if (submitted && profile) {
+      setSubmitted(false);
       (async () => {
         setIsLoading(true);
         try {
           const res = await register(id);
 
           if (res.status === 201 || res.status === 200 || res.status === 204) {
+            if (isEditing && selectedPhoto) {
+              const ok = await uploadPhoto(id);
+              if (!ok) {
+                setSubmitted(false);
+                setIsLoading(false);
+                return;
+              }
+            }
+
             toast.success(
               isEditing
                 ? "Paciente atualizado com sucesso!"
@@ -208,10 +233,15 @@ export default function MembersRegisterProfilePage() {
         }
       })();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [submitted, profile, register, router, form, setStep, id, isEditing]);
 
   const onSubmit = async (values: z.infer<typeof currentSchema>) => {
-    setProfileData(values);
+    const payload = { ...values };
+    if (isEditing && payload.photo instanceof File) {
+      payload.photo = undefined;
+    }
+    setProfileData(payload);
     setSubmitted(true);
   };
 
@@ -246,54 +276,16 @@ export default function MembersRegisterProfilePage() {
         }
       >
         <div className="grid grid-cols-1 gap-6">
-          <FormField
-            control={form.control}
-            name="photo"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel className="text-sm">
-                  Selecione uma foto {isEditing ? "(Opcional na edição)" : "*"}
-                </FormLabel>
-                <FormControl>
-                  <div className="flex flex-col items-start gap-4 w-full">
-                    <input
-                      ref={fileInputRef}
-                      type="file"
-                      id={`${field.name}-upload`}
-                      className="hidden"
-                      accept="image/*"
-                      onChange={(e) => {
-                        if (e.target.files && e.target.files[0]) {
-                          const file = e.target.files[0];
-                          field.onChange(file);
-                          setProfileData({ photo: file });
-                        }
-                      }}
-                    />
-
-                    <button
-                      type="button"
-                      onClick={() => fileInputRef.current?.click()}
-                      className="relative group mr-auto"
-                    >
-                      <Avatar className="w-32 h-32 border-2 border-gray-300/70 cursor-pointer transition-all group-hover:opacity-80">
-                        <AvatarImage src={previewUrl || undefined} alt="Foto do paciente" />
-                        <AvatarFallback className="bg-gray-100">
-                          <User className="w-16 h-16 text-gray-400" />
-                        </AvatarFallback>
-                      </Avatar>
-
-                      <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
-                        <div className="bg-black bg-opacity-50 text-white text-xs px-2 py-1 rounded">
-                          Escolher foto
-                        </div>
-                      </div>
-                    </button>
-                  </div>
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
+          <PhotoUpload
+            label={`Selecione uma foto ${isEditing ? "(Opcional na edição)" : "*"}`}
+            fileInputRef={fileInputRef}
+            selectedPhoto={selectedPhoto}
+            photoPreviewUrl={photoPreviewUrl}
+            profilePhotoUrl={typeof profile.photo === 'string' ? profile.photo : null}
+            photoError={photoError}
+            photoSuccess={photoSuccess}
+            setSelectedPhoto={setSelectedPhoto}
+            clearPhoto={clearPhoto}
           />
 
           <FormField
