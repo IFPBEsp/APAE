@@ -52,4 +52,8 @@ public interface GeneratedAppointmentRepository extends JpaRepository<GeneratedA
     );
 
     List<GeneratedAppointment> findByAppointmentProfessionalId(UUID professionalId);
+
+    @Modifying
+    @Query("DELETE FROM GeneratedAppointment ga WHERE ga.patientId = :patientId AND COALESCE(ga.overriddenDateTime, ga.scheduledDateTime) >= :cutoff AND NOT EXISTS (SELECT 1 FROM Absence a WHERE a.generatedAppointment = ga)")
+    void deleteFutureByPatientId(@Param("patientId") UUID patientId, @Param("cutoff") LocalDateTime cutoff);
 }
