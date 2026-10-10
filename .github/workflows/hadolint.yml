@@ -1,0 +1,21 @@
+name: Dockerfile Lint
+
+on:
+  pull_request:
+    paths:
+      - "apps/api/Dockerfile"
+      - "apps/apae/Dockerfile"
+      - ".github/workflows/hadolint.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  hadolint:
+    name: Lint Dockerfiles
+    uses: IFPBEsp/APAE-INFRA/.github/workflows/hadolint-reusable.yml@f7d59d6e4ad15d8d199aebf619b5b401ffbcc2f1
+    with:
+      dockerfiles: |
+        apps/api/Dockerfile
+        apps/apae/Dockerfile
+      failure-threshold: warning
