@@ -13,7 +13,7 @@ permissions:
 jobs:
   hadolint:
     name: Lint Dockerfiles
-    uses: IFPBEsp/APAE-INFRA/.github/workflows/hadolint-reusable.yml@2d2a7d11fee4571f6aa2d51fb6ae4b6835fb1721
+    uses: IFPBEsp/APAE-INFRA/.github/workflows/hadolint-reusable.yml@f7d59d6e4ad15d8d199aebf619b5b401ffbcc2f1
     with:
       dockerfiles: |
         apps/api/Dockerfile
