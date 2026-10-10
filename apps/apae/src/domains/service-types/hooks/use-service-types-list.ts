@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
-import { ServiceType } from "@/types/service-type";
+import { ServiceType } from "../service-types.types";
 
 export function useServiceTypesList(searchName: string) {
   const [serviceTypes, setServiceTypes] = useState<ServiceType[]>([]);

@@ -2,7 +2,7 @@
 
 import { Button } from "@/components/ui/button";
 import { Edit } from "lucide-react";
-import { ServiceType } from "@/types/service-type";
+import { ServiceType } from "@/domains/service-types";
 
 interface ServiceTypeListItemProps {
   service: ServiceType; 
