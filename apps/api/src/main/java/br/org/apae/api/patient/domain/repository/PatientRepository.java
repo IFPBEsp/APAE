@@ -39,6 +39,16 @@ public interface PatientRepository extends JpaRepository<Patient, UUID>, JpaSpec
             Pageable pageable
     );
 
+    @Query("""
+      SELECT p.id
+      FROM Patient p
+      JOIN Absence a
+          ON a.generatedAppointment.patientId = p.id AND a.isJustified = false
+      GROUP BY p.id
+      HAVING COUNT(a) >= :minAbsences
+    """)
+    List<UUID> findPatientIdsWithMinAbsences(@Param("minAbsences") Integer minAbsences);
+
     @Query("SELECT COUNT(p) > 0 FROM Patient p JOIN p.vaccines v WHERE v.id = :vaccineId")
     boolean isVaccineInUse(UUID vaccineId);
 

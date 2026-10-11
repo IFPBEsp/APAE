@@ -38,4 +38,5 @@ public interface PatientApplicationService {
 
     List<String> findAllPatientCities();
 
+    List<UUID> findAbsenceAlertPatientIds(Integer minAbsences);
 }
