@@ -2,6 +2,8 @@
 
 import { useState, useEffect } from "react";
 
+const MIN_ABSENCES_FOR_ALERT = 3;
+
 interface AbsenceAlertsResult {
   alertPatientIds: Set<string>;
   isLoading: boolean;
@@ -18,20 +20,15 @@ export function useAbsenceAlerts(): AbsenceAlertsResult {
       try {
         setIsLoading(true);
         const response = await fetch(
-          "/apae-geral/api/patients/with-absences?minAbsences=3"
+          `/apae-geral/api/patients/absence-alert-ids?minAbsences=${MIN_ABSENCES_FOR_ALERT}`
         );
 
         if (!response.ok) {
-          throw new Error("Erro ao buscar pacientes com faltas");
+          throw new Error("Erro ao buscar pacientes com alerta de faltas");
         }
 
-        const data = await response.json();
-        const absencesList = data.content || [];
-        const idsSet = new Set<string>(
-          absencesList.map((item: { patient: { id: string } }) => item.patient.id)
-        );
-
-        setAlertPatientIds(idsSet);
+        const ids: string[] = await response.json();
+        setAlertPatientIds(new Set(ids));
       } catch (error) {
         console.error("[useAbsenceAlerts] Erro ao buscar ausências:", error);
       } finally {
