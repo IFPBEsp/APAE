@@ -1,6 +1,10 @@
+"use client";
+
 import { useCallback, useEffect, useState } from "react";
+import { bffFetchJson } from "@/lib/bff-client";
 import { DashboardOverview } from "@/domains/dashboard/dashboard.types";
 import { PaginationInfo, PatientWithAbsences } from "@/types/absence";
+import { Page } from "@/types/pagination";
 
 export function useAbsencesList() {
   const [searchName, setSearchName] = useState("");
@@ -30,17 +34,10 @@ export function useAbsencesList() {
           name: name.trim(),
         });
 
-        const [patientsRes, statsRes] = await Promise.all([
-          fetch(`/apae-geral/api/patients/with-absences?${queryParams}`),
-          fetch("/apae-geral/api/dashboard/overview?minAbsences=3"),
+        const [patientsData, statsData] = await Promise.all([
+          bffFetchJson<Page<PatientWithAbsences>>(`/apae-geral/api/patients/with-absences?${queryParams}`),
+          bffFetchJson<DashboardOverview>("/apae-geral/api/dashboard/overview?minAbsences=3"),
         ]);
-
-        if (!patientsRes.ok || !statsRes.ok) {
-          throw new Error("Erro ao buscar dados");
-        }
-
-        const patientsData = await patientsRes.json();
-        const statsData: DashboardOverview = await statsRes.json();
 
         setPatientsWithAbsences(patientsData.content);
         setStatistics({

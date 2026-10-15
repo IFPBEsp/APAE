@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { bffFetchJson } from "@/lib/bff-client";
 
 interface AbsenceAlertsResult {
   alertPatientIds: Set<string>;
@@ -17,15 +18,9 @@ export function useAbsenceAlerts(): AbsenceAlertsResult {
     const fetchAbsences = async () => {
       try {
         setIsLoading(true);
-        const response = await fetch(
+        const data = await bffFetchJson<{ content: Array<{ patient: { id: string } }> }>(
           "/apae-geral/api/patients/with-absences?minAbsences=3"
         );
-
-        if (!response.ok) {
-          throw new Error("Erro ao buscar pacientes com faltas");
-        }
-
-        const data = await response.json();
         const absencesList = data.content || [];
         const idsSet = new Set<string>(
           absencesList.map((item: { patient: { id: string } }) => item.patient.id)
