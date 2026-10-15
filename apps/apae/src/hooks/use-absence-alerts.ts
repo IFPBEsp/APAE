@@ -1,12 +1,13 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useCallback, useState, useEffect } from "react";
 
 const MIN_ABSENCES_FOR_ALERT = 3;
 
 interface AbsenceAlertsResult {
   alertPatientIds: Set<string>;
   isLoading: boolean;
+  refreshAlerts: () => Promise<void>;
 }
 
 export function useAbsenceAlerts(): AbsenceAlertsResult {
@@ -15,8 +16,7 @@ export function useAbsenceAlerts(): AbsenceAlertsResult {
   );
   const [isLoading, setIsLoading] = useState(true);
 
-  useEffect(() => {
-    const fetchAbsences = async () => {
+   const fetchAbsences = useCallback(async () => {
       try {
         setIsLoading(true);
         const response = await fetch(
@@ -34,10 +34,11 @@ export function useAbsenceAlerts(): AbsenceAlertsResult {
       } finally {
         setIsLoading(false);
       }
-    };
+    }, []);
+  
+  useEffect(() => {
+    void fetchAbsences();
+  }, [fetchAbsences]);
 
-    fetchAbsences();
-  }, []);
-
-  return { alertPatientIds, isLoading };
+  return { alertPatientIds, isLoading, refreshAlerts: fetchAbsences };
 }
