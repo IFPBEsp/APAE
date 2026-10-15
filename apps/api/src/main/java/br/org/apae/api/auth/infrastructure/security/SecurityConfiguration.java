@@ -2,6 +2,7 @@ package br.org.apae.api.auth.infrastructure.security;
 
 import java.util.List;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -25,6 +26,12 @@ public class SecurityConfiguration {
     private final SecurityFilter securityFilter;
     private final List<String> allowedOrigins;
 
+    @Autowired(required = false)
+    private RestAuthenticationEntryPoint authenticationEntryPoint;
+
+    @Autowired(required = false)
+    private RestAccessDeniedHandler accessDeniedHandler;
+
     public SecurityConfiguration(SecurityFilter securityFilter,
             @Value("${cors.allowed-origins}") List<String> allowedOrigins) {
         this.securityFilter = securityFilter;
@@ -33,26 +40,25 @@ public class SecurityConfiguration {
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
-        return httpSecurity
+        var http = httpSecurity
                 .csrf(AbstractHttpConfigurer::disable)
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
-
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                .authorizeHttpRequests(authorize -> authorize
-                        .requestMatchers(
-                                "/auth/**"
-                        ).permitAll()
-                        .requestMatchers(
-                                "/v3/api-docs/**",
-                                "/swagger-ui/**",
-                                "/swagger-ui.html"
-                        ).permitAll()
-                        .requestMatchers(
-                                "/actuator/health",
-                                "/actuator/health/**",
-                                "/actuator/info"
-                        ).permitAll()
-                        .anyRequest().authenticated())
+                .authorizeHttpRequests(authorize -> {
+                    authorize.requestMatchers("/auth/**").permitAll();
+                    authorize.requestMatchers("/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html").permitAll();
+                    authorize.requestMatchers("/actuator/health", "/actuator/health/**", "/actuator/info").permitAll();
+                    authorize.requestMatchers("/error").permitAll();
+                    authorize.anyRequest().authenticated();
+                });
+
+        if (authenticationEntryPoint != null && accessDeniedHandler != null) {
+            http.exceptionHandling(exception -> exception
+                    .authenticationEntryPoint(authenticationEntryPoint)
+                    .accessDeniedHandler(accessDeniedHandler));
+        }
+
+        return http
                 .addFilterBefore(securityFilter, UsernamePasswordAuthenticationFilter.class)
                 .build();
     }
