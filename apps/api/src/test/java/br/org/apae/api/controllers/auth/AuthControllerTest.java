@@ -16,6 +16,8 @@ import br.org.apae.api.auth.domain.exceptions.InvalidPasswordException;
 import br.org.apae.api.auth.domain.exceptions.UserConflictException;
 import br.org.apae.api.auth.domain.exceptions.UserNotFoundException;
 import br.org.apae.api.auth.infrastructure.security.JwtProvider;
+import br.org.apae.api.auth.infrastructure.security.RestAccessDeniedHandler;
+import br.org.apae.api.auth.infrastructure.security.RestAuthenticationEntryPoint;
 import br.org.apae.api.common.dto.auth.request.PasswordRecoveryRequestDTO;
 import br.org.apae.api.common.dto.auth.request.PasswordResetDTO;
 import br.org.apae.api.common.dto.auth.request.SignInDTO;
@@ -60,6 +62,12 @@ class AuthControllerTest {
 
     @MockitoBean
     private UserService userService;
+
+    @MockitoBean
+    private RestAuthenticationEntryPoint restAuthenticationEntryPoint;
+
+    @MockitoBean
+    private RestAccessDeniedHandler restAccessDeniedHandler;
 
     @Nested
     @DisplayName("POST /auth/signup")
