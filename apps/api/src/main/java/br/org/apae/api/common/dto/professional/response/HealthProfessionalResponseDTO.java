@@ -22,7 +22,8 @@ public record HealthProfessionalResponseDTO(
         AddressResponseDTO address,
         ServiceAreaResponseDTO serviceArea,
         List<AvailabilityResponseDTO> availabilities,
-        String profilePhoto
+        String profilePhoto,
+        String profilePhotoUrl
 ) {
 
     public HealthProfessionalResponseDTO(HealthProfessional entity,
@@ -42,7 +43,15 @@ public record HealthProfessionalResponseDTO(
                 entity.getAddress() != null ? new AddressResponseDTO(entity.getAddress()) : null,
                 serviceArea,
                 availabilities,
-                entity.getProfilePhoto()
+                entity.getProfilePhoto(),
+                null
         );
+    }
+
+    public HealthProfessionalResponseDTO withProfilePhotoUrl(String profilePhotoUrl) {
+        return new HealthProfessionalResponseDTO(
+                id, userId, name, email, cpf, professionalDocument, identityDocument,
+                phoneNumber, healthSector, ativo, address, serviceArea, availabilities,
+                profilePhoto, profilePhotoUrl);
     }
 }

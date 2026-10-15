@@ -41,6 +41,7 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
+import { ProfessionalListAvatar } from "@/domains/professional/components/ProfessionalListAvatar";
 
 import { useFetchProfessionals } from "@/hooks/profissional/use-fetch-profissional";
 import { useInactivateProfessional } from "@/hooks/profissional/use-inactivate-profissional";
@@ -161,7 +162,12 @@ export default function VisualizationProfessionalPage() {
                 {displayList.length > 0 ? (
                   displayList.map((prof) => (
                     <TableRow key={prof.id}>
-                      <TableCell className="font-medium">{prof.name}</TableCell>
+                      <TableCell className="font-medium">
+                        <div className="flex items-center gap-3">
+                          <ProfessionalListAvatar name={prof.name} profilePhotoUrl={prof.profilePhotoUrl} />
+                          <span className="min-w-0 truncate">{prof.name}</span>
+                        </div>
+                      </TableCell>
                       <TableCell>{prof.professionalDocument}</TableCell>
                       <TableCell>{prof.serviceArea.area}</TableCell>
                       <TableCell className="hidden md:table-cell">
