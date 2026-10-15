@@ -47,9 +47,6 @@ class SecurityFilterTest {
     RestAuthenticationEntryPoint authenticationEntryPoint;
 
     @Mock
-    PublicRoutes publicRoutes;
-
-    @Mock
     FilterChain filterChain;
 
     SecurityFilter securityFilter;
@@ -62,7 +59,7 @@ class SecurityFilterTest {
 
     @BeforeEach
     void setUp() {
-        securityFilter = new SecurityFilter(jwtProvider, userService, authenticationEntryPoint, publicRoutes);
+        securityFilter = new SecurityFilter(jwtProvider, userService, authenticationEntryPoint);
 
         request = new MockHttpServletRequest();
         request.setContextPath("/apae-geral");
@@ -83,7 +80,7 @@ class SecurityFilterTest {
         @Test
         @DisplayName("Deve retornar true para rota pública /auth/signin")
         void shouldNotFilterForPublicAuthRoute() {
-            when(publicRoutes.isPublic(any())).thenReturn(true);
+            request.setRequestURI("/apae-geral/api/auth/signin");
 
             boolean result = securityFilter.shouldNotFilter(request);
 
@@ -93,7 +90,7 @@ class SecurityFilterTest {
         @Test
         @DisplayName("Deve retornar true para rota pública /actuator/health")
         void shouldNotFilterForPublicActuatorRoute() {
-            when(publicRoutes.isPublic(any())).thenReturn(true);
+            request.setRequestURI("/apae-geral/api/actuator/health");
 
             boolean result = securityFilter.shouldNotFilter(request);
 
@@ -103,7 +100,7 @@ class SecurityFilterTest {
         @Test
         @DisplayName("Deve retornar false para rota protegida")
         void shouldNotFilterForProtectedRoute() {
-            when(publicRoutes.isPublic(any())).thenReturn(false);
+            request.setRequestURI("/apae-geral/api/patients");
 
             boolean result = securityFilter.shouldNotFilter(request);
 
@@ -118,7 +115,7 @@ class SecurityFilterTest {
         @Test
         @DisplayName("Deve continuar a chain sem autenticar quando não há token")
         void shouldContinueChainWithoutAuthWhenNoToken() throws Exception {
-            when(publicRoutes.isPublic(any())).thenReturn(false);
+            request.setRequestURI("/apae-geral/api/patients");
 
             securityFilter.doFilterInternal(request, response, filterChain);
 
@@ -134,7 +131,7 @@ class SecurityFilterTest {
         @Test
         @DisplayName("Deve autenticar e continuar chain quando token é válido")
         void shouldAuthenticateAndContinueWhenTokenValid() throws Exception {
-            when(publicRoutes.isPublic(any())).thenReturn(false);
+            request.setRequestURI("/apae-geral/api/patients");
             when(jwtProvider.validateToken("valid-token")).thenReturn("user@test.com");
 
             User user = new User("user@test.com", "pass", "123", "User", UserRole.ADMIN);
@@ -151,7 +148,7 @@ class SecurityFilterTest {
         @Test
         @DisplayName("Deve aceitar 'bearer' minúsculo no header")
         void shouldAcceptLowercaseBearer() throws Exception {
-            when(publicRoutes.isPublic(any())).thenReturn(false);
+            request.setRequestURI("/apae-geral/api/patients");
             when(jwtProvider.validateToken("valid-token")).thenReturn("user@test.com");
 
             User user = new User("user@test.com", "pass", "123", "User", UserRole.ADMIN);
@@ -172,7 +169,7 @@ class SecurityFilterTest {
         @Test
         @DisplayName("Deve chamar entryPoint e limpar contexto para TokenVerificationException")
         void shouldCallEntryPointAndClearContextForTokenVerificationException() throws Exception {
-            when(publicRoutes.isPublic(any())).thenReturn(false);
+            request.setRequestURI("/apae-geral/api/patients");
             when(jwtProvider.validateToken("bad-token")).thenThrow(new TokenVerificationException());
 
             request.addHeader("Authorization", "Bearer bad-token");
@@ -186,7 +183,7 @@ class SecurityFilterTest {
         @Test
         @DisplayName("Deve chamar entryPoint e limpar contexto para UserNotFoundException")
         void shouldCallEntryPointAndClearContextForUserNotFoundException() throws Exception {
-            when(publicRoutes.isPublic(any())).thenReturn(false);
+            request.setRequestURI("/apae-geral/api/patients");
             when(jwtProvider.validateToken("valid-token")).thenReturn("user@test.com");
             when(userService.findUserByUsername("user@test.com")).thenThrow(new UserNotFoundException());
 
@@ -201,7 +198,7 @@ class SecurityFilterTest {
         @Test
         @DisplayName("Deve logar WARN de uma linha sem stack trace nem token")
         void shouldLogSingleLineWarnWithoutStackTraceOrToken() throws Exception {
-            when(publicRoutes.isPublic(any())).thenReturn(false);
+            request.setRequestURI("/apae-geral/api/patients");
             when(jwtProvider.validateToken("bad-token")).thenThrow(new TokenVerificationException());
 
             request.addHeader("Authorization", "Bearer bad-token");
@@ -219,7 +216,7 @@ class SecurityFilterTest {
         @Test
         @DisplayName("Deve propagar exceção não-autenticação (não virar 401)")
         void shouldPropagateNonAuthException() throws Exception {
-            when(publicRoutes.isPublic(any())).thenReturn(false);
+            request.setRequestURI("/apae-geral/api/patients");
             when(jwtProvider.validateToken("valid-token")).thenReturn("user@test.com");
             when(userService.findUserByUsername("user@test.com")).thenThrow(new RuntimeException("DB down"));
 
