@@ -16,9 +16,14 @@ export async function fetchAllAppointments(): Promise<Page<AppointmentResponseDT
 }
 
 export async function fetchPatientsWithAbsences(): Promise<Set<string>> {
-  const data = await bffFetchJson<{ content: Array<{ patient: { id: string } }> }>(
-    '/apae-geral/api/patients/with-absences?minAbsences=3'
+  const response = await fetch(
+    `/apae-geral/api/patients/absence-alert-ids?minAbsences=3`
   );
-  const list = data.content || [];
-  return new Set<string>(list.map((item: { patient: { id: string } }) => item.patient.id));
+
+  if (!response.ok) {
+    throw new Error("Erro ao buscar pacientes com alerta de faltas");
+  }
+
+  const ids: string[] = await response.json();
+  return new Set(ids);
 }

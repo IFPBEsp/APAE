@@ -230,6 +230,12 @@ public class PatientApplicationServiceImpl implements PatientApplicationService 
 
     @Override
     @Transactional(readOnly = true)
+    public List<UUID> findAbsenceAlertPatientIds(Integer minAbsences) {
+        return patientRepository.findPatientIdsWithMinAbsences(minAbsences);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
     public List<String> findAllPatientCities() {
         return patientRepository.findDistinctCities();
     }
