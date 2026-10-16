@@ -2,8 +2,7 @@
 
 import { useEffect, useRef, useState } from 'react';
 import { format } from 'date-fns';
-import { TodayAppointment } from '@/types/appointment';
-import { type AppointmentResponseDTO } from '@/app/services/appointmentService';
+import type { TodayAppointment, AppointmentResponseDTO } from '@/domains/appointments/types/appointments.types';
 import {
   fetchTodayAppointments,
   fetchAllAppointments,
