@@ -1,6 +1,12 @@
 import { useEffect, useRef, useState, useCallback } from "react";
+import { photoFileSchema } from "@/schemas/shared/photo.schema";
 
-export function usePhotoUpload(options: { buildUrl: (id: string) => string; method: "PUT" | "PATCH"; fieldName?: string }) {
+export function validatePhotoFile(file: File): string | null {
+  const result = photoFileSchema.safeParse(file);
+  return result.success ? null : (result.error.issues[0]?.message ?? "Arquivo inválido");
+}
+
+export function usePhotoUpload(options?: { buildUrl: (id: string) => string; method: "PUT" | "PATCH"; fieldName?: string }) {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [selectedPhoto, setSelectedPhoto] = useState<File | null>(null);
   const [photoPreviewUrl, setPhotoPreviewUrl] = useState<string | null>(null);
@@ -25,8 +31,18 @@ export function usePhotoUpload(options: { buildUrl: (id: string) => string; meth
     if (fileInputRef.current) fileInputRef.current.value = "";
   }
 
+  function selectPhoto(file: File): string | null {
+    const error = validatePhotoFile(file);
+    if (error) {
+      clearPhoto();
+      return error;
+    }
+    setSelectedPhoto(file);
+    return null;
+  }
+
   const uploadPhoto = useCallback(async (id: string): Promise<boolean> => {
-    if (!selectedPhotoRef.current) return true;
+    if (!selectedPhotoRef.current || !optionsRef.current) return true;
     setPhotoError(null);
     setPhotoSuccess(false);
     try {
@@ -61,6 +77,7 @@ export function usePhotoUpload(options: { buildUrl: (id: string) => string; meth
     fileInputRef,
     selectedPhoto,
     setSelectedPhoto,
+    selectPhoto,
     photoPreviewUrl,
     photoError,
     photoSuccess,

@@ -1,5 +1,6 @@
 import * as z from "zod";
 import { MAX_FILE_SIZE_BYTES, MAX_FILE_SIZE_LABEL } from "@/lib/constants";
+import { optionalPhotoSchema } from "@/schemas/shared/photo.schema";
 
 const nameRegex = /^[A-Za-zÀ-ÖØ-öø-ÿ ]{3,100}$/;
 const phoneRegex = /^\(\d{2}\) \d{5}-\d{4}$/;
@@ -28,14 +29,6 @@ const fileSchema = z
     "Apenas imagens ou PDF são permitidos"
   )
   .refine((file) => file.size <= MAX_FILE_SIZE_BYTES, `Arquivo deve ser menor que ${MAX_FILE_SIZE_LABEL}`);
-
-  const imageSchema = z
-  .instanceof(File)
-  .refine((file) => file.size <= MAX_FILE_SIZE_BYTES, `A foto deve ser menor que ${MAX_FILE_SIZE_LABEL}`)
-  .refine(
-    (file) => ["image/jpeg", "image/png", "image/jpg", "image/webp"].includes(file.type),
-    "Apenas formatos JPG, PNG ou WEBP são aceitos"
-  );
 
 const baseSchema = z.object({
   fullName: z
@@ -88,7 +81,7 @@ const baseSchema = z.object({
     )
     .min(0),
 
-  photo: imageSchema.optional().nullable(),
+  photo: optionalPhotoSchema,
 });
 
 export const registerSchema = baseSchema.extend({

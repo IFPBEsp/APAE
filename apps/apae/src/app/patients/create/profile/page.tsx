@@ -116,9 +116,6 @@ export default function MembersRegisterProfilePage() {
       setProfileData({ photo: selectedPhoto });
       return;
     }
-    // selectedPhoto virou null (foto removida): limpa o contexto
-    // APENAS se ele guarda um File local — nunca apaga a URL (string)
-    // da foto existente carregada do servidor na edição.
     if (profile.photo instanceof File) {
       setProfileData({ photo: undefined });
     }
