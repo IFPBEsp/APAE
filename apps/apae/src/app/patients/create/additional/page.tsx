@@ -119,35 +119,39 @@ export default function MembersRegisterAdditionalsPage() {
 
   return (
     <>
-      <CreateCareDialog
-        open={modal === "care"}
-        onConfirm={fetchCares}
-        onOpenChange={(value: boolean) => setModal(value ? "care" : null)}
-        onSuccess={(newName: string) => {
-          const currentValues = form.getValues("care.types") || [];
-          if (!currentValues.includes(newName)) {
-            form.setValue("care.types", [...currentValues, newName], {
-              shouldDirty: true,
-              shouldValidate: true,
-            });
-            setRefreshKey((k) => k + 1);
-          }
-        }}
-      />
-      <CreateDisorderDialog
-        open={modal === "disorder"}
-        onOpenChange={(value: boolean) => setModal(value ? "disorder" : null)}
-        onSuccess={(newName: string) => {
-          const currentValues = form.getValues("disability.types") || [];
-          if (!currentValues.includes(newName)) {
-            form.setValue("disability.types", [...currentValues, newName], {
-              shouldDirty: true,
-              shouldValidate: true,
-            });
-            setRefreshKey((k) => k + 1);
-          }
-        }}
-      />
+      {!isEditing && (
+        <>
+          <CreateCareDialog
+            open={modal === "care"}
+            onConfirm={fetchCares}
+            onOpenChange={(value: boolean) => setModal(value ? "care" : null)}
+            onSuccess={(newName: string) => {
+              const currentValues = form.getValues("care.types") || [];
+              if (!currentValues.includes(newName)) {
+                form.setValue("care.types", [...currentValues, newName], {
+                  shouldDirty: true,
+                  shouldValidate: true,
+                });
+                setRefreshKey((k) => k + 1);
+              }
+            }}
+          />
+          <CreateDisorderDialog
+            open={modal === "disorder"}
+            onOpenChange={(value: boolean) => setModal(value ? "disorder" : null)}
+            onSuccess={(newName: string) => {
+              const currentValues = form.getValues("disability.types") || [];
+              if (!currentValues.includes(newName)) {
+                form.setValue("disability.types", [...currentValues, newName], {
+                  shouldDirty: true,
+                  shouldValidate: true,
+                });
+                setRefreshKey((k) => k + 1);
+              }
+            }}
+          />
+        </>
+      )}
       <CreateVaccineDialog
         open={modal === "vaccine"}
         onOpenChange={(value: boolean) => setModal(value ? "vaccine" : null)}
@@ -188,6 +192,7 @@ export default function MembersRegisterAdditionalsPage() {
           }
         >
           <DoubleColumn>
+            {!isEditing && (
             <FormField
               control={form.control}
               name="diseases"
@@ -205,6 +210,7 @@ export default function MembersRegisterAdditionalsPage() {
                 </FormItem>
               )}
             />
+            )}
 
             <FormField
               control={form.control}
@@ -240,6 +246,7 @@ export default function MembersRegisterAdditionalsPage() {
               )}
             />
 
+            {!isEditing && (
             <FormField
               control={form.control}
               name="medications"
@@ -257,6 +264,7 @@ export default function MembersRegisterAdditionalsPage() {
                 </FormItem>
               )}
             />
+            )}
 
             <FormField
               control={form.control}
@@ -276,6 +284,8 @@ export default function MembersRegisterAdditionalsPage() {
               )}
             />
 
+            {!isEditing && (
+            <>
             <FormField
               control={form.control}
               name="disability.types"
@@ -315,10 +325,7 @@ export default function MembersRegisterAdditionalsPage() {
               name="disability.report"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>
-                    Laudo da Deficiência{" "}
-                    {isEditing ? "(Opcional na edição)" : "*"}
-                  </FormLabel>
+                  <FormLabel>Laudo da Deficiência *</FormLabel>
                   <FormControl>
                     <FileInputButton
                       id={field.name}
@@ -387,9 +394,7 @@ export default function MembersRegisterAdditionalsPage() {
               name="care.referral"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>
-                    Encaminhamento {isEditing ? "(Opcional na edição)" : "*"}
-                  </FormLabel>
+                  <FormLabel>Encaminhamento *</FormLabel>
                   <FormControl>
                     <FileInputButton
                       id={field.name}
@@ -447,6 +452,8 @@ export default function MembersRegisterAdditionalsPage() {
                 false: "Não",
               }}
             />
+            </>
+            )}
           </DoubleColumn>
         </MembersRegisterForm>
       </Form>
