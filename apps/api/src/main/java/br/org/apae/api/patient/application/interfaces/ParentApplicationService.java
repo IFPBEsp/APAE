@@ -13,8 +13,4 @@ public interface ParentApplicationService {
   List<ParentResponseDTO> findParentsByPatientId(UUID patientId);
 
   List<ParentResponseDTO> updateParents(List<UpdateParentDTO> parentDtos, UUID patientId);
-
-  void deleteParents(UUID patientId);
-
-
 }
