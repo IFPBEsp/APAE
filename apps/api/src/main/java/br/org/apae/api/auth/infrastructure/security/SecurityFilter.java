@@ -24,7 +24,7 @@ import java.util.List;
 public class SecurityFilter extends OncePerRequestFilter {
 
     private static final Logger log = LoggerFactory.getLogger(SecurityFilter.class);
-    private static final List<String> PUBLIC_PATHS = List.of(
+    public static final List<String> PUBLIC_PATHS = List.of(
             "/auth/**",
             "/v3/api-docs/**",
             "/swagger-ui/**",
