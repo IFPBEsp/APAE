@@ -16,6 +16,8 @@ import {
   saveDraft,
   loadDraft,
   purgeForeignDrafts,
+  registerDraftKey,
+  editDraftKey,
 } from "@/domains/patients/utils/draft-storage";
 
 import {
@@ -81,7 +83,7 @@ export function MembersRegisterProvider({
 
   const STORAGE_KEY = useMemo(() => {
     const patientId = params?.id as string;
-    return patientId ? `apae_edit_cache_${patientId}` : "apae_register_cache";
+    return patientId ? editDraftKey(patientId) : registerDraftKey();
   }, [params?.id]);
 
   const register = useRegisterSubmission(state, STORAGE_KEY);

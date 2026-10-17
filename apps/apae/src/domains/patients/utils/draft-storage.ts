@@ -14,7 +14,8 @@ export function saveDraft<T>(key: string, ownerId: string, data: T) {
   try {
     const payload: StoredDraft<T> = { ownerId, data };
     localStorage.setItem(key, JSON.stringify(payload));
-  } catch {
+  } catch (error) {
+    console.warn("Não foi possível salvar o rascunho:", error);
   }
 }
 
@@ -33,11 +34,6 @@ export function loadDraft<T>(key: string, ownerId: string): T | null {
     localStorage.removeItem(key);
     return null;
   }
-}
-
-export function removeDraft(key: string) {
-  if (!canUseStorage()) return;
-  localStorage.removeItem(key);
 }
 
 function patientDraftKeys(): string[] {
