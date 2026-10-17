@@ -6,7 +6,6 @@ import { Button } from "@/components/ui/button";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import z from "zod";
-import { useFetchServiceTypes } from "@/domains/service-types";
 import { useCreateServiceType } from "@/domains/service-types";
 import { CreateCare } from "@/schemas/care-schemas";
 
