@@ -24,7 +24,7 @@ import {
   getConflictError,
   getStepForBackendField,
   isSuccessStatus,
-} from "@/domains/patients/patient-register.utils";
+} from "@/domains/patients/shared/patient.utils";
 
 import z from "zod";
 import { FormButton, MembersRegisterForm } from "../form";
