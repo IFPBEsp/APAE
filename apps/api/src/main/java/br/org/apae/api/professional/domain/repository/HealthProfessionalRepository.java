@@ -29,4 +29,11 @@ public interface HealthProfessionalRepository extends JpaRepository<HealthProfes
     List<LocalTime> findOccupiedHours(UUID professionalId, LocalDate date);
 
     boolean existsByProfessionalDocumentAndIdNot(String document, UUID professionalId);
+
+    @Query("""
+        SELECT p FROM HealthProfessional p
+        WHERE p.profilePhoto IS NOT NULL
+          AND (p.profilePhotoName IS NULL OR p.profilePhotoYear IS NULL)
+    """)
+    List<HealthProfessional> findAllMissingProfilePhotoMetadata();
 }
