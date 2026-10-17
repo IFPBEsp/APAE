@@ -22,7 +22,7 @@ export function useProfessionalDocs(professionalId: string | undefined) {
     setDocsLoading(true);
     setDocsError(null);
     try {
-      const data = await getProfessionalDocuments(id);
+      const data = await getProfessionalDocuments<DocumentWithUrl[]>(id);
       setDocs(data);
     } catch (e: unknown) {
       setDocsError((e as Error)?.message ?? "Erro ao carregar documentos");
