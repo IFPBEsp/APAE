@@ -84,7 +84,7 @@ const makeInterceptors = (api: AxiosInstance) => {
         }
       }
 
-      return Promise.reject(error);
+      throw error;
     },
   );
 

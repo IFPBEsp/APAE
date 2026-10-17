@@ -1,9 +1,9 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import { toast } from "react-toastify";
-import { DisorderEditForm } from "./disorder-form";
 import { fetchDisorderApi, updateDisorderApi, fetchDisordersApi } from "../disorders.api";
 import { DisordersProvider } from "@/hooks/use-disorders";
+import EditDisorderPage from "@/app/disorders/[id]/edit/page";
 
 vi.mock("../disorders.api");
 vi.mock("react-toastify", () => ({
@@ -14,11 +14,13 @@ const push = vi.fn();
 const back = vi.fn();
 vi.mock("next/navigation", () => ({
   useRouter: () => ({ push, back }),
+  useParams: () => ({ id: "1" }),
+
 }));
 
 const disorderMock = { id: "1", name: "TDAH", hasPatient: false };
 
-describe("DisorderEditForm", () => {
+describe("EditDisorderPage", () => {
   beforeEach(() => {
     vi.clearAllMocks();
     vi.mocked(fetchDisordersApi).mockResolvedValue([]);
@@ -26,7 +28,7 @@ describe("DisorderEditForm", () => {
   });
 
   it("carrega o nome atual do transtorno", async () => {
-    render(<DisorderEditForm id="1" />, { wrapper: DisordersProvider });
+    render(<EditDisorderPage />, { wrapper: DisordersProvider });
 
     expect(await screen.findByDisplayValue("TDAH")).toBeInTheDocument();
   });
@@ -34,7 +36,7 @@ describe("DisorderEditForm", () => {
   it("envio válido chama a atualização com o id e o novo nome", async () => {
     vi.mocked(updateDisorderApi).mockResolvedValue(undefined);
 
-    render(<DisorderEditForm id="1" />, { wrapper: DisordersProvider });
+    render(<EditDisorderPage />, { wrapper: DisordersProvider });
     await screen.findByDisplayValue("TDAH");
 
     fireEvent.input(screen.getByLabelText("Nome do Transtorno"), {
@@ -50,7 +52,7 @@ describe("DisorderEditForm", () => {
   });
 
   it("envio com nome vazio exibe a mensagem de validação e não chama a API", async () => {
-    render(<DisorderEditForm id="1" />, { wrapper: DisordersProvider });
+    render(<EditDisorderPage />, { wrapper: DisordersProvider });
     await screen.findByDisplayValue("TDAH");
 
     fireEvent.input(screen.getByLabelText("Nome do Transtorno"), {

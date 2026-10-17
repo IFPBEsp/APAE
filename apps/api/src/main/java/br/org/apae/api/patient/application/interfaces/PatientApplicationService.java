@@ -34,10 +34,9 @@ public interface PatientApplicationService {
             Pageable pageable
     );
 
-    void disablePatient(UUID id);
-
     void deletePatient(UUID id);
 
     List<String> findAllPatientCities();
 
+    List<UUID> findAbsenceAlertPatientIds(Integer minAbsences);
 }

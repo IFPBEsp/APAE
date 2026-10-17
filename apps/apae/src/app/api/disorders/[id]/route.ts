@@ -1,5 +1,5 @@
 import { createBaseApi } from "@/lib/axios";
-import { updateDisorderSchema } from "@/domains/disorders/disorders.schema";
+import { disorderFormSchema } from "@/domains/disorders/disorders.schema";
 import { NextResponse } from "next/server";
 import { AxiosError } from "axios";
 
@@ -25,7 +25,7 @@ export async function PUT(request: Request, { params }: IParams) {
   try {
     const { id } = await params;
     const body = await request.json();
-    const validation = updateDisorderSchema.safeParse(body);
+    const validation = disorderFormSchema.safeParse(body);
     if (!validation.success) return NextResponse.json({ errors: validation.error.flatten() }, { status: 400 });
 
     const api = await createBaseApi();

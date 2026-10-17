@@ -35,6 +35,7 @@ import { STATES } from "@/lib/states";
 import HealthAreaSelect from "@/components/shared/HealthAreaSelect";
 import { generateAvailabilityMatrix } from "@/domains/professional/shared/disponibilidade.utils";
 import { buildProfessionalPayload } from "@/domains/professional/shared/professional.utils";
+import { MAX_FILE_SIZE_BYTES, MAX_FILE_SIZE_LABEL } from "@/lib/constants";
 
 export default function ProfessionalRegister(): JSX.Element {
   const router = useRouter();
@@ -337,10 +338,31 @@ export default function ProfessionalRegister(): JSX.Element {
                       ref={fileInputRef}
                       type="file"
                       className="hidden"
-                      accept="image/png,image/jpeg"
+                      accept="image/png,image/jpeg,image/jpg,image/webp"
                       onChange={(e) => {
                         const file = e.target.files?.[0];
-                        if (file) field.onChange(file);
+                        if (!file) return;
+                        const allowedTypes = [
+                          "image/png",
+                          "image/jpeg",
+                          "image/jpg",
+                          "image/webp",
+                        ];
+                        if (
+                          !allowedTypes.includes(file.type) ||
+                          file.size <= 0 ||
+                          file.size > MAX_FILE_SIZE_BYTES
+                        ) {
+                          alert(
+                            `Apenas imagens PNG, JPG ou WEBP até ${MAX_FILE_SIZE_LABEL} são permitidas`
+                          );
+                          if (fileInputRef.current) {
+                            fileInputRef.current.value = "";
+                          }
+                          field.onChange(null);
+                          return;
+                        }
+                        field.onChange(file);
                       }}
                     />
                     <button
@@ -360,6 +382,9 @@ export default function ProfessionalRegister(): JSX.Element {
                         </span>
                       </div>
                     </button>
+                    <p className="text-xs text-gray-500">
+                      PNG, JPG ou WEBP até {MAX_FILE_SIZE_LABEL}
+                    </p>
                   </div>
                 </FormControl>
                 <FormMessage />

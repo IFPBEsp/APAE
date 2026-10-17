@@ -216,7 +216,7 @@ public class PatientDocumentsControllerTest {
             }
 
             @Test
-            @DisplayName("Deve retornar 500 ao substituir documento inexistente (ResponseStatusException capturada pelo GlobalExceptionHandler)")
+            @DisplayName("Deve retornar 404 ao substituir documento inexistente (ResponseStatusException tratada pelo GlobalExceptionHandler)")
             void shouldReturnErrorWhenReplacingNonExistentDocument() throws Exception {
             UUID patientId = UUID.randomUUID();
             UUID documentId = UUID.randomUUID();
@@ -231,7 +231,9 @@ public class PatientDocumentsControllerTest {
                             .with(request -> { request.setMethod("PATCH"); return request; })
                             .header("Authorization", AuthTestHelper.bearerToken())
                             .with(csrf()))
-                    .andExpect(status().isInternalServerError());
+                    .andExpect(status().isNotFound())
+                    .andExpect(jsonPath("$.status").value(404))
+                    .andExpect(jsonPath("$.message").value("Documento não encontrado"));
             }
 
             @Test
