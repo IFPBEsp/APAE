@@ -25,6 +25,8 @@ import {
   SidebarMenuItem,
   useSidebar,
 } from "@/components/ui/sidebar";
+import { endSession } from "@/domains/auth/session-id";
+import { clearAllPatientDrafts } from "@/domains/patients/utils/draft-storage";
 import { removeSessionCookie } from "@/lib/cookies";
 import { cn } from "@/lib/utils";
 import {
@@ -53,6 +55,9 @@ export function AppSidebar() {
   const router = useRouter();
 
   const handleLogout = async () => {
+    clearAllPatientDrafts();
+    endSession();
+
     await removeSessionCookie();
     router.replace("/auth/login");
   };

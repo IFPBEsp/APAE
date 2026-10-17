@@ -5,6 +5,8 @@ import { toast } from "react-toastify";
 
 import { login } from "../auth.api";
 import { FormLogin } from "../authSchema";
+import { startSession } from "@/domains/auth/session-id";
+import { clearAllPatientDrafts } from "@/domains/patients/utils/draft-storage";
 
 export function useLogin() {
   const router = useRouter();
@@ -16,6 +18,9 @@ export function useLogin() {
       const responseData = await res.json();
 
       if (res.ok) {
+        clearAllPatientDrafts();
+        startSession();
+
         toast.success(responseData.message);
         router.push("/");
         return;
