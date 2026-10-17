@@ -193,23 +193,23 @@ export default function MembersRegisterAdditionalsPage() {
         >
           <DoubleColumn>
             {!isEditing && (
-            <FormField
-              control={form.control}
-              name="diseases"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Doenças que já teve *</FormLabel>
-                  <FormControl>
-                    <Input
-                      placeholder="Catapora, Gripe H1N1, Pneumonia"
-                      {...field}
-                      onChange={(e) => field.onChange(capitalizeFirst(e.target.value))}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+              <FormField
+                control={form.control}
+                name="diseases"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Doenças que já teve *</FormLabel>
+                    <FormControl>
+                      <Input
+                        placeholder="Catapora, Gripe H1N1, Pneumonia"
+                        {...field}
+                        onChange={(e) => field.onChange(capitalizeFirst(e.target.value))}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
             )}
 
             <FormField
@@ -247,23 +247,23 @@ export default function MembersRegisterAdditionalsPage() {
             />
 
             {!isEditing && (
-            <FormField
-              control={form.control}
-              name="medications"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Tipo de medicação que toma *</FormLabel>
-                  <FormControl>
-                    <Input
-                      placeholder="Losartana, paracetamol"
-                      {...field}
-                      onChange={(e) => field.onChange(capitalizeFirst(e.target.value))}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+              <FormField
+                control={form.control}
+                name="medications"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Tipo de medicação que toma *</FormLabel>
+                    <FormControl>
+                      <Input
+                        placeholder="Losartana, paracetamol"
+                        {...field}
+                        onChange={(e) => field.onChange(capitalizeFirst(e.target.value))}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
             )}
 
             <FormField
@@ -285,174 +285,174 @@ export default function MembersRegisterAdditionalsPage() {
             />
 
             {!isEditing && (
-            <>
-            <FormField
-              control={form.control}
-              name="disability.types"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Tipos de Deficiências *</FormLabel>
-                  <FormControl>
-                    <CreatableMultiSelect
-                      key={`disorders-select-${refreshKey}`}
-                      defaultValue={field.value || []}
-                      value={field.value || []}
-                      options={[
-                        ...disorders.map((dis) => ({
-                          label: dis.name,
-                          value: dis.name,
-                        })),
-                        ...(field.value || [])
-                          .filter(
-                            (val: string) =>
-                              !disorders.some((d) => d.name === val),
-                          )
-                          .map((val: string) => ({ label: val, value: val })),
-                      ]}
-                      onValueChange={field.onChange}
-                      onCreate={() => setModal("disorder")}
-                      placeholder="Selecione as deficiências"
-                      hideSelectAll={true}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+              <>
+                <FormField
+                  control={form.control}
+                  name="disability.types"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Tipos de Deficiências *</FormLabel>
+                      <FormControl>
+                        <CreatableMultiSelect
+                          key={`disorders-select-${refreshKey}`}
+                          defaultValue={field.value || []}
+                          value={field.value || []}
+                          options={[
+                            ...disorders.map((dis) => ({
+                              label: dis.name,
+                              value: dis.name,
+                            })),
+                            ...(field.value || [])
+                              .filter(
+                                (val: string) =>
+                                  !disorders.some((d) => d.name === val),
+                              )
+                              .map((val: string) => ({ label: val, value: val })),
+                          ]}
+                          onValueChange={field.onChange}
+                          onCreate={() => setModal("disorder")}
+                          placeholder="Selecione as deficiências"
+                          hideSelectAll={true}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
 
-            <FormField
-              control={form.control}
-              name="disability.report"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Laudo da Deficiência *</FormLabel>
-                  <FormControl>
-                    <FileInputButton
-                      id={field.name}
-                      className="min-w-3xs"
-                      onChange={(e) => {
-                        if (e.target.files && e.target.files[0]) {
-                          field.onChange(e.target.files[0]);
-                        }
-                      }}
-                    >
-                      {field.value instanceof File ? (
-                        <span
-                          className="truncate text-left"
-                          title={field.value.name}
+                <FormField
+                  control={form.control}
+                  name="disability.report"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Laudo da Deficiência *</FormLabel>
+                      <FormControl>
+                        <FileInputButton
+                          id={field.name}
+                          className="min-w-3xs"
+                          onChange={(e) => {
+                            if (e.target.files && e.target.files[0]) {
+                              field.onChange(e.target.files[0]);
+                            }
+                          }}
                         >
-                          Arquivo: {field.value.name}
-                        </span>
-                      ) : (
-                        "Selecionar Laudo"
-                      )}
-                    </FileInputButton>
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+                          {field.value instanceof File ? (
+                            <span
+                              className="truncate text-left"
+                              title={field.value.name}
+                            >
+                              Arquivo: {field.value.name}
+                            </span>
+                          ) : (
+                            "Selecionar Laudo"
+                          )}
+                        </FileInputButton>
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
 
-            <FormField
-              control={form.control}
-              name="care.types"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Tipos de Atendimentos *</FormLabel>
-                  <FormControl>
-                    <CreatableMultiSelect
-                      key={`cares-select-${refreshKey}`}
-                      defaultValue={field.value || []}
-                      value={field.value || []}
-                      options={[
-                        ...cares.map((care: { area: string }) => ({
-                          label: care.area,
-                          value: care.area,
-                        })),
-                        ...(field.value || [])
-                          .filter(
-                            (val: string) =>
-                              !cares.some(
-                                (c: { area: string }) => c.area === val,
-                              ),
-                          )
-                          .map((val: string) => ({ label: val, value: val })),
-                      ]}
-                      onValueChange={field.onChange}
-                      placeholder="Selecione os atendimentos necessários"
-                      hideSelectAll={true}
-                      onCreate={() => setModal("care")}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+                <FormField
+                  control={form.control}
+                  name="care.types"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Tipos de Atendimentos *</FormLabel>
+                      <FormControl>
+                        <CreatableMultiSelect
+                          key={`cares-select-${refreshKey}`}
+                          defaultValue={field.value || []}
+                          value={field.value || []}
+                          options={[
+                            ...cares.map((care: { area: string }) => ({
+                              label: care.area,
+                              value: care.area,
+                            })),
+                            ...(field.value || [])
+                              .filter(
+                                (val: string) =>
+                                  !cares.some(
+                                    (c: { area: string }) => c.area === val,
+                                  ),
+                              )
+                              .map((val: string) => ({ label: val, value: val })),
+                          ]}
+                          onValueChange={field.onChange}
+                          placeholder="Selecione os atendimentos necessários"
+                          hideSelectAll={true}
+                          onCreate={() => setModal("care")}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
 
-            <FormField
-              control={form.control}
-              name="care.referral"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Encaminhamento *</FormLabel>
-                  <FormControl>
-                    <FileInputButton
-                      id={field.name}
-                      className="min-w-3xs"
-                      onChange={(e) => {
-                        if (e.target.files && e.target.files[0]) {
-                          field.onChange(e.target.files[0]);
-                        }
-                      }}
-                    >
-                      {field.value instanceof File ? (
-                        <span
-                          className="truncate text-left"
-                          title={field.value.name}
+                <FormField
+                  control={form.control}
+                  name="care.referral"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Encaminhamento *</FormLabel>
+                      <FormControl>
+                        <FileInputButton
+                          id={field.name}
+                          className="min-w-3xs"
+                          onChange={(e) => {
+                            if (e.target.files && e.target.files[0]) {
+                              field.onChange(e.target.files[0]);
+                            }
+                          }}
                         >
-                          Arquivo: {field.value.name}
-                        </span>
-                      ) : (
-                        "Selecionar Encaminhamento"
-                      )}
-                    </FileInputButton>
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+                          {field.value instanceof File ? (
+                            <span
+                              className="truncate text-left"
+                              title={field.value.name}
+                            >
+                              Arquivo: {field.value.name}
+                            </span>
+                          ) : (
+                            "Selecionar Encaminhamento"
+                          )}
+                        </FileInputButton>
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
 
-            <FormField
-              control={form.control}
-              name="householdIncome"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Renda Familiar *:</FormLabel>
-                  <FormControl>
-                    <Input
-                      placeholder="R$ 2.100,00"
-                      maxLength={15}
-                      value={field.value}
-                      onChange={(e) =>
-                        field.onChange(formatCurrency(e.target.value))
-                      }
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+                <FormField
+                  control={form.control}
+                  name="householdIncome"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Renda Familiar *:</FormLabel>
+                      <FormControl>
+                        <Input
+                          placeholder="R$ 2.100,00"
+                          maxLength={15}
+                          value={field.value}
+                          onChange={(e) =>
+                            field.onChange(formatCurrency(e.target.value))
+                          }
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
 
-            <DoubleCheckboxFormField
-              control={form.control}
-              name="bpc"
-              labels={{
-                main: "Possui BPC? *",
-                true: "Sim",
-                false: "Não",
-              }}
-            />
-            </>
+                <DoubleCheckboxFormField
+                  control={form.control}
+                  name="bpc"
+                  labels={{
+                    main: "Possui BPC? *",
+                    true: "Sim",
+                    false: "Não",
+                  }}
+                />
+              </>
             )}
           </DoubleColumn>
         </MembersRegisterForm>
