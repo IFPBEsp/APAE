@@ -15,7 +15,7 @@ export function useDashboard() {
   const [todayAppointments, setTodayAppointments] = useState<TodayAppointment[]>([]);
   const [allAppointments, setAllAppointments] = useState<AppointmentResponseDTO[]>([]);
   const [isCreateOpen, setIsCreateOpen] = useState(false);
-  const { alertPatientIds } = useAbsenceAlerts();
+  const { alertPatientIds, refreshAlerts } = useAbsenceAlerts();
   const lastFetchedDate = useRef<string | null>(null);
 
   useEffect(() => {
@@ -42,5 +42,6 @@ export function useDashboard() {
     isCreateOpen,
     setIsCreateOpen,
     alertPatientIds,
+    refreshAlerts,
   };
 }
