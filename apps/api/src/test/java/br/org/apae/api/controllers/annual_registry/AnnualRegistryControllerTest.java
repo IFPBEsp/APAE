@@ -2,6 +2,8 @@ package br.org.apae.api.controllers.annual_registry;
 
 import br.org.apae.api.auth.application.internal.UserService;
 import br.org.apae.api.auth.infrastructure.security.JwtProvider;
+import br.org.apae.api.auth.infrastructure.security.RestAccessDeniedHandler;
+import br.org.apae.api.auth.infrastructure.security.RestAuthenticationEntryPoint;
 import br.org.apae.api.auth.infrastructure.security.SecurityConfiguration;
 import br.org.apae.api.common.dto.patient.request.annualregistry.CreateAnnualRegistryDTO;
 import br.org.apae.api.common.dto.patient.request.annualregistry.ReplaceAnnualRegistryDTO;
@@ -77,10 +79,16 @@ public class AnnualRegistryControllerTest {
 
  @MockitoBean
  private JwtProvider jwtProvider;
-
+ 
  @MockitoBean
  private UserService userService;
-
+ 
+ @MockitoBean
+ private RestAuthenticationEntryPoint restAuthenticationEntryPoint;
+ 
+ @MockitoBean
+ private RestAccessDeniedHandler restAccessDeniedHandler;
+ 
  private static final String BASE_URL = "/patients/{id}/annual-registry";
 
  @BeforeEach

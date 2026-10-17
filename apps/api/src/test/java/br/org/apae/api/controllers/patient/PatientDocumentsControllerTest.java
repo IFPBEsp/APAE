@@ -2,6 +2,8 @@ package br.org.apae.api.controllers.patient;
 
 import br.org.apae.api.auth.application.internal.UserService;
 import br.org.apae.api.auth.infrastructure.security.JwtProvider;
+import br.org.apae.api.auth.infrastructure.security.RestAccessDeniedHandler;
+import br.org.apae.api.auth.infrastructure.security.RestAuthenticationEntryPoint;
 import br.org.apae.api.auth.infrastructure.security.SecurityConfiguration;
 import br.org.apae.api.common.exceptions.handler.GlobalExceptionHandler;
 import br.org.apae.api.common.dto.patient.response.documents.DocumentWithUrlResponseDTO;
@@ -72,6 +74,12 @@ public class PatientDocumentsControllerTest {
 
     @MockitoBean
     private UserService userService;
+
+    @MockitoBean
+    private RestAuthenticationEntryPoint restAuthenticationEntryPoint;
+
+    @MockitoBean
+    private RestAccessDeniedHandler restAccessDeniedHandler;
 
     private static final String BASE_URL = "/patients/{id}/documents";
 

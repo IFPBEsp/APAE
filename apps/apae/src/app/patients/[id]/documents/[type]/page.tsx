@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import FileCard from "@/domains/documents/shared/file-card";
 import ReplaceDocumentModal from "@/components/documents/ReplaceDocumentModal";
 import { toast } from "react-toastify";
+import { bffFetch, bffFetchJson } from "@/lib/bff-client";
 import {
   Select,
   SelectContent,
@@ -90,16 +91,9 @@ export default function DocumentTypePage() {
         ...(typeFilter && { type: typeFilter }),
       });
 
-      const response = await fetch(
+      const data = await bffFetchJson<FileItem[]>(
         `/apae-geral/api/patients/${patientId}/documents?${params.toString()}`,
       );
-
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.message || "Erro ao buscar os documentos");
-      }
-
-      const data = await response.json();
 
       setFiles(data);
     } catch (err: unknown) {
@@ -145,7 +139,7 @@ export default function DocumentTypePage() {
       const formData = new FormData();
       formData.append("file", replaceFile);
 
-      const response = await fetch(
+      const response = await bffFetch(
         `/apae-geral/api/patients/${patientId}/documents/${replaceTarget.id}`,
         {
           method: "PATCH",

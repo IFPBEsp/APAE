@@ -3,6 +3,8 @@ package br.org.apae.api.controllers.absence;
 import br.org.apae.api.appointment.application.interfaces.AbsenceApplicationService;
 import br.org.apae.api.auth.application.internal.UserService;
 import br.org.apae.api.auth.infrastructure.security.JwtProvider;
+import br.org.apae.api.auth.infrastructure.security.RestAccessDeniedHandler;
+import br.org.apae.api.auth.infrastructure.security.RestAuthenticationEntryPoint;
 import br.org.apae.api.common.dto.appointment.request.absence.CreateAbsenceDTO;
 import br.org.apae.api.common.dto.appointment.response.absence.AbsenceResponseDTO;
 import br.org.apae.api.common.dto.appointment.response.absence.JustifyAbsenceDTO;
@@ -48,6 +50,12 @@ class AbsenceControllerImplTest {
 
     @MockitoBean
     private UserService userService;
+
+    @MockitoBean
+    private RestAuthenticationEntryPoint restAuthenticationEntryPoint;
+
+    @MockitoBean
+    private RestAccessDeniedHandler restAccessDeniedHandler;
 
     @Autowired
     private ObjectMapper objectMapper;

@@ -1,23 +1,20 @@
 import { useState } from "react";
 import { createServiceArea } from "@/services/servicearea-service";
 
+interface ServiceAreaResponse {
+  area: string;
+}
+
 export function useCreateServiceArea() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  async function create(area: string) {
+  async function create(area: string): Promise<ServiceAreaResponse> {
     setLoading(true);
     setError(null);
 
     try {
-      const response = await createServiceArea(area);
-      const data = await response.json();
-
-      if (!response.ok) {
-        const errorMessage = data.message;
-        throw new Error(errorMessage);
-      }
-
+      const data = await createServiceArea<ServiceAreaResponse>(area);
       return data;
     } catch (err: unknown) {
       if (err instanceof Error) {

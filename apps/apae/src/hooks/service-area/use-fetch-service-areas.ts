@@ -10,15 +10,7 @@ export function useFetchServiceAreas() {
   async function fetchData() {
     try {
       setLoading(true);
-      const response = await getAllServiceAreas();
-
-      if (!response.ok) {
-        const errorData = await response.json();
-        const errorMessage = errorData.message;
-        throw new Error(errorMessage.message);
-      }
-
-      const data: ServiceArea[] = await response.json();
+      const data = await getAllServiceAreas<ServiceArea[]>();
       setAreas(data);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Erro desconhecido");
