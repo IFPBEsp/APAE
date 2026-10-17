@@ -103,6 +103,11 @@ public class PatientControllerImpl implements PatientController {
     }
 
     @Override
+    public ResponseEntity<List<UUID>> findAbsenceAlertPatientIds(Integer minAbsences) {
+        return ResponseEntity.ok(patientService.findAbsenceAlertPatientIds(minAbsences));
+    }
+
+    @Override
     public ResponseEntity<List<String>> getTranstornos() {
         List<DisorderResponseDTO> disorderDtos = disorderService.findAllDisorders();
         List<String> disorderNames = disorderDtos.stream()

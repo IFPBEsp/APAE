@@ -3,6 +3,22 @@ import { setSessionCookie } from '@/lib/cookies';
 import { AxiosError } from 'axios';
 import { NextResponse } from 'next/server';
 
+function decodeJwtPayload(token: string): Record<string, unknown> | null {
+  try {
+    const base64Url = token.split('.')[1];
+    const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+    const jsonPayload = decodeURIComponent(
+      atob(base64)
+        .split('')
+        .map((c) => '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2))
+        .join('')
+    );
+    return JSON.parse(jsonPayload);
+  } catch {
+    return null;
+  }
+}
+
 const DISABLE_AUTH = false;
 export async function POST(req: Request) {
   if (DISABLE_AUTH) {
@@ -42,7 +58,12 @@ export async function POST(req: Request) {
       accessToken: token,
     };
 
-    await setSessionCookie(payload);
+    const jwtPayload = decodeJwtPayload(token);
+    const expiresAtSec = jwtPayload?.exp && typeof jwtPayload.exp === 'number'
+      ? jwtPayload.exp
+      : undefined;
+
+    await setSessionCookie(payload, expiresAtSec);
 
     return NextResponse.json(
       { message: 'Login bem-sucedido' },

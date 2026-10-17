@@ -34,6 +34,14 @@ export function AppointmentsTable({
   selectedDate,
   setTodayAppointments,
 }: AppointmentsTableProps) {
+  const handleAbsenceSuccess = (appointmentId: string) => {
+    setTodayAppointments((prev) =>
+      prev.map((a) =>
+        a.id === appointmentId ? { ...a, hasAbsence: true } : a
+      )
+    );
+  };
+
   return (
     <Card>
       <CardContent className="p-0">
@@ -105,13 +113,7 @@ export function AppointmentsTable({
                     patientId={item.patient.id}
                     absenceDate={format(selectedDate, 'yyyy-MM-dd')}
                     disabled={item.hasAbsence}
-                    onSuccess={() => {
-                      setTodayAppointments((prev) =>
-                        prev.map((a) =>
-                          a.id === item.id ? { ...a, hasAbsence: true } : a
-                        )
-                      );
-                    }}
+                    onSuccess={() => handleAbsenceSuccess(item.id)}
                   />
                 </TableCell>
               </TableRow>

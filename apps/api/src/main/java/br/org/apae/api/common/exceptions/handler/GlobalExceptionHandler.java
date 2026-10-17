@@ -17,18 +17,25 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.method.annotation.HandlerMethodValidationException;
+import org.springframework.web.HttpRequestMethodNotSupportedException;
+import org.springframework.web.bind.MissingServletRequestParameterException;
+import org.springframework.web.multipart.support.MissingServletRequestPartException;
+import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
+import org.springframework.web.servlet.resource.NoResourceFoundException;
 
 import br.org.apae.api.common.exceptions.types.ErrorResponse;
 import br.org.apae.api.common.exceptions.types.ValidationErrorResponse;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.ConstraintViolationException;
 import org.springframework.web.multipart.MaxUploadSizeExceededException;
+import org.springframework.web.server.ResponseStatusException;
 
 @ControllerAdvice
 @Order(Ordered.LOWEST_PRECEDENCE)
 public class GlobalExceptionHandler {
 
   private static final Logger logger = LoggerFactory.getLogger(GlobalExceptionHandler.class);
+  private static final String VALIDATION_ERROR = "Erro de validação";
 
 
   @ExceptionHandler(MethodArgumentNotValidException.class)
@@ -46,7 +53,7 @@ public class GlobalExceptionHandler {
     ValidationErrorResponse errorResponse = new ValidationErrorResponse(
             HttpStatus.BAD_REQUEST.value(),
             HttpStatus.BAD_REQUEST.getReasonPhrase(),
-            "Erro de validação",
+            VALIDATION_ERROR,
             request.getRequestURI(),
             fieldErrors
     );
@@ -71,7 +78,7 @@ public class GlobalExceptionHandler {
         ValidationErrorResponse errorResponse = new ValidationErrorResponse(
                 HttpStatus.BAD_REQUEST.value(),
                 HttpStatus.BAD_REQUEST.getReasonPhrase(),
-                "Erro de validação",
+                VALIDATION_ERROR,
                 request.getRequestURI(),
                 fieldErrors
         );
@@ -111,7 +118,7 @@ public class GlobalExceptionHandler {
     ValidationErrorResponse errorResponse = new ValidationErrorResponse(
             HttpStatus.BAD_REQUEST.value(),
             HttpStatus.BAD_REQUEST.getReasonPhrase(),
-            "Erro de validação",
+            VALIDATION_ERROR,
             request.getRequestURI(),
             fieldErrors
     );
@@ -145,10 +152,110 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(errorResponse, HttpStatus.UNSUPPORTED_MEDIA_TYPE);
   }
 
-  @ExceptionHandler(Exception.class)
-  public ResponseEntity<ErrorResponse> handleGenericException(Exception ex, HttpServletRequest request) {
+  @ExceptionHandler(ResponseStatusException.class)
+  public ResponseEntity<ErrorResponse> handleResponseStatusException(
+          ResponseStatusException ex,
+          HttpServletRequest request) {
 
-         String correlationId = UUID.randomUUID().toString();
+    HttpStatus status = HttpStatus.resolve(ex.getStatusCode().value());
+    if (status == null) {
+      status = HttpStatus.INTERNAL_SERVER_ERROR;
+    }
+
+    if (status.is5xxServerError()) {
+      String correlationId = UUID.randomUUID().toString();
+
+      logger.error("Erro de servidor propagado como ResponseStatusException. status={} path={} correlationId={}",
+              status.value(), request.getRequestURI(), correlationId, ex);
+
+      ErrorResponse errorResponse = new ErrorResponse(
+              status.value(),
+              status.getReasonPhrase(),
+              "Ocorreu um erro interno. Informe o código " + correlationId + " ao suporte.",
+              request.getRequestURI());
+
+      return new ResponseEntity<>(errorResponse, status);
+    }
+
+    String message = (ex.getReason() != null && !ex.getReason().isBlank())
+            ? ex.getReason()
+            : status.getReasonPhrase();
+
+    logger.warn("Regra de negócio violada. status={} path={} message={}",
+            status.value(), request.getRequestURI(), message);
+
+    ErrorResponse errorResponse = new ErrorResponse(
+            status.value(),
+            status.getReasonPhrase(),
+            message,
+            request.getRequestURI());
+
+    return new ResponseEntity<>(errorResponse, status);
+  }
+  
+  @ExceptionHandler(MethodArgumentTypeMismatchException.class)
+  public ResponseEntity<ErrorResponse> handleMethodArgumentTypeMismatchException(
+        MethodArgumentTypeMismatchException ex,
+        HttpServletRequest request) {
+
+    ErrorResponse errorResponse = new ErrorResponse(
+            HttpStatus.BAD_REQUEST.value(),
+            HttpStatus.BAD_REQUEST.getReasonPhrase(),
+            "Tipo de parâmetro inválido.",
+            request.getRequestURI());
+
+    return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
+  }
+
+  @ExceptionHandler({
+          MissingServletRequestParameterException.class,
+          MissingServletRequestPartException.class
+    })
+  public ResponseEntity<ErrorResponse> handleMissingRequestException(
+          Exception ex,
+          HttpServletRequest request) {
+
+        ErrorResponse errorResponse = new ErrorResponse(
+            HttpStatus.BAD_REQUEST.value(),
+            HttpStatus.BAD_REQUEST.getReasonPhrase(),
+            "Parâmetro obrigatório ausente.",
+            request.getRequestURI());
+
+      return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
+  }
+
+  @ExceptionHandler(NoResourceFoundException.class)
+  public ResponseEntity<ErrorResponse> handleNoResourceFoundException(
+          NoResourceFoundException ex,
+          HttpServletRequest request) {
+
+        ErrorResponse errorResponse = new ErrorResponse(
+            HttpStatus.NOT_FOUND.value(),
+            HttpStatus.NOT_FOUND.getReasonPhrase(),
+            "Recurso não encontrado.",
+            request.getRequestURI());
+
+    return new ResponseEntity<>(errorResponse, HttpStatus.NOT_FOUND);
+}
+
+    @ExceptionHandler(HttpRequestMethodNotSupportedException.class)
+    public ResponseEntity<ErrorResponse> handleHttpRequestMethodNotSupportedException(
+            HttpRequestMethodNotSupportedException ex,
+            HttpServletRequest request) {
+
+        ErrorResponse errorResponse = new ErrorResponse(
+            HttpStatus.METHOD_NOT_ALLOWED.value(),
+            HttpStatus.METHOD_NOT_ALLOWED.getReasonPhrase(),
+            "Método HTTP não suportado.",
+            request.getRequestURI());
+
+      return new ResponseEntity<>(errorResponse, HttpStatus.METHOD_NOT_ALLOWED);
+  }
+
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<ErrorResponse> handleGenericException(Exception ex, HttpServletRequest request) {
+
+        String correlationId = UUID.randomUUID().toString();
     
         logger.error("Erro interno. CorrelationId={}", correlationId, ex);
     

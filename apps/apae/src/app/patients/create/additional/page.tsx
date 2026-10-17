@@ -40,7 +40,6 @@ import {
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { useDisordersContext } from "@/hooks/use-disorders";
-import { createDisorderSchema as CreateDisorder } from "@/domains/disorders/disorders.schema";
 import { formatCurrency, capitalizeFirst } from "@/lib/formats";
 import { useFetchServiceTypes } from "@/domains/service-types";
 import { CreateCare } from "@/schemas/care-schemas";

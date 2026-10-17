@@ -1,29 +1,23 @@
+"use client";
+
 import { useState } from "react";
+import { bffFetchJson } from "@/lib/bff-client";
+import type { ServiceType } from "../service-types.types";
 
 export function useCreateServiceType() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  async function create(area: string) {
+  async function create(area: string): Promise<ServiceType> {
     setLoading(true);
     setError(null);
     try {
-      const response = await fetch("/apae-geral/api/service-types", {
+      return await bffFetchJson<ServiceType>("/apae-geral/api/service-types", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ area }),
       });
-      const data = await response.json();
-      if (!response.ok) {
-        throw new Error(data.message ?? "Erro ao criar tipo de atendimento.");
-      }
-      return data;
     } catch (err: unknown) {
-      if (err instanceof Error) {
-        setError(err.message);
-      } else {
-        setError("Erro inesperado");
-      }
+      setError(err instanceof Error ? err.message : "Erro inesperado");
       throw err;
     } finally {
       setLoading(false);

@@ -1,4 +1,7 @@
+"use client";
+
 import { useEffect, useState } from "react";
+import { bffFetchJson } from "@/lib/bff-client";
 import { ServiceType } from "../service-types.types";
 
 export function useFetchServiceTypes() {
@@ -10,12 +13,7 @@ export function useFetchServiceTypes() {
     try {
       setLoading(true);
       setError(null);
-      const response = await fetch("/apae-geral/api/service-types");
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.message ?? "Erro ao buscar tipos de atendimento.");
-      }
-      const data: ServiceType[] = await response.json();
+      const data = await bffFetchJson<ServiceType[]>("/apae-geral/api/service-types");
       setServiceTypes(data);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Erro desconhecido");

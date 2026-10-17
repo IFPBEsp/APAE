@@ -1,6 +1,7 @@
 import { Professional } from "@/types/profissional";
 import { ProfessionalFormValues } from "@/schemas/profissional.schema";
 import { buildAvailabilityMatrixFromDTOs } from "./disponibilidade.utils";
+import { MAX_FILE_SIZE_BYTES } from "@/lib/constants";
 
 type StatusFilter = "activate" | "inactivate";
 
@@ -82,7 +83,7 @@ export function isValidFile(file: File): boolean {
     "image/jpg",
     "image/webp",
   ];
-  const maxSize = 5 * 1024 * 1024;
+  const maxSize = MAX_FILE_SIZE_BYTES;
   return (
     allowedTypes.includes(file.type) && file.size > 0 && file.size <= maxSize
   );

@@ -2,6 +2,8 @@ package br.org.apae.api.controllers.patient;
 
 import br.org.apae.api.auth.application.internal.UserService;
 import br.org.apae.api.auth.infrastructure.security.JwtProvider;
+import br.org.apae.api.auth.infrastructure.security.RestAccessDeniedHandler;
+import br.org.apae.api.auth.infrastructure.security.RestAuthenticationEntryPoint;
 import br.org.apae.api.auth.infrastructure.security.SecurityConfiguration;
 import br.org.apae.api.common.dto.address.CreateAddressDTO;
 import br.org.apae.api.common.dto.patient.request.annualregistry.CreateAnnualRegistryDTO;
@@ -34,6 +36,8 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -106,10 +110,16 @@ public class PatientControllerTest {
 
  @MockitoBean
  private JwtProvider jwtProvider;
-
+ 
  @MockitoBean
  private UserService userService;
-
+ 
+ @MockitoBean
+ private RestAuthenticationEntryPoint restAuthenticationEntryPoint;
+ 
+ @MockitoBean
+ private RestAccessDeniedHandler restAccessDeniedHandler;
+ 
  private static final String BASE_URL = "/patients";
 
  @BeforeEach
@@ -299,6 +309,40 @@ public class PatientControllerTest {
    @SuppressWarnings("unchecked") ArgumentCaptor<Map<String, String>> filtersCaptor = ArgumentCaptor.forClass(Map.class);
    verify(patientService).findPatientByFilter(filtersCaptor.capture(), any());
    assertEquals(0, filtersCaptor.getValue().size());
+  }
+
+  @Test
+  @DisplayName("Deve retornar os ids dos pacientes com alerta de faltas (200)")
+  void shouldReturnAbsenceAlertPatientIds() throws Exception {
+   UUID first = UUID.randomUUID();
+   UUID second = UUID.randomUUID();
+   when(patientService.findAbsenceAlertPatientIds(3)).thenReturn(List.of(first, second));
+
+   mockMvc.perform(get(BASE_URL + "/absence-alert-ids").header("Authorization", AuthTestHelper.bearerToken()).param("minAbsences", "3").accept(MediaType.APPLICATION_JSON))
+     .andExpect(status().isOk())
+     .andExpect(jsonPath("$", hasSize(2)))
+     .andExpect(jsonPath("$[0]").value(first.toString()));
+  }
+
+  @ParameterizedTest(name = "minAbsences={0} deve retornar 400")
+  @ValueSource(strings = {"0", "-1"})
+  @DisplayName("Deve retornar 400 quando minAbsences do alerta de faltas for menor que 1")
+  void shouldReturnBadRequestWhenAbsenceAlertMinAbsencesIsInvalid(String minAbsences) throws Exception {
+   mockMvc.perform(get(BASE_URL + "/absence-alert-ids").header("Authorization", AuthTestHelper.bearerToken()).param("minAbsences", minAbsences).accept(MediaType.APPLICATION_JSON))
+     .andExpect(status().isBadRequest());
+
+   verifyNoInteractions(patientService);
+  }
+
+  @Test
+  @DisplayName("Deve aceitar minAbsences igual a 1 no alerta de faltas (200)")
+  void shouldAcceptMinimumValidAbsenceAlertMinAbsences() throws Exception {
+   when(patientService.findAbsenceAlertPatientIds(1)).thenReturn(List.of());
+
+   mockMvc.perform(get(BASE_URL + "/absence-alert-ids").header("Authorization", AuthTestHelper.bearerToken()).param("minAbsences", "1").accept(MediaType.APPLICATION_JSON))
+     .andExpect(status().isOk());
+
+   verify(patientService).findAbsenceAlertPatientIds(1);
   }
 
   @Test

@@ -6,7 +6,6 @@ import axios, {
   AxiosResponse,
   InternalAxiosRequestConfig,
 } from "axios";
-import { redirect } from "next/navigation";
 import { getTokenFromCookie, removeSessionCookie } from "./cookies";
 
 const LOCAL_API_BASE_URL = "http://localhost:8090/apae-geral/api";
@@ -54,13 +53,20 @@ function createAxiosInstance(baseURL: string) {
   });
 }
 
+const AUTH_PUBLIC_PATHS = ["/auth/signin", "/auth/signup", "/auth/password-recovery"];
+
 const makeInterceptors = (api: AxiosInstance) => {
   api.interceptors.request.use(
     async (config: InternalAxiosRequestConfig) => {
-      const token = await getTokenFromCookie();
+      const url = config.url || "";
+      const isAuthPublicPath = AUTH_PUBLIC_PATHS.some((path) => url.includes(path));
 
-      if (token && config.headers) {
-        config.headers.Authorization = `Bearer ${token}`;
+      if (!isAuthPublicPath) {
+        const token = await getTokenFromCookie();
+
+        if (token && config.headers) {
+          config.headers.Authorization = `Bearer ${token}`;
+        }
       }
 
       return config;
@@ -79,12 +85,9 @@ const makeInterceptors = (api: AxiosInstance) => {
         console.warn("Token expirado ou inválido. Removendo sessão...");
 
         await removeSessionCookie();
-        if (typeof window === "undefined") {
-          redirect("/apae-geral/auth/login");
-        }
       }
 
-      return Promise.reject(error);
+      throw error;
     },
   );
 

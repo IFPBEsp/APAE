@@ -19,3 +19,8 @@ export const formatDatePTBR = (date: string) => {
   const dateUtc = new Date(date).setUTCHours(12);
   return format(dateUtc, "dd 'de' MMMM 'de' yyyy" , { locale: ptBR })
 }
+export const formatDateShortPTBR = (dateString: string) => {
+  return new Date(dateString + "Z").toLocaleDateString("pt-BR", {
+    timeZone: "UTC",
+  });
+};
