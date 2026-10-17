@@ -1,5 +1,8 @@
+"use client";
+
 import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
+import { bffFetchJson } from "@/lib/bff-client";
 import { ServiceType } from "@/types/service-type";
 
 export function useServiceTypesList(searchName: string) {
@@ -12,11 +15,7 @@ export function useServiceTypesList(searchName: string) {
       try {
         setLoading(true);
         setError(null);
-        const response = await fetch("/apae-geral/api/service-types");
-        if (!response.ok) {
-          throw new Error("Falha ao buscar os tipos de atendimentos.");
-        }
-        const data: ServiceType[] = await response.json();
+        const data = await bffFetchJson<ServiceType[]>("/apae-geral/api/service-types");
         setServiceTypes(data);
       } catch (err) {
         const error = err as Error;

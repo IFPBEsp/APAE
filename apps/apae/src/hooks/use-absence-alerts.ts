@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { bffFetchJson } from "@/lib/bff-client";
 
 const MIN_ABSENCES_FOR_ALERT = 3;
 
@@ -19,15 +20,10 @@ export function useAbsenceAlerts(): AbsenceAlertsResult {
     const fetchAbsences = async () => {
       try {
         setIsLoading(true);
-        const response = await fetch(
+        const ids = await bffFetchJson<string[]>(
           `/apae-geral/api/patients/absence-alert-ids?minAbsences=${MIN_ABSENCES_FOR_ALERT}`
         );
 
-        if (!response.ok) {
-          throw new Error("Erro ao buscar pacientes com alerta de faltas");
-        }
-
-        const ids: string[] = await response.json();
         setAlertPatientIds(new Set(ids));
       } catch (error) {
         console.error("[useAbsenceAlerts] Erro ao buscar ausências:", error);

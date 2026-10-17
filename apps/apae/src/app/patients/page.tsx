@@ -12,6 +12,7 @@ import { Pagination } from "@/components/shared/pagination";
 import { toast } from "react-toastify";
 import { useDebounce } from "@/hooks/use-debounce";
 import { usePatientFilters } from "@/hooks/use-patients-filters";
+import { bffFetchJson } from "@/lib/bff-client";
 import { buildPatientListQuery } from "@/domains/patients/shared/patient.utils";
 import type { Page } from "@/types/pagination";
 
@@ -65,20 +66,12 @@ function PatientsAndStudentsScreenContent() {
         const requestKey = params.toString();
         latestRequestKeyRef.current = requestKey;
 
-        const response = await fetch(`/apae-geral/api/patients?${requestKey}`, {
-          signal: controller.signal,
-        });
-
-        if (!response.ok) {
-          const errorData = await response.json();
-          console.error(
-            "[ERRO API PATIENTS]:",
-            errorData.response?.data || errorData.message,
-          );
-          throw new Error(errorData.message || "Erro ao buscar dados");
-        }
-
-        const data: Page<PatientCardData> = await response.json();
+        const data = await bffFetchJson<Page<PatientCardData>>(
+          `/apae-geral/api/patients?${requestKey}`,
+          {
+            signal: controller.signal,
+          },
+        );
 
         if (latestRequestKeyRef.current !== requestKey) {
           return;

@@ -16,7 +16,9 @@ VALUES
     ('10000000-0000-4000-8000-000000000001', 'Esperança', '58135-000', 'PB', 'Centro', 'Rua Local Um', '100', NULL),
     ('10000000-0000-4000-8000-000000000002', 'Esperança', '58135-000', 'PB', 'Centro', 'Rua Local Dois', '200', 'Casa'),
     ('10000000-0000-4000-8000-000000000003', 'Esperança', '58135-000', 'PB', 'Bela Vista', 'Rua Local Três', '300', NULL),
-    ('10000000-0000-4000-8000-000000000004', 'Esperança', '58135-000', 'PB', 'Bela Vista', 'Rua Local Quatro', '400', NULL)
+    ('10000000-0000-4000-8000-000000000004', 'Esperança', '58135-000', 'PB', 'Bela Vista', 'Rua Local Quatro', '400', NULL),
+    ('10000000-0000-4000-8000-000000000005', 'Esperança', '58135-000', 'PB', 'Bela Vista', 'Rua Local Cinco', '500', NULL),
+    ('10000000-0000-4000-8000-000000000006', 'Esperança', '58135-000', 'PB', 'Bela Vista', 'Rua Local Seis', '600', NULL)
 ON CONFLICT DO NOTHING;
 
 INSERT INTO apae_geral.usuarios
@@ -116,9 +118,11 @@ ON CONFLICT DO NOTHING;
 INSERT INTO apae_geral.responsaveis
     (id, nome, contato, parentesco, endereco_id, paciente_id)
 VALUES
-    ('41000000-0000-4000-8000-000000000001', 'Responsável Fictício Um', '(83) 90000-2001', 'Mãe', NULL, '40000000-0000-4000-8000-000000000001'),
-    ('41000000-0000-4000-8000-000000000002', 'Responsável Fictício Dois', '(83) 90000-2002', 'Pai', NULL, '40000000-0000-4000-8000-000000000002')
-ON CONFLICT DO NOTHING;
+    ('41000000-0000-4000-8000-000000000001', 'Responsável Fictício Um', '(83) 90000-2001', 'Mãe', '10000000-0000-4000-8000-000000000005', '40000000-0000-4000-8000-000000000001'),
+    ('41000000-0000-4000-8000-000000000002', 'Responsável Fictício Dois', '(83) 90000-2002', 'Pai', '10000000-0000-4000-8000-000000000006', '40000000-0000-4000-8000-000000000002')
+ON CONFLICT (id) DO UPDATE
+    SET endereco_id = EXCLUDED.endereco_id
+    WHERE apae_geral.responsaveis.endereco_id IS NULL;
 
 INSERT INTO apae_geral.parentes
     (id, nome, rg, cpf, vivo, profissao, parentesco, paciente_id)

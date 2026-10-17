@@ -20,12 +20,8 @@ import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { User } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { handleBackendValidationErrors } from "@/lib/utils/form-errors";
-import {
-  getConflictError,
-  getStepForBackendField,
-  isSuccessStatus,
-} from "@/domains/patients/shared/patient.utils";
-
+import {getConflictError, getStepForBackendField, isSuccessStatus} from "@/domains/patients/shared/patient.utils";
+import { bffFetchJson } from "@/lib/bff-client";
 import z from "zod";
 import { FormButton, MembersRegisterForm } from "../form";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -110,8 +106,9 @@ export default function MembersRegisterProfilePage() {
 
     (async () => {
       try {
-        const res = await fetch(`/apae-geral/api/patients/${id}`);
-        const data = await res.json();
+        const data = await bffFetchJson<{ photoUrl?: string }>(
+          `/apae-geral/api/patients/${id}`,
+        );
         if (data?.photoUrl) {
           setPreviewUrl(data.photoUrl);
           setProfileData({ photo: data.photoUrl });

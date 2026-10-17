@@ -1,13 +1,15 @@
-import axios from "axios";
+"use client";
 
-export async function getAllProfessionals(active?: boolean) {
+import { bffFetch, bffFetchJson } from "@/lib/bff-client";
+
+export async function getAllProfessionals<T>(active?: boolean) {
   const url =
     active === undefined
       ? `/apae-geral/api/professionals`
       : `/apae-geral/api/professionals?ativo=${active}`;
 
   console.log("[getAllProfessionals] ativo:", active, "| url:", url);
-  return axios.get(url);
+  return bffFetchJson<T>(url);
 }
 
 /*export async function deleteProfessional(id: string) {
@@ -18,67 +20,46 @@ export async function getAllProfessionals(active?: boolean) {
 }*/
 
 export async function inactivateProfessional(id: string) {
-  const response = await fetch(`/apae-geral/api/professionals/${id}/inactivate`, {
+  return bffFetch(`/apae-geral/api/professionals/${id}/inactivate`, {
     method: "PUT",
   });
-  return response;
 }
 
 export async function activateProfessional(id: string) {
-  const response = await fetch(`/apae-geral/api/professionals/${id}/activate`, {
+  return bffFetch(`/apae-geral/api/professionals/${id}/activate`, {
     method: "PUT",
   });
-  return response;
 }
 
 export async function createProfessional(formData: FormData) {
-  const response = await fetch("/apae-geral/api/professionals", {
+  return bffFetch("/apae-geral/api/professionals", {
     method: "POST",
     body: formData,
   });
-
-  return response;
 }
 
 export async function updateProfessional(id: string, data: unknown) {
-  const response = await fetch(`/apae-geral/api/professionals/${id}`, {
+  return bffFetch(`/apae-geral/api/professionals/${id}`, {
     method: "PUT",
-    headers: {
-      "Content-Type": "application/json",
-    },
     body: JSON.stringify(data),
   });
-
-  return response;
 }
 
-export async function getProfessionalById(id: string) {
-  try {
-    const response = await axios.get(`/apae-geral/api/professionals/${id}`);
-    return response.data;
-  } catch (error) {
-    if (axios.isAxiosError(error)) {
-      throw new Error(error.response?.data?.message || error.message);
-    }
-    throw error;
-  }
+export async function getProfessionalById<T>(id: string) {
+  return bffFetchJson<T>(`/apae-geral/api/professionals/${id}`);
 }
 
-export async function getProfessionalDocuments(id: string) {
+export async function getProfessionalDocuments<T>(id: string) {
   try {
-    const response = await axios.get(`/apae-geral/api/professionals/${id}/documents`);
-    return response.data || [];
-  } catch (error) {
-    if (axios.isAxiosError(error)) {
-      throw new Error(error.response?.data?.message || "Erro ao buscar documentos");
-    }
-    throw error;
+    return await bffFetchJson<T>(`/apae-geral/api/professionals/${id}/documents`);
+  } catch {
+    return [] as T;
   }
 }
 
 
 export async function updateProfessionalDocuments(id: string, formData: FormData) {
-  return fetch(`/apae-geral/api/professionals/${id}/documents`, {
+  return bffFetch(`/apae-geral/api/professionals/${id}/documents`, {
     method: "PATCH",
     body: formData,
   });
@@ -88,7 +69,7 @@ export async function removeProfessionalDocument(
   professionalId: string,
   documentId: string,
 ) {
-  const response = await fetch(
+  const response = await bffFetch(
     `/apae-geral/api/professionals/${professionalId}/documents/${documentId}`,
     { method: "DELETE" },
   );

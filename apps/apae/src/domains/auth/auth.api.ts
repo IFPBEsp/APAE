@@ -1,27 +1,29 @@
-import axios from "axios";
+"use client";
+
+import { bffFetch } from "@/lib/bff-client";
 import { FormLogin } from "./authSchema";
 
-const API_URL =
-  process.env.NEXT_PUBLIC_API_URL ||
-  "http://localhost:8090/apae-geral/api";
-
 export async function login(data: FormLogin) {
-  const response = await fetch("/apae-geral/api/auth/login", {
+  const response = await bffFetch("/apae-geral/api/auth/login", {
     method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
     body: JSON.stringify(data),
+    redirectOnUnauthorized: false,
   });
 
   return response;
 }
 
+const API_URL =
+  process.env.NEXT_PUBLIC_API_URL ||
+  "http://localhost:8090/apae-geral/api";
+
 export async function requestPasswordRecovery(email: string) {
-  return axios.post(
-    `${API_URL}/auth/password-recovery/request`,
-    { email }
-  );
+  const response = await fetch(`${API_URL}/auth/password-recovery/request`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ email }),
+  });
+  return response;
 }
 
 export async function resetPassword(data: {
@@ -29,8 +31,10 @@ export async function resetPassword(data: {
   newPassword: string;
   confirmPassword: string;
 }) {
-  return axios.post(
-    `${API_URL}/auth/password-recovery/reset`,
-    data
-  );
+  const response = await fetch(`${API_URL}/auth/password-recovery/reset`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(data),
+  });
+  return response;
 }
