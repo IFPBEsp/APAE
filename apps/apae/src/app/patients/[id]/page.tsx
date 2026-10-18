@@ -13,6 +13,7 @@ import { Loader2, ArrowLeft, SquarePen, Plus } from "lucide-react";
 import AnnualRegistryEditModal from "@/domains/patients/annual-registry/annual-registry-edit-modal";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { PatientResponse } from "@/domains/patients/types/patient";
+import { bffFetchJson } from "@/lib/bff-client";
 
 interface InfoRowProps {
   label: string;
@@ -75,9 +76,7 @@ export default function PersonDetailsPage() {
   const fetchPerson = useCallback(async (silent = false) => {
     try {
       if (!silent) setLoadingPerson(true); 
-      const response = await fetch(`/apae-geral/api/patients/${id}`);
-      if (!response.ok) throw new Error("Falha ao buscar dados do paciente.");
-      const data: PatientResponse = await response.json();
+      const data = await bffFetchJson<PatientResponse>(`/apae-geral/api/patients/${id}`);
       setPerson(data);
     } catch (err: unknown) {
       const errorMessage = err instanceof Error ? err.message : "Erro ao buscar dados do paciente.";
@@ -91,12 +90,9 @@ export default function PersonDetailsPage() {
 
   const fetchYears = useCallback(async () => {
     try {
-        const res = await fetch(`/apae-geral/api/patients/${id}/registro-anual/years-list`);
-        let yearsData: number[] = [];
-        
-        if (res.ok) {
-            yearsData = await res.json();
-        }
+        const yearsData = await bffFetchJson<number[]>(
+            `/apae-geral/api/patients/${id}/registro-anual/years-list`,
+        );
 
         const currentYearStr = new Date().getFullYear().toString();
 
@@ -120,11 +116,10 @@ export default function PersonDetailsPage() {
     try {
       setLoadingRegistry(true);
       setAnnualRegistry(null);
-      const response = await fetch(`/apae-geral/api/patients/${id}/registro-anual/${selectedYear}`);
-      if (response.ok) {
-        const data = await response.json();
-        setAnnualRegistry(data);
-      }
+      const data = await bffFetchJson<AnnualRegistry>(
+        `/apae-geral/api/patients/${id}/registro-anual/${selectedYear}`,
+      );
+      setAnnualRegistry(data);
     } catch (err) {
       console.error("Erro ao buscar registro anual:", err);
     } finally {

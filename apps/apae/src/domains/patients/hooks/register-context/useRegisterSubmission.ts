@@ -1,4 +1,7 @@
+"use client";
+
 import { useCallback } from "react";
+import { bffFetch } from "@/lib/bff-client";
 import type { MembersRegisterState } from "./types";
 import { serializeCivilDate } from "@/lib/date";
 import { buildPatientPayload } from "@/domains/patients/shared/patient.utils";
@@ -10,15 +13,15 @@ export function useRegisterSubmission(state: MembersRegisterState, STORAGE_KEY: 
       const patient = buildPatientPayload(state);
 
       if (id) {
-        const res = await fetch(`/apae-geral/api/patients/${id}`, {
+        const res = await bffFetch(`/apae-geral/api/patients/${id}`, {
           method: "PUT",
-          headers: { "Content-Type": "application/json" },
           body: JSON.stringify(patient),
         });
 
         if (res.ok) {
           localStorage.removeItem(STORAGE_KEY);
         }
+
 
         const data = await res.json().catch(() => ({}));
         return { status: res.status, data };
@@ -44,7 +47,7 @@ export function useRegisterSubmission(state: MembersRegisterState, STORAGE_KEY: 
         formData.append("referrals", additionals.care.referral);
       }
 
-      const res = await fetch("/apae-geral/api/patients", {
+      const res = await bffFetch("/apae-geral/api/patients", {
         method: "POST",
         body: formData,
       });

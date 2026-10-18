@@ -80,10 +80,11 @@ export async function GET(
       return NextResponse.json([]);
     }
 
-    console.error("Erro na API:", axiosError.response?.data || error);
+    const errorData = axiosError.response?.data as { message?: string } | undefined;
+    console.error("Erro na API:", errorData || error);
     return NextResponse.json(
-      { error: "Erro ao buscar documentos" },
-      { status: 500 },
+      { error: errorData?.message || "Erro ao buscar documentos" },
+      { status: axiosError.response?.status || 500 },
     );
   }
 }

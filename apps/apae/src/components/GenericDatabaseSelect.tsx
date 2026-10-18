@@ -3,6 +3,7 @@
 import React, { useEffect, useState } from "react";
 import CreatableSelect from "react-select/creatable";
 import { MultiValue, StylesConfig } from "react-select";
+import { bffFetchJson } from "@/lib/bff-client";
 
 interface Option {
   label: string;
@@ -38,20 +39,16 @@ export const GenericDatabaseSelect = <T extends { id?: string | number }>({
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const res = await fetch(endpoint);
+        const data = await bffFetchJson<T[]>(endpoint);
+        const safeData = Array.isArray(data) ? data : [];
 
-        if (res.ok) {
-          const data = (await res.json()) as T[];
-          const safeData = Array.isArray(data) ? data : [];
-
-          setOptions(
-            safeData.map((d) => ({
-              label: String(d[labelKey] ?? "Sem nome"),
-              value: String(d[labelKey] ?? "Sem nome"),
-              id: d.id,
-            })),
-          );
-        }
+        setOptions(
+          safeData.map((d) => ({
+            label: String(d[labelKey] ?? "Sem nome"),
+            value: String(d[labelKey] ?? "Sem nome"),
+            id: d.id,
+          })),
+        );
       } catch (error) {
         console.error(error);
       }
@@ -113,9 +110,8 @@ export const GenericDatabaseSelect = <T extends { id?: string | number }>({
 
     setIsLoading(true);
     try {
-      const res = await fetch(endpoint, {
+      const res = await bffFetchJson<{ id?: string | number }>(endpoint, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ [labelKey]: normalizedName }),
       });
 
@@ -124,10 +120,7 @@ export const GenericDatabaseSelect = <T extends { id?: string | number }>({
         value: normalizedName,
       };
 
-      if (res.ok || res.status === 201 || res.status === 409) {
-        const created = (await res.json().catch(() => ({}))) as T;
-        if (created && created.id) newOption.id = created.id;
-      }
+      if (res && res.id) newOption.id = res.id;
 
       if (!newOption.id) newOption.id = `temp-${Date.now()}`;
 
