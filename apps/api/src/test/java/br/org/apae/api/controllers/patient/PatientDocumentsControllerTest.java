@@ -2,6 +2,8 @@ package br.org.apae.api.controllers.patient;
 
 import br.org.apae.api.auth.application.internal.UserService;
 import br.org.apae.api.auth.infrastructure.security.JwtProvider;
+import br.org.apae.api.auth.infrastructure.security.RestAccessDeniedHandler;
+import br.org.apae.api.auth.infrastructure.security.RestAuthenticationEntryPoint;
 import br.org.apae.api.auth.infrastructure.security.SecurityConfiguration;
 import br.org.apae.api.common.exceptions.handler.GlobalExceptionHandler;
 import br.org.apae.api.common.dto.patient.response.documents.DocumentWithUrlResponseDTO;
@@ -9,6 +11,8 @@ import br.org.apae.api.documents.application.interfaces.DocumentApplicationServi
 import br.org.apae.api.documents.domain.enums.DocumentCategory;
 import br.org.apae.api.documents.domain.enums.DocumentType;
 import br.org.apae.api.documents.interfaces.dto.DocumentDTO;
+import br.org.apae.api.patient.application.internal.PatientDomainService;
+import br.org.apae.api.patient.domain.exceptions.PatientNotFoundException;
 import br.org.apae.api.helpers.AuthTestHelper;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -68,10 +72,19 @@ public class PatientDocumentsControllerTest {
     private DocumentApplicationService documentService;
 
     @MockitoBean
+    private PatientDomainService patientDomainService;
+
+    @MockitoBean
     private JwtProvider jwtProvider;
 
     @MockitoBean
     private UserService userService;
+
+    @MockitoBean
+    private RestAuthenticationEntryPoint restAuthenticationEntryPoint;
+
+    @MockitoBean
+    private RestAccessDeniedHandler restAccessDeniedHandler;
 
     private static final String BASE_URL = "/patients/{id}/documents";
 
@@ -216,7 +229,7 @@ public class PatientDocumentsControllerTest {
             }
 
             @Test
-            @DisplayName("Deve retornar 500 ao substituir documento inexistente (ResponseStatusException capturada pelo GlobalExceptionHandler)")
+            @DisplayName("Deve retornar 404 ao substituir documento inexistente (ResponseStatusException tratada pelo GlobalExceptionHandler)")
             void shouldReturnErrorWhenReplacingNonExistentDocument() throws Exception {
             UUID patientId = UUID.randomUUID();
             UUID documentId = UUID.randomUUID();
@@ -231,7 +244,9 @@ public class PatientDocumentsControllerTest {
                             .with(request -> { request.setMethod("PATCH"); return request; })
                             .header("Authorization", AuthTestHelper.bearerToken())
                             .with(csrf()))
-                    .andExpect(status().isInternalServerError());
+                    .andExpect(status().isNotFound())
+                    .andExpect(jsonPath("$.status").value(404))
+                    .andExpect(jsonPath("$.message").value("Documento não encontrado"));
             }
 
             @Test
@@ -272,7 +287,7 @@ public class PatientDocumentsControllerTest {
     class Login {
 
             @Test
-            @DisplayName("Deve falhar ao tentar fazer upload com categoria inválida")
+            @DisplayName("Deve falhar ao tentar fazer upload com categoria inválida (Retornar 400)")
             void shouldFailWhenCategoryIsInvalid() throws Exception {
             UUID patientId = UUID.randomUUID();
             MockMultipartFile file = new MockMultipartFile(
@@ -285,19 +300,59 @@ public class PatientDocumentsControllerTest {
                                     .param("type", "REFERRAL")
                                     .header("Authorization", AuthTestHelper.bearerToken())
                                     .with(csrf()))
-                    .andExpect(status().isInternalServerError());
+                    .andExpect(status().isBadRequest())
+                    .andExpect(jsonPath("$.message").value("Categoria de documento inválida: INVALID"));
             }
 
-            @ParameterizedTest(name = "Deve retornar erro quando o paciente não for encontrado para o endpoint {0}")
+            @Test
+            @DisplayName("Deve falhar ao tentar fazer upload com tipo inválido (Retornar 400)")
+            void shouldFailWhenTypeIsInvalid() throws Exception {
+            UUID patientId = UUID.randomUUID();
+            MockMultipartFile file = new MockMultipartFile(
+                    "file", "document.pdf", "application/pdf", "content".getBytes());
+
+            mockMvc.perform(
+                            multipart(BASE_URL, patientId)
+                                    .file(file)
+                                    .param("category", "MEDICAL")
+                                    .param("type", "INVALID")
+                                    .header("Authorization", AuthTestHelper.bearerToken())
+                                    .with(csrf()))
+                    .andExpect(status().isBadRequest())
+                    .andExpect(jsonPath("$.message").value("Tipo de documento inválido: INVALID"));
+            }
+
+            @Test
+            @DisplayName("Deve retornar 404 quando o paciente não for encontrado ao enviar documento")
+            void shouldReturnNotFoundWhenUploadingDocumentForNonExistentPatient() throws Exception {
+            UUID patientId = UUID.randomUUID();
+            MockMultipartFile file = new MockMultipartFile(
+                    "file", "document.pdf", "application/pdf", "content".getBytes());
+
+            when(patientDomainService.getByIdOrThrow(patientId)).thenThrow(new PatientNotFoundException());
+
+            mockMvc.perform(
+                            multipart(BASE_URL, patientId)
+                                    .file(file)
+                                    .param("category", "MEDICAL")
+                                    .param("type", "REFERRAL")
+                                    .header("Authorization", AuthTestHelper.bearerToken())
+                                    .with(csrf()))
+                    .andExpect(status().isNotFound());
+
+            verify(documentService, never()).putDocument(any());
+            }
+
+            @ParameterizedTest(name = "Deve retornar 404 quando o paciente não for encontrado para o endpoint {0}")
             @MethodSource("br.org.apae.api.controllers.patient.PatientDocumentsControllerTest#documentsEndpoints")
             void shouldReturnErrorWhenPatientNotFound(String endpoint, DocumentCategory category) throws Exception {
             UUID patientId = UUID.randomUUID();
 
-            when(documentService.listDocuments(any())).thenThrow(new RuntimeException("Patient not found"));
+            when(patientDomainService.getByIdOrThrow(patientId)).thenThrow(new PatientNotFoundException());
 
             mockMvc.perform(get(endpoint, patientId)
                             .header("Authorization", AuthTestHelper.bearerToken()))
-                    .andExpect(status().isInternalServerError());
+                    .andExpect(status().isNotFound());
             }
 
     }

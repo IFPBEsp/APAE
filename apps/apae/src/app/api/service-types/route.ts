@@ -1,5 +1,5 @@
 import { createBaseApi } from "@/lib/axios";
-import { createserviceTypeSchema } from "@/schemas/service-type-schemas";
+import { createServiceTypeSchema } from "@/domains/service-types/service-type.schema";
 import { NextResponse } from "next/server";
 import { AxiosError } from "axios";
 
@@ -7,7 +7,7 @@ export async function POST(request: Request) {
   try {
     const body = await request.json();
 
-    const validation = createserviceTypeSchema.safeParse(body);
+    const validation = createServiceTypeSchema.safeParse(body);
     if (!validation.success) {
       return new NextResponse(
         JSON.stringify({

@@ -31,6 +31,7 @@ import {
 } from "@/components/ui/select";
 import { cn } from "@/lib/utils";
 import { getValidTimeSlots } from "@/lib/appointment-utils";
+import { bffFetchJson } from "@/lib/bff-client";
 
 interface Option {
   value: string;
@@ -134,8 +135,9 @@ export function AppointmentForm({ editAppointment }: AppointmentFormProps) {
     const loadProfessionalData = async () => {
       if (professional.value) {
         try {
-          const res = await fetch(`/apae-geral/api/professionals/${professional.value}`);
-          const data = await res.json();
+          const data = await bffFetchJson<{
+            availabilities?: { day: string; shift: string }[];
+          }>(`/apae-geral/api/professionals/${professional.value}`);
           setAvailabilities(data.availabilities || []);
         } catch {
           setAvailabilities([]);
@@ -166,11 +168,9 @@ export function AppointmentForm({ editAppointment }: AppointmentFormProps) {
       try {
         const formattedDate = format(date, "yyyy-MM-dd");
 
-        const res = await fetch(
+        const data = await bffFetchJson<string[]>(
           `/apae-geral/api/professionals/${professional.value}/available-times?date=${formattedDate}`,
         );
-
-        const data = await res.json();
 
         setAvailableTimeSlots(data || []);
       } catch {

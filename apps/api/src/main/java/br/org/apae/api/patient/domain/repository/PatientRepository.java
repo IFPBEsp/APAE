@@ -11,6 +11,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 @Repository
@@ -38,9 +39,22 @@ public interface PatientRepository extends JpaRepository<Patient, UUID>, JpaSpec
             Pageable pageable
     );
 
+    @Query("""
+      SELECT p.id
+      FROM Patient p
+      JOIN Absence a
+          ON a.generatedAppointment.patientId = p.id AND a.isJustified = false
+      GROUP BY p.id
+      HAVING COUNT(a) >= :minAbsences
+    """)
+    List<UUID> findPatientIdsWithMinAbsences(@Param("minAbsences") Integer minAbsences);
+
     @Query("SELECT COUNT(p) > 0 FROM Patient p JOIN p.vaccines v WHERE v.id = :vaccineId")
     boolean isVaccineInUse(UUID vaccineId);
 
     @Query("SELECT DISTINCT v.id FROM Patient p JOIN p.vaccines v WHERE p.id = :patientId")
     List<UUID> findVaccineIdsByPatientId(UUID patientId);
+
+    @Query(value = "SELECT * FROM apae_geral.pacientes WHERE id = :id", nativeQuery = true)
+    Optional<Patient> findByIdIncludingDeleted(@Param("id") UUID id);
 }

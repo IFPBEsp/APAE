@@ -3,6 +3,8 @@ package br.org.apae.api.controllers.dashboard;
 import br.org.apae.api.common.dto.dashboard.response.DashboardOverviewResponseDTO;
 import br.org.apae.api.dashboard.application.interfaces.DashboardApplicationService;
 import br.org.apae.api.auth.infrastructure.security.JwtProvider;
+import br.org.apae.api.auth.infrastructure.security.RestAccessDeniedHandler;
+import br.org.apae.api.auth.infrastructure.security.RestAuthenticationEntryPoint;
 import br.org.apae.api.auth.application.internal.UserService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -34,6 +36,12 @@ class DashboardControllerTest {
 
     @MockitoBean
     private UserService userService;
+
+    @MockitoBean
+    private RestAuthenticationEntryPoint restAuthenticationEntryPoint;
+
+    @MockitoBean
+    private RestAccessDeniedHandler restAccessDeniedHandler;
 
     private final DashboardOverviewResponseDTO mockResponse =
             new DashboardOverviewResponseDTO(100L, 15L);
