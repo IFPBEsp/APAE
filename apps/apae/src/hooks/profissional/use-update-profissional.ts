@@ -1,19 +1,10 @@
 import { useState } from "react";
-import { updateProfissional } from "@/services/profissional-service";
+import { updateProfessional } from "@/services/profissional-service";
 
-export type UpdateProfissionalDto = {
+export type UpdateProfessionalDto = {
   name: string;
   email: string;
   phoneNumber: string;
-  address: {
-    state: string;
-    city: string;
-    neighborhood: string;
-    street: string;
-    number: string;
-    complement: string;
-    cep: string;
-  };
   professionalDocument: string | null;
   serviceArea: { area: string };
   identityDocument: string;
@@ -25,18 +16,18 @@ type ApiResponse = {
   message?: string;
 };
 
-export function useUpdateProfissional() {
+export function useUpdateProfessional() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
 
-  async function doUpdate(id: string, data: UpdateProfissionalDto) {
+  async function doUpdate(id: string, data: UpdateProfessionalDto) {
     setLoading(true);
     setError(null);
     setSuccess(false);
 
     try {
-      const response = await updateProfissional(id, data);
+      const response = await updateProfessional(id, data);
 
       const contentType = response.headers.get("content-type");
       const body: ApiResponse = contentType?.includes("application/json")
@@ -61,5 +52,5 @@ export function useUpdateProfissional() {
     }
   }
 
-  return { updateProfissional: doUpdate, loading, error, success };
+  return { updateProfessional: doUpdate, loading, error, success };
 }

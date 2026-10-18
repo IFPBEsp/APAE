@@ -7,27 +7,21 @@ import {
   useEffect,
   useState,
 } from "react";
-
-type Disorder = Readonly<{
-  id: string;
-  name: string;
-  hasPatient: boolean;
-}>;
+import type {
+  Disorder,
+  CreateDisorderParams,
+  UpdateDisorderParams,
+  DeleteDisorderParams,
+} from "@/domains/disorders/disorders.types";
+import {
+  fetchDisordersApi,
+  fetchDisorderApi,
+  createDisorderApi,
+  updateDisorderApi,
+  deleteDisorderApi,
+} from "@/domains/disorders/disorders.api";
 
 type FetchDisorderParams = Readonly<{
-  id: string;
-}>;
-
-type CreateDisorderParams = Readonly<{
-  name: string;
-}>;
-
-type UpdateDisorderParams = Readonly<{
-  id: string;
-  name: string;
-}>;
-
-type DeleteDisorderParams = Readonly<{
   id: string;
 }>;
 
@@ -41,6 +35,7 @@ interface DisordersContextData {
   loading: boolean;
   feedback: Feedback;
   disorders: Disorder[];
+  fetchDisorders: () => Promise<void>;
   fetchDisorder: (params: FetchDisorderParams) => Promise<Disorder>;
   createDisorder: (params: CreateDisorderParams) => Promise<void>;
   updateDisorder: (params: UpdateDisorderParams) => Promise<void>;
@@ -102,13 +97,7 @@ function DisordersProvider({
   const fetchDisorders = useCallback(async () => {
     return withFeedback(
       async () => {
-        const response = await fetch("/apae-geral/api/disorders");
-
-        if (!response.ok) {
-          throw Error("Ocorreu um erro ao carregar as transtornos.");
-        }
-
-        const data = await response.json();
+        const data = await fetchDisordersApi();
         setDisorders(data);
       },
       setLoading,
@@ -122,13 +111,7 @@ function DisordersProvider({
   const fetchDisorder = useCallback(async (params: FetchDisorderParams) => {
     return withFeedback(
       async (currentParams: FetchDisorderParams) => {
-        const response = await fetch(`/apae-geral/api/disorders/${currentParams.id}`);
-
-        if (!response.ok) {
-          throw Error("Ocorreu um erro ao carregar transtorno.");
-        }
-
-        return response.json();
+        return fetchDisorderApi(currentParams.id);
       },
       setLoading,
       setFeedback,
@@ -142,16 +125,7 @@ function DisordersProvider({
     async (params: CreateDisorderParams) => {
       return withFeedback(
         async (currentParams: CreateDisorderParams): Promise<void> => {
-          const response = await fetch("/apae-geral/api/disorders", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(currentParams),
-          });
-
-          if (!response.ok) {
-            throw new Error("Ocorreu um erro ao criar transtorno.");
-          }
-
+          await createDisorderApi(currentParams);
           await fetchDisorders();
         },
         setLoading,
@@ -165,17 +139,8 @@ function DisordersProvider({
   const updateDisorder = useCallback(
     async (params: UpdateDisorderParams) => {
       return withFeedback(
-        async ({ id, ...data }: UpdateDisorderParams) => {
-          const response = await fetch(`/apae-geral/api/disorders/${id}`, {
-            method: "PUT",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(data),
-          });
-
-          if (!response.ok) {
-            throw new Error("Ocorreu um erro ao atualizar transtorno.");
-          }
-
+        async (currentParams: UpdateDisorderParams) => {
+          await updateDisorderApi(currentParams);
           await fetchDisorders();
         },
         setLoading,
@@ -192,17 +157,7 @@ function DisordersProvider({
     async (params: DeleteDisorderParams) => {
       return withFeedback(
         async (currentParams: DeleteDisorderParams) => {
-          const response = await fetch(`/apae-geral/api/disorders/${currentParams.id}`, {
-            method: "DELETE",
-          });
-
-          if (!response.ok) {
-            const errorData = await response.json().catch(() => null);
-            throw new Error(
-              errorData?.message || "Ocorreu um erro ao excluir transtorno.",
-            );
-          }
-
+          await deleteDisorderApi(currentParams);
           await fetchDisorders();
         },
         setLoading,
@@ -225,6 +180,7 @@ function DisordersProvider({
         loading,
         feedback,
         disorders,
+        fetchDisorders,
         fetchDisorder,
         createDisorder,
         updateDisorder,
@@ -246,11 +202,5 @@ function useDisordersContext() {
   return context;
 }
 
-export type {
-  Disorder,
-  Feedback,
-  CreateDisorderParams,
-  UpdateDisorderParams,
-  DeleteDisorderParams,
-};
+export type { Feedback };
 export { useDisordersContext, DisordersProvider };

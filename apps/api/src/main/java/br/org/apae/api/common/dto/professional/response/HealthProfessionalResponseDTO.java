@@ -10,8 +10,10 @@ import java.util.UUID;
 
 public record HealthProfessionalResponseDTO(
         UUID id,
+        UUID userId,
         String name,
         String email,
+        String cpf,
         String professionalDocument,
         String identityDocument,
         String phoneNumber,
@@ -25,18 +27,19 @@ public record HealthProfessionalResponseDTO(
 
     public HealthProfessionalResponseDTO(HealthProfessional entity,
                                          ServiceAreaResponseDTO serviceArea,
-                                         AddressResponseDTO address,
                                          List<AvailabilityResponseDTO> availabilities) {
         this(
                 entity.getId(),
+                entity.getUserId(),
                 entity.getName(),
                 entity.getEmail(),
+                entity.getCpf(),
                 entity.getProfessionalDocument(),
                 entity.getIdentityDocument(),
                 entity.getPhoneNumber(),
                 (entity.getServiceArea() != null) ? entity.getServiceArea().getArea() : null,
                 entity.getAtivo(),
-                address,
+                entity.getAddress() != null ? new AddressResponseDTO(entity.getAddress()) : null,
                 serviceArea,
                 availabilities,
                 entity.getProfilePhoto()

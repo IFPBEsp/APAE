@@ -25,7 +25,9 @@ import { Textarea } from "@/components/ui/textarea";
 
 import { toast } from "react-toastify";
 
-import { DocumentWithOutUrl } from "@/types/document";
+import AbsenceService from "@/domains/absence/absence.service";
+import { FormDataType } from "@/types/absence";
+import { buildAbsencePayload } from "@/domains/absence/absence.utils";
 
 interface AbsenceFormProps {
   generatedAppointmentId: string;
@@ -33,11 +35,6 @@ interface AbsenceFormProps {
   absenceDate: string;
   onSuccess?: () => void;
 }
-
-type FormDataType = {
-  hasJustification: string;
-  justificationText?: string;
-};
 
 export function AbsenceForm({
   generatedAppointmentId,
@@ -63,50 +60,17 @@ export function AbsenceForm({
       let documentId: string | null = null;
 
       if (data.hasJustification === "yes" && file) {
-        const docFormData = new FormData();
-
-        docFormData.append("file", file);
-        docFormData.append("category", "ABSENCE");
-        docFormData.append("type", "ATTACHMENTANY");
-        docFormData.append("year", String(new Date().getFullYear()));
-
-        const docResponse = await fetch(`/apae-geral/api/patients/${patientId}/documents`, {
-          method: "POST",
-          body: docFormData,
-        });
-
-        if (!docResponse.ok) {
-          const errorData = await docResponse.json();
-          throw new Error(errorData.message);
-        }
-
-        const document = (await docResponse.json()) as DocumentWithOutUrl;
-        documentId = document.name;
+        documentId = await AbsenceService.uploadJustificationDocument(patientId, file);
       }
 
-      const absencePayload = {
+      const absencePayload = buildAbsencePayload({
         generatedAppointmentId,
         absenceDate,
-        isJustified: data.hasJustification === "yes",
-        justification:
-          data.hasJustification === "yes"
-            ? data.justificationText
-            : "Sem justificativa",
-        justificationDocumentId: documentId,
-      };
-
-      const response = await fetch("/apae-geral/api/absences", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(absencePayload),
+        data,
+        documentId,
       });
 
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.message);
-      }
+      await AbsenceService.registerAbsence(absencePayload);
 
       toast.success("Falta registrada com sucesso!");
 
@@ -117,10 +81,14 @@ export function AbsenceForm({
         fileInputRef.current.value = "";
       }
 
-      window.location.reload();
+      onSuccess?.();
 
-    } catch (error: any) {
-      toast.error(error.message || "Erro ao registrar falta");
+    } catch (error: unknown) {
+      const errorMessage =
+        error instanceof Error && error.message
+          ? error.message
+          : "Erro ao registrar falta";
+      toast.error(errorMessage);
     }
   };
 

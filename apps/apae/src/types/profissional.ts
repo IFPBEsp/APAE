@@ -1,6 +1,6 @@
-import { ServiceArea } from "./service-area";
+import { ServiceType } from "@/domains/service-types";
 
-export const diasDaSemana = [
+export const daysOfWeek = [
   { id: "segunda", label: "Segunda" },
   { id: "terca", label: "Terça" },
   { id: "quarta", label: "Quarta" },
@@ -8,34 +8,38 @@ export const diasDaSemana = [
   { id: "sexta", label: "Sexta" },
 ];
 
-export const turnos = [
+export const shifts = [
   { id: "manha", label: "Manhã" },
   { id: "tarde", label: "Tarde" },
 ];
 
 export type AvailabilityType = {
-  dia: string;
-  turno: string;
+  day: string;
+  shift: string;
   checked: boolean;
 };
 
-export interface Availability {
+export interface AvailabilityDTO {
   day: string;
   shift: string;
 }
 
 export interface Professional {
   id: string;
-  serviceArea: ServiceArea;
+  userId?: string;
+  serviceArea: ServiceType;
   phoneNumber: string;
-  professionalDocument: string;
+  professionalDocument: string | null;
   email: string;
+  cpf: string;
   name: string;
   identityDocument: string;
   address: Address;
-  availabilities: Availability[];
+  availabilities: AvailabilityDTO[];
   ativo: boolean;
-  profilePhotoUrl?: string;
+  active?: boolean;
+  profilePhoto?: string | null;
+  profilePhotoUrl?: string | null;
 }
 
 export interface Address {

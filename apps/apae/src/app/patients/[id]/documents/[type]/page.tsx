@@ -4,9 +4,10 @@ import * as React from "react";
 import { useRouter, useParams } from "next/navigation";
 import { ArrowLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import FileCard from "@/components/fileCard";
+import FileCard from "@/domains/documents/shared/file-card";
 import ReplaceDocumentModal from "@/components/documents/ReplaceDocumentModal";
 import { toast } from "react-toastify";
+import { bffFetch, bffFetchJson } from "@/lib/bff-client";
 import {
   Select,
   SelectContent,
@@ -44,11 +45,11 @@ export interface FileItem {
 }
 
 const documentCategory = {
-  pessoal: "Documentos pessoais",
-  medico: "Documentos médicos",
-  medicos: "Documentos médicos",
-  escolar: "Documentos escolares",
-  escolares: "Documentos escolares",
+  personal: "Documentos pessoais",
+  medical: "Documentos médicos",
+  medicals: "Documentos médicos",
+  school: "Documentos escolares",
+  schools: "Documentos escolares",
 };
 
 export default function DocumentTypePage() {
@@ -70,7 +71,7 @@ export default function DocumentTypePage() {
   const [replaceFile, setReplaceFile] = React.useState<File | null>(null);
   const [replaceLoading, setReplaceLoading] = React.useState(false);
 
-  // Gerar lista de anos (últimos 5 anos + ano atual + próximo ano)
+  // Generate a list of years (last 5 years + current year + next year)
   const availableYears = React.useMemo(() => {
     const currentYear = new Date().getFullYear();
     const years = [];
@@ -90,16 +91,9 @@ export default function DocumentTypePage() {
         ...(typeFilter && { type: typeFilter }),
       });
 
-      const response = await fetch(
+      const data = await bffFetchJson<FileItem[]>(
         `/apae-geral/api/patients/${patientId}/documents?${params.toString()}`,
       );
-
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.message || "Erro ao buscar os documentos");
-      }
-
-      const data = await response.json();
 
       setFiles(data);
     } catch (err: unknown) {
@@ -145,7 +139,7 @@ export default function DocumentTypePage() {
       const formData = new FormData();
       formData.append("file", replaceFile);
 
-      const response = await fetch(
+      const response = await bffFetch(
         `/apae-geral/api/patients/${patientId}/documents/${replaceTarget.id}`,
         {
           method: "PATCH",

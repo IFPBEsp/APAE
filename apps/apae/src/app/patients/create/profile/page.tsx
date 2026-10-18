@@ -11,20 +11,21 @@ import {
 import {
   MembersRegisterStep,
   useMembersRegisterContext,
-} from "@/hooks/use-members-register-context";
-import { Profile } from "@/schemas/member-schemas";
-import { EditProfile } from "@/schemas/edit-member-schemas"; 
+} from "@/domains/patients/hooks/use-members-register-context";
+import { Profile } from "@/domains/patients/schemas/member-schemas";
+import { EditProfile } from "@/schemas/edit-member-schemas";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useEffect, useState, useRef } from "react";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { User } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { handleBackendValidationErrors } from "@/lib/utils/form-errors";
+import { bffFetchJson } from "@/lib/bff-client";
 
 import z from "zod";
 import { FormButton, MembersRegisterForm } from "../form";
 import { Checkbox } from "@/components/ui/checkbox";
-import { useRouter, useParams, usePathname } from "next/navigation"; 
+import { useRouter, useParams, usePathname } from "next/navigation";
 import { toast } from "react-toastify";
 
 export default function MembersRegisterProfilePage() {
@@ -33,7 +34,7 @@ export default function MembersRegisterProfilePage() {
     setters: { setProfileData, setStep },
     register,
   } = useMembersRegisterContext();
-  
+
   const [submitted, setSubmitted] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
@@ -55,7 +56,7 @@ export default function MembersRegisterProfilePage() {
 
   const [isInitialized, setIsInitialized] = useState(false);
 
-  const getErrorMessage = (data: any) => {  
+  const getErrorMessage = (data: any) => {
     if (!data) return "Erro inesperado no servidor.";
     if (typeof data === "string") return data;
     if (typeof data.message === "string") return data.message;
@@ -98,15 +99,16 @@ export default function MembersRegisterProfilePage() {
     };
   }, [previewUrl]);
 
-  // Busca a foto atual do paciente ao entrar na edição
+  // Fetches the patient's current photo when entering edit mode
   useEffect(() => {
     if (!isEditing || !id) return;
     if (profile.photo) return;
 
     (async () => {
       try {
-        const res = await fetch(`/apae-geral/api/patients/${id}`);
-        const data = await res.json();
+        const data = await bffFetchJson<{ photoUrl?: string }>(
+          `/apae-geral/api/patients/${id}`,
+        );
         if (data?.photoUrl) {
           setPreviewUrl(data.photoUrl);
           setProfileData({ photo: data.photoUrl });
@@ -174,8 +176,8 @@ export default function MembersRegisterProfilePage() {
 
             if (backendField) {
               if (
-                ["fullName","cpf","rg","contact","birth","nationality","cns","nis","phone","name"]
-                .some((f) => fieldLower.includes(f.toLowerCase()))
+                ["fullName", "cpf", "rg", "contact", "birth", "nationality", "cns", "nis", "phone", "name"]
+                  .some((f) => fieldLower.includes(f.toLowerCase()))
               ) {
                 setStep(MembersRegisterStep.PERSONAL);
               } else if (fieldLower.includes("parents") || fieldLower.includes("kinships")) {
@@ -183,8 +185,8 @@ export default function MembersRegisterProfilePage() {
               } else if (fieldLower.includes("address") && !fieldLower.includes("guardian")) {
                 setStep(MembersRegisterStep.ADDRESS);
               } else if (
-                ["annualRegistry","vaccine","allergies","diseases","familyIncome","householdIncome"]
-                .some((f) => fieldLower.includes(f.toLowerCase()))
+                ["annualRegistry", "vaccine", "allergies", "diseases", "familyIncome", "householdIncome"]
+                  .some((f) => fieldLower.includes(f.toLowerCase()))
               ) {
                 setStep(MembersRegisterStep.ADDITIONALS);
               } else if (fieldLower.includes("guardian")) {

@@ -1,35 +1,14 @@
-# Dependências e artefatos de build
-node_modules
-.next
-out
-build
-coverage
+**
+!package.json
+!package-lock.json
+!next.config.ts
+!tsconfig.json
+!postcss.config.mjs
+!components.json
+!eslint.config.mjs
 
-# Logs
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
-.pnpm-debug.log*
+!public/
+!public/**
 
-# Ambiente local
-.env
-.env.*
-!.env.example
-
-# Git / IDE / SO
-.git
-.gitignore
-.vscode
-.idea
-.DS_Store
-Thumbs.db
-
-# Docker
-Dockerfile
-.dockerignore
-
-# Misc
-*.tsbuildinfo
-next-env.d.ts
-.vercel
-README.md
+!src/
+!src/**

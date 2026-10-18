@@ -1,7 +1,8 @@
-import { getAllProfissionais } from "@/services/profissional-service";
+"use client";
+
+import { getAllProfessionals } from "@/services/profissional-service";
 import { Professional } from "@/types/profissional";
 import { useEffect, useState } from "react";
-import axios from "axios";
 
 interface PaginatedResponse<T> {
   content: T[];
@@ -9,8 +10,8 @@ interface PaginatedResponse<T> {
   totalElements: number;
 }
 
-export function useFetchProfessionals(ativo: boolean) {
-  const [profissionais, setProfissionais] = useState<Professional[]>([]);
+export function useFetchProfessionals(active: boolean) {
+  const [professionals, setProfessionals] = useState<Professional[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -20,25 +21,20 @@ export function useFetchProfessionals(ativo: boolean) {
         setLoading(true);
         setError(null);
 
-        console.log("[useFetchProfessionals] disparou fetch com ativo =", ativo);
+        console.log("[useFetchProfessionals] disparou fetch com ativo =", active);
         
-        const response = await getAllProfissionais(ativo);
+        const data = await getAllProfessionals<PaginatedResponse<Professional>>(active);
 
-        const data: PaginatedResponse<Professional> = response.data;
-        setProfissionais(data.content);
+        setProfessionals(data.content);
       } catch (err) {
-        if (axios.isAxiosError(err)) {
-          setError(err.response?.data?.message || err.message);
-        } else {
-          setError(err instanceof Error ? err.message : "Erro desconhecido");
-        }
+        setError(err instanceof Error ? err.message : "Erro desconhecido");
       } finally {
         setLoading(false);
       }
     }
 
     fetchProfessionals();
-  }, [ativo]);
+  }, [active]);
 
-  return { profissionais, loading, error, setProfissionais };
+  return { professionals, loading, error, setProfessionals };
 }

@@ -1,150 +1,131 @@
-## GRADLE
+# Guia do Desenvolvedor Back-End (Maven & Spring Boot)
 
-Essa será nossa ferramenta de automação de build e teste, vamos usar ele para gerenciar nossos projetos e suas dependências.
+Este guia apresenta os padrões de build, testes e execução do backend da APAE, utilizando **Maven** e **Spring Boot** com **Java 21**.
 
-> Vamos utilizar a versão **8.14**, é a última versão disponível até o momento.
+---
 
-## EXEMPLO DA ÁRVORE DE PACOTES
+## Ferramenta de Build: Apache Maven
+
+A API utiliza o **Apache Maven** para automação de compilação, gerenciamento de dependências e execução de testes.
+
+O projeto inclui o **Maven Wrapper (`mvnw` e `mvnw.cmd`)** na pasta `apps/api/`, eliminando a necessidade de instalar o Maven manualmente no sistema operacional.
+
+---
+
+## Estrutura de Diretórios do Back-End
+
+O backend está localizado dentro do monorepo no diretório `apps/api/`:
 
 ```bash
-├── api
-│   ├── buildSrc #--->*COMPONENTE DE LÓGICA DE BUILD (DEFINE CONVENÇÕES)*
-│   │   ├── build.gradle.kts
-│   │   ├── settings.gradle.kts
-│   │   └── src
-│   │       └── main
-│   │           └── kotlin
-│   │               ├── buildlogic.java-application-conventions.gradle.kts
-│   │               ├── buildlogic.java-common-conventions.gradle.kts
-│   │               └── buildlogic.java-library-conventions.gradle.kts
-│   ├── demo  #--->*EXEMPLO DE API (MICROSERVIÇO)*
-│   │   ├── build.gradle.kts #--->*ARAQUIVO DE BUILD (CONFIGURA DEPENDÊNCIAS)*
-│   │   └── src
-│   │       ├── main
-│   │       │   ├── java
-│   │       │   │   └── br
-│   │       │   │       └── edu
-│   │       │   │           └── ifpb
-│   │       │   │               └── esp
-│   │       │   │                   └── demo
-│   │       │   │                       └── DemoApplication.java
-│   │       │   └── resources
-│   │       │       └── application.properties
-│   │       └── test
-│   │           └── java
-│   │               └── br
-│   │                   └── edu
-│   │                       └── ifpb
-│   │                           └── esp
-│   │                               └── demo
-│   │                                   └── DemoApplicationTests.java
-│   ├── gradle  #--->*COMPONENTE GRADLE (DEFINE PROPRIEDADES BASE)*
-│   │   ├── libs.versions.toml
-│   │   └── wrapper
-│   │       ├── gradle-wrapper.jar
-│   │       └── gradle-wrapper.properties
-│   ├── gradle.properties
-│   ├── gradlew
-│   ├── gradlew.bat
-│   └── settings.gradle.kts #--->*COMPONENTE GRADLE (DEFINE RAÍZ DO PROJETO E INCLUI SUBPROJETOS)*
+apps/api/
+├── .mvn/                      # Configurações e binários do Maven Wrapper
+├── src/
+│   ├── main/
+│   │   ├── java/br/org/apae/api/
+│   │   │   ├── ApiApplication.java     # Classe principal (@SpringBootApplication)
+│   │   │   ├── auth/                   # Autenticação e segurança JWT
+│   │   │   ├── patient/                # Gestão de pacientes
+│   │   │   ├── professional/           # Profissionais de saúde/apoio
+│   │   │   ├── appointment/            # Agendamentos e atendimentos
+│   │   │   ├── documents/              # Armazenamento e integração com MinIO
+│   │   │   ├── notification/           # Notificações e alertas
+│   │   │   ├── dashboard/              # Métricas e relatórios
+│   │   │   └── common/                 # DTOs, validações e exceções globais
+│   │   └── resources/
+│   │       ├── application.yaml        # Configuração principal da aplicação
+│   │       ├── application-dev.yaml    # Perfil de desenvolvimento
+│   │       └── db/migration/           # Migrations do Flyway (PostgreSQL)
+│   └── test/
+│       └── java/br/org/apae/api/       # Testes unitários e de integração (JUnit 5, Mockito)
+├── mvnw                       # Script Maven Wrapper para Linux/macOS
+├── mvnw.cmd                   # Script Maven Wrapper para Windows
+└── pom.xml                    # Arquivo de configuração Maven (dependências e plugins)
 ```
 
 ---
 
-![componentes-back](./images/draw-backend.svg)
-> Componentes back-end.
+## Como Executar
+
+### 1. Pré-requisitos
+- **Java JDK 21** instalado (`java -version`).
+- **Docker** e **Docker Compose** para inicializar banco de dados e serviços auxiliares.
+
+### 2. Subir Serviços de Infraestrutura (PostgreSQL + MinIO)
+Na raiz do monorepo, execute:
+```bash
+pnpm dev:infra
+# ou diretamente via Docker:
+docker compose up -d db minio
+```
+
+### 3. Rodar a API
+
+#### Opção A: A partir da raiz do monorepo (via pnpm)
+```bash
+pnpm dev:backend
+```
+
+#### Opção B: A partir da pasta `apps/api` (via Maven Wrapper)
+```bash
+cd apps/api
+
+# Linux/macOS:
+./mvnw spring-boot:run
+
+# Windows:
+mvnw.cmd spring-boot:run
+```
 
 ---
 
-## COMO INSTALAR
+## Como Executar os Testes
 
-#### Podemos utilizar o gradle interno do projeto com o comando terminal:
+O projeto utiliza **JUnit 5** e **Mockito**, gerenciados pelo `maven-surefire-plugin`.
 
-```sh
-./gradlew <task>
+### Rodar todos os testes
+
+#### Pela raiz do monorepo:
+```bash
+pnpm test:api
 ```
 
-> Assim como podemos fazer isso via IDE, através da interface (seja no vscode ou intellij).
+#### Pelo terminal dentro de `apps/api`:
+```bash
+# Executa todos os testes
+./mvnw test
 
-#### Caso queira instalar no seu terminal, siga os passos:
-
-1. baixe a versão desejada (vamos seguir com a versão 8.14)
-```sh
-wget https://services.gradle.org/distributions/gradle-8.14-bin.zip -P /tmp
+# Executa compilando e empacotando o .jar
+./mvnw clean package
 ```
 
-2. crie a pasta para a ferramenta
-```sh
-sudo mkdir /opt/gradle
+### Rodar uma classe de teste específica
+```bash
+./mvnw test -Dtest=AuthServiceTest
 ```
 
-3. exporte a instalação
-```sh
-sudo unzip -d /opt/gradle /tmp/gradle-8.7-bin.zip
+### Rodar apenas um método de teste específico
+```bash
+./mvnw test -Dtest=AuthServiceTest#deveAutenticarComSucesso
 ```
-
-4. adicione essa linha no seu arquivo `.bashrc`
-```sh
-echo 'export PATH=$PATH:/opt/gradle/gradle-8.14/bin' >> ~/.bashrc
-source ~/.bashrc
-```
-
 
 ---
 
-## COMO USAR
+## Comandos Maven Mais Utilizados
 
-Agora podemos partir para alguns comandos do gradle.
+| Comando | Descrição |
+| :--- | :--- |
+| `./mvnw clean` | Limpa o diretório `target/` gerado em builds anteriores |
+| `./mvnw compile` | Compila o código-fonte da aplicação |
+| `./mvnw test` | Executa a suíte de testes automatizados |
+| `./mvnw package` | Compila, roda testes e empacota a aplicação em um `.jar` executável |
+| `./mvnw package -DskipTests` | Gera o `.jar` sem rodar a suíte de testes (útil em builds rápidos) |
+| `./mvnw spring-boot:run` | Inicializa a aplicação Spring Boot em modo desenvolvimento |
+| `./mvnw dependency:tree` | Exibe a árvore completa de dependências do projeto |
 
-### ALGUNS COMANDOS BÁSICOS
+---
 
-- Para compilar o projeto
-```bash
-./gradlew build
-```
+## Documentação Oficial e Referências
 
-- Para executar todos os testes
-```bash
-./gradlew test
-```
-
-- Para listar todas as tasks
-```bash
-./gradlew tasks
-```
-
-- Para parar o ./gradlew
-```bash
-./gradlew --stop
-```
-
-Podemos especificar qual sub-projeto que queremos executar e testar:
-
-- Para buildar o sub-projeto
-```bash
-./gradlew :demo:build
-```
-
-- Para rodar o sub-projeto
-```bash
-./gradlew :demo:bootRun #no caso estamos usando o spring boot
-```
-
-- Para testar o sub-projeto
-```bash
-./gradlew :demo:test
-```
-
-- Para listar as dependências do sub-projeto
-```bash
-./gradlew :demo:dependencies
-```
-
-- Para listar todas as tasks de um sub-projeto
-```bash
-./gradlew :demo:tasks
-```
-
-## **PARA MAIS INFORMAÇÕES ACESSE A DOCUMENTAÇÃO OFICIAL DA TECNOLOGIA:**
-
-Documentação gradle: https://docs.gradle.org/current/userguide/userguide.html
+- **Documentação Apache Maven:** https://maven.apache.org/guides/
+- **Spring Boot Maven Plugin:** https://docs.spring.io/spring-boot/docs/current/maven-plugin/reference/htmlsingle/
+- **JUnit 5 User Guide:** https://junit.org/junit5/docs/current/user-guide/

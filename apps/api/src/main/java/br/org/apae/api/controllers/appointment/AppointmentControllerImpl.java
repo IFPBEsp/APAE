@@ -3,6 +3,7 @@ package br.org.apae.api.controllers.appointment;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.UUID;
+import java.util.List;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -12,8 +13,13 @@ import org.springframework.web.bind.annotation.RestController;
 
 import br.org.apae.api.appointment.application.interfaces.AppointmentApplicationService;
 import br.org.apae.api.appointment.interfaces.controllers.AppointmentController;
-import br.org.apae.api.common.dto.appointment.request.appointment.*;
-import br.org.apae.api.common.dto.appointment.response.appointment.*;
+import br.org.apae.api.common.dto.appointment.request.appointment.CancelGeneratedAppointmentDTO;
+import br.org.apae.api.common.dto.appointment.request.appointment.CreateAppointmentDTO;
+import br.org.apae.api.common.dto.appointment.request.appointment.RescheduleGeneratedAppointmentDTO;
+import br.org.apae.api.common.dto.appointment.request.appointment.UpdateAppointmentDTO;
+import br.org.apae.api.common.dto.appointment.response.appointment.AppointmentResponseDTO;
+import br.org.apae.api.common.dto.appointment.response.appointment.GeneratedAppointmentResponseDTO;
+import br.org.apae.api.common.dto.appointment.response.appointment.TodayAppointmentsResponseDTO;
 import jakarta.validation.Valid;
 
 @RestController
@@ -87,5 +93,11 @@ public class AppointmentControllerImpl implements AppointmentController {
   @Override
   public ResponseEntity<TodayAppointmentsResponseDTO> getTodayAppointmentById(UUID id) {
     return ResponseEntity.ok(service.findGeneratedAppointmentById(id));
+  }
+
+  @Override
+  public ResponseEntity<List<GeneratedAppointmentResponseDTO>> listGeneratedByProfessional(UUID professionalId) {
+      List<GeneratedAppointmentResponseDTO> response = service.listGeneratedByProfessional(professionalId);
+      return ResponseEntity.ok(response);
   }
 }

@@ -4,6 +4,6 @@ public class InvalidPasswordException extends RuntimeException {
   private static final String MESSAGE = "Senha incorreta.";
 
   public InvalidPasswordException() {
-    super(MESSAGE);
+    super("E-mail ou senha incorretos");
   }
 }

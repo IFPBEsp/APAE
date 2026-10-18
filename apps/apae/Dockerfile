@@ -1,10 +1,8 @@
 # syntax=docker/dockerfile:1.7
 
-# dependências
-FROM node:20-alpine AS deps
-WORKDIR /app
+FROM node:20-alpine@sha256:fb4cd12c85ee03686f6af5362a0b0d56d50c58a04632e6c0fb8363f609372293 AS builder
 
-RUN apk add --no-cache libc6-compat
+WORKDIR /app
 
 COPY package.json ./
 COPY package-lock.json* ./
@@ -15,21 +13,28 @@ RUN if [ -f package-lock.json ]; then \
       npm install --no-audit --no-fund; \
     fi
 
-# build
-FROM node:20-alpine AS builder
-WORKDIR /app
+COPY . .
 
 ARG NEXT_PUBLIC_API_URL=/apae-geral/api
-ENV NEXT_PUBLIC_API_URL=${NEXT_PUBLIC_API_URL}
-ENV NEXT_TELEMETRY_DISABLED=1
 
-COPY --from=deps /app/node_modules ./node_modules
-COPY . .
+ENV NEXT_PUBLIC_API_URL=$NEXT_PUBLIC_API_URL
+ENV NEXT_TELEMETRY_DISABLED=1
 
 RUN npm run build
 
-# ---------- Stage 3: runtime ----------
-FROM node:20-alpine AS runner
+
+FROM gcr.io/distroless/nodejs20-debian13:nonroot@sha256:c8da1b6cccb5c6cc4b8826c67353f31c5f7b2719c5517b1312d191b337d8bd99 AS runner
+
+ARG APP_VERSION
+ARG VCS_REF
+
+LABEL org.opencontainers.image.title="APAE Geral Frontend" \
+      org.opencontainers.image.description="Frontend do sistema APAE" \
+      org.opencontainers.image.source="https://github.com/IFPBEsp/APAE" \
+      org.opencontainers.image.licenses="MIT" \
+      org.opencontainers.image.version=$APP_VERSION \
+      org.opencontainers.image.revision=$VCS_REF
+
 WORKDIR /app
 
 ENV NODE_ENV=production
@@ -37,19 +42,12 @@ ENV NEXT_TELEMETRY_DISABLED=1
 ENV PORT=3000
 ENV HOSTNAME=0.0.0.0
 
-RUN apk add --no-cache wget \
- && addgroup -S -g 1001 appgroup \
- && adduser  -S -u 1001 -G appgroup appuser
+COPY --from=builder --chown=65532:65532 /app/public ./public
+COPY --from=builder --chown=65532:65532 /app/.next/standalone ./
+COPY --from=builder --chown=65532:65532 /app/.next/static ./.next/static
 
-COPY --from=builder --chown=appuser:appgroup /app/public         ./public
-COPY --from=builder --chown=appuser:appgroup /app/.next/standalone ./
-COPY --from=builder --chown=appuser:appgroup /app/.next/static    ./.next/static
-
-USER appuser
+USER 65532:65532
 
 EXPOSE 3000
 
-HEALTHCHECK --interval=30s --timeout=5s --start-period=20s --retries=3 \
-  CMD wget -qO- http://127.0.0.1:3000/apae-geral >/dev/null 2>&1 || exit 1
-
-CMD ["node", "server.js"]
+CMD ["server.js"]

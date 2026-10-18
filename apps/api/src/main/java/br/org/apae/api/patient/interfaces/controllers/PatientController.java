@@ -8,9 +8,19 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.Min;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
@@ -106,7 +116,7 @@ public interface PatientController {
                         description = "Número mínimo de faltas para filtrar os pacientes",
                         example = "2"
                 )
-                @RequestParam(defaultValue = "1") Integer minAbsences,
+                @RequestParam(defaultValue = "1") @Min(value = 1, message = "minAbsences deve ser maior ou igual a 1") Integer minAbsences,
                 @Parameter(
                         description = "Texto para busca (ex: nome do paciente)",
                         example = "John"
@@ -114,6 +124,23 @@ public interface PatientController {
                 @RequestParam(required = false) String name,
                 @Parameter(hidden = true)
                 Pageable pageable
+        );
+
+        @Operation(
+                summary = "Listar ids de pacientes com alerta de faltas",
+                description = "Retorna, sem paginação, apenas os ids dos pacientes com pelo menos o número mínimo de faltas não justificadas informado."
+        )
+        @ApiResponses(value = {
+                @ApiResponse(responseCode = "200", description = "Lista de ids retornada com sucesso"),
+                @ApiResponse(responseCode = "400", description = "Parâmetro de requisição inválido")
+        })
+        @GetMapping("/absence-alert-ids")
+        ResponseEntity<List<UUID>> findAbsenceAlertPatientIds(
+                @Parameter(
+                        description = "Número mínimo de faltas não justificadas",
+                        example = "3"
+                )
+                @RequestParam(defaultValue = "3") @Min(value = 1, message = "minAbsences deve ser maior ou igual a 1") Integer minAbsences
         );
 
         @Operation(summary = "Lista os tipos de atendimento para o filtro")

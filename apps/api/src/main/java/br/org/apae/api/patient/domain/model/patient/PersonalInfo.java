@@ -1,7 +1,8 @@
 package br.org.apae.api.patient.domain.model.patient;
 
 import java.time.LocalDate;
-import static br.org.apae.api.patient.domain.validation.ValidationUtils.*;
+import static br.org.apae.api.patient.domain.validation.ValidationUtils.requireNonNull;
+import static br.org.apae.api.patient.domain.validation.ValidationUtils.requireNonNullOrEmpty;
 
 public class PersonalInfo {
   private final String fullName;

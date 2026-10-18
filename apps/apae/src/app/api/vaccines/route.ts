@@ -29,6 +29,14 @@ export async function GET() {
         const { data } = await api.get("/vaccines");
         return NextResponse.json(data);
     } catch (error) {
+        if (error instanceof AxiosError) {
+            return NextResponse.json(
+                {
+                    message: error.response?.data?.message || "Erro ao buscar vacinas",
+                },
+                { status: error.response?.status || 500 }
+            );
+        }
         const message = error instanceof Error ? error.message : "Erro desconhecido";
         console.error("Erro ao buscar vacinas:", message);
         return NextResponse.json({ message: "Erro ao buscar a lista de vacinas." }, { status: 500 }

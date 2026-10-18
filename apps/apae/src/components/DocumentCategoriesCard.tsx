@@ -2,23 +2,23 @@
 import React from 'react';
 import { User, ClipboardPlus, LibraryBigIcon } from 'lucide-react';
 
-interface Categoria {
+interface Category {
   label: string;
   icon: React.ReactNode;
-  tipo: string;
+  type: string;
 }
 
 interface DocumentCategoriesCardProps {
-  onClickCategoria: (tipo: string) => void;
-  categorias?: Categoria[];
+  onClickCategory: (type: string) => void;
+  categories?: Category[];
 }
 
 const DocumentCategoriesCard: React.FC<DocumentCategoriesCardProps> = ({
-  onClickCategoria,
-  categorias = [
-    { label: 'Pessoais', icon: <User />, tipo: 'pessoais' },
-    { label: 'Médicos', icon: <ClipboardPlus />, tipo: 'medicos' },
-    { label: 'Escolares', icon: <LibraryBigIcon />, tipo: 'escolares' },
+  onClickCategory,
+  categories = [
+    { label: 'Pessoais', icon: <User />, type: 'personals' },
+    { label: 'Médicos', icon: <ClipboardPlus />, type: 'medicals' },
+    { label: 'Escolares', icon: <LibraryBigIcon />, type: 'schools' },
   ],
 }) => {
   return (
@@ -26,14 +26,14 @@ const DocumentCategoriesCard: React.FC<DocumentCategoriesCardProps> = ({
       <h2 className="text-center text-2xl font-semibold mb-4">Documentos</h2>
 
       <div className="flex justify-around gap-2 flex-wrap">
-        {categorias.map((categoria) => (
+        {categories.map((category) => (
           <div
-            key={categoria.tipo}
-            onClick={() => onClickCategoria(categoria.tipo)}
+            key={category.type}
+            onClick={() => onClickCategory(category.type)}
             className="flex flex-col items-center justify-center cursor-pointer border-2 border-white px-4 py-3 rounded-lg hover:bg-white hover:text-[#003366] transition-colors duration-200"
           >
-            {categoria.icon}
-            <span className="mt-2 text-sm font-medium">{categoria.label}</span>
+            {category.icon}
+            <span className="mt-2 text-sm font-medium">{category.label}</span>
           </div>
         ))}
       </div>

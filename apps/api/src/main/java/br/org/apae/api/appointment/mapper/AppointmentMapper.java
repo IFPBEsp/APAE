@@ -5,10 +5,8 @@ import java.util.List;
 
 import org.springframework.stereotype.Component;
 
-import br.org.apae.api.address.domain.model.Address;
 import br.org.apae.api.appointment.domain.model.Appointment;
 import br.org.apae.api.appointment.domain.model.GeneratedAppointment;
-import br.org.apae.api.common.dto.address.AddressResponseDTO;
 import br.org.apae.api.common.dto.appointment.request.appointment.CreateAppointmentDTO;
 import br.org.apae.api.common.dto.appointment.request.appointment.UpdateAppointmentDTO;
 import br.org.apae.api.common.dto.appointment.response.appointment.AnnualRegistryResponseDTO;
@@ -78,7 +76,6 @@ public class AppointmentMapper {
   public AppointmentResponseDTO toResponse(Appointment appointment, PatientResponseDTO patient) {
     HealthProfessional professional = appointment.getProfessional();
     ServiceAreaResponseDTO serviceArea = new ServiceAreaResponseDTO(professional.getServiceArea());
-    AddressResponseDTO address = new AddressResponseDTO(professional.getAddress());
     List<AvailabilityResponseDTO> availabilities = professional.getAvailabilities()
         .stream()
         .map(AvailabilityResponseDTO::new).toList();
@@ -88,7 +85,6 @@ public class AppointmentMapper {
         new HealthProfessionalResponseDTO(
           professional, 
           serviceArea,
-          address, 
           availabilities),
         toResponse(appointment.getAnnualRegistration(), patient),
         appointment.getFrequencyDays(),
@@ -121,7 +117,6 @@ public class AppointmentMapper {
     // Patient patient = appointment.getAnnualRegistration().getPatient();
     HealthProfessional professional = appointment.getProfessional();
     ServiceAreaResponseDTO serviceArea = new ServiceAreaResponseDTO(professional.getServiceArea());
-    AddressResponseDTO address = new AddressResponseDTO(professional.getAddress());
     List<AvailabilityResponseDTO> availabilities = professional.getAvailabilities()
         .stream()
         .map(AvailabilityResponseDTO::new).toList();
@@ -132,7 +127,6 @@ public class AppointmentMapper {
         new HealthProfessionalResponseDTO(
           professional, 
           serviceArea,
-          address, 
           availabilities),
         generatedAppointment.getScheduledDateTime(),
         generatedAppointment.getOverriddenDateTime(),

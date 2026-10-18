@@ -47,33 +47,78 @@ Este projeto tem como objetivo o desenvolvimento de dois sistemas para a APAE, o
 
 ### Como Executar
 
-O projeto foi automatizado para rodar com o mínimo de comandos utilizando **pnpm Workspaces**:
+O projeto foi automatizado para rodar com o mínimo de comandos utilizando **pnpm Workspaces**. Siga os passos abaixo:
 
-1. **Terminal na pasta raiz:** `cd APAE`
-
-   1.1. Caso esteja no Windows, acessar terminal via **GitBash**
-
-2. **Setup Inicial**: `pnpm install`
-3. **Rodar Tudo (Docker + Back + Front)**: `pnpm dev`
-
+> **Nota para Windows:** Utilize **GitBash** para executar os comandos.
+> 
 > ℹ️ Algumas funcionalidades, como envio de e-mails, utilizam configuração opcional de variáveis de ambiente. Veja a seção [**Configuração do Projeto**](#configuração-do-projeto).
 
-#### Outros Comandos:
+#### Pré-requisitos
 
-- `pnpm dev:backend`: Executa apenas o backend (api).
-- `pnpm dev:apae`: Executa apenas o frontend (apae).
-- `pnpm docker:up`: Sobe apenas o banco de dados e MinIO.
+- Docker com Docker Compose;
+- Java 21;
+- Node.js e pnpm.
+
+#### Passo 1: Setup inicial
+
+Instale todas as dependências do projeto:
+
+```bash
+cd APAE
+pnpm install
+cp .env.example .env
+```
+
+O arquivo `.env.example` já contém valores adequados ao desenvolvimento local. Não use
+credenciais de produção nesse arquivo.
+
+#### Passo 2: Preparar os serviços locais
+
+Suba PostgreSQL e MinIO, aplique as migrations Flyway V1–V11 e insira os dados
+fictícios de desenvolvimento:
+
+```bash
+pnpm db:prepare
+```
+
+O PostgreSQL local cria somente o schema `apae_geral`, que é o schema de propriedade
+deste produto. O desenvolvimento do APAE-Geral não depende dos schemas
+`atendimento` ou `gestao_escolar`, nem do banco compartilhado no Neon.
+
+#### Passo 3: Executar o projeto
+
+Inicie backend e frontend no host. A infraestrutura continuará nos containers:
+
+```bash
+pnpm dev
+```
+
+Aguarde até que os serviços estejam prontos. O frontend estará acessível em
+`http://localhost:3000/apae-geral` e a API em
+`http://localhost:8090/apae-geral/api`.
+
+---
+
+#### Outros Comandos Úteis:
+
+- `pnpm dev:infra`: Sobe PostgreSQL e MinIO e aplica as migrations.
+- `pnpm dev:backend`: Executa apenas o backend (API).
+- `pnpm dev:apae`: Executa apenas o frontend APAE-Geral.
+- `pnpm db:migrate`: Aplica as migrations pendentes no PostgreSQL local.
+- `pnpm db:seed`: Aplica as migrations e insere o seed fictício e idempotente.
+- `pnpm db:prepare`: Prepara banco, seed e MinIO para o desenvolvimento.
+- `pnpm docker:up`: Sobe todos os serviços definidos no Compose.
 - `pnpm docker:down`: Para os containers e os remove da memória.
-- `pnpm docker:drop`: Para os containers, os remove e apaga os volumes associados.
-- `pnpm db:seed`: Cria um usuário admin e views em mock no banco de dados para fins de testes.
+- `pnpm docker:drop`: Para os containers e apaga os volumes locais, incluindo os dados do banco.
 
 #### Credenciais do usuário para testes:
 
-- Email: `admin@teste.com`
-- CPF: `123.456.789-00`
+- Email: `admin@teste.local`
+- CPF: `000.000.001-91`
 - Senha: `123456`
 
-> ℹ️ É necessário criar o usuário teste a partir do comando `pnpm db:seed`.
+Todos os registros criados por esse seed são fictícios e destinados exclusivamente
+ao desenvolvimento. O comando pode ser repetido sem duplicá-los.
 
 ---
 
@@ -219,7 +264,7 @@ O Kanban é usado para organizar as **issues** no processo de desenvolvimento. A
 ### Configuração de Ambiente
 
 Este projeto automatiza a configuração inicial das variáveis de ambiente.
-Ao rodar `pnpm dev`, o script verifica a existência do arquivo `.env`.
+Ao rodar `pnpm run dev`, o script verifica a existência do arquivo `.env`.
 Caso ele não exista, uma cópia será criada automaticamente a partir do `.env.example`.
 
 **Nota:** O script nunca sobrescreverá um arquivo `.env` já existente.

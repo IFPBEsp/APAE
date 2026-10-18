@@ -6,12 +6,14 @@ import { parseAsInteger, parseAsString, useQueryStates } from "nuqs";
 import { Button } from "@/components/ui/button";
 import { Plus } from "lucide-react";
 import { PatientCard } from "@/components/shared/patient-card";
-import { PatientCardData } from "@/schemas/patientSchema";
+import type { PatientCardData } from "@/domains/patients/types/patient";
 import { SearchFilters } from "@/components/search-filters";
 import { Pagination } from "@/components/shared/pagination";
 import { toast } from "react-toastify";
 import { useDebounce } from "@/hooks/use-debounce";
 import { usePatientFilters } from "@/hooks/use-patients-filters";
+import { bffFetchJson } from "@/lib/bff-client";
+import { buildPatientListQuery } from "@/domains/patients/shared/patient.utils";
 import type { Page } from "@/types/pagination";
 
 import { Suspense } from "react";
@@ -38,10 +40,10 @@ function PatientsAndStudentsScreenContent() {
   const debouncedSearchName = useDebounce(query.name, 500);
 
   const {
-    transtornoOptions,
-    anoOptions,
-    cidadeOptions,
-    tipoAtendimentoOptions,
+    disorderOptions,
+    yearOptions,
+    cityOptions,
+    serviceAreaOptions,
   } = usePatientFilters();
 
   useEffect(() => {
@@ -51,36 +53,25 @@ function PatientsAndStudentsScreenContent() {
       setIsLoading(true);
 
       try {
-        const params = new URLSearchParams();
-
-        if (debouncedSearchName) params.append("name", debouncedSearchName);
-        if (query.disorder) params.append("disorder", query.disorder);
-        if (query.year) params.append("year", query.year);
-        if (query.city) params.append("city", query.city);
-        if (query.treatmentType) {
-          params.append("treatmentType", query.treatmentType);
-        }
-
-        params.append("page", String(query.page));
-        params.append("size", String(query.size));
+        const params = buildPatientListQuery({
+          name: debouncedSearchName,
+          disorder: query.disorder,
+          year: query.year,
+          city: query.city,
+          treatmentType: query.treatmentType,
+          page: query.page,
+          size: query.size,
+        });
 
         const requestKey = params.toString();
         latestRequestKeyRef.current = requestKey;
 
-        const response = await fetch(`/apae-geral/api/patients?${requestKey}`, {
-          signal: controller.signal,
-        });
-
-        if (!response.ok) {
-          const errorData = await response.json();
-          console.error(
-            "[ERRO API PATIENTS]:",
-            errorData.response?.data || errorData.message,
-          );
-          throw new Error(errorData.message || "Erro ao buscar dados");
-        }
-
-        const data: Page<PatientCardData> = await response.json();
+        const data = await bffFetchJson<Page<PatientCardData>>(
+          `/apae-geral/api/patients?${requestKey}`,
+          {
+            signal: controller.signal,
+          },
+        );
 
         if (latestRequestKeyRef.current !== requestKey) {
           return;
@@ -127,7 +118,7 @@ function PatientsAndStudentsScreenContent() {
   ]);
 
   const updateQuery = (nextValues: Partial<typeof query>) => {
-    void setQuery(nextValues);
+    setQuery(nextValues);
   };
 
   const renderContent = () => {
@@ -176,46 +167,26 @@ function PatientsAndStudentsScreenContent() {
       <main className="container mx-auto p-4 md:p-6">
         <div className="mb-4 rounded-xl border-2 bg-white p-6 shadow-md">
           <SearchFilters
-            searchName={query.name}
-            setSearchName={(value) => {
-              updateQuery({
-                name: value || "",
-                page: 0,
-              });
-            }}
-            transtorno={query.disorder}
-            setTranstorno={(value) => {
-              updateQuery({
-                disorder: value || "",
-                page: 0,
-              });
-            }}
-            ano={query.year}
-            setAno={(value) => {
-              updateQuery({
-                year: value || "",
-                page: 0,
-              });
-            }}
-            cidade={query.city}
-            setCidade={(value) => {
-              updateQuery({
-                city: value || "",
-                page: 0,
-              });
-            }}
-            tipoAtendimento={query.treatmentType}
-            setTipoAtendimento={(value) => {
-              updateQuery({
-                treatmentType: value || "",
-                page: 0,
-              });
-            }}
-            transtornoOptions={transtornoOptions}
-            anoOptions={anoOptions}
-            cidadeOptions={cidadeOptions}
-            tipoAtendimentoOptions={tipoAtendimentoOptions}
-          />
+          searchName={query.name}
+          setSearchName={(value) => {
+            updateQuery({
+              name: value || "",
+              page: 0,
+            });
+          }}
+          serviceArea={query.treatmentType}
+          setServiceArea={(value) => updateQuery({ treatmentType: value || "", page: 0 })}
+          serviceAreaOptions={serviceAreaOptions}
+          disorder={query.disorder}
+          setDisorder={(value) => updateQuery({ disorder: value || "", page: 0 })}
+          disorderOptions={disorderOptions}
+          year={query.year}
+          setYear={(value) => updateQuery({ year: value || "", page: 0 })}
+          yearOptions={yearOptions}
+          city={query.city}
+          setCity={(value) => updateQuery({ city: value || "", page: 0 })}
+          cityOptions={cityOptions}
+        />
         </div>
 
         <section className="relative md:rounded-xl md:border-2 md:bg-white md:p-6 md:shadow-md">

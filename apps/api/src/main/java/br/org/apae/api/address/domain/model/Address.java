@@ -1,6 +1,11 @@
 package br.org.apae.api.address.domain.model;
 
-import jakarta.persistence.*;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
 import java.util.UUID;
 
 @Entity
@@ -88,5 +93,16 @@ public class Address {
 
     public String getComplement() {
         return complement;
+    }
+
+    public void update(String city, String cep, String state, String neighborhood, String street, String number,
+            String complement) {
+        this.city = city;
+        this.cep = cep;
+        this.state = state;
+        this.neighborhood = neighborhood;
+        this.street = street;
+        this.number = number;
+        this.complement = complement;
     }
 }

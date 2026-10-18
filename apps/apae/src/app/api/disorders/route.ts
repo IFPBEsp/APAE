@@ -1,5 +1,5 @@
 import { createBaseApi } from "@/lib/axios";
-import { createDisorderSchema } from "@/schemas/transtornosSchema";
+import { disorderFormSchema } from "@/domains/disorders/disorders.schema";
 import { NextResponse } from "next/server";
 import { AxiosError } from "axios";
 
@@ -7,7 +7,7 @@ export async function POST(request: Request) {
   try {
     const body = await request.json();
 
-    const validation = createDisorderSchema.safeParse(body);
+    const validation = disorderFormSchema.safeParse(body);
     if (!validation.success) {
       return new NextResponse(
         JSON.stringify({
@@ -20,7 +20,12 @@ export async function POST(request: Request) {
 
     const api = await createBaseApi();
 
-    const { data } = await api.post("/disorders", validation.data);
+    const payload = validation.data;
+    if (payload && payload.name && payload.name.length > 0) {
+      payload.name = payload.name.charAt(0).toUpperCase() + payload.name.slice(1);
+    }
+
+    const { data } = await api.post("/disorders", payload);
 
     return NextResponse.json(data, { status: 201 });
 

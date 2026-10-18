@@ -15,7 +15,7 @@ import java.util.List;
 
 @Target({ ElementType.FIELD, ElementType.PARAMETER })
 @Retention(RetentionPolicy.RUNTIME)
-@Constraint(validatedBy = NotEmptyFiles.Validator.class)
+@Constraint(validatedBy = { NotEmptyFiles.ListValidator.class, NotEmptyFiles.SingleFileValidator.class })
 @Documented
 public @interface NotEmptyFiles {
     String message() default "A lista de arquivos não pode estar vazia";
@@ -24,13 +24,20 @@ public @interface NotEmptyFiles {
 
     Class<? extends Payload>[] payload() default {};
 
-    class Validator implements ConstraintValidator<NotEmptyFiles, List<MultipartFile>> {
+    class ListValidator implements ConstraintValidator<NotEmptyFiles, List<MultipartFile>> {
         @Override
         public boolean isValid(List<MultipartFile> files, ConstraintValidatorContext context) {
             if (files == null || files.isEmpty()) {
                 return false;
             }
             return files.stream().anyMatch(file -> file != null && !file.isEmpty());
+        }
+    }
+
+    class SingleFileValidator implements ConstraintValidator<NotEmptyFiles, MultipartFile> {
+        @Override
+        public boolean isValid(MultipartFile file, ConstraintValidatorContext context) {
+            return file != null && !file.isEmpty();
         }
     }
 }

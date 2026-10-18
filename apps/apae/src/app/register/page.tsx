@@ -14,7 +14,8 @@ import React from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Button } from "@/components/ui/button";
 import { PasswordInput } from "@/components/forms/PasswordInputs";
-import { FormSignUp, signUpSchema } from "@/schemas/authSchema";
+import { FormSignUp, signUpSchema } from "@/domains/auth/authSchema";
+import { bffFetch } from "@/lib/bff-client";
 import { toast } from "react-toastify";
 import { useRouter } from "next/navigation";
 
@@ -23,11 +24,11 @@ function Page() {
   const form = useForm<FormSignUp>({
     resolver: zodResolver(signUpSchema),
     defaultValues: {
-      nomeCompleto: "",
+      fullName: "",
       email: "",
       cpf: "",
-      senha: "",
-      confirmarSenha: "",
+      password: "",
+      confirmPassword: "",
     },
     mode: "all",
   });
@@ -49,9 +50,8 @@ function Page() {
 
   const onSubmit = async (data: FormSignUp) => {
     try {
-      const res = await fetch("/apae-geral/api/auth/register", {
+      const res = await bffFetch("/apae-geral/api/auth/register", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
         body: JSON.stringify(data),
       });
       const responseData = await res.json();
@@ -85,7 +85,7 @@ function Page() {
                 
                 <FormField
                   control={form.control}
-                  name="nomeCompleto"
+                  name="fullName"
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel className="text-[#0D4F97] font-semibold">Nome Completo</FormLabel>
@@ -143,7 +143,7 @@ function Page() {
                 <div className="md:col-span-2 grid grid-cols-1 md:grid-cols-2 gap-8">
                   <FormField
                     control={form.control}
-                    name="senha"
+                    name="password"
                     render={({ field }) => (
                       <FormItem>
                         <FormLabel className="text-[#0D4F97] font-semibold">Senha</FormLabel>
@@ -161,7 +161,7 @@ function Page() {
 
                   <FormField
                     control={form.control}
-                    name="confirmarSenha"
+                    name="confirmPassword"
                     render={({ field }) => (
                       <FormItem>
                         <FormLabel className="text-[#0D4F97] font-semibold">Confirmar Senha</FormLabel>

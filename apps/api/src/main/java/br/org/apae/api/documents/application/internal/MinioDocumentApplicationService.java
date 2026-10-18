@@ -4,15 +4,19 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
+import br.org.apae.api.common.dto.patient.response.documents.DocumentWithUrlResponseDTO;
 import br.org.apae.api.documents.application.interfaces.DocumentApplicationService;
 import br.org.apae.api.documents.domain.builders.DocumentReferenceBuilder;
 import br.org.apae.api.documents.domain.mappers.DocumentMetadataMapper;
@@ -45,6 +49,7 @@ import io.minio.messages.Item;
 public class MinioDocumentApplicationService implements DocumentApplicationService {
     private final MinioClient client;
     private final MinioClient publicClient;
+    private static final Logger log = LoggerFactory.getLogger(MinioDocumentApplicationService.class);
 
     public MinioDocumentApplicationService(
             MinioClient client,
@@ -217,6 +222,32 @@ public class MinioDocumentApplicationService implements DocumentApplicationServi
                             .build());
         } catch (MinioException e) {
             throw translateMinioException(e);
+        }
+    }
+
+    @Override
+    public DocumentWithUrlResponseDTO generatePresignedUrl(DocumentDTO dto, Duration expiry) {
+        try {
+            GetPresignedDocumentUrlArgsDTO args = GetPresignedDocumentUrlArgsDTO.builder()
+                    .name(dto.name())
+                    .owner(dto.owner())
+                    .category(dto.category())
+                    .type(dto.type())
+                    .year(dto.year())
+                    .id(dto.id())
+                    .expiry((int) expiry.toSeconds(), java.util.concurrent.TimeUnit.SECONDS)
+                    .build();
+
+            String url = this.getPresignedDocumentUrl(args);
+
+            return new DocumentWithUrlResponseDTO(
+                    dto.id(), dto.name(), dto.category(),
+                    dto.type(), dto.owner(), dto.year(), url
+            );
+
+        } catch (Exception e) {
+            log.error("Falha ao gerar URL para documento: {} - {}", dto.name(), e.getMessage(), e);
+            return null;
         }
     }
 }

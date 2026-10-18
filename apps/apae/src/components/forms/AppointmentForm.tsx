@@ -1,14 +1,14 @@
 "use client";
 
-import { format, getDay, isBefore, isValid, startOfDay } from "date-fns";
+import { format, getDay, isValid, startOfDay } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { CalendarIcon } from "lucide-react";
 import React, { useEffect, useRef, useState } from "react";
 
 import {
   Appointment,
-  getPacientes,
-  getProfissionaisDaSaude,
+  getPatients,
+  getHealthProfessionals,
   saveAppointment,
   updateAppointment,
 } from "@/app/services/appointmentService";
@@ -30,6 +30,8 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { cn } from "@/lib/utils";
+import { getValidTimeSlots } from "@/lib/appointment-utils";
+import { bffFetchJson } from "@/lib/bff-client";
 
 interface Option {
   value: string;
@@ -110,8 +112,8 @@ export function AppointmentForm({ editAppointment }: AppointmentFormProps) {
       try {
         dataFetched.current = true;
         const [patients, professionals] = await Promise.all([
-          getPacientes(),
-          getProfissionaisDaSaude(),
+          getPatients(),
+          getHealthProfessionals(),
         ]);
 
         setListPatients(
@@ -133,8 +135,9 @@ export function AppointmentForm({ editAppointment }: AppointmentFormProps) {
     const loadProfessionalData = async () => {
       if (professional.value) {
         try {
-          const res = await fetch(`/apae-geral/api/professionals/${professional.value}`);
-          const data = await res.json();
+          const data = await bffFetchJson<{
+            availabilities?: { day: string; shift: string }[];
+          }>(`/apae-geral/api/professionals/${professional.value}`);
           setAvailabilities(data.availabilities || []);
         } catch {
           setAvailabilities([]);
@@ -165,11 +168,9 @@ export function AppointmentForm({ editAppointment }: AppointmentFormProps) {
       try {
         const formattedDate = format(date, "yyyy-MM-dd");
 
-        const res = await fetch(
+        const data = await bffFetchJson<string[]>(
           `/apae-geral/api/professionals/${professional.value}/available-times?date=${formattedDate}`,
         );
-
-        const data = await res.json();
 
         setAvailableTimeSlots(data || []);
       } catch {
@@ -245,27 +246,16 @@ export function AppointmentForm({ editAppointment }: AppointmentFormProps) {
         });
       }
       window.location.reload();
-    } catch (error: any) {
-      setSubmitError(error.message || "Erro inesperado ao salvar o agendamento.");
+    } catch (error: unknown) {
+      setSubmitError((error as Error).message || "Erro inesperado ao salvar o agendamento.");
     }
   };
 
-  const isToday = date && format(date, "yyyy-MM-dd") === format(new Date(), "yyyy-MM-dd");  
-  const validTimeSlots = availableTimeSlots.filter(slot => {
-    if (!isToday) return true;
-
-    if (editAppointment && editAppointment.hour.startsWith(slot)) return true;
-
-    const [slotHour, slotMinute] = slot.split(':').map(Number);
-    const now = new Date();
-    const currentHour = now.getHours();
-    const currentMinute = now.getMinutes();
-
-    if (slotHour > currentHour) return true;
-    if (slotHour === currentHour && slotMinute > currentMinute) return true;
-    
-    return false;
-  });
+  const validTimeSlots = getValidTimeSlots(
+    availableTimeSlots,
+    date,
+    editAppointment?.hour
+  );
 
   return (
     <Card className="w-full mx-auto border-none shadow-none">

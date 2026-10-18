@@ -1,6 +1,5 @@
 package br.org.apae.api.servicearea.application.mappers;
 
-import br.org.apae.api.common.dto.patient.response.disorder.DisorderResponseDTO;
 import br.org.apae.api.common.dto.servicearea.request.CreateServiceAreaDTO;
 import br.org.apae.api.common.dto.servicearea.request.UpdateServiceAreaDTO;
 import br.org.apae.api.common.dto.servicearea.response.ServiceAreaResponseDTO;

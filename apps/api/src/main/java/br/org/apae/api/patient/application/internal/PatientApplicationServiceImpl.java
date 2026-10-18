@@ -1,5 +1,6 @@
 package br.org.apae.api.patient.application.internal;
 
+import br.org.apae.api.appointment.application.interfaces.AppointmentApplicationService;
 import br.org.apae.api.appointment.domain.repository.AbsenceRepository;
 import br.org.apae.api.appointment.mapper.AbsenceMapper;
 import br.org.apae.api.common.dto.appointment.response.absence.AbsenceResponseDTO;
@@ -30,7 +31,11 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.*;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service
@@ -46,6 +51,7 @@ public class PatientApplicationServiceImpl implements PatientApplicationService 
     private final PatientDocumentsService documentService;
     private final AbsenceRepository absenceRepository;
     private final AbsenceMapper absenceMapper;
+    private final AppointmentApplicationService appointmentService;
 
     public PatientApplicationServiceImpl(PatientRepository patientRepository, PatientMapper patientMapper,
             PatientDomainService patientDomainService,
@@ -54,7 +60,8 @@ public class PatientApplicationServiceImpl implements PatientApplicationService 
             AnnualRegistryApplicationService annualRegistryService,
             PatientDocumentsService documentService,
             AbsenceRepository absenceRepository,
-                                         AbsenceMapper absenceMapper) {
+                                         AbsenceMapper absenceMapper,
+                                         AppointmentApplicationService appointmentService) {
         this.patientRepository = patientRepository;
         this.patientMapper = patientMapper;
         this.patientDomainService = patientDomainService;
@@ -65,6 +72,7 @@ public class PatientApplicationServiceImpl implements PatientApplicationService 
         this.documentService = documentService;
         this.absenceRepository = absenceRepository;
         this.absenceMapper = absenceMapper;
+        this.appointmentService = appointmentService;
     }
 
     @Override
@@ -160,22 +168,12 @@ public class PatientApplicationServiceImpl implements PatientApplicationService 
 
     @Override
     @Transactional
-    public void disablePatient(UUID id) {
-        Patient patient = patientDomainService.getByIdOrThrow(id);
-        patient.setDeleted(true);
-
-        patientRepository.save(patient);
-    }
-
-    @Override
-    @Transactional
     public void deletePatient(UUID id) {
         Patient patient = patientDomainService.getByIdOrThrow(id);
 
-        guardianService.deleteGuardian(patient.getId());
-        parentService.deleteParents(patient.getId());
-        annualRegistryService.deleteAllRegistriesByPatient(patient.getId());
+        appointmentService.deactivateAndRemoveFutureAppointments(patient.getId());
 
+        patient.setDeleted(true);
         patientRepository.save(patient);
     }
 
@@ -228,6 +226,12 @@ public class PatientApplicationServiceImpl implements PatientApplicationService 
                     absences
             );
         });
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<UUID> findAbsenceAlertPatientIds(Integer minAbsences) {
+        return patientRepository.findPatientIdsWithMinAbsences(minAbsences);
     }
 
     @Override

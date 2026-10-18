@@ -8,27 +8,11 @@ import {
   useState,
 } from "react";
 
-type Vaccine = Readonly<{
-    id: string;
-    name: string;
-    hasPatient: boolean;
-}>;
+import { bffFetchJson } from "@/lib/bff-client";
+import type { Vaccine, CreateVaccineParams, UpdateVaccineParams, DeleteVaccineParams } from "@/domains/vaccines/vaccines.types";
 
 type FetchVaccineParams = Readonly<{
     id: string;
-}>;
-
-type CreateVaccineParams = Readonly<{
-    name: string;
-}>;
-
-type UpdateVaccineParams = Readonly<{
-    id: string;
-    name: string;
-}>;
-
-type DeleteVaccineParams = Readonly<{
-  id: string;
 }>;
 
 type Feedback = Readonly<{
@@ -39,6 +23,7 @@ type Feedback = Readonly<{
 
 interface VaccinesContextData {
     loading: boolean;
+    fetchVaccines: () => Promise<void>;
     feedback: Feedback;
     vaccines: Vaccine[];
     fetchVaccine: (params: FetchVaccineParams) => Promise<Vaccine>;
@@ -108,13 +93,7 @@ function VaccinesProvider({
   const fetchVaccines = useCallback(async () => {
     return withFeedback(
       async () => {
-        const response = await fetch("/apae-geral/api/vaccines");
-
-        if (!response.ok) {
-          throw Error("Ocorreu um erro ao carregar as vacinas.");
-        }
-
-        const data = await response.json();
+        const data = await bffFetchJson<Vaccine[]>("/apae-geral/api/vaccines");
         setVaccines(data);
       },
       setLoading,
@@ -125,13 +104,7 @@ function VaccinesProvider({
   const fetchVaccine = useCallback(async (params: FetchVaccineParams) => {
     return withFeedback(
       async (currentParams: FetchVaccineParams) => {
-        const response = await fetch(`/apae-geral/api/vaccines/${currentParams.id}`);
-
-        if (!response.ok) {
-          throw Error("Ocorreu um erro ao carregar vacina.");
-        }
-
-        return response.json();
+        return bffFetchJson<Vaccine>(`/apae-geral/api/vaccines/${currentParams.id}`);
       },
       setLoading,
       setFeedback,
@@ -142,15 +115,10 @@ function VaccinesProvider({
     async (params: CreateVaccineParams) => {
       return withFeedback(
         async (currentParams: CreateVaccineParams): Promise<void> => {
-          const response = await fetch("/apae-geral/api/vaccines", {
+          await bffFetchJson("/apae-geral/api/vaccines", {
             method: "POST",
-            headers: { "Content-Type": "application/json" },
             body: JSON.stringify(currentParams),
           });
-
-          if (!response.ok) {
-            throw new Error("Ocorreu um erro ao criar vacina.");
-          }
 
           await fetchVaccines();
         },
@@ -166,15 +134,10 @@ function VaccinesProvider({
     async (params: UpdateVaccineParams) => {
       return withFeedback(
         async ({ id, ...data }: UpdateVaccineParams) => {
-          const response = await fetch(`/apae-geral/api/vaccines/${id}`, {
+          await bffFetchJson(`/apae-geral/api/vaccines/${id}`, {
             method: "PUT",
-            headers: { "Content-Type": "application/json" },
             body: JSON.stringify(data),
           });
-
-          if (!response.ok) {
-            throw new Error("Ocorreu um erro ao atualizar vacina.");
-          }
 
           await fetchVaccines();
         },
@@ -192,16 +155,9 @@ function VaccinesProvider({
     async (params: DeleteVaccineParams) => {
       return withFeedback(
         async (currentParams: DeleteVaccineParams) => {
-          const response = await fetch(`/apae-geral/api/vaccines/${currentParams.id}`, {
+          await bffFetchJson(`/apae-geral/api/vaccines/${currentParams.id}`, {
             method: "DELETE",
           });
-
-          if (!response.ok) {
-            const errorData = await response.json().catch(() => null);
-            throw new Error(
-              errorData?.message || "Ocorreu um erro ao excluir a vacina.",
-            );
-          }
 
           await fetchVaccines();
         },
@@ -225,6 +181,7 @@ function VaccinesProvider({
         loading,
         feedback,
         vaccines,
+        fetchVaccines,
         fetchVaccine,
         createVaccine,
         updateVaccine,

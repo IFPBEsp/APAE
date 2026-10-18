@@ -12,4 +12,5 @@ export interface TodayAppointment {
 	effectiveDateTime: Date;
 	ruleId: UUID,
 	hasAbsence: boolean;
+	isActive: boolean;
 }

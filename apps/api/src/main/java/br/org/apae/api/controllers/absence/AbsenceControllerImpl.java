@@ -8,8 +8,11 @@ import br.org.apae.api.common.dto.appointment.response.absence.JustifyAbsenceDTO
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
@@ -52,5 +55,11 @@ public class AbsenceControllerImpl implements AbsenceController {
     public ResponseEntity<AbsenceResponseDTO> justifyAbsence(UUID id, JustifyAbsenceDTO dto) {
         AbsenceResponseDTO response = service.justify(id, dto);
         return ResponseEntity.ok(response);
+    }
+
+    @ExceptionHandler(IllegalArgumentException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public void handleIllegalArgument(IllegalArgumentException ex) {
+        // Argumentos inválidos vindos do serviço (ex.: falta já registrada) resultam em 400.
     }
 }

@@ -1,6 +1,7 @@
 package br.org.apae.api.professional.application.exceptions;
 
 import br.org.apae.api.professional.domain.exceptions.EmailConflictException;
+import br.org.apae.api.professional.domain.exceptions.CpfConflictException;
 import br.org.apae.api.professional.domain.exceptions.IdentityDocumentConflictException;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
@@ -44,6 +45,17 @@ public class HealthProfessionalExceptionHandler {
   @ExceptionHandler(EmailConflictException.class)
   public ResponseEntity<ErrorResponse> handleEmailConflictException(
       EmailConflictException ex, HttpServletRequest request) {
+    ErrorResponse error = new ErrorResponse(
+        HttpStatus.CONFLICT.value(),
+        HttpStatus.CONFLICT.getReasonPhrase(),
+        ex.getMessage(),
+        request.getRequestURI());
+    return new ResponseEntity<>(error, HttpStatus.CONFLICT);
+  }
+
+  @ExceptionHandler(CpfConflictException.class)
+  public ResponseEntity<ErrorResponse> handleCpfConflictException(
+      CpfConflictException ex, HttpServletRequest request) {
     ErrorResponse error = new ErrorResponse(
         HttpStatus.CONFLICT.value(),
         HttpStatus.CONFLICT.getReasonPhrase(),

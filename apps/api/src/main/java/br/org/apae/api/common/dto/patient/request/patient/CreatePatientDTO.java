@@ -5,7 +5,7 @@ import java.util.List;
 import java.util.Set;
 
 import br.org.apae.api.common.dto.address.CreateAddressDTO;
-import br.org.apae.api.common.dto.patient.request.annual_registry.CreateAnnualRegistryDTO;
+import br.org.apae.api.common.dto.patient.request.annualregistry.CreateAnnualRegistryDTO;
 import br.org.apae.api.common.dto.patient.request.guardian.CreateGuardianDTO;
 import br.org.apae.api.common.dto.patient.request.parent.CreateParentDTO;
 import br.org.apae.api.common.dto.patient.request.vaccine.CreateVaccineDTO;

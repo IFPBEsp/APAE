@@ -20,16 +20,20 @@ import {
   TooltipTrigger,
 } from '@/components/ui/tooltip';
 
-import { getTodayAppointmentById } from '@/app/services/appointmentService';
+import {
+  getProfessionalAreaName,
+  getTodayAppointmentById,
+} from '@/app/services/appointmentService';
 import { TodayAppointment } from '@/types/appointment';
+import { useAbsenceAlerts } from '@/hooks/use-absence-alerts';
 
 export default function ViewTodayAppointment() {
   const { id } = useParams<{ id: string }>();
   const [appointment, setAppointment] = useState<TodayAppointment | null>(null);
   const [loading, setLoading] = useState(true);
   const initialized = useRef(false);
-  
-  const [alertPatientIds, setAlertPatientIds] = useState<Set<string>>(new Set());
+
+  const { alertPatientIds } = useAbsenceAlerts();
 
   useEffect(() => {
     if (!id) return;
@@ -40,19 +44,8 @@ export default function ViewTodayAppointment() {
         initialized.current = true;
         setLoading(true);
         
-        // 1. Busca o agendamento de hoje
         const data = await getTodayAppointmentById(id as string);
         setAppointment(data);
-
-        // 2. Busca pacientes com faltas via fetch direto
-        const response = await fetch('/apae-geral/api/patients/with-absences?minAbsences=3');
-        
-        if (response.ok) {
-          const result = await response.json();
-          const absencesList = result.content || [];
-          const idsSet = new Set<string>(absencesList.map((item: any) => item.patient.id));
-          setAlertPatientIds(idsSet);
-        }
 
       } catch (error) {
         console.error('[ViewTodayAppointment]', error);
@@ -126,7 +119,10 @@ export default function ViewTodayAppointment() {
 
         <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-6 text-sm text-[#0D4F97]">
             <div className="space-y-2">
-              <p><strong>Área de atendimento:</strong> {appointment.professional.healthSector || '—'}</p>
+              <p>
+                <strong>Área de atendimento:</strong>{' '}
+                {getProfessionalAreaName(appointment.professional) || '—'}
+              </p>
               <p>
                 <strong>Status:</strong>{' '}
                 <span

@@ -6,6 +6,7 @@ import br.org.apae.api.documents.interfaces.dto.DocumentDTO;
 import br.org.apae.api.documents.interfaces.dto.GetDocumentArgsDTO;
 import br.org.apae.api.documents.interfaces.dto.ListDocumentsArgsDTO;
 import br.org.apae.api.patient.application.interfaces.PatientDocumentsApplicationService;
+import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
@@ -17,6 +18,8 @@ import java.util.stream.StreamSupport;
 
 @Service
 public class PatientDocumentsApplicationServiceImpl implements PatientDocumentsApplicationService {
+
+    private static final Logger log = LoggerFactory.getLogger(PatientDocumentsApplicationServiceImpl.class);
 
     private final DocumentApplicationService documentApplicationService;
 
@@ -36,7 +39,7 @@ public class PatientDocumentsApplicationServiceImpl implements PatientDocumentsA
 
             return StreamSupport.stream(documents.spliterator(), false).toList();
         }catch (Exception e){
-            LoggerFactory.getLogger(PatientDocumentsApplicationServiceImpl.class).error(e.getMessage());
+            log.error("Falha ao buscar documentos do paciente {}", id, e);
         }
 
         return Collections.emptyList();
@@ -51,7 +54,7 @@ public class PatientDocumentsApplicationServiceImpl implements PatientDocumentsA
                             .owner(id.toString())
                             .build());
         }catch (Exception e){
-            LoggerFactory.getLogger(PatientDocumentsApplicationServiceImpl.class).error(e.getMessage());
+            log.error("Falha ao buscar documento {} do paciente {}", name, id, e);
         }return null;
     }
 
