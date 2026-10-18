@@ -8,7 +8,6 @@ import { FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/comp
 import { useFormContext } from "react-hook-form";
 import { MAX_FILE_SIZE_LABEL } from "@/lib/constants";
 import { ALLOWED_IMAGE_TYPES } from "@/schemas/shared/photo.schema";
-import { validatePhotoFile } from "@/hooks/use-photo-upload";
 
 export interface PhotoUploadProps {
   label?: string;
@@ -19,8 +18,7 @@ export interface PhotoUploadProps {
   profilePhotoUrl?: string | null;
   photoError: string | null;
   photoSuccess: boolean;
-  setSelectedPhoto: (file: File | null) => void;
-  clearPhoto: () => void;
+  selectPhoto: (file: File | null) => boolean;
 }
 
 export function PhotoUpload({
@@ -32,8 +30,7 @@ export function PhotoUpload({
   profilePhotoUrl,
   photoError,
   photoSuccess,
-  setSelectedPhoto,
-  clearPhoto,
+  selectPhoto,
 }: PhotoUploadProps) {
   const { control, setValue } = useFormContext();
 
@@ -52,17 +49,9 @@ export function PhotoUpload({
                 className="hidden"
                 accept={ALLOWED_IMAGE_TYPES.join(",")}
                 onChange={(e) => {
-                  const file = e.target.files?.[0];
-                  if (!file) { setValue(name, undefined); clearPhoto(); return; }
-                  const error = validatePhotoFile(file);
-                  if (error) {
-                    alert(error);
-                    clearPhoto();
-                    setValue(name, undefined);
-                    return;
-                  }
-                  setValue(name, file);
-                  setSelectedPhoto(file);
+                  const file = e.target.files?.[0] ?? null;
+                  const ok = selectPhoto(file);
+                  setValue(name, ok ? file : undefined);
                 }}
               />
               <button
@@ -84,7 +73,7 @@ export function PhotoUpload({
               {selectedPhoto && (
                 <div className="flex items-center gap-2">
                   <p className="text-xs text-gray-600">Selecionado: {selectedPhoto.name}</p>
-                  <Button type="button" variant="outline" size="sm" onClick={() => { clearPhoto(); setValue(name, undefined); }}>
+                  <Button type="button" variant="outline" size="sm" onClick={() => { selectPhoto(null); setValue(name, undefined); }}>
                     Remover
                   </Button>
                 </div>

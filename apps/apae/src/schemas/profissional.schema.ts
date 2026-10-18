@@ -1,6 +1,6 @@
 import * as z from "zod";
 import { MAX_FILE_SIZE_BYTES, MAX_FILE_SIZE_LABEL } from "@/lib/constants";
-import { optionalPhotoSchema } from "@/schemas/shared/photo.schema";
+import { optionalPhotoSchema, photoFileSchema } from "@/schemas/shared/photo.schema";
 
 const nameRegex = /^[A-Za-zÀ-ÖØ-öø-ÿ ]{3,100}$/;
 const phoneRegex = /^\(\d{2}\) \d{5}-\d{4}$/;
@@ -85,6 +85,7 @@ const baseSchema = z.object({
 });
 
 export const registerSchema = baseSchema.extend({
+  photo: photoFileSchema,
   volunteerAgreement: fileSchema,
   curriculum: fileSchema,
   attachmentAny: fileSchema.optional(),

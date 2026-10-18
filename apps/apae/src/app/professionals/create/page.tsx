@@ -53,11 +53,10 @@ export default function ProfessionalRegister(): JSX.Element {
   const {
     fileInputRef,
     selectedPhoto,
-    setSelectedPhoto,
+    selectPhoto,
     photoPreviewUrl,
     photoError,
     photoSuccess,
-    clearPhoto,
   } = usePhotoUpload();
 
   const onSubmit: SubmitHandler<RegisterProfessionalFormValues> = async (values) => {
@@ -92,8 +91,7 @@ export default function ProfessionalRegister(): JSX.Element {
             photoPreviewUrl={photoPreviewUrl}
             photoError={photoError}
             photoSuccess={photoSuccess}
-            setSelectedPhoto={setSelectedPhoto}
-            clearPhoto={clearPhoto}
+            selectPhoto={selectPhoto}
           />
 
           <FormField

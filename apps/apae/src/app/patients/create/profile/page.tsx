@@ -41,10 +41,10 @@ export default function MembersRegisterProfilePage() {
     fileInputRef,
     selectedPhoto,
     setSelectedPhoto,
+    selectPhoto,
     photoPreviewUrl,
     photoError,
     photoSuccess,
-    clearPhoto,
     uploadPhoto,
   } = usePhotoUpload({ buildUrl: (patientId) => `/apae-geral/api/patients/${patientId}/photo`, method: "PUT", fieldName: "photo" });
   const router = useRouter();
@@ -87,12 +87,6 @@ export default function MembersRegisterProfilePage() {
       form.reset(profile);
     }
   }, [profile, form]);
-
-  useEffect(() => {
-    if (photoError) {
-      toast.error(photoError);
-    }
-  }, [photoError]);
 
   // Fetches the patient's current photo when entering edit mode
   useEffect(() => {
@@ -283,8 +277,7 @@ export default function MembersRegisterProfilePage() {
             profilePhotoUrl={typeof profile.photo === 'string' ? profile.photo : null}
             photoError={photoError}
             photoSuccess={photoSuccess}
-            setSelectedPhoto={setSelectedPhoto}
-            clearPhoto={clearPhoto}
+            selectPhoto={selectPhoto}
           />
 
           <FormField

@@ -6,14 +6,7 @@ import { useForm, type SubmitHandler } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 
 import { Button } from "@/components/ui/button";
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form";
+import { Form } from "@/components/ui/form";
 import { useGetByIdProfessional } from "@/hooks/profissional/use-get-by-id-profissional";
 import { useUpdateProfessional } from "@/hooks/profissional/use-update-profissional";
 import { useUpdateProfessionalDocuments } from "@/hooks/profissional/use-update-professional-documents";
@@ -37,11 +30,10 @@ export default function ProfessionalUpdate(): JSX.Element {
   const {
     fileInputRef,
     selectedPhoto,
-    setSelectedPhoto,
+    selectPhoto,
     photoPreviewUrl,
     photoError,
     photoSuccess,
-    clearPhoto,
     uploadPhoto,
   } = usePhotoUpload({ buildUrl: (id) => `/apae-geral/api/professionals/${id}/photo`, method: "PATCH" });
   const {
@@ -132,8 +124,7 @@ export default function ProfessionalUpdate(): JSX.Element {
             profilePhotoUrl={groupedDocs.photo?.url || professional?.profilePhotoUrl || professional?.profilePhoto || undefined}
             photoError={photoError}
             photoSuccess={photoSuccess}
-            setSelectedPhoto={setSelectedPhoto}
-            clearPhoto={clearPhoto}
+            selectPhoto={selectPhoto}
           />
 
           <ProfessionalDocuments

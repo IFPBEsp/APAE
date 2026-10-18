@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState, useCallback } from "react";
 import { photoFileSchema } from "@/schemas/shared/photo.schema";
+import { bffFetch } from "@/lib/bff-client";
 
 export function validatePhotoFile(file: File): string | null {
   const result = photoFileSchema.safeParse(file);
@@ -26,20 +27,20 @@ export function usePhotoUpload(options?: { buildUrl: (id: string) => string; met
     return () => URL.revokeObjectURL(url);
   }, [selectedPhoto]);
 
-  function clearPhoto() {
+  const clearPhoto = useCallback(() => {
     setSelectedPhoto(null);
     if (fileInputRef.current) fileInputRef.current.value = "";
-  }
+  }, []);
 
-  function selectPhoto(file: File): string | null {
+  const selectPhoto = useCallback((file: File | null): boolean => {
+    setPhotoError(null);
+    setPhotoSuccess(false);
+    if (!file) { clearPhoto(); return false; }
     const error = validatePhotoFile(file);
-    if (error) {
-      clearPhoto();
-      return error;
-    }
+    if (error) { setPhotoError(error); clearPhoto(); return false; }
     setSelectedPhoto(file);
-    return null;
-  }
+    return true;
+  }, [clearPhoto]);
 
   const uploadPhoto = useCallback(async (id: string): Promise<boolean> => {
     if (!selectedPhotoRef.current || !optionsRef.current) return true;
@@ -48,7 +49,7 @@ export function usePhotoUpload(options?: { buildUrl: (id: string) => string; met
     try {
       const photoData = new FormData();
       photoData.append(optionsRef.current.fieldName ?? "file", selectedPhotoRef.current);
-      const response = await fetch(optionsRef.current.buildUrl(id), {
+      const response = await bffFetch(optionsRef.current.buildUrl(id), {
         method: optionsRef.current.method,
         body: photoData,
       });
