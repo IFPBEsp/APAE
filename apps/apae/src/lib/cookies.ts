@@ -31,16 +31,34 @@ export async function removeSessionCookie(): Promise<void> {
 
 export async function setSessionCookie(payload: {
   accessToken: string;
-}): Promise<void> {
+}, expiresAtSec?: number): Promise<void> {
   try {
     const cookieStore = await cookies();
 
-    cookieStore.set("session", JSON.stringify(payload), {
+    const options: {
+      httpOnly: boolean;
+      secure: boolean;
+      sameSite: "lax";
+      path: string;
+      maxAge?: number;
+      expires?: Date;
+    } = {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
       sameSite: "lax",
       path: "/",
-    });
+    };
+
+    if (expiresAtSec) {
+      const now = Math.floor(Date.now() / 1000);
+      const maxAge = expiresAtSec - now;
+      if (maxAge > 0) {
+        options.maxAge = maxAge;
+        options.expires = new Date(expiresAtSec * 1000);
+      }
+    }
+
+    cookieStore.set("session", JSON.stringify(payload), options);
   } catch (error) {
     console.error("Erro ao definir cookie de sessão:", error);
   }

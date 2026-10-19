@@ -32,13 +32,22 @@ export async function GET(
 
     if (!res.ok) {
         if (res.status === 404) return NextResponse.json([], { status: 200 });
-        return NextResponse.json([], { status: res.status });
+        
+        const errorData = await res.json().catch(() => ({ message: "Erro ao buscar anos" }));
+        return NextResponse.json(
+          { message: errorData.message || "Erro ao buscar anos" },
+          { status: res.status }
+        );
     }
 
     const data = await res.json();
     return NextResponse.json(data, { status: 200 });
 
-  } catch {
-    return NextResponse.json([], { status: 500 });
+  } catch (error) {
+    console.error("Error proxying to backend:", error);
+    return NextResponse.json(
+      { message: "Erro interno do servidor" },
+      { status: 500 }
+    );
   }
 }

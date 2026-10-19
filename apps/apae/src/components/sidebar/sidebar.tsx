@@ -11,7 +11,7 @@ import {
 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
-import { usePathname, useRouter } from "next/navigation";
+import { usePathname } from "next/navigation";
 
 import {
   Sidebar,
@@ -25,9 +25,9 @@ import {
   SidebarMenuItem,
   useSidebar,
 } from "@/components/ui/sidebar";
-import { endSession } from "@/domains/auth/session-id";
+import { endSession as endDraftSession } from "@/domains/auth/session-id";
 import { clearAllPatientDrafts } from "@/domains/patients/utils/draft-storage";
-import { removeSessionCookie } from "@/lib/cookies";
+import { endSession } from "@/lib/session";
 import { cn } from "@/lib/utils";
 import {
   AlertIcon,
@@ -52,14 +52,12 @@ export function AppSidebar() {
   const { setOpen, isMobile, setOpenMobile } = useSidebar();
 
   const pathname = usePathname();
-  const router = useRouter();
 
   const handleLogout = async () => {
     clearAllPatientDrafts();
-    endSession();
+    endDraftSession();
 
-    await removeSessionCookie();
-    router.replace("/auth/login");
+    await endSession();
   };
 
   return (

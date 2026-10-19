@@ -1,7 +1,8 @@
+"use client";
+
 import { getAllProfessionals } from "@/services/profissional-service";
 import { Professional } from "@/types/profissional";
 import { useEffect, useState } from "react";
-import axios from "axios";
 
 interface PaginatedResponse<T> {
   content: T[];
@@ -22,16 +23,11 @@ export function useFetchProfessionals(active: boolean) {
 
         console.log("[useFetchProfessionals] disparou fetch com ativo =", active);
         
-        const response = await getAllProfessionals(active);
+        const data = await getAllProfessionals<PaginatedResponse<Professional>>(active);
 
-        const data: PaginatedResponse<Professional> = response.data;
         setProfessionals(data.content);
       } catch (err) {
-        if (axios.isAxiosError(err)) {
-          setError(err.response?.data?.message || err.message);
-        } else {
-          setError(err instanceof Error ? err.message : "Erro desconhecido");
-        }
+        setError(err instanceof Error ? err.message : "Erro desconhecido");
       } finally {
         setLoading(false);
       }

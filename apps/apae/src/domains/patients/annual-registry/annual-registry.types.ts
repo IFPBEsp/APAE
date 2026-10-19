@@ -13,7 +13,7 @@ export interface DisorderItem {
   value?: string;
 }
 
-export interface ServiceAreaItem {
+export interface ServiceTypeItem {
   id?: string | number;
   area?: string;
   name?: string;
@@ -31,9 +31,7 @@ export interface AnnualRegistry {
   medicamentos?: string;
   medication?: string;
   disorders?: DisorderItem[];
-  serviceAreas?: ServiceAreaItem[];
-  serviceArea?: ServiceAreaItem[];
-  serviceTypes?: ServiceAreaItem[];
+  serviceAreas?: ServiceTypeItem[];
 }
 
 export interface FullPatientData {

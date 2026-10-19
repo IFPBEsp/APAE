@@ -26,6 +26,7 @@ interface AppointmentsTableProps {
   alertPatientIds: Set<string>;
   selectedDate: Date;
   setTodayAppointments: React.Dispatch<React.SetStateAction<TodayAppointment[]>>;
+  refreshAlerts: () => Promise<void>;
 }
 
 export function AppointmentsTable({
@@ -33,6 +34,7 @@ export function AppointmentsTable({
   alertPatientIds,
   selectedDate,
   setTodayAppointments,
+  refreshAlerts,
 }: AppointmentsTableProps) {
   const handleAbsenceSuccess = (appointmentId: string) => {
     setTodayAppointments((prev) =>
@@ -40,6 +42,7 @@ export function AppointmentsTable({
         a.id === appointmentId ? { ...a, hasAbsence: true } : a
       )
     );
+    void refreshAlerts();
   };
 
   return (

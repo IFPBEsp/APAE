@@ -30,6 +30,8 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import br.org.apae.api.auth.application.internal.UserService;
 import br.org.apae.api.auth.infrastructure.security.JwtProvider;
+import br.org.apae.api.auth.infrastructure.security.RestAccessDeniedHandler;
+import br.org.apae.api.auth.infrastructure.security.RestAuthenticationEntryPoint;
 import br.org.apae.api.auth.infrastructure.security.SecurityConfiguration;
 import br.org.apae.api.common.dto.professional.request.UpdateHealthProfessionalDTO;
 import br.org.apae.api.common.dto.professional.request.CreateHealthProfessionalDTO;
@@ -69,10 +71,16 @@ class HealthProfessionalControllerTest {
 
  @MockitoBean
  private JwtProvider jwtProvider;
-
+ 
  @MockitoBean
  private UserService userService;
-
+ 
+ @MockitoBean
+ private RestAuthenticationEntryPoint restAuthenticationEntryPoint;
+ 
+ @MockitoBean
+ private RestAccessDeniedHandler restAccessDeniedHandler;
+ 
  @MockitoBean
  private DocumentApplicationService documentApplicationService;
 
