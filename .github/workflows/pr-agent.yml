@@ -16,10 +16,6 @@ jobs:
   pr-agent:
     uses: IFPBEsp/APAE-INFRA/.github/workflows/pr-agent-reusable.yml@7dde1b13757bfa3ac35df5518e3e9b2e512d139d
     with:
-      model: "gemini/gemini-3.6-flash"
-      response-language: "pt-BR"
-      num-code-suggestions: 3
-      ignore-globs: '["*.lock", "pnpm-lock.yaml", "package-lock.json"]'
 
       extra-instructions: >
         Monorepo com backend Java 21 e Spring Boot 3.5 em apps/api.
