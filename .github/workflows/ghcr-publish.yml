@@ -13,7 +13,7 @@ permissions:
 jobs:
   publish-backend:
     name: Build & publish backend
-    uses: IFPBEsp/APAE-INFRA/.github/workflows/docker-build-publish-image.yml@dev
+    uses: IFPBEsp/APAE-INFRA/.github/workflows/docker-build-publish-image.yml@44-ci-correcao-workflow-reutilizavel
     with:
       context: ./apps/api
       dockerfile: ./apps/api/Dockerfile
@@ -23,7 +23,7 @@ jobs:
 
   publish-frontend:
     name: Build & publish frontend
-    uses: IFPBEsp/APAE-INFRA/.github/workflows/docker-build-publish-image.yml@dev
+    uses: IFPBEsp/APAE-INFRA/.github/workflows/docker-build-publish-image.yml@44-ci-correcao-workflow-reutilizavel
     with:
       context: ./apps/apae
       dockerfile: ./apps/apae/Dockerfile
