@@ -1,4 +1,4 @@
 export interface ServiceType {
-  id: string;
+  id: number;
   area: string;
 }

@@ -2,6 +2,8 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import type { PaginationInfo, PatientWithAbsences } from "@/domains/absences/types/absences.types";
 import { DashboardOverview } from "@/domains/dashboard/dashboard.types";
 import { justifyAbsence, uploadJustificationDocument } from "@/domains/absences/absences.api";
+import { bffFetchJson } from "@/lib/bff-client";
+import { Page } from "@/types/pagination";
 
 export function useAbsencePage() {
   const [searchName, setSearchName] = useState("");
@@ -34,15 +36,10 @@ export function useAbsencePage() {
         name: name.trim(),
       });
 
-      const [patientsRes, statsRes] = await Promise.all([
-        fetch(`/apae-geral/api/patients/with-absences?${queryParams}`),
-        fetch("/apae-geral/api/dashboard/overview?minAbsences=3"),
+      const [patientsData, statsData] = await Promise.all([
+        bffFetchJson<Page<PatientWithAbsences>>(`/apae-geral/api/patients/with-absences?${queryParams}`),
+        bffFetchJson<DashboardOverview>("/apae-geral/api/dashboard/overview?minAbsences=3"),
       ]);
-
-      if (!patientsRes.ok || !statsRes.ok) throw new Error("Erro ao buscar dados");
-
-      const patientsData = await patientsRes.json();
-      const statsData: DashboardOverview = await statsRes.json();
 
       setPatientsWithAbsences(patientsData.content);
       setStatistics({
@@ -71,11 +68,9 @@ export function useAbsencePage() {
 
   const handleDownload = async (patientId: string, documentName: string) => {
     try {
-      const res = await fetch(
+      const data = await bffFetchJson<{ url: string }>(
         `/apae-geral/api/patients/${patientId}/documents/download?name=${encodeURIComponent(documentName)}`,
       );
-      if (!res.ok) throw new Error("Erro ao buscar URL");
-      const data = await res.json();
       window.open(data.url, "_blank");
     } catch (error) {
       console.error("Erro ao baixar documento:", error);

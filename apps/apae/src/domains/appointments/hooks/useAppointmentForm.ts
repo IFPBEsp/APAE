@@ -8,6 +8,9 @@ import {
 } from "../appointments.api";
 import type { Appointment } from '@/domains/appointments/types/appointments.types';
 import { formatTimeForBackend, parseTimeFromBackend } from "../shared/formatters";
+import { getValidTimeSlots } from "@/lib/appointment-utils";
+import { bffFetchJson } from "@/lib/bff-client";
+import { string } from "zod";
 
 interface Option { value: string; label: string; }
 
@@ -69,8 +72,9 @@ export function useAppointmentForm(editAppointment?: Appointment) {
     const loadProfessionalData = async () => {
       if (professional.value) {
         try {
-          const res = await fetch(`/apae-geral/api/professionals/${professional.value}`);
-          const data = await res.json();
+          const data = await bffFetchJson<{
+            availabilities?: { day : string; shift: string }[];
+          }>(`/apae-geral/api/professionals/${professional.value}`);
           setAvailabilities(data.availabilities || []);
         } catch { setAvailabilities([]); }
       } else { setAvailabilities([]); }
@@ -88,8 +92,9 @@ export function useAppointmentForm(editAppointment?: Appointment) {
       if (!date || !professional.value) return;
       try {
         const formattedDate = format(date, "yyyy-MM-dd");
-        const res = await fetch(`/apae-geral/api/professionals/${professional.value}/available-times?date=${formattedDate}`);
-        const data = await res.json();
+        const data = await bffFetchJson<string[]>(
+          `/apae-geral/api/professionals/${professional.value}/available-times?date=${formattedDate}`,
+        );
         setAvailableTimeSlots(data || []);
       } catch { setAvailableTimeSlots([]); }
     };
@@ -111,16 +116,11 @@ export function useAppointmentForm(editAppointment?: Appointment) {
     return isPast || !professionalWorksThisDay;
   };
 
-  const isToday = date && format(date, "yyyy-MM-dd") === format(new Date(), "yyyy-MM-dd");
-  const validTimeSlots = availableTimeSlots.filter((slot) => {
-    if (!isToday) return true;
-    if (editAppointment && editAppointment.hour.startsWith(slot)) return true;
-    const [slotHour, slotMinute] = slot.split(":").map(Number);
-    const now = new Date();
-    if (slotHour > now.getHours()) return true;
-    if (slotHour === now.getHours() && slotMinute > now.getMinutes()) return true;
-    return false;
-  });
+  const validTimeSlots = getValidTimeSlots(
+    availableTimeSlots,
+    date,
+    editAppointment?.hour,
+  );
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();

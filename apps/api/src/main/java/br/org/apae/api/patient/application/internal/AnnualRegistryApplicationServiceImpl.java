@@ -173,14 +173,4 @@ public class AnnualRegistryApplicationServiceImpl implements AnnualRegistryAppli
 
         annualRegistryRepository.delete(registry);
     }
-
-    @Override
-    @Transactional
-    public void deleteAllRegistriesByPatient(UUID patientId) {
-        List<AnnualRegistry> registries = annualRegistryRepository.findAllByPatientId(patientId);
-        if (registries.isEmpty()) {
-            return;
-        }
-        annualRegistryRepository.deleteAll(registries);
-    }
 }

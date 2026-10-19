@@ -23,8 +23,8 @@ export function useGetByIdProfessional() {
     setLoading(true);
     setError(null);
 
-    getProfessionalById(id)
-      .then((data: Professional) => {
+    getProfessionalById<Professional>(id)
+      .then((data) => {
         setProfessional(data);
       })
       .catch((err) => {

@@ -48,7 +48,7 @@ export function RegisterAbsenceButton({
             Confirme o registro da falta para o agendamento.
           </DialogDescription>
         </DialogHeader>
-        <AbsenceForm generatedAppointmentId={generatedAppointmentId} absenceDate={absenceDate} onSuccess={onSuccess} patientId={patientId} />
+        <AbsenceForm generatedAppointmentId={generatedAppointmentId} absenceDate={absenceDate} patientId={patientId} onSuccess={() => { setOpen(false); onSuccess?.(); }} />
       </DialogContent>
     </Dialog>
   );

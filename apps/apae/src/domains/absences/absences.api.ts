@@ -1,22 +1,15 @@
 import type { CreateAbsenceDTO, AbsenceResponseDTO } from './types/absences.types';
 import type { DocumentWithOutUrl } from '@/types/document';
 import { ABSENCE_DOCUMENT_CATEGORY, ABSENCE_DOCUMENT_TYPE } from './absences.constants';
+import { bffFetch, bffFetchJson } from '@/lib/bff-client';
 
 const API_PATH = '/apae-geral/api/absences';
 
 export async function registerAbsence(dto: CreateAbsenceDTO): Promise<AbsenceResponseDTO> {
-  const response = await fetch(API_PATH, {
+  return bffFetchJson<AbsenceResponseDTO>(API_PATH, {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(dto),
   });
-
-  if (!response.ok) {
-    const error = await response.text();
-    throw new Error(`HTTP ${response.status}: ${error || response.statusText}`);
-  }
-
-  return response.json();
 }
 
 export async function justifyAbsence(
@@ -24,18 +17,10 @@ export async function justifyAbsence(
   justification: string,
   justificationDocumentId?: string | null,
 ): Promise<AbsenceResponseDTO> {
-  const response = await fetch(`${API_PATH}/${absenceId}/justify`, {
+  return bffFetchJson<AbsenceResponseDTO>(`${API_PATH}/${absenceId}/justify`, {
     method: 'PATCH',
-    headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ justification, justificationDocumentId }),
   });
-
-  if (!response.ok) {
-    const error = await response.text();
-    throw new Error(`HTTP ${response.status}: ${error || response.statusText}`);
-  }
-
-  return response.json();
 }
 
 export async function uploadJustificationDocument(
@@ -48,7 +33,7 @@ export async function uploadJustificationDocument(
   formData.append('type', ABSENCE_DOCUMENT_TYPE);
   formData.append('year', String(new Date().getFullYear()));
 
-  const response = await fetch(`/apae-geral/api/patients/${patientId}/documents`, {
+  const response = await bffFetch(`/apae-geral/api/patients/${patientId}/documents`, {
     method: 'POST',
     body: formData,
   });

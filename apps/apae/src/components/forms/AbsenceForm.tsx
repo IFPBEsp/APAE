@@ -81,7 +81,7 @@ export function AbsenceForm({
         fileInputRef.current.value = "";
       }
 
-      window.location.reload();
+      onSuccess?.();
 
     } catch (error: unknown) {
       const errorMessage =

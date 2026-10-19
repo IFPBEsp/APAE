@@ -1,10 +1,14 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useCallback, useState, useEffect } from "react";
+import { bffFetchJson } from "@/lib/bff-client";
+
+const MIN_ABSENCES_FOR_ALERT = 3;
 
 interface AbsenceAlertsResult {
   alertPatientIds: Set<string>;
   isLoading: boolean;
+  refreshAlerts: () => Promise<void>;
 }
 
 export function useAbsenceAlerts(): AbsenceAlertsResult {
@@ -13,34 +17,25 @@ export function useAbsenceAlerts(): AbsenceAlertsResult {
   );
   const [isLoading, setIsLoading] = useState(true);
 
-  useEffect(() => {
-    const fetchAbsences = async () => {
-      try {
-        setIsLoading(true);
-        const response = await fetch(
-          "/apae-geral/api/patients/with-absences?minAbsences=3"
-        );
+  const fetchAbsences = useCallback(async () => {
+    try {
+      setIsLoading(true);
+      const ids = await bffFetchJson<string[]>(
+        `/apae-geral/api/patients/absence-alert-ids?minAbsences=${MIN_ABSENCES_FOR_ALERT}`
+      );
 
-        if (!response.ok) {
-          throw new Error("Erro ao buscar pacientes com faltas");
-        }
-
-        const data = await response.json();
-        const absencesList = data.content || [];
-        const idsSet = new Set<string>(
-          absencesList.map((item: { patient: { id: string } }) => item.patient.id)
-        );
-
-        setAlertPatientIds(idsSet);
-      } catch (error) {
-        console.error("[useAbsenceAlerts] Erro ao buscar ausências:", error);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    fetchAbsences();
+      setAlertPatientIds(new Set(ids));
+    } catch (error) {
+      console.error("[useAbsenceAlerts] Erro ao buscar ausências:", error);
+    } finally {
+      setIsLoading(false);
+    }
   }, []);
 
-  return { alertPatientIds, isLoading };
+  useEffect(() => {
+    void fetchAbsences();
+  }, [fetchAbsences]);
+
+  return { alertPatientIds, isLoading, refreshAlerts: fetchAbsences };
 }
+
