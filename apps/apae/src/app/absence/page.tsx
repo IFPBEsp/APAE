@@ -6,6 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Calendar, SearchIcon, Users } from "lucide-react";
 import React, { useState, useRef } from "react";
 import AbsenceService from "@/domains/absence/absence.service";
+import { bffFetchJson } from "@/lib/bff-client";
 import { formatDateShortPTBR } from "@/lib/utils";
 import { useAbsencesList } from "@/domains/absence/list/use-absences-list";
 
@@ -54,11 +55,9 @@ export default function AbsenceDetails() {
 
   const handleDownload = async (patientId: string, documentName: string) => {
     try {
-      const res = await fetch(
+      const data = await bffFetchJson<{ url: string }>(
         `/apae-geral/api/patients/${patientId}/documents/download?name=${encodeURIComponent(documentName)}`,
       );
-      if (!res.ok) throw new Error("Erro ao buscar URL");
-      const data = await res.json();
       window.open(data.url, "_blank");
     } catch (error) {
       console.error("Erro ao baixar documento:", error);

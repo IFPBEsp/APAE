@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { toast } from "react-toastify";
+import { bffFetchJson } from "@/lib/bff-client";
 
 interface PatientFilterOptions {
   disorderOptions: string[];
@@ -25,33 +26,18 @@ export function usePatientFilters(): PatientFilterOptions {
       try {
         setIsLoading(true);
         setError(null);
-        const disordersPromise = fetch('/apae-geral/api/patients/filtros/transtornos');
-        const yearsPromise = fetch('/apae-geral/api/patients/filtros/anos');
-        const citiesPromise = fetch('/apae-geral/api/patients/filtros/cidades');
-        const serviceAreaPromise = fetch('/apae-geral/api/patients/filtros/tipos-atendimento');
-
         const [
-          disordersResponse,
-          yearsResponse,
-          citiesResponse,
-          serviceAreaResponse
+          disordersData,
+          yearsData,
+          citiesData,
+          serviceAreaData,
         ] = await Promise.all([
-          disordersPromise,
-          yearsPromise,
-          citiesPromise,
-          serviceAreaPromise
+          bffFetchJson<string[]>("/apae-geral/api/patients/filtros/transtornos"),
+          bffFetchJson<string[]>("/apae-geral/api/patients/filtros/anos"),
+          bffFetchJson<string[]>("/apae-geral/api/patients/filtros/cidades"),
+          bffFetchJson<string[]>("/apae-geral/api/patients/filtros/tipos-atendimento"),
         ]);
 
-        if (!disordersResponse.ok) throw new Error('Falha ao buscar transtornos');
-        if (!yearsResponse.ok) throw new Error('Falha ao buscar anos');
-        if (!citiesResponse.ok) throw new Error('Falha ao buscar cidades');
-        if (!serviceAreaResponse.ok) throw new Error('Falha ao buscar tipos de atendimentos');
-
-        const disordersData = await disordersResponse.json();
-        const yearsData = await yearsResponse.json();
-        const citiesData = await citiesResponse.json();
-        const serviceAreaData = await serviceAreaResponse.json();
-        
         setDisorderOptions(disordersData);
         setYearOptions(yearsData);
         setCityOptions(citiesData);
