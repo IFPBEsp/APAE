@@ -51,7 +51,11 @@ export function PhotoUpload({
                 onChange={(e) => {
                   const file = e.target.files?.[0] ?? null;
                   const ok = selectPhoto(file);
-                  setValue(name, ok ? file : undefined);
+                  if (ok) {
+                    setValue(name, file, { shouldValidate: true, shouldDirty: true });
+                  } else {
+                    setValue(name, undefined);
+                  }
                 }}
               />
               <button
