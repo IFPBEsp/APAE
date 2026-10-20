@@ -96,11 +96,7 @@ export default function MembersRegisterAddressPage() {
       }
       setAddressData(dataToSave);
 
-      if (isEditing) {
-        setStep(MembersRegisterStep.PROFILE);
-      } else {
-        setStep(MembersRegisterStep.ADDITIONALS);
-      }
+      setStep(MembersRegisterStep.ADDITIONALS);
     } catch (error: unknown) {
       const err = error as { response?: { data?: Record<string, string[]> } };
       if (err.response?.data) {
