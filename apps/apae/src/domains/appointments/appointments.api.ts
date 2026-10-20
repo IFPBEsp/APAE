@@ -6,7 +6,6 @@ import type {
   RescheduleGeneratedAppointmentDTO,
   CancelGeneratedAppointmentDTO,
   GeneratedAppointmentResponseDTO,
-  Absence,
   Patient,
   Professional,
 } from './types/appointments.types';
@@ -164,29 +163,6 @@ export async function listByPatient(
     `/apae-geral/api/appointments/patient/${patientId}?${query}`
   );
   return ensurePageFormat<GeneratedAppointmentResponseDTO>(res);
-}
-
-export async function registerAbsence(
-  generatedAppointmentId: UUID,
-  justification: string,
-): Promise<Absence> {
-  const dateObj = new Date();
-  const year = dateObj.getFullYear();
-  const month = String(dateObj.getMonth() + 1).padStart(2, "0");
-  const day = String(dateObj.getDate()).padStart(2, "0");
-  const localDateString = `${year}-${month}-${day}`;
-
-  const body = {
-    generatedAppointmentId,
-    justification,
-    date: localDateString,
-    notified: false,
-  };
-
-  return bffFetchJson<Absence>(`/apae-geral/api/absences`, {
-    method: "POST",
-    body: JSON.stringify(body),
-  });
 }
 
 export async function getPatients(): Promise<Patient[]> {

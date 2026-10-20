@@ -71,7 +71,7 @@ export function useAbsencePage() {
       const data = await bffFetchJson<{ url: string }>(
         `/apae-geral/api/patients/${patientId}/documents/download?name=${encodeURIComponent(documentName)}`,
       );
-      window.open(data.url, "_blank");
+      window.open(data.url, "_blank", "noopener,noreferrer");
     } catch (error) {
       console.error("Erro ao baixar documento:", error);
     }

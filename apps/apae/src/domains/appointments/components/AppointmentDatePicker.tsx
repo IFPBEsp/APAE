@@ -55,6 +55,7 @@ export function AppointmentDatePicker({
           <Calendar
             mode="single"
             selected={date}
+            defaultMonth={date}
             onSelect={(d) => {
               onDateChange(d);
               onOpenChange(false);

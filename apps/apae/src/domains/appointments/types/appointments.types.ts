@@ -80,14 +80,6 @@ export interface GeneratedAppointmentResponseDTO {
   effectiveDateTime: string;
 }
 
-export interface Absence {
-  id: UUID;
-  generatedAppointment?: GeneratedAppointment;
-  absenceDate: string;
-  justification: string;
-  notified: boolean;
-}
-
 export interface UpdateAppointmentDTO {
   professionalId?: string;
   annualRegistrationId?: string;

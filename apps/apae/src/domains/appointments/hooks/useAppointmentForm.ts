@@ -10,7 +10,6 @@ import type { Appointment } from '@/domains/appointments/types/appointments.type
 import { formatTimeForBackend, parseTimeFromBackend } from "../shared/formatters";
 import { getValidTimeSlots } from "@/lib/appointment-utils";
 import { bffFetchJson } from "@/lib/bff-client";
-import { string } from "zod";
 
 interface Option { value: string; label: string; }
 
@@ -23,6 +22,7 @@ export function useAppointmentForm(editAppointment?: Appointment) {
   const prevProfessionalId = useRef(editAppointment?.professional?.id || "");
   const dataFetched = useRef(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [date, setDate] = useState<Date | undefined>(() => {
     if (editAppointment?.initialDate) {
       const parts = editAppointment.initialDate.split("-").map(Number);
@@ -124,6 +124,9 @@ export function useAppointmentForm(editAppointment?: Appointment) {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (isSubmitting == true) {
+      return;
+    }
     setSubmitError(null);
     const errors = {
       date: !date || !isValid(date), time: !selectedTime,
@@ -133,6 +136,7 @@ export function useAppointmentForm(editAppointment?: Appointment) {
     setValidationErrors(errors);
     if (Object.values(errors).some(Boolean)) return;
     try {
+      setIsSubmitting(true);
       const initialDate = format(date!, "yyyy-MM-dd");
       const hourStr = formatTimeForBackend(selectedTime);
       if (editAppointment?.id) {
@@ -152,6 +156,8 @@ export function useAppointmentForm(editAppointment?: Appointment) {
       window.location.reload();
     } catch (error: any) {
       setSubmitError(error.message || "Erro inesperado ao salvar o agendamento.");
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -160,7 +166,7 @@ export function useAppointmentForm(editAppointment?: Appointment) {
     isCalendarOpen, setIsCalendarOpen,
     patient, setPatient, professional, setProfessional,
     listPatients, listaProfessional, frequencyDays, setFrequencyDays,
-    validTimeSlots, validationErrors, submitError,
+    validTimeSlots, validationErrors, submitError, isSubmitting,
     isDayDisabled, handleSubmit,
   };
 }

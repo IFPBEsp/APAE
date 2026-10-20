@@ -30,7 +30,7 @@ export function AppointmentForm({ editAppointment }: AppointmentFormProps) {
     isCalendarOpen, setIsCalendarOpen,
     patient, setPatient, professional, setProfessional,
     listPatients, listaProfessional, frequencyDays, setFrequencyDays,
-    validTimeSlots, validationErrors, submitError,
+    validTimeSlots, validationErrors, submitError, isSubmitting,
     isDayDisabled, handleSubmit,
   } = useAppointmentForm(editAppointment);
 
@@ -128,7 +128,7 @@ export function AppointmentForm({ editAppointment }: AppointmentFormProps) {
           )}
 
           <div className="flex justify-end pt-4">
-            <Button className="w-full bg-[#0D4F97] text-white hover:bg-blue-900 sm:w-auto">
+            <Button disabled = {isSubmitting} className="w-full bg-[#0D4F97] text-white hover:bg-blue-900 sm:w-auto">
               {editAppointment ? "Atualizar" : "Cadastrar"}
             </Button>
           </div>
