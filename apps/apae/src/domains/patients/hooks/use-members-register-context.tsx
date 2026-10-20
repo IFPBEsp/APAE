@@ -11,7 +11,7 @@ import {
 } from "react";
 import { useParams } from "next/navigation";
 import { parseCivilDate } from "@/lib/date";
-import { getSessionId } from "@/domains/auth/session-id";
+import { getSessionId, readSessionId } from "@/domains/auth/session-id";
 import {
   saveDraft,
   loadDraft,
@@ -154,7 +154,9 @@ export function MembersRegisterProvider({
     if (params?.id && state.personal.name === "") return;
 
     const timer = setTimeout(() => {
-      saveDraft(STORAGE_KEY, getSessionId(), stripFiles(state));
+      const ownerId = readSessionId();
+      if (!ownerId) return;
+      saveDraft(STORAGE_KEY, ownerId, stripFiles(state));
     }, 1000);
 
     return () => clearTimeout(timer);

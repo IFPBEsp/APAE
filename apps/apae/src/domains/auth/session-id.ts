@@ -20,3 +20,7 @@ export function getSessionId(): string {
 export function endSession() {
   localStorage.removeItem(KEY);
 }
+
+export function readSessionId(): string | null {
+  return localStorage.getItem(KEY);
+}

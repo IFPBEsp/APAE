@@ -25,8 +25,6 @@ import {
   SidebarMenuItem,
   useSidebar,
 } from "@/components/ui/sidebar";
-import { endSession as endDraftSession } from "@/domains/auth/session-id";
-import { clearAllPatientDrafts } from "@/domains/patients/utils/draft-storage";
 import { endSession } from "@/lib/session";
 import { cn } from "@/lib/utils";
 import {
@@ -54,9 +52,6 @@ export function AppSidebar() {
   const pathname = usePathname();
 
   const handleLogout = async () => {
-    clearAllPatientDrafts();
-    endDraftSession();
-
     await endSession();
   };
 
