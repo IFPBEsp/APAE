@@ -4,6 +4,9 @@ export type { Patient } from '@/domains/patients/types/patient';
 import type { Professional, Address } from '@/types/profissional';
 export type { Professional, Address } from '@/types/profissional';
 
+import type { Disorder } from '@/domains/disorders/disorders.types';
+export type { Disorder } from '@/domains/disorders/disorders.types';
+
 export type UUID = string;
 
 export interface AnnualRegistry {
@@ -101,25 +104,6 @@ export interface RescheduleGeneratedAppointmentDTO {
 
 export interface CancelGeneratedAppointmentDTO {
   reason: string;
-}
-
-// ATENÇÃO: MUDANÇA POSTERIOR
-
-
-export interface Disorder {
-  id: UUID;
-  name: string;
-}
-export interface Vaccine {
-  id: UUID;
-  name: string;
-}
-export interface Guardian {
-  id: UUID;
-  name: string;
-  contact: string;
-  kinship: string;
-  address?: Address;
 }
 
 export interface TodayAppointment {
