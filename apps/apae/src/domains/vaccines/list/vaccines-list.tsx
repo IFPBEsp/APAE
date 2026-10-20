@@ -1,19 +1,42 @@
 "use client";
 
-import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { parseAsInteger, parseAsString, useQueryStates } from "nuqs";
 import { Button } from "@/components/ui/button";
 import { SearchFilters } from "@/components/search-filters";
+import { Pagination } from "@/components/shared/pagination";
+import { useDebounce } from "@/hooks/use-debounce";
 import { ArrowLeft, Loader2, Plus } from "lucide-react";
 import { VaccineListItem } from "../shared/vaccine-list-item";
 import { useVaccinesList } from "./use-vaccines-list";
 
 export function VaccinesList() {
-  const [searchName, setSearchName] = useState("");
-  const { vaccines: filtered, loading, deleteVaccine } = useVaccinesList(searchName);
+  const [query, setQuery] = useQueryStates({
+    name: parseAsString.withDefault(""),
+    page: parseAsInteger.withDefault(0),
+    size: parseAsInteger.withDefault(10),
+  });
+
+  const debouncedSearchName = useDebounce(query.name, 500);
+
+  const {
+    vaccines,
+    loading,
+    totalPages,
+    totalElements,
+    deleteVaccine,
+  } = useVaccinesList({
+    name: debouncedSearchName,
+    page: query.page,
+    size: query.size,
+  });
+
   const router = useRouter();
 
+  const updateQuery = (nextValues: Partial<typeof query>) => {
+    setQuery(nextValues);
+  };
 
   return (
     <div className="!bg-slate-100 min-h-screen">
@@ -27,7 +50,15 @@ export function VaccinesList() {
             Voltar
         </Button>
         <div className="bg-white rounded-xl shadow-md border-2 p-6 mb-4">
-          <SearchFilters searchName={searchName} setSearchName={setSearchName} />
+          <SearchFilters
+            searchName={query.name}
+            setSearchName={(value) => {
+              updateQuery({
+                name: value || "",
+                page: 0,
+              });
+            }}
+          />
         </div>
 
         <section className="relative md:bg-white md:rounded-xl md:shadow-md md:border-2 md:p-6">
@@ -46,15 +77,15 @@ export function VaccinesList() {
             <div className="flex justify-center items-center p-10">
               <Loader2 className="h-8 w-8 animate-spin text-gray-500" />
             </div>
-          ) : filtered.length === 0 ? (
+          ) : vaccines.length === 0 ? (
             <p className="text-center text-gray-500 p-10">
-              {searchName ? `Nenhuma vacina encontrada para "${searchName}".` : "Nenhuma vacina cadastrada."}
+              {debouncedSearchName ? `Nenhuma vacina encontrada para "${debouncedSearchName}".` : "Nenhuma vacina cadastrada."}
             </p>
           ) : (
             <>
-              <p className="text-sm text-gray-500 mb-4">{filtered.length} vacinas encontradas</p>
+              <p className="text-sm text-gray-500 mb-4">{totalElements} vacinas encontradas</p>
               <div className="space-y-2">
-                {filtered.map((vaccine) => (
+                {vaccines.map((vaccine) => (
                   <VaccineListItem
                     key={vaccine.id}
                     vaccine={vaccine}
@@ -63,6 +94,19 @@ export function VaccinesList() {
                   />
                 ))}
               </div>
+
+              <Pagination
+                currentPage={query.page}
+                totalPages={totalPages}
+                totalElements={totalElements}
+                pageSize={query.size}
+                onPageChange={(nextPage) => {
+                  updateQuery({ page: nextPage });
+                }}
+                onPageSizeChange={(nextSize) => {
+                  updateQuery({ size: nextSize, page: 0 });
+                }}
+              />
             </>
           )}
         </section>
