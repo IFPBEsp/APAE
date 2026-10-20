@@ -1,10 +1,10 @@
 name: Test reusable Docker workflow - backend
-#teste pipeline - reexecutando 2x
+# Validação controlada do PR IFPBEsp/APAE-INFRA#75.
 
 on:
   push:
     branches:
-      - 35-ci-testar-workflow-reutilizavel-docker
+      - codex/pr75-cosign-validation
     paths:
       - "apps/api/**"
       - ".github/workflows/ghcr-publish-backend-reusable.yml"
@@ -25,7 +25,6 @@ jobs:
       dockerfile: ./apps/api/Dockerfile
       image-name: apae-geral-backend
       platforms: '["linux/amd64"]'
-      publish-latest: false
 
       # Temporário apenas para permitir que o teste avance
       # até as etapas de assinatura e verificação com Cosign.
