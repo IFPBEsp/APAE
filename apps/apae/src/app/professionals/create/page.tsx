@@ -2,7 +2,6 @@
 
 import { useForm, type SubmitHandler } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { User } from "lucide-react";
 import type { JSX } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
@@ -15,9 +14,7 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useCreateProfessional } from "@/hooks/profissional/use-create-profissional";
-import { useProfessionalRegisterPhoto } from "@/hooks/profissional/use-professional-register-photo";
 import {
   registerSchema,
   type RegisterProfessionalFormValues,
@@ -25,7 +22,8 @@ import {
 import { ProfessionalFormFields } from "@/domains/professional/components/ProfessionalFormFields";
 import { generateAvailabilityMatrix } from "@/domains/professional/shared/disponibilidade.utils";
 import { buildProfessionalPayload } from "@/domains/professional/shared/professional.utils";
-import { MAX_FILE_SIZE_BYTES, MAX_FILE_SIZE_LABEL } from "@/lib/constants";
+import { usePhotoUpload } from "@/hooks/use-photo-upload";
+import { PhotoUpload } from "@/components/shared/PhotoUpload";
 
 export default function ProfessionalRegister(): JSX.Element {
   const router = useRouter();
@@ -52,8 +50,14 @@ export default function ProfessionalRegister(): JSX.Element {
     },
   });
 
-  const photoFile = form.watch("photo");
-  const { fileInputRef, previewUrl } = useProfessionalRegisterPhoto(photoFile);
+  const {
+    fileInputRef,
+    selectedPhoto,
+    selectPhoto,
+    photoPreviewUrl,
+    photoError,
+    photoSuccess,
+  } = usePhotoUpload();
 
   const onSubmit: SubmitHandler<RegisterProfessionalFormValues> = async (values) => {
     const formData = new FormData();
@@ -81,71 +85,13 @@ export default function ProfessionalRegister(): JSX.Element {
           {/* Campos comuns (fullName ... complement) + disponibilidade */}
           <ProfessionalFormFields />
 
-          {/* A partir daqui é específico do cadastro */}
-          <FormField
-            control={form.control}
-            name="photo"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel className="text-sm font-medium">Selecione uma foto*</FormLabel>
-                <FormControl>
-                  <div className="flex flex-col items-start gap-4 w-full">
-                    <input
-                      ref={fileInputRef}
-                      type="file"
-                      className="hidden"
-                      accept="image/png,image/jpeg,image/jpg,image/webp"
-                      onChange={(e) => {
-                        const file = e.target.files?.[0];
-                        if (!file) return;
-                        const allowedTypes = [
-                          "image/png",
-                          "image/jpeg",
-                          "image/jpg",
-                          "image/webp",
-                        ];
-                        if (
-                          !allowedTypes.includes(file.type) ||
-                          file.size <= 0 ||
-                          file.size > MAX_FILE_SIZE_BYTES
-                        ) {
-                          alert(
-                            `Apenas imagens PNG, JPG ou WEBP até ${MAX_FILE_SIZE_LABEL} são permitidas`
-                          );
-                          if (fileInputRef.current) {
-                            fileInputRef.current.value = "";
-                          }
-                          field.onChange(null);
-                          return;
-                        }
-                        field.onChange(file);
-                      }}
-                    />
-                    <button
-                      type="button"
-                      onClick={() => fileInputRef.current?.click()}
-                      className="relative group mr-auto rounded-full transition-transform hover:scale-105"
-                    >
-                      <Avatar className="w-32 h-32 border-2 border-dashed border-gray-300 bg-gray-50">
-                        <AvatarImage src={previewUrl || ""} alt="Foto do profissional" />
-                        <AvatarFallback className="bg-transparent">
-                          <User className="w-12 h-12 text-gray-400" />
-                        </AvatarFallback>
-                      </Avatar>
-                      <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity bg-black/20 rounded-full">
-                        <span className="bg-white text-black text-[10px] font-bold px-2 py-1 rounded shadow-sm">
-                          Escolher foto
-                        </span>
-                      </div>
-                    </button>
-                    <p className="text-xs text-gray-500">
-                      PNG, JPG ou WEBP até {MAX_FILE_SIZE_LABEL}
-                    </p>
-                  </div>
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
+          <PhotoUpload
+            fileInputRef={fileInputRef}
+            selectedPhoto={selectedPhoto}
+            photoPreviewUrl={photoPreviewUrl}
+            photoError={photoError}
+            photoSuccess={photoSuccess}
+            selectPhoto={selectPhoto}
           />
 
           <FormField
