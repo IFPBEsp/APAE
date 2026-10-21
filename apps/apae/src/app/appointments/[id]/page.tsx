@@ -25,7 +25,7 @@ import { Pencil, AlertTriangle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { getAppointmentById } from '@/domains/appointments/appointments.api';
 import type { Appointment } from '@/domains/appointments/types/appointments.types';
-import { AppointmentForm } from '@/components/forms/AppointmentForm';
+import { AppointmentForm } from '@/domains/appointments/components/AppointmentForm';
 import TrashButton from '@/components/buttons/trashButton';
 import { separateAndTransformIntoNumber } from '@/lib/utils';
 import {

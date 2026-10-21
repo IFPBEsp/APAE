@@ -1,1 +1,0 @@
-export { AppointmentForm } from '@/domains/appointments/components/AppointmentForm';

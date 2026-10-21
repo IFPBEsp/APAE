@@ -24,7 +24,7 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
-import { AppointmentForm } from '@/components/forms/AppointmentForm';
+import { AppointmentForm } from '@/domains/appointments/components/AppointmentForm';
 import { InfoCard } from '@/components/shared/InfoCard';
 import {
   Dialog,
@@ -44,7 +44,8 @@ import {
 import { formatDatePTBR } from '@/lib/utils';
 import { ptBR } from 'date-fns/locale';
 import Link from "next/link";
-import { getAppointments, getServiceAreas } from "@/domains/appointments/appointments.api";
+import { getAppointments } from "@/domains/appointments/appointments.api";
+import { getServiceAreas } from "@/domains/professional/professional.api";
 import type { Appointment } from "@/domains/appointments/types/appointments.types";
 import {Tooltip, TooltipContent, TooltipProvider, TooltipTrigger} from "@radix-ui/react-tooltip";
 import { useAbsenceAlerts } from '@/hooks/use-absence-alerts';

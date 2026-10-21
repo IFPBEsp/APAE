@@ -6,11 +6,9 @@ import type {
   RescheduleGeneratedAppointmentDTO,
   CancelGeneratedAppointmentDTO,
   GeneratedAppointmentResponseDTO,
-  Patient,
-  Professional,
+  TodayAppointment
 } from './types/appointments.types';
 import type { Page } from '@/types/pagination';
-import type { TodayAppointment } from '@/domains/appointments/types/appointments.types';
 import { bffFetchJson } from '@/lib/bff-client';
 
 function ensurePageFormat<T>(data: unknown): Page<T> {
@@ -164,47 +162,6 @@ export async function listByPatient(
   );
   return ensurePageFormat<GeneratedAppointmentResponseDTO>(res);
 }
-
-export async function getPatients(): Promise<Patient[]> {
-  const data = await bffFetchJson<Page<Patient>>(`/apae-geral/api/patients?page=0&size=100`);
-  return data.content || [];
-}
-
-export async function getHealthProfessionals(): Promise<Professional[]> {
-  const data = await bffFetchJson<Page<Professional>>(`/apae-geral/api/professionals?page=0&size=100`);
-  return data.content || [];
-}
-
-export async function getHealthProfessional(
-  id: string,
-): Promise<Professional> {
-  return bffFetchJson<Professional>(`/apae-geral/api/professionals/${id}`);
-}
-
-export async function getServiceAreas(): Promise<string[]> {
-  const professionals = await getHealthProfessionals();
-  const areas = professionals.map((p) => p.serviceArea?.area);
-  return [...new Set(areas)].filter(Boolean) as string[];
-}
-
-export const toggleConfirmation = async (id: UUID): Promise<void> => {
-  const appointment = await getAppointmentById(id);
-
-  if (!appointment.professional || !appointment.annualRegistration?.id) {
-    throw new Error("Dados do agendamento incompletos para confirmaÃ§Ã£o");
-  }
-
-  const dto: CreateAppointmentDTO = {
-    professionalId: appointment.professional.id,
-    serviceId: appointment.serviceId,
-    patientId: appointment.annualRegistration.patient.id,
-    frequencyDays: appointment.frequencyDays,
-    initialDate: appointment.initialDate,
-    hour: appointment.hour.replace(":00", ""),
-  };
-
-  await saveAppointment(dto);
-};
 
 export async function getTodayAppointmentById(
   id: string,

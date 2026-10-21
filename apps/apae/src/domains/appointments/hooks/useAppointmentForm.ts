@@ -1,8 +1,6 @@
 import { format, getDay, isValid, startOfDay } from "date-fns";
 import { useEffect, useRef, useState } from "react";
 import {
-  getPatients,
-  getHealthProfessionals,
   saveAppointment,
   updateAppointment,
 } from "../appointments.api";
@@ -10,6 +8,8 @@ import type { Appointment } from '@/domains/appointments/types/appointments.type
 import { formatTimeForBackend, parseTimeFromBackend } from "../shared/formatters";
 import { getValidTimeSlots } from "@/lib/appointment-utils";
 import { bffFetchJson } from "@/lib/bff-client";
+import { getPatients } from "@/domains/patients/patients.api";
+import { getHealthProfessionals, getHealthProfessional } from "@/domains/professional/professional.api";
 
 interface Option { value: string; label: string; }
 
@@ -72,9 +72,7 @@ export function useAppointmentForm(editAppointment?: Appointment) {
     const loadProfessionalData = async () => {
       if (professional.value) {
         try {
-          const data = await bffFetchJson<{
-            availabilities?: { day : string; shift: string }[];
-          }>(`/apae-geral/api/professionals/${professional.value}`);
+          const data = await getHealthProfessional(professional.value);
           setAvailabilities(data.availabilities || []);
         } catch { setAvailabilities([]); }
       } else { setAvailabilities([]); }
