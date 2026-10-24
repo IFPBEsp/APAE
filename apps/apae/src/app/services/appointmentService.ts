@@ -18,7 +18,6 @@ export interface AnnualRegistry {
 export interface Appointment {
   id: UUID;
   professional: Professional;
-  serviceId: UUID;
   annualRegistration: AnnualRegistry;
   frequencyDays: number;
   hour: string;
@@ -32,7 +31,6 @@ export interface Appointment {
 
 export interface CreateAppointmentDTO {
   professionalId: UUID;
-  serviceId: UUID;
   patientId: UUID;
   frequencyDays: number;
   initialDate: string;
@@ -42,7 +40,6 @@ export interface CreateAppointmentDTO {
 export interface AppointmentResponseDTO {
   id: UUID;
   professional: Professional;
-  serviceId: UUID;
   annualRegistration: AnnualRegistry;
   frequencyDays: number;
   hour: string;
@@ -147,7 +144,6 @@ export interface Vaccine {
 export interface UpdateAppointmentDTO {
   professionalId?: string;
   annualRegistrationId?: string;
-  serviceId?: string;
   frequencyDays?: number;
   initialDate?: string;
   hour?: string;
@@ -406,7 +402,6 @@ export const toggleConfirmation = async (id: UUID): Promise<void> => {
 
   const dto: CreateAppointmentDTO = {
     professionalId: appointment.professional.id,
-    serviceId: appointment.serviceId,
     patientId: appointment.annualRegistration.patient.id,
     frequencyDays: appointment.frequencyDays,
     initialDate: appointment.initialDate,

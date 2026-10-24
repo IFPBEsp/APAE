@@ -230,7 +230,6 @@ export function AppointmentForm({ editAppointment }: AppointmentFormProps) {
         await updateAppointment(editAppointment.id, {
           professionalId: professional.value,
           annualRegistrationId: editAppointment.annualRegistration.id,
-          serviceId: editAppointment.serviceId,
           initialDate,
           hour: hourStr,
           frequencyDays,
@@ -239,7 +238,6 @@ export function AppointmentForm({ editAppointment }: AppointmentFormProps) {
         await saveAppointment({
           patientId: patient.value,
           professionalId: professional.value,
-          serviceId: "ea4c3a4d-c3f4-4a83-ab29-ff24c50e844c",
           initialDate,
           hour: hourStr,
           frequencyDays,
