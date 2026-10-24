@@ -293,7 +293,7 @@ class AppointmentControllerTest {
         @DisplayName("Deve atualizar regra de agendamento com sucesso (200)")
         void shouldUpdateAppointmentRuleSuccessfully() throws Exception {
             UUID id = UUID.randomUUID();
-            var payload = new UpdateAppointmentDTO(UUID.randomUUID(), UUID.randomUUID(), UUID.randomUUID(), 14, LocalDate.now().plusDays(1), LocalTime.of(10, 30, 0), LocalDate.now().plusDays(30));
+            var payload = new UpdateAppointmentDTO(UUID.randomUUID(), UUID.randomUUID(), 14, LocalDate.now().plusDays(1), LocalTime.of(10, 30, 0), LocalDate.now().plusDays(30));
             var response = new AppointmentResponseDTO(id, mock(HealthProfessionalResponseDTO.class), mock(AnnualRegistryResponseDTO.class), payload.frequencyDays(), payload.initialDate(), payload.endDate(), payload.hour(), true, LocalDateTime.now().withNano(0), null, null);
 
             when(service.update(id, payload)).thenReturn(response);

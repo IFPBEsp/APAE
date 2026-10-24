@@ -12,7 +12,6 @@ public record UpdateAppointmentDTO(
 
     UUID professionalId,
     UUID annualRegistrationId,
-    UUID serviceId,
 
     @Positive(message = "A frequência de dias deve ser maior que 0")
     Integer frequencyDays,
