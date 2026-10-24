@@ -1,9 +1,10 @@
-"use client";
-
 import { useCallback, useEffect, useState } from "react";
-import { bffFetchJson } from "@/lib/bff-client";
+import type {
+  PaginationInfo,
+  PatientWithAbsences,
+} from "@/domains/absences/types/absences.types";
 import { DashboardOverview } from "@/domains/dashboard/dashboard.types";
-import { PaginationInfo, PatientWithAbsences } from "@/types/absence";
+import { bffFetchJson } from "@/lib/bff-client";
 import { Page } from "@/types/pagination";
 
 export function useAbsencesList() {
@@ -35,8 +36,12 @@ export function useAbsencesList() {
         });
 
         const [patientsData, statsData] = await Promise.all([
-          bffFetchJson<Page<PatientWithAbsences>>(`/apae-geral/api/patients/with-absences?${queryParams}`),
-          bffFetchJson<DashboardOverview>("/apae-geral/api/dashboard/overview?minAbsences=3"),
+          bffFetchJson<Page<PatientWithAbsences>>(
+            `/apae-geral/api/patients/with-absences?${queryParams}`,
+          ),
+          bffFetchJson<DashboardOverview>(
+            "/apae-geral/api/dashboard/overview?minAbsences=3",
+          ),
         ]);
 
         setPatientsWithAbsences(patientsData.content);
@@ -66,13 +71,25 @@ export function useAbsencesList() {
     return () => clearTimeout(timer);
   }, [searchName, fetchData]);
 
+  const handleDownload = async (patientId: string, documentName: string) => {
+    try {
+      const data = await bffFetchJson<{ url: string }>(
+        `/apae-geral/api/patients/${patientId}/documents/download?name=${encodeURIComponent(documentName)}`,
+      );
+      window.open(data.url, "_blank", "noopener,noreferrer");
+    } catch (error) {
+      console.error("Erro ao baixar documento:", error);
+    }
+  };
+
   return {
     searchName,
     setSearchName,
     patientsWithAbsences,
     loading,
     pagination,
-    statistics,
     fetchData,
+    statistics,
+    handleDownload,
   };
 }
