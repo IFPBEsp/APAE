@@ -14,6 +14,7 @@ import { Loader2, CheckCircle2, Circle } from "lucide-react";
 import Image from "@/assets/background_image.jpg";
 import { SidebarSteps } from "@/components/shared/SidebarSteps";
 import { parseCivilDate } from "@/lib/date";
+import { bffFetchJson } from "@/lib/bff-client";
 
 interface ParentData {
   name?: string;
@@ -22,6 +23,49 @@ interface ParentData {
   profession?: string;
   isAlive?: boolean;
   kinship?: string;
+}
+
+interface EditPatientAddress {
+  cep?: string;
+  state?: string;
+  city?: string;
+  neighborhood?: string;
+  street?: string;
+  number?: string;
+  complement?: string;
+  district?: string;
+}
+
+interface EditPatientData {
+  fullName?: string;
+  cpf?: string;
+  contact?: string;
+  rg?: string;
+  issuingAgency?: string;
+  issueDate?: string;
+  cns?: string;
+  nis?: string;
+  birthCertificateNumber?: string;
+  birthDate?: string;
+  birthplace?: string;
+  nationality?: string;
+  allergies?: string;
+  isStudent?: boolean;
+  address?: EditPatientAddress;
+  annualRegistry?: {
+    diseases?: string;
+    continuousMedication?: string;
+    bpc?: boolean;
+    familyIncome?: number;
+  };
+  vaccineNames?: { name?: string }[];
+  guardian?: {
+    name?: string;
+    contact?: string;
+    kinship?: string;
+    address?: EditPatientAddress;
+  };
+  parents?: ParentData[];
 }
 
 function EditPatientDataLoader({ children }: { children: React.ReactNode }) {
@@ -35,9 +79,10 @@ function EditPatientDataLoader({ children }: { children: React.ReactNode }) {
 
     async function load() {
       try {
-        const res = await fetch(`/apae-geral/api/patients/${id}`, { cache: "no-store" });
-        if (!res.ok) throw new Error("Erro ao buscar dados do paciente");
-        const data = await res.json();
+        const data = await bffFetchJson<EditPatientData>(
+          `/apae-geral/api/patients/${id}`,
+          { cache: "no-store" },
+        );
 
         const mappedData: MembersRegisterState = {
           personal: {

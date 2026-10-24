@@ -2,6 +2,8 @@ package br.org.apae.api.controllers.vaccine;
 
 import br.org.apae.api.auth.application.internal.UserService;
 import br.org.apae.api.auth.infrastructure.security.JwtProvider;
+import br.org.apae.api.auth.infrastructure.security.RestAccessDeniedHandler;
+import br.org.apae.api.auth.infrastructure.security.RestAuthenticationEntryPoint;
 import br.org.apae.api.auth.infrastructure.security.SecurityConfiguration;
 import br.org.apae.api.common.dto.patient.request.vaccine.CreateVaccineDTO;
 import br.org.apae.api.common.dto.patient.response.vaccine.VaccineResponseDTO;
@@ -24,6 +26,9 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Import;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.config.EnableSpringDataWebSupport;
 import org.springframework.data.web.config.SpringDataWebConfiguration;
 import org.springframework.http.MediaType;
@@ -69,10 +74,16 @@ public class VaccineControllerTest {
 
  @MockitoBean
  private JwtProvider jwtProvider;
-
+ 
  @MockitoBean
  private UserService userService;
-
+ 
+ @MockitoBean
+ private RestAuthenticationEntryPoint restAuthenticationEntryPoint;
+ 
+ @MockitoBean
+ private RestAccessDeniedHandler restAccessDeniedHandler;
+ 
  private static final String BASE_URL = "/vaccines";
 
  @BeforeEach
@@ -140,6 +151,28 @@ public class VaccineControllerTest {
      .andExpect(status().isOk())
      .andExpect(jsonPath("$", hasSize(2)))
      .andExpect(jsonPath("$[0].name", is("BCG")));
+  }
+
+  @Test
+  @DisplayName("Deve listar vacinas paginadas e filtradas por nome com sucesso (200)")
+  void shouldGetPaginatedVaccinesSuccess() throws Exception {
+   VaccineResponseDTO v1 = new VaccineResponseDTO(UUID.randomUUID(), "Hepatite A", false);
+   VaccineResponseDTO v2 = new VaccineResponseDTO(UUID.randomUUID(), "Hepatite B", true);
+   PageImpl<VaccineResponseDTO> page = new PageImpl<>(List.of(v1, v2), PageRequest.of(0, 2), 2);
+
+   when(vaccineService.findAllVaccines(eq("hep"), any(Pageable.class))).thenReturn(page);
+
+   mockMvc.perform(get(BASE_URL)
+       .header("Authorization", AuthTestHelper.bearerToken())
+       .param("page", "0")
+       .param("size", "2")
+       .param("name", "hep")
+       .accept(MediaType.APPLICATION_JSON))
+     .andExpect(status().isOk())
+     .andExpect(jsonPath("$.content", hasSize(2)))
+     .andExpect(jsonPath("$.content[0].name", is("Hepatite A")))
+     .andExpect(jsonPath("$.page.totalElements", is(2)))
+     .andExpect(jsonPath("$.page.totalPages", is(1)));
   }
 
   @Test

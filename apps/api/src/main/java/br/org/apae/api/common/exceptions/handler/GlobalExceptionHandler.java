@@ -17,6 +17,11 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.method.annotation.HandlerMethodValidationException;
+import org.springframework.web.HttpRequestMethodNotSupportedException;
+import org.springframework.web.bind.MissingServletRequestParameterException;
+import org.springframework.web.multipart.support.MissingServletRequestPartException;
+import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
+import org.springframework.web.servlet.resource.NoResourceFoundException;
 
 import br.org.apae.api.common.exceptions.types.ErrorResponse;
 import br.org.apae.api.common.exceptions.types.ValidationErrorResponse;
@@ -187,11 +192,70 @@ public class GlobalExceptionHandler {
 
     return new ResponseEntity<>(errorResponse, status);
   }
+  
+  @ExceptionHandler(MethodArgumentTypeMismatchException.class)
+  public ResponseEntity<ErrorResponse> handleMethodArgumentTypeMismatchException(
+        MethodArgumentTypeMismatchException ex,
+        HttpServletRequest request) {
 
-  @ExceptionHandler(Exception.class)
-  public ResponseEntity<ErrorResponse> handleGenericException(Exception ex, HttpServletRequest request) {
+    ErrorResponse errorResponse = new ErrorResponse(
+            HttpStatus.BAD_REQUEST.value(),
+            HttpStatus.BAD_REQUEST.getReasonPhrase(),
+            "Tipo de parâmetro inválido.",
+            request.getRequestURI());
 
-         String correlationId = UUID.randomUUID().toString();
+    return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
+  }
+
+  @ExceptionHandler({
+          MissingServletRequestParameterException.class,
+          MissingServletRequestPartException.class
+    })
+  public ResponseEntity<ErrorResponse> handleMissingRequestException(
+          Exception ex,
+          HttpServletRequest request) {
+
+        ErrorResponse errorResponse = new ErrorResponse(
+            HttpStatus.BAD_REQUEST.value(),
+            HttpStatus.BAD_REQUEST.getReasonPhrase(),
+            "Parâmetro obrigatório ausente.",
+            request.getRequestURI());
+
+      return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
+  }
+
+  @ExceptionHandler(NoResourceFoundException.class)
+  public ResponseEntity<ErrorResponse> handleNoResourceFoundException(
+          NoResourceFoundException ex,
+          HttpServletRequest request) {
+
+        ErrorResponse errorResponse = new ErrorResponse(
+            HttpStatus.NOT_FOUND.value(),
+            HttpStatus.NOT_FOUND.getReasonPhrase(),
+            "Recurso não encontrado.",
+            request.getRequestURI());
+
+    return new ResponseEntity<>(errorResponse, HttpStatus.NOT_FOUND);
+}
+
+    @ExceptionHandler(HttpRequestMethodNotSupportedException.class)
+    public ResponseEntity<ErrorResponse> handleHttpRequestMethodNotSupportedException(
+            HttpRequestMethodNotSupportedException ex,
+            HttpServletRequest request) {
+
+        ErrorResponse errorResponse = new ErrorResponse(
+            HttpStatus.METHOD_NOT_ALLOWED.value(),
+            HttpStatus.METHOD_NOT_ALLOWED.getReasonPhrase(),
+            "Método HTTP não suportado.",
+            request.getRequestURI());
+
+      return new ResponseEntity<>(errorResponse, HttpStatus.METHOD_NOT_ALLOWED);
+  }
+
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<ErrorResponse> handleGenericException(Exception ex, HttpServletRequest request) {
+
+        String correlationId = UUID.randomUUID().toString();
     
         logger.error("Erro interno. CorrelationId={}", correlationId, ex);
     

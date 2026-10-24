@@ -5,6 +5,8 @@ import br.org.apae.api.appointment.domain.exceptions.AppointmentAlreadyCancelled
 import br.org.apae.api.appointment.domain.exceptions.AppointmentNotFoundException;
 import br.org.apae.api.auth.application.internal.UserService;
 import br.org.apae.api.auth.infrastructure.security.JwtProvider;
+import br.org.apae.api.auth.infrastructure.security.RestAccessDeniedHandler;
+import br.org.apae.api.auth.infrastructure.security.RestAuthenticationEntryPoint;
 import br.org.apae.api.common.dto.appointment.request.appointment.*;
 import br.org.apae.api.common.dto.appointment.response.appointment.AnnualRegistryResponseDTO;
 import br.org.apae.api.common.dto.appointment.response.appointment.AppointmentResponseDTO;
@@ -60,6 +62,12 @@ class AppointmentControllerTest {
 
     @MockitoBean
     private UserService userService;
+
+    @MockitoBean
+    private RestAuthenticationEntryPoint restAuthenticationEntryPoint;
+
+    @MockitoBean
+    private RestAccessDeniedHandler restAccessDeniedHandler;
 
     private static final String URI = "/appointments";
     private static final String URI_WITH_ID = URI + "/{id}";
@@ -285,7 +293,7 @@ class AppointmentControllerTest {
         @DisplayName("Deve atualizar regra de agendamento com sucesso (200)")
         void shouldUpdateAppointmentRuleSuccessfully() throws Exception {
             UUID id = UUID.randomUUID();
-            var payload = new UpdateAppointmentDTO(UUID.randomUUID(), UUID.randomUUID(), UUID.randomUUID(), 14, LocalDate.now().plusDays(1), LocalTime.of(10, 30, 0), LocalDate.now().plusDays(30));
+            var payload = new UpdateAppointmentDTO(UUID.randomUUID(), UUID.randomUUID(), 14, LocalDate.now().plusDays(1), LocalTime.of(10, 30, 0), LocalDate.now().plusDays(30));
             var response = new AppointmentResponseDTO(id, mock(HealthProfessionalResponseDTO.class), mock(AnnualRegistryResponseDTO.class), payload.frequencyDays(), payload.initialDate(), payload.endDate(), payload.hour(), true, LocalDateTime.now().withNano(0), null, null);
 
             when(service.update(id, payload)).thenReturn(response);

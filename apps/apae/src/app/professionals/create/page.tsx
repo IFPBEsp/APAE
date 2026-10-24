@@ -1,20 +1,11 @@
 "use client";
 
-import { useForm, Controller, type SubmitHandler } from "react-hook-form";
+import { useForm, type SubmitHandler } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { InputMask } from "@react-input/mask";
-import { User } from "lucide-react";
 import type { JSX } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import {
   Form,
   FormControl,
@@ -23,19 +14,16 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useCreateProfessional } from "@/hooks/profissional/use-create-profissional";
-import { useProfessionalRegisterPhoto } from "@/hooks/profissional/use-professional-register-photo";
-import Availability from "@/components/forms/AvailabilityForm";
 import {
   registerSchema,
   type RegisterProfessionalFormValues,
 } from "@/schemas/profissional.schema";
-import { STATES } from "@/lib/states";
-import HealthAreaSelect from "@/components/shared/HealthAreaSelect";
+import { ProfessionalFormFields } from "@/domains/professional/components/ProfessionalFormFields";
 import { generateAvailabilityMatrix } from "@/domains/professional/shared/disponibilidade.utils";
 import { buildProfessionalPayload } from "@/domains/professional/shared/professional.utils";
-import { MAX_FILE_SIZE_BYTES, MAX_FILE_SIZE_LABEL } from "@/lib/constants";
+import { usePhotoUpload } from "@/hooks/use-photo-upload";
+import { PhotoUpload } from "@/components/shared/PhotoUpload";
 
 export default function ProfessionalRegister(): JSX.Element {
   const router = useRouter();
@@ -62,8 +50,14 @@ export default function ProfessionalRegister(): JSX.Element {
     },
   });
 
-  const photoFile = form.watch("photo");
-  const { fileInputRef, previewUrl } = useProfessionalRegisterPhoto(photoFile);
+  const {
+    fileInputRef,
+    selectedPhoto,
+    selectPhoto,
+    photoPreviewUrl,
+    photoError,
+    photoSuccess,
+  } = usePhotoUpload();
 
   const onSubmit: SubmitHandler<RegisterProfessionalFormValues> = async (values) => {
     const formData = new FormData();
@@ -88,308 +82,16 @@ export default function ProfessionalRegister(): JSX.Element {
           onSubmit={form.handleSubmit(onSubmit)}
           className="space-y-6 w-full max-w-2xl"
         >
-          <FormField
-            control={form.control}
-            name="fullName"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Nome completo *</FormLabel>
-                <FormControl>
-                  <Input placeholder="Ex: Maria da Silva" {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
+          {/* Campos comuns (fullName ... complement) + disponibilidade */}
+          <ProfessionalFormFields />
 
-          <FormField
-            control={form.control}
-            name="email"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Email *</FormLabel>
-                <FormControl>
-                  <Input type="email" placeholder="profissional@exemplo.com" {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-
-          <Controller
-            control={form.control}
-            name="cpf"
-            render={({ field, fieldState }) => (
-              <FormItem>
-                <FormLabel>CPF *</FormLabel>
-                <FormControl>
-                  <InputMask
-                    mask="___.___.___-__"
-                    replacement={{ _: /\d/ }}
-                    value={field.value ?? ""}
-                    onChange={(e) => field.onChange(e.target.value)}
-                    onBlur={field.onBlur}
-                    placeholder="000.000.000-00"
-                    className="w-full rounded-md border px-3 py-2"
-                  />
-                </FormControl>
-                <FormMessage>{fieldState.error?.message}</FormMessage>
-              </FormItem>
-            )}
-          />
-
-          <div className="grid grid-cols-2 gap-4">
-            <FormField
-              control={form.control}
-              name="professionalDocument"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Documento profissional</FormLabel>
-                  <FormControl>
-                    <Input placeholder="Ex: CRM/SP 123456" {...field} value={field.value || ""} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <Controller
-              control={form.control}
-              name="serviceArea"
-              render={({ field, fieldState }) => (
-                <FormItem>
-                  <FormLabel>Área de atendimento *</FormLabel>
-                  <FormControl>
-                    <HealthAreaSelect value={field.value} onChange={field.onChange} />
-                  </FormControl>
-                  <FormMessage>{fieldState.error?.message}</FormMessage>
-                </FormItem>
-              )}
-            />
-          </div>
-
-          <div className="grid grid-cols-2 gap-4">
-            <FormField
-              control={form.control}
-              name="rg"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>RG *</FormLabel>
-                  <FormControl>
-                    <Input placeholder="Ex: 1234567" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <Controller
-              control={form.control}
-              name="phone"
-              render={({ field, fieldState }) => (
-                <FormItem>
-                  <FormLabel>Telefone *</FormLabel>
-                  <FormControl>
-                    <InputMask
-                      mask="(__) _____-____"
-                      replacement={{ _: /\d/ }}
-                      value={field.value ?? ""}
-                      onChange={(e) => field.onChange(e.target.value)}
-                      onBlur={field.onBlur}
-                      placeholder="(xx) xxxxx-xxxx"
-                      className="w-full rounded-md border px-3 py-2"
-                    />
-                  </FormControl>
-                  <FormMessage>{fieldState.error?.message}</FormMessage>
-                </FormItem>
-              )}
-            />
-          </div>
-
-          <div className="grid grid-cols-2 gap-4">
-            <Controller
-              control={form.control}
-              name="state"
-              render={({ field, fieldState }) => (
-                <FormItem>
-                  <FormLabel>Estado *</FormLabel>
-                  <FormControl>
-                    <Select onValueChange={field.onChange} value={field.value}>
-                      <SelectTrigger
-                        className={`w-full ${fieldState.invalid ? "border-red-500" : "border-gray-300"}`}
-                      >
-                        <SelectValue placeholder="Selecione um estado" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {STATES.map((s) => (
-                          <SelectItem key={s} value={s}>
-                            {s}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </FormControl>
-                  <FormMessage>{fieldState.error?.message}</FormMessage>
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="city"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Cidade *</FormLabel>
-                  <FormControl>
-                    <Input placeholder="Ex: João Pessoa" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-          </div>
-
-          <FormField
-            control={form.control}
-            name="street"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Endereço *</FormLabel>
-                <FormControl>
-                  <Input placeholder="Ex: Rua das Flores" {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <FormField
-              control={form.control}
-              name="neighborhood"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Bairro *</FormLabel>
-                  <FormControl>
-                    <Input placeholder="Ex: Centro" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <Controller
-              control={form.control}
-              name="cep"
-              render={({ field, fieldState }) => (
-                <FormItem>
-                  <FormLabel>CEP *</FormLabel>
-                  <FormControl>
-                    <InputMask
-                      mask="_____-___"
-                      replacement={{ _: /\d/ }}
-                      value={field.value ?? ""}
-                      onChange={(e) => field.onChange(e.target.value)}
-                      onBlur={field.onBlur}
-                      placeholder="12345-678"
-                      className="w-full rounded-md border px-3 py-2"
-                    />
-                  </FormControl>
-                  <FormMessage>{fieldState.error?.message}</FormMessage>
-                </FormItem>
-              )}
-            />
-          </div>
-
-          <div className="grid grid-cols-2 gap-4">
-            <FormField
-              control={form.control}
-              name="number"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Número *</FormLabel>
-                  <FormControl>
-                    <Input placeholder="Ex: 123" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="complement"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Complemento</FormLabel>
-                  <FormControl>
-                    <Input placeholder="Ex: Apt 101" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-          </div>
-
-          <FormField
-            control={form.control}
-            name="photo"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel className="text-sm font-medium">Selecione uma foto*</FormLabel>
-                <FormControl>
-                  <div className="flex flex-col items-start gap-4 w-full">
-                    <input
-                      ref={fileInputRef}
-                      type="file"
-                      className="hidden"
-                      accept="image/png,image/jpeg,image/jpg,image/webp"
-                      onChange={(e) => {
-                        const file = e.target.files?.[0];
-                        if (!file) return;
-                        const allowedTypes = [
-                          "image/png",
-                          "image/jpeg",
-                          "image/jpg",
-                          "image/webp",
-                        ];
-                        if (
-                          !allowedTypes.includes(file.type) ||
-                          file.size <= 0 ||
-                          file.size > MAX_FILE_SIZE_BYTES
-                        ) {
-                          alert(
-                            `Apenas imagens PNG, JPG ou WEBP até ${MAX_FILE_SIZE_LABEL} são permitidas`
-                          );
-                          if (fileInputRef.current) {
-                            fileInputRef.current.value = "";
-                          }
-                          field.onChange(null);
-                          return;
-                        }
-                        field.onChange(file);
-                      }}
-                    />
-                    <button
-                      type="button"
-                      onClick={() => fileInputRef.current?.click()}
-                      className="relative group mr-auto rounded-full transition-transform hover:scale-105"
-                    >
-                      <Avatar className="w-32 h-32 border-2 border-dashed border-gray-300 bg-gray-50">
-                        <AvatarImage src={previewUrl || ""} alt="Foto do profissional" />
-                        <AvatarFallback className="bg-transparent">
-                          <User className="w-12 h-12 text-gray-400" />
-                        </AvatarFallback>
-                      </Avatar>
-                      <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity bg-black/20 rounded-full">
-                        <span className="bg-white text-black text-[10px] font-bold px-2 py-1 rounded shadow-sm">
-                          Escolher foto
-                        </span>
-                      </div>
-                    </button>
-                    <p className="text-xs text-gray-500">
-                      PNG, JPG ou WEBP até {MAX_FILE_SIZE_LABEL}
-                    </p>
-                  </div>
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
+          <PhotoUpload
+            fileInputRef={fileInputRef}
+            selectedPhoto={selectedPhoto}
+            photoPreviewUrl={photoPreviewUrl}
+            photoError={photoError}
+            photoSuccess={photoSuccess}
+            selectPhoto={selectPhoto}
           />
 
           <FormField
@@ -445,8 +147,6 @@ export default function ProfessionalRegister(): JSX.Element {
               </FormItem>
             )}
           />
-
-          <Availability control={form.control} watch={form.watch} />
 
           {loading && <p className="text-blue-500">Salvando...</p>}
           {error && <p className="text-red-500">{error}</p>}

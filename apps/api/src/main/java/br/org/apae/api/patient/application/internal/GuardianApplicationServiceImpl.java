@@ -58,12 +58,4 @@ public class GuardianApplicationServiceImpl implements GuardianApplicationServic
 
     return guardianMapper.toResponseDTO(updatedGuardian);
   }
-
-  @Override
-  @Transactional
-  public void deleteGuardian(UUID patientId) {
-    Guardian guardian = guardianRepository.findByPatientId(patientId).orElseThrow(GuardianNotFoundException::new);
-
-    guardianRepository.deleteById(guardian.getId());
-  }
 }

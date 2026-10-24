@@ -7,6 +7,8 @@ import br.org.apae.api.patient.interfaces.controllers.VaccineController;
 import jakarta.validation.Valid;
 import java.util.List;
 import java.util.UUID;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
@@ -35,6 +37,12 @@ public class VaccineControllerImpl implements VaccineController {
     @Override
     public ResponseEntity<List<VaccineResponseDTO>> findAll() {
         List<VaccineResponseDTO> vaccines = vaccineService.findAllVaccines();
+        return ResponseEntity.ok(vaccines);
+    }
+
+    @Override
+    public ResponseEntity<Page<VaccineResponseDTO>> findAllPaginated(String name, Pageable pageable) {
+        Page<VaccineResponseDTO> vaccines = vaccineService.findAllVaccines(name, pageable);
         return ResponseEntity.ok(vaccines);
     }
 

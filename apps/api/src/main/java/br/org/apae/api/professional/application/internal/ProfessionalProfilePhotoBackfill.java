@@ -14,7 +14,6 @@ import org.springframework.boot.ApplicationRunner;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.transaction.annotation.Transactional;
 
 @Configuration
 public class ProfessionalProfilePhotoBackfill {
@@ -27,7 +26,6 @@ public class ProfessionalProfilePhotoBackfill {
         return args -> backfill(repository, documentService);
     }
 
-    @Transactional
     void backfill(HealthProfessionalRepository repository, DocumentApplicationService documentService) {
         for (HealthProfessional professional : repository.findAllMissingProfilePhotoMetadata()) {
             try {

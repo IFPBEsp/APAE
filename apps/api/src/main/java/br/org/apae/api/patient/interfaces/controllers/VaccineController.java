@@ -3,10 +3,15 @@ package br.org.apae.api.patient.interfaces.controllers;
 import br.org.apae.api.common.dto.patient.request.vaccine.CreateVaccineDTO;
 import br.org.apae.api.common.dto.patient.response.vaccine.VaccineResponseDTO;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -44,8 +49,17 @@ public interface VaccineController {
         @ApiResponses(value = {
                         @ApiResponse(responseCode = "200", description = "Lista de vacinas retornada com sucesso")
         })
-        @GetMapping
+        @GetMapping(params = {"!page", "!size", "!name"})
         ResponseEntity<List<VaccineResponseDTO>> findAll();
+
+        @Operation(summary = "Listar vacinas com paginação e filtro por nome", description = "Retorna uma página de vacinas filtrada parcialmente por nome.")
+        @ApiResponses(value = {
+                        @ApiResponse(responseCode = "200", description = "Página de vacinas retornada com sucesso")
+        })
+        @GetMapping
+        ResponseEntity<Page<VaccineResponseDTO>> findAllPaginated(
+                        @RequestParam(required = false) String name,
+                        @Parameter(hidden = true) @PageableDefault(sort = "name", direction = Sort.Direction.ASC) Pageable pageable);
 
         @Operation(summary = "Buscar vacina por nome", description = "Retorna os dados de uma vacina específica pelo seu nome único.")
         @ApiResponses(value = {
