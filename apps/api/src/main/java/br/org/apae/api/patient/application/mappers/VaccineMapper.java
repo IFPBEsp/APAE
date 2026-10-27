@@ -16,12 +16,6 @@ public class VaccineMapper {
         return new Vaccine(dto.name());
     }
 
-    public Set<Vaccine> toEntitySet(Set<CreateVaccineDTO> createVaccineDTOs) {
-        return createVaccineDTOs.stream()
-                .map(dto -> new Vaccine(dto.name()))
-                .collect(Collectors.toSet());
-    }
-
     public Set<Vaccine> toEntitySetFromResponse(Set<VaccineResponseDTO> responseDTOs) {
         return responseDTOs.stream()
                 .map(dto -> new Vaccine(dto.id(), dto.name()))
