@@ -85,6 +85,25 @@ public final class HealthProfessionalMockDto {
         );
     }
 
+    public static CreateHealthProfessionalDTO createHealthProfessionalRequestWithInvalidCpf() {
+        return new CreateHealthProfessionalDTO(
+            createServiceAreaRequestPsychology(),
+            "11999999999",
+            "CRP-12345",
+            "teste@apae.org.br",
+            "834.002.892-24", // CPF inválido
+            "João da Silva",
+            "123456789",
+            createAddressRequest(),
+            List.of(
+                new CreateAvailabilityDTO("SEGUNDA", "MANHA"),
+                new CreateAvailabilityDTO("TERCA", "TARDE")
+            ),
+            "http://example.com/photo.jpg"
+        );
+    }
+
+
     public static AddressResponseDTO createAddressResponse1() {
         return new AddressResponseDTO(ADDRESS_ID_1, "01000-000", "São Paulo", "SP", "Centro", "Rua A", "123", "Apto 10");
     }
