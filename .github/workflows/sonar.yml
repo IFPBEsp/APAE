@@ -15,6 +15,7 @@ jobs:
       project-key: "apae-geral-backend"
       working-directory: "apps/api"
       java-version: "21"
+      sonar-host-url: ${{ vars.SONAR_HOST_URL }}
     secrets:
       SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
 
@@ -25,5 +26,6 @@ jobs:
       project-key: "apae-geral-frontend"
       working-directory: "apps/apae"
       node-version: "22"
+      sonar-host-url: ${{ vars.SONAR_HOST_URL }}
     secrets:
       SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
