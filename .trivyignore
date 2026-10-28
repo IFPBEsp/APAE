@@ -1,0 +1,2 @@
+# Arquivo de excecoes de vulnerabilidades para o Trivy (SCA)
+# Formato: <CVE-XXXX-NNNNN|GHSA-xxxx-xxxx-xxxx> exp:YYYY-MM-DD # justificativa
