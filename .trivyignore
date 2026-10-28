@@ -1,6 +1,6 @@
 # Arquivo de excecoes de vulnerabilidades para o Trivy (SCA)
 # Formato: <CVE-XXXX-NNNNN|GHSA-xxxx-xxxx-xxxx> exp:YYYY-MM-DD # justificativa
-CVE-2025-14813 exp:2027-12-31 # Dependencia transitiva Maven em analise pela equipe (issue #68)
+CVE-2025-14813 exp:2024-01-01 # Dependencia transitiva Maven em analise pela equipe (issue #68)
 CVE-2025-59952 exp:2027-12-31 # Dependencia transitiva Maven em analise pela equipe (issue #68)
 CVE-2026-102554 exp:2027-12-31 # Dependencia transitiva Maven em analise pela equipe (issue #68)
 CVE-2026-108106 exp:2027-12-31 # Dependencia transitiva Maven em analise pela equipe (issue #68)
