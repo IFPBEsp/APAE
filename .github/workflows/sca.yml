@@ -17,7 +17,7 @@ permissions:
 jobs:
   sca-api:
     name: SCA Maven (apps/api)
-    uses: IFPBEsp/APAE-INFRA/.github/workflows/sca-reusable.yml@8bd745c7e954f2eab4dba8fde552428a8aa86314
+    uses: IFPBEsp/APAE-INFRA/.github/workflows/sca-reusable.yml@6455a57f5512aaab3f4c136d80c8aab6ce312c01
     with:
       scan-path: "apps/api"
       severity: "HIGH,CRITICAL"
@@ -25,7 +25,7 @@ jobs:
 
   sca-frontend:
     name: SCA pnpm (apps/apae)
-    uses: IFPBEsp/APAE-INFRA/.github/workflows/sca-reusable.yml@8bd745c7e954f2eab4dba8fde552428a8aa86314
+    uses: IFPBEsp/APAE-INFRA/.github/workflows/sca-reusable.yml@6455a57f5512aaab3f4c136d80c8aab6ce312c01
     with:
       scan-path: "apps/apae"
       severity: "HIGH,CRITICAL"
