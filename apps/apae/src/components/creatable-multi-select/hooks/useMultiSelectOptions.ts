@@ -7,6 +7,45 @@ function isGroupedOptions(
   return opts.length > 0 && "heading" in opts[0];
 }
 
+function flattenOptions(
+  opts: MultiSelectOption[] | MultiSelectGroup[],
+): MultiSelectOption[] {
+  return isGroupedOptions(opts) ? opts.flatMap((g) => g.options) : opts;
+}
+
+function collectOptions(
+  flat: MultiSelectOption[],
+  deduplicate: boolean,
+): { result: MultiSelectOption[]; duplicates: string[] } {
+  const seen = new Set<string>();
+  const duplicates: string[] = [];
+  const result: MultiSelectOption[] = [];
+
+  for (const opt of flat) {
+    if (!seen.has(opt.value)) {
+      seen.add(opt.value);
+      result.push(opt);
+      continue;
+    }
+    duplicates.push(opt.value);
+    if (!deduplicate) result.push(opt);
+  }
+
+  return { result, duplicates };
+}
+
+function warnDuplicates(duplicates: string[], deduplicate: boolean): void {
+  if (process.env.NODE_ENV !== "development" || duplicates.length === 0) return;
+
+  const action = deduplicate ? "automatically removed" : "detected";
+  const hint = deduplicate
+    ? "Duplicates have been removed automatically."
+    : "Consider setting 'deduplicateOptions={true}' or ensure all option values are unique.";
+  console.warn(
+    `MultiSelect: Duplicate option values ${action}: ${duplicates.join(", ")}. ${hint}`,
+  );
+}
+
 interface UseMultiSelectOptionsReturn {
   allOptions: MultiSelectOption[];
   filteredOptions: MultiSelectOption[] | MultiSelectGroup[];
@@ -26,39 +65,11 @@ export function useMultiSelectOptions(
   );
 
   const allOptions = React.useMemo((): MultiSelectOption[] => {
-    if (options.length === 0) return [];
-
-    let flat: MultiSelectOption[];
-    if (isGroupedOptions(options)) {
-      flat = options.flatMap((g) => g.options);
-    } else {
-      flat = options as MultiSelectOption[];
-    }
-
-    const seen = new Set<string>();
-    const duplicates: string[] = [];
-    const result: MultiSelectOption[] = [];
-
-    for (const opt of flat) {
-      if (seen.has(opt.value)) {
-        duplicates.push(opt.value);
-        if (!deduplicateOptions) result.push(opt);
-      } else {
-        seen.add(opt.value);
-        result.push(opt);
-      }
-    }
-
-    if (process.env.NODE_ENV === "development" && duplicates.length > 0) {
-      const action = deduplicateOptions ? "automatically removed" : "detected";
-      console.warn(
-        `MultiSelect: Duplicate option values ${action}: ${duplicates.join(", ")}. ` +
-          (deduplicateOptions
-            ? "Duplicates have been removed automatically."
-            : "Consider setting 'deduplicateOptions={true}' or ensure all option values are unique."),
-      );
-    }
-
+    const { result, duplicates } = collectOptions(
+      flattenOptions(options),
+      deduplicateOptions,
+    );
+    warnDuplicates(duplicates, deduplicateOptions);
     return result;
   }, [options, deduplicateOptions]);
 

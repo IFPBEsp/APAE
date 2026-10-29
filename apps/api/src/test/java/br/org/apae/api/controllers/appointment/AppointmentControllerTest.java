@@ -42,6 +42,7 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -230,6 +231,50 @@ class AppointmentControllerTest {
 
         @Test
         @WithMockUser(username = "admin", roles = {"ADMIN"})
+        @DisplayName("Deve listar agendamentos gerados por profissional com sucesso (200)")
+        void shouldListGeneratedAppointmentsByProfessionalSuccessfully() throws Exception {
+            UUID professionalId = UUID.randomUUID();
+
+            var response1 = new GeneratedAppointmentResponseDTO(
+                    UUID.randomUUID(), UUID.randomUUID(), LocalDateTime.now().withNano(0), null, false, false, null, UUID.randomUUID(), null
+            );
+            var response2 = new GeneratedAppointmentResponseDTO(
+                    UUID.randomUUID(), UUID.randomUUID(), LocalDateTime.now().withNano(0), null, false, false, null, UUID.randomUUID(), null
+            );
+
+            when(service.listGeneratedByProfessional(professionalId)).thenReturn(List.of(response1, response2));
+
+            mockMvc.perform(get(URI + "/professional/{professionalId}/generated", professionalId).with(csrf()))
+                    .andExpect(status().isOk())
+                    .andExpect(jsonPath("$.length()").value(2))
+                    .andExpect(jsonPath("$[0].id").value(response1.id().toString()))
+                    .andExpect(jsonPath("$[0].appointmentId").value(response1.appointmentId().toString()))
+                    .andExpect(jsonPath("$[0].patientId").value(response1.patientId().toString()))
+                    .andExpect(jsonPath("$[1].id").value(response2.id().toString()))
+                    .andExpect(jsonPath("$[1].appointmentId").value(response2.appointmentId().toString()))
+                    .andExpect(jsonPath("$[1].patientId").value(response2.patientId().toString()));
+
+            verify(service).listGeneratedByProfessional(professionalId);
+        }
+
+        @Test
+        @WithMockUser(username = "admin", roles = {"ADMIN"})
+        @DisplayName("Deve retornar lista vazia quando profissional não possui agendamentos gerados (200)")
+        void shouldReturnEmptyListWhenProfessionalHasNoGeneratedAppointments() throws Exception {
+            UUID professionalId = UUID.randomUUID();
+
+            when(service.listGeneratedByProfessional(professionalId)).thenReturn(List.of());
+
+            mockMvc.perform(get(URI + "/professional/{professionalId}/generated", professionalId).with(csrf()))
+                    .andExpect(status().isOk())
+                    .andExpect(content().json("[]"))
+                    .andExpect(jsonPath("$.length()").value(0));
+
+            verify(service).listGeneratedByProfessional(professionalId);
+        }
+
+        @Test
+        @WithMockUser(username = "admin", roles = {"ADMIN"})
         @DisplayName("Deve listar agendamentos do dia atual com sucesso (200)")
         void shouldListTodayAppointmentsSuccessfully() throws Exception {
             LocalDate date = LocalDate.now();
@@ -293,7 +338,7 @@ class AppointmentControllerTest {
         @DisplayName("Deve atualizar regra de agendamento com sucesso (200)")
         void shouldUpdateAppointmentRuleSuccessfully() throws Exception {
             UUID id = UUID.randomUUID();
-            var payload = new UpdateAppointmentDTO(UUID.randomUUID(), UUID.randomUUID(), UUID.randomUUID(), 14, LocalDate.now().plusDays(1), LocalTime.of(10, 30, 0), LocalDate.now().plusDays(30));
+            var payload = new UpdateAppointmentDTO(UUID.randomUUID(), UUID.randomUUID(), 14, LocalDate.now().plusDays(1), LocalTime.of(10, 30, 0), LocalDate.now().plusDays(30));
             var response = new AppointmentResponseDTO(id, mock(HealthProfessionalResponseDTO.class), mock(AnnualRegistryResponseDTO.class), payload.frequencyDays(), payload.initialDate(), payload.endDate(), payload.hour(), true, LocalDateTime.now().withNano(0), null, null);
 
             when(service.update(id, payload)).thenReturn(response);

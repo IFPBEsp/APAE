@@ -142,7 +142,7 @@ class AppointmentMapperTest {
     }
 
     private static UpdateAppointmentDTO updateDto(UUID professionalId, UUID annualRegistrationId) {
-        return new UpdateAppointmentDTO(professionalId, annualRegistrationId, null, 45, END_DATE, HOUR, null);
+        return new UpdateAppointmentDTO(professionalId, annualRegistrationId, 45, END_DATE, HOUR, null);
     }
 
     @Test
@@ -204,7 +204,7 @@ class AppointmentMapperTest {
         Appointment appointment = appointment();
         HealthProfessional currentProfessional = appointment.getProfessional();
         AnnualRegistry currentRegistry = appointment.getAnnualRegistration();
-        UpdateAppointmentDTO empty = new UpdateAppointmentDTO(null, null, null, null, null, null, null);
+        UpdateAppointmentDTO empty = new UpdateAppointmentDTO(null, null, null, null, null, null);
 
         Appointment result = appointmentMapper.updateEntity(appointment, empty, professional(), annualRegistry());
 
@@ -224,7 +224,7 @@ class AppointmentMapperTest {
         AnnualRegistry currentRegistry = appointment.getAnnualRegistration();
         HealthProfessional newProfessional = new HealthProfessional(
                 PROFESSIONAL_ID, professionalUser(), new ServiceArea(2, "Psicologia"), "CRP-2");
-        UpdateAppointmentDTO dto = new UpdateAppointmentDTO(PROFESSIONAL_ID, null, null, null, null, null, null);
+        UpdateAppointmentDTO dto = new UpdateAppointmentDTO(PROFESSIONAL_ID, null, null, null, null, null);
 
         Appointment result = appointmentMapper.updateEntity(appointment, dto, newProfessional, annualRegistry());
 
@@ -241,26 +241,12 @@ class AppointmentMapperTest {
         AnnualRegistry newRegistry = new AnnualRegistry(
                 UUID.fromString("77777777-1111-2222-3333-444444444444"), "BPC-9", "Depressao", null,
                 BigDecimal.ONE, 2025, PATIENT_ID, Set.of(), Set.of());
-        UpdateAppointmentDTO dto = new UpdateAppointmentDTO(null, ANNUAL_REGISTRY_ID, null, null, null, null, null);
+        UpdateAppointmentDTO dto = new UpdateAppointmentDTO(null, ANNUAL_REGISTRY_ID, null, null, null, null);
 
         Appointment result = appointmentMapper.updateEntity(appointment, dto, professional(), newRegistry);
 
         assertSame(newRegistry, result.getAnnualRegistration());
         assertSame(currentProfessional, result.getProfessional());
-    }
-
-    @Test
-    @DisplayName("updateEntity ignora o serviceId do DTO porque nao existe area no agendamento")
-    void updateEntity_ShouldIgnoreServiceId() {
-        Appointment appointment = appointment();
-        HealthProfessional currentProfessional = appointment.getProfessional();
-        UpdateAppointmentDTO dto = new UpdateAppointmentDTO(null, null,
-                UUID.fromString("eeeeeeee-9999-8888-7777-666666666666"), null, null, null, null);
-
-        Appointment result = appointmentMapper.updateEntity(appointment, dto, professional(), annualRegistry());
-
-        assertSame(currentProfessional, result.getProfessional());
-        assertSame(appointment.getAnnualRegistration(), result.getAnnualRegistration());
     }
 
     @Test
@@ -270,7 +256,7 @@ class AppointmentMapperTest {
 
         Appointment result = appointmentMapper.updateEntity(
                 appointment,
-                new UpdateAppointmentDTO(null, null, null, null, null, null, END_DATE),
+                new UpdateAppointmentDTO(null, null, null, null, null, END_DATE),
                 professional(),
                 annualRegistry());
 
