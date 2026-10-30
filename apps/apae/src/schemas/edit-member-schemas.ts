@@ -7,16 +7,6 @@ export const EditAdditionals = Additionals.pick({
   allergies: true,
 });
 
-/**
- * Na edição, a foto pode ser:
- * - ausente (não alterar);
- * - string (URL da foto já cadastrada);
- * - File (nova foto), validado pelo photoFileSchema compartilhado.
- *
- * Usamos custom + superRefine em vez de z.union([photoFileSchema, z.string()])
- * para que um File inválido mostre a mensagem específica (formato/tamanho)
- * e não o erro genérico de união.
- */
 const editPhotoSchema = z
   .custom<File | string>((v) => v instanceof File || typeof v === "string", {
     message: "Selecione uma imagem",

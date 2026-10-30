@@ -14,11 +14,9 @@ const tooBig = () => makeFile("grande.png", "image/png", MAX_FILE_SIZE_BYTES + 1
 type Issue = { message: string; path: PropertyKey[] };
 type Result = { success: boolean; error?: { issues: Issue[] } };
 
-// Mensagens de erro do campo "photo" em um schema de paciente
 const photoMessages = (result: Result) =>
   result.error?.issues.filter((i) => i.path[0] === "photo").map((i) => i.message) ?? [];
 
-// Mensagens do schema compartilhado (fonte da verdade, usada também no profissional)
 const sharedMessages = (value: unknown) =>
   photoFileSchema.safeParse(value).error?.issues.map((i) => i.message) ?? [];
 
