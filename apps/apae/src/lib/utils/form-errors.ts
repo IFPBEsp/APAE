@@ -14,6 +14,12 @@ interface ApiErrorResponse {
   message?: string;
 }
 
+export const professionalFieldMap: Record<string, string> = {
+  phoneNumber: "phone",
+  identityDocument: "rg",
+  name: "fullName",
+};
+
 /**
  * Maps backend validation errors to frontend form fields.
  * Resolves nested field names and maps API specific fields to the UI.
@@ -23,6 +29,7 @@ interface ApiErrorResponse {
 export function handleBackendValidationErrors<T extends FieldValues>(
   errorData: ApiErrorResponse,
   setError: UseFormSetError<T>,
+  fieldMap?: Record<string, string>,
 ) {
   if (errorData.fields && Array.isArray(errorData.fields)) {
     errorData.fields.forEach((err) => {
@@ -38,6 +45,10 @@ export function handleBackendValidationErrors<T extends FieldValues>(
       if (fieldName === "fullName") fieldName = "name";
       if (fieldName === "contact") fieldName = "phone";
       if (fieldName === "familyIncome") fieldName = "householdIncome";
+
+      if (fieldMap && fieldMap[fieldName]) {
+        fieldName = fieldMap[fieldName];
+      }
 
       setError(fieldName as Path<T>, {
         type: "server",

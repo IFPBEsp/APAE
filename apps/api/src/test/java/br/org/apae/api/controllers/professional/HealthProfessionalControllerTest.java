@@ -124,6 +124,25 @@ class HealthProfessionalControllerTest {
   }
 
   @Test
+  @DisplayName("Deve retornar 400 ao cadastrar profissional com CPF inválido")
+  void shouldReturnBadRequestWhenCpfIsInvalid() throws Exception {
+   var request = HealthProfessionalMockDto.createHealthProfessionalRequestWithInvalidCpf();
+
+   var professionalPart = new MockMultipartFile("professional", "", MediaType.APPLICATION_JSON_VALUE, objectMapper.writeValueAsBytes(request));
+
+   mockMvc.perform(multipart("/professionals")
+                   .file(professionalPart)
+                   .file(HealthProfessionalMockDto.volunteerAgreementFile())
+                   .file(HealthProfessionalMockDto.curriculumFile())
+                   .file(HealthProfessionalMockDto.attachmentAnyFile())
+                   .header("Authorization", AuthTestHelper.bearerToken())
+                   .contentType(MediaType.MULTIPART_FORM_DATA))
+           .andExpect(status().isBadRequest()).andExpect(jsonPath("$.fields[0].field").value("cpf"));
+
+   Mockito.verify(service, Mockito.never()).createProfessional(any(), any(), any());
+  }
+
+  @Test
   @DisplayName("Deve criar profissional com foto com sucesso (201)")
   void shouldCreateProfessionalWithPhotoSuccessfully() throws Exception {
    var request = HealthProfessionalMockDto.createHealthProfessionalRequest();

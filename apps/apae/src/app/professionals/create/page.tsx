@@ -27,7 +27,6 @@ import { PhotoUpload } from "@/components/shared/PhotoUpload";
 
 export default function ProfessionalRegister(): JSX.Element {
   const router = useRouter();
-  const { create, loading, error, success } = useCreateProfessional();
 
   const form = useForm<RegisterProfessionalFormValues>({
     resolver: zodResolver(registerSchema),
@@ -49,6 +48,8 @@ export default function ProfessionalRegister(): JSX.Element {
       availability: generateAvailabilityMatrix([]),
     },
   });
+
+  const { create, loading, error, success } = useCreateProfessional(form.setError);
 
   const {
     fileInputRef,

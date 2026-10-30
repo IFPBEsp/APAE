@@ -1,8 +1,13 @@
 import { useState } from "react";
 import { createProfessional } from "@/services/profissional-service";
 import { useRouter } from "next/navigation";
+import { FieldValues, UseFormSetError } from "react-hook-form";
+import { handleBackendValidationErrors, professionalFieldMap, } from "@/lib/utils/form-errors";
 
-export function useCreateProfessional() {
+
+export function useCreateProfessional<T extends FieldValues>(
+  formSetError: UseFormSetError<T>,
+) {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -18,8 +23,14 @@ export function useCreateProfessional() {
       const data = await response.json();
 
       if (!response.ok) {
-        const errorMessage = data.message;
-        throw new Error(errorMessage);
+        handleBackendValidationErrors(
+          data,
+          formSetError,
+          professionalFieldMap,
+        );
+
+        setError(data.message || "Erro ao cadastrar profissional");
+        return;
       }
 
       setSuccess(true);

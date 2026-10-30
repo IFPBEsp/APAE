@@ -57,6 +57,7 @@ export async function PUT(
         {
           message:
             error.response?.data?.message || "Erro ao atualizar profissional",
+          fields: error.response?.data?.fields,
         },
         { status: error.response?.status || 500 },
       );
