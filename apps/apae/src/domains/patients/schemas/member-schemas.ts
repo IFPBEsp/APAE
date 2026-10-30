@@ -1,5 +1,6 @@
 import z, { ZodCoercedDate } from "zod";
 import { parseCivilDate } from "@/lib/date";
+import { photoFileSchema } from "@/schemas/shared/photo.schema";
 
 const CPF = z
   .string()
@@ -226,7 +227,7 @@ export const Profile = z.object({
   role: z.enum(["student", "patient"], {
     message: "Tipo de eficiência é obrigatório.",
   }),
-  photo: z.instanceof(File, { message: "A foto é obrigatória." }),
+  photo: photoFileSchema,
 });
 
 export type PersonalData = z.infer<typeof Personal>;
