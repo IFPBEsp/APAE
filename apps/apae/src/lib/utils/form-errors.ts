@@ -40,15 +40,15 @@ export function handleBackendValidationErrors<T extends FieldValues>(
         fieldName = parts[parts.length - 1];
       }
 
-      if (fieldMap && fieldMap[fieldName]) {
-        fieldName = fieldMap[fieldName];
-      }
-
       if (fieldName === "number") fieldName = "number";
       if (fieldName === "neighborhood") fieldName = "neighborhood";
       if (fieldName === "fullName") fieldName = "name";
       if (fieldName === "contact") fieldName = "phone";
       if (fieldName === "familyIncome") fieldName = "householdIncome";
+
+      if (fieldMap && fieldMap[fieldName]) {
+        fieldName = fieldMap[fieldName];
+      }
 
       setError(fieldName as Path<T>, {
         type: "server",
