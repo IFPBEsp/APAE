@@ -130,7 +130,8 @@ public final class HealthProfessionalMockDto {
                 new AvailabilityResponseDTO(UUID.randomUUID(), "SEGUNDA", "MANHA"),
                 new AvailabilityResponseDTO(UUID.randomUUID(), "TERCA", "TARDE")
             ),
-            "http://example.com/photo1.jpg"
+            "00000000-0000-0000-0000-000000000001",
+            "https://storage.example/photo1.jpg"
         );
     }
 
@@ -149,6 +150,7 @@ public final class HealthProfessionalMockDto {
             createAddressResponse2(),
             createServiceAreaResponsePsychology(),
             List.of(),
+            null,
             null
         );
     }
