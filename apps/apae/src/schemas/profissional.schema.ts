@@ -48,8 +48,11 @@ const baseSchema = z.object({
 
   rg: z
     .string()
-    .regex(rgRegex, "RG inválido")
-    .transform((val) => val.replace(/\W/g, "")),
+    .refine(
+      (value) => value === "" || rgRegex.test(value),
+      "RG inválido",
+   )
+   .transform((value) => (value === "" ? value : value.replace(/\W/g, ""))),
 
   state: z.string().regex(stateRegex, "Estado inválido"),
   city: z.string().regex(cityRegex, "Cidade inválida"),

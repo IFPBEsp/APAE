@@ -7,11 +7,12 @@ const CPF = z
   .min(14, "CPF deve ter pelo menos 11 dígitos")
   .regex(/^\d{3}\.\d{3}\.\d{3}-\d{2}$/, "Formato de CPF inválido");
 
-const RG = z
+const OptionalRG = z
   .string()
-  .min(1, "RG é obrigatório")
-  .min(9, "RG deve ter pelo menos 7 dígitos")
-  .regex(/^\d\.\d{3}\.\d{3}$/, "Formato de RG inválido");
+  .refine(
+    (value) => value === "" || /^\d\.\d{3}\.\d{3}$/.test(value),
+    "Formato de RG inválido",
+  );
 
 const CNS = z
   .string()
@@ -66,7 +67,7 @@ export const Personal = z
       .min(1, "Telefone é obrigatório")
       .min(14, "Telefone deve ter pelo menos 10 dígitos"),
     rg: z.object({
-      number: RG,
+      number: OptionalRG,
       issuing: z.object({
         body: z
           .string()
@@ -171,7 +172,7 @@ export const Additionals = z.object({
 });
 
 export const Kinship = z.object({
-  rg: RG,
+  rg: OptionalRG,
   cpf: CPF,
   alive: z.boolean(),
   name: z
