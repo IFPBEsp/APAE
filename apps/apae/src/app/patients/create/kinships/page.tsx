@@ -163,7 +163,7 @@ export default function MembersRegisterKinshipsPage() {
               name={`kinships.${index}.rg`}
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>RG do parente *</FormLabel>
+                  <FormLabel>RG do parente</FormLabel>
                   <FormControl>
                     <Input
                       placeholder="1.234.567"
