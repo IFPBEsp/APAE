@@ -192,7 +192,7 @@ export default function MembersRegisterPersonalPage() {
             name="rg.number"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>RG *</FormLabel>
+                <FormLabel>RG</FormLabel>
                 <FormControl>
                   <Input
                     placeholder="1.234.567"
