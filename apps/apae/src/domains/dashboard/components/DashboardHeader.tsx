@@ -15,7 +15,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from '@/components/ui/dialog';
-import { AppointmentForm } from '@/components/forms/AppointmentForm';
+import { AppointmentForm } from '@/domains/appointments/components/AppointmentForm';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import { CalendarDays } from 'lucide-react';

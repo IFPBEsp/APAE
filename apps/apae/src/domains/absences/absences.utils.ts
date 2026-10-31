@@ -1,4 +1,4 @@
-import { CreateAbsenceDTO, FormDataType } from "@/types/absence";
+import type { CreateAbsenceDTO, FormDataType } from "./types/absences.types";
 
 interface BuildAbsencePayloadParams {
   generatedAppointmentId: string;
