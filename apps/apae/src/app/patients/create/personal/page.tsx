@@ -45,20 +45,15 @@ export default function MembersRegisterPersonalPage() {
   const pathname = usePathname();
   const router = useRouter();
   const isEditing = pathname.includes("/edit");
-  const form = useForm<z.infer<typeof Personal>>({
+  const form = useForm<
+    z.input<typeof Personal>,
+    any,
+    z.output<typeof Personal>
+  >({
     mode: "onBlur",
     resolver: zodResolver(Personal),
     defaultValues: personal,
   });
-
-  const [isInitialized, setIsInitialized] = useState(false);
-
-  useEffect(() => {
-    if (personal.name && !isInitialized) {
-      form.reset(personal);
-      setIsInitialized(true);
-    }
-  }, [personal, form, isInitialized]);
 
   useEffect(() => {
     if (personal.name !== "") {
@@ -69,7 +64,16 @@ export default function MembersRegisterPersonalPage() {
   const onSubmit = async (values: z.infer<typeof Personal>) => {
     setIsLoading(true);
     try {
-      setPersonalData(values as PersonalData);
+      setPersonalData({
+        ...values,
+      rg: {
+        ...values.rg,
+        issuing: {
+          ...values.rg.issuing,
+          date: values.rg.issuing.date ?? null,
+        },
+      },
+    });
       setStep(MembersRegisterStep.KINSHIPS);
     } catch (error: unknown) {
       const err = error as { response?: { data?: Record<string, string[]> } };

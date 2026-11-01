@@ -23,7 +23,7 @@ export interface PatientGuardian {
 
 export interface PatientParentPayload {
   name: string;
-  rg: string;
+  rg: string | null;
   cpf: string;
   profession: string;
   isAlive: boolean;
@@ -53,9 +53,9 @@ export interface PatientPayload {
   registryOffice: string;
   fls: string;
   book: string;
-  rg: string;
+  rg: string | null;
   issueDate: string | null;
-  issuingAgency: string;
+  issuingAgency: string | null;
   cpf: string;
   cns: string;
   nis: string;
