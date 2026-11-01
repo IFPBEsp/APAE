@@ -7,7 +7,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import z from "zod";
 import { capitalizeFirst } from "@/lib/formats";
-import { useVaccinesContext } from "@/hooks/use-vaccines";
+import { useVaccinesContext } from "@/domains/vaccines/hooks/use-vaccines";
 import { vaccineFormSchema } from "@/domains/vaccines/vaccines.schema";
 
 export type DialogProps = Readonly<{

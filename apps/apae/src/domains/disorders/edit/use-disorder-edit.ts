@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { toast } from "react-toastify";
 import { fetchDisorderApi, updateDisorderApi } from "../disorders.api";
 import type { Disorder, UpdateDisorderParams } from "../disorders.types";
-import { useDisordersContext } from "@/hooks/use-disorders";
+import { useDisordersContext } from "@/domains/disorders/hooks/use-disorders";
 
 export function useDisorderEdit(id: string) {
   const [disorder, setDisorder] = useState<Disorder | null>(null);

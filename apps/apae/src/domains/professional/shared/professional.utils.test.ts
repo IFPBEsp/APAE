@@ -1,6 +1,6 @@
 import { describe, it, expect } from "vitest";
-import { Professional, daysOfWeek, shifts } from "@/types/profissional";
-import { ProfessionalFormValues } from "@/schemas/profissional.schema";
+import { Professional, daysOfWeek, shifts } from "@/domains/professional/types/profissional";
+import { ProfessionalFormValues } from "@/domains/professional/schemas/profissional.schema";
 import {
   filterProfessionals,
   buildProfessionalPayload,

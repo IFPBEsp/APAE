@@ -2,7 +2,7 @@
 
 import { useCallback } from "react";
 import { toast } from "react-toastify";
-import { useDisordersContext } from "@/hooks/use-disorders";
+import { useDisordersContext } from "@/domains/disorders/hooks/use-disorders";
 
 export function useDisordersList() {
   const {

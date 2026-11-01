@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { updateProfessional } from "@/services/profissional-service";
+import { updateProfessional } from "@/domains/professional/professional.api";
 import { handleBackendValidationErrors, professionalFieldMap } from "@/lib/utils/form-errors";
 import { FieldValues, UseFormSetError } from "react-hook-form";
 

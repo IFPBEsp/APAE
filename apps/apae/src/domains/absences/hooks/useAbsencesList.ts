@@ -5,7 +5,7 @@ import type {
 } from "@/domains/absences/types/absences.types";
 import { DashboardOverview } from "@/domains/dashboard/dashboard.types";
 import { bffFetchJson } from "@/lib/bff-client";
-import { Page } from "@/types/pagination";
+import { Page } from "@/lib/pagination";
 
 export function useAbsencesList() {
   const [searchName, setSearchName] = useState("");

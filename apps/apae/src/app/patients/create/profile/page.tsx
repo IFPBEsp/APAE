@@ -12,7 +12,7 @@ import {
   useMembersRegisterContext,
 } from "@/domains/patients/hooks/use-members-register-context";
 import { Profile } from "@/domains/patients/schemas/member-schemas";
-import { EditProfile } from "@/schemas/edit-member-schemas";
+import { EditProfile } from "@/domains/patients/schemas/edit-member-schemas";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
@@ -21,7 +21,7 @@ import { bffFetchJson } from "@/lib/bff-client";
 
 import z from "zod";
 import { FormButton, MembersRegisterForm } from "../form";
-import { usePhotoUpload } from "@/hooks/use-photo-upload";
+import { usePhotoUpload } from "@/lib/use-photo-upload";
 import { PhotoUpload } from "@/components/shared/PhotoUpload";
 import { Checkbox } from "@/components/ui/checkbox";
 import { useRouter, useParams, usePathname } from "next/navigation";

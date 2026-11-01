@@ -1,5 +1,5 @@
 import type { CreateAbsenceDTO, AbsenceResponseDTO } from './types/absences.types';
-import type { DocumentWithOutUrl } from '@/types/document';
+import type { DocumentWithOutUrl } from '@/domains/documents/types/document';
 import { ABSENCE_DOCUMENT_CATEGORY, ABSENCE_DOCUMENT_TYPE } from './absences.constants';
 import { bffFetch, bffFetchJson } from '@/lib/bff-client';
 

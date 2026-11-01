@@ -48,8 +48,8 @@ import { getAppointments } from "@/domains/appointments/appointments.api";
 import { getServiceAreas } from "@/domains/professional/professional.api";
 import type { Appointment } from "@/domains/appointments/types/appointments.types";
 import {Tooltip, TooltipContent, TooltipProvider, TooltipTrigger} from "@radix-ui/react-tooltip";
-import { useAbsenceAlerts } from '@/hooks/use-absence-alerts';
-import { useAppointmentFilters } from '@/hooks/use-appointment-filters';
+import { useAbsenceAlerts } from '@/domains/absences/hooks/use-absence-alerts';
+import { useAppointmentFilters } from '@/domains/appointments/hooks/use-appointment-filters';
 
 type Area = {
   id: number;

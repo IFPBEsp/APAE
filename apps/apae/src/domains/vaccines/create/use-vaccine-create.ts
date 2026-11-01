@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { useVaccinesContext } from "@/hooks/use-vaccines";
+import { useVaccinesContext } from "@/domains/vaccines/hooks/use-vaccines";
 import type { CreateVaccineParams } from "../vaccines.types";
 
 export function useVaccineCreate() {

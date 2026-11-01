@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { EditAddress, EditPersonal, EditAdditionals, EditGuardian, EditProfile } from "@/schemas/edit-member-schemas";
+import { EditAddress, EditPersonal, EditAdditionals, EditGuardian, EditProfile } from "@/domains/patients/schemas/edit-member-schemas";
 import { Address, Personal, Additionals, Guardian, Profile, Kinships } from "@/domains/patients/schemas/member-schemas";
 
 export type EditAddressFormValues = z.infer<typeof EditAddress>;

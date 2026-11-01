@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { createProfessional } from "@/services/profissional-service";
+import { createProfessional } from "@/domains/professional/professional.api";
 import { useRouter } from "next/navigation";
 import { FieldValues, UseFormSetError } from "react-hook-form";
 import { handleBackendValidationErrors, professionalFieldMap, } from "@/lib/utils/form-errors";

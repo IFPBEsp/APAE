@@ -1,7 +1,7 @@
 "use client";
 
-import { getAllProfessionals } from "@/services/profissional-service";
-import { Professional } from "@/types/profissional";
+import { getAllProfessionals } from "@/domains/professional/professional.api";
+import { Professional } from "@/domains/professional/types/profissional";
 import { useEffect, useState } from "react";
 
 interface PaginatedResponse<T> {

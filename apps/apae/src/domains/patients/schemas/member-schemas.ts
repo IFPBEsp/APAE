@@ -1,6 +1,6 @@
 import z, { ZodCoercedDate } from "zod";
 import { parseCivilDate } from "@/lib/date";
-import { photoFileSchema } from "@/schemas/shared/photo.schema";
+import { photoFileSchema } from "@/lib/schemas/photo.schema";
 
 const CPF = z
   .string()
