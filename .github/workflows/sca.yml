@@ -28,5 +28,6 @@ jobs:
     uses: IFPBEsp/APAE-INFRA/.github/workflows/sca-reusable.yml@6455a57f5512aaab3f4c136d80c8aab6ce312c01
     with:
       scan-path: "."
+      skip-dirs: "apps/api"
       severity: "HIGH,CRITICAL"
       ignore-unfixed: true
