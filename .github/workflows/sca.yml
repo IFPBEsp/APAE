@@ -24,9 +24,9 @@ jobs:
       ignore-unfixed: true
 
   sca-frontend:
-    name: SCA pnpm (apps/apae)
+    name: SCA pnpm (raiz — pnpm-lock.yaml)
     uses: IFPBEsp/APAE-INFRA/.github/workflows/sca-reusable.yml@6455a57f5512aaab3f4c136d80c8aab6ce312c01
     with:
-      scan-path: "apps/apae"
+      scan-path: "."
       severity: "HIGH,CRITICAL"
       ignore-unfixed: true
