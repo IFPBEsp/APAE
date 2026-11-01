@@ -50,7 +50,7 @@ associate_project() {
     -d "gateName=$gate_name" \
     -d "projectKey=$project_key")
   
-  if echo "$resp" | grep -q "not found";> /dev/null 2>&1; then
+  if echo "$resp" | grep -q "not found" > /dev/null 2>&1; then
     echo "    [AVISO] Projeto '$project_key' ainda não foi analisado no servidor. A associação será ignorada por enquanto."
   fi
 }
