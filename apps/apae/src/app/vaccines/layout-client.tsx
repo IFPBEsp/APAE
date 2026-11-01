@@ -1,6 +1,6 @@
 "use client";
 
-import { useVaccinesContext } from "@/hooks/use-vaccines";
+import { useVaccinesContext } from "@/domains/vaccines/hooks/use-vaccines";
 import { useEffect } from "react";
 import { toast } from "react-toastify";
 

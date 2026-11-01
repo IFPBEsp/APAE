@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState, useCallback } from "react";
-import { photoFileSchema } from "@/schemas/shared/photo.schema";
+import { photoFileSchema } from "@/lib/schemas/photo.schema";
 import { bffFetch } from "@/lib/bff-client";
 
 export function validatePhotoFile(file: File): string | null {

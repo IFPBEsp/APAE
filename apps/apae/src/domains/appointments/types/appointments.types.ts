@@ -1,8 +1,8 @@
 import type { Patient } from '@/domains/patients/types/patient';
 export type { Patient } from '@/domains/patients/types/patient';
 
-import type { Professional, Address } from '@/types/profissional';
-export type { Professional, Address } from '@/types/profissional';
+import type { Professional, Address } from '@/domains/professional/types/profissional';
+export type { Professional, Address } from '@/domains/professional/types/profissional';
 
 import type { Disorder } from '@/domains/disorders/disorders.types';
 export type { Disorder } from '@/domains/disorders/disorders.types';

@@ -15,7 +15,7 @@ import {
 } from "@/domains/patients/hooks/use-members-register-context";
 import { formatCEP, capitalizeFirst } from "@/lib/formats";
 import { Address } from "@/domains/patients/schemas/member-schemas";
-import { EditAddress } from "@/schemas/edit-member-schemas";
+import { EditAddress } from "@/domains/patients/schemas/edit-member-schemas";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { useState, useEffect } from "react";

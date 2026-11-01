@@ -34,7 +34,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from '@/components/ui/tooltip';
-import { useAbsenceAlerts } from '@/hooks/use-absence-alerts';
+import { useAbsenceAlerts } from '@/domains/absences/hooks/use-absence-alerts';
 
 export default function ViewAppointment() {
   const { id } = useParams<{ id: string }>();

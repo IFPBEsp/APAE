@@ -4,10 +4,10 @@ import Image from "@/assets/background_image.jpg";
 import { MembersRegisterProvider } from "@/domains/patients/hooks/use-members-register-context";
 import { PageOrchestrator } from "./orchestrator";
 import { Nunito } from "next/font/google";
-import { VaccinesProvider } from "@/hooks/use-vaccines";
+import { VaccinesProvider } from "@/domains/vaccines/hooks/use-vaccines";
 import { useMembersRegisterContext, MembersRegisterStep } from "@/domains/patients/hooks/use-members-register-context";
 import { CheckCircle2, Circle } from "lucide-react";
-import { DisordersProvider } from "@/hooks/use-disorders";
+import { DisordersProvider } from "@/domains/disorders/hooks/use-disorders";
 
 const nunito = Nunito({
   subsets: ["latin"],

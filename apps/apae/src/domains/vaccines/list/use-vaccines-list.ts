@@ -1,9 +1,9 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
-import { useVaccinesContext } from "@/hooks/use-vaccines";
+import { useVaccinesContext } from "@/domains/vaccines/hooks/use-vaccines";
 import { bffFetchJson } from "@/lib/bff-client";
-import type { Page } from "@/types/pagination";
+import type { Page } from "@/lib/pagination";
 import type { Vaccine } from "../vaccines.types";
 
 interface UseVaccinesListParams {

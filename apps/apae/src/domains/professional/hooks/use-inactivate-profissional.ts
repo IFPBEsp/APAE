@@ -1,4 +1,4 @@
-import { inactivateProfessional } from "@/services/profissional-service";
+import { inactivateProfessional } from "@/domains/professional/professional.api";
 
 export function useInactivateProfessional() {
   async function inactivate(id: string) {

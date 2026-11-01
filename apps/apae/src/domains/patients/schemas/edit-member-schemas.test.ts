@@ -1,7 +1,7 @@
 import { describe, it, expect } from "vitest";
-import { Profile } from "../domains/patients/schemas/member-schemas";
+import { Profile } from "@/domains/patients/schemas/member-schemas";
 import { EditProfile } from "./edit-member-schemas";
-import { photoFileSchema } from "@/schemas/shared/photo.schema";
+import { photoFileSchema } from "@/lib/schemas/photo.schema";
 import { MAX_FILE_SIZE_BYTES } from "@/lib/constants";
 
 const makeFile = (name: string, type: string, size = 1024) =>

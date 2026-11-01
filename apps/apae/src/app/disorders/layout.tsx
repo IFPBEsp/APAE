@@ -1,6 +1,6 @@
 "use client";
 
-import { DisordersProvider } from "@/hooks/use-disorders";
+import { DisordersProvider } from "@/domains/disorders/hooks/use-disorders";
 
 export default function DisordersLayout({
   children,

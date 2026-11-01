@@ -15,7 +15,7 @@ import {
 } from "@/domains/patients/hooks/use-members-register-context";
 import { formatCEP, capitalizeFirst } from "@/lib/formats";
 import { Guardian, GuardianData } from "@/domains/patients/schemas/member-schemas";
-import { EditGuardian } from "@/schemas/edit-member-schemas";
+import { EditGuardian } from "@/domains/patients/schemas/edit-member-schemas";
 import { zodResolver } from "@hookform/resolvers/zod";
 import React, { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
