@@ -17,7 +17,7 @@ permissions:
 jobs:
   sca-api:
     name: SCA Maven (apps/api)
-    uses: IFPBEsp/APAE-INFRA/.github/workflows/sca-reusable.yml@6455a57f5512aaab3f4c136d80c8aab6ce312c01
+    uses: IFPBEsp/APAE-INFRA/.github/workflows/sca-reusable.yml@2a91862cd4d522abe16925a8bf080a8613dd4b06
     with:
       scan-path: "apps/api"
       severity: "HIGH,CRITICAL"
@@ -25,7 +25,7 @@ jobs:
 
   sca-frontend:
     name: SCA pnpm (raiz — pnpm-lock.yaml)
-    uses: IFPBEsp/APAE-INFRA/.github/workflows/sca-reusable.yml@6455a57f5512aaab3f4c136d80c8aab6ce312c01
+    uses: IFPBEsp/APAE-INFRA/.github/workflows/sca-reusable.yml@2a91862cd4d522abe16925a8bf080a8613dd4b06
     with:
       scan-path: "."
       skip-dirs: "apps/api"
