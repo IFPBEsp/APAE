@@ -15,10 +15,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { useCreateProfessional } from "@/hooks/profissional/use-create-profissional";
-import {
-  registerSchema,
-  type RegisterProfessionalFormValues,
-} from "@/schemas/profissional.schema";
+import { registerSchema, type RegisterProfessionalFormValues, } from "@/schemas/profissional.schema";
 import { ProfessionalFormFields } from "@/domains/professional/components/ProfessionalFormFields";
 import { generateAvailabilityMatrix } from "@/domains/professional/shared/disponibilidade.utils";
 import { buildProfessionalPayload } from "@/domains/professional/shared/professional.utils";
@@ -59,8 +56,7 @@ export default function ProfessionalRegister(): JSX.Element {
     photoSuccess,
   } = usePhotoUpload();
 
-  const onSubmit: SubmitHandler<RegisterProfessionalFormValues> = async (values) => {
-    const formData = new FormData();
+  const onSubmit: SubmitHandler<RegisterProfessionalFormValues> = async (values) => {    const formData = new FormData();
     const payload = buildProfessionalPayload(values);
     formData.append(
       "professional",
