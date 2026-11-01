@@ -41,7 +41,7 @@ export function buildProfessionalPayload(values: ProfessionalFormValues) {
     email: values.email.trim(),
     cpf: values.cpf.trim(),
     name: values.fullName.trim(),
-    identityDocument: values.rg.trim(),
+    identityDocument: values.rg.trim() || null,
     address: {
       state: values.state,
       city: values.city.trim(),
