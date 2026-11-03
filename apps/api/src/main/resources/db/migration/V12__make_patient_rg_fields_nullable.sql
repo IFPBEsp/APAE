@@ -1,0 +1,7 @@
+ALTER TABLE pacientes
+    ALTER COLUMN rg DROP NOT NULL,
+    ALTER COLUMN data_de_emissao DROP NOT NULL,
+    ALTER COLUMN orgao_emissor DROP NOT NULL;
+
+ALTER TABLE parentes
+    ALTER COLUMN rg DROP NOT NULL;

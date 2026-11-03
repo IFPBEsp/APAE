@@ -8,11 +8,12 @@ const CPF = z
   .min(14, "CPF deve ter pelo menos 11 dígitos")
   .regex(/^\d{3}\.\d{3}\.\d{3}-\d{2}$/, "Formato de CPF inválido");
 
-const RG = z
+const OptionalRG = z
   .string()
-  .min(1, "RG é obrigatório")
-  .min(9, "RG deve ter pelo menos 7 dígitos")
-  .regex(/^\d\.\d{3}\.\d{3}$/, "Formato de RG inválido");
+  .refine(
+    (value) => value === "" || /^\d\.\d{3}\.\d{3}$/.test(value),
+    "Formato de RG inválido",
+  );
 
 const CNS = z
   .string()
@@ -46,6 +47,30 @@ const civilDateSchema = (
       ),
   ) as unknown as ZodCoercedDate<Date>;
 
+  const optionalCivilDateSchema = z
+  .union([z.string(), z.date(), z.null(), z.undefined()])
+  .transform((value): Date | null => {
+    if (value === "" || value === null || value === undefined) {
+      return null;
+    }
+
+    return parseCivilDate(value as string | Date) ?? null;
+  })
+  .refine(
+    (date) => date === null || date <= new Date(),
+    { message: "Data de emissão não pode ser futura" },
+  )
+  .refine(
+    (date) => {
+      if (date === null) return true;
+
+      const minDate = new Date();
+      minDate.setFullYear(minDate.getFullYear() - 50);
+      return date >= minDate;
+    },
+    { message: "Data de emissão muito antiga" },
+  );
+
 export const Personal = z
   .object({
     name: z
@@ -67,22 +92,19 @@ export const Personal = z
       .min(1, "Telefone é obrigatório")
       .min(14, "Telefone deve ter pelo menos 10 dígitos"),
     rg: z.object({
-      number: RG,
+      number: OptionalRG,
       issuing: z.object({
         body: z
           .string()
-          .min(1, "Órgão emissor é obrigatório")
-          .min(2, "Órgão emissor inválido")
           .max(10, "Órgão emissor muito longo")
-          .regex(
-            /^[A-Z]{2,4}\/[A-Z]{2}$/,
+          .refine((value) => value === "" || value.length >= 2, {
+            message: "Órgão emissor inválido",
+          })
+          .refine(
+            (value) => value === "" || /^[A-Z]{2,4}\/[A-Z]{2}$/.test(value),
             "Formato inválido. Use SSP/UF, PC/UF, etc.",
           ),
-        date: civilDateSchema(
-          "Data de emissão não pode ser futura",
-          50,
-          "Data de emissão muito antiga",
-        ),
+        date: optionalCivilDateSchema,
       }),
     }),
     cns: CNS,
@@ -109,9 +131,33 @@ export const Personal = z
       place: z.string().min(1, "Naturalidade é obrigatória."),
     }),
   })
-  .refine((data) => data.rg.issuing.date > data.birth.date, {
-    message: "A data de emissão do RG não pode ser anterior ao nascimento",
-    path: ["rg", "issuing", "date"],
+  .superRefine((data, ctx) => {
+    if (!data.rg.number.trim()) return;
+
+    if (data.rg.issuing.body === "") {
+      ctx.addIssue({
+        code: "custom",
+        message: "Órgão emissor é obrigatório",
+        path: ["rg", "issuing", "body"],
+      });
+    }
+
+    if (!data.rg.issuing.date) {
+      ctx.addIssue({
+        code: "custom",
+        message: "Data de emissão é obrigatória",
+        path: ["rg", "issuing", "date"],
+      });
+      return;
+    }
+
+    if (data.rg.issuing.date <= data.birth.date) {
+      ctx.addIssue({
+        code: "custom",
+        message: "A data de emissão do RG não pode ser anterior ao nascimento",
+        path: ["rg", "issuing", "date"],
+      });
+    }
   });
 
 export const Address = z.object({
@@ -172,7 +218,7 @@ export const Additionals = z.object({
 });
 
 export const Kinship = z.object({
-  rg: RG,
+  rg: OptionalRG,
   cpf: CPF,
   alive: z.boolean(),
   name: z
