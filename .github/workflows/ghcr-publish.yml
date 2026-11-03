@@ -46,9 +46,19 @@ jobs:
       contents: read
 
     steps:
+      - name: Generate GitHub App token
+        id: app-token
+        uses: actions/create-github-app-token@v3
+        with:
+          app-id: ${{ vars.GITOPS_APP_ID }}
+          private-key: ${{ secrets.GITOPS_APP_PRIVATE_KEY }}
+          owner: IFPBEsp
+          repositories: APAE-INFRA
+          permission-contents: write
+
       - name: Send GitOps publication event
         env:
-          GH_TOKEN: ${{ secrets.GITOPS_DISPATCH_TOKEN }}
+          GH_TOKEN: ${{ steps.app-token.outputs.token }}
           IMAGE: ${{ needs.publish-backend.outputs.image }}
           IMAGE_TAG: ${{ needs.publish-backend.outputs.sha-tag }}
           IMAGE_DIGEST: ${{ needs.publish-backend.outputs.digest }}
@@ -84,9 +94,19 @@ jobs:
       contents: read
 
     steps:
+      - name: Generate GitHub App token
+        id: app-token
+        uses: actions/create-github-app-token@v3
+        with:
+          app-id: ${{ vars.GITOPS_APP_ID }}
+          private-key: ${{ secrets.GITOPS_APP_PRIVATE_KEY }}
+          owner: IFPBEsp
+          repositories: APAE-INFRA
+          permission-contents: write
+
       - name: Send GitOps publication event
         env:
-          GH_TOKEN: ${{ secrets.GITOPS_DISPATCH_TOKEN }}
+          GH_TOKEN: ${{ steps.app-token.outputs.token }}
           IMAGE: ${{ needs.publish-frontend.outputs.image }}
           IMAGE_TAG: ${{ needs.publish-frontend.outputs.sha-tag }}
           IMAGE_DIGEST: ${{ needs.publish-frontend.outputs.digest }}
