@@ -1,14 +1,2 @@
 # Arquivo de excecoes de vulnerabilidades para o Trivy (SCA)
 # Formato: <CVE-XXXX-NNNNN|GHSA-xxxx-xxxx-xxxx> exp:YYYY-MM-DD # justificativa
-CVE-2026-44492 exp:2027-12-31 # Teste de excecao valida frontend para PR
-CVE-2026-42039 exp:2027-12-31 # Teste de excecao valida frontend para PR
-CVE-2026-44487 exp:2027-12-31 # Teste de excecao valida frontend para PR
-CVE-2026-44486 exp:2027-12-31 # Teste de excecao valida frontend para PR
-CVE-2026-44496 exp:2027-12-31 # Teste de excecao valida frontend para PR
-CVE-2026-44495 exp:2027-12-31 # Teste de excecao valida frontend para PR
-CVE-2026-42043 exp:2027-12-31 # Teste de excecao valida frontend para PR
-CVE-2021-3749 exp:2027-12-31 # Teste de excecao valida frontend para PR
-CVE-2025-27152 exp:2027-12-31 # Teste de excecao valida frontend para PR
-CVE-2026-25639 exp:2027-12-31 # Teste de excecao valida frontend para PR
-CVE-2026-42033 exp:2027-12-31 # Teste de excecao valida frontend para PR
-CVE-2026-42035 exp:2027-12-31 # Teste de excecao valida frontend para PR
