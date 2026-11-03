@@ -21,6 +21,7 @@ import Availability from "@/components/forms/AvailabilityForm";
 import HealthAreaSelect from "@/components/shared/HealthAreaSelect";
 import { STATES } from "@/lib/states";
 import type { ProfessionalFormValues } from "@/schemas/profissional.schema";
+import { formatRG, formatPhone } from "@/lib/formats";
 
 /**
  * Campos comuns do profissional (fullName ... complement) + disponibilidade.
@@ -122,7 +123,9 @@ export function ProfessionalFormFields() {
             <FormItem>
               <FormLabel>RG *</FormLabel>
               <FormControl>
-                <Input placeholder="Ex: 1234567" {...field} />
+                <Input 
+                placeholder="Ex: 12.345.678-9" {...field}
+                onChange={(e) => field.onChange(formatRG(e.target.value))} />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -135,14 +138,11 @@ export function ProfessionalFormFields() {
             <FormItem>
               <FormLabel>Telefone *</FormLabel>
               <FormControl>
-                <InputMask
-                  mask="(__) _____-____"
-                  replacement={{ _: /\d/ }}
-                  value={field.value ?? ""}
-                  onChange={(e) => field.onChange(e.target.value)}
-                  onBlur={field.onBlur}
+                <Input
                   placeholder="(xx) xxxxx-xxxx"
-                  className="w-full rounded-md border px-3 py-2"
+                  value={field.value ?? ""}
+                  onChange={(e) => field.onChange(formatPhone(e.target.value))}
+                  onBlur={field.onBlur}
                 />
               </FormControl>
               <FormMessage>{fieldState.error?.message}</FormMessage>

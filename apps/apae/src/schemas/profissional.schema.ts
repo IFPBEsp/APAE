@@ -1,13 +1,13 @@
 import * as z from "zod";
-import { cpfSchema } from "@/schemas/shared/personal-data.schema";
+import {
+  cpfSchema,
+  nomeCompletoSchema,
+  rgSchema,
+  telefoneSchema,
+} from "@/schemas/shared/personal-data.schema";
 import { MAX_FILE_SIZE_BYTES, MAX_FILE_SIZE_LABEL } from "@/lib/constants";
 import { optionalPhotoSchema, photoFileSchema } from "@/schemas/shared/photo.schema";
 
-const nameRegex = /^[A-Za-zÀ-ÖØ-öø-ÿ ]{3,100}$/;
-const phoneRegex = /^\(\d{2}\) \d{5}-\d{4}$/;
-
-const rgRegex =
-  /^(\d{7,8}[\dXx]?|\d\.\d{3}\.\d{3}|\d{2}\.\d{3}\.\d{3}-[\dXx])$/;
 const stateRegex = /^[A-Z]{2}$/;
 const cityRegex = /^[A-Za-zÀ-ÿ\s]+$/;
 const neighborhoodRegex = /^[A-Za-zÀ-ÿ\s]+$/;
@@ -31,12 +31,7 @@ const fileSchema = z
   .refine((file) => file.size <= MAX_FILE_SIZE_BYTES, `Arquivo deve ser menor que ${MAX_FILE_SIZE_LABEL}`);
 
 const baseSchema = z.object({
-  fullName: z
-    .string()
-    .regex(
-      nameRegex,
-      "Nome inválido. Use apenas letras e espaços, 3-100 caracteres"
-    ),
+  fullName: nomeCompletoSchema,
 
   email: z.email("Email inválido"),
 
@@ -46,10 +41,7 @@ const baseSchema = z.object({
 
   serviceArea: z.string().min(1, "Selecione uma área"),
 
-  rg: z
-    .string()
-    .regex(rgRegex, "RG inválido")
-    .transform((val) => val.replace(/\W/g, "")),
+  rg: rgSchema,
 
   state: z.string().regex(stateRegex, "Estado inválido"),
   city: z.string().regex(cityRegex, "Cidade inválida"),
@@ -63,13 +55,7 @@ const baseSchema = z.object({
     .string()
     .regex(/^\d{5}-\d{3}$/, "CEP inválido. Formato esperado: XXXXX-XXX"),
 
-  phone: z
-    .string()
-    .regex(
-      phoneRegex,
-      "Telefone inválido. Formato esperado: (xx) xxxxx-xxxx"
-    )
-    .transform((val) => val.trim()),
+  phone: telefoneSchema,
 
   availability: z
     .array(

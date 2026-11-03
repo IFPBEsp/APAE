@@ -1,10 +1,5 @@
 import z from "zod";
-
-const cpfRegex = /^\d{3}\.\d{3}\.\d{3}-\d{2}$/;
-const cpfSchema = z
-  .string()
-  .trim()
-  .regex(cpfRegex, { message: "CPF deve estar no formato XXX.XXX.XXX-XX" });
+import { cpfSchema } from "@/schemas/shared/personal-data.schema";
 
 export const patientSchema = z.object({
   id: z.string().uuid(),
