@@ -53,7 +53,7 @@ function createAxiosInstance(baseURL: string) {
   });
 }
 
-const AUTH_PUBLIC_PATHS = ["/auth/signin", "/auth/signup", "/auth/password-recovery"];
+const AUTH_PUBLIC_PATHS = ["/auth/signin", "/auth/password-recovery"];
 
 const makeInterceptors = (api: AxiosInstance) => {
   api.interceptors.request.use(
