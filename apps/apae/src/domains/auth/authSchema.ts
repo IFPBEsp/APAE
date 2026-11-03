@@ -1,5 +1,5 @@
 import z from "zod";
-import { cpfSchema } from "@/schemas/shared/personal-data.schema";
+import { cpfSchema } from "@/lib/personal-data.schema";
 
 export const patientSchema = z.object({
   id: z.string().uuid(),

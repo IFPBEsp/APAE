@@ -1,12 +1,12 @@
 import z, { ZodCoercedDate } from "zod";
 import { parseCivilDate } from "@/lib/date";
-import { photoFileSchema } from "@/schemas/shared/photo.schema";
+import { photoFileSchema } from "@/lib/photo.schema";
 import {
   cpfSchema,
   nomeCompletoSchema,
   rgSchema,
   telefoneSchema,
-} from "@/schemas/shared/personal-data.schema";
+} from "@/lib/personal-data.schema";
 
 const CNS = z
   .string()

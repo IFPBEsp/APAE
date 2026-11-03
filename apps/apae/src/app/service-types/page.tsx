@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { ServiceTypeListItemItem } from "./service-type-item";
+import { ServiceTypeListItemItem } from "@/domains/service-types/service-type-item";
 import { Loader2 } from "lucide-react";
 import { SearchFilters } from "@/components/search-filters";
 import { useServiceTypesList } from "@/domains/service-types";

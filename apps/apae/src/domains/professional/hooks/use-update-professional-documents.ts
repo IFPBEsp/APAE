@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { updateProfessionalDocuments } from "@/services/profissional-service";
+import { updateProfessionalDocuments } from "@/domains/professional/profissional-service";
 
 type ApiError = {
   message?: string;

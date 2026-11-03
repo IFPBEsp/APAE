@@ -4,9 +4,9 @@ import {
   nomeCompletoSchema,
   rgSchema,
   telefoneSchema,
-} from "@/schemas/shared/personal-data.schema";
+} from "@/lib/personal-data.schema";
 import { MAX_FILE_SIZE_BYTES, MAX_FILE_SIZE_LABEL } from "@/lib/constants";
-import { optionalPhotoSchema, photoFileSchema } from "@/schemas/shared/photo.schema";
+import { optionalPhotoSchema, photoFileSchema } from "@/lib/photo.schema";
 
 const stateRegex = /^[A-Z]{2}$/;
 const cityRegex = /^[A-Za-zÀ-ÿ\s]+$/;

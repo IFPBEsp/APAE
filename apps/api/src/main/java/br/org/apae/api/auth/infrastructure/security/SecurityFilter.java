@@ -25,7 +25,8 @@ public class SecurityFilter extends OncePerRequestFilter {
 
     private static final Logger log = LoggerFactory.getLogger(SecurityFilter.class);
     public static final List<String> PUBLIC_PATHS = List.of(
-            "/auth/**",
+            "/auth/signin",
+            "/auth/password-recovery/**",
             "/v3/api-docs/**",
             "/swagger-ui/**",
             "/swagger-ui.html",

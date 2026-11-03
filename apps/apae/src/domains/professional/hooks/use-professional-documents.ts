@@ -1,8 +1,8 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { getProfessionalDocuments } from "@/services/profissional-service";
-import { DocumentWithUrl } from "@/types/document";
+import { getProfessionalDocuments } from "@/domains/professional/profissional-service";
+import { DocumentWithUrl } from "@/domains/documents/documents.types";
 
 export function useProfessionalDocuments(id?: string) {
   const [documents, setDocuments] = useState<DocumentWithUrl[]>([]);

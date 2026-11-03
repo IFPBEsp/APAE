@@ -20,7 +20,7 @@ import {
 import Availability from "@/components/forms/AvailabilityForm";
 import HealthAreaSelect from "@/components/shared/HealthAreaSelect";
 import { STATES } from "@/lib/states";
-import type { ProfessionalFormValues } from "@/schemas/profissional.schema";
+import type { ProfessionalFormValues } from "@/domains/professional/profissional.schema";
 import { formatRG, formatPhone } from "@/lib/formats";
 
 /**

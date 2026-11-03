@@ -31,7 +31,7 @@ import { handleBackendValidationErrors } from "@/lib/utils/form-errors";
 import { formatCivilDateDisplayValue } from "@/lib/date";
 import { InputMask } from "@react-input/mask";
 
-import { DoubleColumn, FormButton, MembersRegisterForm } from "../form";
+import { DoubleColumn, FormButton, MembersRegisterForm } from "@/domains/patients/components/form";
 import z from "zod";
 
 export default function MembersRegisterPersonalPage() {

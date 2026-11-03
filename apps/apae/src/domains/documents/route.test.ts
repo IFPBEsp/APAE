@@ -1,7 +1,7 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { NextRequest } from "next/server";
 import { AxiosError, AxiosHeaders } from "axios";
-import { GET } from "./route";
+import { GET } from "@/app/api/documents/[patientId]/route";
 import { createDocumentsAPI } from "@/lib/axios";
 
 vi.mock("@/lib/axios", () => ({

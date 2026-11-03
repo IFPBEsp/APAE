@@ -10,11 +10,11 @@ import type { PatientCardData } from "@/domains/patients/types/patient";
 import { SearchFilters } from "@/components/search-filters";
 import { Pagination } from "@/components/shared/pagination";
 import { toast } from "react-toastify";
-import { useDebounce } from "@/hooks/use-debounce";
-import { usePatientFilters } from "@/hooks/use-patients-filters";
+import { useDebounce } from "@/lib/use-debounce";
+import { usePatientFilters } from "@/domains/patients/hooks/use-patients-filters";
 import { bffFetchJson } from "@/lib/bff-client";
 import { buildPatientListQuery } from "@/domains/patients/shared/patient.utils";
-import type { Page } from "@/types/pagination";
+import type { Page } from "@/lib/pagination";
 
 import { Suspense } from "react";
 
