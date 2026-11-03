@@ -35,3 +35,79 @@ jobs:
         NEXT_PUBLIC_API_URL=/apae-geral/api
       platforms: '["linux/amd64"]'
       scan-severity: "HIGH,CRITICAL"
+
+  notify-backend:
+    name: Notify APAE-INFRA - backend
+    needs: publish-backend
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-24.04
+    environment: gitops-dispatch
+    permissions:
+      contents: read
+
+    steps:
+      - name: Send GitOps publication event
+        env:
+          GH_TOKEN: ${{ secrets.GITOPS_DISPATCH_TOKEN }}
+          IMAGE: ${{ needs.publish-backend.outputs.image }}
+          IMAGE_TAG: ${{ needs.publish-backend.outputs.sha-tag }}
+          IMAGE_DIGEST: ${{ needs.publish-backend.outputs.digest }}
+          SOURCE_REPOSITORY: ${{ needs.publish-backend.outputs.source-repository }}
+          SOURCE_COMMIT: ${{ needs.publish-backend.outputs.source-commit }}
+        run: |
+          set -euo pipefail
+
+          [[ -n "$GH_TOKEN" ]] || {
+            echo "::error::GITOPS_DISPATCH_TOKEN não configurado."
+            exit 1
+          }
+
+          gh api \
+            --method POST \
+            repos/IFPBEsp/APAE-INFRA/dispatches \
+            -f event_type='gitops-image-published' \
+            -f 'client_payload[application]=apae-geral' \
+            -f 'client_payload[environment]=dev' \
+            -f "client_payload[image]=$IMAGE" \
+            -f "client_payload[image_tag]=$IMAGE_TAG" \
+            -f "client_payload[image_digest]=$IMAGE_DIGEST" \
+            -f "client_payload[source_repository]=$SOURCE_REPOSITORY" \
+            -f "client_payload[source_commit]=$SOURCE_COMMIT"
+
+  notify-frontend:
+    name: Notify APAE-INFRA - frontend
+    needs: publish-frontend
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-24.04
+    environment: gitops-dispatch
+    permissions:
+      contents: read
+
+    steps:
+      - name: Send GitOps publication event
+        env:
+          GH_TOKEN: ${{ secrets.GITOPS_DISPATCH_TOKEN }}
+          IMAGE: ${{ needs.publish-frontend.outputs.image }}
+          IMAGE_TAG: ${{ needs.publish-frontend.outputs.sha-tag }}
+          IMAGE_DIGEST: ${{ needs.publish-frontend.outputs.digest }}
+          SOURCE_REPOSITORY: ${{ needs.publish-frontend.outputs.source-repository }}
+          SOURCE_COMMIT: ${{ needs.publish-frontend.outputs.source-commit }}
+        run: |
+          set -euo pipefail
+
+          [[ -n "$GH_TOKEN" ]] || {
+            echo "::error::GITOPS_DISPATCH_TOKEN não configurado."
+            exit 1
+          }
+
+          gh api \
+            --method POST \
+            repos/IFPBEsp/APAE-INFRA/dispatches \
+            -f event_type='gitops-image-published' \
+            -f 'client_payload[application]=apae-geral' \
+            -f 'client_payload[environment]=dev' \
+            -f "client_payload[image]=$IMAGE" \
+            -f "client_payload[image_tag]=$IMAGE_TAG" \
+            -f "client_payload[image_digest]=$IMAGE_DIGEST" \
+            -f "client_payload[source_repository]=$SOURCE_REPOSITORY" \
+            -f "client_payload[source_commit]=$SOURCE_COMMIT"
