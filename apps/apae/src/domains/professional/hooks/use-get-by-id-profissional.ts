@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useParams } from "next/navigation";
-import { getProfessionalById } from "@/services/profissional-service";
-import { Professional } from "@/types/profissional";
+import { getProfessionalById } from "@/domains/professional/profissional-service";
+import { Professional } from "@/domains/professional/profissional.types";
 
 export function useGetByIdProfessional() {
   const params = useParams();

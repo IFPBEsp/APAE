@@ -1,5 +1,6 @@
 import { useState } from "react";
-import { updateProfessional } from "@/services/profissional-service";
+import { toast } from "react-toastify";
+import { updateProfessional } from "@/domains/professional/profissional-service";
 import { handleBackendValidationErrors, professionalFieldMap } from "@/lib/utils/form-errors";
 import { FieldValues, UseFormSetError } from "react-hook-form";
 
@@ -52,18 +53,19 @@ export function useUpdateProfessional<T extends FieldValues>(
           professionalFieldMap,
         );
 
-        setError(body.message || "Erro ao atualizar profissional");
+        const msg = body.message || "Erro ao atualizar profissional";
+        setError(msg);
+        toast.error(msg);
         return false;
 }
 
       setSuccess(true);
+      toast.success("Profissional atualizado com sucesso!");
       return true;
     } catch (err: unknown) {
-      if (err instanceof Error) {
-        setError(err.message);
-      } else {
-        setError("Erro inesperado");
-      }
+      const msg = err instanceof Error ? err.message : "Erro inesperado";
+      setError(msg);
+      toast.error(msg);
       return false;
     } finally {
       setLoading(false);

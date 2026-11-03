@@ -1,9 +1,10 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
-import { useVaccinesContext } from "@/hooks/use-vaccines";
+import { toast } from "react-toastify";
+import { useVaccinesContext } from "@/domains/vaccines/use-vaccines";
 import { bffFetchJson } from "@/lib/bff-client";
-import type { Page } from "@/types/pagination";
+import type { Page } from "@/lib/pagination";
 import type { Vaccine } from "../vaccines.types";
 
 interface UseVaccinesListParams {
@@ -56,6 +57,7 @@ export function useVaccinesList({ name, page, size }: UseVaccinesListParams) {
         }
 
         console.error("Erro ao buscar vacinas:", err);
+        toast.error(err instanceof Error ? err.message : "Não foi possível carregar as vacinas.");
       } finally {
         if (!signal?.aborted) {
           setLoading(false);

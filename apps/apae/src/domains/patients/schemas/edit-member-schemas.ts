@@ -1,6 +1,6 @@
 import * as z from "zod";
-import { Personal, Address, Additionals, Guardian, Profile } from "../domains/patients/schemas/member-schemas";
-import { photoFileSchema } from "@/schemas/shared/photo.schema";
+import { Personal, Address, Additionals, Guardian, Profile } from "./member-schemas";
+import { photoFileSchema } from "@/lib/photo.schema";
 
 export const EditAdditionals = Additionals.pick({
   vaccines: true,

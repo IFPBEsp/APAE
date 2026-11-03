@@ -12,7 +12,7 @@ import {
   useMembersRegisterContext,
 } from "@/domains/patients/hooks/use-members-register-context";
 import { Profile } from "@/domains/patients/schemas/member-schemas";
-import { EditProfile } from "@/schemas/edit-member-schemas";
+import { EditProfile } from "@/domains/patients/schemas/edit-member-schemas";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
@@ -20,8 +20,8 @@ import { handleBackendValidationErrors } from "@/lib/utils/form-errors";
 import { bffFetchJson } from "@/lib/bff-client";
 
 import z from "zod";
-import { FormButton, MembersRegisterForm } from "../form";
-import { usePhotoUpload } from "@/hooks/use-photo-upload";
+import { FormButton, MembersRegisterForm } from "@/domains/patients/components/form";
+import { usePhotoUpload } from "@/lib/use-photo-upload";
 import { PhotoUpload } from "@/components/shared/PhotoUpload";
 import { Checkbox } from "@/components/ui/checkbox";
 import { useRouter, useParams, usePathname } from "next/navigation";
@@ -64,14 +64,15 @@ export default function MembersRegisterProfilePage() {
 
   const [isInitialized, setIsInitialized] = useState(false);
 
-  const getErrorMessage = (data: any) => {
+  const getErrorMessage = (data: unknown): string => {
     if (!data) return "Erro inesperado no servidor.";
     if (typeof data === "string") return data;
-    if (typeof data.message === "string") return data.message;
-    if (data.message && typeof data.message.message === "string") {
-      return data.message.message;
+    const obj = data as { message?: string | { message?: string }; error?: string };
+    if (typeof obj.message === "string") return obj.message;
+    if (obj.message && typeof obj.message.message === "string") {
+      return obj.message.message;
     }
-    if (typeof data.error === "string") return data.error;
+    if (typeof obj.error === "string") return obj.error;
     return "Erro inesperado no servidor.";
   };
 
@@ -174,7 +175,7 @@ export default function MembersRegisterProfilePage() {
 
             toast.error(displayMsg);
             setStep(MembersRegisterStep.PERSONAL);
-            form.setError(targetField as any, {
+            form.setError(targetField as Parameters<typeof form.setError>[0], {
               type: "manual",
               message: displayMsg,
             });

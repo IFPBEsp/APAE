@@ -12,6 +12,8 @@
     "dev:backend": "bash ./.scripts/run-app.sh backend",
     "dev:apae": "bash ./.scripts/run-app.sh frontend apae",
     "dev": "pnpm dev:infra && bash ./.scripts/run-app.sh both apae",
+    "build": "pnpm --filter agendamento build",
+    "lint": "pnpm --filter agendamento lint",
     "test:api": "cd apps/api && ./mvnw package",
     "test:front": "pnpm --filter agendamento test",
     "db:migrate": "docker compose up db-migrate",

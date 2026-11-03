@@ -14,15 +14,15 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import { useCreateProfessional } from "@/hooks/profissional/use-create-profissional";
+import { useCreateProfessional } from "@/domains/professional/hooks/use-create-profissional";
 import {
   registerSchema,
   type RegisterProfessionalFormValues,
-} from "@/schemas/profissional.schema";
+} from "@/domains/professional/profissional.schema";
 import { ProfessionalFormFields } from "@/domains/professional/components/ProfessionalFormFields";
 import { generateAvailabilityMatrix } from "@/domains/professional/shared/disponibilidade.utils";
 import { buildProfessionalPayload } from "@/domains/professional/shared/professional.utils";
-import { usePhotoUpload } from "@/hooks/use-photo-upload";
+import { usePhotoUpload } from "@/lib/use-photo-upload";
 import { PhotoUpload } from "@/components/shared/PhotoUpload";
 
 export default function ProfessionalRegister(): JSX.Element {

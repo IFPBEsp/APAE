@@ -6,8 +6,8 @@ import {
   MembersRegisterState,
   MembersRegisterStep,
 } from "@/domains/patients/hooks/use-members-register-context";
-import { VaccinesProvider } from "@/hooks/use-vaccines";
-import { DisordersProvider } from "@/hooks/use-disorders";
+import { VaccinesProvider } from "@/domains/vaccines/use-vaccines";
+import { DisordersProvider } from "@/domains/disorders/use-disorders";
 import { useParams, usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import { Loader2, CheckCircle2, Circle } from "lucide-react";

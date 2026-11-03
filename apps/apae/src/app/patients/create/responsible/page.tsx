@@ -14,8 +14,8 @@ import {
   useMembersRegisterContext,
 } from "@/domains/patients/hooks/use-members-register-context";
 import { formatCEP, capitalizeFirst } from "@/lib/formats";
-import { Guardian, GuardianData } from "@/domains/patients/schemas/member-schemas";
-import { EditGuardian } from "@/schemas/edit-member-schemas";
+import { Guardian } from "@/domains/patients/schemas/member-schemas";
+import { EditGuardian } from "@/domains/patients/schemas/edit-member-schemas";
 import { zodResolver } from "@hookform/resolvers/zod";
 import React, { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
@@ -24,7 +24,7 @@ import { usePathname } from "next/navigation";
 import { formatPhone } from "@/lib/formats";
 import { Checkbox } from "@/components/ui/checkbox";
 import z from "zod";
-import { DoubleColumn, FormButton, MembersRegisterForm } from "../form";
+import { DoubleColumn, FormButton, MembersRegisterForm } from "@/domains/patients/components/form";
 
 export default function MembersRegisterGuardianPage() {
   const {
@@ -84,7 +84,7 @@ export default function MembersRegisterGuardianPage() {
         address: {
           ...values.address,
           number: values.address.noNumber ? "SN" : values.address.number,
-          district: (values.address as any).district || ""
+          district: (values.address as { district?: string }).district || ""
         }
       };
 
@@ -115,10 +115,10 @@ export default function MembersRegisterGuardianPage() {
                   ...currentValues,
                   address: currentValues.address ? {
                     ...currentValues.address,
-                    district: (currentValues.address as any).district || ""
+                    district: (currentValues.address as { district?: string }).district || ""
                   } : undefined
                 };
-                setGuardianData(dataToSave as any);
+                setGuardianData(dataToSave);
                 setStep(MembersRegisterStep.KINSHIPS);
               }}
               disabled={isLoading}
