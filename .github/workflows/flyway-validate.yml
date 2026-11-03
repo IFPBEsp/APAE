@@ -2,6 +2,7 @@ name: Flyway Migrations Validate
 
 on:
   pull_request:
+    types: [opened, synchronize, reopened, labeled, unlabeled]
     paths:
       - "apps/api/src/main/resources/db/migration/**"
       - ".github/workflows/flyway-validate.yml"
@@ -13,7 +14,7 @@ permissions:
 jobs:
   flyway:
     name: Validate Flyway migrations
-    uses: IFPBEsp/APAE-INFRA/.github/workflows/flyway-validate-reusable.yml@58-ci-criar-workflow-reutilizavel-para-validacao-de-migrations-do-flyway-dos-repositorios-da-apae
+    uses: IFPBEsp/APAE-INFRA/.github/workflows/flyway-validate-reusable.yml@4879b200ff4e0022145190727c5266a564bbc998
     with:
       migrations-path: "apps/api/src/main/resources/db/migration"
       schemas: "apae_geral"
