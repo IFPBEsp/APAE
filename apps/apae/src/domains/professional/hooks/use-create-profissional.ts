@@ -1,5 +1,6 @@
 import { useState } from "react";
-import { createProfessional } from "@/services/profissional-service";
+import { toast } from "react-toastify";
+import { createProfessional } from "@/domains/professional/profissional-service";
 import { useRouter } from "next/navigation";
 import { FieldValues, UseFormSetError } from "react-hook-form";
 import { handleBackendValidationErrors, professionalFieldMap, } from "@/lib/utils/form-errors";
@@ -29,18 +30,19 @@ export function useCreateProfessional<T extends FieldValues>(
           professionalFieldMap,
         );
 
-        setError(data.message || "Erro ao cadastrar profissional");
+        const msg = data.message || "Erro ao cadastrar profissional";
+        setError(msg);
+        toast.error(msg);
         return;
       }
 
       setSuccess(true);
+      toast.success("Profissional cadastrado com sucesso!");
       router.push("/professionals");
     } catch (err: unknown) {
-      if(err instanceof Error) {
-        setError(err.message || "Erro inesperado");
-      } else {
-        setError("Erro inesperado");
-      }
+      const msg = err instanceof Error ? err.message || "Erro inesperado" : "Erro inesperado";
+      setError(msg);
+      toast.error(msg);
       throw err;
     } finally {
       setLoading(false);

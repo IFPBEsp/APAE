@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { AxiosError, AxiosHeaders } from "axios";
-import { POST } from "./route";
+import { POST } from "@/app/api/auth/login/route";
 import { createBaseApi } from "@/lib/axios";
 import { setSessionCookie } from "@/lib/cookies";
 

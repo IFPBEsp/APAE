@@ -32,10 +32,10 @@ export function usePatientFilters(): PatientFilterOptions {
           citiesData,
           serviceAreaData,
         ] = await Promise.all([
-          bffFetchJson<string[]>("/apae-geral/api/patients/filtros/transtornos"),
-          bffFetchJson<string[]>("/apae-geral/api/patients/filtros/anos"),
-          bffFetchJson<string[]>("/apae-geral/api/patients/filtros/cidades"),
-          bffFetchJson<string[]>("/apae-geral/api/patients/filtros/tipos-atendimento"),
+          bffFetchJson<string[]>("/apae-geral/api/patients/filters/transtornos"),
+          bffFetchJson<string[]>("/apae-geral/api/patients/filters/anos"),
+          bffFetchJson<string[]>("/apae-geral/api/patients/filters/cidades"),
+          bffFetchJson<string[]>("/apae-geral/api/patients/filters/tipos-atendimento"),
         ]);
 
         setDisorderOptions(disordersData);

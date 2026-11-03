@@ -1,8 +1,9 @@
 "use client";
 
-import { getAllProfessionals } from "@/services/profissional-service";
-import { Professional } from "@/types/profissional";
+import { getAllProfessionals } from "@/domains/professional/profissional-service";
+import { Professional } from "@/domains/professional/profissional.types";
 import { useEffect, useState } from "react";
+import { toast } from "react-toastify";
 
 interface PaginatedResponse<T> {
   content: T[];
@@ -27,7 +28,9 @@ export function useFetchProfessionals(active: boolean) {
 
         setProfessionals(data.content);
       } catch (err) {
-        setError(err instanceof Error ? err.message : "Erro desconhecido");
+        const msg = err instanceof Error ? err.message : "Erro desconhecido";
+        setError(msg);
+        toast.error(msg);
       } finally {
         setLoading(false);
       }

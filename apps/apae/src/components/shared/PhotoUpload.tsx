@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { useFormContext } from "react-hook-form";
 import { MAX_FILE_SIZE_LABEL } from "@/lib/constants";
-import { ALLOWED_IMAGE_TYPES } from "@/schemas/shared/photo.schema";
+import { ALLOWED_IMAGE_TYPES } from "@/lib/photo.schema";
 
 export interface PhotoUploadProps {
   label?: string;

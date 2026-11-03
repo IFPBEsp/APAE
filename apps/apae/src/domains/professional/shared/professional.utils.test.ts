@@ -1,6 +1,6 @@
 import { describe, it, expect } from "vitest";
-import { Professional, daysOfWeek, shifts } from "@/types/profissional";
-import { ProfessionalFormValues } from "@/schemas/profissional.schema";
+import { Professional, daysOfWeek, shifts } from "@/domains/professional/profissional.types";
+import { ProfessionalFormValues } from "@/domains/professional/profissional.schema";
 import {
   filterProfessionals,
   buildProfessionalPayload,
@@ -282,12 +282,12 @@ describe("isValidFile", () => {
     expect(isValidFile(makeFile("application/pdf", 0))).toBe(false);
   });
 
-  it("aceita arquivo com exatamente 5MB", () => {
-    expect(isValidFile(makeFile("application/pdf", 5 * MB))).toBe(true);
+  it("aceita arquivo com exatamente 10MB", () => {
+    expect(isValidFile(makeFile("application/pdf", 10 * MB))).toBe(true);
   });
 
-  it("rejeita arquivo maior que 5MB", () => {
-    expect(isValidFile(makeFile("application/pdf", 5 * MB + 1))).toBe(false);
+  it("rejeita arquivo maior que 10MB", () => {
+    expect(isValidFile(makeFile("application/pdf", 10 * MB + 1))).toBe(false);
   });
 });
 

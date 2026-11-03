@@ -7,7 +7,7 @@ import {
   fetchTodayAppointments,
   fetchAllAppointments,
 } from '../dashboard.api';
-import { useAbsenceAlerts } from '@/hooks/use-absence-alerts';
+import { useAbsenceAlerts } from '@/domains/absences/hooks/use-absence-alerts';
 
 export function useDashboard() {
   const [selectedDate, setSelectedDate] = useState<Date>(new Date());

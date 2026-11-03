@@ -1,6 +1,6 @@
 import { bffFetchJson } from "@/lib/bff-client";
-import { Page } from "@/types/pagination";
-import { Professional } from "@/types/profissional";
+import { Page } from "@/lib/pagination";
+import { Professional } from "@/domains/professional/profissional.types";
 
 export async function getHealthProfessionals(): Promise<Professional[]> {
   const data = await bffFetchJson<Page<Professional>>(`/apae-geral/api/professionals?page=0&size=100`);

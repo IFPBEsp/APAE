@@ -7,15 +7,15 @@ import { zodResolver } from "@hookform/resolvers/zod";
 
 import { Button } from "@/components/ui/button";
 import { Form } from "@/components/ui/form";
-import { useGetByIdProfessional } from "@/hooks/profissional/use-get-by-id-profissional";
-import { useUpdateProfessional } from "@/hooks/profissional/use-update-profissional";
-import { useUpdateProfessionalDocuments } from "@/hooks/profissional/use-update-professional-documents";
-import { updateProfessionalSchema, UpdateProfessionalFormValues } from "@/schemas/profissional.schema";
+import { useGetByIdProfessional } from "@/domains/professional/hooks/use-get-by-id-profissional";
+import { useUpdateProfessional } from "@/domains/professional/hooks/use-update-profissional";
+import { useUpdateProfessionalDocuments } from "@/domains/professional/hooks/use-update-professional-documents";
+import { updateProfessionalSchema, UpdateProfessionalFormValues } from "@/domains/professional/profissional.schema";
 import { ProfessionalFormFields } from "@/domains/professional/components/ProfessionalFormFields";
 import { ProfessionalDocuments } from "@/domains/professional/components/ProfessionalDocuments";
-import { usePhotoUpload } from "@/hooks/use-photo-upload";
+import { usePhotoUpload } from "@/lib/use-photo-upload";
 import { PhotoUpload } from "@/components/shared/PhotoUpload";
-import { useProfessionalDocs } from "@/hooks/profissional/use-professional-docs";
+import { useProfessionalDocs } from "@/domains/professional/hooks/use-professional-docs";
 import {
   mapProfessionalToForm,
   buildProfessionalPayload,

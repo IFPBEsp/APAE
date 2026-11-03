@@ -1,6 +1,6 @@
 import { useCallback, useMemo, useState } from "react";
-import { getProfessionalDocuments, removeProfessionalDocument } from "@/services/profissional-service";
-import { DocumentWithUrl } from "@/types/document";
+import { getProfessionalDocuments, removeProfessionalDocument } from "@/domains/professional/profissional-service";
+import { DocumentWithUrl } from "@/domains/documents/documents.types";
 import { isValidFile } from "@/domains/professional/shared/professional.utils";
 
 export function useProfessionalDocs(professionalId: string | undefined) {
