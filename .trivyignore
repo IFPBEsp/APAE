@@ -1,17 +1,6 @@
 # Arquivo de excecoes de vulnerabilidades para o Trivy (SCA)
 # Formato: <CVE-XXXX-NNNNN|GHSA-xxxx-xxxx-xxxx> exp:YYYY-MM-DD # justificativa
 CVE-2020-7598 exp:2027-12-31 # Teste de excecao valida pnpm
+GHSA-vh95-rmgr-6w4m exp:2027-12-31 # Teste de excecao valida pnpm
 CVE-2021-44906 exp:2027-12-31 # Teste de excecao valida pnpm
-CVE-2026-67319 exp:2027-12-31 # Teste de excecao valida pnpm
-CVE-2026-67316 exp:2027-12-31 # Teste de excecao valida pnpm
-CVE-2026-44490 exp:2027-12-31 # Teste de excecao valida pnpm
-CVE-2020-28168 exp:2027-12-31 # Teste de excecao valida pnpm
-CVE-2023-45857 exp:2027-12-31 # Teste de excecao valida pnpm
-CVE-2025-62718 exp:2027-12-31 # Teste de excecao valida pnpm
-CVE-2026-40175 exp:2027-12-31 # Teste de excecao valida pnpm
-CVE-2026-42034 exp:2027-12-31 # Teste de excecao valida pnpm
-CVE-2026-42036 exp:2027-12-31 # Teste de excecao valida pnpm
-CVE-2026-42038 exp:2027-12-31 # Teste de excecao valida pnpm
-CVE-2026-42041 exp:2027-12-31 # Teste de excecao valida pnpm
-CVE-2026-42042 exp:2027-12-31 # Teste de excecao valida pnpm
-CVE-2026-42040 exp:2027-12-31 # Teste de excecao valida pnpm
+GHSA-xvch-5gv4-984h exp:2027-12-31 # Teste de excecao valida pnpm
