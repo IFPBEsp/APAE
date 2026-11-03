@@ -19,7 +19,7 @@ public class Parent {
     @Column(name = "nome", nullable = false)
     private String name;
 
-    @Column(name = "rg", nullable = false)
+    @Column(name = "rg")
     private String rg;
 
     @Column(name = "cpf", nullable = false)
