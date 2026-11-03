@@ -1,11 +1,8 @@
-import { TodayAppointment } from '@/types/appointment';
+import type { TodayAppointment, AppointmentResponseDTO } from '@/domains/appointments/types/appointments.types';
 import { Page } from '@/types/pagination';
+
 import { bffFetchJson } from '@/lib/bff-client';
-import {
-  listTodayAppointment,
-  getAppointments,
-  type AppointmentResponseDTO,
-} from '@/app/services/appointmentService';
+import { listTodayAppointment, getAppointments } from '@/domains/appointments/appointments.api';
 
 export async function fetchTodayAppointments(date: string): Promise<Page<TodayAppointment>> {
   return listTodayAppointment(date);

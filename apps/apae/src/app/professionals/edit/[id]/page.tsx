@@ -25,7 +25,17 @@ import {
 export default function ProfessionalUpdate(): JSX.Element {
   const router = useRouter();
   const { professional, loading: loadingProf, error: errorProf } = useGetByIdProfessional();
-  const { updateProfessional, loading, error, success } = useUpdateProfessional();
+
+    const form = useForm<UpdateProfessionalFormValues>({
+    resolver: zodResolver(updateProfessionalSchema),
+    defaultValues: {
+      fullName: "", email: "", cpf: "", professionalDocument: "", serviceArea: "",
+      phone: "", rg: "", state: "", city: "", neighborhood: "",
+      street: "", number: "", complement: "", cep: "", availability: [],
+    },
+  });
+
+  const { updateProfessional, loading, error, success } = useUpdateProfessional(form.setError);
   const { upload, loadingDocs, errorDocs, successDocs } = useUpdateProfessionalDocuments();
   const {
     fileInputRef,
@@ -59,15 +69,6 @@ export default function ProfessionalUpdate(): JSX.Element {
     clearFiles,
     isValidFile,
   } = useProfessionalDocs(professional?.id);
-
-  const form = useForm<UpdateProfessionalFormValues>({
-    resolver: zodResolver(updateProfessionalSchema),
-    defaultValues: {
-      fullName: "", email: "", cpf: "", professionalDocument: "", serviceArea: "",
-      phone: "", rg: "", state: "", city: "", neighborhood: "",
-      street: "", number: "", complement: "", cep: "", availability: [],
-    },
-  });
 
   useEffect(() => {
     if (!professional) return;

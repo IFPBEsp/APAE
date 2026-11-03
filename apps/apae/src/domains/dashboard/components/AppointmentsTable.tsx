@@ -16,7 +16,7 @@ import {
   TooltipTrigger,
 } from '@/components/ui/tooltip';
 import { RegisterAbsenceButton } from '@/components/buttons/RegisterAbsenceButton';
-import { TodayAppointment } from '@/types/appointment';
+import type { TodayAppointment } from '@/domains/appointments/types/appointments.types';
 import { format } from 'date-fns';
 import { AlertTriangle } from 'lucide-react';
 import Link from 'next/link';

@@ -46,7 +46,8 @@ export async function POST(req: Request) {
       return NextResponse.json(
         {
           message:
-            data?.message || "Erro ao criar profissional"
+            data?.message || "Erro ao criar profissional",
+            fields: data?.fields,
         },
         { status: error.response?.status || 500 }
       );

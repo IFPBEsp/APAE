@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 
-import { Appointment } from "@/app/services/appointmentService";
+import type { Appointment } from "@/domains/appointments/types/appointments.types";
 import { formatDatePTBR } from "@/lib/utils";
 
 interface AppointmentFiltersResult {
@@ -43,7 +43,7 @@ export function useAppointmentFilters(
       appointment.professional.name.toLowerCase().includes(search);
 
     const matchesArea = selectedArea
-      ? appointment.professional.healthSector === selectedArea
+      ? appointment.professional.serviceArea?.area === selectedArea
       : true;
 
     const matchesStatus = selectedStatus

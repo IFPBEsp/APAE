@@ -50,7 +50,7 @@ public interface HealthProfessionalController {
   })
   @PostMapping(consumes = { MediaType.MULTIPART_FORM_DATA_VALUE })
   ResponseEntity<HealthProfessionalResponseDTO> createHealthProfessional(
-    @RequestPart("professional") CreateHealthProfessionalDTO dto,
+    @RequestPart("professional") @Valid CreateHealthProfessionalDTO dto,
     @ModelAttribute @Valid CreateProfessionalDocumentsDTO documentsDTO,
     @RequestPart(value = "profilePhoto", required = false) @ValidFileSize @ValidFileFormat MultipartFile profilePhoto
     );
