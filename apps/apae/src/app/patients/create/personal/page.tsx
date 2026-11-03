@@ -22,7 +22,7 @@ import {
   formatRG,
   capitalizeFirst,
 } from "@/lib/formats";
-import { Personal, PersonalData } from "@/domains/patients/schemas/member-schemas";
+import { Personal } from "@/domains/patients/schemas/member-schemas";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { useState, useEffect } from "react";
@@ -47,7 +47,7 @@ export default function MembersRegisterPersonalPage() {
   const isEditing = pathname.includes("/edit");
   const form = useForm<
     z.input<typeof Personal>,
-    any,
+    unknown,
     z.output<typeof Personal>
   >({
     mode: "onBlur",
@@ -218,7 +218,7 @@ export default function MembersRegisterPersonalPage() {
             name="rg.issuing.body"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Órgão Emissor *</FormLabel>
+                <FormLabel>Órgão Emissor</FormLabel>
                 <FormControl>
                   <Input
                     placeholder="SSP/SP"
@@ -240,7 +240,7 @@ export default function MembersRegisterPersonalPage() {
             name="rg.issuing.date"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Data de Emissão *</FormLabel>
+                <FormLabel>Data de Emissão</FormLabel>
                 <FormControl>
                   <InputMask
                     mask="__/__/____"
