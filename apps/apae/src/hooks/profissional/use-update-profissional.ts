@@ -7,7 +7,7 @@ export type UpdateProfessionalDto = {
   phoneNumber: string;
   professionalDocument: string | null;
   serviceArea: { area: string };
-  identityDocument: string;
+  identityDocument: string | null;
   availabilities?: { day?: string; shift?: string }[];
 };
 

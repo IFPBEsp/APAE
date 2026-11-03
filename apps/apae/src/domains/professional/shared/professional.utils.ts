@@ -63,7 +63,7 @@ export function mapProfessionalToForm(professional: Professional) {
     professionalDocument: professional.professionalDocument ?? "",
     serviceArea: professional.serviceArea.area,
     phone: professional.phoneNumber,
-    rg: professional.identityDocument,
+    rg: professional.identityDocument ?? "",
     state: professional.address.state,
     city: professional.address.city,
     neighborhood: professional.address.neighborhood,
