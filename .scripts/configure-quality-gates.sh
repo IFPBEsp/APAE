@@ -1,4 +1,17 @@
 #!/usr/bin/env bash
+# ==============================================================================
+# Script: configure-quality-gates.sh
+# Objetivo: Cria e configura os Quality Gates no SonarQube para apae-geral-backend
+#           e apae-geral-frontend via Web API.
+#
+# Como executar (Exemplo genérico):
+#   SONAR_HOST_URL="http://localhost:9500" SONAR_TOKEN="seu_token_aqui" ./.scripts/configure-quality-gates.sh
+#
+# Variáveis de ambiente:
+#   SONAR_HOST_URL - URL do servidor SonarQube (padrão: http://localhost:9500)
+#   SONAR_TOKEN    - Token de autenticação de usuário gerado no SonarQube
+# ==============================================================================
+
 set -uo pipefail
 
 SONAR_HOST_URL="${SONAR_HOST_URL:-http://localhost:9500}"
@@ -6,6 +19,7 @@ SONAR_TOKEN="${SONAR_TOKEN:-}"
 
 if [ -z "$SONAR_TOKEN" ]; then
   echo "ERRO: SONAR_TOKEN não definido."
+  echo "Uso: SONAR_HOST_URL=http://localhost:9500 SONAR_TOKEN=seu_token ./.scripts/configure-quality-gates.sh"
   exit 1
 fi
 
@@ -21,7 +35,6 @@ sonar_api() {
 create_gate() {
   local gate_name="$1"
   echo "--> Configurando Quality Gate: '$gate_name'..."
-  # Tenta destruir caso já exista
   sonar_api POST "api/qualitygates/destroy" -d "name=$gate_name" > /dev/null || true
   sonar_api POST "api/qualitygates/create" -d "name=$gate_name" > /dev/null
 }
@@ -33,7 +46,6 @@ add_condition() {
   local error="$4"   
 
   echo "    [Condição] $metric $op $error"
-  # Tenta criar a condição (se já existir, ignora para evitar erro)
   sonar_api POST "api/qualitygates/create_condition" \
     -d "gateName=$gate_name" \
     -d "metric=$metric" \
