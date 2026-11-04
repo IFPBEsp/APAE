@@ -127,7 +127,7 @@ jobs:
           echo "Release candidata completa preparada para ${GITHUB_SHA}."
 
       - name: Upload release candidate
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         with:
           name: release-candidate
           path: release.json
@@ -144,7 +144,7 @@ jobs:
       contents: read
     steps:
       - name: Download release candidate
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4
         with:
           name: release-candidate
           path: .
@@ -168,7 +168,7 @@ jobs:
 
       - name: Generate GitOps dispatcher token
         id: app-token
-        uses: actions/create-github-app-token@v3
+        uses: actions/create-github-app-token@64ab729a6294000f5aa4a4bc0b73d1f32bc45510 # v3
         with:
           app-id: ${{ vars.GITOPS_DISPATCH_APP_ID }}
           private-key: ${{ secrets.GITOPS_DISPATCH_APP_PRIVATE_KEY }}
