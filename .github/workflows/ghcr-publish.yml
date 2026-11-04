@@ -166,12 +166,12 @@ jobs:
               and (.images.frontend.digest | test("^sha256:[a-f0-9]{64}$"))' \
             release.json > /dev/null
 
-      - name: Generate GitHub App token
+      - name: Generate GitOps dispatcher token
         id: app-token
         uses: actions/create-github-app-token@v3
         with:
-          app-id: ${{ vars.GITOPS_APP_ID }}
-          private-key: ${{ secrets.GITOPS_APP_PRIVATE_KEY }}
+          app-id: ${{ vars.GITOPS_DISPATCH_APP_ID }}
+          private-key: ${{ secrets.GITOPS_DISPATCH_APP_PRIVATE_KEY }}
           owner: IFPBEsp
           repositories: APAE-INFRA
           permission-contents: write
