@@ -3,6 +3,7 @@
 import { Controller, useFormContext } from "react-hook-form";
 import { InputMask } from "@react-input/mask";
 import { Input } from "@/components/ui/input";
+import { Checkbox } from "@/components/ui/checkbox";
 import {
   Select,
   SelectContent,
@@ -32,6 +33,7 @@ import type { ProfessionalFormValues } from "@/domains/professional/profissional
  */
 export function ProfessionalFormFields() {
   const form = useFormContext<ProfessionalFormValues>();
+  const isNoNumber = form.watch("noNumber");
 
   return (
     <>
@@ -245,19 +247,56 @@ export function ProfessionalFormFields() {
       </div>
 
       <div className="grid grid-cols-2 gap-4">
-        <FormField
-          control={form.control}
-          name="number"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Número *</FormLabel>
-              <FormControl>
-                <Input placeholder="Ex: 123" {...field} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
+        <div className="space-y-2">
+          <div className="flex justify-between items-center">
+            <FormLabel>Número *</FormLabel>
+            <FormField
+              control={form.control}
+              name="noNumber"
+              render={({ field }) => (
+                <div className="flex items-center space-x-2">
+                  <Checkbox
+                    id="noNumber"
+                    checked={Boolean(field.value)}
+                    onCheckedChange={(checked) => {
+                      const isChecked = checked === true;
+                      field.onChange(isChecked);
+                      if (isChecked) {
+                        form.setValue("number", "SN");
+                        form.clearErrors("number");
+                      } else {
+                        form.setValue("number", "");
+                      }
+                    }}
+                  />
+                  <label htmlFor="noNumber" className="text-sm text-gray-600">
+                    Sem número?{" "}
+                  </label>
+                </div>
+              )}
+            />
+          </div>
+          <FormField
+            control={form.control}
+            name="number"
+            render={({ field }) => (
+              <FormItem>
+                <FormControl>
+                  <Input
+                    placeholder="Ex: 123"
+                    {...field}
+                    disabled={isNoNumber}
+                    aria-placeholder={isNoNumber ? "SN" : "Ex: 123"}
+                    className={
+                      isNoNumber ? "bg-gray-100 cursor-not-allowed" : ""
+                    }
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+        </div>
         <FormField
           control={form.control}
           name="complement"

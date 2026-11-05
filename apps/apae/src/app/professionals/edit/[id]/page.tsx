@@ -30,8 +30,8 @@ export default function ProfessionalUpdate(): JSX.Element {
     resolver: zodResolver(updateProfessionalSchema),
     defaultValues: {
       fullName: "", email: "", cpf: "", professionalDocument: "", serviceArea: "",
-      phone: "", rg: "", state: "", city: "", neighborhood: "",
-      street: "", number: "", complement: "", cep: "", availability: [],
+      phone: "", rg: "", state: "" as UpdateProfessionalFormValues["state"], city: "", neighborhood: "",
+      street: "", noNumber: false, number: "", complement: "", cep: "", availability: [],
     },
   });
 
