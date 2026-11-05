@@ -1,0 +1,19 @@
+#!/bin/sh
+
+# 1. Verifica se o gitleaks está instalado
+if ! command -v gitleaks >/dev/null 2>&1; then
+    echo ""
+    echo "⚠️  [AVISO] 'gitleaks' não encontrado no PATH."
+    echo "👉 Instale para evitar vazar credenciais: https://github.com/gitleaks/gitleaks#installing"
+    echo "ℹ️  O commit continuará localmente, mas será verificado obrigatoriamente no CI."
+    echo ""
+else
+    # Executa a verificação staged
+    if gitleaks protect --help >/dev/null 2>&1; then
+        gitleaks protect --staged --redact -v || exit 1
+    else
+        gitleaks git --pre-commit --staged --redact -v || exit 1
+    fi
+fi
+
+# (Se houver lint-staged ou outros comandos do PR 895 logo abaixo, mantenha-os após o bloco do gitleaks)

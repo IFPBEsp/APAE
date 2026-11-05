@@ -5,6 +5,7 @@
   "license": "ISC",
   "packageManager": "pnpm@10.10.0",
   "scripts": {
+    "prepare": "husky",
     "docker:up": "docker compose up -d",
     "docker:down": "docker compose down",
     "docker:drop": "docker compose down -v",
@@ -25,6 +26,7 @@
   ],
   "devDependencies": {
     "@types/node": "^25.5.0",
-    "concurrently": "^9.2.1"
+    "concurrently": "^9.2.1",
+    "husky": "^9.1.7"
   }
 }
