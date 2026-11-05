@@ -40,7 +40,6 @@ public class HealthProfessionalMapper {
                 user,
                 serviceArea,
                 dto.professionalDocument());
-        entity.setProfilePhoto(dto.profilePhoto());
 
         if (dto.availabilities() != null) {
             dto.availabilities().forEach(availDto -> {
@@ -63,7 +62,6 @@ public class HealthProfessionalMapper {
         professional.setIdentityDocument(dto.identityDocument());
         professional.setAddress(addressMapper.updateEntityFromDto(professional.getAddress(), dto.address()));
         professional.setProfessionalDocument(dto.professionalDocument());
-        professional.setProfilePhoto(dto.profilePhoto());
 
         if (dto.availabilities() != null) {
             List<Availability> newAvailabilities = dto.availabilities().stream()

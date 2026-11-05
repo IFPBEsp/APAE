@@ -13,9 +13,11 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
+import org.hibernate.annotations.BatchSize;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.time.Year;
 import java.util.UUID;
 
 import br.org.apae.api.address.domain.model.Address;
@@ -51,10 +53,17 @@ public class HealthProfessional {
     private Boolean ativo = true;
 
     @OneToMany(mappedBy = "professional", cascade = CascadeType.ALL, orphanRemoval = true)
+    @BatchSize(size = 50)
     private List<Availability> availabilities = new ArrayList<>();
 
     @Column(name = "foto_perfil")
     private String profilePhoto;
+
+    @Column(name = "foto_perfil_nome")
+    private String profilePhotoName;
+
+    @Column(name = "foto_perfil_ano")
+    private Integer profilePhotoYear;
 
     protected HealthProfessional() {
     }
@@ -188,6 +197,30 @@ public class HealthProfessional {
 
     public void setProfilePhoto(String profilePhoto) {
         this.profilePhoto = profilePhoto;
+    }
+
+    public String getProfilePhotoName() {
+        return profilePhotoName;
+    }
+
+    public Integer getProfilePhotoYear() {
+        return profilePhotoYear;
+    }
+
+    public void setProfilePhotoMetadata(String profilePhoto, String profilePhotoName, Year profilePhotoYear) {
+        this.profilePhoto = profilePhoto;
+        this.profilePhotoName = profilePhotoName;
+        this.profilePhotoYear = profilePhotoYear != null ? profilePhotoYear.getValue() : null;
+    }
+
+    public boolean hasProfilePhotoMetadata() {
+        return profilePhoto != null && profilePhotoName != null && profilePhotoYear != null;
+    }
+
+    public void clearProfilePhoto() {
+        profilePhoto = null;
+        profilePhotoName = null;
+        profilePhotoYear = null;
     }
 
     private void updateUserProfile(String name, String email, String phoneNumber, String identityDocument) {

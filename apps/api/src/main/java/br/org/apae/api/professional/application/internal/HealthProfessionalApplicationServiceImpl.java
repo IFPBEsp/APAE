@@ -37,14 +37,21 @@ import org.springframework.web.multipart.MultipartFile;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.time.Duration;
+import java.time.Year;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
 import java.util.stream.Collectors;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @Service
 public class HealthProfessionalApplicationServiceImpl implements HealthProfessionalApplicationService {
+
+    private static final Logger log = LoggerFactory.getLogger(HealthProfessionalApplicationServiceImpl.class);
+    private static final Duration PROFILE_PHOTO_URL_EXPIRY = Duration.ofHours(1);
 
     @Autowired
     @Lazy
@@ -158,7 +165,7 @@ public class HealthProfessionalApplicationServiceImpl implements HealthProfessio
     @Transactional(readOnly = true)
     public HealthProfessionalResponseDTO findProfessionalById(UUID id) {
         return repository.findById(id)
-                .map(mapper::toResponseDTO)
+                .map(this::toResponseDTO)
                 .orElseThrow(HealthProfessionalNotFoundException::new);
     }
 
@@ -187,7 +194,7 @@ public class HealthProfessionalApplicationServiceImpl implements HealthProfessio
                 ? repository.findAll(pageable)
                 : repository.findByAtivo(ativo, pageable);
 
-        return page.map(mapper::toResponseDTO);
+        return page.map(this::toResponseDTO);
     }
 
     @Override
@@ -206,6 +213,9 @@ public class HealthProfessionalApplicationServiceImpl implements HealthProfessio
                 .orElseThrow(HealthProfessionalNotFoundException::new);
 
         documentsService.removeProfessionalDocument(professional, documentId);
+        if (documentId.toString().equals(professional.getProfilePhoto())) {
+            professional.clearProfilePhoto();
+        }
     }
 
     @Override
@@ -227,12 +237,38 @@ public class HealthProfessionalApplicationServiceImpl implements HealthProfessio
                     .build()
             );
 
-            professional.setProfilePhoto(document.id().toString());
+            professional.setProfilePhotoMetadata(document.id().toString(), document.name(), document.year());
 
             repository.save(professional);
 
         } catch (Exception e) {
             throw new RuntimeException("Erro ao salvar foto", e);
+        }
+    }
+
+    private HealthProfessionalResponseDTO toResponseDTO(HealthProfessional professional) {
+        HealthProfessionalResponseDTO response = mapper.toResponseDTO(professional);
+        if (!professional.hasProfilePhotoMetadata()) {
+            return response;
+        }
+
+        try {
+            DocumentDTO photo = new DocumentDTO(
+                    UUID.fromString(professional.getProfilePhoto()),
+                    professional.getProfilePhotoName(),
+                    DocumentCategory.PROFESSIONAL,
+                    DocumentType.PHOTO,
+                    professional.getId().toString(),
+                    Year.of(professional.getProfilePhotoYear()));
+            var photoWithUrl = documentService.generatePresignedUrl(photo, PROFILE_PHOTO_URL_EXPIRY);
+            if (photoWithUrl == null) {
+                log.warn("Não foi possível gerar URL da foto do profissional {}", professional.getId());
+                return response;
+            }
+            return response.withProfilePhotoUrl(photoWithUrl.url());
+        } catch (RuntimeException exception) {
+            log.warn("Metadados inválidos para foto do profissional {}", professional.getId(), exception);
+            return response;
         }
     }
 
