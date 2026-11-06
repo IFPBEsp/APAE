@@ -14,6 +14,7 @@ import AnnualRegistryEditModal from "@/domains/patients/annual-registry/annual-r
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { PatientResponse } from "@/domains/patients/types/patient";
 import { bffFetchJson } from "@/lib/bff-client";
+import { normalizeStateToUF } from "@/lib/states";
 
 interface InfoRowProps {
   label: string;
@@ -240,7 +241,7 @@ export default function PersonDetailsPage() {
             <InfoRow label="Número" value={person.address?.number} />
             <InfoRow label="Bairro" value={person.address?.neighborhood} />
             <InfoRow label="Cidade" value={person.address?.city} />
-            <InfoRow label="Estado" value={person.address?.state} />
+            <InfoRow label="Estado" value={normalizeStateToUF(person.address?.state)} />
             <InfoRow label="CEP" value={person.address?.cep} />
             <InfoRow label="Complemento" value={person.address?.complement} />
           </CardContent>
@@ -260,7 +261,7 @@ export default function PersonDetailsPage() {
                 <InfoRow label="Número" value={person.guardian.address?.number} />
                 <InfoRow label="Bairro" value={person.guardian.address?.neighborhood} />
                 <InfoRow label="Cidade" value={person.guardian.address?.city} />
-                <InfoRow label="Estado" value={person.guardian.address?.state} />
+                <InfoRow label="Estado" value={normalizeStateToUF(person.guardian.address?.state)} />
                 <InfoRow label="CEP" value={person.guardian.address?.cep} />
                 <InfoRow label="Complemento" value={person.guardian.address?.complement} />
               </div>

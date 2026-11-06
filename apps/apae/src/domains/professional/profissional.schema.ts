@@ -7,12 +7,7 @@ import {
 } from "@/lib/personal-data.schema";
 import { MAX_FILE_SIZE_BYTES, MAX_FILE_SIZE_LABEL } from "@/lib/constants";
 import { optionalPhotoSchema, photoFileSchema } from "@/lib/photo.schema";
-
-const stateRegex = /^[A-Z]{2}$/;
-const cityRegex = /^[A-Za-zÀ-ÿ\s]+$/;
-const neighborhoodRegex = /^[A-Za-zÀ-ÿ\s]+$/;
-const streetRegex = /^[A-Za-zÀ-ÿ0-9\s]+$/;
-const numberRegex = /^[0-9]{1,6}$/;
+import { addressSchema } from "@/schemas/shared/address.schema";
 
 const fileSchema = z
   .instanceof(File, { message: "Selecione um arquivo" })
@@ -43,17 +38,7 @@ const baseSchema = z.object({
 
   rg: rgSchema,
 
-  state: z.string().regex(stateRegex, "Estado inválido"),
-  city: z.string().regex(cityRegex, "Cidade inválida"),
-  neighborhood: z.string().regex(neighborhoodRegex, "Bairro inválido"),
-  street: z.string().regex(streetRegex, "Rua inválida"),
-  number: z.string().regex(numberRegex, "Número inválido"),
-
-  complement: z.string().optional(),
-
-  cep: z
-    .string()
-    .regex(/^\d{5}-\d{3}$/, "CEP inválido. Formato esperado: XXXXX-XXX"),
+  ...addressSchema.shape,
 
   phone: telefoneSchema,
 
