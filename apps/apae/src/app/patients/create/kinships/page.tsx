@@ -28,7 +28,7 @@ import {
   DoubleColumn,
   FormButton,
   MembersRegisterForm,
-} from "../form";
+} from "@/domains/patients/components/form";
 import { Button } from "@/components/ui/button";
 import { usePathname } from "next/navigation";
 import { UseFormReturn } from "react-hook-form";

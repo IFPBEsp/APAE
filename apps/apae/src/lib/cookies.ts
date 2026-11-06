@@ -20,6 +20,28 @@ export async function getTokenFromCookie(): Promise<string | null> {
   }
 }
 
+export async function getRoleFromCookie(): Promise<string | null> {
+  try {
+    const cookieStore = await cookies();
+
+    const sessionCookie = cookieStore.get("session");
+
+    if (!sessionCookie?.value) {
+      return null;
+    }
+
+    const { accessToken } = JSON.parse(sessionCookie.value);
+    const base64Url = accessToken.split(".")[1];
+    const base64 = base64Url.replace(/-/g, "+").replace(/_/g, "/");
+    const padded = base64 + "=".repeat((4 - (base64.length % 4)) % 4);
+    const payload = JSON.parse(atob(padded));
+
+    return typeof payload.role === "string" ? payload.role : null;
+  } catch {
+    return null;
+  }
+}
+
 export async function removeSessionCookie(): Promise<void> {
   try {
     const cookieStore = await cookies();

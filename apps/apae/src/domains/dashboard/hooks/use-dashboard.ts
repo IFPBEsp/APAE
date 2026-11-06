@@ -2,13 +2,12 @@
 
 import { useEffect, useRef, useState } from 'react';
 import { format } from 'date-fns';
-import { TodayAppointment } from '@/types/appointment';
-import { type AppointmentResponseDTO } from '@/app/services/appointmentService';
+import type { TodayAppointment, AppointmentResponseDTO } from '@/domains/appointments/types/appointments.types';
 import {
   fetchTodayAppointments,
   fetchAllAppointments,
 } from '../dashboard.api';
-import { useAbsenceAlerts } from '@/hooks/use-absence-alerts';
+import { useAbsenceAlerts } from '@/domains/absences/hooks/use-absence-alerts';
 
 export function useDashboard() {
   const [selectedDate, setSelectedDate] = useState<Date>(new Date());

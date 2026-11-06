@@ -20,12 +20,15 @@ public interface AuthController {
   @Operation(summary = "Registra um novo usuário", description = "Cria um novo usuário no sistema com username e senha.")
   @ApiResponse(responseCode = "201", description = "Usuário criado com sucesso")
   @ApiResponse(responseCode = "400", description = "Dados inválidos")
+  @ApiResponse(responseCode = "401", description = "Token ausente, inválido ou expirado")
+  @ApiResponse(responseCode = "403", description = "Acesso restrito a usuários com papel ADMIN")
   @PostMapping("/signup")
   ResponseEntity<Void> signUp(@Valid @RequestBody SignUpDTO signUpDto);
 
   @Operation(summary = "Realiza login", description = "Autentica um usuário existente e retorna um token JWT.")
   @ApiResponse(responseCode = "200", description = "Login bem-sucedido")
   @ApiResponse(responseCode = "401", description = "Credenciais inválidas")
+  @ApiResponse(responseCode = "403", description = "Usuário sem acesso ao APAE Geral")
   @PostMapping("/signin")
   ResponseEntity<TokenResponseDTO> signIn(@Valid @RequestBody SignInDTO signInDto);
 

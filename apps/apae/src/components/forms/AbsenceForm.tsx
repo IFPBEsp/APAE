@@ -25,9 +25,9 @@ import { Textarea } from "@/components/ui/textarea";
 
 import { toast } from "react-toastify";
 
-import AbsenceService from "@/domains/absence/absence.service";
-import { FormDataType } from "@/types/absence";
-import { buildAbsencePayload } from "@/domains/absence/absence.utils";
+import { registerAbsence, uploadJustificationDocument } from "@/domains/absences/absences.api";
+import { buildAbsencePayload } from "@/domains/absences/absences.utils";
+import type { FormDataType } from "@/domains/absences/types/absences.types";
 
 interface AbsenceFormProps {
   generatedAppointmentId: string;
@@ -60,7 +60,7 @@ export function AbsenceForm({
       let documentId: string | null = null;
 
       if (data.hasJustification === "yes" && file) {
-        documentId = await AbsenceService.uploadJustificationDocument(patientId, file);
+        documentId = await uploadJustificationDocument(patientId, file);
       }
 
       const absencePayload = buildAbsencePayload({
@@ -70,7 +70,7 @@ export function AbsenceForm({
         documentId,
       });
 
-      await AbsenceService.registerAbsence(absencePayload);
+      await registerAbsence(absencePayload);
 
       toast.success("Falta registrada com sucesso!");
 

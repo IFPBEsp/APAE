@@ -42,9 +42,10 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 
-import { useFetchProfessionals } from "@/hooks/profissional/use-fetch-profissional";
-import { useInactivateProfessional } from "@/hooks/profissional/use-inactivate-profissional";
-import { useActivateProfessional } from "@/hooks/profissional/use-activate-profissional";
+import { useFetchProfessionals } from "@/domains/professional/hooks/use-fetch-profissional";
+import { useInactivateProfessional } from "@/domains/professional/hooks/use-inactivate-profissional";
+import { useActivateProfessional } from "@/domains/professional/hooks/use-activate-profissional";
+import { toast } from "react-toastify";
 import {
   filterProfessionals,
   getStatusActionConfig,
@@ -84,6 +85,7 @@ export default function VisualizationProfessionalPage() {
       setProfessionals((prev) => prev.filter((p) => p.id !== id));
     } catch (err) {
       console.error(err);
+      toast.error(err instanceof Error ? err.message : "Erro ao alterar status do profissional");
     }
   };
 

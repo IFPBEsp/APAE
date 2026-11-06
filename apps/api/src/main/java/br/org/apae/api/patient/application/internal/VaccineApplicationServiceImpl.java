@@ -10,6 +10,8 @@ import br.org.apae.api.patient.domain.repository.VaccineRepository;
 import br.org.apae.api.common.dto.patient.request.vaccine.CreateVaccineDTO;
 import br.org.apae.api.common.dto.patient.response.vaccine.VaccineResponseDTO;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -99,6 +101,19 @@ public class VaccineApplicationServiceImpl implements VaccineApplicationService 
             boolean inUse = patientRepository.isVaccineInUse(vaccine.getId());
             return new VaccineResponseDTO(vaccine.getId(), vaccine.getName(), inUse);
         }).toList();
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Page<VaccineResponseDTO> findAllVaccines(String name, Pageable pageable) {
+        Page<Vaccine> vaccines = (name == null || name.isBlank())
+                ? vaccineRepository.findAll(pageable)
+                : vaccineRepository.findByNameContainingIgnoreCase(name.trim(), pageable);
+
+        return vaccines.map(vaccine -> {
+            boolean inUse = patientRepository.isVaccineInUse(vaccine.getId());
+            return new VaccineResponseDTO(vaccine.getId(), vaccine.getName(), inUse);
+        });
     }
 
     @Override

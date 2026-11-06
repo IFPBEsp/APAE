@@ -12,6 +12,7 @@ import {
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useEffect, useState } from "react";
 
 import {
   Sidebar,
@@ -25,6 +26,7 @@ import {
   SidebarMenuItem,
   useSidebar,
 } from "@/components/ui/sidebar";
+import { getRoleFromCookie } from "@/lib/cookies";
 import { endSession } from "@/lib/session";
 import { cn } from "@/lib/utils";
 import {
@@ -50,6 +52,12 @@ export function AppSidebar() {
   const { setOpen, isMobile, setOpenMobile } = useSidebar();
 
   const pathname = usePathname();
+
+  const [role, setRole] = useState<string | null>(null);
+
+  useEffect(() => {
+    getRoleFromCookie().then(setRole);
+  }, []);
 
   const handleLogout = async () => {
     await endSession();
@@ -265,41 +273,43 @@ export function AppSidebar() {
           </SidebarGroup>
         </Collapsible>
 
-        <Collapsible defaultOpen={false} className="group/collapsible">
-          <SidebarGroup>
-            <SidebarGroupLabel asChild>
-              <CollapsibleTrigger
-                className={`${styles.menuButton} font-base gap-2`}
-              >
-                <ShieldUser size={20} />
-                <span className="text-base">Área do Administrador</span>
-                <ChevronDownIcon
-                  size={16}
-                  className="ml-auto transition-transform group-data-[state=open]/collapsible:rotate-180"
-                />
-              </CollapsibleTrigger>
-            </SidebarGroupLabel>
-            <CollapsibleContent>
-              <SidebarMenu>
-                <SidebarMenuItem>
-                  <Link href="/register">
-                    <SidebarMenuButton
-                      className={`${styles.menuButton} font-base gap-2 ${cn(
-                        "h-10 transition-colors",
-                        pathname == ""
-                          ? "bg-[#FFFFFF] text-[#000000]!"
-                          : "text-[#0D4F97] hover:bg-[#0D4F97] hover:text-white!",
-                      )}`}
-                    >
-                      <UserRoundPlus size={16} />
-                      <span className="text-base">Cadastrar Usuário</span>
-                    </SidebarMenuButton>
-                  </Link>
-                </SidebarMenuItem>
-              </SidebarMenu>
-            </CollapsibleContent>
-          </SidebarGroup>
-        </Collapsible>
+        {role === "ADMIN" && (
+          <Collapsible defaultOpen={false} className="group/collapsible">
+            <SidebarGroup>
+              <SidebarGroupLabel asChild>
+                <CollapsibleTrigger
+                  className={`${styles.menuButton} font-base gap-2`}
+                >
+                  <ShieldUser size={20} />
+                  <span className="text-base">Área do Administrador</span>
+                  <ChevronDownIcon
+                    size={16}
+                    className="ml-auto transition-transform group-data-[state=open]/collapsible:rotate-180"
+                  />
+                </CollapsibleTrigger>
+              </SidebarGroupLabel>
+              <CollapsibleContent>
+                <SidebarMenu>
+                  <SidebarMenuItem>
+                    <Link href="/register">
+                      <SidebarMenuButton
+                        className={`${styles.menuButton} font-base gap-2 ${cn(
+                          "h-10 transition-colors",
+                          pathname == ""
+                            ? "bg-[#FFFFFF] text-[#000000]!"
+                            : "text-[#0D4F97] hover:bg-[#0D4F97] hover:text-white!",
+                        )}`}
+                      >
+                        <UserRoundPlus size={16} />
+                        <span className="text-base">Cadastrar Usuário</span>
+                      </SidebarMenuButton>
+                    </Link>
+                  </SidebarMenuItem>
+                </SidebarMenu>
+              </CollapsibleContent>
+            </SidebarGroup>
+          </Collapsible>
+        )}
       </SidebarContent>
 
       <SidebarFooter>

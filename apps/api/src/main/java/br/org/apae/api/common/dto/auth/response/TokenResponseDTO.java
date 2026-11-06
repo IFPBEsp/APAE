@@ -1,5 +1,5 @@
 package br.org.apae.api.common.dto.auth.response;
 
-public record TokenResponseDTO(String token) {
+public record TokenResponseDTO(String token, String role) {
 
 }
