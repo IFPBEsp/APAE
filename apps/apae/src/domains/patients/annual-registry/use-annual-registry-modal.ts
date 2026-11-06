@@ -176,7 +176,8 @@ export function useAnnualRegistryModal({
       toast.success("Documento anexado!");
       await loadDocuments();
       if (fileInputRef.current) fileInputRef.current.value = "";
-    } catch {
+    } catch (error) {
+      console.error("[handleFileUpload] Erro ao enviar documento:", error);
       toast.error("Erro ao enviar documento.");
     } finally {
       setIsUploading(false);
@@ -237,6 +238,7 @@ export function useAnnualRegistryModal({
         const baseData = cleanPatientData(fullPatientData as Record<string, unknown>);
         await updatePatientApi(patientId, {
           ...baseData,
+          nationality: baseData.nationality || baseData.birthplace || "",
           allergies: data.allergies || "Nenhuma",
           vaccineNames: vaccineList,
           continuousMedication: data.continuousMedication || "Nenhum",
@@ -246,6 +248,7 @@ export function useAnnualRegistryModal({
       onClose(mode === "create" ? data.year : undefined);
       toast.success(mode === "create" ? "Registro criado com sucesso!" : "Alterações salvas!");
     } catch (error: unknown) {
+      console.error("[onSubmit] Erro ao salvar registro anual:", error);
       const message = error instanceof Error ? error.message : "Erro ao salvar.";
       toast.error(message);
     }
