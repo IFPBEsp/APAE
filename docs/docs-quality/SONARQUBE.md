@@ -184,7 +184,7 @@ A edição Community analisa um único branch por projeto e não analisa pull re
 
 ### Configurar
 
-1. Suba o servidor (seção 2) e troque a senha do `admin` no primeiro login. O compose define `SONAR_FORCEAUTHENTICATION=true`, então o painel exige login.
+1. Suba o servidor (seção 2) e troque a senha do `admin` no primeiro login. O SonarQube exige login por padrão (`sonar.forceAuthentication`, ligado desde a versão 8.6).
 2. Crie os projetos com `dev` como branch principal, com um token do `admin`:
    ```
    for p in apae-geral-backend apae-geral-frontend; do
@@ -204,7 +204,14 @@ A edição Community analisa um único branch por projeto e não analisa pull re
 Para implantar:
 
 1. **Runner self-hosted** na máquina do servidor (**Settings > Actions > Runners**, label `sonar-local`). Os runners do GitHub não alcançam o `localhost` dessa máquina; o runner local busca os jobs no GitHub e fala com o SonarQube ali mesmo. Rode-o com um usuário comum e exija aprovação para PRs de contribuidores externos (**Settings > Actions > General**).
-2. **Secrets e variável** em **Settings > Secrets and variables > Actions**: `SONAR_HOST_URL` (endereço do servidor), `SONAR_TOKEN` (token de um usuário `ci-github` com **Execute Analysis**) e a variável `SONAR_RUNS_ON=sonar-local`. Nada disso vai para arquivo versionado.
+2. **Secrets e variável** em **Settings > Secrets and variables > Actions**. Nada disso vai para arquivo versionado.
+
+   | Aba | Nome | Valor | Lido no workflow como |
+   |---|---|---|---|
+   | *Secrets* | `SONAR_HOST_URL` | Endereço do servidor | `secrets.SONAR_HOST_URL` |
+   | *Secrets* | `SONAR_TOKEN` | Token de um usuário `ci-github` com **Execute Analysis** | `secrets.SONAR_TOKEN` |
+   | *Variables* | `SONAR_RUNS_ON` | `sonar-local` | `vars.SONAR_RUNS_ON` |
+
 3. **Bloqueio do merge:** regra da `dev` em **Settings > Branches** exigindo os checks `Análise SonarQube do back-end` e `Análise SonarQube do front-end`.
 4. **Workflow** em `.github/workflows/sonarqube.yml` (abaixo). No APAE-atendimento, os caminhos são `backend/atendimento` e `frontend/atendimento-app`, com `verify -DskipTests` porque os testes precisam de PostgreSQL. No APAE-gestao-escolar, `api` e `app`. Esses dois repositórios ainda usam a 26.9, que não tem plugin: troque a imagem para a da tabela acima e apague o volume local (`down -v`), porque o SonarQube não volta de versão.
 
@@ -441,12 +448,12 @@ Plugin instalado, com a versão do servidor no rodapé:
 
 `dev` como branch principal:
 
-![Branch dev](../docs-images/sonarqube/03-branch-dev.png)
+![Branch dev](../docs-images/sonarqube/02-branch-dev.png)
 
 PR do outro dev analisado:
 
-![Pull Requests](../docs-images/sonarqube/04-pull-requests.png)
+![Pull Requests](../docs-images/sonarqube/03-pull-requests.png)
 
 Painel do PR com o gate reprovado:
 
-![PR com gate reprovado](../docs-images/sonarqube/05-pr-gate-reprovado.png)
+![PR com gate reprovado](../docs-images/sonarqube/04-pr-gate-reprovado.png)
