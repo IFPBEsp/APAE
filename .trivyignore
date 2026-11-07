@@ -1,0 +1,5 @@
+# Spring Framework 6.2.x nao possui patch para estas CVEs.
+# A correcao disponivel exige Spring Framework 7 / Spring Boot 4.x.
+# A aplicacao nao utiliza XsltView nem SSE com view, reduzindo a exposicao.
+CVE-2026-47884
+CVE-2026-47890
