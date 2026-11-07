@@ -5,7 +5,6 @@ services:
     ports:
       - "${SONAR_PORT:-9500}:9000"
     environment:
-      - SONAR_FORCEAUTHENTICATION=true
       - SONAR_ES_BOOTSTRAP_CHECKS_DISABLE=true
       - SONAR_SEARCH_JAVAADDITIONALOPTS=-Dcluster.routing.allocation.disk.threshold_enabled=false
     volumes:
