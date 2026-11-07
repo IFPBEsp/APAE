@@ -164,3 +164,25 @@ docker compose -f docker-compose.sonar.yml down -v
 ```
 
 > ⚠️ O segundo comando (com o `-v`) apaga os volumes do banco de dados e Elasticsearch. Isso apagará todo o histórico de análises e **resetará a senha do admin de volta para o padrão `admin/admin`**. Use apenas se precisar limpar configurações corrompidas e recomeçar do zero.
+
+## Quality Gates Personalizados (#1069)
+
+Os projetos utilizam Quality Gates dedicados, com metas baseadas na realidade atual do time. Todas as regras incidem **apenas sobre o Código Novo** (*New Code*). A regra de revisão é o **efeito catraca**: os limites sobem ao final de cada fase, mas nunca descem.
+
+### 1. `apae-geral-backend`
+| Métrica (Código Novo) | Valor Atual | Limite no Gate | Condição | Justificativa |
+| :--- | :---: | :---: | :---: | :--- |
+| **Cobertura** | 43.1% | **43.0%** | Menor que | Arredondado para baixo do atual. |
+| **Duplicação** | 1.6% | **2.0%** | Maior que | Limite levemente acima da base. |
+| **Confiabilidade** | D (4) | **D (4)** | Maior que | Não piorar o código novo. |
+| **Segurança** | D (4) | **D (4)** | Maior que | Não introduzir vulnerabilidades. |
+| **Hotspots Revisados** | N/A | **100%** | Menor que | Revisão integral obrigatória. |
+
+### 2. `apae-geral-frontend`
+| Métrica (Código Novo) | Valor Atual | Limite no Gate | Condição | Justificativa |
+| :--- | :---: | :---: | :---: | :--- |
+| **Duplicação** | N/A | **3.0%** | Maior que | Margem inicial segura. |
+| **Confiabilidade** | A (1) | **A (1)** | Maior que | Manter qualidade máxima. |
+| **Segurança** | A (1) | **A (1)** | Maior que | Manter segurança máxima. |
+| **Hotspots Revisados** | N/A | **100%** | Menor que | Revisão integral obrigatória. |
+| **Cobertura** | N/A | *Ausente* | *N/A* | **[PENDÊNCIA]** Ausência do lcov.info. Vitest não configurado. |
