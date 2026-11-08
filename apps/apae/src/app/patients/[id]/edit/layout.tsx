@@ -15,6 +15,7 @@ import Image from "@/assets/background_image.jpg";
 import { SidebarSteps } from "@/components/shared/SidebarSteps";
 import { parseCivilDate } from "@/lib/date";
 import { bffFetchJson } from "@/lib/bff-client";
+import { normalizeStateToUF } from "@/lib/states";
 
 interface ParentData {
   name?: string;
@@ -106,7 +107,7 @@ function EditPatientDataLoader({ children }: { children: React.ReactNode }) {
           },
           address: {
             cep: data.address?.cep || "",
-            state: data.address?.state || "",
+            state: normalizeStateToUF(data.address?.state),
             city: data.address?.city || "",
             neighborhood: data.address?.neighborhood || "",
             street: data.address?.street || "",
@@ -135,7 +136,7 @@ function EditPatientDataLoader({ children }: { children: React.ReactNode }) {
             kinship: data.guardian?.kinship || "",
             address: {
               cep: data.guardian?.address?.cep || "",
-              state: data.guardian?.address?.state || "",
+              state: normalizeStateToUF(data.guardian?.address?.state),
               city: data.guardian?.address?.city || "",
               neighborhood: data.guardian?.address?.neighborhood || "",
               street: data.guardian?.address?.street || "",

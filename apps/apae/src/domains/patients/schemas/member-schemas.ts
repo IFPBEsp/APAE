@@ -1,6 +1,7 @@
 import z, { ZodCoercedDate } from "zod";
 import { parseCivilDate } from "@/lib/date";
 import { photoFileSchema } from "@/lib/photo.schema";
+import { addressSchema } from "@/schemas/shared/address.schema";
 
 const CPF = z
   .string()
@@ -160,31 +161,7 @@ export const Personal = z
     }
   });
 
-export const Address = z.object({
-  cep: z.string().min(1, "CEP é obrigatório.").min(9, "CEP deve ter 8 dígitos"),
-  state: z
-    .string()
-    .min(3, "Estado deve ser o nome completo (ex: Paraíba)")
-    .regex(/^[a-zA-ZÀ-ÿ\s]+$/, "O estado deve conter apenas letras"),
-  city: z
-    .string()
-    .min(2, "Cidade inválida")
-    .regex(/^[a-zA-ZÀ-ÿ\s]+$/, "A cidade deve conter apenas letras"),
-  neighborhood: z.string().min(2, "Bairro inválido"),
-  street: z
-    .string()
-    .min(2, "Rua é obrigatória")
-    .regex(/^[a-zA-ZÀ-ÿ\s\.\-,]+$/, "Informe a rua (ex: Rua tal)"),
-  noNumber: z.boolean().optional(),
-  number: z
-    .string()
-    .min(1, "Número é obrigatório")
-    .regex(
-      /^(\d+|SN|sn|S\/N|s\/n)$/,
-      "Número deve conter apenas dígitos ou SN",
-    ),
-  complement: z.string().optional(),
-});
+export const Address = addressSchema;
 
 export const Additionals = z.object({
   diseases: z.string().min(1, "O campo de doenças é obrigatório."),
