@@ -166,8 +166,8 @@ export default function MembersRegisterKinshipsPage() {
                   <FormLabel>RG do parente *</FormLabel>
                   <FormControl>
                     <Input
-                      placeholder="1.234.567"
-                      maxLength={9}
+                      placeholder="12.345.678-9"
+                      maxLength={15}
                       value={field.value}
                       onChange={(e) => field.onChange(formatRG(e.target.value))}
                     />
