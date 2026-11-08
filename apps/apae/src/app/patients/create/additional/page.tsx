@@ -14,7 +14,7 @@ import {
   useMembersRegisterContext,
 } from "@/domains/patients/hooks/use-members-register-context";
 import { Additionals, AdditionalsData } from "@/domains/patients/schemas/member-schemas";
-import { EditAdditionals } from "@/schemas/edit-member-schemas";
+import { EditAdditionals } from "@/domains/patients/schemas/edit-member-schemas";
 import { zodResolver } from "@hookform/resolvers/zod";
 import React, { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
@@ -28,9 +28,9 @@ import {
   FileInputButton,
   FormButton,
   MembersRegisterForm,
-} from "../form";
+} from "@/domains/patients/components/form";
 import { CreatableMultiSelect } from "@/components/creatable-multi-select";
-import { useVaccinesContext } from "@/hooks/use-vaccines";
+import { useVaccinesContext } from "@/domains/vaccines/use-vaccines";
 import {
   Dialog,
   DialogContent,
@@ -39,10 +39,10 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { useDisordersContext } from "@/hooks/use-disorders";
+import { useDisordersContext } from "@/domains/disorders/use-disorders";
 import { formatCurrency, capitalizeFirst } from "@/lib/formats";
 import { useFetchServiceTypes } from "@/domains/service-types";
-import { CreateCare } from "@/schemas/care-schemas";
+import { CreateCare } from "@/domains/patients/schemas/care-schemas";
 
 import { CreateVaccineDialog } from "@/domains/patients/components/dialogs/CreateVaccineDialog";
 import { CreateCareDialog } from "@/domains/patients/components/dialogs/CreateCareDialog";

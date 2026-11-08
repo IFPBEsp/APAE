@@ -1,4 +1,4 @@
-import { activateProfessional } from "@/services/profissional-service";
+import { activateProfessional } from "@/domains/professional/profissional-service";
 
 export function useActivateProfessional() {
   async function activate(id: string) {

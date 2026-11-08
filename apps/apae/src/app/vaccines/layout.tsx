@@ -1,5 +1,5 @@
-import { VaccinesProvider } from "@/hooks/use-vaccines";
-import { VaccinesLayoutClient } from "./layout-client";
+import { VaccinesProvider } from "@/domains/vaccines/use-vaccines";
+import { VaccinesLayoutClient } from "@/domains/vaccines/shared/layout-client";
 
 export default function VaccinesLayout({
     children,

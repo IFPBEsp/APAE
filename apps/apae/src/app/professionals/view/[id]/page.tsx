@@ -2,8 +2,8 @@
 
 
 import { useParams, useRouter } from "next/navigation";
-import { useGetByIdProfessional } from "@/hooks/profissional/use-get-by-id-profissional";
-import { useProfessionalDocuments } from "@/hooks/profissional/use-professional-documents";
+import { useGetByIdProfessional } from "@/domains/professional/hooks/use-get-by-id-profissional";
+import { useProfessionalDocuments } from "@/domains/professional/hooks/use-professional-documents";
 import { buildAvailabilityMatrixFromDTOs } from "@/domains/professional/shared/disponibilidade.utils";
 import { AvailabilityGrid } from "@/domains/professional/components/AvailabilityGrid";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";

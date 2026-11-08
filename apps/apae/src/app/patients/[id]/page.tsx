@@ -91,7 +91,7 @@ export default function PersonDetailsPage() {
   const fetchYears = useCallback(async () => {
     try {
         const yearsData = await bffFetchJson<number[]>(
-            `/apae-geral/api/patients/${id}/registro-anual/years-list`,
+            `/apae-geral/api/patients/${id}/annual-registry/years-list`,
         );
 
         const currentYearStr = new Date().getFullYear().toString();
@@ -117,7 +117,7 @@ export default function PersonDetailsPage() {
       setLoadingRegistry(true);
       setAnnualRegistry(null);
       const data = await bffFetchJson<AnnualRegistry>(
-        `/apae-geral/api/patients/${id}/registro-anual/${selectedYear}`,
+        `/apae-geral/api/patients/${id}/annual-registry/${selectedYear}`,
       );
       setAnnualRegistry(data);
     } catch (err) {

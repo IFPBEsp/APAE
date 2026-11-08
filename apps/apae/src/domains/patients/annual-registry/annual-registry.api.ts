@@ -29,14 +29,14 @@ export async function uploadDocumentApi(patientId: string, formData: FormData): 
 }
 
 export async function createAnnualRegistryApi(patientId: string, payload: unknown): Promise<Response> {
-  return bffFetch(`${BASE_URL}/${patientId}/registro-anual`, {
+  return bffFetch(`${BASE_URL}/${patientId}/annual-registry`, {
     method: "POST",
     body: JSON.stringify(payload),
   });
 }
 
 export async function updateAnnualRegistryApi(patientId: string, registryId: string, payload: unknown): Promise<Response> {
-  return bffFetch(`${BASE_URL}/${patientId}/registro-anual/${registryId}`, {
+  return bffFetch(`${BASE_URL}/${patientId}/annual-registry/${registryId}`, {
     method: "PUT",
     body: JSON.stringify(payload),
   });

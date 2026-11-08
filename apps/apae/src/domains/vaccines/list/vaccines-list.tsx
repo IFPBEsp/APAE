@@ -6,7 +6,7 @@ import { parseAsInteger, parseAsString, useQueryStates } from "nuqs";
 import { Button } from "@/components/ui/button";
 import { SearchFilters } from "@/components/search-filters";
 import { Pagination } from "@/components/shared/pagination";
-import { useDebounce } from "@/hooks/use-debounce";
+import { useDebounce } from "@/lib/use-debounce";
 import { ArrowLeft, Loader2, Plus } from "lucide-react";
 import { VaccineListItem } from "../shared/vaccine-list-item";
 import { useVaccinesList } from "./use-vaccines-list";

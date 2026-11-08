@@ -1,5 +1,5 @@
-import { Professional } from "@/types/profissional";
-import { ProfessionalFormValues } from "@/schemas/profissional.schema";
+import { Professional } from "@/domains/professional/profissional.types";
+import { ProfessionalFormValues } from "@/domains/professional/profissional.schema";
 import { buildAvailabilityMatrixFromDTOs } from "./disponibilidade.utils";
 import { MAX_FILE_SIZE_BYTES } from "@/lib/constants";
 

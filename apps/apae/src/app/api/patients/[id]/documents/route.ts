@@ -41,7 +41,7 @@ export async function GET(
 
   try {
     const api = await createBaseApi();
-    const config: any = {};
+    const config: { params?: { year: number } } = {};
     if (year) {
       config.params = { year: parseInt(year) };
     }
