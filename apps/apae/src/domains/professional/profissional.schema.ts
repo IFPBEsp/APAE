@@ -42,7 +42,17 @@ const baseSchema = z.object({
 
   cpf: cpfSchema,
 
-  professionalDocument: z.string().optional().nullable(),
+  professionalDocument: z
+    .string()
+    .trim()
+    .refine((val) => val === "" || val.length >= 3, {
+      message: "O documento profissional deve ter no mínimo 3 caracteres",
+    })
+    .refine((val) => val.length <= 50, {
+      message: "O documento profissional deve ter no máximo 50 caracteres",
+    })
+    .optional()
+    .nullable(),
 
   serviceArea: z.string().min(1, "Selecione uma área"),
 
