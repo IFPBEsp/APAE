@@ -45,8 +45,21 @@ export async function updateAnnualRegistryApi(patientId: string, registryId: str
 }
 
 export async function updatePatientApi(patientId: string, payload: unknown): Promise<void> {
-  await bffFetch(`${BASE_URL}/${patientId}`, {
+  const res = await bffFetch(`${BASE_URL}/${patientId}`, {
     method: "PUT",
     body: JSON.stringify(payload),
   });
+  if (!res.ok) {
+    const errorData = await res.json().catch(() => ({}));
+    const backendError = errorData?.message;
+    const fieldMessage =
+      typeof backendError === "object" && Array.isArray(backendError?.fields)
+        ? backendError.fields[0]?.message
+        : undefined;
+    const errorMessage =
+      fieldMessage ||
+      (typeof backendError === "string" ? backendError : backendError?.message) ||
+      "Erro ao atualizar dados do paciente.";
+    throw new Error(errorMessage);
+  }
 }
