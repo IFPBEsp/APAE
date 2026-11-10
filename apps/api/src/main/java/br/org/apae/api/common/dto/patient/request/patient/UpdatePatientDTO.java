@@ -43,7 +43,7 @@ public record UpdatePatientDTO(
 
         @NotBlank(message = "O CNS não pode estar em branco") String cns,
 
-        @NotBlank(message = "O NIS não pode estar em branco") String nis,
+        String nis,
 
         @NotBlank(message = "As alergias não podem estar em branco") String allergies,
 

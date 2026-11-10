@@ -17,9 +17,10 @@ const CNS = z
 
 const NIS = z
   .string()
-  .min(1, "NIS é obrigatório")
   .length(11, "O NIS deve ter exatamente 11 dígitos")
-  .regex(/^\d+$/, "O NIS deve conter apenas números");
+  .regex(/^\d+$/, "O NIS deve conter apenas números")
+  .optional()
+  .or(z.literal(""));
 
 const civilDateSchema = (
   futureMessage: string,

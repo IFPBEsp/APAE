@@ -19,7 +19,6 @@ public class Identification {
     requireNonNullOrEmpty(rg, "RG");
     requireNonNullOrEmpty(cpf, "CPF");
     requireNonNullOrEmpty(cns, "CNS");
-    requireNonNullOrEmpty(nis, "NIS");
     requireNonNull(issueDate, "Data de emissão");
     requireNonNullOrEmpty(issuingAgency, "Órgão emissor");
 

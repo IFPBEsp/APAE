@@ -65,7 +65,7 @@ export function buildPatientPayload(
     issuingAgency: personal.rg.issuing.body || "SSP/SP",
     cpf: personal.cpf,
     cns: personal.cns || "000 0000 0000 0000",
-    nis: personal.nis || "0",
+    nis: personal.nis || "",
     registrationDate: serializeCivilDate(personal.rg.issuing.date),
     allergies: additionals.allergies || "Nenhuma",
     continuousMedication: additionals.medications || "Nenhum",

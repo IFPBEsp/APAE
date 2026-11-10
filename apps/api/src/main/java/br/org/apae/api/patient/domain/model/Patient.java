@@ -73,7 +73,7 @@ public class Patient {
     @Column(name = "cns", nullable = false)
     private String cns;
 
-    @Column(name = "nis", nullable = false)
+    @Column(name = "nis")
     private String nis;
 
     @Column(name = "data_de_cadastro", nullable = false)
