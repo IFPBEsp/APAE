@@ -141,6 +141,53 @@ class PatientMapperTest {
     }
 
     @Test
+    void toEntity_ShouldAcceptNullOrEmptyNis() {
+        CreateAddressDTO addressDto = new CreateAddressDTO("Cidade", "12345-678", "SP", "Bairro", "Rua A", "123", "Comple");
+        CreatePatientDTO dto = new CreatePatientDTO(
+                "Paciente Sem NIS", "Brasileira", LocalDate.of(2010, 1, 1), "999999999",
+                "123456", "Cartório X", "12", "34", "11.111.111-1", LocalDate.of(2010, 1, 5), "SSP",
+                "111.111.111-11", "12345", "", LocalDate.of(2020, 1, 1), "Nenhuma", true,
+                addressDto, null, null, Set.of(), null
+        );
+
+        when(addressMapper.toEntity(addressDto)).thenReturn(dummyAddress);
+        when(vaccineMapper.toEntitySetFromResponse(vaccineDtos)).thenReturn(dummyVaccines);
+
+        Patient entity = patientMapper.toEntity(dto, vaccineDtos);
+
+        assertNotNull(entity);
+        assertEquals("", entity.getNis());
+    }
+
+    @Test
+    void updateEntityFromDto_ShouldAcceptEmptyNis() {
+        Patient existingPatient = new Patient(
+                patientId,
+                new PersonalInfo("Old Name", "BR", LocalDate.now(), "000", "None", false),
+                new BirthRecord("000", "0", "0", "0", LocalDate.of(2000, 1, 1)),
+                new Identification("0", "0", "0", "12345678901", LocalDate.now(), "SSP"),
+                dummyAddress, Set.of()
+        );
+
+        CreateAddressDTO addressDto = new CreateAddressDTO("Cidade 2", "87654-321", "RJ", "Bairro 2", "Rua B", "321", "C");
+        UpdateGuardianDTO guardianDto = new UpdateGuardianDTO("G", "1", "Mãe", null);
+
+        UpdatePatientDTO dto = new UpdatePatientDTO(
+                "New Name", "BR", LocalDate.now(), "111", "111", "1", "1", "1",
+                "1", LocalDate.now(), "SSP", "1", "1", "", "None", true,
+                addressDto, guardianDto, List.of(), Set.of()
+        );
+
+        when(addressMapper.toEntity(addressDto)).thenReturn(dummyAddress);
+        when(vaccineMapper.toEntitySetFromResponse(vaccineDtos)).thenReturn(dummyVaccines);
+
+        Patient updated = patientMapper.updateEntityFromDto(existingPatient, dto, vaccineDtos);
+
+        assertNotNull(updated);
+        assertEquals("", updated.getNis());
+    }
+
+    @Test
     void toSummaryResponseDTO_ShouldMapCorrectly() {
         Patient patient = new Patient(
                 patientId,

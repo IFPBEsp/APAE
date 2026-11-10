@@ -37,8 +37,7 @@ public class PatientCreator {
                 "Centro",
                 "Rua Quinze de Novembro",
                 "100",
-                "Apto 101"
-        );
+                "Apto 101");
     }
 
     private static CreateVaccineDTO createVaccine() {
@@ -58,8 +57,7 @@ public class PatientCreator {
                 "Maria da Silva",
                 "83988887777",
                 "MÃE",
-                createAddress()
-        );
+                createAddress());
     }
 
     private static List<CreateParentDTO> createParents() {
@@ -70,30 +68,28 @@ public class PatientCreator {
                         "529.982.247-25",
                         "Autônomo",
                         true,
-                        "PAI"
-                )
-        );
+                        "PAI"));
     }
-/*
-    private static CreateAnnualRegistryDTO createAnnualRegistry() {
-        return new CreateAnnualRegistryDTO(
-                "123456789",
-                "Nenhuma doença pré-existente",
-                "Nenhum",
-                new BigDecimal("1412.00"),
-                2024,
-                Set.of(createDisorder()),
-                Set.of(createServiceArea())
-        );
-    }
-*/
+
+    /*
+     * private static CreateAnnualRegistryDTO createAnnualRegistry() {
+     * return new CreateAnnualRegistryDTO(
+     * "123456789",
+     * "Nenhuma doença pré-existente",
+     * "Nenhum",
+     * new BigDecimal("1412.00"),
+     * 2024,
+     * Set.of(createDisorder()),
+     * Set.of(createServiceArea())
+     * );
+     * }
+     */
     private static UpdateGuardianDTO createUpdateGuardian() {
         return new UpdateGuardianDTO(
                 "Maria da Silva Editada",
                 "83988887777",
                 "MÃE",
-                createAddress()
-        );
+                createAddress());
     }
 
     private static List<UpdateParentDTO> createUpdateParents() {
@@ -104,9 +100,7 @@ public class PatientCreator {
                         "529.982.247-25",
                         "Autônomo",
                         true,
-                        "PAI"
-                )
-        );
+                        "PAI"));
     }
 
     public static PatientResponseDTO createResponse() {
@@ -149,8 +143,7 @@ public class PatientCreator {
                 guardian,
                 List.of(parent),
                 Set.of(vaccine),
-                "http://url-foto.com"
-        );
+                "http://url-foto.com");
     }
 
     public static PatientSummaryResponseDTO createSummaryResponse() {
@@ -183,86 +176,111 @@ public class PatientCreator {
                 address,
                 "http://url-foto.com");
     }
-/*
-    public static CreatePatientDTO createRequest() {
-        return new CreatePatientDTO(
-                "João da Silva",
+
+    /*
+     * public static CreatePatientDTO createRequest() {
+     * return new CreatePatientDTO(
+     * "João da Silva",
+     * "Brasileira",
+     * LocalDate.of(2010, 1, 1),
+     * "8399999",
+     * "123",
+     * "Cartório",
+     * "1",
+     * "A",
+     * "RG123",
+     * LocalDate.now(),
+     * "SSP",
+     * "00000000000",
+     * "123",
+     * "123",
+     * LocalDate.now(),
+     * "Nenhuma",
+     * true,
+     * createAddress(),
+     * createGuardian(),
+     * createParents(),
+     * Set.of(createVaccine()),
+     * createAnnualRegistry()
+     * );
+     * }
+     */
+    public static UpdatePatientDTO createUpdatePayload() {
+        return new UpdatePatientDTO(
+                "João da Silva Editado",
                 "Brasileira",
                 LocalDate.of(2010, 1, 1),
-                "8399999",
+                "8399999-EDIT",
                 "123",
-                "Cartório",
+                "Cartório Novo",
                 "1",
                 "A",
                 "RG123",
-                LocalDate.now(),
-                "SSP",
-                "00000000000",
-                "123",
-                "123",
-                LocalDate.now(),
+                LocalDate.of(2015, 1, 1),
+                "SSP/PB",
+                "529.982.247-25",
+                "123456789",
+                "12345",
                 "Nenhuma",
                 true,
                 createAddress(),
-                createGuardian(),
-                createParents(),
-                Set.of(createVaccine()),
-                createAnnualRegistry()
-        );
+                createUpdateGuardian(),
+                createUpdateParents(),
+                Set.of(createVaccine()));
     }
-*/
-    public static UpdatePatientDTO createUpdatePayload() {
-    return new UpdatePatientDTO(
-            "João da Silva Editado",
-            "Brasileira",
-            LocalDate.of(2010, 1, 1),
-            "8399999-EDIT",
-            "123",
-            "Cartório Novo",
-            "1",
-            "A",
-            "RG123",
-            LocalDate.of(2015, 1, 1),
-            "SSP/PB",
-            "529.982.247-25",
-            "123456789",
-            "12345",
-            "Nenhuma",
-            true,
-            createAddress(),
-            createUpdateGuardian(),
-            createUpdateParents(),
-            Set.of(createVaccine())
-    );
-}
-/*
-    public static CreatePatientDTO createInvalidRequest() {
-        return new CreatePatientDTO(
-                "",
+
+    public static UpdatePatientDTO createUpdatePayloadWithoutNis() {
+        return new UpdatePatientDTO(
+                "João da Silva Editado",
                 "Brasileira",
-                LocalDate.now().plusDays(1),
-                "8399999",
+                LocalDate.of(2010, 1, 1),
+                "8399999-EDIT",
                 "123",
-                "Cartório",
+                "Cartório Novo",
                 "1",
                 "A",
+                "RG123",
+                LocalDate.of(2015, 1, 1),
+                "SSP/PB",
+                "529.982.247-25",
+                "123456789",
                 "",
-                LocalDate.now(),
-                "SSP",
-                "00000000000",
-                "123",
-                "123",
-                LocalDate.now(),
                 "Nenhuma",
                 true,
                 createAddress(),
-                createGuardian(),
-                createParents(),
-                Set.of(createVaccine()),
-                createAnnualRegistry()
-        );
+                createUpdateGuardian(),
+                createUpdateParents(),
+                Set.of(createVaccine()));
     }
-*/
+
+    /*
+     * public static CreatePatientDTO createInvalidRequest() {
+     * return new CreatePatientDTO(
+     * "",
+     * "Brasileira",
+     * LocalDate.now().plusDays(1),
+     * "8399999",
+     * "123",
+     * "Cartório",
+     * "1",
+     * "A",
+     * "",
+     * LocalDate.now(),
+     * "SSP",
+     * "00000000000",
+     * "123",
+     * "123",
+     * LocalDate.now(),
+     * "Nenhuma",
+     * true,
+     * createAddress(),
+     * createGuardian(),
+     * createParents(),
+     * Set.of(createVaccine()),
+     * createAnnualRegistry()
+     * );
+     * }
+     */
     public static UpdatePatientDTO createInvalidUpdateRequest() {
         return new UpdatePatientDTO(
                 "",
@@ -284,24 +302,24 @@ public class PatientCreator {
                 PatientCreator.createAddress(),
                 PatientCreator.createUpdateGuardian(),
                 PatientCreator.createUpdateParents(),
-                Set.of(createVaccine())
-        );
+                Set.of(createVaccine()));
     }
 
     public static CreateDocumentsDTO createDocuments() {
         MultipartFile rg = new MockMultipartFile("rg", "rg.pdf", "application/pdf", "conteudo falso".getBytes());
         MultipartFile cpf = new MockMultipartFile("cpf", "cpf.pdf", "application/pdf", "conteudo falso".getBytes());
-        MultipartFile address = new MockMultipartFile("proof_of_address", "address.pdf", "application/pdf", "conteudo falso".getBytes());
-        MultipartFile birth = new MockMultipartFile("birth_certificate", "birth.pdf", "application/pdf", "conteudo falso".getBytes());
+        MultipartFile address = new MockMultipartFile("proof_of_address", "address.pdf", "application/pdf",
+                "conteudo falso".getBytes());
+        MultipartFile birth = new MockMultipartFile("birth_certificate", "birth.pdf", "application/pdf",
+                "conteudo falso".getBytes());
         MultipartFile photo = new MockMultipartFile("photo", "photo.jpg", "image/jpeg", "imagem falsa".getBytes());
 
         List<MultipartFile> reports = List.of(
-                new MockMultipartFile("reports", "laudo1.pdf", "application/pdf", "conteudo falso".getBytes())
-        );
+                new MockMultipartFile("reports", "laudo1.pdf", "application/pdf", "conteudo falso".getBytes()));
 
         List<MultipartFile> referrals = List.of(
-                new MockMultipartFile("referrals", "encaminhamento.pdf", "application/pdf", "conteudo falso".getBytes())
-        );
+                new MockMultipartFile("referrals", "encaminhamento.pdf", "application/pdf",
+                        "conteudo falso".getBytes()));
 
         return new CreateDocumentsDTO(
                 rg,
@@ -310,7 +328,6 @@ public class PatientCreator {
                 birth,
                 photo,
                 reports,
-                referrals
-        );
+                referrals);
     }
 }
