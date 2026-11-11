@@ -17,8 +17,8 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { handleBackendValidationErrors } from "@/lib/utils/form-errors";
+import {getConflictError, getStepForBackendField, isSuccessStatus} from "@/domains/patients/shared/patient.utils";
 import { bffFetchJson } from "@/lib/bff-client";
-
 import z from "zod";
 import { FormButton, MembersRegisterForm } from "@/domains/patients/components/form";
 import { usePhotoUpload } from "@/lib/use-photo-upload";
@@ -127,106 +127,86 @@ export default function MembersRegisterProfilePage() {
   }, []);
 
   useEffect(() => {
-    if (submitted && profile) {
-      setSubmitted(false);
-      (async () => {
-        setIsLoading(true);
-        try {
-          const res = await register(id);
+    if (!submitted || !profile) return;
+    setSubmitted(false);
 
-          if (res.status === 201 || res.status === 200 || res.status === 204) {
-            if (isEditing && selectedPhoto) {
-              const ok = await uploadPhoto(id);
-              if (!ok) {
-                setSubmitted(false);
-                setIsLoading(false);
-                return;
-              }
-            }
+    type RegisterResponse = Awaited<ReturnType<typeof register>>;
 
-            toast.success(
-              isEditing
-                ? "Paciente atualizado com sucesso!"
-                : "Membro cadastrado com sucesso!",
-            );
-            router.push(
-              isEditing ? `/patients/${id}` : "/patients",
-            );
-            return;
-          }
-
-          if (res.status === 409) {
-            const msg = getErrorMessage(res.data);
-            const msgLower = msg.toLowerCase();
-
-            let targetField = "cpf";
-            let displayMsg = "CPF ou documento já cadastrado no sistema.";
-
-            if (msgLower.includes("rg") || msgLower.includes("identidade")) {
-              targetField = "rg.number";
-              displayMsg = "Este RG já está cadastrado no sistema.";
-            } else if (msgLower.includes("cns")) {
-              targetField = "cns";
-              displayMsg = "Este CNS já está cadastrado no sistema.";
-            } else if (msgLower.includes("cpf")) {
-              targetField = "cpf";
-              displayMsg = "Este CPF já está cadastrado no sistema.";
-            }
-
-            toast.error(displayMsg);
-            setStep(MembersRegisterStep.PERSONAL);
-            form.setError(targetField as Parameters<typeof form.setError>[0], {
-              type: "manual",
-              message: displayMsg,
-            });
-            setSubmitted(false);
-            return;
-          }
-
-          if (res.status === 400) {
-            const resData = res.data as { fields?: Array<{ field?: string; message?: string }> } | undefined;
-            const firstError = resData?.fields?.[0];
-            const backendField = firstError?.field || "";
-            const fieldLower = backendField.toLowerCase();
-            const errorMessage =
-              firstError?.message || getErrorMessage(res.data);
-
-            if (backendField) {
-              if (
-                ["fullName", "cpf", "rg", "contact", "birth", "nationality", "cns", "nis", "phone", "name"]
-                  .some((f) => fieldLower.includes(f.toLowerCase()))
-              ) {
-                setStep(MembersRegisterStep.PERSONAL);
-              } else if (fieldLower.includes("parents") || fieldLower.includes("kinships")) {
-                setStep(MembersRegisterStep.KINSHIPS);
-              } else if (fieldLower.includes("address") && !fieldLower.includes("guardian")) {
-                setStep(MembersRegisterStep.ADDRESS);
-              } else if (
-                ["annualRegistry", "vaccine", "allergies", "diseases", "familyIncome", "householdIncome"]
-                  .some((f) => fieldLower.includes(f.toLowerCase()))
-              ) {
-                setStep(MembersRegisterStep.ADDITIONALS);
-              } else if (fieldLower.includes("guardian")) {
-                setStep(MembersRegisterStep.GUARDIAN);
-              }
-            }
-
-            toast.error(errorMessage);
-            handleBackendValidationErrors(res.data, form.setError);
-            setSubmitted(false);
-            return;
-          }
-
-          toast.error(getErrorMessage(res.data));
+    const handleSuccess = async () => {
+      if (isEditing && selectedPhoto) {
+        const ok = await uploadPhoto(id);
+        if (!ok) {
           setSubmitted(false);
-        } catch (error) {
-          toast.error("Falha na conexão com o servidor.");
-          setSubmitted(false);
-        } finally {
-          setIsLoading(false);
+          return;
         }
-      })();
-    }
+      }
+
+      toast.success(
+        isEditing
+          ? "Paciente atualizado com sucesso!"
+          : "Membro cadastrado com sucesso!",
+      );
+      router.push(
+        isEditing ? `/patients/${id}` : "/patients",
+      );
+    };
+
+    const handleConflict = (res: RegisterResponse) => {
+      const { field, message } = getConflictError(getErrorMessage(res.data));
+
+      toast.error(message);
+      setStep(MembersRegisterStep.PERSONAL);
+      form.setError(field as Parameters<typeof form.setError>[0], {
+        type: "manual",
+        message,
+      });
+      setSubmitted(false);
+    };
+
+    const handleValidationError = (res: RegisterResponse) => {
+      const resData = res.data as { fields?: Array<{ field?: string; message?: string }> } | undefined;
+      const firstError = resData?.fields?.[0];
+      const backendField = firstError?.field || "";
+      const errorMessage =
+        firstError?.message || getErrorMessage(res.data);
+
+      const step = backendField ? getStepForBackendField(backendField) : undefined;
+      if (step) setStep(step);
+
+      toast.error(errorMessage);
+      handleBackendValidationErrors(res.data, form.setError);
+      setSubmitted(false);
+    };
+
+    const handleResponse = async (res: RegisterResponse) => {
+      if (isSuccessStatus(res.status)) {
+        await handleSuccess();
+        return;
+      }
+      if (res.status === 409) {
+        handleConflict(res);
+        return;
+      }
+      if (res.status === 400) {
+        handleValidationError(res);
+        return;
+      }
+
+      toast.error(getErrorMessage(res.data));
+      setSubmitted(false);
+    };
+
+    (async () => {
+      setIsLoading(true);
+      try {
+        await handleResponse(await register(id));
+      } catch (error) {
+        toast.error("Falha na conexão com o servidor.");
+        setSubmitted(false);
+      } finally {
+        setIsLoading(false);
+      }
+    })();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [submitted, profile, register, router, form, setStep, id, isEditing]);
 
