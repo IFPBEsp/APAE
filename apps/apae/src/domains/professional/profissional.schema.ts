@@ -1,13 +1,14 @@
 import * as z from "zod";
-import {
-  cpfSchema,
-  nomeCompletoSchema,
-  rgSchema,
-  telefoneSchema,
-} from "@/lib/personal-data.schema";
+import { cpfSchema } from "@/lib/personal-data.schema";
 import { MAX_FILE_SIZE_BYTES, MAX_FILE_SIZE_LABEL } from "@/lib/constants";
 import { optionalPhotoSchema, photoFileSchema } from "@/lib/photo.schema";
 import { addressSchema } from "@/schemas/shared/address.schema";
+
+const nameRegex = /^[A-Za-zÀ-ÖØ-öø-ÿ ]{3,100}$/;
+const phoneRegex = /^\(\d{2}\) \d{5}-\d{4}$/;
+
+const rgRegex =
+  /^(\d{7,8}[\dXx]?|\d\.\d{3}\.\d{3}|\d{2}\.\d{3}\.\d{3}-[\dXx])$/;
 
 const fileSchema = z
   .instanceof(File, { message: "Selecione um arquivo" })
@@ -26,7 +27,12 @@ const fileSchema = z
   .refine((file) => file.size <= MAX_FILE_SIZE_BYTES, `Arquivo deve ser menor que ${MAX_FILE_SIZE_LABEL}`);
 
 const baseSchema = z.object({
-  fullName: nomeCompletoSchema,
+  fullName: z
+    .string()
+    .regex(
+      nameRegex,
+      "Nome inválido. Use apenas letras e espaços, 3-100 caracteres"
+    ),
 
   email: z.email("Email inválido"),
 
@@ -39,14 +45,20 @@ const baseSchema = z.object({
   rg: z
     .string()
     .refine(
-      (value) => value === "" || rgSchema.safeParse(value).success,
+      (value) => value === "" || rgRegex.test(value),
       "RG inválido",
-    )
-    .transform((value) => value.replace(/\W/g, "")),
+   )
+   .transform((value) => value.replace(/\W/g, "")),
 
   ...addressSchema.shape,
 
-  phone: telefoneSchema,
+  phone: z
+    .string()
+    .regex(
+      phoneRegex,
+      "Telefone inválido. Formato esperado: (xx) xxxxx-xxxx"
+    )
+    .transform((val) => val.trim()),
 
   availability: z
     .array(

@@ -12,7 +12,7 @@ import { addressSchema } from "@/schemas/shared/address.schema";
 const OptionalRG = z
   .string()
   .refine(
-    (value) => value === "" || /^\d\.\d{3}\.\d{3}$/.test(value),
+    (value) => value === "" || rgSchema.safeParse(value).success,
     "Formato de RG inválido",
   );
 
@@ -184,7 +184,7 @@ export const Additionals = z.object({
 });
 
 export const Kinship = z.object({
-  rg: OptionalRG,
+ rg: OptionalRG,
   cpf: cpfSchema,
   alive: z.boolean(),
   name: nomeCompletoSchema,
