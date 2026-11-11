@@ -34,7 +34,6 @@ public record UpdateHealthProfessionalDTO(
     @Size(min = 3, max = 100)
     String name,
 
-    @NotBlank(message = "O documento de identidade é obrigatório.")
     String identityDocument,
 
     @NotNull(message = "Endereço é obrigatório.")

@@ -1,5 +1,6 @@
 package br.org.apae.api.common.dto.patient.request.parent;
 
+import br.org.apae.api.common.validations.CPF;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 
@@ -8,7 +9,7 @@ public record CreateParentDTO(
 
                 String rg,
 
-                String cpf,
+                @CPF String cpf,
 
                 String profession,
 

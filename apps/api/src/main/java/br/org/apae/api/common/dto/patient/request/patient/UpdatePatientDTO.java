@@ -8,6 +8,7 @@ import br.org.apae.api.common.dto.address.CreateAddressDTO;
 import br.org.apae.api.common.dto.patient.request.guardian.UpdateGuardianDTO;
 import br.org.apae.api.common.dto.patient.request.parent.UpdateParentDTO;
 import br.org.apae.api.common.dto.patient.request.vaccine.CreateVaccineDTO;
+import br.org.apae.api.common.validations.CPF;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
@@ -38,7 +39,7 @@ public record UpdatePatientDTO(
 
         String issuingAgency,
 
-        @NotBlank(message = "O CPF não pode estar em branco") String cpf,
+        @CPF @NotBlank(message = "O CPF não pode estar em branco") String cpf,
 
         @NotBlank(message = "O CNS não pode estar em branco") String cns,
 

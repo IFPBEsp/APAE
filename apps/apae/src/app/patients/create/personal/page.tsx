@@ -199,8 +199,8 @@ export default function MembersRegisterPersonalPage() {
                 <FormLabel>RG</FormLabel>
                 <FormControl>
                   <Input
-                    placeholder="1.234.567"
-                    maxLength={9}
+                    placeholder="12.345.678-9"
+                    maxLength={15}
                     value={field.value}
                     onChange={(e) => {
                       const formatted = formatRG(e.target.value);

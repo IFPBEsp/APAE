@@ -26,10 +26,7 @@ export function formatPhone(value: string) {
 }
 
 export function formatRG(value: string) {
-  const numbers = limit(value.replace(/\D/g, ""), 7);
-  return numbers
-    .replace(/(\d{1})(\d)/, "$1.$2")
-    .replace(/(\d{3})(\d)/, "$1.$2");
+  return value.replace(/[^\dXx.\-]/g, "").toUpperCase();
 }
 
 export function formatIssuingBody(value: string) {
