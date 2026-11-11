@@ -78,11 +78,7 @@ export const Personal = z
     cpf: cpfSchema,
     phone: telefoneSchema,
     rg: z.object({
-<<<<<<< HEAD
       number: OptionalRG,
-=======
-      number: rgSchema,
->>>>>>> dev
       issuing: z.object({
         body: z
           .string()
