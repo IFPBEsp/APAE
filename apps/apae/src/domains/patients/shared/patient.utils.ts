@@ -17,12 +17,14 @@ export function buildPatientListQuery(
   const year = values.year?.trim();
   const city = values.city?.trim();
   const treatmentType = values.treatmentType?.trim();
+  const status = values.status?.trim();
 
   if (name) params.append("name", name);
   if (disorder) params.append("disorder", disorder);
   if (year) params.append("year", year);
   if (city) params.append("city", city);
   if (treatmentType) params.append("treatmentType", treatmentType);
+  if (status) params.append("status", status);
 
   params.append("page", String(values.page ?? 0));
   params.append("size", String(values.size ?? 10));

@@ -6,12 +6,16 @@ import { parseAsInteger, parseAsString, useQueryStates } from "nuqs";
 import { Button } from "@/components/ui/button";
 import { Plus } from "lucide-react";
 import { PatientCard } from "@/components/shared/patient-card";
-import type { PatientCardData } from "@/domains/patients/types/patient";
+import type {
+  PatientCardData,
+  PatientStatus,
+} from "@/domains/patients/types/patient";
 import { SearchFilters } from "@/components/search-filters";
 import { Pagination } from "@/components/shared/pagination";
 import { toast } from "react-toastify";
 import { useDebounce } from "@/lib/use-debounce";
 import { usePatientFilters } from "@/domains/patients/hooks/use-patients-filters";
+import { useAbsenceAlerts } from "@/domains/absences/hooks/use-absence-alerts";
 import { bffFetchJson } from "@/lib/bff-client";
 import { buildPatientListQuery } from "@/domains/patients/shared/patient.utils";
 import type { Page } from "@/lib/pagination";
@@ -33,9 +37,15 @@ function PatientsAndStudentsScreenContent() {
     year: parseAsString.withDefault(""),
     city: parseAsString.withDefault(""),
     treatmentType: parseAsString.withDefault(""),
+    status: parseAsString.withDefault(""),
     page: parseAsInteger.withDefault(0),
     size: parseAsInteger.withDefault(10),
   });
+
+  const status: PatientStatus | "" =
+    query.status === "active" || query.status === "inactive"
+      ? query.status
+      : "";
 
   const debouncedSearchName = useDebounce(query.name, 500);
 
@@ -45,6 +55,13 @@ function PatientsAndStudentsScreenContent() {
     cityOptions,
     serviceAreaOptions,
   } = usePatientFilters();
+
+  const { alertPatientIds, isLoading: isLoadingAlerts } = useAbsenceAlerts();
+
+  const getPatientStatus = (patientId: string): PatientStatus | undefined => {
+    if (isLoadingAlerts) return undefined;
+    return alertPatientIds.has(patientId) ? "inactive" : "active";
+  };
 
   useEffect(() => {
     const controller = new AbortController();
@@ -59,6 +76,7 @@ function PatientsAndStudentsScreenContent() {
           year: query.year,
           city: query.city,
           treatmentType: query.treatmentType,
+          status,
           page: query.page,
           size: query.size,
         });
@@ -113,6 +131,7 @@ function PatientsAndStudentsScreenContent() {
     query.year,
     query.city,
     query.treatmentType,
+    status,
     query.page,
     query.size,
   ]);
@@ -142,7 +161,11 @@ function PatientsAndStudentsScreenContent() {
       <>
         <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
           {patients.map((patient) => (
-            <PatientCard key={patient.id} patient={patient} />
+            <PatientCard
+              key={patient.id}
+              patient={patient}
+              status={getPatientStatus(patient.id)}
+            />
           ))}
         </div>
 
@@ -167,26 +190,32 @@ function PatientsAndStudentsScreenContent() {
       <main className="container mx-auto p-4 md:p-6">
         <div className="mb-4 rounded-xl border-2 bg-white p-6 shadow-md">
           <SearchFilters
-          searchName={query.name}
-          setSearchName={(value) => {
-            updateQuery({
-              name: value || "",
-              page: 0,
-            });
-          }}
-          serviceArea={query.treatmentType}
-          setServiceArea={(value) => updateQuery({ treatmentType: value || "", page: 0 })}
-          serviceAreaOptions={serviceAreaOptions}
-          disorder={query.disorder}
-          setDisorder={(value) => updateQuery({ disorder: value || "", page: 0 })}
-          disorderOptions={disorderOptions}
-          year={query.year}
-          setYear={(value) => updateQuery({ year: value || "", page: 0 })}
-          yearOptions={yearOptions}
-          city={query.city}
-          setCity={(value) => updateQuery({ city: value || "", page: 0 })}
-          cityOptions={cityOptions}
-        />
+            searchName={query.name}
+            setSearchName={(value) => {
+              updateQuery({
+                name: value || "",
+                page: 0,
+              });
+            }}
+            serviceArea={query.treatmentType}
+            setServiceArea={(value) =>
+              updateQuery({ treatmentType: value || "", page: 0 })
+            }
+            serviceAreaOptions={serviceAreaOptions}
+            disorder={query.disorder}
+            setDisorder={(value) =>
+              updateQuery({ disorder: value || "", page: 0 })
+            }
+            disorderOptions={disorderOptions}
+            year={query.year}
+            setYear={(value) => updateQuery({ year: value || "", page: 0 })}
+            yearOptions={yearOptions}
+            city={query.city}
+            setCity={(value) => updateQuery({ city: value || "", page: 0 })}
+            cityOptions={cityOptions}
+            status={status}
+            setStatus={(value) => updateQuery({ status: value || "", page: 0 })}
+          />
         </div>
 
         <section className="relative md:rounded-xl md:border-2 md:bg-white md:p-6 md:shadow-md">
@@ -222,7 +251,13 @@ function PatientsAndStudentsScreenContent() {
 
 export default function PatientsAndStudentsScreen() {
   return (
-    <Suspense fallback={<div className="min-h-screen bg-slate-100 flex items-center justify-center">Carregando...</div>}>
+    <Suspense
+      fallback={
+        <div className="min-h-screen bg-slate-100 flex items-center justify-center">
+          Carregando...
+        </div>
+      }
+    >
       <PatientsAndStudentsScreenContent />
     </Suspense>
   );

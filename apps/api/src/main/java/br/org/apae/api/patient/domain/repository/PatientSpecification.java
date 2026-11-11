@@ -1,5 +1,6 @@
 package br.org.apae.api.patient.domain.repository;
 
+import br.org.apae.api.appointment.domain.model.Absence;
 import br.org.apae.api.patient.domain.model.AnnualRegistry;
 import br.org.apae.api.patient.domain.model.Disorder;
 import br.org.apae.api.patient.domain.model.Patient;
@@ -17,6 +18,9 @@ import java.util.UUID;
 
 public class PatientSpecification {
     private static final String PATIENT_ID = "patientId";
+
+    public static final int INACTIVE_ABSENCE_THRESHOLD = 3;
+
     public static Specification<Patient> filterBy(Map<String, String> filters) {
         return (root, query, criteriaBuilder) -> {
             List<Predicate> predicates = new ArrayList<>();
@@ -70,8 +74,28 @@ public class PatientSpecification {
                             predicates.add(root.get("id").in(tipoSubQuery));
                             break;
 
+                        case "status":
+                            String status = value.trim().toLowerCase();
+                            if (!status.equals("active") && !status.equals("inactive")) {
+                                break;
+                            }
+
+                            Subquery<UUID> inactiveSubQuery = query.subquery(UUID.class);
+                            Root<Absence> absenceRoot = inactiveSubQuery.from(Absence.class);
+                            inactiveSubQuery.select(absenceRoot.get("generatedAppointment").get(PATIENT_ID))
+                                    .where(criteriaBuilder.isFalse(absenceRoot.get("isJustified")))
+                                    .groupBy(absenceRoot.get("generatedAppointment").get(PATIENT_ID))
+                                    .having(criteriaBuilder.greaterThanOrEqualTo(
+                                            criteriaBuilder.count(absenceRoot), (long) INACTIVE_ABSENCE_THRESHOLD));
+
+                            if (status.equals("inactive")) {
+                                predicates.add(root.get("id").in(inactiveSubQuery));
+                            } else {
+                                predicates.add(criteriaBuilder.not(root.get("id").in(inactiveSubQuery)));
+                            }
+                            break;
+
                         default:
-                            // Ignora parâmetros de busca desconhecidos para manter o comportamento atual
                             break;
                     }
                 }
