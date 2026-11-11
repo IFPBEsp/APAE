@@ -22,7 +22,7 @@ import {
   formatRG,
   capitalizeFirst,
 } from "@/lib/formats";
-import { Personal, PersonalData } from "@/domains/patients/schemas/member-schemas";
+import { Personal } from "@/domains/patients/schemas/member-schemas";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { useState, useEffect } from "react";
@@ -45,20 +45,15 @@ export default function MembersRegisterPersonalPage() {
   const pathname = usePathname();
   const router = useRouter();
   const isEditing = pathname.includes("/edit");
-  const form = useForm<z.infer<typeof Personal>>({
+  const form = useForm<
+    z.input<typeof Personal>,
+    unknown,
+    z.output<typeof Personal>
+  >({
     mode: "onBlur",
     resolver: zodResolver(Personal),
     defaultValues: personal,
   });
-
-  const [isInitialized, setIsInitialized] = useState(false);
-
-  useEffect(() => {
-    if (personal.name && !isInitialized) {
-      form.reset(personal);
-      setIsInitialized(true);
-    }
-  }, [personal, form, isInitialized]);
 
   useEffect(() => {
     if (personal.name !== "") {
@@ -69,7 +64,16 @@ export default function MembersRegisterPersonalPage() {
   const onSubmit = async (values: z.infer<typeof Personal>) => {
     setIsLoading(true);
     try {
-      setPersonalData(values as PersonalData);
+      setPersonalData({
+        ...values,
+      rg: {
+        ...values.rg,
+        issuing: {
+          ...values.rg.issuing,
+          date: values.rg.issuing.date ?? null,
+        },
+      },
+    });
       setStep(MembersRegisterStep.KINSHIPS);
     } catch (error: unknown) {
       const err = error as { response?: { data?: Record<string, string[]> } };
@@ -192,7 +196,7 @@ export default function MembersRegisterPersonalPage() {
             name="rg.number"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>RG *</FormLabel>
+                <FormLabel>RG</FormLabel>
                 <FormControl>
                   <Input
                     placeholder="12.345.678-9"
@@ -214,7 +218,7 @@ export default function MembersRegisterPersonalPage() {
             name="rg.issuing.body"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Órgão Emissor *</FormLabel>
+                <FormLabel>Órgão Emissor</FormLabel>
                 <FormControl>
                   <Input
                     placeholder="SSP/SP"
@@ -236,7 +240,7 @@ export default function MembersRegisterPersonalPage() {
             name="rg.issuing.date"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Data de Emissão *</FormLabel>
+                <FormLabel>Data de Emissão</FormLabel>
                 <FormControl>
                   <InputMask
                     mask="__/__/____"

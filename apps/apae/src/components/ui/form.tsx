@@ -11,12 +11,23 @@ import {
   type ControllerProps,
   type FieldPath,
   type FieldValues,
+  type UseFormReturn,
 } from "react-hook-form"
 
 import { cn } from "@/lib/utils"
 import { Label } from "@/components/ui/label"
 
-const Form = FormProvider
+const Form = <
+  TFieldValues extends FieldValues,
+  TContext,
+  TTransformedValues = TFieldValues,
+>(
+  props: UseFormReturn<TFieldValues, TContext, TTransformedValues> & {
+    children: React.ReactNode;
+  },
+) => {
+  return <FormProvider {...props} />;
+};
 
 type FormFieldContextValue<
   TFieldValues extends FieldValues = FieldValues,
@@ -32,15 +43,16 @@ const FormFieldContext = React.createContext<FormFieldContextValue>(
 const FormField = <
   TFieldValues extends FieldValues = FieldValues,
   TName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>,
+  TTransformedValues = TFieldValues,
 >({
   ...props
-}: ControllerProps<TFieldValues, TName>) => {
+}: ControllerProps<TFieldValues, TName, TTransformedValues>) => {
   return (
     <FormFieldContext.Provider value={{ name: props.name }}>
       <Controller {...props} />
     </FormFieldContext.Provider>
-  )
-}
+  );
+};
 
 const useFormField = () => {
   const fieldContext = React.useContext(FormFieldContext)

@@ -34,11 +34,11 @@ public record CreatePatientDTO(
 
     @NotBlank(message = "O campo 'livro' não pode estar em branco") String book,
 
-    @NotBlank(message = "O RG não pode estar em branco") String rg,
+    String rg,
 
-    @NotNull(message = "A data de emissão não pode ser nula") LocalDate issueDate,
+    LocalDate issueDate,
 
-    @NotBlank(message = "O órgão emissor não pode estar em branco") String issuingAgency,
+    String issuingAgency,
 
     @CPF @NotBlank(message = "O CPF não pode estar em branco") String cpf,
 

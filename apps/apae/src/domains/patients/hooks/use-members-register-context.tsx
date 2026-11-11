@@ -40,7 +40,7 @@ export type { MembersRegisterState };
 
 type DraftCache = {
   personal?: {
-    rg?: { issuing?: { date?: string | Date } };
+    rg?: { issuing?: { date?: string | Date | null; } };
     birth?: { date?: string | Date };
   };
 };
@@ -57,14 +57,19 @@ function stripFiles(state: MembersRegisterState): MembersRegisterState {
 }
 
 function reviveDates(obj: DraftCache) {
-  if (obj.personal?.rg?.issuing?.date) {
-    obj.personal.rg.issuing.date =
-      parseCivilDate(obj.personal.rg.issuing.date) || new Date();
+  const rgDate = obj.personal?.rg?.issuing?.date;
+
+  if (obj.personal?.rg?.issuing) {
+    obj.personal.rg.issuing.date = rgDate
+      ? parseCivilDate(rgDate) ?? null
+      : null;
   }
+
   if (obj.personal?.birth?.date) {
     obj.personal.birth.date =
-      parseCivilDate(obj.personal.birth.date) || new Date();
+      parseCivilDate(obj.personal.birth.date) ?? new Date();
   }
+
   return obj;
 }
 

@@ -123,7 +123,7 @@ export function ProfessionalFormFields() {
           name="rg"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>RG *</FormLabel>
+              <FormLabel>RG</FormLabel>
               <FormControl>
                 <Input 
                 placeholder="Ex: 12.345.678-9" {...field}
