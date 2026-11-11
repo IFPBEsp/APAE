@@ -58,7 +58,7 @@ O projeto foi automatizado para rodar com o mínimo de comandos utilizando **pnp
 - Docker com Docker Compose;
 - Java 21;
 - Node.js e pnpm;
-- [Gitleaks](https://github.com/gitleaks/gitleaks#installing) v8+ (necessário para a verificação de segurança no hook de pré-commit).
+- [Gitleaks](https://github.com/IFPBEsp/APAE-INFRA/blob/dev/docs/seguranca/gitleaks.md) v8.30.1+ (necessário para a verificação de segurança no hook de pré-commit).
 
 #### Passo 1: Setup inicial
 

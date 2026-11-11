@@ -4,16 +4,15 @@
 if ! command -v gitleaks >/dev/null 2>&1; then
     echo ""
     echo "⚠️  [AVISO] 'gitleaks' não encontrado no PATH."
-    echo "👉 Instale para evitar vazar credenciais: https://github.com/gitleaks/gitleaks#installing"
+    echo "👉 Instale para evitar vazar credenciais: https://github.com/IFPBEsp/APAE-INFRA/blob/dev/docs/seguranca/gitleaks.md"
     echo "ℹ️  O commit continuará localmente, mas será verificado obrigatoriamente no CI."
     echo ""
 else
-    # Executa a verificação staged
-    if gitleaks protect --help >/dev/null 2>&1; then
-        gitleaks protect --staged --redact -v || exit 1
-    else
-        gitleaks git --pre-commit --staged --redact -v || exit 1
-    fi
+    # 2. Executa a verificação do gitleaks (v8.30.1+)
+    gitleaks git --pre-commit --staged --redact -v || exit 1
 fi
 
-# (Se houver lint-staged ou outros comandos do PR 895 logo abaixo, mantenha-os após o bloco do gitleaks)
+# 3. Executa o lint-staged apenas se o arquivo de config existir na raiz do projeto
+if [ -f ".lintstagedrc" ] || [ -f ".lintstagedrc.json" ] || [ -f "lint-staged.config.js" ]; then
+    pnpm exec lint-staged
+fi
