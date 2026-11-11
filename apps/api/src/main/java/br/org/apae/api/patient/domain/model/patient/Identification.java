@@ -29,7 +29,7 @@ public class Identification {
     this.rg = rg;
     this.cpf = cpf;
     this.cns = cns;
-    this.nis = nis;
+    this.nis = (nis == null || nis.isBlank()) ? null : nis;
     this.issueDate = issueDate;
     this.issuingAgency = issuingAgency;
   }

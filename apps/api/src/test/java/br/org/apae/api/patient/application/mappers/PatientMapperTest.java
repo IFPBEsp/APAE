@@ -156,7 +156,7 @@ class PatientMapperTest {
         Patient entity = patientMapper.toEntity(dto, vaccineDtos);
 
         assertNotNull(entity);
-        assertEquals("", entity.getNis());
+        assertNull(entity.getNis());
     }
 
     @Test
@@ -184,7 +184,7 @@ class PatientMapperTest {
         Patient updated = patientMapper.updateEntityFromDto(existingPatient, dto, vaccineDtos);
 
         assertNotNull(updated);
-        assertEquals("", updated.getNis());
+        assertNull(updated.getNis());
     }
 
     @Test
