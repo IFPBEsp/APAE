@@ -82,6 +82,10 @@ minio:
 cors:
   allowed-origins: ${CORS_ALLOWED_ORIGINS:http://localhost:3000}
 
+apae:
+  profile-photo-backfill:
+    enabled: ${PROFILE_PHOTO_BACKFILL_ENABLED:true}
+
 server:
   port: ${API_PORT:8090}
   servlet:
