@@ -15,12 +15,6 @@ public class DisorderMapper {
         return new Disorder(dto.name());
     }
 
-    public Set<Disorder> toEntitySet(Set<CreateDisorderDTO> dtos) {
-        return dtos.stream()
-                .map(this::toEntity)
-                .collect(Collectors.toSet());
-    }
-
     public Disorder toEntityFromResponse(DisorderResponseDTO dto) {
         return new Disorder(dto.id(), dto.name());
     }

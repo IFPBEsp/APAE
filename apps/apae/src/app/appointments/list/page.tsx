@@ -24,7 +24,7 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
-import { AppointmentForm } from '@/components/forms/AppointmentForm';
+import { AppointmentForm } from '@/domains/appointments/components/AppointmentForm';
 import { InfoCard } from '@/components/shared/InfoCard';
 import {
   Dialog,
@@ -44,14 +44,13 @@ import {
 import { formatDatePTBR } from '@/lib/utils';
 import { ptBR } from 'date-fns/locale';
 import Link from "next/link";
-import {
-  Appointment,
-  getAppointments,
-  getServiceAreas,
-} from "../../services/appointmentService";
+import { getAppointments } from "@/domains/appointments/appointments.api";
+import { getServiceAreas } from "@/domains/professional/professional.api";
+import type { Appointment } from "@/domains/appointments/types/appointments.types";
 import {Tooltip, TooltipContent, TooltipProvider, TooltipTrigger} from "@radix-ui/react-tooltip";
-import { useAbsenceAlerts } from '@/hooks/use-absence-alerts';
-import { useAppointmentFilters } from '@/hooks/use-appointment-filters';
+import { useAbsenceAlerts } from '@/domains/absences/hooks/use-absence-alerts';
+import { useAppointmentFilters } from '@/domains/appointments/hooks/use-appointment-filters';
+import { toast } from 'react-toastify';
 
 type Area = {
   id: number;
@@ -99,6 +98,7 @@ useEffect(() => {
 
     } catch (error) {
       console.error(error);
+      toast.error(error instanceof Error ? error.message : 'Não foi possível carregar os agendamentos.');
       initialized.current = false;
     }
   };

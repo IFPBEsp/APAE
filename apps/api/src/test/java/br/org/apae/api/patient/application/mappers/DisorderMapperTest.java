@@ -41,21 +41,6 @@ class DisorderMapperTest {
     }
 
     @Test
-    void toEntitySet_ShouldMapAllItems() {
-        Set<CreateDisorderDTO> dtos = Set.of(
-                new CreateDisorderDTO("Autismo"),
-                new CreateDisorderDTO("TDAH")
-        );
-
-        Set<Disorder> entities = disorderMapper.toEntitySet(dtos);
-
-        assertNotNull(entities);
-        assertEquals(2, entities.size());
-        assertTrue(entities.stream().anyMatch(e -> "Autismo".equals(e.getName())));
-        assertTrue(entities.stream().anyMatch(e -> "TDAH".equals(e.getName())));
-    }
-
-    @Test
     void toEntityFromResponse_ShouldMapAllFields() {
         UUID id = UUID.randomUUID();
         DisorderResponseDTO dto = new DisorderResponseDTO(id, "Autismo", false);

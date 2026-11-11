@@ -1,6 +1,6 @@
 import { describe, it, expect } from "vitest";
-import { Professional, daysOfWeek, shifts } from "@/types/profissional";
-import { ProfessionalFormValues } from "@/schemas/profissional.schema";
+import { Professional, daysOfWeek, shifts } from "@/domains/professional/profissional.types";
+import { ProfessionalFormValues } from "@/domains/professional/profissional.schema";
 import {
   filterProfessionals,
   buildProfessionalPayload,
@@ -146,6 +146,14 @@ describe("buildProfessionalPayload", () => {
     expect(address.complement).toBe("");
   });
 
+  it("envia number como 'SN' quando noNumber é true", () => {
+    const { address } = buildProfessionalPayload(
+      makeFormValues({ noNumber: true, number: "" }),
+    );
+
+    expect(address.number).toBe("SN");
+  });
+
   it("inclui apenas as disponibilidades marcadas, só com day e shift", () => {
     const payload = buildProfessionalPayload(
       makeFormValues({
@@ -204,10 +212,30 @@ describe("mapProfessionalToForm", () => {
       city: "Esperança",
       neighborhood: "Centro",
       street: "Rua A",
+      noNumber: false,
       number: "10",
       complement: "Casa",
       cep: "58135-000",
     });
+  });
+
+  it("preenche noNumber como true quando o número do endereço é 'SN'", () => {
+    const form = mapProfessionalToForm(
+      makeProfessional({
+        address: {
+          state: "PB",
+          city: "Esperança",
+          neighborhood: "Centro",
+          street: "Rua A",
+          number: "SN",
+          complement: "Casa",
+          cep: "58135-000",
+        },
+      }),
+    );
+
+    expect(form.noNumber).toBe(true);
+    expect(form.number).toBe("SN");
   });
 
   it("usa string vazia para cpf, professionalDocument e complement ausentes", () => {
@@ -282,12 +310,12 @@ describe("isValidFile", () => {
     expect(isValidFile(makeFile("application/pdf", 0))).toBe(false);
   });
 
-  it("aceita arquivo com exatamente 5MB", () => {
-    expect(isValidFile(makeFile("application/pdf", 5 * MB))).toBe(true);
+  it("aceita arquivo com exatamente 10MB", () => {
+    expect(isValidFile(makeFile("application/pdf", 10 * MB))).toBe(true);
   });
 
-  it("rejeita arquivo maior que 5MB", () => {
-    expect(isValidFile(makeFile("application/pdf", 5 * MB + 1))).toBe(false);
+  it("rejeita arquivo maior que 10MB", () => {
+    expect(isValidFile(makeFile("application/pdf", 10 * MB + 1))).toBe(false);
   });
 });
 

@@ -4,7 +4,7 @@ import {
   shifts,
   AvailabilityType,
   AvailabilityDTO,
-} from "@/types/profissional";
+} from "@/domains/professional/profissional.types";
 import {
   generateAvailabilityMatrix,
   buildAvailabilityMatrixFromDTOs,

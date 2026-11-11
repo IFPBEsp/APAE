@@ -141,7 +141,7 @@ public class PatientControllerTest {
  }
 
  private CreatePatientDTO createValidPatientRequest() {
-  return new CreatePatientDTO("João da Silva", "Brasileira", LocalDate.of(2010, 1, 1), "8399999999", "123456", "Cartório X", "10", "A", "123456", LocalDate.of(2015, 1, 1), "SSP/PB", "000.000.000-00", "123456789", "12345", LocalDate.now(), "Nenhuma", true, createAddress(), new CreateGuardianDTO("Mãe", "8399999999", "MÃE", createAddress()), List.of(new CreateParentDTO("Pai", "123456", "000.000.000-00", "Autônomo", true, "PAI")), Set.of(new CreateVaccineDTO("BCG")), createAnnualRegistry());
+  return new CreatePatientDTO("João da Silva", "Brasileira", LocalDate.of(2010, 1, 1), "8399999999", "123456", "Cartório X", "10", "A", "123456", LocalDate.of(2015, 1, 1), "SSP/PB", "529.982.247-25", "123456789", "12345", LocalDate.now(), "Nenhuma", true, createAddress(), new CreateGuardianDTO("Mãe", "8399999999", "MÃE", createAddress()), List.of(new CreateParentDTO("Pai", "123456", "529.982.247-25", "Autônomo", true, "PAI")), Set.of(new CreateVaccineDTO("BCG")), createAnnualRegistry());
  }
 
  private CreatePatientDTO createInvalidPatientRequest() {

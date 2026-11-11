@@ -12,6 +12,7 @@ export default function DashboardPage() {
     allAppointments,
     isCreateOpen, setIsCreateOpen,
     alertPatientIds,
+    refreshAlerts,
   } = useDashboard();
 
   return (
@@ -32,6 +33,7 @@ export default function DashboardPage() {
           alertPatientIds={alertPatientIds}
           selectedDate={selectedDate}
           setTodayAppointments={setTodayAppointments}
+          refreshAlerts={refreshAlerts}
         />
       </main>
     </div>

@@ -16,7 +16,7 @@ import {
   TooltipTrigger,
 } from '@/components/ui/tooltip';
 import { RegisterAbsenceButton } from '@/components/buttons/RegisterAbsenceButton';
-import { TodayAppointment } from '@/types/appointment';
+import type { TodayAppointment } from '@/domains/appointments/types/appointments.types';
 import { format } from 'date-fns';
 import { AlertTriangle } from 'lucide-react';
 import Link from 'next/link';
@@ -26,6 +26,7 @@ interface AppointmentsTableProps {
   alertPatientIds: Set<string>;
   selectedDate: Date;
   setTodayAppointments: React.Dispatch<React.SetStateAction<TodayAppointment[]>>;
+  refreshAlerts: () => Promise<void>;
 }
 
 export function AppointmentsTable({
@@ -33,6 +34,7 @@ export function AppointmentsTable({
   alertPatientIds,
   selectedDate,
   setTodayAppointments,
+  refreshAlerts,
 }: AppointmentsTableProps) {
   const handleAbsenceSuccess = (appointmentId: string) => {
     setTodayAppointments((prev) =>
@@ -40,6 +42,7 @@ export function AppointmentsTable({
         a.id === appointmentId ? { ...a, hasAbsence: true } : a
       )
     );
+    void refreshAlerts();
   };
 
   return (

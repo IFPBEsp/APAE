@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { toast } from "react-toastify";
 import { createDisorderApi } from "../disorders.api";
 import type { CreateDisorderParams } from "../disorders.types";
-import { useDisordersContext } from "@/hooks/use-disorders";
+import { useDisordersContext } from "@/domains/disorders/use-disorders";
 
 export function useDisorderCreate() {
   const [isSubmitting, setIsSubmitting] = useState(false);

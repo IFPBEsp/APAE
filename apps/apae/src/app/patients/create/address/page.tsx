@@ -10,12 +10,20 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { STATES, normalizeStateToUF } from "@/lib/states";
+import {
   MembersRegisterStep,
   useMembersRegisterContext,
 } from "@/domains/patients/hooks/use-members-register-context";
 import { formatCEP, capitalizeFirst } from "@/lib/formats";
 import { Address } from "@/domains/patients/schemas/member-schemas";
-import { EditAddress } from "@/schemas/edit-member-schemas";
+import { EditAddress } from "@/domains/patients/schemas/edit-member-schemas";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { useState, useEffect } from "react";
@@ -23,7 +31,7 @@ import { usePathname } from "next/navigation";
 import { handleBackendValidationErrors } from "@/lib/utils/form-errors";
 import { Checkbox } from "@/components/ui/checkbox";
 
-import { DoubleColumn, FormButton, MembersRegisterForm } from "../form";
+import { DoubleColumn, FormButton, MembersRegisterForm } from "@/domains/patients/components/form";
 import z from "zod";
 
 export default function MembersRegisterAddressPage() {
@@ -43,6 +51,7 @@ export default function MembersRegisterAddressPage() {
     resolver: zodResolver(currentSchema),
     defaultValues: {
       ...address,
+      state: normalizeStateToUF(address.state) as z.infer<typeof Address>["state"],
       noNumber: address.number === "SN" || false
     },
   });
@@ -64,6 +73,7 @@ export default function MembersRegisterAddressPage() {
     if (address && Object.keys(address).length > 0) {
       form.reset({
         ...address,
+        state: normalizeStateToUF(address.state) as z.infer<typeof Address>["state"],
         noNumber: address.number === "SN" || false
       });
     }
@@ -80,6 +90,7 @@ export default function MembersRegisterAddressPage() {
 
     const guardianAddress = {
       ...guardian.address,
+      state: normalizeStateToUF(guardian.address.state) as z.infer<typeof Address>["state"],
       noNumber: guardian.address.number === "SN",
     };
 
@@ -96,11 +107,7 @@ export default function MembersRegisterAddressPage() {
       }
       setAddressData(dataToSave);
 
-      if (isEditing) {
-        setStep(MembersRegisterStep.PROFILE);
-      } else {
-        setStep(MembersRegisterStep.ADDITIONALS);
-      }
+      setStep(MembersRegisterStep.ADDITIONALS);
     } catch (error: unknown) {
       const err = error as { response?: { data?: Record<string, string[]> } };
       if (err.response?.data) {
@@ -113,7 +120,10 @@ export default function MembersRegisterAddressPage() {
 
   useEffect(() => {
     if (address.cep !== "") {
-      form.reset(address);
+      form.reset({
+        ...address,
+        state: normalizeStateToUF(address.state) as z.infer<typeof Address>["state"],
+      });
     }
   }, [address, form]);
 
@@ -247,15 +257,24 @@ export default function MembersRegisterAddressPage() {
           <FormField
             control={form.control}
             name="state"
-            render={({ field }) => (
+            render={({ field, fieldState }) => (
               <FormItem>
                 <FormLabel>Estado *</FormLabel>
                 <FormControl>
-                  <Input
-                    placeholder="Paraiba"
-                    {...field}
-                    onChange={(e) => field.onChange(capitalizeFirst(e.target.value))}
-                  />
+                  <Select onValueChange={field.onChange} value={field.value}>
+                    <SelectTrigger
+                      className={`w-full ${fieldState.invalid ? "border-red-500" : "border-gray-300"}`}
+                    >
+                      <SelectValue placeholder="Selecione um estado" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {STATES.map((s) => (
+                        <SelectItem key={s} value={s}>
+                          {s}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
                 </FormControl>
                 <FormMessage />
               </FormItem>

@@ -67,7 +67,7 @@ public class PatientCreator {
                 new CreateParentDTO(
                         "José da Silva",
                         "33344455",
-                        "000.111.222-33",
+                        "529.982.247-25",
                         "Autônomo",
                         true,
                         "PAI"
@@ -101,7 +101,7 @@ public class PatientCreator {
                 new UpdateParentDTO(
                         "José da Silva Editado",
                         "33344455",
-                        "000.111.222-33",
+                        "529.982.247-25",
                         "Autônomo",
                         true,
                         "PAI"
@@ -120,7 +120,7 @@ public class PatientCreator {
                 UUID.randomUUID(), "Mãe", "8399999999", "MÃE", address);
 
         ParentResponseDTO parent = new ParentResponseDTO(
-                UUID.randomUUID(), "Pai", "123456", "000.000.000-00",
+                UUID.randomUUID(), "Pai", "123456", "529.982.247-25",
                 "Autônomo", "PAI", true);
 
         VaccineResponseDTO vaccine = new VaccineResponseDTO(UUID.randomUUID(), "BCG", false);
@@ -138,7 +138,7 @@ public class PatientCreator {
                 "123456",
                 LocalDate.of(2015, 1, 1),
                 "SSP/PB",
-                "000.000.000-00",
+                "529.982.247-25",
                 "123456789",
                 "12345",
                 LocalDate.now(),
@@ -173,7 +173,7 @@ public class PatientCreator {
                 "123456",
                 LocalDate.of(2015, 1, 1),
                 "SSP/PB",
-                "000.000.000-00",
+                "529.982.247-25",
                 "123456789",
                 "12345",
                 LocalDate.now(),
@@ -224,7 +224,7 @@ public class PatientCreator {
             "RG123",
             LocalDate.of(2015, 1, 1),
             "SSP/PB",
-            "000.000.000-00",
+            "529.982.247-25",
             "123456789",
             "12345",
             "Nenhuma",

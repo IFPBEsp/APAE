@@ -1,5 +1,5 @@
 import { createBaseApi } from "@/lib/axios";
-import { updateserviceTypeSchema } from "@/schemas/service-type-schemas";
+import { updateServiceTypeSchema } from "@/domains/service-types/service-type.schema";
 import { NextResponse } from "next/server";
 import { AxiosError } from "axios";
 
@@ -29,7 +29,7 @@ export async function PUT(request: Request, { params }: IParams) {
   try {
     const { id } = await params;
     const body = await request.json();
-    const validation = updateserviceTypeSchema.safeParse(body);
+    const validation = updateServiceTypeSchema.safeParse(body);
     if (!validation.success) return NextResponse.json({ errors: validation.error.flatten() }, { status: 400 });
 
     const api = await createBaseApi();

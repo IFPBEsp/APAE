@@ -1,8 +1,7 @@
 'use client';
 
 import { InfoCard } from '@/components/shared/InfoCard';
-import { TodayAppointment } from '@/types/appointment';
-import { type AppointmentResponseDTO } from '@/app/services/appointmentService';
+import type { TodayAppointment, AppointmentResponseDTO } from '@/domains/appointments/types/appointments.types';
 import { Users, UserRoundCheck, UserRoundX } from 'lucide-react';
 
 interface DashboardSummaryCardsProps {

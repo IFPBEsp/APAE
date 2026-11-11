@@ -1,17 +1,13 @@
 import z, { ZodCoercedDate } from "zod";
 import { parseCivilDate } from "@/lib/date";
-
-const CPF = z
-  .string()
-  .min(1, "CPF é obrigatório")
-  .min(14, "CPF deve ter pelo menos 11 dígitos")
-  .regex(/^\d{3}\.\d{3}\.\d{3}-\d{2}$/, "Formato de CPF inválido");
-
-const RG = z
-  .string()
-  .min(1, "RG é obrigatório")
-  .min(9, "RG deve ter pelo menos 7 dígitos")
-  .regex(/^\d\.\d{3}\.\d{3}$/, "Formato de RG inválido");
+import { photoFileSchema } from "@/lib/photo.schema";
+import {
+  cpfSchema,
+  nomeCompletoSchema,
+  rgSchema,
+  telefoneSchema,
+} from "@/lib/personal-data.schema";
+import { addressSchema } from "@/schemas/shared/address.schema";
 
 const CNS = z
   .string()
@@ -47,26 +43,11 @@ const civilDateSchema = (
 
 export const Personal = z
   .object({
-    name: z
-      .string()
-      .transform((v) => v.trim())
-      .pipe(
-        z
-          .string()
-          .min(2, "Nome muito curto")
-          .max(100, "Nome muito longo")
-          .regex(/^[a-zA-ZÀ-ÿ\s]+$/, "Nome deve conter apenas letras e espaços")
-          .refine((val) => val.split(/\s+/).length >= 2, {
-            message: "Digite o nome completo (nome e sobrenome)",
-          }),
-      ),
-    cpf: CPF,
-    phone: z
-      .string()
-      .min(1, "Telefone é obrigatório")
-      .min(14, "Telefone deve ter pelo menos 10 dígitos"),
+    name: nomeCompletoSchema,
+    cpf: cpfSchema,
+    phone: telefoneSchema,
     rg: z.object({
-      number: RG,
+      number: rgSchema,
       issuing: z.object({
         body: z
           .string()
@@ -113,31 +94,7 @@ export const Personal = z
     path: ["rg", "issuing", "date"],
   });
 
-export const Address = z.object({
-  cep: z.string().min(1, "CEP é obrigatório.").min(9, "CEP deve ter 8 dígitos"),
-  state: z
-    .string()
-    .min(3, "Estado deve ser o nome completo (ex: Paraíba)")
-    .regex(/^[a-zA-ZÀ-ÿ\s]+$/, "O estado deve conter apenas letras"),
-  city: z
-    .string()
-    .min(2, "Cidade inválida")
-    .regex(/^[a-zA-ZÀ-ÿ\s]+$/, "A cidade deve conter apenas letras"),
-  neighborhood: z.string().min(2, "Bairro inválido"),
-  street: z
-    .string()
-    .min(2, "Rua é obrigatória")
-    .regex(/^[a-zA-ZÀ-ÿ\s\.\-,]+$/, "Informe a rua (ex: Rua tal)"),
-  noNumber: z.boolean().optional(),
-  number: z
-    .string()
-    .min(1, "Número é obrigatório")
-    .regex(
-      /^(\d+|SN|sn|S\/N|s\/n)$/,
-      "Número deve conter apenas dígitos ou SN",
-    ),
-  complement: z.string().optional(),
-});
+export const Address = addressSchema;
 
 export const Additionals = z.object({
   diseases: z.string().min(1, "O campo de doenças é obrigatório."),
@@ -171,21 +128,10 @@ export const Additionals = z.object({
 });
 
 export const Kinship = z.object({
-  rg: RG,
-  cpf: CPF,
+  rg: rgSchema,
+  cpf: cpfSchema,
   alive: z.boolean(),
-  name: z
-    .string()
-    .transform((v) => v.trim())
-    .pipe(
-      z
-        .string()
-        .min(2, "Nome muito curto")
-        .regex(/^[a-zA-ZÀ-ÿ\s]+$/, "O nome não pode conter números ou símbolos")
-        .refine((val) => val.split(/\s+/).length >= 2, {
-          message: "Digite o nome completo do parente",
-        }),
-    ),
+  name: nomeCompletoSchema,
   occupation: z.string().min(2, "Profissão inválida"),
   type: z.string().min(1, "Informar o parentesco é obrigatório."),
   isLegalGuardian: z.boolean().default(false).optional(),
@@ -196,26 +142,8 @@ export const Kinships = z.object({
 });
 
 export const Guardian = z.object({
-  name: z
-    .string()
-    .transform((v) => v.trim())
-    .pipe(
-      z
-        .string()
-        .min(2, "Nome muito curto")
-        .max(100, "Nome muito longo")
-        .regex(/^[a-zA-ZÀ-ÿ\s]+$/, "Nome deve conter apenas letras e espaços")
-        .refine((val) => val.split(/\s+/).length >= 2, {
-          message: "Digite o nome completo do responsável (nome e sobrenome)",
-        }),
-    ),
-  contact: z
-    .string()
-    .min(1, "Contato de emergência é obrigatório.")
-    .refine((val) => {
-      const apenasNumeros = val.replace(/\D/g, "");
-      return apenasNumeros.length >= 10;
-    }, "O telefone deve ter no mínimo 10 dígitos (DDD + número)"),
+  name: nomeCompletoSchema,
+  contact: telefoneSchema,
 
   kinship: z.string().min(1, "Informar o parentesco é obrigatório."),
   address: Address,
@@ -226,7 +154,7 @@ export const Profile = z.object({
   role: z.enum(["student", "patient"], {
     message: "Tipo de eficiência é obrigatório.",
   }),
-  photo: z.instanceof(File, { message: "A foto é obrigatória." }),
+  photo: photoFileSchema,
 });
 
 export type PersonalData = z.infer<typeof Personal>;

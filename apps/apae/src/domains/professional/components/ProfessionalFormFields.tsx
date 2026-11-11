@@ -3,6 +3,7 @@
 import { Controller, useFormContext } from "react-hook-form";
 import { InputMask } from "@react-input/mask";
 import { Input } from "@/components/ui/input";
+import { Checkbox } from "@/components/ui/checkbox";
 import {
   Select,
   SelectContent,
@@ -20,7 +21,8 @@ import {
 import Availability from "@/components/forms/AvailabilityForm";
 import HealthAreaSelect from "@/components/shared/HealthAreaSelect";
 import { STATES } from "@/lib/states";
-import type { ProfessionalFormValues } from "@/schemas/profissional.schema";
+import type { ProfessionalFormValues } from "@/domains/professional/profissional.schema";
+import { formatRG, formatPhone } from "@/lib/formats";
 
 /**
  * Campos comuns do profissional (fullName ... complement) + disponibilidade.
@@ -32,6 +34,7 @@ import type { ProfessionalFormValues } from "@/schemas/profissional.schema";
  */
 export function ProfessionalFormFields() {
   const form = useFormContext<ProfessionalFormValues>();
+  const isNoNumber = form.watch("noNumber");
 
   return (
     <>
@@ -122,7 +125,9 @@ export function ProfessionalFormFields() {
             <FormItem>
               <FormLabel>RG *</FormLabel>
               <FormControl>
-                <Input placeholder="Ex: 1234567" {...field} />
+                <Input 
+                placeholder="Ex: 12.345.678-9" {...field}
+                onChange={(e) => field.onChange(formatRG(e.target.value))} />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -135,14 +140,11 @@ export function ProfessionalFormFields() {
             <FormItem>
               <FormLabel>Telefone *</FormLabel>
               <FormControl>
-                <InputMask
-                  mask="(__) _____-____"
-                  replacement={{ _: /\d/ }}
-                  value={field.value ?? ""}
-                  onChange={(e) => field.onChange(e.target.value)}
-                  onBlur={field.onBlur}
+                <Input
                   placeholder="(xx) xxxxx-xxxx"
-                  className="w-full rounded-md border px-3 py-2"
+                  value={field.value ?? ""}
+                  onChange={(e) => field.onChange(formatPhone(e.target.value))}
+                  onBlur={field.onBlur}
                 />
               </FormControl>
               <FormMessage>{fieldState.error?.message}</FormMessage>
@@ -245,19 +247,56 @@ export function ProfessionalFormFields() {
       </div>
 
       <div className="grid grid-cols-2 gap-4">
-        <FormField
-          control={form.control}
-          name="number"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Número *</FormLabel>
-              <FormControl>
-                <Input placeholder="Ex: 123" {...field} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
+        <div className="space-y-2">
+          <div className="flex justify-between items-center">
+            <FormLabel>Número *</FormLabel>
+            <FormField
+              control={form.control}
+              name="noNumber"
+              render={({ field }) => (
+                <div className="flex items-center space-x-2">
+                  <Checkbox
+                    id="noNumber"
+                    checked={Boolean(field.value)}
+                    onCheckedChange={(checked) => {
+                      const isChecked = checked === true;
+                      field.onChange(isChecked);
+                      if (isChecked) {
+                        form.setValue("number", "SN");
+                        form.clearErrors("number");
+                      } else {
+                        form.setValue("number", "");
+                      }
+                    }}
+                  />
+                  <label htmlFor="noNumber" className="text-sm text-gray-600">
+                    Sem número?{" "}
+                  </label>
+                </div>
+              )}
+            />
+          </div>
+          <FormField
+            control={form.control}
+            name="number"
+            render={({ field }) => (
+              <FormItem>
+                <FormControl>
+                  <Input
+                    placeholder="Ex: 123"
+                    {...field}
+                    disabled={isNoNumber}
+                    aria-placeholder={isNoNumber ? "SN" : "Ex: 123"}
+                    className={
+                      isNoNumber ? "bg-gray-100 cursor-not-allowed" : ""
+                    }
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+        </div>
         <FormField
           control={form.control}
           name="complement"

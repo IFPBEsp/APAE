@@ -1,5 +1,7 @@
 package br.org.apae.api.common.exceptions.handler;
 
+import java.util.UUID;
+
 import br.org.apae.api.auth.infrastructure.security.JwtProvider;
 import br.org.apae.api.auth.infrastructure.security.SecurityFilter;
 import org.junit.jupiter.api.DisplayName;
@@ -11,16 +13,24 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.test.context.support.WithMockUser;
+import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.matchesPattern;
 import static org.hamcrest.Matchers.not;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -30,6 +40,10 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @WithMockUser
 @Tag("unit")
 @Tag("controller")
+@TestPropertySource(properties = {
+    "spring.mvc.throw-exception-if-no-handler-found=true"
+})
+
 class GlobalExceptionHandlerResponseStatusTest {
 
     private static final String URI = "/handler-probe";
@@ -45,6 +59,26 @@ class GlobalExceptionHandlerResponseStatusTest {
 
     @RestController
     public static class ProbeController {
+
+        @GetMapping(URI + "/uuid/{id}")
+        public String uuid(@PathVariable UUID id) {
+            return "ok";
+        }
+
+        @GetMapping(URI + "/parametro")
+        public String parametro(@RequestParam String nome) {
+            return "ok";
+        }
+
+        @GetMapping(URI + "/somente-get")
+        public String somenteGet() {
+            return "ok";
+        }
+
+        @PostMapping(URI + "/multipart")
+        public String multipart(@RequestPart MultipartFile arquivo) {
+            return "ok";
+        }
 
         @GetMapping(URI + "/regra-negocio")
         public String regraNegocio() {
@@ -82,6 +116,61 @@ class GlobalExceptionHandlerResponseStatusTest {
         public String statusDesconhecido() {
             throw new ResponseStatusException(599, "código interno 599 não mapeado", null);
         }
+    }
+
+    @Test
+    @DisplayName("Retorna 404 quando a rota não existe")
+    void deveRetornar404QuandoRotaNaoExistir() throws Exception {
+
+        mockMvc.perform(get("/rota-que-nao-existe"))
+                .andExpect(status().isNotFound())
+                .andExpect(jsonPath("$.status").value(404))
+                .andExpect(jsonPath("$.error").value("Not Found"))
+                .andExpect(jsonPath("$.message").value("Recurso não encontrado."));
+    }
+
+    @Test
+    @DisplayName("Retorna 400 quando uma parte obrigatória da requisição está ausente")
+    void deveRetornar400QuandoParteObrigatoriaEstiverAusente() throws Exception {
+
+        mockMvc.perform(multipart(URI + "/multipart"))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.status").value(400))
+                .andExpect(jsonPath("$.error").value("Bad Request"))
+                .andExpect(jsonPath("$.message").value("Parâmetro obrigatório ausente."))
+                .andExpect(jsonPath("$.path").value(URI + "/multipart"));
+    }
+
+    @Test
+    @DisplayName("Retorna 405 quando o método HTTP não é suportado")
+    void deveRetornar405QuandoMetodoNaoForSuportado() throws Exception {
+        mockMvc.perform(put(URI + "/somente-get"))
+                .andExpect(status().isMethodNotAllowed())
+                .andExpect(jsonPath("$.status").value(405))
+                .andExpect(jsonPath("$.error").value("Method Not Allowed"))
+                .andExpect(jsonPath("$.message").value("Método HTTP não suportado."))
+                .andExpect(jsonPath("$.path").value(URI + "/somente-get"));
+    }
+
+    @Test
+    @DisplayName("Retorna 400 quando o parâmetro UUID é inválido")
+    void deveRetornar400QuandoUuidForInvalido() throws Exception {
+        mockMvc.perform(get(URI + "/uuid/abc"))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.status").value(400))
+                .andExpect(jsonPath("$.error").value("Bad Request"))
+                .andExpect(jsonPath("$.message").value("Tipo de parâmetro inválido."))
+                .andExpect(jsonPath("$.path").value(URI + "/uuid/abc"));
+    }
+
+    @Test
+    @DisplayName("Retorna 400 quando um parâmetro obrigatório não é informado")
+    void deveRetornar400QuandoParametroObrigatorioEstiverAusente() throws Exception {
+        mockMvc.perform(get(URI + "/parametro"))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.status").value(400))
+                .andExpect(jsonPath("$.error").value("Bad Request"))
+                .andExpect(jsonPath("$.message").value("Parâmetro obrigatório ausente."));
     }
 
     @Test

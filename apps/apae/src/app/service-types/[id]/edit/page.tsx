@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Loader2, ArrowLeft } from "lucide-react";
-import { useServiceTypeEdit } from "@/hooks/service-types/use-service-type-edit";
+import { useServiceTypeEdit } from "@/domains/service-types";
 
 export default function EditServiceTypePage() {
   const router = useRouter();

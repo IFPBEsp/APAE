@@ -17,7 +17,7 @@ export function SidebarSteps() {
     { id: MembersRegisterStep.KINSHIPS, label: "Parentesco" },
     { id: MembersRegisterStep.GUARDIAN, label: "Responsável" },
     { id: MembersRegisterStep.ADDRESS, label: "Endereço" },
-    ...(!isEditing ? [{ id: MembersRegisterStep.ADDITIONALS, label: "Saúde & Social" }] : []),
+    { id: MembersRegisterStep.ADDITIONALS, label: "Saúde & Social" },
     { id: MembersRegisterStep.PROFILE, label: "Perfil & Documentos" },
   ];
 

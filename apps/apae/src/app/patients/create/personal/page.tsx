@@ -31,7 +31,7 @@ import { handleBackendValidationErrors } from "@/lib/utils/form-errors";
 import { formatCivilDateDisplayValue } from "@/lib/date";
 import { InputMask } from "@react-input/mask";
 
-import { DoubleColumn, FormButton, MembersRegisterForm } from "../form";
+import { DoubleColumn, FormButton, MembersRegisterForm } from "@/domains/patients/components/form";
 import z from "zod";
 
 export default function MembersRegisterPersonalPage() {
@@ -195,8 +195,8 @@ export default function MembersRegisterPersonalPage() {
                 <FormLabel>RG *</FormLabel>
                 <FormControl>
                   <Input
-                    placeholder="1.234.567"
-                    maxLength={9}
+                    placeholder="12.345.678-9"
+                    maxLength={15}
                     value={field.value}
                     onChange={(e) => {
                       const formatted = formatRG(e.target.value);

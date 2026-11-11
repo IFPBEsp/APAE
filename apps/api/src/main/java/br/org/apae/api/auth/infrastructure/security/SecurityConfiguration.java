@@ -5,6 +5,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -44,8 +45,9 @@ public class SecurityConfiguration {
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(authorize -> {
+                    authorize.requestMatchers(HttpMethod.POST, "/auth/signup").hasRole("ADMIN");
                     SecurityFilter.PUBLIC_PATHS.forEach(pattern -> authorize.requestMatchers(pattern).permitAll());
-                    authorize.anyRequest().authenticated();
+                    authorize.anyRequest().hasAnyRole("ADMIN", "APAE_GERAL");
                 });
 
         http.exceptionHandling(exception -> exception

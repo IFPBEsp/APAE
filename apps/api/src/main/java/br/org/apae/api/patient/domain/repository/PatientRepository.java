@@ -29,7 +29,7 @@ public interface PatientRepository extends JpaRepository<Patient, UUID>, JpaSpec
       FROM Patient p
       LEFT JOIN Absence a
           ON a.generatedAppointment.patientId = p.id AND a.isJustified = false
-      WHERE LOWER(p.fullName) LIKE CONCAT('%', :name, '%')
+      WHERE LOWER(p.fullName) LIKE LOWER(CONCAT('%', :name, '%'))
       GROUP BY p.id
       HAVING COUNT(a) >= COALESCE(:minAbsences, 0)
     """)
