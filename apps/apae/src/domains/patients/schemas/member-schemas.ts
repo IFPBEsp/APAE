@@ -1,6 +1,12 @@
 import z, { ZodCoercedDate } from "zod";
 import { parseCivilDate } from "@/lib/date";
 import { photoFileSchema } from "@/lib/photo.schema";
+import {
+  cpfSchema,
+  nomeCompletoSchema,
+  rgSchema,
+  telefoneSchema,
+} from "@/lib/personal-data.schema";
 import { addressSchema } from "@/schemas/shared/address.schema";
 
 const CPF = z
@@ -74,24 +80,9 @@ const civilDateSchema = (
 
 export const Personal = z
   .object({
-    name: z
-      .string()
-      .transform((v) => v.trim())
-      .pipe(
-        z
-          .string()
-          .min(2, "Nome muito curto")
-          .max(100, "Nome muito longo")
-          .regex(/^[a-zA-ZÀ-ÿ\s]+$/, "Nome deve conter apenas letras e espaços")
-          .refine((val) => val.split(/\s+/).length >= 2, {
-            message: "Digite o nome completo (nome e sobrenome)",
-          }),
-      ),
-    cpf: CPF,
-    phone: z
-      .string()
-      .min(1, "Telefone é obrigatório")
-      .min(14, "Telefone deve ter pelo menos 10 dígitos"),
+    name: nomeCompletoSchema,
+    cpf: cpfSchema,
+    phone: telefoneSchema,
     rg: z.object({
       number: OptionalRG,
       issuing: z.object({
@@ -198,18 +189,7 @@ export const Kinship = z.object({
   rg: OptionalRG,
   cpf: CPF,
   alive: z.boolean(),
-  name: z
-    .string()
-    .transform((v) => v.trim())
-    .pipe(
-      z
-        .string()
-        .min(2, "Nome muito curto")
-        .regex(/^[a-zA-ZÀ-ÿ\s]+$/, "O nome não pode conter números ou símbolos")
-        .refine((val) => val.split(/\s+/).length >= 2, {
-          message: "Digite o nome completo do parente",
-        }),
-    ),
+  name: nomeCompletoSchema,
   occupation: z.string().min(2, "Profissão inválida"),
   type: z.string().min(1, "Informar o parentesco é obrigatório."),
   isLegalGuardian: z.boolean().default(false).optional(),
@@ -220,26 +200,8 @@ export const Kinships = z.object({
 });
 
 export const Guardian = z.object({
-  name: z
-    .string()
-    .transform((v) => v.trim())
-    .pipe(
-      z
-        .string()
-        .min(2, "Nome muito curto")
-        .max(100, "Nome muito longo")
-        .regex(/^[a-zA-ZÀ-ÿ\s]+$/, "Nome deve conter apenas letras e espaços")
-        .refine((val) => val.split(/\s+/).length >= 2, {
-          message: "Digite o nome completo do responsável (nome e sobrenome)",
-        }),
-    ),
-  contact: z
-    .string()
-    .min(1, "Contato de emergência é obrigatório.")
-    .refine((val) => {
-      const apenasNumeros = val.replace(/\D/g, "");
-      return apenasNumeros.length >= 10;
-    }, "O telefone deve ter no mínimo 10 dígitos (DDD + número)"),
+  name: nomeCompletoSchema,
+  contact: telefoneSchema,
 
   kinship: z.string().min(1, "Informar o parentesco é obrigatório."),
   address: Address,
