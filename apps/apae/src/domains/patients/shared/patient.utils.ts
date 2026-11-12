@@ -70,7 +70,7 @@ export function buildPatientPayload(
     issuingAgency: hasRG ? personal.rg.issuing.body : null,
     cpf: personal.cpf,
     cns: personal.cns || "000 0000 0000 0000",
-    nis: personal.nis || "0",
+    nis: personal.nis || "",
     registrationDate: hasRG && personal.rg.issuing.date
       ? serializeCivilDate(personal.rg.issuing.date)
       : null,

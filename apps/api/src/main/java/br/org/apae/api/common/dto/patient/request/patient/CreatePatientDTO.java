@@ -44,7 +44,7 @@ public record CreatePatientDTO(
 
     @NotBlank(message = "O CNS não pode estar em branco") String cns,
 
-    @NotBlank(message = "O NIS não pode estar em branco") String nis,
+    String nis,
 
     @NotNull(message = "A data de cadastro não pode ser nula") LocalDate registrationDate,
 

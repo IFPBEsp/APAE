@@ -174,7 +174,7 @@ export default function MembersRegisterPersonalPage() {
             name="nis"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>NIS *</FormLabel>
+                <FormLabel>NIS</FormLabel>
                 <FormControl>
                   <Input
                     placeholder="Apenas 11 números"

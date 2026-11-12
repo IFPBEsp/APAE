@@ -235,6 +235,31 @@ public class PatientCreator {
             Set.of(createVaccine())
     );
 }
+
+public static UpdatePatientDTO createUpdatePayloadWithoutNis() {
+    return new UpdatePatientDTO(
+            "João da Silva Editado",
+            "Brasileira",
+            LocalDate.of(2010, 1, 1),
+            "8399999-EDIT",
+            "123",
+            "Cartório Novo",
+            "1",
+            "A",
+            "RG123",
+            LocalDate.of(2015, 1, 1),
+            "SSP/PB",
+            "529.982.247-25",
+            "123456789",
+            null,
+            "Nenhuma",
+            true,
+            createAddress(),
+            createUpdateGuardian(),
+            createUpdateParents(),
+            Set.of(createVaccine())
+    );
+}
 /*
     public static CreatePatientDTO createInvalidRequest() {
         return new CreatePatientDTO(

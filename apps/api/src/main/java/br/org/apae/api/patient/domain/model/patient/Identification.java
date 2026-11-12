@@ -17,7 +17,6 @@ public class Identification {
   public Identification(String rg, String cpf, String cns, String nis, LocalDate issueDate, String issuingAgency) {
     requireNonNullOrEmpty(cpf, "CPF");
     requireNonNullOrEmpty(cns, "CNS");
-    requireNonNullOrEmpty(nis, "NIS");
 
     boolean hasRG = rg != null && !rg.isBlank();
 
@@ -36,7 +35,7 @@ public class Identification {
     this.rg = hasRG ? rg : null;
     this.cpf = cpf;
     this.cns = cns;
-    this.nis = nis;
+    this.nis = (nis == null || nis.isBlank()) ? null : nis;
     this.issueDate = hasRG ? issueDate : null;
     this.issuingAgency = hasRG ? issuingAgency : null;
   }
