@@ -94,7 +94,7 @@ function EditPatientDataLoader({ children }: { children: React.ReactNode }) {
               number: data.rg || "",
               issuing: {
                 body: data.issuingAgency || "",
-                date: parseCivilDate(data.issueDate) || new Date(),
+                date: parseCivilDate(data.issueDate),
               },
             },
             cns: data.cns || "",

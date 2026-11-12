@@ -27,15 +27,10 @@ const fileSchema = z
 
 const baseSchema = z.object({
   fullName: nomeCompletoSchema,
-
   email: z.email("Email inválido"),
-
   cpf: cpfSchema,
-
   professionalDocument: z.string().optional().nullable(),
-
   serviceArea: z.string().min(1, "Selecione uma área"),
-
   rg: rgSchema,
 
   ...addressSchema.shape,

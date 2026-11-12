@@ -58,13 +58,13 @@ public class Patient {
     @Column(name = "livro", nullable = false)
     private String book;
 
-    @Column(name = "rg", nullable = false, unique = true)
+    @Column(name = "rg", unique = true)
     private String rg;
 
-    @Column(name = "data_de_emissao", nullable = false)
+    @Column(name = "data_de_emissao")
     private LocalDate issueDate;
 
-    @Column(name = "orgao_emissor", nullable = false)
+    @Column(name = "orgao_emissor")
     private String issuingAgency;
 
     @Column(name = "cpf", nullable = false, unique = true)

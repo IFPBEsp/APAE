@@ -1,6 +1,7 @@
 import { serializeCivilDate } from "@/lib/date";
-import type {
-  MembersRegisterState,
+import {
+  MembersRegisterStep,
+  type MembersRegisterState,
 } from "@/domains/patients/hooks/register-context/types";
 import type {
   PatientListQueryValues,
@@ -41,6 +42,8 @@ export function buildPatientPayload(
 ): PatientPayload {
   const { personal, address, additionals, guardian, kinships, profile } = state;
 
+  const hasRG = personal.rg.number.trim() !== "";
+
   const annualRegistryData = {
     bpc: additionals.bpc,
     diseases: additionals.diseases || "Nenhuma",
@@ -60,13 +63,17 @@ export function buildPatientPayload(
     registryOffice: "Cartorio",
     fls: "0",
     book: "0",
-    rg: personal.rg.number || "0",
-    issueDate: serializeCivilDate(personal.rg.issuing.date),
-    issuingAgency: personal.rg.issuing.body || "SSP/SP",
+    rg: hasRG ? personal.rg.number : null,
+    issueDate: hasRG && personal.rg.issuing.date
+      ? serializeCivilDate(personal.rg.issuing.date)
+      : null,
+    issuingAgency: hasRG ? personal.rg.issuing.body : null,
     cpf: personal.cpf,
     cns: personal.cns || "000 0000 0000 0000",
     nis: personal.nis || "",
-    registrationDate: serializeCivilDate(personal.rg.issuing.date),
+    registrationDate: hasRG && personal.rg.issuing.date
+      ? serializeCivilDate(personal.rg.issuing.date)
+      : null,
     allergies: additionals.allergies || "Nenhuma",
     continuousMedication: additionals.medications || "Nenhum",
     isStudent: profile.role === "student",
@@ -95,7 +102,7 @@ export function buildPatientPayload(
     },
     parents: kinships.map((k) => ({
       name: k.name || "Não informado",
-      rg: k.rg || "0",
+      rg: k.rg || null,
       cpf: k.cpf,
       profession: k.occupation || "Não informado",
       isAlive: k.alive,
@@ -104,4 +111,83 @@ export function buildPatientPayload(
     vaccineNames: additionals.vaccines.map((v) => ({ name: v })),
     annualRegistry: annualRegistryData,
   };
+}
+
+export interface ConflictError {
+  field: string;
+  message: string;
+}
+
+const PERSONAL_FIELDS = [
+  "fullName",
+  "cpf",
+  "rg",
+  "contact",
+  "birth",
+  "nationality",
+  "cns",
+  "nis",
+  "phone",
+  "name",
+];
+
+const ADDITIONALS_FIELDS = [
+  "annualRegistry",
+  "vaccine",
+  "allergies",
+  "diseases",
+  "familyIncome",
+  "householdIncome",
+];
+
+export function isSuccessStatus(status: number): boolean {
+  return status === 201 || status === 200 || status === 204;
+}
+
+export function getConflictError(backendMessage: string): ConflictError {
+  const msgLower = backendMessage.toLowerCase();
+
+  if (msgLower.includes("rg") || msgLower.includes("identidade")) {
+    return {
+      field: "rg.number",
+      message: "Este RG já está cadastrado no sistema.",
+    };
+  }
+  if (msgLower.includes("cns")) {
+    return { field: "cns", message: "Este CNS já está cadastrado no sistema." };
+  }
+  if (msgLower.includes("cpf")) {
+    return { field: "cpf", message: "Este CPF já está cadastrado no sistema." };
+  }
+  return {
+    field: "cpf",
+    message: "CPF ou documento já cadastrado no sistema.",
+  };
+}
+
+function includesAny(fieldLower: string, fields: string[]): boolean {
+  return fields.some((f) => fieldLower.includes(f.toLowerCase()));
+}
+
+export function getStepForBackendField(
+  backendField: string,
+): MembersRegisterStep | undefined {
+  const fieldLower = backendField.toLowerCase();
+
+  if (includesAny(fieldLower, PERSONAL_FIELDS)) {
+    return MembersRegisterStep.PERSONAL;
+  }
+  if (fieldLower.includes("parents") || fieldLower.includes("kinships")) {
+    return MembersRegisterStep.KINSHIPS;
+  }
+  if (fieldLower.includes("address") && !fieldLower.includes("guardian")) {
+    return MembersRegisterStep.ADDRESS;
+  }
+  if (includesAny(fieldLower, ADDITIONALS_FIELDS)) {
+    return MembersRegisterStep.ADDITIONALS;
+  }
+  if (fieldLower.includes("guardian")) {
+    return MembersRegisterStep.GUARDIAN;
+  }
+  return undefined;
 }

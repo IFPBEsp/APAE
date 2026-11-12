@@ -4,7 +4,6 @@ import java.time.LocalDate;
 
 import br.org.apae.api.patient.domain.exceptions.InvalidDataException;
 
-import static br.org.apae.api.patient.domain.validation.ValidationUtils.requireNonNull;
 import static br.org.apae.api.patient.domain.validation.ValidationUtils.requireNonNullOrEmpty;
 
 public class Identification {
@@ -16,22 +15,29 @@ public class Identification {
   private final String issuingAgency;
 
   public Identification(String rg, String cpf, String cns, String nis, LocalDate issueDate, String issuingAgency) {
-    requireNonNullOrEmpty(rg, "RG");
     requireNonNullOrEmpty(cpf, "CPF");
     requireNonNullOrEmpty(cns, "CNS");
-    requireNonNull(issueDate, "Data de emissão");
-    requireNonNullOrEmpty(issuingAgency, "Órgão emissor");
 
-    if (issueDate.isAfter(LocalDate.now())) {
-      throw new InvalidDataException("Data de emissão não pode ser no futuro.");
+    boolean hasRG = rg != null && !rg.isBlank();
+
+    if (hasRG) {
+      if (issueDate == null) {
+            throw new InvalidDataException("Data de emissão é obrigatória quando há RG.");
+        }
+
+      if (issueDate.isAfter(LocalDate.now())) {
+        throw new InvalidDataException("Data de emissão não pode ser no futuro.");
+      }
+    } else if (issueDate != null || (issuingAgency != null && !issuingAgency.isBlank())) {
+      throw new InvalidDataException("Data de emissão e órgão emissor não podem ser informados sem RG.");
     }
 
-    this.rg = rg;
+    this.rg = hasRG ? rg : null;
     this.cpf = cpf;
     this.cns = cns;
     this.nis = (nis == null || nis.isBlank()) ? null : nis;
-    this.issueDate = issueDate;
-    this.issuingAgency = issuingAgency;
+    this.issueDate = hasRG ? issueDate : null;
+    this.issuingAgency = hasRG ? issuingAgency : null;
   }
 
   public String getRg() {
