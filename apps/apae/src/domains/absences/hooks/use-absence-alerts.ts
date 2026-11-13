@@ -3,8 +3,6 @@
 import { useCallback, useState, useEffect } from "react";
 import { bffFetchJson } from "@/lib/bff-client";
 
-const MIN_ABSENCES_FOR_ALERT = 3;
-
 interface AbsenceAlertsResult {
   alertPatientIds: Set<string>;
   isLoading: boolean;
@@ -21,7 +19,7 @@ export function useAbsenceAlerts(): AbsenceAlertsResult {
     try {
       setIsLoading(true);
       const ids = await bffFetchJson<string[]>(
-        `/apae-geral/api/patients/absence-alert-ids?minAbsences=${MIN_ABSENCES_FOR_ALERT}`
+        "/apae-geral/api/patients/absence-alert-ids"
       );
 
       setAlertPatientIds(new Set(ids));
@@ -38,4 +36,3 @@ export function useAbsenceAlerts(): AbsenceAlertsResult {
 
   return { alertPatientIds, isLoading, refreshAlerts: fetchAbsences };
 }
-
