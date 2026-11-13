@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 
 const PUBLIC_PATHS = ["/auth/login", "/auth/recovery", "/auth/reset-password"];
-const ADMIN_ONLY_PATH = "/register";
+const ADMIN_ONLY_PATH = "/auth/register";
 
 function getRoleFromSession(session: string): string | null {
   try {
