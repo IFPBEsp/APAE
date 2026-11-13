@@ -158,6 +158,28 @@ public class PatientDocumentsControllerTest {
                     .andExpect(status().isInternalServerError());
             }
 
+            @Test
+            @DisplayName("Deve retornar 400 ao enviar documento em formato não permitido (.txt)")
+            void shouldReturnBadRequestWhenUploadingDocumentWithInvalidFormat() throws Exception {
+            UUID patientId = UUID.randomUUID();
+            MockMultipartFile invalidFile = new MockMultipartFile(
+                    "file", "teste.txt", "text/plain", "conteudo".getBytes());
+
+            mockMvc.perform(
+                            multipart(BASE_URL, patientId)
+                                    .file(invalidFile)
+                                    .param("category", "MEDICAL")
+                                    .param("type", "REFERRAL")
+                                    .header("Authorization", AuthTestHelper.bearerToken())
+                                    .with(csrf()))
+                    .andExpect(status().isBadRequest())
+                    .andExpect(jsonPath("$.fields[0].field").value("file"))
+                    .andExpect(jsonPath("$.fields[0].message").value(
+                            "Formato de arquivo 'text/plain' não permitido. Formatos permitidos: PDF, JPG, PNG, DOCX, WEBP"));
+
+            verify(documentService, never()).putDocument(any());
+            }
+
     }
 
     @Nested
@@ -226,6 +248,27 @@ public class PatientDocumentsControllerTest {
                             .with(csrf()))
                     .andExpect(status().isOk())
                     .andExpect(jsonPath("$.url").value("http://presigned-url"));
+            }
+
+            @Test
+            @DisplayName("Deve retornar 400 ao substituir documento por arquivo em formato não permitido (.txt)")
+            void shouldReturnBadRequestWhenReplacingDocumentWithInvalidFormat() throws Exception {
+            UUID patientId = UUID.randomUUID();
+            UUID documentId = UUID.randomUUID();
+            MockMultipartFile invalidFile = new MockMultipartFile(
+                    "file", "teste.txt", "text/plain", "content".getBytes());
+
+            mockMvc.perform(multipart(BASE_URL + "/{documentId}", patientId, documentId)
+                            .file(invalidFile)
+                            .with(request -> { request.setMethod("PATCH"); return request; })
+                            .header("Authorization", AuthTestHelper.bearerToken())
+                            .with(csrf()))
+                    .andExpect(status().isBadRequest())
+                    .andExpect(jsonPath("$.fields[0].field").value("file"))
+                    .andExpect(jsonPath("$.fields[0].message").value(
+                            "Formato de arquivo 'text/plain' não permitido. Formatos permitidos: PDF, JPG, PNG, DOCX, WEBP"));
+
+            verify(documentService, never()).putDocument(any());
             }
 
             @Test
