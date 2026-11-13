@@ -181,7 +181,7 @@ export const Additionals = z.object({
 });
 
 export const Kinship = z.object({
- rg: OptionalRG,
+  rg: OptionalRG,
   cpf: cpfSchema,
   alive: z.boolean(),
   name: nomeCompletoSchema,
