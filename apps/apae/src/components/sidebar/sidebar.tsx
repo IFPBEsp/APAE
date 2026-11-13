@@ -291,7 +291,7 @@ export function AppSidebar() {
               <CollapsibleContent>
                 <SidebarMenu>
                   <SidebarMenuItem>
-                    <Link href="/register">
+                    <Link href="/auth/register">
                       <SidebarMenuButton
                         className={`${styles.menuButton} font-base gap-2 ${cn(
                           "h-10 transition-colors",
