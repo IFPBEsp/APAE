@@ -2,6 +2,8 @@ package br.org.apae.api.patient.interfaces.controllers;
 
 import br.org.apae.api.common.dto.patient.response.documents.DocumentWithUrlResponseDTO;
 import br.org.apae.api.documents.interfaces.dto.DocumentDTO;
+import br.org.apae.api.documents.interfaces.validations.ValidFileFormat;
+import br.org.apae.api.documents.interfaces.validations.ValidFileSize;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.MediaType;
@@ -44,7 +46,7 @@ public interface PatientDocumentsController {
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     ResponseEntity<DocumentDTO> uploadDocument(
             @PathVariable UUID id,
-            @RequestPart("file") MultipartFile file,
+            @ValidFileSize @ValidFileFormat @RequestPart("file") MultipartFile file,
             @RequestParam("category") String category,
             @RequestParam("type") String type,
             @RequestParam(required = false) Integer year
@@ -55,7 +57,7 @@ public interface PatientDocumentsController {
     ResponseEntity<DocumentWithUrlResponseDTO> replaceDocument(
             @PathVariable UUID id,
             @PathVariable UUID documentId,
-            @RequestPart("file") MultipartFile file
+            @ValidFileSize @ValidFileFormat @RequestPart("file") MultipartFile file
     );
 
     @Operation(summary = "Retorna um documento pelo nome")
