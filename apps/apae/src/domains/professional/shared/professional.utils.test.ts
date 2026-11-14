@@ -8,6 +8,7 @@ import {
   isValidFile,
   getStatusActionConfig,
 } from "./professional.utils";
+import { MAX_FILE_SIZE_BYTES } from "@/lib/constants";
 
 const makeProfessional = (overrides: Record<string, unknown> = {}) =>
   ({
@@ -288,7 +289,6 @@ describe("mapProfessionalToForm", () => {
 });
 
 describe("isValidFile", () => {
-  const MB = 1024 * 1024;
   const makeFile = (type: string, size: number) =>
     new File([new Uint8Array(size)], "arquivo", { type });
 
@@ -310,12 +310,12 @@ describe("isValidFile", () => {
     expect(isValidFile(makeFile("application/pdf", 0))).toBe(false);
   });
 
-  it("aceita arquivo com exatamente 10MB", () => {
-    expect(isValidFile(makeFile("application/pdf", 10 * MB))).toBe(true);
+  it("aceita arquivo com exatamente o tamanho máximo", () => {
+    expect(isValidFile(makeFile("application/pdf", MAX_FILE_SIZE_BYTES))).toBe(true);
   });
 
-  it("rejeita arquivo maior que 10MB", () => {
-    expect(isValidFile(makeFile("application/pdf", 10 * MB + 1))).toBe(false);
+  it("rejeita arquivo maior que o tamanho máximo", () => {
+    expect(isValidFile(makeFile("application/pdf", MAX_FILE_SIZE_BYTES + 1))).toBe(false);
   });
 });
 
