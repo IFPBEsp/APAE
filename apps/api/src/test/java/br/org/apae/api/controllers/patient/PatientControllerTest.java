@@ -233,6 +233,80 @@ public class PatientControllerTest {
        .header("Authorization", AuthTestHelper.bearerToken()).with(csrf()).contentType(MediaType.MULTIPART_FORM_DATA))
      .andExpect(status().isConflict());
   }
+
+  @Test
+  @DisplayName("Deve retornar 400 ao criar paciente com laudo em formato não permitido (.txt)")
+  void shouldReturnBadRequestWhenReportHasInvalidFormat() throws Exception {
+   CreatePatientDTO patientDTO = createValidPatientRequest();
+   CreateDocumentsDTO docsDTO = PatientCreator.createDocuments();
+   MockMultipartFile patientPart = new MockMultipartFile("patient", "", MediaType.APPLICATION_JSON_VALUE, objectMapper.writeValueAsString(patientDTO).getBytes(StandardCharsets.UTF_8));
+   MockMultipartFile invalidReport = new MockMultipartFile("reports", "laudo.txt", "text/plain", "conteudo".getBytes());
+
+   mockMvc.perform(multipart(BASE_URL)
+       .file(patientPart).file((MockMultipartFile) docsDTO.rg()).file((MockMultipartFile) docsDTO.cpf())
+       .file((MockMultipartFile) docsDTO.proof_of_address()).file((MockMultipartFile) docsDTO.birth_certificate())
+       .file((MockMultipartFile) docsDTO.photo()).file(invalidReport)
+       .file((MockMultipartFile) docsDTO.referrals().getFirst())
+       .header("Authorization", AuthTestHelper.bearerToken()).with(csrf()).contentType(MediaType.MULTIPART_FORM_DATA))
+     .andExpect(status().isBadRequest())
+     .andExpect(jsonPath("$.fields[0].field").value("reports"))
+     .andExpect(jsonPath("$.fields[0].message").value("Formato de arquivo 'text/plain' não permitido. Formatos permitidos: PDF, JPG, PNG, DOCX, WEBP"));
+
+   verifyNoInteractions(patientService);
+  }
+
+  @Test
+  @DisplayName("Deve retornar 400 ao criar paciente com encaminhamento em formato não permitido (.txt)")
+  void shouldReturnBadRequestWhenReferralHasInvalidFormat() throws Exception {
+   CreatePatientDTO patientDTO = createValidPatientRequest();
+   CreateDocumentsDTO docsDTO = PatientCreator.createDocuments();
+   MockMultipartFile patientPart = new MockMultipartFile("patient", "", MediaType.APPLICATION_JSON_VALUE, objectMapper.writeValueAsString(patientDTO).getBytes(StandardCharsets.UTF_8));
+   MockMultipartFile invalidReferral = new MockMultipartFile("referrals", "encaminhamento.txt", "text/plain", "conteudo".getBytes());
+
+   mockMvc.perform(multipart(BASE_URL)
+       .file(patientPart).file((MockMultipartFile) docsDTO.rg()).file((MockMultipartFile) docsDTO.cpf())
+       .file((MockMultipartFile) docsDTO.proof_of_address()).file((MockMultipartFile) docsDTO.birth_certificate())
+       .file((MockMultipartFile) docsDTO.photo()).file((MockMultipartFile) docsDTO.reports().getFirst())
+       .file(invalidReferral)
+       .header("Authorization", AuthTestHelper.bearerToken()).with(csrf()).contentType(MediaType.MULTIPART_FORM_DATA))
+     .andExpect(status().isBadRequest())
+     .andExpect(jsonPath("$.fields[0].field").value("referrals"))
+     .andExpect(jsonPath("$.fields[0].message").value("Formato de arquivo 'text/plain' não permitido. Formatos permitidos: PDF, JPG, PNG, DOCX, WEBP"));
+
+   verifyNoInteractions(patientService);
+  }
+
+  @Test
+  @DisplayName("Deve retornar 400 ao criar paciente com foto em PDF ou DOCX")
+  void shouldReturnBadRequestWhenPhotoIsPdfOrDocxOnCreate() throws Exception {
+   CreatePatientDTO patientDTO = createValidPatientRequest();
+   CreateDocumentsDTO docsDTO = PatientCreator.createDocuments();
+   MockMultipartFile patientPart = new MockMultipartFile("patient", "", MediaType.APPLICATION_JSON_VALUE, objectMapper.writeValueAsString(patientDTO).getBytes(StandardCharsets.UTF_8));
+   MockMultipartFile pdfPhoto = new MockMultipartFile("photo", "foto.pdf", "application/pdf", "conteudo".getBytes());
+   MockMultipartFile docxPhoto = new MockMultipartFile("photo", "foto.docx", "application/vnd.openxmlformats-officedocument.wordprocessingml.document", "conteudo".getBytes());
+
+   mockMvc.perform(multipart(BASE_URL)
+       .file(patientPart).file((MockMultipartFile) docsDTO.rg()).file((MockMultipartFile) docsDTO.cpf())
+       .file((MockMultipartFile) docsDTO.proof_of_address()).file((MockMultipartFile) docsDTO.birth_certificate())
+       .file(pdfPhoto).file((MockMultipartFile) docsDTO.reports().getFirst())
+       .file((MockMultipartFile) docsDTO.referrals().getFirst())
+       .header("Authorization", AuthTestHelper.bearerToken()).with(csrf()).contentType(MediaType.MULTIPART_FORM_DATA))
+     .andExpect(status().isBadRequest())
+     .andExpect(jsonPath("$.fields[0].field").value("photo"))
+     .andExpect(jsonPath("$.fields[0].message").value("Formato de arquivo 'application/pdf' não permitido. Formatos permitidos: PNG, JPG, JPEG, WEBP"));
+
+   mockMvc.perform(multipart(BASE_URL)
+       .file(patientPart).file((MockMultipartFile) docsDTO.rg()).file((MockMultipartFile) docsDTO.cpf())
+       .file((MockMultipartFile) docsDTO.proof_of_address()).file((MockMultipartFile) docsDTO.birth_certificate())
+       .file(docxPhoto).file((MockMultipartFile) docsDTO.reports().getFirst())
+       .file((MockMultipartFile) docsDTO.referrals().getFirst())
+       .header("Authorization", AuthTestHelper.bearerToken()).with(csrf()).contentType(MediaType.MULTIPART_FORM_DATA))
+     .andExpect(status().isBadRequest())
+     .andExpect(jsonPath("$.fields[0].field").value("photo"))
+     .andExpect(jsonPath("$.fields[0].message").value("Formato de arquivo 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' não permitido. Formatos permitidos: PNG, JPG, JPEG, WEBP"));
+
+   verifyNoInteractions(patientService);
+  }
  }
 
  @Nested
@@ -463,6 +537,35 @@ public class PatientControllerTest {
    mockMvc.perform(multipart(BASE_URL + "/{id}/photo", id).file(photo).with(request -> { request.setMethod("PUT"); return request; })
        .header("Authorization", AuthTestHelper.bearerToken()).with(csrf()))
      .andExpect(status().isNotFound());
+  }
+
+  @Test
+  @DisplayName("Deve retornar 400 ao atualizar foto do paciente com arquivo que não seja imagem (PDF, DOCX ou TXT)")
+  void shouldReturnBadRequestWhenUpdatingPhotoWithInvalidFormat() throws Exception {
+   UUID id = UUID.randomUUID();
+   MockMultipartFile pdfPhoto = new MockMultipartFile("photo", "foto.pdf", "application/pdf", "pdf".getBytes());
+   MockMultipartFile docxPhoto = new MockMultipartFile("photo", "foto.docx", "application/vnd.openxmlformats-officedocument.wordprocessingml.document", "docx".getBytes());
+   MockMultipartFile txtPhoto = new MockMultipartFile("photo", "foto.txt", "text/plain", "txt".getBytes());
+
+   mockMvc.perform(multipart(BASE_URL + "/{id}/photo", id).file(pdfPhoto).with(request -> { request.setMethod("PUT"); return request; })
+       .header("Authorization", AuthTestHelper.bearerToken()).with(csrf()))
+     .andExpect(status().isBadRequest())
+     .andExpect(jsonPath("$.fields[0].field").value("photo"))
+     .andExpect(jsonPath("$.fields[0].message").value("Formato de arquivo 'application/pdf' não permitido. Formatos permitidos: PNG, JPG, JPEG, WEBP"));
+
+   mockMvc.perform(multipart(BASE_URL + "/{id}/photo", id).file(docxPhoto).with(request -> { request.setMethod("PUT"); return request; })
+       .header("Authorization", AuthTestHelper.bearerToken()).with(csrf()))
+     .andExpect(status().isBadRequest())
+     .andExpect(jsonPath("$.fields[0].field").value("photo"))
+     .andExpect(jsonPath("$.fields[0].message").value("Formato de arquivo 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' não permitido. Formatos permitidos: PNG, JPG, JPEG, WEBP"));
+
+   mockMvc.perform(multipart(BASE_URL + "/{id}/photo", id).file(txtPhoto).with(request -> { request.setMethod("PUT"); return request; })
+       .header("Authorization", AuthTestHelper.bearerToken()).with(csrf()))
+     .andExpect(status().isBadRequest())
+     .andExpect(jsonPath("$.fields[0].field").value("photo"))
+     .andExpect(jsonPath("$.fields[0].message").value("Formato de arquivo 'text/plain' não permitido. Formatos permitidos: PNG, JPG, JPEG, WEBP"));
+
+   verifyNoInteractions(patientService);
   }
  }
 
