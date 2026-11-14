@@ -11,7 +11,7 @@ Analise das vulnerabilidades HIGH e CRITICAL apontadas pelo Trivy no repositorio
 | `spring-security-web` | CVE-2026-22732 | CRITICAL | Atualizado para 6.5.11 via Spring Boot 3.5.16 |
 | `spring-expression` | CVE-2026-41850 | HIGH | Atualizado para 6.2.19 via Spring Boot 3.5.16 |
 | `spring-webmvc` | CVE-2026-41842, CVE-2026-41845 | HIGH | Atualizado para 6.2.19 via Spring Boot 3.5.16 |
-| `spring-webmvc` | CVE-2026-47884, CVE-2026-47890 | CRITICAL | Ignorado com justificativa no `.trivyignore`: nao existe patch na linha 6.2.x; a correcao exige Spring Framework 7 (Spring Boot 4.x). A aplicacao nao utiliza `XsltView` nem SSE com view |
+| `spring-webmvc` | CVE-2026-47884, CVE-2026-47890 | CRITICAL | Ignorado com justificativa no `.trivyignore`: a linha comunitaria (OSS) nao possui patch na versao 6.2.x (o backport esta restrito a suporte comercial na 6.2.20, sendo a correcao oficial OSS disponivel na linha 7.0.9 / Spring Boot 4.x). Severidade real declarada pelo fornecedor (vendor): MEDIUM para a CVE-2026-47884 e LOW para a CVE-2026-47890. A aplicacao e uma API REST JSON e nao utiliza `XsltView` nem SSE com view |
 | `tomcat-embed-core` | CVE-2026-41293, CVE-2026-43512, CVE-2026-43515, CVE-2026-55276, CVE-2026-65182, CVE-2026-65905, CVE-2026-68525 | CRITICAL | Atualizado de 10.1.46 para 10.1.61 via propriedade `tomcat.version` |
 | `tomcat-embed-core` | CVE-2026-24734, CVE-2026-24880, CVE-2026-34483, CVE-2026-34487, CVE-2026-41284, CVE-2026-42498, CVE-2026-43513, CVE-2026-53404 | HIGH | Atualizado de 10.1.46 para 10.1.61 via propriedade `tomcat.version` |
 | `jackson-core` | CVE-2026-68494, CVE-2026-89407, CVE-2026-89425 | HIGH | Atualizado de 2.19.2 para 2.21.8 via propriedade `jackson-bom.version` |
