@@ -16,6 +16,7 @@ import { SidebarSteps } from "@/components/shared/SidebarSteps";
 import { parseCivilDate } from "@/lib/date";
 import { bffFetchJson } from "@/lib/bff-client";
 import { normalizeStateToUF } from "@/lib/states";
+import { formatBirthCertificate } from "@/lib/formats";
 
 interface ParentData {
   name?: string;
@@ -94,13 +95,15 @@ function EditPatientDataLoader({ children }: { children: React.ReactNode }) {
               number: data.rg || "",
               issuing: {
                 body: data.issuingAgency || "",
-                date: parseCivilDate(data.issueDate) || new Date(),
+                date: parseCivilDate(data.issueDate),
               },
             },
             cns: data.cns || "",
             nis: data.nis || "",
             birth: {
-              certificate: data.birthCertificateNumber || "",
+              certificate: formatBirthCertificate(
+                data.birthCertificateNumber || "",
+              ),
               date: parseCivilDate(data.birthDate) || new Date(),
               place: data.birthplace || data.nationality || "",
             },

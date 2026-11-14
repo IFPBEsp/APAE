@@ -1,8 +1,10 @@
 import { describe, it, expect } from "vitest";
-import { Profile } from "./member-schemas";
+import { Personal, Profile } from "./member-schemas";
 import { EditProfile } from "./edit-member-schemas";
 import { photoFileSchema } from "@/lib/photo.schema";
 import { MAX_FILE_SIZE_BYTES } from "@/lib/constants";
+import { buildPatientPayload } from "@/domains/patients/shared/patient.utils";
+import { initialState } from "@/domains/patients/hooks/register-context/reducer";
 
 const makeFile = (name: string, type: string, size = 1024) =>
   new File([new Uint8Array(size)], name, { type });
@@ -93,5 +95,46 @@ describe("Critério 4: mensagens de erro consistentes com o schema compartilhado
   it("cadastro: foto ausente usa a mesma mensagem do photoFileSchema", () => {
     const result = Profile.safeParse({ role: "patient" });
     expect(photoMessages(result)).toEqual(sharedMessages(undefined));
+  });
+});
+
+describe("Validação e payload do campo NIS opcional (#1121)", () => {
+  const validPersonalBase = {
+    name: "João da Silva",
+    cpf: "529.982.247-25",
+    phone: "(83) 99999-9999",
+    rg: {
+      number: "1234567",
+      issuing: {
+        body: "SSP/PB",
+        date: new Date(2020, 0, 1),
+      },
+    },
+    cns: "123 4567 8901 2345",
+    birth: {
+      certificate: "123456 01 55 2010 1 12345 123 1234567 12",
+      date: new Date(2010, 0, 1),
+      place: "Campina Grande",
+    },
+  };
+
+  it("aceita NIS vazio ('') ou não informado", () => {
+    expect(Personal.safeParse({ ...validPersonalBase, nis: "" }).success).toBe(true);
+    expect(Personal.safeParse({ ...validPersonalBase, nis: undefined }).success).toBe(true);
+  });
+
+  it("aceita NIS válido com 11 números", () => {
+    expect(Personal.safeParse({ ...validPersonalBase, nis: "12345678901" }).success).toBe(true);
+  });
+
+  it("rejeita NIS preenchido com menos de 11 dígitos ou com letras", () => {
+    expect(Personal.safeParse({ ...validPersonalBase, nis: "12345" }).success).toBe(false);
+    expect(Personal.safeParse({ ...validPersonalBase, nis: "1234567890a" }).success).toBe(false);
+  });
+
+  it("buildPatientPayload envia string vazia e não '0' quando NIS está vazio", () => {
+    const payload = buildPatientPayload(initialState);
+    expect(payload.nis).toBe("");
+    expect(payload.nis).not.toBe("0");
   });
 });

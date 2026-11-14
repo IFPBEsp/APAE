@@ -10,7 +10,7 @@ export type UpdateProfessionalDto = {
   phoneNumber: string;
   professionalDocument: string | null;
   serviceArea: { area: string };
-  identityDocument: string;
+  identityDocument: string | null;
   availabilities?: { day?: string; shift?: string }[];
 };
 
@@ -60,7 +60,6 @@ export function useUpdateProfessional<T extends FieldValues>(
 }
 
       setSuccess(true);
-      toast.success("Profissional atualizado com sucesso!");
       return true;
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : "Erro inesperado";

@@ -13,8 +13,21 @@ import { Loader2, ArrowLeft, SquarePen, Plus } from "lucide-react";
 import AnnualRegistryEditModal from "@/domains/patients/annual-registry/annual-registry-edit-modal";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { PatientResponse } from "@/domains/patients/types/patient";
+import type { PatientStatus } from "@/domains/patients/types/patient";
+import { useAbsenceAlerts } from "@/domains/absences/hooks/use-absence-alerts";
+import { cn } from "@/lib/utils";
 import { bffFetchJson } from "@/lib/bff-client";
 import { normalizeStateToUF } from "@/lib/states";
+
+const statusLabels: Record<PatientStatus, string> = {
+  active: "Ativo",
+  inactive: "Inativo",
+};
+
+const statusStyles: Record<PatientStatus, string> = {
+  active: "text-[#468f71] border-[#5db993]",
+  inactive: "text-[#871d1e] border-[#ac3637]",
+};
 
 interface InfoRowProps {
   label: string;
@@ -73,6 +86,14 @@ export default function PersonDetailsPage() {
   
   const [loadingPerson, setLoadingPerson] = useState(true);
   const [loadingRegistry, setLoadingRegistry] = useState(false);
+
+  const { alertPatientIds, isLoading: isLoadingAlerts } = useAbsenceAlerts();
+
+  const patientStatus: PatientStatus | undefined = isLoadingAlerts
+    ? undefined
+    : alertPatientIds.has(id)
+      ? "inactive"
+      : "active";
 
   const fetchPerson = useCallback(async (silent = false) => {
     try {
@@ -195,6 +216,16 @@ export default function PersonDetailsPage() {
           <AvatarFallback className="font-baloo font-bold text-[32px]">{person?.fullName?.charAt(0) ?? "P"}</AvatarFallback>
         </Avatar>
         <h3 className="font-baloo font-bold text-[#0D4F97] text-[24px]">{person?.fullName}</h3>
+        {patientStatus && (
+          <span
+            className={cn(
+              "rounded-full border-2 px-3 py-0.5 text-sm font-semibold",
+              statusStyles[patientStatus],
+            )}
+          >
+            {statusLabels[patientStatus]}
+          </span>
+        )}
       </div>
 
       <DocumentCategoriesCard onClickCategory={(tipo: string) => { router.push(`/patients/${id}/documents/${tipo}`); }} />

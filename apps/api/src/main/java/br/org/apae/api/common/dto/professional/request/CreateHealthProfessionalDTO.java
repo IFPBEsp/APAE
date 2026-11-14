@@ -25,7 +25,7 @@ public record CreateHealthProfessionalDTO(
 
     @NotBlank(message = "O nome é obrigatório.") @Size(min = 3, max = 100) String name,
 
-    @NotBlank(message = "O documento de identidade é obrigatório.") String identityDocument,
+    String identityDocument,
 
     @NotNull(message = "Endereço é obrigatório.") @Valid CreateAddressDTO address,
 
@@ -33,4 +33,9 @@ public record CreateHealthProfessionalDTO(
 
     String profilePhoto
 ) {
+    public CreateHealthProfessionalDTO {
+        if (identityDocument != null && identityDocument.isBlank()) {
+            identityDocument = null;
+        }
+    }
 }

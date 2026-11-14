@@ -42,7 +42,7 @@ export function buildProfessionalPayload(values: ProfessionalFormValues) {
     email: values.email.trim(),
     cpf: values.cpf.trim(),
     name: values.fullName.trim(),
-    identityDocument: values.rg.trim(),
+    identityDocument: values.rg.trim() || null,
     address: {
       state: values.state,
       city: values.city.trim(),
@@ -64,7 +64,7 @@ export function mapProfessionalToForm(professional: Professional) {
     professionalDocument: professional.professionalDocument ?? "",
     serviceArea: professional.serviceArea.area,
     phone: professional.phoneNumber,
-    rg: professional.identityDocument,
+    rg: professional.identityDocument ?? "",
     state: normalizeStateToUF(professional.address.state) as ProfessionalFormValues["state"],
     city: professional.address.city,
     neighborhood: professional.address.neighborhood,
