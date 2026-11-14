@@ -112,7 +112,10 @@ export default function ProfessionalUpdate(): JSX.Element {
 
     if (selectedPhoto) {
       const okPhoto = await uploadPhoto(professional.id);
-      if (!okPhoto) return;
+
+      if (!okPhoto) {
+        return;
+      }
     }
 
     toast.success("Profissional atualizado com sucesso!");
