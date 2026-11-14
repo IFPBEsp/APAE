@@ -62,7 +62,7 @@ export default function ProfessionalRegister(): JSX.Element {
   } = usePhotoUpload();
 
   const onSubmit: SubmitHandler<RegisterProfessionalFormValues> = async (values) => {
-  const formData = new FormData();
+    const formData = new FormData();
     const payload = buildProfessionalPayload(values);
     formData.append(
       "professional",
