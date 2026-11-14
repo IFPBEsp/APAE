@@ -31,7 +31,7 @@ const baseSchema = z.object({
   cpf: cpfSchema,
   professionalDocument: z.string().optional().nullable(),
   serviceArea: z.string().min(1, "Selecione uma área"),
-  rg: rgSchema,
+  rg: rgSchema.or(z.literal("")),
 
   ...addressSchema.shape,
 

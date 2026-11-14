@@ -14,6 +14,8 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import org.mockito.ArgumentCaptor;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -121,6 +123,84 @@ class HealthProfessionalControllerTest {
            .andExpect(status().isCreated());
 
    Mockito.verify(service).createProfessional(any(), any(), any());
+  }
+
+  @Test
+  @DisplayName("Deve criar profissional sem RG com sucesso (201)")
+  void shouldCreateProfessionalWithoutIdentityDocumentSuccessfully() throws Exception {
+   var base = HealthProfessionalMockDto.createHealthProfessionalRequest();
+   var request = new CreateHealthProfessionalDTO(
+           base.serviceArea(),
+           base.phoneNumber(),
+           base.professionalDocument(),
+           base.email(),
+           base.cpf(),
+           base.name(),
+           null,
+           base.address(),
+           base.availabilities(),
+           base.profilePhoto()
+   );
+   var response = HealthProfessionalMockDto.createProfessionalResponse1();
+
+   Mockito.when(service.createProfessional(
+           any(CreateHealthProfessionalDTO.class),
+           any(CreateProfessionalDocumentsDTO.class),
+           any(MultipartFile.class)
+   )).thenReturn(response);
+
+   var professionalPart = new MockMultipartFile("professional", "", MediaType.APPLICATION_JSON_VALUE, objectMapper.writeValueAsBytes(request));
+
+   mockMvc.perform(multipart("/professionals")
+                   .file(professionalPart)
+                   .file(HealthProfessionalMockDto.volunteerAgreementFile())
+                   .file(HealthProfessionalMockDto.curriculumFile())
+                   .file(HealthProfessionalMockDto.attachmentAnyFile())
+                   .header("Authorization", AuthTestHelper.bearerToken())
+                   .contentType(MediaType.MULTIPART_FORM_DATA))
+           .andExpect(status().isCreated());
+
+   Mockito.verify(service).createProfessional(any(), any(), any());
+  }
+
+  @Test
+  @DisplayName("Deve criar profissional com RG em branco convertido para null com sucesso (201)")
+  void shouldCreateProfessionalWithBlankIdentityDocumentAsNull() throws Exception {
+   var base = HealthProfessionalMockDto.createHealthProfessionalRequest();
+   var request = new CreateHealthProfessionalDTO(
+           base.serviceArea(),
+           base.phoneNumber(),
+           base.professionalDocument(),
+           base.email(),
+           base.cpf(),
+           base.name(),
+           "",
+           base.address(),
+           base.availabilities(),
+           base.profilePhoto()
+   );
+   var response = HealthProfessionalMockDto.createProfessionalResponse1();
+
+   Mockito.when(service.createProfessional(
+           any(CreateHealthProfessionalDTO.class),
+           any(CreateProfessionalDocumentsDTO.class),
+           any(MultipartFile.class)
+   )).thenReturn(response);
+
+   var professionalPart = new MockMultipartFile("professional", "", MediaType.APPLICATION_JSON_VALUE, objectMapper.writeValueAsBytes(request));
+
+   mockMvc.perform(multipart("/professionals")
+                   .file(professionalPart)
+                   .file(HealthProfessionalMockDto.volunteerAgreementFile())
+                   .file(HealthProfessionalMockDto.curriculumFile())
+                   .file(HealthProfessionalMockDto.attachmentAnyFile())
+                   .header("Authorization", AuthTestHelper.bearerToken())
+                   .contentType(MediaType.MULTIPART_FORM_DATA))
+           .andExpect(status().isCreated());
+
+   ArgumentCaptor<CreateHealthProfessionalDTO> captor = ArgumentCaptor.forClass(CreateHealthProfessionalDTO.class);
+   Mockito.verify(service).createProfessional(captor.capture(), any(), any());
+   assertNull(captor.getValue().identityDocument());
   }
 
   @Test
