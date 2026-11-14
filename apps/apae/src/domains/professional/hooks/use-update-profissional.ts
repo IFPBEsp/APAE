@@ -60,7 +60,6 @@ export function useUpdateProfessional<T extends FieldValues>(
 }
 
       setSuccess(true);
-      toast.success("Profissional atualizado com sucesso!");
       return true;
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : "Erro inesperado";
