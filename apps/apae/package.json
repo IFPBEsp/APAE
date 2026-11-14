@@ -27,7 +27,7 @@
     "@radix-ui/react-slot": "^1.2.3",
     "@radix-ui/react-tooltip": "^1.2.7",
     "@react-input/mask": "^2.0.4",
-    "axios": "^1.11.0",
+    "axios": "^1.21.0",
     "chrono-node": "^2.8.4",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
@@ -35,7 +35,7 @@
     "date-fns": "^4.1.0",
     "lucide-react": "^0.534.0",
     "nuqs": "^2.8.9",
-    "next": "16.2.3",
+    "next": "16.4.5",
     "react": "19.1.0",
     "react-day-picker": "^9.8.1",
     "react-dom": "19.1.0",
@@ -45,24 +45,38 @@
     "react-toastify": "^11.0.5",
     "tailwind-merge": "^3.3.1",
     "use-mask-input": "^3.5.1",
-    "zod": "^4.0.17"
+    "zod": "^4.6.7"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",
     "@tailwindcss/postcss": "^4",
     "@testing-library/jest-dom": "^6.6.3",
     "@testing-library/react": "^16.3.0",
-    "@types/node": "^20",
+    "@types/node": "^22.0.0",
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "@types/react-toastify": "^4.1.0",
-    "@vitejs/plugin-react": "^4.3.4",
+    "@vitejs/plugin-react": "^6.2.1",
     "eslint": "^9",
-    "eslint-config-next": "15.4.5",
+    "eslint-config-next": "^16.4.5",
     "jsdom": "^25.0.1",
     "tailwindcss": "^4",
     "tw-animate-css": "^1.3.6",
     "typescript": "^5",
-    "vitest": "^2.1.9"
+    "vite": "^8.3.6",
+    "vitest": "^5.1.0"
+  },
+  "overrides": {
+    "brace-expansion@<2": "1.1.20",
+    "brace-expansion@>=3": "5.0.12",
+    "follow-redirects@<1.16.2": "1.16.2",
+    "form-data@>=4 <4.0.6": "4.0.6",
+    "js-yaml@>=4 <4.3.2": "4.3.2",
+    "nanoid@<4": "3.3.18",
+    "postcss@<8.5.18": "8.5.32",
+    "sharp@<0.35.5": "0.35.5",
+    "shell-quote@<1.9": "1.12.0",
+    "source-map-js@<1.2.2": "1.2.2",
+    "tinypool@<2.1.2": "2.2.0"
   }
 }
