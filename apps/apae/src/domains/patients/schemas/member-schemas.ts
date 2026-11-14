@@ -29,6 +29,21 @@ const NIS = z
   .optional()
   .or(z.literal(""));
 
+const BIRTH_CERTIFICATE_MAX_DIGITS = 32;
+const BIRTH_CERTIFICATE_REQUIRED_MESSAGE =
+  "Informe o número da certidão de nascimento";
+
+const countDigits = (value: string) => value.replace(/\D/g, "").length;
+
+export const birthCertificateSchema = z
+  .string({ error: BIRTH_CERTIFICATE_REQUIRED_MESSAGE })
+  .refine((value) => countDigits(value) >= 1, {
+    message: BIRTH_CERTIFICATE_REQUIRED_MESSAGE,
+  })
+  .refine((value) => countDigits(value) <= BIRTH_CERTIFICATE_MAX_DIGITS, {
+    message: "Número da certidão de nascimento inválido",
+  });
+
 const civilDateSchema = (
   futureMessage: string,
   minYearsBack: number,
@@ -97,10 +112,7 @@ export const Personal = z
     cns: CNS,
     nis: NIS,
     birth: z.object({
-      certificate: z
-        .string()
-        .min(1, "Certidão de nascimento é obrigatória")
-        .min(40, "Número da certidão deve ter pelo menos 32 dígitos"),
+      certificate: birthCertificateSchema,
       date: civilDateSchema(
         "Data de nascimento não pode ser futura",
         150,
