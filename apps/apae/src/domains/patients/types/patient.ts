@@ -8,7 +8,6 @@ export interface PatientAddress {
   complement: string;
 }
 
-/** Endereço reduzido devolvido pela listagem: só a cidade é garantida. */
 export type PatientAddressSummary = Pick<PatientAddress, "city"> &
   Partial<Omit<PatientAddress, "city">>;
 
@@ -75,12 +74,15 @@ export interface PatientPayload {
   annualRegistry: PatientAnnualRegistry;
 }
 
+export type PatientStatus = "active" | "inactive";
+
 export interface PatientListQueryValues {
   name?: string;
   disorder?: string;
   year?: string;
   city?: string;
   treatmentType?: string;
+  status?: PatientStatus | "";
   page?: number;
   size?: number;
 }
