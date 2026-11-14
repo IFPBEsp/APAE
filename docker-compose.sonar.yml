@@ -1,6 +1,6 @@
 services:
   sonarqube:
-    image: sonarqube:26.3.0.120487-community
+    image: mc1arke/sonarqube-with-community-branch-plugin:26.3.0.120487-community
     container_name: apae-sonarqube
     ports:
       - "${SONAR_PORT:-9500}:9000"
@@ -9,10 +9,8 @@ services:
       - SONAR_SEARCH_JAVAADDITIONALOPTS=-Dcluster.routing.allocation.disk.threshold_enabled=false
     volumes:
       - sonarqube_data:/opt/sonarqube/data
-      - sonarqube_extensions:/opt/sonarqube/extensions
       - sonarqube_logs:/opt/sonarqube/logs
 
 volumes:
   sonarqube_data:
-  sonarqube_extensions:
   sonarqube_logs:
