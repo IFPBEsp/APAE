@@ -1,4 +1,7 @@
+"use client";
+
 import Image from "next/image";
+import { usePathname } from "next/navigation";
 import BackgroundImage from "@/assets/background_image.jpg";
 import Logo from "@/assets/logo.png";
 
@@ -7,6 +10,11 @@ export default function AuthLayout({
 }: {
   readonly children: React.ReactNode;
 }) {
+  const pathname = usePathname();
+  if (pathname === '/auth/register' || pathname.startsWith('/auth/register/')) {
+    return <>{children}</>;
+  }
+
   return (
     <div className="h-screen w-screen relative flex items-center justify-center overflow-hidden">
       <div
