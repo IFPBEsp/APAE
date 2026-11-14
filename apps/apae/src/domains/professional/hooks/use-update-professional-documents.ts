@@ -12,7 +12,7 @@ export function useUpdateProfessionalDocuments() {
   const [errorDocs, setErrorDocs] = useState<string | null>(null);
   const [successDocs, setSuccessDocs] = useState(false);
 
-  async function upload(id: string, formData: FormData) {
+  async function upload(id: string, formData: FormData): Promise<boolean> {
     setLoadingDocs(true);
     setErrorDocs(null);
     setSuccessDocs(false);
@@ -27,14 +27,15 @@ export function useUpdateProfessionalDocuments() {
           : {};
 
       if (!response.ok) {
-        throw new Error(data?.message || "Erro ao enviar documentos");
+        setErrorDocs(data?.message || "Erro ao enviar documentos");
+        return false;
       }
 
       setSuccessDocs(true);
-      return data;
+      return true;
     } catch (err) {
       setErrorDocs(err instanceof Error ? err.message : "Erro desconhecido");
-      throw err;
+      return false;
     } finally {
       setLoadingDocs(false);
     }

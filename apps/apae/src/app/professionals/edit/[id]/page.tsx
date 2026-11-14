@@ -4,6 +4,7 @@ import { useEffect, useMemo, JSX } from "react";
 import { useRouter } from "next/navigation";
 import { useForm, type SubmitHandler } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { toast } from "react-toastify";
 
 import { Button } from "@/components/ui/button";
 import { Form } from "@/components/ui/form";
@@ -35,7 +36,7 @@ export default function ProfessionalUpdate(): JSX.Element {
     },
   });
 
-  const { updateProfessional, loading, error, success } = useUpdateProfessional(form.setError);
+  const { updateProfessional, loading, error } = useUpdateProfessional(form.setError);
   const { upload, loadingDocs, errorDocs, successDocs } = useUpdateProfessionalDocuments();
   const {
     fileInputRef,
@@ -95,8 +96,17 @@ export default function ProfessionalUpdate(): JSX.Element {
     if (!ok) return;
 
     if (hasAnyUpload) {
-      await upload(professional.id, buildFormData());
+      const okDocs = await upload(
+        professional.id,
+        buildFormData()
+      );
+
+      if (!okDocs) {
+        return;
+      }
+
       clearFiles();
+
       await refreshDocuments(professional.id);
     }
 
@@ -104,6 +114,8 @@ export default function ProfessionalUpdate(): JSX.Element {
       const okPhoto = await uploadPhoto(professional.id);
       if (!okPhoto) return;
     }
+
+    toast.success("Profissional atualizado com sucesso!");
 
     router.push("/professionals");
   };
@@ -156,7 +168,6 @@ export default function ProfessionalUpdate(): JSX.Element {
             <p className="text-blue-500">{loading ? "Salvando perfil..." : "Enviando documentos..."}</p>
           )}
           {error && <p className="text-red-500">{error}</p>}
-          {success && <p className="text-green-600">Profissional atualizado com sucesso!</p>}
 
           <div className="flex justify-end gap-4">
             <Button type="button" variant="outline" onClick={() => router.push("/professionals")}>Cancelar</Button>
