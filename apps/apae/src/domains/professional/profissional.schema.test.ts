@@ -89,4 +89,19 @@ describe("Critério: nome do profissional aceita símbolos", () => {
   });
 });
 
+describe("Critério: endereço do profissional aceita símbolos", () => {
+  it.each([
+    { city: "Olho d’Água" },
+    { neighborhood: "Jd. Cidade Universitária" },
+    { neighborhood: "Conj. Hab. Ernani Sátiro" },
+    { street: "Rua Pe. Ibiapina (Loteamento)" },
+    { street: "Rua José Américo nº 5" },
+  ])("aceita endereço do profissional: %o", (address) => {
+    expect(
+      updateProfessionalSchema.safeParse({ ...makeValues(""), ...address })
+        .success,
+    ).toBe(true);
+  });
+});
+
 
