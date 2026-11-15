@@ -30,7 +30,7 @@ export function formatRG(value: string) {
 }
 
 export function formatIssuingBody(value: string) {
-  return limit(value, 7)
+  return limit(value, 13)
     .toUpperCase()
     .replace(/[^A-Z\/]/g, "");
 }
