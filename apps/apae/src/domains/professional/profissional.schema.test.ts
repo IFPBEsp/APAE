@@ -76,4 +76,17 @@ describe("Critério: registerSchema aceita RG vazio e valida RG preenchido", () 
   });
 });
 
+describe("Critério: nome do profissional aceita símbolos", () => {
+  it.each([
+    "Ana Clara D'Ávila",
+    "Maria Sant’Ana",
+    "Ana-Clara Souza",
+    "José Silva Jr.",
+  ])("aceita nome do profissional: %s", (fullName) => {
+    expect(
+      updateProfessionalSchema.safeParse({ ...makeValues(""), fullName }).success,
+    ).toBe(true);
+  });
+});
+
 

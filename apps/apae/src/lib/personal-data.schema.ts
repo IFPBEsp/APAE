@@ -10,11 +10,11 @@ export const cpfSchema = z
 
 export const nomeCompletoSchema = z
   .string()
-  .trim()
+  .overwrite((value) => value.replace(/\s+/g, " ").trim())
   .min(1, "Nome obrigatório")
   .max(100, "O nome deve ter no máximo 100 caracteres")
   .regex(
-    /^[\p{L}]+(?: \p{L}+)+$/u,
+    /^\p{L}[\p{L}'’.\-]*(?: \p{L}[\p{L}'’.\-]*)+$/u,
     "Por favor, insira o nome e sobrenome"
   );
 

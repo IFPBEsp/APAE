@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { birthCertificateSchema } from "./member-schemas";
+import { Guardian, Kinship, birthCertificateSchema } from "./member-schemas";
 
 const MATRICULA = "12345678901234567890123456789012";
 const MATRICULA_FORMATADA = "123456 78 90 1234 5 67890 123 4567890 12";
@@ -44,5 +44,48 @@ describe("birthCertificateSchema (#1122)", () => {
   it("não cita 32 dígitos nas mensagens de erro", () => {
     expect(firstError("")).not.toMatch(/32/);
     expect(firstError(`${MATRICULA}1`)).not.toMatch(/32/);
+  });
+});
+
+describe("Nomes com símbolos nos membros", () => {
+  const nomes = [
+    "Ana Clara D'Ávila",
+    "Maria Sant’Ana",
+    "Ana-Clara Souza",
+    "José Silva Jr.",
+  ];
+
+  const validAddress = {
+    cep: "58135-000",
+    state: "PB",
+    city: "Esperança",
+    neighborhood: "Centro",
+    street: "Rua A",
+    number: "100",
+    complement: "Casa",
+  };
+
+  it.each(nomes)("aceita nome no responsável: %s", (name) => {
+    const result = Guardian.safeParse({
+      name,
+      contact: "(83) 99999-9999",
+      kinship: "Mãe",
+      address: validAddress,
+    });
+
+    expect(result.success).toBe(true);
+  });
+
+  it.each(nomes)("aceita nome no parente: %s", (name) => {
+    const result = Kinship.safeParse({
+      rg: "",
+      cpf: "529.982.247-25",
+      alive: true,
+      name,
+      occupation: "Professora",
+      type: "Mãe",
+    });
+
+    expect(result.success).toBe(true);
   });
 });
