@@ -32,6 +32,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
@@ -184,7 +185,7 @@ public class PatientApplicationServiceImpl implements PatientApplicationService 
             String name,
             Pageable pageable
     ) {
-        name = Optional.ofNullable(name).orElse("");
+        name = Optional.ofNullable(name).orElse("").trim().toLowerCase(Locale.ROOT);
 
         Page<PatientWithAbsenceProjection> page =
                 patientRepository.findPatientsWithAbsences(minAbsences, name, pageable);

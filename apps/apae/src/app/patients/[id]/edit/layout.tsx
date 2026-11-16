@@ -15,6 +15,8 @@ import Image from "@/assets/background_image.jpg";
 import { SidebarSteps } from "@/components/shared/SidebarSteps";
 import { parseCivilDate } from "@/lib/date";
 import { bffFetchJson } from "@/lib/bff-client";
+import { normalizeStateToUF } from "@/lib/states";
+import { formatBirthCertificate } from "@/lib/formats";
 
 interface ParentData {
   name?: string;
@@ -93,20 +95,22 @@ function EditPatientDataLoader({ children }: { children: React.ReactNode }) {
               number: data.rg || "",
               issuing: {
                 body: data.issuingAgency || "",
-                date: parseCivilDate(data.issueDate) || new Date(),
+                date: parseCivilDate(data.issueDate),
               },
             },
             cns: data.cns || "",
             nis: data.nis || "",
             birth: {
-              certificate: data.birthCertificateNumber || "",
+              certificate: formatBirthCertificate(
+                data.birthCertificateNumber || "",
+              ),
               date: parseCivilDate(data.birthDate) || new Date(),
               place: data.birthplace || data.nationality || "",
             },
           },
           address: {
             cep: data.address?.cep || "",
-            state: data.address?.state || "",
+            state: normalizeStateToUF(data.address?.state),
             city: data.address?.city || "",
             neighborhood: data.address?.neighborhood || "",
             street: data.address?.street || "",
@@ -135,7 +139,7 @@ function EditPatientDataLoader({ children }: { children: React.ReactNode }) {
             kinship: data.guardian?.kinship || "",
             address: {
               cep: data.guardian?.address?.cep || "",
-              state: data.guardian?.address?.state || "",
+              state: normalizeStateToUF(data.guardian?.address?.state),
               city: data.guardian?.address?.city || "",
               neighborhood: data.guardian?.address?.neighborhood || "",
               street: data.guardian?.address?.street || "",

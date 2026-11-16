@@ -1,18 +1,20 @@
 import z, { ZodCoercedDate } from "zod";
 import { parseCivilDate } from "@/lib/date";
 import { photoFileSchema } from "@/lib/photo.schema";
+import {
+  cpfSchema,
+  nomeCompletoSchema,
+  rgSchema,
+  telefoneSchema,
+} from "@/lib/personal-data.schema";
+import { addressSchema } from "@/schemas/shared/address.schema";
 
-const CPF = z
+const OptionalRG = z
   .string()
-  .min(1, "CPF é obrigatório")
-  .min(14, "CPF deve ter pelo menos 11 dígitos")
-  .regex(/^\d{3}\.\d{3}\.\d{3}-\d{2}$/, "Formato de CPF inválido");
-
-const RG = z
-  .string()
-  .min(1, "RG é obrigatório")
-  .min(9, "RG deve ter pelo menos 7 dígitos")
-  .regex(/^\d\.\d{3}\.\d{3}$/, "Formato de RG inválido");
+  .refine(
+    (value) => value === "" || rgSchema.safeParse(value).success,
+    "Formato de RG inválido",
+  );
 
 const CNS = z
   .string()
@@ -22,9 +24,25 @@ const CNS = z
 
 const NIS = z
   .string()
-  .min(1, "NIS é obrigatório")
   .length(11, "O NIS deve ter exatamente 11 dígitos")
-  .regex(/^\d+$/, "O NIS deve conter apenas números");
+  .regex(/^\d+$/, "O NIS deve conter apenas números")
+  .optional()
+  .or(z.literal(""));
+
+const BIRTH_CERTIFICATE_MAX_DIGITS = 32;
+const BIRTH_CERTIFICATE_REQUIRED_MESSAGE =
+  "Informe o número da certidão de nascimento";
+
+const countDigits = (value: string) => value.replace(/\D/g, "").length;
+
+export const birthCertificateSchema = z
+  .string({ error: BIRTH_CERTIFICATE_REQUIRED_MESSAGE })
+  .refine((value) => countDigits(value) >= 1, {
+    message: BIRTH_CERTIFICATE_REQUIRED_MESSAGE,
+  })
+  .refine((value) => countDigits(value) <= BIRTH_CERTIFICATE_MAX_DIGITS, {
+    message: "Número da certidão de nascimento inválido",
+  });
 
 const civilDateSchema = (
   futureMessage: string,
@@ -46,52 +64,55 @@ const civilDateSchema = (
       ),
   ) as unknown as ZodCoercedDate<Date>;
 
+  const optionalCivilDateSchema = z
+  .union([z.string(), z.date(), z.null(), z.undefined()])
+  .transform((value): Date | null => {
+    if (value === "" || value === null || value === undefined) {
+      return null;
+    }
+
+    return parseCivilDate(value as string | Date) ?? null;
+  })
+  .refine(
+    (date) => date === null || date <= new Date(),
+    { message: "Data de emissão não pode ser futura" },
+  )
+  .refine(
+    (date) => {
+      if (date === null) return true;
+
+      const minDate = new Date();
+      minDate.setFullYear(minDate.getFullYear() - 50);
+      return date >= minDate;
+    },
+    { message: "Data de emissão muito antiga" },
+  );
+
 export const Personal = z
   .object({
-    name: z
-      .string()
-      .transform((v) => v.trim())
-      .pipe(
-        z
-          .string()
-          .min(2, "Nome muito curto")
-          .max(100, "Nome muito longo")
-          .regex(/^[a-zA-ZÀ-ÿ\s]+$/, "Nome deve conter apenas letras e espaços")
-          .refine((val) => val.split(/\s+/).length >= 2, {
-            message: "Digite o nome completo (nome e sobrenome)",
-          }),
-      ),
-    cpf: CPF,
-    phone: z
-      .string()
-      .min(1, "Telefone é obrigatório")
-      .min(14, "Telefone deve ter pelo menos 10 dígitos"),
+    name: nomeCompletoSchema,
+    cpf: cpfSchema,
+    phone: telefoneSchema,
     rg: z.object({
-      number: RG,
+      number: OptionalRG,
       issuing: z.object({
         body: z
           .string()
-          .min(1, "Órgão emissor é obrigatório")
-          .min(2, "Órgão emissor inválido")
           .max(10, "Órgão emissor muito longo")
-          .regex(
-            /^[A-Z]{2,4}\/[A-Z]{2}$/,
+          .refine((value) => value === "" || value.length >= 2, {
+            message: "Órgão emissor inválido",
+          })
+          .refine(
+            (value) => value === "" || /^[A-Z]{2,4}\/[A-Z]{2}$/.test(value),
             "Formato inválido. Use SSP/UF, PC/UF, etc.",
           ),
-        date: civilDateSchema(
-          "Data de emissão não pode ser futura",
-          50,
-          "Data de emissão muito antiga",
-        ),
+        date: optionalCivilDateSchema,
       }),
     }),
     cns: CNS,
     nis: NIS,
     birth: z.object({
-      certificate: z
-        .string()
-        .min(1, "Certidão de nascimento é obrigatória")
-        .min(40, "Número da certidão deve ter pelo menos 32 dígitos"),
+      certificate: birthCertificateSchema,
       date: civilDateSchema(
         "Data de nascimento não pode ser futura",
         150,
@@ -109,36 +130,36 @@ export const Personal = z
       place: z.string().min(1, "Naturalidade é obrigatória."),
     }),
   })
-  .refine((data) => data.rg.issuing.date > data.birth.date, {
-    message: "A data de emissão do RG não pode ser anterior ao nascimento",
-    path: ["rg", "issuing", "date"],
+  .superRefine((data, ctx) => {
+    if (!data.rg.number.trim()) return;
+
+    if (data.rg.issuing.body === "") {
+      ctx.addIssue({
+        code: "custom",
+        message: "Órgão emissor é obrigatório",
+        path: ["rg", "issuing", "body"],
+      });
+    }
+
+    if (!data.rg.issuing.date) {
+      ctx.addIssue({
+        code: "custom",
+        message: "Data de emissão é obrigatória",
+        path: ["rg", "issuing", "date"],
+      });
+      return;
+    }
+
+    if (data.rg.issuing.date <= data.birth.date) {
+      ctx.addIssue({
+        code: "custom",
+        message: "A data de emissão do RG não pode ser anterior ao nascimento",
+        path: ["rg", "issuing", "date"],
+      });
+    }
   });
 
-export const Address = z.object({
-  cep: z.string().min(1, "CEP é obrigatório.").min(9, "CEP deve ter 8 dígitos"),
-  state: z
-    .string()
-    .min(3, "Estado deve ser o nome completo (ex: Paraíba)")
-    .regex(/^[a-zA-ZÀ-ÿ\s]+$/, "O estado deve conter apenas letras"),
-  city: z
-    .string()
-    .min(2, "Cidade inválida")
-    .regex(/^[a-zA-ZÀ-ÿ\s]+$/, "A cidade deve conter apenas letras"),
-  neighborhood: z.string().min(2, "Bairro inválido"),
-  street: z
-    .string()
-    .min(2, "Rua é obrigatória")
-    .regex(/^[a-zA-ZÀ-ÿ\s\.\-,]+$/, "Informe a rua (ex: Rua tal)"),
-  noNumber: z.boolean().optional(),
-  number: z
-    .string()
-    .min(1, "Número é obrigatório")
-    .regex(
-      /^(\d+|SN|sn|S\/N|s\/n)$/,
-      "Número deve conter apenas dígitos ou SN",
-    ),
-  complement: z.string().optional(),
-});
+export const Address = addressSchema;
 
 export const Additionals = z.object({
   diseases: z.string().min(1, "O campo de doenças é obrigatório."),
@@ -172,21 +193,10 @@ export const Additionals = z.object({
 });
 
 export const Kinship = z.object({
-  rg: RG,
-  cpf: CPF,
+  rg: OptionalRG,
+  cpf: cpfSchema,
   alive: z.boolean(),
-  name: z
-    .string()
-    .transform((v) => v.trim())
-    .pipe(
-      z
-        .string()
-        .min(2, "Nome muito curto")
-        .regex(/^[a-zA-ZÀ-ÿ\s]+$/, "O nome não pode conter números ou símbolos")
-        .refine((val) => val.split(/\s+/).length >= 2, {
-          message: "Digite o nome completo do parente",
-        }),
-    ),
+  name: nomeCompletoSchema,
   occupation: z.string().min(2, "Profissão inválida"),
   type: z.string().min(1, "Informar o parentesco é obrigatório."),
   isLegalGuardian: z.boolean().default(false).optional(),
@@ -197,26 +207,8 @@ export const Kinships = z.object({
 });
 
 export const Guardian = z.object({
-  name: z
-    .string()
-    .transform((v) => v.trim())
-    .pipe(
-      z
-        .string()
-        .min(2, "Nome muito curto")
-        .max(100, "Nome muito longo")
-        .regex(/^[a-zA-ZÀ-ÿ\s]+$/, "Nome deve conter apenas letras e espaços")
-        .refine((val) => val.split(/\s+/).length >= 2, {
-          message: "Digite o nome completo do responsável (nome e sobrenome)",
-        }),
-    ),
-  contact: z
-    .string()
-    .min(1, "Contato de emergência é obrigatório.")
-    .refine((val) => {
-      const apenasNumeros = val.replace(/\D/g, "");
-      return apenasNumeros.length >= 10;
-    }, "O telefone deve ter no mínimo 10 dígitos (DDD + número)"),
+  name: nomeCompletoSchema,
+  contact: telefoneSchema,
 
   kinship: z.string().min(1, "Informar o parentesco é obrigatório."),
   address: Address,

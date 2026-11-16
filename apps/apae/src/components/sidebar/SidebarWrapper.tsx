@@ -12,7 +12,8 @@ interface SidebarWrapperProps {
 
 export function SidebarWrapper({ children }: SidebarWrapperProps) {
   const pathname = usePathname();
-  const isAuthRoute = pathname.startsWith('/auth');
+  const isRegisterRoute = pathname === '/auth/register' || pathname.startsWith('/auth/register/');
+  const isAuthRoute = pathname.startsWith('/auth') && !isRegisterRoute;
 
   if(isAuthRoute) return <div>{children}</div>;
 

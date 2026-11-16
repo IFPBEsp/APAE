@@ -10,6 +10,14 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { STATES, normalizeStateToUF } from "@/lib/states";
+import {
   MembersRegisterStep,
   useMembersRegisterContext,
 } from "@/domains/patients/hooks/use-members-register-context";
@@ -45,6 +53,7 @@ export default function MembersRegisterGuardianPage() {
       ...guardian,
       address: {
         ...guardian.address,
+        state: normalizeStateToUF(guardian.address?.state) as z.infer<typeof Guardian>["address"]["state"],
         noNumber: guardian.address?.number === "SN"
       }
     },
@@ -70,6 +79,7 @@ export default function MembersRegisterGuardianPage() {
         ...guardian,
         address: {
           ...guardian.address,
+          state: normalizeStateToUF(guardian.address?.state) as z.infer<typeof Guardian>["address"]["state"],
           noNumber: guardian.address?.number === "SN"
         }
       });
@@ -294,15 +304,24 @@ export default function MembersRegisterGuardianPage() {
           <FormField
             control={form.control}
             name="address.state"
-            render={({ field }) => (
+            render={({ field, fieldState }) => (
               <FormItem>
                 <FormLabel>Estado *</FormLabel>
                 <FormControl>
-                  <Input
-                    placeholder="Paraíba"
-                    {...field}
-                    onChange={(e) => field.onChange(capitalizeFirst(e.target.value))}
-                  />
+                  <Select onValueChange={field.onChange} value={field.value}>
+                    <SelectTrigger
+                      className={`w-full ${fieldState.invalid ? "border-red-500" : "border-gray-300"}`}
+                    >
+                      <SelectValue placeholder="Selecione um estado" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {STATES.map((s) => (
+                        <SelectItem key={s} value={s}>
+                          {s}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
                 </FormControl>
                 <FormMessage />
               </FormItem>

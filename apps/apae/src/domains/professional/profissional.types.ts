@@ -33,7 +33,7 @@ export interface Professional {
   email: string;
   cpf: string;
   name: string;
-  identityDocument: string;
+  identityDocument: string | null;
   address: Address;
   availabilities: AvailabilityDTO[];
   ativo: boolean;

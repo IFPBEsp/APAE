@@ -8,6 +8,7 @@ import {
   isValidFile,
   getStatusActionConfig,
 } from "./professional.utils";
+import { MAX_FILE_SIZE_BYTES } from "@/lib/constants";
 
 const makeProfessional = (overrides: Record<string, unknown> = {}) =>
   ({
@@ -146,6 +147,14 @@ describe("buildProfessionalPayload", () => {
     expect(address.complement).toBe("");
   });
 
+  it("envia number como 'SN' quando noNumber é true", () => {
+    const { address } = buildProfessionalPayload(
+      makeFormValues({ noNumber: true, number: "" }),
+    );
+
+    expect(address.number).toBe("SN");
+  });
+
   it("inclui apenas as disponibilidades marcadas, só com day e shift", () => {
     const payload = buildProfessionalPayload(
       makeFormValues({
@@ -204,10 +213,30 @@ describe("mapProfessionalToForm", () => {
       city: "Esperança",
       neighborhood: "Centro",
       street: "Rua A",
+      noNumber: false,
       number: "10",
       complement: "Casa",
       cep: "58135-000",
     });
+  });
+
+  it("preenche noNumber como true quando o número do endereço é 'SN'", () => {
+    const form = mapProfessionalToForm(
+      makeProfessional({
+        address: {
+          state: "PB",
+          city: "Esperança",
+          neighborhood: "Centro",
+          street: "Rua A",
+          number: "SN",
+          complement: "Casa",
+          cep: "58135-000",
+        },
+      }),
+    );
+
+    expect(form.noNumber).toBe(true);
+    expect(form.number).toBe("SN");
   });
 
   it("usa string vazia para cpf, professionalDocument e complement ausentes", () => {
@@ -260,7 +289,6 @@ describe("mapProfessionalToForm", () => {
 });
 
 describe("isValidFile", () => {
-  const MB = 1024 * 1024;
   const makeFile = (type: string, size: number) =>
     new File([new Uint8Array(size)], "arquivo", { type });
 
@@ -282,12 +310,12 @@ describe("isValidFile", () => {
     expect(isValidFile(makeFile("application/pdf", 0))).toBe(false);
   });
 
-  it("aceita arquivo com exatamente 10MB", () => {
-    expect(isValidFile(makeFile("application/pdf", 10 * MB))).toBe(true);
+  it("aceita arquivo com exatamente o tamanho máximo", () => {
+    expect(isValidFile(makeFile("application/pdf", MAX_FILE_SIZE_BYTES))).toBe(true);
   });
 
-  it("rejeita arquivo maior que 10MB", () => {
-    expect(isValidFile(makeFile("application/pdf", 10 * MB + 1))).toBe(false);
+  it("rejeita arquivo maior que o tamanho máximo", () => {
+    expect(isValidFile(makeFile("application/pdf", MAX_FILE_SIZE_BYTES + 1))).toBe(false);
   });
 });
 
