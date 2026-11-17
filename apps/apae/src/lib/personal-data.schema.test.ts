@@ -12,16 +12,26 @@ const isValid = (
 ) => schema.safeParse(value).success;
 
 describe("nomeCompletoSchema", () => {
-  it("aceita nome e sobrenome simples", () => {
-    expect(isValid(nomeCompletoSchema, "Maria Silva")).toBe(true);
-  });
-
-  it("aceita nome completo com acentos e múltiplas palavras", () => {
-    expect(isValid(nomeCompletoSchema, "José da Conceição Júnior")).toBe(true);
+  it.each([
+    "Maria Silva",
+    "José da Conceição Júnior",
+    "Ana Clara D'Ávila",
+    "Maria Sant’Ana",
+    "Ana-Clara Souza",
+    "José Silva Jr.",
+  ])("aceita nome válido: %s", (nome) => {
+    expect(isValid(nomeCompletoSchema, nome)).toBe(true);
   });
 
   it("remove espaços nas pontas (trim)", () => {
     expect(nomeCompletoSchema.parse("  Maria Silva  ")).toBe("Maria Silva");
+  });
+
+  it("junta espaços repetidos em um só", () => {
+    expect(nomeCompletoSchema.parse("Maria  Silva")).toBe("Maria Silva");
+    expect(nomeCompletoSchema.parse("  Maria   da   Silva  ")).toBe(
+      "Maria da Silva"
+    );
   });
 
   it("aceita nome com exatamente 100 caracteres", () => {
@@ -41,9 +51,9 @@ describe("nomeCompletoSchema", () => {
     ["vazio", ""],
     ["apenas espaços", "   "],
     ["com números", "Maria Silva 2"],
-    ["com hífen", "Ana-Maria Silva"],
-    ["com apóstrofo", "Joana D'Arc"],
-    ["espaço duplo entre palavras", "Maria  Silva"],
+    ["com arroba", "Ana@Silva"],
+    ["com exclamação", "Maria Silva!"],
+    ["com hífen solto entre espaços", "Maria - Silva"],
   ])("recusa %s (%s)", (_desc, valor) => {
     expect(isValid(nomeCompletoSchema, valor)).toBe(false);
   });

@@ -76,4 +76,32 @@ describe("Critério: registerSchema aceita RG vazio e valida RG preenchido", () 
   });
 });
 
+describe("Critério: nome do profissional aceita símbolos", () => {
+  it.each([
+    "Ana Clara D'Ávila",
+    "Maria Sant’Ana",
+    "Ana-Clara Souza",
+    "José Silva Jr.",
+  ])("aceita nome do profissional: %s", (fullName) => {
+    expect(
+      updateProfessionalSchema.safeParse({ ...makeValues(""), fullName }).success,
+    ).toBe(true);
+  });
+});
+
+describe("Critério: endereço do profissional aceita símbolos", () => {
+  it.each([
+    { city: "Olho d’Água" },
+    { neighborhood: "Jd. Cidade Universitária" },
+    { neighborhood: "Conj. Hab. Ernani Sátiro" },
+    { street: "Rua Pe. Ibiapina (Loteamento)" },
+    { street: "Rua José Américo nº 5" },
+  ])("aceita endereço do profissional: %o", (address) => {
+    expect(
+      updateProfessionalSchema.safeParse({ ...makeValues(""), ...address })
+        .success,
+    ).toBe(true);
+  });
+});
+
 

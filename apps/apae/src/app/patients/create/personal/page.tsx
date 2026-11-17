@@ -222,7 +222,7 @@ export default function MembersRegisterPersonalPage() {
                 <FormControl>
                   <Input
                     placeholder="SSP/SP"
-                    maxLength={7}
+                    maxLength={13}
                     value={field.value}
                     onChange={(e) => {
                       const formatted = formatIssuingBody(e.target.value);
