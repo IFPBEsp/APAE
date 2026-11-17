@@ -1,0 +1,40 @@
+name: Test reusable Docker workflow - backend
+#teste pipeline - reexecutando 2x
+
+on:
+  push:
+    branches:
+      - 35-ci-testar-workflow-reutilizavel-docker
+    paths:
+      - "apps/api/**"
+      - ".github/workflows/ghcr-publish-backend-reusable.yml"
+
+permissions:
+  contents: read
+  packages: write
+  id-token: write
+
+jobs:
+  publish-backend:
+    name: Build, scan, publish and sign backend
+
+    uses: IFPBEsp/APAE-INFRA/.github/workflows/docker-build-publish-image.yml@64-ci-adicionar-assinatura-de-imagens-docker-com-cosign
+
+    with:
+      context: ./apps/api
+      dockerfile: ./apps/api/Dockerfile
+      image-name: apae-geral-backend
+      platforms: '["linux/amd64"]'
+      publish-latest: false
+
+      # Temporário apenas para permitir que o teste avance
+      # até as etapas de assinatura e verificação com Cosign.
+      #
+      # O backend possui vulnerabilidades HIGH e CRITICAL já
+      # conhecidas, então o valor padrão bloquearia o fluxo
+      # antes da etapa de assinatura.
+      scan-severity: UNKNOWN
+
+      build-args: |
+        APP_VERSION=${{ github.sha }}
+        VCS_REF=${{ github.sha }}
