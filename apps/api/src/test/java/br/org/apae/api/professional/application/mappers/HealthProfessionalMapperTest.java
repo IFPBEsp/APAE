@@ -111,7 +111,7 @@ class HealthProfessionalMapperTest {
     }
 
     @Test
-    @DisplayName("toEntity deve mapear documento profissional, foto de perfil e area de atendimento")
+    @DisplayName("toEntity deve mapear documento profissional e area de atendimento sem aceitar referência de foto sem metadados")
     void toEntity_ShouldMapAllFields() {
         HealthProfessional entity = healthProfessionalMapper.toEntity(
                 createDto(List.of()),
@@ -119,7 +119,7 @@ class HealthProfessionalMapperTest {
                 professionalUser());
 
         assertEquals(PROFESSIONAL_DOCUMENT, entity.getProfessionalDocument());
-        assertEquals(PROFILE_PHOTO, entity.getProfilePhoto());
+        assertNull(entity.getProfilePhoto());
         assertNotNull(entity.getServiceArea());
         assertEquals(SERVICE_AREA_ID, entity.getServiceArea().getId());
         assertEquals(SERVICE_AREA_NAME, entity.getServiceArea().getArea());
@@ -229,7 +229,7 @@ class HealthProfessionalMapperTest {
         assertEquals("11888888888", result.getPhoneNumber());
         assertEquals("987654321", result.getIdentityDocument());
         assertEquals("CRP-99999", result.getProfessionalDocument());
-        assertEquals("http://example.com/nova-foto.jpg", result.getProfilePhoto());
+        assertNull(result.getProfilePhoto());
         assertEquals(Integer.valueOf(2), result.getServiceArea().getId());
         assertEquals("Psicologia", result.getServiceArea().getArea());
     }
