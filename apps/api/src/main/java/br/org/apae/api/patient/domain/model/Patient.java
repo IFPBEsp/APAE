@@ -49,13 +49,13 @@ public class Patient {
     @Column(name = "numero_registro_de_nascimento", nullable = false)
     private String birthCertificateNumber;
 
-    @Column(name = "cartorio", nullable = false)
+    @Column(name = "cartorio", nullable = true)
     private String registryOffice;
 
-    @Column(name = "fls", nullable = false)
+    @Column(name = "fls", nullable = true)
     private String fls;
 
-    @Column(name = "livro", nullable = false)
+    @Column(name = "livro", nullable = true)
     private String book;
 
     @Column(name = "rg", unique = true)

@@ -28,11 +28,11 @@ public record CreatePatientDTO(
 
     @NotBlank(message = "O número da certidão de nascimento não pode estar em branco") String birthCertificateNumber,
 
-    @NotBlank(message = "O cartório não pode estar em branco") String registryOffice,
+    String registryOffice,
 
-    @NotBlank(message = "O campo 'fls' não pode estar em branco") String fls,
+    String fls,
 
-    @NotBlank(message = "O campo 'livro' não pode estar em branco") String book,
+    String book,
 
     String rg,
 

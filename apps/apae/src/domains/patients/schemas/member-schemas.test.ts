@@ -141,3 +141,69 @@ describe("Nomes com símbolos nos membros", () => {
     expect(result.success).toBe(true);
   });
 });
+
+describe("Cartório, livro e folha (#1132)", () => {
+  const CERTIDAO_ANTIGA = "12345";
+  const base = {
+    name: "João da Silva",
+    cpf: "529.982.247-25",
+    phone: "(83) 99999-9999",
+    rg: { number: "", issuing: { body: "", date: null } },
+    cns: "123 4567 8901 2345",
+    birth: {
+      certificate: CERTIDAO_ANTIGA,
+      date: new Date(2010, 0, 1),
+      place: "Campina Grande",
+    },
+  };
+
+  const parse = (birth: Record<string, unknown>) =>
+    Personal.safeParse({ ...base, birth: { ...base.birth, ...birth } });
+
+  const errorPaths = (birth: Record<string, unknown>) => {
+    const result = parse(birth);
+    return result.success
+      ? []
+      : result.error.issues.map((i) => i.path.join("."));
+  };
+
+  it("exige os três campos com certidão de menos de 32 dígitos", () => {
+    expect(errorPaths({})).toEqual(
+      expect.arrayContaining([
+        "birth.registryOffice",
+        "birth.book",
+        "birth.fls",
+      ]),
+    );
+  });
+
+  it("retorna erro apenas nos campos faltantes", () => {
+    const paths = errorPaths({ registryOffice: "Cartório X", book: "  " });
+    expect(paths).toContain("birth.book");
+    expect(paths).toContain("birth.fls");
+    expect(paths).not.toContain("birth.registryOffice");
+  });
+
+  it("aceita certidão curta com os três campos preenchidos", () => {
+    expect(
+      parse({ registryOffice: "Cartório X", book: "A", fls: "10" }).success,
+    ).toBe(true);
+  });
+
+  it("exige os campos com 31 dígitos", () => {
+    expect(errorPaths({ certificate: "1".repeat(31) })).toContain(
+      "birth.fls",
+    );
+  });
+
+  it("não valida os campos com 32 dígitos sem máscara", () => {
+    expect(parse({ certificate: "1".repeat(32) }).success).toBe(true);
+  });
+
+  it("não valida os campos com 32 dígitos com máscara", () => {
+    expect(
+      parse({ certificate: "123456 78 90 1234 5 67890 123 4567890 12" })
+        .success,
+    ).toBe(true);
+  });
+});

@@ -61,10 +61,10 @@ export function buildPatientPayload(
     nationality: personal.birth.place || "Brasileiro",
     birthDate: serializeCivilDate(personal.birth.date),
     contact: personal.phone || "Não informado",
-    birthCertificateNumber: personal.birth.certificate || "0",
-    registryOffice: "Cartorio",
-    fls: "0",
-    book: "0",
+    birthCertificateNumber: personal.birth.certificate,
+    registryOffice: personal.birth.registryOffice?.trim() || null,
+    fls: personal.birth.fls?.trim() || null,
+    book: personal.birth.book?.trim() || null,
     rg: hasRG ? personal.rg.number : null,
     issueDate: hasRG && personal.rg.issuing.date
       ? serializeCivilDate(personal.rg.issuing.date)
