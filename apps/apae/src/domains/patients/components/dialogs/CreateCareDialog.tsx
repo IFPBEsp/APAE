@@ -7,7 +7,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import z from "zod";
 import { useCreateServiceType } from "@/domains/service-types";
-import { CreateCare } from "@/schemas/care-schemas";
+import { CreateCare } from "@/domains/patients/schemas/care-schemas";
 
 export type DialogProps = Readonly<{
   open: boolean;

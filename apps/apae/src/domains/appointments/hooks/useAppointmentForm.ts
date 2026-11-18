@@ -1,5 +1,6 @@
 import { format, getDay, isValid, startOfDay } from "date-fns";
 import { useEffect, useRef, useState } from "react";
+import { toast } from "react-toastify";
 import {
   saveAppointment,
   updateAppointment,
@@ -150,8 +151,10 @@ export function useAppointmentForm(editAppointment?: Appointment) {
         });
       }
       window.location.reload();
-    } catch (error: any) {
-      setSubmitError(error.message || "Erro inesperado ao salvar o agendamento.");
+    } catch (error: unknown) {
+      const msg = error instanceof Error ? error.message : "Erro inesperado ao salvar o agendamento.";
+      setSubmitError(msg);
+      toast.error(msg);
     } finally {
       setIsSubmitting(false);
     }

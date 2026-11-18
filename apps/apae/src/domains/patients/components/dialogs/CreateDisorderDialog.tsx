@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import z from "zod";
-import { useDisordersContext } from "@/hooks/use-disorders";
+import { useDisordersContext } from "@/domains/disorders/use-disorders";
 import { disorderFormSchema  as CreateDisorder } from "@/domains/disorders/disorders.schema";
 
 export type DialogProps = Readonly<{

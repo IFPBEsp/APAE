@@ -6,8 +6,8 @@ import {
   MembersRegisterState,
   MembersRegisterStep,
 } from "@/domains/patients/hooks/use-members-register-context";
-import { VaccinesProvider } from "@/hooks/use-vaccines";
-import { DisordersProvider } from "@/hooks/use-disorders";
+import { VaccinesProvider } from "@/domains/vaccines/use-vaccines";
+import { DisordersProvider } from "@/domains/disorders/use-disorders";
 import { useParams, usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import { Loader2, CheckCircle2, Circle } from "lucide-react";
@@ -15,6 +15,8 @@ import Image from "@/assets/background_image.jpg";
 import { SidebarSteps } from "@/components/shared/SidebarSteps";
 import { parseCivilDate } from "@/lib/date";
 import { bffFetchJson } from "@/lib/bff-client";
+import { normalizeStateToUF } from "@/lib/states";
+import { formatBirthCertificate } from "@/lib/formats";
 
 interface ParentData {
   name?: string;
@@ -46,6 +48,9 @@ interface EditPatientData {
   cns?: string;
   nis?: string;
   birthCertificateNumber?: string;
+  registryOffice?: string;
+  book?: string;
+  fls?: string;
   birthDate?: string;
   birthplace?: string;
   nationality?: string;
@@ -93,20 +98,25 @@ function EditPatientDataLoader({ children }: { children: React.ReactNode }) {
               number: data.rg || "",
               issuing: {
                 body: data.issuingAgency || "",
-                date: parseCivilDate(data.issueDate) || new Date(),
+                date: parseCivilDate(data.issueDate),
               },
             },
             cns: data.cns || "",
             nis: data.nis || "",
             birth: {
-              certificate: data.birthCertificateNumber || "",
+              certificate: formatBirthCertificate(
+                data.birthCertificateNumber || "",
+              ),
               date: parseCivilDate(data.birthDate) || new Date(),
               place: data.birthplace || data.nationality || "",
+              registryOffice: data.registryOffice || "",
+              book: data.book || "",
+              fls: data.fls || "",
             },
           },
           address: {
             cep: data.address?.cep || "",
-            state: data.address?.state || "",
+            state: normalizeStateToUF(data.address?.state),
             city: data.address?.city || "",
             neighborhood: data.address?.neighborhood || "",
             street: data.address?.street || "",
@@ -135,7 +145,7 @@ function EditPatientDataLoader({ children }: { children: React.ReactNode }) {
             kinship: data.guardian?.kinship || "",
             address: {
               cep: data.guardian?.address?.cep || "",
-              state: data.guardian?.address?.state || "",
+              state: normalizeStateToUF(data.guardian?.address?.state),
               city: data.guardian?.address?.city || "",
               neighborhood: data.guardian?.address?.neighborhood || "",
               street: data.guardian?.address?.street || "",

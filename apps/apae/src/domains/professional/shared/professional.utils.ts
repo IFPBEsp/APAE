@@ -1,7 +1,8 @@
-import { Professional } from "@/types/profissional";
-import { ProfessionalFormValues } from "@/schemas/profissional.schema";
+import { Professional } from "@/domains/professional/profissional.types";
+import { ProfessionalFormValues } from "@/domains/professional/profissional.schema";
 import { buildAvailabilityMatrixFromDTOs } from "./disponibilidade.utils";
 import { MAX_FILE_SIZE_BYTES } from "@/lib/constants";
+import { normalizeStateToUF } from "@/lib/states";
 
 type StatusFilter = "activate" | "inactivate";
 
@@ -41,13 +42,13 @@ export function buildProfessionalPayload(values: ProfessionalFormValues) {
     email: values.email.trim(),
     cpf: values.cpf.trim(),
     name: values.fullName.trim(),
-    identityDocument: values.rg.trim(),
+    identityDocument: values.rg.trim() || null,
     address: {
       state: values.state,
       city: values.city.trim(),
       neighborhood: values.neighborhood.trim(),
       street: values.street.trim(),
-      number: values.number?.trim() ?? "",
+      number: values.noNumber ? "SN" : (values.number?.trim() ?? ""),
       complement: values.complement?.trim() ?? "",
       cep: values.cep,
     },
@@ -63,11 +64,12 @@ export function mapProfessionalToForm(professional: Professional) {
     professionalDocument: professional.professionalDocument ?? "",
     serviceArea: professional.serviceArea.area,
     phone: professional.phoneNumber,
-    rg: professional.identityDocument,
-    state: professional.address.state,
+    rg: professional.identityDocument ?? "",
+    state: normalizeStateToUF(professional.address.state) as ProfessionalFormValues["state"],
     city: professional.address.city,
     neighborhood: professional.address.neighborhood,
     street: professional.address.street,
+    noNumber: professional.address.number === "SN",
     number: professional.address.number,
     complement: professional.address.complement ?? "",
     cep: professional.address.cep,

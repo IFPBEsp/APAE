@@ -10,6 +10,12 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { ChevronDown, Search } from "lucide-react";
 import { cn } from "@/lib/utils";
+import type { PatientStatus } from "@/domains/patients/types/patient";
+
+const STATUS_OPTIONS: { value: PatientStatus; label: string }[] = [
+  { value: "active", label: "Ativo" },
+  { value: "inactive", label: "Inativo" },
+];
 
 interface SearchFiltersProps {
   readonly searchName?: string;
@@ -23,6 +29,8 @@ interface SearchFiltersProps {
   readonly setCity?: (status: string) => void;
   readonly serviceArea?: string;
   readonly setServiceArea?: (status: string) => void;
+  readonly status?: PatientStatus | "";
+  readonly setStatus?: (status: PatientStatus | "") => void;
 
   readonly disorderOptions?: string[];
   readonly yearOptions?: string[];
@@ -41,6 +49,8 @@ export function SearchFilters({
   setCity,
   serviceArea,
   setServiceArea,
+  status,
+  setStatus,
   disorderOptions = [],
   yearOptions = [],
   cityOptions = [],
@@ -58,6 +68,9 @@ export function SearchFilters({
   const showYearFilter = setYear !== undefined;
   const showCityFilter = setCity !== undefined;
   const showServiceAreaFilter = setServiceArea !== undefined;
+  const showStatusFilter = setStatus !== undefined;
+
+  const statusLabel = STATUS_OPTIONS.find((o) => o.value === status)?.label;
 
   return (
     <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2">
@@ -74,7 +87,8 @@ export function SearchFilters({
       {(showDisorderFilter ||
         showYearFilter ||
         showCityFilter ||
-        showServiceAreaFilter) && (
+        showServiceAreaFilter ||
+        showStatusFilter) && (
         <div className="flex flex-wrap sm:flex-nowrap items-center gap-2 w-full sm:w-auto">
           {showServiceAreaFilter && (
             <DropdownMenu>
@@ -189,6 +203,36 @@ export function SearchFilters({
                     className={cn({ "bg-slate-100": city === option })}
                   >
                     {option}
+                  </DropdownMenuItem>
+                ))}
+              </DropdownMenuContent>
+            </DropdownMenu>
+          )}
+
+          {showStatusFilter && (
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button className={cn(dropdownTriggerStyle, "w-full sm:w-[110px]")}>
+                  <span className="flex-1 w-0 truncate text-left">
+                    {statusLabel || "Status"}
+                  </span>
+                  <ChevronDown className="h-4 w-4" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent
+                align="end"
+                className="w-[--radix-dropdown-menu-trigger-width]"
+              >
+                <DropdownMenuItem onClick={() => setStatus?.("")}>
+                  Qualquer
+                </DropdownMenuItem>
+                {STATUS_OPTIONS.map((option) => (
+                  <DropdownMenuItem
+                    key={option.value}
+                    onClick={() => setStatus?.(option.value)}
+                    className={cn({ "bg-slate-100": status === option.value })}
+                  >
+                    {option.label}
                   </DropdownMenuItem>
                 ))}
               </DropdownMenuContent>

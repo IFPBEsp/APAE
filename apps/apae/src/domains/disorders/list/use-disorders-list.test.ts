@@ -2,7 +2,7 @@ import { describe, it, expect, vi, beforeEach } from "vitest";
 import { renderHook, waitFor } from "@testing-library/react";
 import { useDisordersList } from "./use-disorders-list";
 import { fetchDisordersApi } from "../disorders.api";
-import { DisordersProvider } from "@/hooks/use-disorders";
+import { DisordersProvider } from "@/domains/disorders/use-disorders";
 
 vi.mock("../disorders.api");
 vi.mock("react-toastify", () => ({

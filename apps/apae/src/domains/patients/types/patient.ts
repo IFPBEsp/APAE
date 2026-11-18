@@ -8,7 +8,6 @@ export interface PatientAddress {
   complement: string;
 }
 
-/** Endereço reduzido devolvido pela listagem: só a cidade é garantida. */
 export type PatientAddressSummary = Pick<PatientAddress, "city"> &
   Partial<Omit<PatientAddress, "city">>;
 
@@ -23,7 +22,7 @@ export interface PatientGuardian {
 
 export interface PatientParentPayload {
   name: string;
-  rg: string;
+  rg: string | null;
   cpf: string;
   profession: string;
   isAlive: boolean;
@@ -50,12 +49,12 @@ export interface PatientPayload {
   birthDate: string | null;
   contact: string;
   birthCertificateNumber: string;
-  registryOffice: string;
-  fls: string;
-  book: string;
-  rg: string;
+  registryOffice: string | null;
+  fls: string | null;
+  book: string | null;
+  rg: string | null;
   issueDate: string | null;
-  issuingAgency: string;
+  issuingAgency: string | null;
   cpf: string;
   cns: string;
   nis: string;
@@ -75,12 +74,15 @@ export interface PatientPayload {
   annualRegistry: PatientAnnualRegistry;
 }
 
+export type PatientStatus = "active" | "inactive";
+
 export interface PatientListQueryValues {
   name?: string;
   disorder?: string;
   year?: string;
   city?: string;
   treatmentType?: string;
+  status?: PatientStatus | "";
   page?: number;
   size?: number;
 }

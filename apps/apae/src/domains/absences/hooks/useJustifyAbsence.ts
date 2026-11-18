@@ -26,9 +26,9 @@ export function useJustifyAbsence() {
 
       await justifyAbsence(justifyingAbsence.id, justificationText, documentId);
       window.location.reload();
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error("Erro ao justificar falta:", error);
-      alert(error.message || "Erro ao justificar falta.");
+      alert(error instanceof Error ? error.message : "Erro ao justificar falta.");
     } finally {
       setIsSubmittingJustification(false);
       setJustifyingAbsence(null);

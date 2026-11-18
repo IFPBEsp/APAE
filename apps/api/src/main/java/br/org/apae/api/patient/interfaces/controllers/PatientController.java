@@ -1,6 +1,7 @@
 package br.org.apae.api.patient.interfaces.controllers;
 
 import br.org.apae.api.common.dto.patient.response.patient.PatientWithAbsencesResponseDTO;
+import br.org.apae.api.patient.domain.repository.PatientSpecification;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;
@@ -29,6 +30,9 @@ import br.org.apae.api.common.dto.patient.request.patient.CreatePatientDTO;
 import br.org.apae.api.common.dto.patient.request.patient.UpdatePatientDTO;
 import br.org.apae.api.common.dto.patient.response.patient.PatientResponseDTO;
 import br.org.apae.api.common.dto.patient.response.patient.PatientSummaryResponseDTO;
+import br.org.apae.api.documents.interfaces.validations.ValidFileSize;
+import br.org.apae.api.documents.interfaces.validations.ValidImageFormat;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 import java.util.Map;
@@ -60,15 +64,18 @@ public interface PatientController {
         @ApiResponses(value = {
                 @ApiResponse(responseCode = "200", description = "Lista de pacientes filtrada retornada com sucesso")
         })
-        // DOCUMENTAÇÃO SWAGGER (Para aparecer os campos na tela do Swagger)
+
         @Parameter(name = "name", description = "Nome parcial", in = ParameterIn.QUERY)
         @Parameter(name = "disorder", description = "Transtorno", in = ParameterIn.QUERY)
         @Parameter(name = "year", description = "Ano", in = ParameterIn.QUERY)
         @Parameter(name = "city", description = "Cidade", in = ParameterIn.QUERY)
         @Parameter(name = "treatmentType", description = "Tipo de atendimento", in = ParameterIn.QUERY)
+        @Parameter(name = "status",
+                description = "Status do paciente: 'active' (menos de 3 faltas não justificadas) ou 'inactive' (3 ou mais faltas não justificadas)",
+                in = ParameterIn.QUERY,
+                schema = @io.swagger.v3.oas.annotations.media.Schema(allowableValues = {"active", "inactive"}))
         @GetMapping
         ResponseEntity<Page<PatientSummaryResponseDTO>> findWithFilters(
-                // Ocultamos o Map do Swagger para ele não criar um campo JSON estranho
                 @Parameter(hidden = true)
                 @RequestParam Map<String, String> filters,
                 @Parameter(hidden = true) Pageable pageable
@@ -92,7 +99,7 @@ public interface PatientController {
         })
         @PutMapping(value = "/{id}/photo", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
         ResponseEntity<PatientResponseDTO> updatePatientPhoto(@PathVariable UUID id,
-                                                              @RequestPart("photo") org.springframework.web.multipart.MultipartFile photo);
+                                                              @ValidFileSize @ValidImageFormat @RequestPart("photo") MultipartFile photo);
 
         @Operation(summary = "Excluir um paciente", description = "Remove um paciente do sistema a partir do seu ID.")
         @ApiResponses(value = {
@@ -128,7 +135,8 @@ public interface PatientController {
 
         @Operation(
                 summary = "Listar ids de pacientes com alerta de faltas",
-                description = "Retorna, sem paginação, apenas os ids dos pacientes com pelo menos o número mínimo de faltas não justificadas informado."
+                description = "Retorna, sem paginação, apenas os ids dos pacientes com pelo menos o número mínimo de faltas não justificadas informado. "
+                        + "Por padrão usa o mesmo limite que define o paciente como inativo."
         )
         @ApiResponses(value = {
                 @ApiResponse(responseCode = "200", description = "Lista de ids retornada com sucesso"),
@@ -137,10 +145,11 @@ public interface PatientController {
         @GetMapping("/absence-alert-ids")
         ResponseEntity<List<UUID>> findAbsenceAlertPatientIds(
                 @Parameter(
-                        description = "Número mínimo de faltas não justificadas",
+                        description = "Número mínimo de faltas não justificadas (padrão: limite de inatividade do paciente)",
                         example = "3"
                 )
-                @RequestParam(defaultValue = "3") @Min(value = 1, message = "minAbsences deve ser maior ou igual a 1") Integer minAbsences
+                @RequestParam(defaultValue = "" + PatientSpecification.INACTIVE_ABSENCE_THRESHOLD)
+                @Min(value = 1, message = "minAbsences deve ser maior ou igual a 1") Integer minAbsences
         );
 
         @Operation(summary = "Lista os tipos de atendimento para o filtro")

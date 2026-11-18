@@ -26,40 +26,24 @@ export function formatPhone(value: string) {
 }
 
 export function formatRG(value: string) {
-  const numbers = limit(value.replace(/\D/g, ""), 7);
-  return numbers
-    .replace(/(\d{1})(\d)/, "$1.$2")
-    .replace(/(\d{3})(\d)/, "$1.$2");
+  return value.replace(/[^\dXx.\-]/g, "").toUpperCase();
 }
 
 export function formatIssuingBody(value: string) {
-  return limit(value, 7)
+  return limit(value, 13)
     .toUpperCase()
     .replace(/[^A-Z\/]/g, "");
 }
 
 export function formatBirthCertificate(value: string) {
-  const numbers = value.replace(/\D/g, "");
-  const divisors = [6, 2, 2, 4, 1, 5, 3, 7];
+  const numbers = limit(value.replace(/\D/g, ""), 32);
 
-  return divisors.reduce(
-    (acc, curr, index) => {
-      const regex = `${acc.regex}(\\d{${curr}})`;
-      const groups = `${acc.groups} $${index + 2}`;
-      const result = acc.result.replace(new RegExp(`${regex}(\\d)`), groups);
+  if (numbers.length < 32) return numbers;
 
-      return {
-        regex: `${regex}\\ `,
-        groups,
-        result,
-      };
-    },
-    {
-      regex: "",
-      groups: "$1",
-      result: limit(numbers, 32),
-    },
-  ).result;
+  return numbers.replace(
+    /^(\d{6})(\d{2})(\d{2})(\d{4})(\d)(\d{5})(\d{3})(\d{7})(\d{2})$/,
+    "$1 $2 $3 $4 $5 $6 $7 $8 $9",
+  );
 }
 
 export function formatCEP(value: string) {

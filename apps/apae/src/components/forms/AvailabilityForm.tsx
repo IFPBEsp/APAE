@@ -16,7 +16,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Checkbox } from "@/components/ui/checkbox";
-import { daysOfWeek, shifts } from "@/types/profissional";
+import { daysOfWeek, shifts } from "@/domains/professional/profissional.types";
 import { Control, UseFormWatch, FieldValues, Path } from "react-hook-form";
 
 type Props<T extends FieldValues> = {

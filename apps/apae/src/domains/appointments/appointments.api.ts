@@ -8,7 +8,7 @@ import type {
   GeneratedAppointmentResponseDTO,
   TodayAppointment
 } from './types/appointments.types';
-import type { Page } from '@/types/pagination';
+import type { Page } from '@/lib/pagination';
 import { bffFetchJson } from '@/lib/bff-client';
 
 function ensurePageFormat<T>(data: unknown): Page<T> {

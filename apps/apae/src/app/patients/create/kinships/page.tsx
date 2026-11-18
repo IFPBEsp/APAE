@@ -28,7 +28,7 @@ import {
   DoubleColumn,
   FormButton,
   MembersRegisterForm,
-} from "../form";
+} from "@/domains/patients/components/form";
 import { Button } from "@/components/ui/button";
 import { usePathname } from "next/navigation";
 import { UseFormReturn } from "react-hook-form";
@@ -163,11 +163,11 @@ export default function MembersRegisterKinshipsPage() {
               name={`kinships.${index}.rg`}
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>RG do parente *</FormLabel>
+                  <FormLabel>RG do parente</FormLabel>
                   <FormControl>
                     <Input
-                      placeholder="1.234.567"
-                      maxLength={9}
+                      placeholder="12.345.678-9"
+                      maxLength={15}
                       value={field.value}
                       onChange={(e) => field.onChange(formatRG(e.target.value))}
                     />

@@ -10,12 +10,20 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { STATES, normalizeStateToUF } from "@/lib/states";
+import {
   MembersRegisterStep,
   useMembersRegisterContext,
 } from "@/domains/patients/hooks/use-members-register-context";
 import { formatCEP, capitalizeFirst } from "@/lib/formats";
-import { Guardian, GuardianData } from "@/domains/patients/schemas/member-schemas";
-import { EditGuardian } from "@/schemas/edit-member-schemas";
+import { Guardian } from "@/domains/patients/schemas/member-schemas";
+import { EditGuardian } from "@/domains/patients/schemas/edit-member-schemas";
 import { zodResolver } from "@hookform/resolvers/zod";
 import React, { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
@@ -24,7 +32,7 @@ import { usePathname } from "next/navigation";
 import { formatPhone } from "@/lib/formats";
 import { Checkbox } from "@/components/ui/checkbox";
 import z from "zod";
-import { DoubleColumn, FormButton, MembersRegisterForm } from "../form";
+import { DoubleColumn, FormButton, MembersRegisterForm } from "@/domains/patients/components/form";
 
 export default function MembersRegisterGuardianPage() {
   const {
@@ -45,6 +53,7 @@ export default function MembersRegisterGuardianPage() {
       ...guardian,
       address: {
         ...guardian.address,
+        state: normalizeStateToUF(guardian.address?.state) as z.infer<typeof Guardian>["address"]["state"],
         noNumber: guardian.address?.number === "SN"
       }
     },
@@ -70,6 +79,7 @@ export default function MembersRegisterGuardianPage() {
         ...guardian,
         address: {
           ...guardian.address,
+          state: normalizeStateToUF(guardian.address?.state) as z.infer<typeof Guardian>["address"]["state"],
           noNumber: guardian.address?.number === "SN"
         }
       });
@@ -84,7 +94,7 @@ export default function MembersRegisterGuardianPage() {
         address: {
           ...values.address,
           number: values.address.noNumber ? "SN" : values.address.number,
-          district: (values.address as any).district || ""
+          district: (values.address as { district?: string }).district || ""
         }
       };
 
@@ -115,10 +125,10 @@ export default function MembersRegisterGuardianPage() {
                   ...currentValues,
                   address: currentValues.address ? {
                     ...currentValues.address,
-                    district: (currentValues.address as any).district || ""
+                    district: (currentValues.address as { district?: string }).district || ""
                   } : undefined
                 };
-                setGuardianData(dataToSave as any);
+                setGuardianData(dataToSave);
                 setStep(MembersRegisterStep.KINSHIPS);
               }}
               disabled={isLoading}
@@ -294,15 +304,24 @@ export default function MembersRegisterGuardianPage() {
           <FormField
             control={form.control}
             name="address.state"
-            render={({ field }) => (
+            render={({ field, fieldState }) => (
               <FormItem>
                 <FormLabel>Estado *</FormLabel>
                 <FormControl>
-                  <Input
-                    placeholder="Paraíba"
-                    {...field}
-                    onChange={(e) => field.onChange(capitalizeFirst(e.target.value))}
-                  />
+                  <Select onValueChange={field.onChange} value={field.value}>
+                    <SelectTrigger
+                      className={`w-full ${fieldState.invalid ? "border-red-500" : "border-gray-300"}`}
+                    >
+                      <SelectValue placeholder="Selecione um estado" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {STATES.map((s) => (
+                        <SelectItem key={s} value={s}>
+                          {s}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
                 </FormControl>
                 <FormMessage />
               </FormItem>

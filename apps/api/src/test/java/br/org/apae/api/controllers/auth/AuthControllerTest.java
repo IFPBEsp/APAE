@@ -163,7 +163,7 @@ class AuthControllerTest {
                     "Senha123"
             );
 
-            TokenResponseDTO responseDto = new TokenResponseDTO("jwt-token");
+            TokenResponseDTO responseDto = new TokenResponseDTO("jwt-token", "ADMIN");
 
             when(authService.signIn(requestDto)).thenReturn(responseDto);
 

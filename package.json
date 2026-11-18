@@ -5,6 +5,7 @@
   "license": "ISC",
   "packageManager": "pnpm@10.10.0",
   "scripts": {
+    "prepare": "husky",
     "docker:up": "docker compose up -d",
     "docker:down": "docker compose down",
     "docker:drop": "docker compose down -v",
@@ -12,6 +13,8 @@
     "dev:backend": "bash ./.scripts/run-app.sh backend",
     "dev:apae": "bash ./.scripts/run-app.sh frontend apae",
     "dev": "pnpm dev:infra && bash ./.scripts/run-app.sh both apae",
+    "build": "pnpm --filter agendamento build",
+    "lint": "pnpm --filter agendamento lint",
     "test:api": "cd apps/api && ./mvnw package",
     "test:front": "pnpm --filter agendamento test",
     "db:migrate": "docker compose up db-migrate",
@@ -23,6 +26,8 @@
   ],
   "devDependencies": {
     "@types/node": "^25.5.0",
-    "concurrently": "^9.2.1"
+    "concurrently": "^9.2.1",
+    "husky": "^9.1.7",
+    "lint-staged": "^17.6.0"
   }
 }

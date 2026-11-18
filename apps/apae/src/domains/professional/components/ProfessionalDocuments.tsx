@@ -9,7 +9,7 @@ import {
   AlertDialogContent, AlertDialogDescription,
   AlertDialogFooter, AlertDialogHeader, AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-import { DocumentWithUrl } from "@/types/document";
+import { DocumentWithUrl } from "@/domains/documents/documents.types";
 
 interface ProfessionalDocumentsProps {
   groupedDocs: {

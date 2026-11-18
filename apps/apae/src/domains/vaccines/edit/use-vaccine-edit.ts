@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { toast } from "react-toastify";
 import { fetchVaccineApi } from "../vaccines.api";
-import { useVaccinesContext } from "@/hooks/use-vaccines";
+import { useVaccinesContext } from "@/domains/vaccines/use-vaccines";
 import type { Vaccine, UpdateVaccineParams } from "../vaccines.types";
 
 export function useVaccineEdit(id: string) {

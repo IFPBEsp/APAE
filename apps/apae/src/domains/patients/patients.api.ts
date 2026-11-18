@@ -1,5 +1,5 @@
 import { bffFetchJson } from "@/lib/bff-client";
-import { Page } from "@/types/pagination";
+import { Page } from "@/lib/pagination";
 import { Patient } from "./types/patient";
 
 export async function getPatients(): Promise<Patient[]> {

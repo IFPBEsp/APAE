@@ -22,7 +22,7 @@ import {
   formatRG,
   capitalizeFirst,
 } from "@/lib/formats";
-import { Personal, PersonalData } from "@/domains/patients/schemas/member-schemas";
+import { Personal } from "@/domains/patients/schemas/member-schemas";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { useState, useEffect } from "react";
@@ -31,7 +31,7 @@ import { handleBackendValidationErrors } from "@/lib/utils/form-errors";
 import { formatCivilDateDisplayValue } from "@/lib/date";
 import { InputMask } from "@react-input/mask";
 
-import { DoubleColumn, FormButton, MembersRegisterForm } from "../form";
+import { DoubleColumn, FormButton, MembersRegisterForm } from "@/domains/patients/components/form";
 import z from "zod";
 
 export default function MembersRegisterPersonalPage() {
@@ -45,20 +45,21 @@ export default function MembersRegisterPersonalPage() {
   const pathname = usePathname();
   const router = useRouter();
   const isEditing = pathname.includes("/edit");
-  const form = useForm<z.infer<typeof Personal>>({
+  const form = useForm<
+    z.input<typeof Personal>,
+    unknown,
+    z.output<typeof Personal>
+  >({
     mode: "onBlur",
     resolver: zodResolver(Personal),
     defaultValues: personal,
+    shouldUnregister: false,
   });
 
-  const [isInitialized, setIsInitialized] = useState(false);
-
-  useEffect(() => {
-    if (personal.name && !isInitialized) {
-      form.reset(personal);
-      setIsInitialized(true);
-    }
-  }, [personal, form, isInitialized]);
+  const birthCertificate = form.watch("birth.certificate") || "";
+  const certificateDigits = birthCertificate.replace(/\D/g, "").length;
+  const showOldCertificateFields =
+    certificateDigits >= 1 && certificateDigits <= 31;
 
   useEffect(() => {
     if (personal.name !== "") {
@@ -69,7 +70,16 @@ export default function MembersRegisterPersonalPage() {
   const onSubmit = async (values: z.infer<typeof Personal>) => {
     setIsLoading(true);
     try {
-      setPersonalData(values as PersonalData);
+      setPersonalData({
+        ...values,
+      rg: {
+        ...values.rg,
+        issuing: {
+          ...values.rg.issuing,
+          date: values.rg.issuing.date ?? null,
+        },
+      },
+    });
       setStep(MembersRegisterStep.KINSHIPS);
     } catch (error: unknown) {
       const err = error as { response?: { data?: Record<string, string[]> } };
@@ -170,7 +180,7 @@ export default function MembersRegisterPersonalPage() {
             name="nis"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>NIS *</FormLabel>
+                <FormLabel>NIS</FormLabel>
                 <FormControl>
                   <Input
                     placeholder="Apenas 11 números"
@@ -192,11 +202,11 @@ export default function MembersRegisterPersonalPage() {
             name="rg.number"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>RG *</FormLabel>
+                <FormLabel>RG</FormLabel>
                 <FormControl>
                   <Input
-                    placeholder="1.234.567"
-                    maxLength={9}
+                    placeholder="12.345.678-9"
+                    maxLength={15}
                     value={field.value}
                     onChange={(e) => {
                       const formatted = formatRG(e.target.value);
@@ -214,11 +224,11 @@ export default function MembersRegisterPersonalPage() {
             name="rg.issuing.body"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Órgão Emissor *</FormLabel>
+                <FormLabel>Órgão Emissor</FormLabel>
                 <FormControl>
                   <Input
                     placeholder="SSP/SP"
-                    maxLength={7}
+                    maxLength={13}
                     value={field.value}
                     onChange={(e) => {
                       const formatted = formatIssuingBody(e.target.value);
@@ -236,7 +246,7 @@ export default function MembersRegisterPersonalPage() {
             name="rg.issuing.date"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Data de Emissão *</FormLabel>
+                <FormLabel>Data de Emissão</FormLabel>
                 <FormControl>
                   <InputMask
                     mask="__/__/____"
@@ -278,6 +288,68 @@ export default function MembersRegisterPersonalPage() {
               </FormItem>
             )}
           />
+
+          {showOldCertificateFields && (
+            <>
+              <p className="text-sm text-muted-foreground md:col-span-2">
+                Certidão sem matrícula: informe cartório, livro e folha
+              </p>
+
+              <FormField
+                control={form.control}
+                name="birth.registryOffice"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Cartório *</FormLabel>
+                    <FormControl>
+                      <Input
+                        placeholder="Digite o cartório"
+                        {...field}
+                        value={field.value ?? ""}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="birth.book"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Livro *</FormLabel>
+                    <FormControl>
+                      <Input
+                        placeholder="Digite o livro"
+                        {...field}
+                        value={field.value ?? ""}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="birth.fls"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Folha *</FormLabel>
+                    <FormControl>
+                      <Input
+                        placeholder="Digite a folha"
+                        {...field}
+                        value={field.value ?? ""}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </>
+          )}
 
           <FormField
             control={form.control}

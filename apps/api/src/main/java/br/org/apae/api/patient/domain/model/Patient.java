@@ -49,22 +49,22 @@ public class Patient {
     @Column(name = "numero_registro_de_nascimento", nullable = false)
     private String birthCertificateNumber;
 
-    @Column(name = "cartorio", nullable = false)
+    @Column(name = "cartorio", nullable = true)
     private String registryOffice;
 
-    @Column(name = "fls", nullable = false)
+    @Column(name = "fls", nullable = true)
     private String fls;
 
-    @Column(name = "livro", nullable = false)
+    @Column(name = "livro", nullable = true)
     private String book;
 
-    @Column(name = "rg", nullable = false, unique = true)
+    @Column(name = "rg", unique = true)
     private String rg;
 
-    @Column(name = "data_de_emissao", nullable = false)
+    @Column(name = "data_de_emissao")
     private LocalDate issueDate;
 
-    @Column(name = "orgao_emissor", nullable = false)
+    @Column(name = "orgao_emissor")
     private String issuingAgency;
 
     @Column(name = "cpf", nullable = false, unique = true)
@@ -73,7 +73,7 @@ public class Patient {
     @Column(name = "cns", nullable = false)
     private String cns;
 
-    @Column(name = "nis", nullable = false)
+    @Column(name = "nis")
     private String nis;
 
     @Column(name = "data_de_cadastro", nullable = false)

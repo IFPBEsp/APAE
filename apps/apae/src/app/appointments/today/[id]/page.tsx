@@ -25,7 +25,7 @@ import {
   getTodayAppointmentById,
 } from '@/domains/appointments/appointments.api';
 import type { TodayAppointment } from '@/domains/appointments/types/appointments.types';
-import { useAbsenceAlerts } from '@/hooks/use-absence-alerts';
+import { useAbsenceAlerts } from '@/domains/absences/hooks/use-absence-alerts';
 
 export default function ViewTodayAppointment() {
   const { id } = useParams<{ id: string }>();

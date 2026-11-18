@@ -21,9 +21,11 @@ import br.org.apae.api.auth.application.interfaces.AuthApplicationService;
 import br.org.apae.api.auth.domain.exceptions.AuthenticationException;
 import br.org.apae.api.auth.domain.exceptions.InvalidPasswordException;
 import br.org.apae.api.auth.domain.exceptions.UserNotFoundException;
+import br.org.apae.api.auth.domain.exceptions.UserWithoutProductAccessException;
 import br.org.apae.api.auth.domain.interfaces.TokenProvider;
 import br.org.apae.api.auth.domain.model.PasswordRecoveryToken;
 import br.org.apae.api.auth.domain.model.User;
+import br.org.apae.api.auth.domain.model.UserRole;
 import br.org.apae.api.auth.domain.repository.PasswordRecoveryTokenRepository;
 import br.org.apae.api.common.dto.auth.request.PasswordRecoveryRequestDTO;
 import br.org.apae.api.common.dto.auth.request.PasswordResetDTO;
@@ -83,11 +85,17 @@ public class AuthApplicationServiceImpl implements AuthApplicationService {
       var authentication = authenticationManager.authenticate(authenticationToken);
 
       UserDetails userDetails = (UserDetails) authentication.getPrincipal();
-      String token = tokenProvider.generateToken((User) userDetails);
+      User authenticatedUser = (User) userDetails;
+      if (authenticatedUser.getRole() == UserRole.GESTAO_ESCOLAR || authenticatedUser.getRole() == UserRole.ATENDIMENTO) {
+        throw new UserWithoutProductAccessException();
+      }
+      String token = tokenProvider.generateToken(authenticatedUser);
 
-      return new TokenResponseDTO(token);
+      return new TokenResponseDTO(token, authenticatedUser.getRole().name());
     } catch (UserNotFoundException | InvalidPasswordException e) {
         throw new InvalidPasswordException();
+    } catch (UserWithoutProductAccessException e) {
+      throw e;
     } catch (Exception e) {
       throw new AuthenticationException();
     }

@@ -7,11 +7,11 @@ export const dynamic = 'force-dynamic';
 
 
 const categoryMap: { [key: string]: string } = {
-  personal: "personal",
+  personal: "personals",
   personals: "personals",
-  medical: "medical",
+  medical: "medicals",
   medicals: "medicals",
-  school: "school",
+  school: "schools",
   schools: "schools",
 };
 
@@ -41,7 +41,7 @@ export async function GET(
 
   try {
     const api = await createBaseApi();
-    const config: any = {};
+    const config: { params?: { year: number } } = {};
     if (year) {
       config.params = { year: parseInt(year) };
     }

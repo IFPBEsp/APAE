@@ -1,11 +1,12 @@
 import { useCallback, useEffect, useState } from "react";
+import { toast } from "react-toastify";
 import type {
   PaginationInfo,
   PatientWithAbsences,
 } from "@/domains/absences/types/absences.types";
 import { DashboardOverview } from "@/domains/dashboard/dashboard.types";
 import { bffFetchJson } from "@/lib/bff-client";
-import { Page } from "@/types/pagination";
+import { Page } from "@/lib/pagination";
 
 export function useAbsencesList() {
   const [searchName, setSearchName] = useState("");
@@ -57,6 +58,7 @@ export function useAbsencesList() {
         }));
       } catch (error) {
         console.error("Error fetching data:", error);
+        toast.error(error instanceof Error ? error.message : "Não foi possível carregar os dados de faltas.");
       } finally {
         setLoading(false);
       }

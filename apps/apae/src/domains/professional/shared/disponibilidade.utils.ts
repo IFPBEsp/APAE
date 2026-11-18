@@ -3,7 +3,7 @@ import {
   AvailabilityType,
   shifts,
   AvailabilityDTO,
-} from "@/types/profissional";
+} from "@/domains/professional/profissional.types";
 
 export function generateAvailabilityMatrix(list: AvailabilityType[]): AvailabilityType[] {
   return daysOfWeek.flatMap((day) =>

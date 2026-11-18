@@ -1,5 +1,5 @@
 import type { TodayAppointment, AppointmentResponseDTO } from '@/domains/appointments/types/appointments.types';
-import { Page } from '@/types/pagination';
+import { Page } from '@/lib/pagination';
 
 import { bffFetchJson } from '@/lib/bff-client';
 import { listTodayAppointment, getAppointments } from '@/domains/appointments/appointments.api';
