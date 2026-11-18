@@ -48,6 +48,9 @@ interface EditPatientData {
   cns?: string;
   nis?: string;
   birthCertificateNumber?: string;
+  registryOffice?: string;
+  book?: string;
+  fls?: string;
   birthDate?: string;
   birthplace?: string;
   nationality?: string;
@@ -106,6 +109,9 @@ function EditPatientDataLoader({ children }: { children: React.ReactNode }) {
               ),
               date: parseCivilDate(data.birthDate) || new Date(),
               place: data.birthplace || data.nationality || "",
+              registryOffice: data.registryOffice || "",
+              book: data.book || "",
+              fls: data.fls || "",
             },
           },
           address: {
