@@ -1,20 +1,85 @@
-name: Docker Build & Publish
+name: Publish images to GHCR
 
 on:
   push:
     branches:
-      - dev
+      - main
   workflow_dispatch:
+  pull_request:
+    branches: [dev, main]
+    paths:
+      - '.github/workflows/ghcr-publish.yml'
 
 permissions:
   contents: read
-  packages: write
-  id-token: write
 
 jobs:
+  validate-frontend:
+    name: Validate frontend before publication
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    defaults:
+      run:
+        working-directory: apps/apae
+    env:
+      CI: 'true'
+      NEXT_TELEMETRY_DISABLED: '1'
+      NEXT_PUBLIC_API_URL: /apae-geral/api
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          persist-credentials: false
+      - name: Set up pnpm
+        uses: pnpm/action-setup@f40ffcd9367d9f12939873eb1018b921a783ffaa # v4
+        with:
+          version: '10.10.0'
+      - name: Set up Node.js
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: '20'
+          cache: pnpm
+          cache-dependency-path: pnpm-lock.yaml
+      - name: Install locked dependencies
+        working-directory: .
+        run: pnpm install --frozen-lockfile
+      - name: Lint frontend
+        run: pnpm exec eslint .
+      - name: Test frontend
+        run: pnpm test
+      - name: Build frontend
+        run: pnpm run build
+      - name: Typecheck frontend
+        run: pnpm exec tsc --noEmit
+
+  validate-backend:
+    name: Validate backend before publication
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          persist-credentials: false
+      - name: Set up Java
+        uses: actions/setup-java@cf277c60eb25467037889841efdb72551f06f6c3 # v4
+        with:
+          java-version: '21'
+          distribution: temurin
+          cache: maven
+          cache-dependency-path: apps/api/pom.xml
+      - name: Test and verify backend
+        working-directory: apps/api
+        run: bash ./mvnw --batch-mode --no-transfer-progress verify
+
   publish-backend:
+    needs: [validate-frontend, validate-backend]
     name: Build & publish backend
-    uses: IFPBEsp/APAE-INFRA/.github/workflows/docker-build-publish-image.yml@dev
+    if: github.ref == 'refs/heads/main' && (github.event_name == 'push' || github.event_name == 'workflow_dispatch')
+    permissions:
+      contents: read
+      packages: write
+      id-token: write
+      attestations: write
+    uses: IFPBEsp/APAE-INFRA/.github/workflows/docker-build-publish-image.yml@main
     with:
       context: ./apps/api
       dockerfile: ./apps/api/Dockerfile
@@ -23,8 +88,15 @@ jobs:
       scan-severity: "HIGH,CRITICAL"
 
   publish-frontend:
+    needs: [validate-frontend, validate-backend]
     name: Build & publish frontend
-    uses: IFPBEsp/APAE-INFRA/.github/workflows/docker-build-publish-image.yml@dev
+    if: github.ref == 'refs/heads/main' && (github.event_name == 'push' || github.event_name == 'workflow_dispatch')
+    permissions:
+      contents: read
+      packages: write
+      id-token: write
+      attestations: write
+    uses: IFPBEsp/APAE-INFRA/.github/workflows/docker-build-publish-image.yml@main
     with:
       context: ./apps/apae
       dockerfile: ./apps/apae/Dockerfile
@@ -33,3 +105,167 @@ jobs:
         NEXT_PUBLIC_API_URL=/apae-geral/api
       platforms: '["linux/amd64"]'
       scan-severity: "HIGH,CRITICAL"
+
+  prepare-release:
+    name: Prepare complete release candidate
+    needs:
+      - publish-backend
+      - publish-frontend
+    if: github.ref == 'refs/heads/main' && (github.event_name == 'push' || github.event_name == 'workflow_dispatch')
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: read
+    steps:
+      - name: Generate and validate release manifest
+        shell: bash
+        env:
+          BACKEND_IMAGE: ${{ needs.publish-backend.outputs.image }}
+          BACKEND_TAG: ${{ needs.publish-backend.outputs.sha-tag }}
+          BACKEND_DIGEST: ${{ needs.publish-backend.outputs.digest }}
+          BACKEND_COMMIT: ${{ needs.publish-backend.outputs.source-commit }}
+          BACKEND_REPOSITORY: ${{ needs.publish-backend.outputs.source-repository }}
+          BACKEND_RUN_URL: ${{ needs.publish-backend.outputs.workflow-run-url }}
+          FRONTEND_IMAGE: ${{ needs.publish-frontend.outputs.image }}
+          FRONTEND_TAG: ${{ needs.publish-frontend.outputs.sha-tag }}
+          FRONTEND_DIGEST: ${{ needs.publish-frontend.outputs.digest }}
+          FRONTEND_COMMIT: ${{ needs.publish-frontend.outputs.source-commit }}
+          FRONTEND_REPOSITORY: ${{ needs.publish-frontend.outputs.source-repository }}
+          FRONTEND_RUN_URL: ${{ needs.publish-frontend.outputs.workflow-run-url }}
+        run: |
+          set -euo pipefail
+
+          expected_run="${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}"
+          expected_tag="sha-${GITHUB_SHA:0:7}"
+
+          [[ "$GITHUB_REPOSITORY" == "IFPBEsp/APAE" ]] || {
+            echo "::error::Repositório de publicação inesperado."
+            exit 1
+          }
+          [[ "$GITHUB_SHA" =~ ^[a-f0-9]{40}$ ]] || {
+            echo "::error::Commit de origem inválido."
+            exit 1
+          }
+
+          for component in BACKEND FRONTEND; do
+            image_var="${component}_IMAGE"
+            tag_var="${component}_TAG"
+            digest_var="${component}_DIGEST"
+            commit_var="${component}_COMMIT"
+            repository_var="${component}_REPOSITORY"
+            run_var="${component}_RUN_URL"
+
+            image="${!image_var}"
+            tag="${!tag_var}"
+            digest="${!digest_var}"
+            commit="${!commit_var}"
+            repository="${!repository_var}"
+            run_url="${!run_var}"
+
+            expected_image="ghcr.io/ifpbesp/apae-geral-${component,,}"
+            if [[ "$image" != "$expected_image" || "$tag" != "$expected_tag" ||
+                  ! "$digest" =~ ^sha256:[a-f0-9]{64}$ ||
+                  "$commit" != "$GITHUB_SHA" ||
+                  "$repository" != "$GITHUB_REPOSITORY" ||
+                  "$run_url" != "$expected_run" ]]; then
+              echo "::error::Outputs da publicação de ${component,,} incompletos ou inconsistentes."
+              exit 1
+            fi
+          done
+
+          jq -n \
+            --arg application "apae-geral" \
+            --arg repository "$GITHUB_REPOSITORY" \
+            --arg commit "$GITHUB_SHA" \
+            --arg run "$expected_run" \
+            --arg backend_image "$BACKEND_IMAGE" \
+            --arg backend_tag "$BACKEND_TAG" \
+            --arg backend_digest "$BACKEND_DIGEST" \
+            --arg frontend_image "$FRONTEND_IMAGE" \
+            --arg frontend_tag "$FRONTEND_TAG" \
+            --arg frontend_digest "$FRONTEND_DIGEST" \
+            '{
+              application: $application,
+              source_repository: $repository,
+              source_commit: $commit,
+              workflow_run: $run,
+              images: {
+                backend: {image: $backend_image, tag: $backend_tag, digest: $backend_digest, workflow_run: $run},
+                frontend: {image: $frontend_image, tag: $frontend_tag, digest: $frontend_digest, workflow_run: $run}
+              }
+            }' > release.json
+
+          jq -e '.images | keys == ["backend", "frontend"]' release.json > /dev/null
+          echo "Release candidata completa preparada para ${GITHUB_SHA}."
+
+      - name: Upload release candidate
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: release-candidate
+          path: release.json
+          if-no-files-found: error
+          retention-days: 30
+
+  notify-release:
+    name: Notify APAE-INFRA - complete release
+    needs: prepare-release
+    if: github.ref == 'refs/heads/main' && (github.event_name == 'push' || github.event_name == 'workflow_dispatch')
+    runs-on: ubuntu-24.04
+    environment: gitops-dispatch
+    permissions:
+      contents: read
+    steps:
+      - name: Download release candidate
+        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4
+        with:
+          name: release-candidate
+          path: .
+
+      - name: Validate downloaded release candidate
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -s release.json
+          jq -e \
+            --arg commit "$GITHUB_SHA" \
+            --arg run "${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}" \
+            '.application == "apae-geral"
+              and .source_repository == "IFPBEsp/APAE"
+              and .source_commit == $commit
+              and .workflow_run == $run
+              and (.images | keys == ["backend", "frontend"])
+              and (.images.backend.digest | test("^sha256:[a-f0-9]{64}$"))
+              and (.images.frontend.digest | test("^sha256:[a-f0-9]{64}$"))' \
+            release.json > /dev/null
+
+      - name: Generate GitOps dispatcher token
+        id: app-token
+        uses: actions/create-github-app-token@64ab729a6294000f5aa4a4bc0b73d1f32bc45510 # v3
+        with:
+          app-id: ${{ vars.GITOPS_DISPATCH_APP_ID }}
+          private-key: ${{ secrets.GITOPS_DISPATCH_APP_PRIVATE_KEY }}
+          owner: IFPBEsp
+          repositories: APAE-INFRA
+          permission-contents: write
+
+      - name: Send complete GitOps release
+        shell: bash
+        env:
+          GH_TOKEN: ${{ steps.app-token.outputs.token }}
+        run: |
+          set -euo pipefail
+          [[ -n "$GH_TOKEN" ]] || {
+            echo "::error::Token de instalação do GitHub App não disponível."
+            exit 1
+          }
+
+          jq -n --slurpfile release release.json '{
+            event_type: "gitops-release-published",
+            client_payload: $release[0]
+          }' > "$RUNNER_TEMP/gitops-dispatch.json"
+
+          gh api \
+            --method POST \
+            repos/IFPBEsp/APAE-INFRA/dispatches \
+            --input "$RUNNER_TEMP/gitops-dispatch.json"
+
+          echo "Evento gitops-release-published enviado ao APAE-INFRA."
