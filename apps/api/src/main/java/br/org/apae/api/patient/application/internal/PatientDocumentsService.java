@@ -114,7 +114,7 @@ class PatientDocumentsService {
 
     public String getPatientPhoto(UUID patientId) {
         try {
-            Iterable<DocumentDTO> document = this.documentService.listDocuments(
+            Iterable<DocumentDTO> documents = this.documentService.listDocuments(
                     ListDocumentsArgsDTO.builder()
                             .owner(patientId.toString())
                             .category(DocumentCategory.PERSONAL)
@@ -123,10 +123,19 @@ class PatientDocumentsService {
                             .build()
             );
 
+            var iterator = documents.iterator();
+
+            if (!iterator.hasNext()) {
+                return null;
+            }
+
+            DocumentDTO photo = iterator.next();
+
+
             return this.documentService.getPresignedDocumentUrl(
                     GetPresignedDocumentUrlArgsDTO.builder()
                             .owner(patientId.toString())
-                            .name(document.iterator().next().name())
+                            .name(photo.name())
                             .expiry(1, TimeUnit.HOURS)
                             .build()
             );

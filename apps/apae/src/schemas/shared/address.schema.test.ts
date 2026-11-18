@@ -17,6 +17,9 @@ describe("addressSchema", () => {
       "Rua 7 de Setembro",
       "Av. Epitácio Pessoa",
       "Rua D'Ávila, Lote 2 - Centro",
+      "Rua Pe. Ibiapina (Loteamento)",
+      "Rua José Américo nº 5",
+      "Rua 1ª Travessa do Sol",
     ])("aceita rua válida: %s", (street) => {
       const result = addressSchema.safeParse({ ...validAddress, street });
       expect(result.success).toBe(true);
@@ -89,7 +92,13 @@ describe("addressSchema", () => {
   });
 
   describe("cidade (city)", () => {
-    it.each(["Esperança", "Olho d'Água", "Pau dos Ferros", "São João do Rio do Peixe"])(
+    it.each([
+      "Esperança",
+      "Olho d'Água",
+      "Olho d’Água",
+      "Pau dos Ferros",
+      "São João do Rio do Peixe",
+    ])(
       "aceita cidade válida: %s",
       (city) => {
         const result = addressSchema.safeParse({ ...validAddress, city });
@@ -107,7 +116,14 @@ describe("addressSchema", () => {
   });
 
   describe("bairro (neighborhood)", () => {
-    it.each(["Centro", "Conjunto D'Ávila 2", "Setor Sul - Etapa 1"])(
+    it.each([
+      "Centro",
+      "Conjunto D'Ávila 2",
+      "Setor Sul - Etapa 1",
+      "Jd. Cidade Universitária",
+      "Conj. Hab. Ernani Sátiro",
+      "Bairro d’Água (Zona Rural)",
+    ])(
       "aceita bairro válido: %s",
       (neighborhood) => {
         const result = addressSchema.safeParse({

@@ -23,7 +23,8 @@ class AddressDtoValidationTest {
     }
 
     @ParameterizedTest
-    @ValueSource(strings = {"Rua 7 de Setembro", "Av. Epitácio Pessoa", "Rua D'Ávila, Lote 2 - Centro"})
+    @ValueSource(strings = {"Rua 7 de Setembro", "Av. Epitácio Pessoa", "Rua D'Ávila, Lote 2 - Centro",
+            "Rua Pe. Ibiapina (Loteamento)", "Rua José Américo nº 5", "Rua 1ª Travessa do Sol"})
     @DisplayName("CreateAddressDTO e UpdateAddressDTO devem aceitar ruas válidas")
     void shouldAcceptValidStreets(String street) {
         var createDto = new CreateAddressDTO("Esperança", "58135-000", "PB", "Centro", street, "100", "Casa");
@@ -45,11 +46,22 @@ class AddressDtoValidationTest {
     }
 
     @ParameterizedTest
-    @ValueSource(strings = {"Olho d'Água", "Pau dos Ferros", "Esperança"})
+    @ValueSource(strings = {"Olho d'Água", "Olho d’Água", "Pau dos Ferros", "Esperança"})
     @DisplayName("CreateAddressDTO e UpdateAddressDTO devem aceitar cidades válidas")
     void shouldAcceptValidCities(String city) {
         var createDto = new CreateAddressDTO(city, "58135-000", "PB", "Centro", "Rua A", "12A", null);
         var updateDto = new UpdateAddressDTO(city, "58135-000", "PB", "Centro", "Rua A", "12A", null);
+
+        assertTrue(validator.validate(createDto).isEmpty());
+        assertTrue(validator.validate(updateDto).isEmpty());
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = {"Jd. Cidade Universitária", "Conj. Hab. Ernani Sátiro", "Bairro d’Água (Zona Rural)"})
+    @DisplayName("CreateAddressDTO e UpdateAddressDTO devem aceitar bairros com abreviações e símbolos")
+    void shouldAcceptValidNeighborhoods(String neighborhood) {
+        var createDto = new CreateAddressDTO("Esperança", "58135-000", "PB", neighborhood, "Rua A", "100", null);
+        var updateDto = new UpdateAddressDTO("Esperança", "58135-000", "PB", neighborhood, "Rua A", "100", null);
 
         assertTrue(validator.validate(createDto).isEmpty());
         assertTrue(validator.validate(updateDto).isEmpty());
@@ -78,5 +90,19 @@ class AddressDtoValidationTest {
         var invalidComplementUpdate = new UpdateAddressDTO("Esperança", "58135-000", "PB", "Centro", "Rua A", "100", "Apto @ 10");
         assertFalse(validator.validate(invalidComplementCreate).isEmpty());
         assertFalse(validator.validate(invalidComplementUpdate).isEmpty());
+    }
+
+    @Test
+    @DisplayName("CreateAddressDTO e UpdateAddressDTO devem rejeitar bairro e rua com @")
+    void shouldRejectInvalidNeighborhoodAndStreet() {
+        var invalidNeighborhoodCreate = new CreateAddressDTO("Esperança", "58135-000", "PB", "Bairro @ Centro", "Rua A", "100", null);
+        var invalidNeighborhoodUpdate = new UpdateAddressDTO("Esperança", "58135-000", "PB", "Bairro @ Centro", "Rua A", "100", null);
+        assertFalse(validator.validate(invalidNeighborhoodCreate).isEmpty());
+        assertFalse(validator.validate(invalidNeighborhoodUpdate).isEmpty());
+
+        var invalidStreetCreate = new CreateAddressDTO("Esperança", "58135-000", "PB", "Centro", "Rua @ Inválida", "100", null);
+        var invalidStreetUpdate = new UpdateAddressDTO("Esperança", "58135-000", "PB", "Centro", "Rua @ Inválida", "100", null);
+        assertFalse(validator.validate(invalidStreetCreate).isEmpty());
+        assertFalse(validator.validate(invalidStreetUpdate).isEmpty());
     }
 }

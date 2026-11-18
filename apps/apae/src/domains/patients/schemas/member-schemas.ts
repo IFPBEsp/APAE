@@ -98,13 +98,10 @@ export const Personal = z
       issuing: z.object({
         body: z
           .string()
-          .max(10, "Órgão emissor muito longo")
-          .refine((value) => value === "" || value.length >= 2, {
-            message: "Órgão emissor inválido",
-          })
+          .max(13, "Órgão emissor muito longo")
           .refine(
-            (value) => value === "" || /^[A-Z]{2,4}\/[A-Z]{2}$/.test(value),
-            "Formato inválido. Use SSP/UF, PC/UF, etc.",
+            (value) => value === "" || /^[A-Z]{2,10}\/[A-Z]{2}$/.test(value),
+            "Formato inválido. Use SSP/UF, DETRAN/RJ, etc.",
           ),
         date: optionalCivilDateSchema,
       }),

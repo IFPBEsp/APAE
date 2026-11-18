@@ -7,7 +7,7 @@ import jakarta.validation.constraints.Size;
 public record CreateAddressDTO(
         @NotBlank(message = "A cidade não pode estar em branco")
         @Size(min = 2, max = 60, message = "A cidade deve ter entre 2 e 60 caracteres")
-        @Pattern(regexp = "^[A-Za-zÀ-ÖØ-öø-ÿ\\s'-]+$", message = "A cidade deve conter apenas letras, espaços, apóstrofo ou hífen")
+        @Pattern(regexp = "^[\\p{L}\\s'’-]+$", message = "A cidade contém caracteres inválidos")
         String city,
 
         @NotBlank(message = "O CEP não pode estar em branco")
@@ -20,12 +20,12 @@ public record CreateAddressDTO(
 
         @NotBlank(message = "O bairro não pode estar em branco")
         @Size(min = 2, max = 60, message = "O bairro deve ter entre 2 e 60 caracteres")
-        @Pattern(regexp = "^[A-Za-zÀ-ÖØ-öø-ÿ0-9\\s'-]+$", message = "O bairro deve conter apenas letras, números e espaços")
+        @Pattern(regexp = "^[\\p{L}0-9\\s'’.,()-]+$", message = "O bairro contém caracteres inválidos")
         String neighborhood,
 
         @NotBlank(message = "A rua não pode estar em branco")
         @Size(min = 2, max = 80, message = "A rua deve ter entre 2 e 80 caracteres")
-        @Pattern(regexp = "^[A-Za-zÀ-ÖØ-öø-ÿ0-9\\s'.,-]+$", message = "A rua deve conter apenas letras, números e espaços")
+        @Pattern(regexp = "^[\\p{L}0-9\\s'’.,()ºª°/#-]+$", message = "A rua contém caracteres inválidos")
         String street,
 
         @NotBlank(message = "O número não pode estar em branco")

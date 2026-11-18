@@ -2,9 +2,9 @@ import * as z from "zod";
 import { STATES } from "@/lib/states";
 
 export const cepRegex = /^\d{5}-\d{3}$/;
-export const cityRegex = /^[A-Za-zÀ-ÖØ-öø-ÿ\s'-]+$/;
-export const neighborhoodRegex = /^[A-Za-zÀ-ÖØ-öø-ÿ0-9\s'-]+$/;
-export const streetRegex = /^[A-Za-zÀ-ÖØ-öø-ÿ0-9\s'.,-]+$/;
+export const cityRegex = /^[\p{L}\s'’-]+$/u;
+export const neighborhoodRegex = /^[\p{L}0-9\s'’.,()-]+$/u;
+export const streetRegex = /^[\p{L}0-9\s'’.,()ºª°/#-]+$/u;
 export const numberRegex = /^[0-9A-Za-z/-]{1,10}$/;
 export const complementRegex = /^[A-Za-zÀ-ÖØ-öø-ÿ0-9\s'°º.,/#()-]*$/;
 
@@ -30,7 +30,7 @@ export const addressSchema = z.object({
     .max(60, "O bairro deve ter entre 2 e 60 caracteres")
     .regex(
       neighborhoodRegex,
-      "O bairro deve conter apenas letras, números e espaços",
+      "O bairro contém caracteres inválidos",
     ),
   street: z
     .string()
@@ -38,7 +38,7 @@ export const addressSchema = z.object({
     .max(80, "A rua deve ter entre 2 e 80 caracteres")
     .regex(
       streetRegex,
-      "A rua deve conter apenas letras, números e espaços",
+      "A rua contém caracteres inválidos",
     ),
   noNumber: z.boolean().optional(),
   number: z
