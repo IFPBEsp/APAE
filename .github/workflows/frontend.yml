@@ -1,41 +1,15 @@
-name: CI Front-end
+name: Teste CI Reutilizável APAE
 
 on:
-  pull_request:
+  push:
     branches:
-      - dev
-      - main
-    paths:
-      - "apps/apae/**"
+      - teste-novo-ci
 
 jobs:
-  build:
-    name: Build do projeto Front-end
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Baixar repositório
-        uses: actions/checkout@v4
-
-      - name: Instalar PNPM
-        uses: pnpm/action-setup@v4
-
-      - name: Instalar Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: 22
-          cache: pnpm
-
-      - name: Instalar dependências
-        working-directory: ./apps/apae
-        run: pnpm install --frozen-lockfile
-
-      - name: Construir aplicação
-        working-directory: ./apps/apae
-        run: pnpm run build
-
-      - name: Salvar artefato de build
-        uses: actions/upload-artifact@v4
-        with:
-          name: frontend-build
-          path: apps/apae/.next
+  frontend-ci:
+    uses: IFPBEsp/APAE-INFRA/.github/workflows/frontend-ci.yml@67-ci-criar-workflow-reutilizavel-de-ci-para-frontends-nodejs
+    with:
+      working-directory: 'apps/apae'
+      run-lint: false
+      run-tests: true
+      run-build: true
