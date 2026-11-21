@@ -26,7 +26,7 @@ jobs:
     name: Build & publish frontend
     uses: IFPBEsp/APAE-INFRA/.github/workflows/docker-build-publish-image.yml@dev
     with:
-      context: ./apps/apae
+      context: .
       dockerfile: ./apps/apae/Dockerfile
       image-name: apae-geral-frontend
       build-args: |
