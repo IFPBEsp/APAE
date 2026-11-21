@@ -1,6 +1,8 @@
 services:
   sonarqube:
-    image: mc1arke/sonarqube-with-community-branch-plugin:26.3.0.120487-community
+    build:
+      context: ./docker/sonarqube
+    image: apae-sonarqube:26.3.0.120487-community
     container_name: apae-sonarqube
     ports:
       - "${SONAR_PORT:-9500}:9000"
