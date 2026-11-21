@@ -35,6 +35,8 @@ docker compose -f docker-compose.sonar.yml up
 
 *(Rodar sem a flag `-d` fará com que você veja os logs em tempo real).*
 
+Na primeira execução, o compose monta a imagem do servidor a partir de [`docker/sonarqube/Dockerfile`](../../docker/sonarqube/Dockerfile) (seção 9), o que exige acesso à internet para baixar o plugin do GitHub. Nas próximas, ele reaproveita a imagem já montada. Se o Dockerfile mudar, rode `docker compose -f docker-compose.sonar.yml up --build`.
+
 > ⚠️ **Aviso sobre containers órfãos:** Durante a inicialização, o Docker pode exibir o alerta `Found orphan containers ([minio_docs_apae apae-postgres])` e sugerir a flag `--remove-orphans`. **Não utilize essa flag**, pois ela derrubaria os containers de banco de dados e armazenamento do compose principal do projeto.
 
 **Aguardando o servidor:** No log, a mensagem `Web Server is operational` aparecerá primeiro, mas você deve aguardar até que a mensagem final **`SonarQube is operational`** seja exibida.
@@ -175,12 +177,37 @@ A edição Community analisa um único branch por projeto e não analisa pull re
 
 | Item | Versão |
 |---|---|
-| Imagem | `mc1arke/sonarqube-with-community-branch-plugin:26.3.0.120487-community` |
-| Servidor | 26.3.0.120487 |
-| Plugin | 26.3.0 |
+| Imagem base (oficial) | `sonarqube:26.3.0.120487-community`, fixada pelo digest |
+| Plugin | 26.3.0, da [release no GitHub](https://github.com/mc1arke/sonarqube-community-branch-plugin/releases/tag/26.3.0) |
+| Imagem gerada | `apae-sonarqube:26.3.0.120487-community` (local) |
 
-* A imagem já traz o jar do plugin e o `-javaagent`. Por isso o compose **não monta volume em `/opt/sonarqube/extensions`**: um volume existente esconderia o jar, e o servidor não subiria.
-* ⚠️ **Restrição de atualização:** o plugin acompanha a versão do servidor. Só dá para atualizar o SonarQube para uma versão que tenha imagem do plugin (a última é a 26.5.0, de junho de 2026). Confira as [tags](https://hub.docker.com/r/mc1arke/sonarqube-with-community-branch-plugin/tags) antes de trocar.
+A imagem é montada no próprio repositório, em [`docker/sonarqube/Dockerfile`](../../docker/sonarqube/Dockerfile), em vez de usar a imagem pronta de terceiro `mc1arke/sonarqube-with-community-branch-plugin`. Não existe imagem oficial com análise de branch e PR, porque a SonarSource só oferece esse recurso nas edições pagas. Assim, a base vem da SonarSource e só o plugin vem do mc1arke. O Dockerfile:
+
+1. Parte da imagem oficial, fixada pelo digest: mesmo que a tag seja republicada, o build usa exatamente a mesma imagem.
+2. Baixa da release do GitHub dois arquivos: o jar do plugin e o `sonarqube-webapp.zip`. Com `ADD --checksum`, **o build falha (`digest mismatch`) se o SHA-256 não for o publicado na release**.
+3. Troca a interface web pela do zip. A interface da edição Community vem compilada sem as telas de branch e PR (seletor de branch, aba **Pull Requests**). Só com o jar, as análises seriam aceitas, mas não apareceriam no painel.
+4. Define o `-javaagent` do plugin no servidor web e no Compute Engine.
+
+* O compose **não monta volume em `/opt/sonarqube/extensions`**: um volume existente esconderia o jar, e o servidor não subiria.
+* `ADD --checksum` exige Docker com BuildKit e Dockerfile frontend 1.6 ou mais novo (Docker 25 em diante). Testado no Docker 29.8.
+* ⚠️ **Restrição de atualização:** o plugin acompanha a versão do servidor (plugin `26.X.0` para o SonarQube `26.X.*`). Só dá para atualizar o SonarQube para uma versão que tenha [release do plugin](https://github.com/mc1arke/sonarqube-community-branch-plugin/releases).
+
+**Como atualizar a versão:**
+
+1. Troque no Dockerfile `SONARQUBE_VERSION` e `PLUGIN_VERSION`.
+2. Pegue o digest da nova imagem base:
+   ```
+   docker pull sonarqube:<versão>-community
+   docker image inspect sonarqube:<versão>-community --format '{{index .RepoDigests 0}}'
+   ```
+   e coloque em `SONARQUBE_DIGEST`.
+3. Pegue os checksums dos dois arquivos da release e substitua nos dois `--checksum`:
+   ```
+   gh release view <versão-do-plugin> -R mc1arke/sonarqube-community-branch-plugin \
+     --json assets --jq '.assets[] | "\(.name) \(.digest)"'
+   ```
+   Sem o `gh`, o SHA-256 aparece na página da release, ao lado de cada arquivo.
+4. Troque a tag em `image:` no `docker-compose.sonar.yml` e rode `docker compose -f docker-compose.sonar.yml up --build`.
 
 ### Configurar
 
@@ -439,6 +466,16 @@ Teste feito no servidor local, com o projeto `apae-geral-frontend`: a base `dev`
 | Código novo calculado contra a `dev` | ✅ 4 linhas novas e só a issue introduzida pelo PR |
 | Gate reprovado trava a análise | ✅ `QUALITY GATE STATUS: FAILED` e saída 3, que deixa o job vermelho |
 | Link da análise devolvido | ✅ `.../dashboard?id=apae-geral-frontend&pullRequest=9001` |
+
+Teste da imagem montada pelo repositório:
+
+| Verificação | Resultado |
+|---|---|
+| Build sem cache, com os checksums da release | ✅ |
+| Build com um checksum adulterado | ✅ Falha com `digest mismatch` |
+| Arquivos iguais aos da imagem `mc1arke/...:26.3.0.120487-community` | ✅ Jar e interface web idênticos (SHA-256), mesmo `-javaagent` |
+| Plugin carregado no servidor web e no Compute Engine | ✅ `Expected agent runtime modifications detected` para `SERVER` e `COMPUTE_ENGINE` |
+| Análise da `dev` e de PR, com a branch e o PR visíveis no painel | ✅ |
 
 > O *Sonar way* também exige 80% de cobertura no código novo. No teste, essa condição foi ignorada porque o PR tinha menos de 20 linhas novas. Em PRs maiores, a cobertura atual de 0% do front-end reprova o gate. As condições ficam para as issues de quality gate.
 
