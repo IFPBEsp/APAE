@@ -18,4 +18,4 @@ jobs:
     uses: IFPBEsp/APAE-INFRA/.github/workflows/stale-branches-reusable.yml@dev
     with:
       protected-branches: "main,dev"
-      dry-run: ${{ inputs.dry-run != false }}
+      dry-run: ${{ github.event_name != 'workflow_dispatch' || inputs.dry-run }}
