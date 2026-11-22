@@ -1,10 +1,13 @@
 package br.org.apae.api.patient.domain.repository;
 
 import br.org.apae.api.appointment.domain.model.Absence;
+import br.org.apae.api.common.util.LikePattern;
 import br.org.apae.api.patient.domain.model.AnnualRegistry;
 import br.org.apae.api.patient.domain.model.Disorder;
 import br.org.apae.api.patient.domain.model.Patient;
 import br.org.apae.api.servicearea.domain.model.ServiceArea;
+import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.Expression;
 import jakarta.persistence.criteria.Join;
 import jakarta.persistence.criteria.Predicate;
 import jakarta.persistence.criteria.Root;
@@ -28,11 +31,11 @@ public class PatientSpecification {
                 if (value != null && !value.isBlank()) {
                     switch (key) {
                         case "name":
-                            predicates.add(criteriaBuilder.like(criteriaBuilder.lower(root.get("fullName")), "%" + value.toLowerCase() + "%"));
+                            predicates.add(containsIgnoreCase(criteriaBuilder, root.get("fullName"), value));
                             break;
 
                         case "city":
-                            predicates.add(criteriaBuilder.like(criteriaBuilder.lower(root.get("address").get("city")), "%" + value.toLowerCase() + "%"));
+                            predicates.add(containsIgnoreCase(criteriaBuilder, root.get("address").get("city"), value));
                             break;
                         case "year":
                             try {
@@ -57,7 +60,7 @@ public class PatientSpecification {
                             Join<AnnualRegistry, Disorder> disorderJoin = transtornoRoot.join("disorders");
                             transtornoSubQuery.select(transtornoRoot.get(PATIENT_ID))
                                     .where(
-                                            criteriaBuilder.like(criteriaBuilder.lower(disorderJoin.get("name")), "%" + value.toLowerCase() + "%")
+                                            containsIgnoreCase(criteriaBuilder, disorderJoin.get("name"), value)
                                     );
                             predicates.add(root.get("id").in(transtornoSubQuery));
                             break;
@@ -67,9 +70,7 @@ public class PatientSpecification {
                             Root<AnnualRegistry> tipoRoot = tipoSubQuery.from(AnnualRegistry.class);
                             Join<AnnualRegistry, ServiceArea> serviceAreaJoin = tipoRoot.join("serviceAreas");
                             tipoSubQuery.select(tipoRoot.get(PATIENT_ID))
-                                    .where(criteriaBuilder.like(
-                                            criteriaBuilder.lower(serviceAreaJoin.get("area")),
-                                            "%" + value.toLowerCase() + "%"));
+                                    .where(containsIgnoreCase(criteriaBuilder, serviceAreaJoin.get("area"), value));
 
                             predicates.add(root.get("id").in(tipoSubQuery));
                             break;
@@ -103,5 +104,13 @@ public class PatientSpecification {
 
             return criteriaBuilder.and(predicates.toArray(new Predicate[0]));
         };
+    }
+
+    private static Predicate containsIgnoreCase(CriteriaBuilder criteriaBuilder, Expression<String> expression, String value) {
+        return criteriaBuilder.like(
+                criteriaBuilder.lower(expression),
+                LikePattern.contains(value.toLowerCase()),
+                LikePattern.ESCAPE_CHARACTER
+        );
     }
 }
