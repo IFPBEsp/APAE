@@ -56,6 +56,7 @@ public class PatientDocumentsControllerImpl implements PatientDocumentsControlle
                     .year(docYear)
                     .contentType(file.getContentType())
                     .stream(file.getInputStream())
+                    .size(file.getSize())
                     .build();
 
             DocumentDTO documentDTO = this.documentService.putDocument(args);
@@ -116,6 +117,7 @@ public class PatientDocumentsControllerImpl implements PatientDocumentsControlle
                             .year(target.year())
                             .contentType(file.getContentType())
                             .stream(file.getInputStream())
+                            .size(file.getSize())
                             .build()
             );
 
