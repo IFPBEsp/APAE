@@ -220,6 +220,7 @@ public class HealthProfessionalApplicationServiceImpl implements HealthProfessio
             DocumentDTO document = documentService.putDocument(
                 PutDocumentArgsDTO.builder()
                     .stream(file.getInputStream())
+                    .size(file.getSize())
                     .category(DocumentCategory.PROFESSIONAL)
                     .type(DocumentType.PHOTO)
                     .contentType(file.getContentType())
