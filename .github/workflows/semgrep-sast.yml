@@ -1,0 +1,30 @@
+name: SAST (Semgrep)
+
+on:
+  pull_request:
+    branches: [ "main", "dev", "develop" ]
+    paths:
+      - "**.java"
+      - "**.ts"
+      - "**.tsx"
+      - "**.js"
+      - "**.jsx"
+      - ".github/workflows/semgrep-sast.yml"
+
+permissions:
+  contents: read
+  security-events: write
+
+jobs:
+  sast:
+    name: Semgrep SAST
+    uses: IFPBEsp/APAE-INFRA/.github/workflows/sast-semgrep.yml@1e95556a18e02358b0dc767d2281ff8fca5e49bf
+    with:
+      rulesets: |
+        p/security-audit
+        p/owasp-top-ten
+        p/java
+        p/typescript
+        p/react
+      diff-aware: true
+      fail-severity: "ERROR"
