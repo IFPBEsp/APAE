@@ -1,0 +1,1 @@
+DROP TABLE flyway_destructive_test;
