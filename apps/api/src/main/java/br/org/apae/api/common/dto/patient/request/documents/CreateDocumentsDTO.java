@@ -15,6 +15,5 @@ public record CreateDocumentsDTO(
                 @ValidFileSize @ValidFileFormat MultipartFile proof_of_address,
                 @ValidFileSize @ValidFileFormat MultipartFile birth_certificate,
                 @ValidFileSize @ValidImageFormat MultipartFile photo,
-                @NotEmptyFiles @ValidFileSize @ValidFileFormat List<MultipartFile> reports,
-                @NotEmptyFiles @ValidFileSize @ValidFileFormat List<MultipartFile> referrals) {
+                @NotEmptyFiles @ValidFileSize @ValidFileFormat List<MultipartFile> reports) {
 }

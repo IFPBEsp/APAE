@@ -106,7 +106,7 @@ export const initialState: MembersRegisterState = {
     vaccines: [],
     allergies: "",
     disability: { types: [], report: undefined },
-    care: { types: [], referral: undefined },
+    care: { types: [] },
     bpc: false,
     householdIncome: "",
   },
