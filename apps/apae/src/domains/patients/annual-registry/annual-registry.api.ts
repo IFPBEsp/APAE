@@ -16,7 +16,7 @@ export async function fetchDocumentsApi(patientId: string, year: string): Promis
 
 export async function fetchPatientApi(patientId: string): Promise<FullPatientData | null> {
   try {
-    return await bffFetchJson<FullPatientData>(`${BASE_URL}/${patientId}`);
+    return await bffFetchJson<FullPatientData>(`${BASE_URL}/${patientId}`, { cache: "no-store" });
   } catch (error) {
     console.error("[fetchPatientApi] Erro ao buscar paciente:", error);
     return null;
