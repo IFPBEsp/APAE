@@ -70,7 +70,7 @@ export default function AnnualRegistryEditModal({
                     <FormField control={form.control} name="year" render={({ field }) => (
                       <FormItem>
                         <FormLabel className={`font-bold text-xs ${errors.year ? "text-red-500" : "text-slate-700"}`}>Ano de Referência</FormLabel>
-                        <Select onValueChange={field.onChange} defaultValue={field.value}>
+                        <Select onValueChange={field.onChange} value={field.value}>
                           <FormControl>
                             <SelectTrigger className={`bg-slate-50 h-10 text-sm ${errors.year ? "border-red-500 ring-red-500" : "border-slate-200"}`}>
                               <SelectValue placeholder="Selecione o ano" />
