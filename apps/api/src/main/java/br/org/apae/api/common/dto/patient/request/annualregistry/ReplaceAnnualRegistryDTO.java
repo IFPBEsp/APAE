@@ -1,12 +1,13 @@
 package br.org.apae.api.common.dto.patient.request.annualregistry;
 
+import java.math.BigDecimal;
+import java.util.Set;
+
 import br.org.apae.api.common.dto.patient.request.disorder.CreateDisorderDTO;
 import br.org.apae.api.common.dto.servicearea.request.CreateServiceAreaDTO;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 import jakarta.validation.constraints.Size;
-import java.math.BigDecimal;
-import java.util.Set;
 
 public record ReplaceAnnualRegistryDTO(
         @NotNull @Size(min = 1, max = 50)
@@ -18,7 +19,7 @@ public record ReplaceAnnualRegistryDTO(
         @NotNull @Positive
         BigDecimal familyIncome,
 
-        @NotNull
+       
         String continuousMedication,
 
         @NotNull
