@@ -37,11 +37,6 @@ export interface AnnualRegistry {
 export interface FullPatientData {
   vaccineNames?: { name: string }[] | string[];
   allergies?: string;
-  additionals?: {
-    medications?: string;
-    diseases?: string;
-    [key: string]: unknown;
-  };
   address?: Record<string, string | null | undefined>;
   guardian?: Record<string, string | Record<string, string> | null | undefined>;
   parents?: Array<Record<string, string | boolean>>;
