@@ -8,6 +8,7 @@ import { annualRegistryFormSchema, type AnnualRegistryFormValues } from "./annua
 import {
   fetchDocumentsApi,
   fetchPatientApi,
+  fetchLatestAnnualRegistryApi,
   uploadDocumentApi,
   createAnnualRegistryApi,
   updateAnnualRegistryApi,
@@ -96,11 +97,14 @@ export function useAnnualRegistryModal({
   onClose,
 }: UseAnnualRegistryModalParams) {
   const [documents, setDocuments] = useState<DocumentDTO[]>([]);
+  const [isInitialDataLoaded, setIsInitialDataLoaded] = useState(false);
   const [isLoadingDocs, setIsLoadingDocs] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
   const [docType, setDocType] = useState("MEDICAL_REPORT");
   const [fullPatientData, setFullPatientData] = useState<FullPatientData | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const isLoadingInitialData = isOpen && !isInitialDataLoaded;
 
   const form = useForm<AnnualRegistryFormValues>({
     resolver: zodResolver(annualRegistryFormSchema),
@@ -118,6 +122,8 @@ export function useAnnualRegistryModal({
     },
   });
 
+  const { reset } = form;
+
   const loadDocuments = useCallback(async () => {
     setIsLoadingDocs(true);
     try {
@@ -130,28 +136,50 @@ export function useAnnualRegistryModal({
     }
   }, [patientId, currentYear]);
 
-  const loadPatientData = async () => {
-    const data = await fetchPatientApi(patientId);
-    if (data) setFullPatientData(data);
-  };
-
   useEffect(() => {
-    if (isOpen && patientId) {
-      if (mode === "edit") loadDocuments();
-      else setDocuments([]);
-      loadPatientData();
+    if (!isOpen || !patientId) {
+      setIsInitialDataLoaded(false);
+      setFullPatientData(null);
+      return;
     }
-  }, [isOpen, patientId, mode]);
 
-  useEffect(() => {
-    if (!isOpen) return;
+    let isCancelled = false;
+    setIsInitialDataLoaded(false);
 
-    if (mode === "edit" && initialData) {
-      form.reset(mapRegistryToFormValues(currentYear, initialData, fullPatientData));
-    } else if (mode === "create") {
-      form.reset(mapRegistryToFormValues(currentYearInt.toString(), null, fullPatientData));
+    if (mode === "edit") {
+      loadDocuments();
+    } else {
+      setDocuments([]);
     }
-  }, [initialData, fullPatientData, isOpen, mode, currentYear, form]);
+
+    const loadInitialData = async () => {
+      try {
+        const [patientData, latestRegistry] = await Promise.all([
+          fetchPatientApi(patientId),
+          mode === "create" ? fetchLatestAnnualRegistryApi(patientId) : Promise.resolve(null),
+        ]);
+
+        if (isCancelled) return;
+
+        setFullPatientData(patientData);
+
+        const registrySource = mode === "edit" ? initialData : latestRegistry;
+        const targetYear = mode === "create" ? currentYearInt.toString() : currentYear;
+
+        reset(mapRegistryToFormValues(targetYear, registrySource, patientData));
+      } finally {
+        if (!isCancelled) {
+          setIsInitialDataLoaded(true);
+        }
+      }
+    };
+
+    loadInitialData();
+
+    return () => {
+      isCancelled = true;
+    };
+  }, [isOpen, patientId, mode, currentYear, initialData, loadDocuments, reset]);
 
   const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -185,6 +213,7 @@ export function useAnnualRegistryModal({
   };
 
   const onSubmit = async (data: AnnualRegistryFormValues) => {
+    if (isLoadingInitialData) return;
     toast.dismiss();
     try {
       const registryId = initialData?.id;
@@ -248,6 +277,7 @@ export function useAnnualRegistryModal({
   return {
     form,
     documents,
+    isLoadingInitialData,
     isLoadingDocs,
     isUploading,
     docType,
