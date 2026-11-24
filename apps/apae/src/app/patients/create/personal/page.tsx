@@ -401,7 +401,7 @@ export default function MembersRegisterPersonalPage() {
             name="phone"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Telefone *</FormLabel>
+                <FormLabel>Telefone</FormLabel>
                 <FormControl>
                   <Input
                     placeholder="(00) 00000-0000"

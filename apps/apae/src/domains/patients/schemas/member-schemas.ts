@@ -92,7 +92,13 @@ export const Personal = z
   .object({
     name: nomeCompletoSchema,
     cpf: cpfSchema,
-    phone: telefoneSchema,
+    phone: z
+      .string()
+      .optional()
+      .refine(
+        (value) => !value || telefoneSchema.safeParse(value).success,
+        "Número de telefone inválido",
+      ),
     rg: z.object({
       number: OptionalRG,
       issuing: z.object({

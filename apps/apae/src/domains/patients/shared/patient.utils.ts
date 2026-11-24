@@ -60,7 +60,7 @@ export function buildPatientPayload(
     fullName: personal.name || "Não informado",
     nationality: personal.birth.place || "Brasileiro",
     birthDate: serializeCivilDate(personal.birth.date),
-    contact: personal.phone || "Não informado",
+    contact: personal.phone || null,
     birthCertificateNumber: personal.birth.certificate,
     registryOffice: personal.birth.registryOffice?.trim() || null,
     fls: personal.birth.fls?.trim() || null,

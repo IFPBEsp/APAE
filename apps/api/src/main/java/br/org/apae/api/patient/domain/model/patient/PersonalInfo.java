@@ -18,13 +18,12 @@ public class PersonalInfo {
     requireNonNullOrEmpty(fullName, "Nome completo");
     requireNonNullOrEmpty(birthplace, "Naturalidade");
     requireNonNull(birthDate, "Data de nascimento");
-    requireNonNullOrEmpty(contact, "Contato");
     requireNonNullOrEmpty(allergies, "Alergias");
 
     this.fullName = fullName;
     this.birthplace = birthplace;
     this.birthDate = birthDate;
-    this.contact = contact;
+    this.contact = (contact == null || contact.isBlank()) ? null : contact;
     this.allergies = allergies;
     this.isStudent = isStudent;
   }
