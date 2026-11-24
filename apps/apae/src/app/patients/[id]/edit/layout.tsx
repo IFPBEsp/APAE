@@ -57,12 +57,6 @@ interface EditPatientData {
   allergies?: string;
   isStudent?: boolean;
   address?: EditPatientAddress;
-  annualRegistry?: {
-    diseases?: string;
-    continuousMedication?: string;
-    bpc?: boolean;
-    familyIncome?: number;
-  };
   vaccineNames?: { name?: string }[];
   guardian?: {
     name?: string;
