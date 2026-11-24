@@ -40,7 +40,7 @@ export interface AddressData {
 export interface AdditionalsData {
   id?: string;
   diseases: string;
-  medications: string;
+  medications: string | null;
   vaccines: string[];
   allergies: string;
   disability: { types: string[]; report: File | string | undefined };

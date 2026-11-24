@@ -36,7 +36,7 @@ export interface PatientParent extends PatientParentPayload {
 export interface PatientAnnualRegistry {
   bpc: boolean;
   diseases: string;
-  continuousMedication: string;
+  continuousMedication: string | null;
   serviceArea: { area: string }[];
   familyIncome: number;
   year: number;

@@ -256,6 +256,7 @@ export default function MembersRegisterAdditionalsPage() {
                       <Input
                         placeholder="Losartana, paracetamol"
                         {...field}
+                        value={field.value ?? ""}
                         onChange={(e) => field.onChange(capitalizeFirst(e.target.value))}
                       />
                     </FormControl>
