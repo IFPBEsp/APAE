@@ -73,12 +73,6 @@ class PatientDocumentsService {
                 this.storePatientDocument(patient, DocumentCategory.MEDICAL, DocumentType.MEDICAL_REPORT, report);
             }
         }
-
-        if (documents.referrals() != null) {
-            for (MultipartFile referral : documents.referrals()) {
-                this.storePatientDocument(patient, DocumentCategory.MEDICAL, DocumentType.REFERRAL, referral);
-            }
-        }
     }
 
     public void storePatientDocuments(Patient patient, CreateDocumentsDTO documents) {

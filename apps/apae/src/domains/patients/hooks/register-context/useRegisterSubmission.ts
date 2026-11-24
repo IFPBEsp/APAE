@@ -43,10 +43,6 @@ export function useRegisterSubmission(state: MembersRegisterState, STORAGE_KEY: 
         formData.append("reports", additionals.disability.report);
       }
 
-      if (additionals.care.referral instanceof File) {
-        formData.append("referrals", additionals.care.referral);
-      }
-
       const res = await bffFetch("/apae-geral/api/patients", {
         method: "POST",
         body: formData,

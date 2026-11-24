@@ -48,14 +48,12 @@ export interface FullPatientData {
 export const MEDICAL_DOC_TYPES = [
   { value: "MEDICAL_REPORT", label: "Laudo Médico" },
   { value: "EXAMINATION", label: "Exame" },
-  { value: "REFERRAL", label: "Encaminhamento" },
   { value: "OTHER", label: "Outro" },
 ] as const;
 
 export const DOC_TYPE_TRANSLATIONS: Record<string, string> = {
   MEDICAL_REPORT: "Laudo Médico",
   EXAMINATION: "Exame",
-  REFERRAL: "Encaminhamento",
   OTHER: "Outro",
   VACCINE_CARD: "Cartão de Vacina",
 };

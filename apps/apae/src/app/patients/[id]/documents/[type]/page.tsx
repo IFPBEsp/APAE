@@ -18,7 +18,6 @@ import {
 
 const documentTypeTranslations: Record<string, string> = {
   MEDICAL_REPORT: "Laudo Médico",
-  REFERRAL: "Encaminhamento",
   PRESCRIPTION: "Receita Médica",
   EXAM: "Exame",
   VACCINE_CARD: "Cartão de Vacina",
@@ -114,7 +113,7 @@ export default function DocumentTypePage() {
   const pageTitle = documentCategory[category] || "Documentos";
   const isReplaceableDocument = (file: FileItem) =>
     file.category === "MEDICAL" &&
-    ["MEDICAL_REPORT", "REFERRAL"].includes(file.type);
+    ["MEDICAL_REPORT"].includes(file.type);
 
   const openReplaceModal = (file: FileItem) => {
     setReplaceTarget(file);

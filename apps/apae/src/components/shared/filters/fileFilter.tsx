@@ -17,7 +17,7 @@ type FileFilterProps = {
 };
 
 const years = [2023, 2024, 2025];
-const types = ["laudo", "encaminhamento", "escolar", "pessoal"];
+const types = ["laudo", "escolar", "pessoal"];
 
 const selectStyle =
   "w-48 border-2 border-[#0d4f97] rounded-md focus:outline-none focus:ring-2 focus:ring-[#0d4f97]";

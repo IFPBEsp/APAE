@@ -127,7 +127,7 @@ function EditPatientDataLoader({ children }: { children: React.ReactNode }) {
               [],
             allergies: data.allergies || "",
             disability: { types: [], report: undefined },
-            care: { types: [], referral: undefined },
+            care: { types: [] },
             bpc: false,
             householdIncome: "",
           },
