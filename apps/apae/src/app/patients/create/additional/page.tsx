@@ -251,7 +251,7 @@ export default function MembersRegisterAdditionalsPage() {
                 name="medications"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Tipo de medicação que toma *</FormLabel>
+                    <FormLabel>Tipo de medicação que toma</FormLabel>
                     <FormControl>
                       <Input
                         placeholder="Losartana, paracetamol"
