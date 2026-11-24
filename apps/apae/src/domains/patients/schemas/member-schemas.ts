@@ -180,7 +180,7 @@ export const Address = addressSchema;
 
 export const Additionals = z.object({
   diseases: z.string().min(1, "O campo de doenças é obrigatório."),
-  medications: z.string().min(1, "O campo de medicações é obrigatório."),
+  medications: z.string().optional().nullable().or(z.literal("")),
   vaccines: z
     .array(z.string().min(1))
     .min(1, "O campo de vacinas é obrigatório."),

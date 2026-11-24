@@ -49,7 +49,7 @@ export function buildPatientPayload(
   const annualRegistryData = {
     bpc: additionals.bpc,
     diseases: additionals.diseases || "Nenhuma",
-    continuousMedication: additionals.medications || "Nenhum",
+    continuousMedication: additionals.medications?.trim() ? additionals.medications.trim() : null,
     serviceArea: additionals.care.types.map((area: string) => ({ area })),
     familyIncome: parseIncome(additionals.householdIncome),
     year: new Date().getFullYear(),
@@ -77,7 +77,7 @@ export function buildPatientPayload(
       ? serializeCivilDate(personal.rg.issuing.date)
       : null,
     allergies: additionals.allergies || "Nenhuma",
-    continuousMedication: additionals.medications || "Nenhum",
+    continuousMedication: additionals.medications?.trim() ? additionals.medications.trim() : null,
     isStudent: profile.role === "student",
     address: {
       city: address.city || "Não informado",

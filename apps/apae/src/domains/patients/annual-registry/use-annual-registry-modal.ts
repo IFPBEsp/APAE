@@ -116,11 +116,12 @@ export function useAnnualRegistryModal({
         ? sourceServiceAreas.map((s: ServiceTypeItem) => ({ id: s.id, area: s.area || s.name, name: s.name || s.area }))
         : [];
 
-      const medicationValue =
+      const rawMedication =
         initialData.continuousMedication ||
         initialData.medications ||
         initialData.medicamentos ||
         "";
+      const medicationValue = rawMedication === "Não informado" ? "" : rawMedication;
 
       form.reset({
         year: currentYear,
@@ -138,10 +139,11 @@ export function useAnnualRegistryModal({
         ? fullPatientData.vaccineNames.map((v: unknown) => (typeof v === "string" ? { name: v } : v))
         : [];
 
-      const existingMedication =
+      const rawExistingMedication =
         (fullPatientData?.additionals?.medications) ||
         (fullPatientData as Record<string, unknown>)?.continuousMedication ||
         "";
+      const existingMedication = rawExistingMedication === "Não informado" ? "" : rawExistingMedication;
 
       const existingDiseases =
         (fullPatientData?.additionals?.diseases) ||
@@ -198,14 +200,15 @@ export function useAnnualRegistryModal({
     try {
       const registryId = initialData?.id;
       const income = parseFloat(cleanCurrency(data.familyIncome));
+      const medicationPayload = data.continuousMedication?.trim() ? data.continuousMedication.trim() : null;
 
       const regPayload = {
         bpc: data.bpc === "true",
         familyIncome: income,
         diseases: data.diseases || "Nenhuma",
-        continuousMedication: data.continuousMedication || "Nenhum",
-        medications: data.continuousMedication || "Nenhum",
-        medicamentos: data.continuousMedication || "Nenhum",
+        continuousMedication: medicationPayload,
+        medications: medicationPayload,
+        medicamentos: medicationPayload,
         disorders: (data.disorders || []).map((d: Record<string, unknown>) => ({ name: d.name || d.label || d.value, id: d.id })),
         serviceArea: (data.serviceTypes || []).map((s: Record<string, unknown>) => ({ id: s.id, area: s.area || s.name || s.label })),
         serviceAreas: (data.serviceTypes || []).map((s: Record<string, unknown>) => ({ id: s.id, area: s.area || s.name || s.label })),
@@ -241,7 +244,7 @@ export function useAnnualRegistryModal({
           nationality: baseData.nationality || baseData.birthplace || "",
           allergies: data.allergies || "Nenhuma",
           vaccineNames: vaccineList,
-          continuousMedication: data.continuousMedication || "Nenhum",
+          continuousMedication: medicationPayload,
         });
       }
 
