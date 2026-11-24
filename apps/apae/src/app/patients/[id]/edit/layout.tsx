@@ -126,18 +126,16 @@ function EditPatientDataLoader({ children }: { children: React.ReactNode }) {
             district: data.address?.district || "",
           },
           additionals: {
-            diseases: data.annualRegistry?.diseases || "",
-            medications: data.annualRegistry?.continuousMedication || "",
+            diseases: "",
+            medications: "",
             vaccines:
               data.vaccineNames?.map((v: { name?: string }) => v.name || "") ||
               [],
             allergies: data.allergies || "",
             disability: { types: [], report: undefined },
             care: { types: [], referral: undefined },
-            bpc: data.annualRegistry?.bpc ?? false,
-            householdIncome: data.annualRegistry?.familyIncome
-              ? (data.annualRegistry.familyIncome * 100).toString()
-              : "0",
+            bpc: false,
+            householdIncome: "",
           },
           guardian: {
             name: data.guardian?.name || "",
