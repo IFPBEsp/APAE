@@ -41,7 +41,7 @@ interface EditPatientAddress {
 interface EditPatientData {
   fullName?: string;
   cpf?: string;
-  contact?: string;
+  contact?: string | null;
   rg?: string;
   issuingAgency?: string;
   issueDate?: string;
@@ -93,7 +93,10 @@ function EditPatientDataLoader({ children }: { children: React.ReactNode }) {
           personal: {
             name: data.fullName || "",
             cpf: data.cpf || "",
-            phone: data.contact || "",
+            phone:
+              data.contact && data.contact !== "Não informado"
+                ? data.contact
+                : "",
             rg: {
               number: data.rg || "",
               issuing: {

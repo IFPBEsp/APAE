@@ -43,7 +43,7 @@ public class Patient {
     @Column(name = "data_de_nascimento", nullable = false)
     private LocalDate birthDate;
 
-    @Column(name = "contato", nullable = false)
+    @Column(name = "contato", nullable = true)
     private String contact;
 
     @Column(name = "numero_registro_de_nascimento", nullable = false)

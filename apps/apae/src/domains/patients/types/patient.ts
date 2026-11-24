@@ -47,7 +47,7 @@ export interface PatientPayload {
   fullName: string;
   nationality: string;
   birthDate: string | null;
-  contact: string;
+  contact: string | null;
   birthCertificateNumber: string;
   registryOffice: string | null;
   fls: string | null;
