@@ -45,7 +45,7 @@ public record UpdatePatientDTO(
 
         String nis,
 
-        @NotBlank(message = "As alergias não podem estar em branco") String allergies,
+        String allergies,
 
         @NotNull(message = "O campo 'é estudante' não pode ser nulo") boolean isStudent,
 

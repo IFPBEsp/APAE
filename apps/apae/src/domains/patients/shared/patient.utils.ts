@@ -76,7 +76,7 @@ export function buildPatientPayload(
     registrationDate: hasRG && personal.rg.issuing.date
       ? serializeCivilDate(personal.rg.issuing.date)
       : null,
-    allergies: additionals.allergies || "Nenhuma",
+    allergies: additionals.allergies || null,
     continuousMedication: additionals.medications || "Nenhum",
     isStudent: profile.role === "student",
     address: {

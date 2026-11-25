@@ -59,7 +59,7 @@ export interface PatientPayload {
   cns: string;
   nis: string;
   registrationDate: Date | string | null;
-  allergies: string;
+  allergies?: string | null;
   continuousMedication: string;
   isStudent: boolean;
   address: PatientAddress;
