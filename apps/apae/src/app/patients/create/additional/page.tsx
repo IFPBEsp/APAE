@@ -389,38 +389,6 @@ export default function MembersRegisterAdditionalsPage() {
 
                 <FormField
                   control={form.control}
-                  name="care.referral"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Encaminhamento *</FormLabel>
-                      <FormControl>
-                        <FileInputButton
-                          id={field.name}
-                          className="min-w-3xs"
-                          onChange={(e) => {
-                            const file = e.target.files?.[0];
-                            if (file) field.onChange(file);
-                          }}
-                        >
-                          {field.value instanceof File ? (
-                            <span
-                              className="truncate text-left"
-                              title={field.value.name}
-                            >
-                              Arquivo: {field.value.name}
-                            </span>
-                          ) : (
-                            "Selecionar Encaminhamento"
-                          )}
-                        </FileInputButton>
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
-                <FormField
-                  control={form.control}
                   name="householdIncome"
                   render={({ field }) => (
                     <FormItem>

@@ -53,8 +53,6 @@ function stripFiles(state: MembersRegisterState): MembersRegisterState {
 
   draft.additionals.disability.report =
     initialState.additionals.disability.report;
-  draft.additionals.care.referral =
-    initialState.additionals.care.referral;
   draft.profile.photo = initialState.profile.photo;
 
   return draft;
@@ -152,7 +150,7 @@ export function MembersRegisterProvider({
     
     if (draft) {
       if (draft.step && draftNeedsFileWarning(draft.step)) {
-        toast.warning("Os arquivos anexados não ficam salvos no rascunho. Anexe novamente o laudo, o encaminhamento e a foto.");
+        toast.warning("Os arquivos anexados não ficam salvos no rascunho. Anexe novamente o laudo e a foto.");
       }
       dispatch({
         type: "LOAD_ALL_DATA",

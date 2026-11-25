@@ -1,31 +1,13 @@
 import { describe, expect, it } from "vitest";
-import { draftNeedsFileWarning, getStepForBackendField, hasRequiredRegistrationFiles } from "./patient.utils";
-import { MembersRegisterStep } from "../hooks/register-context/types";
-
-describe("getStepForBackendField", () => {
-  it.each(["reports", "referrals"])("maps %s to additional information", (field) => {
-    expect(getStepForBackendField(field)).toBe(MembersRegisterStep.ADDITIONALS);
-  });
-
-  it("requires both medical documents before registration", () => {
-    const additionals = {
-      disability: { report: new File(["laudo"], "laudo.pdf"), types: [] },
-      care: { referral: new File(["encaminhamento"], "encaminhamento.pdf"), types: [] },
-    };
-    expect(hasRequiredRegistrationFiles(additionals)).toBe(true);
-    expect(hasRequiredRegistrationFiles({
-      disability: { report: undefined, types: [] },
-      care: { referral: undefined, types: [] },
-    })).toBe(false);
-  });
-
-  it("warns when a restored draft has passed additional information", () => {
-    expect(draftNeedsFileWarning(MembersRegisterStep.PROFILE)).toBe(true);
-    expect(draftNeedsFileWarning(MembersRegisterStep.ADDITIONALS)).toBe(false);
-    expect(draftNeedsFileWarning(MembersRegisterStep.GUARDIAN)).toBe(false);
 import { initialState } from "@/domains/patients/hooks/register-context/reducer";
 import type { MembersRegisterState } from "@/domains/patients/hooks/register-context/types";
-import { buildPatientPayload } from "./patient.utils";
+import {
+  buildPatientPayload,
+  draftNeedsFileWarning,
+  getStepForBackendField,
+  hasRequiredRegistrationFiles,
+} from "./patient.utils";
+import { MembersRegisterStep } from "../hooks/register-context/types";
 
 const buildState = (
   birth: Partial<MembersRegisterState["personal"]["birth"]>,
@@ -85,5 +67,33 @@ describe("buildPatientPayload - certidão (#1132)", () => {
   it("mantém o número da certidão informado", () => {
     const payload = buildPatientPayload(buildState({ certificate: "12345" }));
     expect(payload.birthCertificateNumber).toBe("12345");
+  });
+});
+
+describe("getStepForBackendField", () => {
+  it("mapeia reports para Informações Adicionais", () => {
+    expect(getStepForBackendField("reports")).toBe(
+      MembersRegisterStep.ADDITIONALS,
+    );
+  });
+
+  it("exige o laudo médico antes do cadastro", () => {
+    expect(
+      hasRequiredRegistrationFiles({
+        disability: { report: new File(["laudo"], "laudo.pdf"), types: [] },
+      }),
+    ).toBe(true);
+
+    expect(
+      hasRequiredRegistrationFiles({
+        disability: { report: undefined, types: [] },
+      }),
+    ).toBe(false);
+  });
+
+  it("avisa quando um rascunho recuperado já passou de Informações Adicionais", () => {
+    expect(draftNeedsFileWarning(MembersRegisterStep.PROFILE)).toBe(true);
+    expect(draftNeedsFileWarning(MembersRegisterStep.ADDITIONALS)).toBe(false);
+    expect(draftNeedsFileWarning(MembersRegisterStep.GUARDIAN)).toBe(false);
   });
 });

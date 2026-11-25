@@ -9,9 +9,9 @@ import type {
 } from "@/domains/patients/types/patient";
 
 export function hasRequiredRegistrationFiles(
-  additionals: Pick<MembersRegisterState["additionals"], "disability" | "care">,
+  additionals: Pick<MembersRegisterState["additionals"], "disability">,
 ): boolean {
-  return additionals.disability.report instanceof File && additionals.care.referral instanceof File;
+  return additionals.disability.report instanceof File;
 }
 
 export function draftNeedsFileWarning(step: MembersRegisterStep): boolean {
@@ -198,7 +198,7 @@ export function getStepForBackendField(
   if (includesAny(fieldLower, ADDITIONALS_FIELDS)) {
     return MembersRegisterStep.ADDITIONALS;
   }
-  if (fieldLower.includes("reports") || fieldLower.includes("referrals")) {
+  if (fieldLower.includes("reports")) {
     return MembersRegisterStep.ADDITIONALS;
   }
   if (fieldLower.includes("guardian")) {

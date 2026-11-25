@@ -213,7 +213,7 @@ export default function MembersRegisterProfilePage() {
   const onSubmit = async (values: z.infer<typeof currentSchema>) => {
     if (!isEditing && !hasRequiredRegistrationFiles(additionals)) {
       setStep(MembersRegisterStep.ADDITIONALS);
-      toast.error("Anexe novamente o laudo e o encaminhamento");
+      toast.error("Anexe novamente o laudo");
       return;
     }
     const payload = { ...values };
