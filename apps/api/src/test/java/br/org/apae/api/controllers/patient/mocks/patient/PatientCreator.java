@@ -324,18 +324,13 @@ public static UpdatePatientDTO createUpdatePayloadWithoutNis() {
                 new MockMultipartFile("reports", "laudo1.pdf", "application/pdf", "conteudo falso".getBytes())
         );
 
-        List<MultipartFile> referrals = List.of(
-                new MockMultipartFile("referrals", "encaminhamento.pdf", "application/pdf", "conteudo falso".getBytes())
-        );
-
         return new CreateDocumentsDTO(
                 rg,
                 cpf,
                 address,
                 birth,
                 photo,
-                reports,
-                referrals
+                reports
         );
     }
 }

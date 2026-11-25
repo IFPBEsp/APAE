@@ -47,11 +47,11 @@ export interface PatientPayload {
   fullName: string;
   nationality: string;
   birthDate: string | null;
-  contact: string;
+  contact: string | null;
   birthCertificateNumber: string;
-  registryOffice: string;
-  fls: string;
-  book: string;
+  registryOffice: string | null;
+  fls: string | null;
+  book: string | null;
   rg: string | null;
   issueDate: string | null;
   issuingAgency: string | null;

@@ -167,7 +167,6 @@ public class PatientControllerTest {
        .file(patientPart).file((MockMultipartFile) docsDTO.rg()).file((MockMultipartFile) docsDTO.cpf())
        .file((MockMultipartFile) docsDTO.proof_of_address()).file((MockMultipartFile) docsDTO.birth_certificate())
        .file((MockMultipartFile) docsDTO.photo()).file((MockMultipartFile) docsDTO.reports().getFirst())
-       .file((MockMultipartFile) docsDTO.referrals().getFirst())
        .header("Authorization", AuthTestHelper.bearerToken()).with(csrf()).contentType(MediaType.MULTIPART_FORM_DATA))
      .andExpect(status().isCreated())
      .andExpect(jsonPath("$.id").value(responseDTO.id().toString()))
@@ -197,7 +196,6 @@ public class PatientControllerTest {
        .file(patientPart).file((MockMultipartFile) docsDTO.rg()).file((MockMultipartFile) docsDTO.cpf())
        .file((MockMultipartFile) docsDTO.proof_of_address()).file((MockMultipartFile) docsDTO.birth_certificate())
        .file((MockMultipartFile) docsDTO.photo()).file((MockMultipartFile) docsDTO.reports().getFirst())
-       .file((MockMultipartFile) docsDTO.referrals().getFirst())
        .header("Authorization", AuthTestHelper.bearerToken()).with(csrf()).contentType(MediaType.MULTIPART_FORM_DATA))
      .andExpect(status().isCreated());
   }
@@ -229,7 +227,6 @@ public class PatientControllerTest {
        .file(patientPart).file((MockMultipartFile) docsDTO.rg()).file((MockMultipartFile) docsDTO.cpf())
        .file((MockMultipartFile) docsDTO.proof_of_address()).file((MockMultipartFile) docsDTO.birth_certificate())
        .file((MockMultipartFile) docsDTO.photo()).file((MockMultipartFile) docsDTO.reports().getFirst())
-       .file((MockMultipartFile) docsDTO.referrals().getFirst())
        .header("Authorization", AuthTestHelper.bearerToken()).with(csrf()).contentType(MediaType.MULTIPART_FORM_DATA))
      .andExpect(status().isConflict());
   }
@@ -246,31 +243,9 @@ public class PatientControllerTest {
        .file(patientPart).file((MockMultipartFile) docsDTO.rg()).file((MockMultipartFile) docsDTO.cpf())
        .file((MockMultipartFile) docsDTO.proof_of_address()).file((MockMultipartFile) docsDTO.birth_certificate())
        .file((MockMultipartFile) docsDTO.photo()).file(invalidReport)
-       .file((MockMultipartFile) docsDTO.referrals().getFirst())
        .header("Authorization", AuthTestHelper.bearerToken()).with(csrf()).contentType(MediaType.MULTIPART_FORM_DATA))
      .andExpect(status().isBadRequest())
      .andExpect(jsonPath("$.fields[0].field").value("reports"))
-     .andExpect(jsonPath("$.fields[0].message").value("Formato de arquivo 'text/plain' não permitido. Formatos permitidos: PDF, JPG, PNG, DOCX, WEBP"));
-
-   verifyNoInteractions(patientService);
-  }
-
-  @Test
-  @DisplayName("Deve retornar 400 ao criar paciente com encaminhamento em formato não permitido (.txt)")
-  void shouldReturnBadRequestWhenReferralHasInvalidFormat() throws Exception {
-   CreatePatientDTO patientDTO = createValidPatientRequest();
-   CreateDocumentsDTO docsDTO = PatientCreator.createDocuments();
-   MockMultipartFile patientPart = new MockMultipartFile("patient", "", MediaType.APPLICATION_JSON_VALUE, objectMapper.writeValueAsString(patientDTO).getBytes(StandardCharsets.UTF_8));
-   MockMultipartFile invalidReferral = new MockMultipartFile("referrals", "encaminhamento.txt", "text/plain", "conteudo".getBytes());
-
-   mockMvc.perform(multipart(BASE_URL)
-       .file(patientPart).file((MockMultipartFile) docsDTO.rg()).file((MockMultipartFile) docsDTO.cpf())
-       .file((MockMultipartFile) docsDTO.proof_of_address()).file((MockMultipartFile) docsDTO.birth_certificate())
-       .file((MockMultipartFile) docsDTO.photo()).file((MockMultipartFile) docsDTO.reports().getFirst())
-       .file(invalidReferral)
-       .header("Authorization", AuthTestHelper.bearerToken()).with(csrf()).contentType(MediaType.MULTIPART_FORM_DATA))
-     .andExpect(status().isBadRequest())
-     .andExpect(jsonPath("$.fields[0].field").value("referrals"))
      .andExpect(jsonPath("$.fields[0].message").value("Formato de arquivo 'text/plain' não permitido. Formatos permitidos: PDF, JPG, PNG, DOCX, WEBP"));
 
    verifyNoInteractions(patientService);
@@ -289,7 +264,6 @@ public class PatientControllerTest {
        .file(patientPart).file((MockMultipartFile) docsDTO.rg()).file((MockMultipartFile) docsDTO.cpf())
        .file((MockMultipartFile) docsDTO.proof_of_address()).file((MockMultipartFile) docsDTO.birth_certificate())
        .file(pdfPhoto).file((MockMultipartFile) docsDTO.reports().getFirst())
-       .file((MockMultipartFile) docsDTO.referrals().getFirst())
        .header("Authorization", AuthTestHelper.bearerToken()).with(csrf()).contentType(MediaType.MULTIPART_FORM_DATA))
      .andExpect(status().isBadRequest())
      .andExpect(jsonPath("$.fields[0].field").value("photo"))
@@ -299,7 +273,6 @@ public class PatientControllerTest {
        .file(patientPart).file((MockMultipartFile) docsDTO.rg()).file((MockMultipartFile) docsDTO.cpf())
        .file((MockMultipartFile) docsDTO.proof_of_address()).file((MockMultipartFile) docsDTO.birth_certificate())
        .file(docxPhoto).file((MockMultipartFile) docsDTO.reports().getFirst())
-       .file((MockMultipartFile) docsDTO.referrals().getFirst())
        .header("Authorization", AuthTestHelper.bearerToken()).with(csrf()).contentType(MediaType.MULTIPART_FORM_DATA))
      .andExpect(status().isBadRequest())
      .andExpect(jsonPath("$.fields[0].field").value("photo"))

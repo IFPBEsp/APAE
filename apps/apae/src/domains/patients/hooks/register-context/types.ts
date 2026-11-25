@@ -5,7 +5,14 @@ export interface PersonalData {
   rg: { number: string; issuing: { body: string; date: Date | null } };
   cns: string;
   nis: string;
-  birth: { certificate: string; date: Date; place: string };
+  birth: {
+    certificate: string;
+    date: Date;
+    place: string;
+    registryOffice?: string;
+    book?: string;
+    fls?: string;
+  };
 }
 
 export interface KinshipData {
@@ -37,7 +44,7 @@ export interface AdditionalsData {
   vaccines: string[];
   allergies: string;
   disability: { types: string[]; report: File | string | undefined };
-  care: { types: string[]; referral: File | string | undefined };
+  care: { types: string[] };
   bpc: boolean;
   householdIncome: string;
 }

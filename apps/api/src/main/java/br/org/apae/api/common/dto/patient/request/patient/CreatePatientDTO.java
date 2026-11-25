@@ -24,15 +24,15 @@ public record CreatePatientDTO(
 
     @NotNull(message = "A data de nascimento não pode ser nula") @Past(message = "A data de nascimento deve ser uma data no passado") LocalDate birthDate,
 
-    @NotBlank(message = "O contato não pode estar em branco") String contact,
+    String contact,
 
     @NotBlank(message = "O número da certidão de nascimento não pode estar em branco") String birthCertificateNumber,
 
-    @NotBlank(message = "O cartório não pode estar em branco") String registryOffice,
+    String registryOffice,
 
-    @NotBlank(message = "O campo 'fls' não pode estar em branco") String fls,
+    String fls,
 
-    @NotBlank(message = "O campo 'livro' não pode estar em branco") String book,
+    String book,
 
     String rg,
 

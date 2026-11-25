@@ -92,7 +92,13 @@ export const Personal = z
   .object({
     name: nomeCompletoSchema,
     cpf: cpfSchema,
-    phone: telefoneSchema,
+    phone: z
+      .string()
+      .optional()
+      .refine(
+        (value) => !value || telefoneSchema.safeParse(value).success,
+        "Número de telefone inválido",
+      ),
     rg: z.object({
       number: OptionalRG,
       issuing: z.object({
@@ -108,8 +114,12 @@ export const Personal = z
     }),
     cns: CNS,
     nis: NIS,
-    birth: z.object({
+    birth: z
+      .object({
       certificate: birthCertificateSchema,
+      registryOffice: z.string().optional(),
+      book: z.string().optional(),
+      fls: z.string().optional(),
       date: civilDateSchema(
         "Data de nascimento não pode ser futura",
         150,
@@ -125,7 +135,23 @@ export const Personal = z
         },
       ) as ZodCoercedDate<Date>,
       place: z.string().min(1, "Naturalidade é obrigatória."),
-    }),
+      })
+      .superRefine((birth, ctx) => {
+        const digits = countDigits(birth.certificate);
+        if (digits < 1 || digits >= BIRTH_CERTIFICATE_MAX_DIGITS) return;
+
+        const required = [
+          ["registryOffice", "Cartório é obrigatório"],
+          ["book", "Livro é obrigatório"],
+          ["fls", "Folha é obrigatória"],
+        ] as const;
+
+        for (const [field, message] of required) {
+          if (!birth[field]?.trim()) {
+            ctx.addIssue({ code: "custom", message, path: [field] });
+          }
+        }
+      }),
   })
   .superRefine((data, ctx) => {
     if (!data.rg.number.trim()) return;
@@ -175,9 +201,6 @@ export const Additionals = z.object({
     types: z
       .array(z.string().min(1))
       .min(1, "O tipo de atendimento é obrigatório."),
-    referral: z.instanceof(File, {
-      message: "O encaminhamento é obrigatório.",
-    }),
   }),
   bpc: z.boolean(),
   householdIncome: z

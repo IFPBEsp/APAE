@@ -17,13 +17,16 @@ public class BirthRecord {
       String fls, String book, LocalDate registrationDate) {
 
     requireNonNullOrEmpty(birthCertificateNumber, "Número do registro de nascimento");
-    requireNonNullOrEmpty(registryOffice, "Cartório");
-    requireNonNullOrEmpty(fls, "FLS");
-    requireNonNullOrEmpty(book, "Livro");
     requireNonNull(registrationDate, "Data de registro");
 
     if (registrationDate.isAfter(LocalDate.now())) {
       throw new IllegalArgumentException("Data de registro não pode ser no futuro: " + registrationDate.format(DateTimeFormatter.ISO_DATE));
+    }
+
+    if (hasFewerThan32Digits(birthCertificateNumber)) {
+      requireNonNullOrEmpty(registryOffice, "Cartório");
+      requireNonNullOrEmpty(fls, "FLS");
+      requireNonNullOrEmpty(book, "Livro");
     }
 
     this.birthCertificateNumber = birthCertificateNumber;
@@ -31,6 +34,11 @@ public class BirthRecord {
     this.fls = fls;
     this.book = book;
     this.registrationDate = registrationDate;
+  }
+
+  private boolean hasFewerThan32Digits(String certificateNumber) {
+    String cleanNumber = certificateNumber.replaceAll("\\D", "");
+    return cleanNumber.length() < 32;
   }
 
   public String getBirthCertificateNumber() {

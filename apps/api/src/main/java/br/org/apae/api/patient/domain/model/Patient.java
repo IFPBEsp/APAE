@@ -43,19 +43,19 @@ public class Patient {
     @Column(name = "data_de_nascimento", nullable = false)
     private LocalDate birthDate;
 
-    @Column(name = "contato", nullable = false)
+    @Column(name = "contato", nullable = true)
     private String contact;
 
     @Column(name = "numero_registro_de_nascimento", nullable = false)
     private String birthCertificateNumber;
 
-    @Column(name = "cartorio", nullable = false)
+    @Column(name = "cartorio", nullable = true)
     private String registryOffice;
 
-    @Column(name = "fls", nullable = false)
+    @Column(name = "fls", nullable = true)
     private String fls;
 
-    @Column(name = "livro", nullable = false)
+    @Column(name = "livro", nullable = true)
     private String book;
 
     @Column(name = "rg", unique = true)

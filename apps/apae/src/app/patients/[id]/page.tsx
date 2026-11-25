@@ -240,7 +240,7 @@ export default function PersonDetailsPage() {
             <InfoRow label="Nome Completo" value={person.fullName} />
             <InfoRow label="Data de Nasc." value={person.birthDate} />
             <InfoRow label="Naturalidade" value={person.birthplace} />
-            <InfoRow label="Contato" value={person.contact} />
+            <InfoRow label="Contato" value={person.contact || "Não informado"} />
             <InfoRow label="Alergias" value={person.allergies} />
             <InfoRow label="Estudante?" value={person.isStudent} />
             <InfoRow label="Data de Cadastro" value={person.registrationDate} />

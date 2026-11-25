@@ -52,7 +52,6 @@ function stripFiles(state: MembersRegisterState): MembersRegisterState {
 
   draft.additionals.disability.report =
     initialState.additionals.disability.report;
-  draft.additionals.care.referral = initialState.additionals.care.referral;
   draft.profile.photo = initialState.profile.photo;
 
   return draft;

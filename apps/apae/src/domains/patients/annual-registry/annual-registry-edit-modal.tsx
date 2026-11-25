@@ -31,6 +31,7 @@ export default function AnnualRegistryEditModal({
   const {
     form,
     documents,
+    isLoadingInitialData,
     isLoadingDocs,
     isUploading,
     docType,
@@ -58,19 +59,25 @@ export default function AnnualRegistryEditModal({
         </DialogHeader>
 
         <div className="flex-1 overflow-y-auto p-5 pb-24">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 h-full">
-            <div className="bg-white p-5 rounded-xl shadow-sm border border-slate-200 h-fit">
-              <h3 className="text-[#0D4F97] font-bold text-base mb-4 pb-2 border-b border-slate-100 flex items-center gap-2">
-                <span className="bg-blue-50 p-1.5 rounded-lg text-[#0D4F97]"><FileText className="h-4 w-4" /></span>
-                Dados Clínicos e Sociais
-              </h3>
-              <Form {...form}>
-                <form id="health-form" onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-                  {isCreateMode && (
-                    <FormField control={form.control} name="year" render={({ field }) => (
-                      <FormItem>
-                        <FormLabel className={`font-bold text-xs ${errors.year ? "text-red-500" : "text-slate-700"}`}>Ano de Referência</FormLabel>
-                        <Select onValueChange={field.onChange} defaultValue={field.value}>
+          {isLoadingInitialData ? (
+            <div className="flex h-full min-h-[300px] flex-col items-center justify-center gap-3">
+              <Loader2 className="h-8 w-8 animate-spin text-[#0D4F97]" />
+              <p className="text-sm font-medium text-slate-500">Carregando dados...</p>
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 h-full">
+              <div className="bg-white p-5 rounded-xl shadow-sm border border-slate-200 h-fit">
+                <h3 className="text-[#0D4F97] font-bold text-base mb-4 pb-2 border-b border-slate-100 flex items-center gap-2">
+                  <span className="bg-blue-50 p-1.5 rounded-lg text-[#0D4F97]"><FileText className="h-4 w-4" /></span>
+                  Dados Clínicos e Sociais
+                </h3>
+                <Form {...form}>
+                  <form id="health-form" onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+                    {isCreateMode && (
+                      <FormField control={form.control} name="year" render={({ field }) => (
+                        <FormItem>
+                          <FormLabel className={`font-bold text-xs ${errors.year ? "text-red-500" : "text-slate-700"}`}>Ano de Referência</FormLabel>
+                          <Select onValueChange={field.onChange} value={field.value}>
                           <FormControl>
                             <SelectTrigger className={`bg-slate-50 h-10 text-sm ${errors.year ? "border-red-500 ring-red-500" : "border-slate-200"}`}>
                               <SelectValue placeholder="Selecione o ano" />
@@ -263,11 +270,12 @@ export default function AnnualRegistryEditModal({
               </div>
             </div>
           </div>
+          )}
         </div>
 
         <DialogFooter className="px-6 py-4 bg-white border-t border-slate-100 shrink-0 flex justify-end gap-3 z-10">
           <Button variant="ghost" onClick={() => onClose()} type="button" className="text-slate-500 h-10 px-5 text-sm">Cancelar</Button>
-          <Button form="health-form" type="submit" disabled={isSubmitting} className="text-white bg-[#0D4F97] hover:bg-[#0b427d] h-10 px-6 rounded-lg font-bold transition-all text-sm disabled:opacity-70">
+          <Button form="health-form" type="submit" disabled={isSubmitting || isLoadingInitialData} className="text-white bg-[#0D4F97] hover:bg-[#0b427d] h-10 px-6 rounded-lg font-bold transition-all text-sm disabled:opacity-70">
             {isSubmitting ? <><Loader2 className="mr-2 h-4 w-4 animate-spin" /> Salvando...</> : (isCreateMode ? "Criar Registro" : "Salvar Alterações")}
           </Button>
         </DialogFooter>

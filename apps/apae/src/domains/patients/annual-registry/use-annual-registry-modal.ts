@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "react-toastify";
@@ -8,6 +8,7 @@ import { annualRegistryFormSchema, type AnnualRegistryFormValues } from "./annua
 import {
   fetchDocumentsApi,
   fetchPatientApi,
+  fetchLatestAnnualRegistryApi,
   uploadDocumentApi,
   createAnnualRegistryApi,
   updateAnnualRegistryApi,
@@ -45,6 +46,48 @@ function cleanPatientData(data: Record<string, unknown>) {
   return rest;
 }
 
+function mapRegistryToFormValues(
+  year: string,
+  registry: AnnualRegistry | null,
+  patient: FullPatientData | null,
+): AnnualRegistryFormValues {
+  const bpcString =
+    registry?.bpc === true || String(registry?.bpc).toLowerCase() === "true"
+      ? "true"
+      : "false";
+
+  const vaccineList = Array.isArray(patient?.vaccineNames)
+    ? patient.vaccineNames.map((v: unknown) => (typeof v === "string" ? { name: v } : v))
+    : [];
+
+  const sourceServiceAreas = registry?.serviceAreas ?? [];
+  const serviceTypeList = Array.isArray(sourceServiceAreas)
+    ? sourceServiceAreas.map((s: ServiceTypeItem) => ({
+        id: s.id,
+        area: s.area || s.name,
+        name: s.name || s.area,
+      }))
+    : [];
+
+  const medicationValue =
+    registry?.continuousMedication ||
+    registry?.medications ||
+    registry?.medicamentos ||
+    "";
+
+  return {
+    year,
+    bpc: bpcString,
+    familyIncome: registry?.familyIncome ? formatCurrencyForDisplay(registry.familyIncome) : "",
+    diseases: registry?.diseases ?? "",
+    continuousMedication: medicationValue,
+    allergies: patient?.allergies ?? "",
+    disorders: registry?.disorders || [],
+    vaccines: vaccineList,
+    serviceTypes: serviceTypeList,
+  };
+}
+
 export function useAnnualRegistryModal({
   isOpen,
   patientId,
@@ -54,11 +97,14 @@ export function useAnnualRegistryModal({
   onClose,
 }: UseAnnualRegistryModalParams) {
   const [documents, setDocuments] = useState<DocumentDTO[]>([]);
+  const [isInitialDataLoaded, setIsInitialDataLoaded] = useState(false);
   const [isLoadingDocs, setIsLoadingDocs] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
   const [docType, setDocType] = useState("MEDICAL_REPORT");
   const [fullPatientData, setFullPatientData] = useState<FullPatientData | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const isLoadingInitialData = isOpen && !isInitialDataLoaded;
 
   const form = useForm<AnnualRegistryFormValues>({
     resolver: zodResolver(annualRegistryFormSchema),
@@ -76,7 +122,9 @@ export function useAnnualRegistryModal({
     },
   });
 
-  const loadDocuments = async () => {
+  const { reset } = form;
+
+  const loadDocuments = useCallback(async () => {
     setIsLoadingDocs(true);
     try {
       const data = await fetchDocumentsApi(patientId, currentYear);
@@ -86,81 +134,52 @@ export function useAnnualRegistryModal({
     } finally {
       setIsLoadingDocs(false);
     }
-  };
-
-  const loadPatientData = async () => {
-    const data = await fetchPatientApi(patientId);
-    if (data) setFullPatientData(data);
-  };
+  }, [patientId, currentYear]);
 
   useEffect(() => {
-    if (isOpen && patientId) {
-      if (mode === "edit") loadDocuments();
-      else setDocuments([]);
-      loadPatientData();
+    if (!isOpen || !patientId) {
+      setIsInitialDataLoaded(false);
+      setFullPatientData(null);
+      return;
     }
-  }, [isOpen, patientId, mode]);
 
-  useEffect(() => {
-    if (!isOpen) return;
+    let isCancelled = false;
+    setIsInitialDataLoaded(false);
 
-    if (mode === "edit" && initialData) {
-      const bpcString = initialData.bpc === true || String(initialData.bpc) === "true" ? "true" : "false";
-
-      const vaccineList = Array.isArray(fullPatientData?.vaccineNames)
-        ? fullPatientData.vaccineNames.map((v: unknown) => (typeof v === "string" ? { name: v } : v))
-        : [];
-
-      const sourceServiceAreas = initialData.serviceAreas ?? [];
-      const serviceTypeList = Array.isArray(sourceServiceAreas)
-        ? sourceServiceAreas.map((s: ServiceTypeItem) => ({ id: s.id, area: s.area || s.name, name: s.name || s.area }))
-        : [];
-
-      const medicationValue =
-        initialData.continuousMedication ||
-        initialData.medications ||
-        initialData.medicamentos ||
-        "";
-
-      form.reset({
-        year: currentYear,
-        bpc: bpcString,
-        familyIncome: initialData.familyIncome ? formatCurrencyForDisplay(initialData.familyIncome) : "",
-        diseases: initialData.diseases ?? "",
-        continuousMedication: medicationValue,
-        allergies: fullPatientData?.allergies ?? "",
-        disorders: initialData.disorders || [],
-        vaccines: vaccineList,
-        serviceTypes: serviceTypeList,
-      });
-    } else if (mode === "create") {
-      const vaccineList = Array.isArray(fullPatientData?.vaccineNames)
-        ? fullPatientData.vaccineNames.map((v: unknown) => (typeof v === "string" ? { name: v } : v))
-        : [];
-
-      const existingMedication =
-        (fullPatientData?.additionals?.medications) ||
-        (fullPatientData as Record<string, unknown>)?.continuousMedication ||
-        "";
-
-      const existingDiseases =
-        (fullPatientData?.additionals?.diseases) ||
-        (fullPatientData as Record<string, unknown>)?.diseases ||
-        "";
-
-      form.reset({
-        year: currentYearInt.toString(),
-        bpc: "false",
-        familyIncome: "",
-        diseases: existingDiseases as string,
-        continuousMedication: existingMedication as string,
-        allergies: fullPatientData?.allergies ?? "",
-        disorders: [],
-        vaccines: vaccineList,
-        serviceTypes: [],
-      });
+    if (mode === "edit") {
+      loadDocuments();
+    } else {
+      setDocuments([]);
     }
-  }, [initialData, fullPatientData, isOpen, mode, currentYear]);
+
+    const loadInitialData = async () => {
+      try {
+        const [patientData, latestRegistry] = await Promise.all([
+          fetchPatientApi(patientId),
+          mode === "create" ? fetchLatestAnnualRegistryApi(patientId) : Promise.resolve(null),
+        ]);
+
+        if (isCancelled) return;
+
+        setFullPatientData(patientData);
+
+        const registrySource = mode === "edit" ? initialData : latestRegistry;
+        const targetYear = mode === "create" ? currentYearInt.toString() : currentYear;
+
+        reset(mapRegistryToFormValues(targetYear, registrySource, patientData));
+      } finally {
+        if (!isCancelled) {
+          setIsInitialDataLoaded(true);
+        }
+      }
+    };
+
+    loadInitialData();
+
+    return () => {
+      isCancelled = true;
+    };
+  }, [isOpen, patientId, mode, currentYear, initialData, loadDocuments, reset]);
 
   const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -194,6 +213,7 @@ export function useAnnualRegistryModal({
   };
 
   const onSubmit = async (data: AnnualRegistryFormValues) => {
+    if (isLoadingInitialData) return;
     toast.dismiss();
     try {
       const registryId = initialData?.id;
@@ -257,6 +277,7 @@ export function useAnnualRegistryModal({
   return {
     form,
     documents,
+    isLoadingInitialData,
     isLoadingDocs,
     isUploading,
     docType,

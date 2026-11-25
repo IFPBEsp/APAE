@@ -53,7 +53,13 @@ export default function MembersRegisterPersonalPage() {
     mode: "onBlur",
     resolver: zodResolver(Personal),
     defaultValues: personal,
+    shouldUnregister: false,
   });
+
+  const birthCertificate = form.watch("birth.certificate") || "";
+  const certificateDigits = birthCertificate.replace(/\D/g, "").length;
+  const showOldCertificateFields =
+    certificateDigits >= 1 && certificateDigits <= 31;
 
   useEffect(() => {
     if (personal.name !== "") {
@@ -283,6 +289,68 @@ export default function MembersRegisterPersonalPage() {
             )}
           />
 
+          {showOldCertificateFields && (
+            <>
+              <p className="text-sm text-muted-foreground md:col-span-2">
+                Certidão sem matrícula: informe cartório, livro e folha
+              </p>
+
+              <FormField
+                control={form.control}
+                name="birth.registryOffice"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Cartório *</FormLabel>
+                    <FormControl>
+                      <Input
+                        placeholder="Digite o cartório"
+                        {...field}
+                        value={field.value ?? ""}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="birth.book"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Livro *</FormLabel>
+                    <FormControl>
+                      <Input
+                        placeholder="Digite o livro"
+                        {...field}
+                        value={field.value ?? ""}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="birth.fls"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Folha *</FormLabel>
+                    <FormControl>
+                      <Input
+                        placeholder="Digite a folha"
+                        {...field}
+                        value={field.value ?? ""}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </>
+          )}
+
           <FormField
             control={form.control}
             name="birth.date"
@@ -333,7 +401,7 @@ export default function MembersRegisterPersonalPage() {
             name="phone"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Telefone *</FormLabel>
+                <FormLabel>Telefone</FormLabel>
                 <FormControl>
                   <Input
                     placeholder="(00) 00000-0000"
