@@ -17,7 +17,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { handleBackendValidationErrors } from "@/lib/utils/form-errors";
-import {getConflictError, getStepForBackendField, isSuccessStatus} from "@/domains/patients/shared/patient.utils";
+import {getConflictError, getStepForBackendField, hasRequiredRegistrationFiles, isSuccessStatus} from "@/domains/patients/shared/patient.utils";
 import { bffFetchJson } from "@/lib/bff-client";
 import z from "zod";
 import { FormButton, MembersRegisterForm } from "@/domains/patients/components/form";
@@ -29,7 +29,7 @@ import { toast } from "react-toastify";
 
 export default function MembersRegisterProfilePage() {
   const {
-    state: { profile },
+    state: { profile, additionals },
     setters: { setProfileData, setStep },
     register,
   } = useMembersRegisterContext();
@@ -211,6 +211,11 @@ export default function MembersRegisterProfilePage() {
   }, [submitted, profile, register, router, form, setStep, id, isEditing]);
 
   const onSubmit = async (values: z.infer<typeof currentSchema>) => {
+    if (!isEditing && !hasRequiredRegistrationFiles(additionals)) {
+      setStep(MembersRegisterStep.ADDITIONALS);
+      toast.error("Anexe novamente o laudo e o encaminhamento");
+      return;
+    }
     const payload = { ...values };
     if (isEditing && payload.photo instanceof File) {
       payload.photo = undefined;

@@ -34,6 +34,8 @@ import {
 
 import { membersRegisterReducer, initialState } from "./register-context/reducer";
 import { useRegisterSubmission } from "./register-context/useRegisterSubmission";
+import { toast } from "react-toastify";
+import { draftNeedsFileWarning } from "@/domains/patients/shared/patient.utils";
 
 export { MembersRegisterStep };
 export type { MembersRegisterState };
@@ -144,6 +146,9 @@ export function MembersRegisterProvider({
 
     const draft = loadDraft<DraftCache>(STORAGE_KEY, ownerId);
     if (draft) {
+      if (draftNeedsFileWarning(draft.step)) {
+        toast.warning("Os arquivos anexados não ficam salvos no rascunho. Anexe novamente o laudo, o encaminhamento e a foto.");
+      }
       dispatch({
         type: "LOAD_ALL_DATA",
         payload: reviveDates(draft) as MembersRegisterState,

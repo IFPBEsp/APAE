@@ -6,7 +6,7 @@ import { toast } from "react-toastify";
 import { login } from "../auth.api";
 import { FormLogin } from "../authSchema";
 import { startSession } from "@/domains/auth/session-id";
-import { clearAllPatientDrafts } from "@/domains/patients/utils/draft-storage";
+import { clearForeignPatientDrafts } from "@/domains/patients/utils/draft-storage";
 
 export function useLogin() {
   const router = useRouter();
@@ -18,8 +18,10 @@ export function useLogin() {
       const responseData = await res.json();
 
       if (res.ok) {
-        clearAllPatientDrafts();
-        startSession();
+        const userId = typeof responseData.userId === "string" ? responseData.userId : "";
+        if (userId) clearForeignPatientDrafts(userId);
+        startSession(userId || undefined);
+
 
         toast.success(responseData.message);
         router.push("/");
