@@ -12,7 +12,7 @@ export type UUID = string;
 export interface AnnualRegistry {
   id: UUID;
   bpc: string;
-  diseases: string;
+  diseases: string | null;
   familyIncome: number;
   year: string;
   patient: Patient;

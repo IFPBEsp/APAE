@@ -29,7 +29,7 @@ public class AnnualRegistry {
     @Column(name = "bpc", nullable = false)
     private String bpc;
 
-    @Column(name = "doencas", nullable = false)
+    @Column(name = "doencas")
     private String diseases;
 
     @Column(name = "medicamentos_continuos")
@@ -58,7 +58,7 @@ public class AnnualRegistry {
     public AnnualRegistry(String bpc, String diseases, String continuousMedication, BigDecimal familyIncome, int year, UUID patientId,
                           Set<Disorder> disorders, Set<ServiceArea> serviceAreas) {
         this.bpc = bpc;
-        this.diseases = diseases;
+        this.diseases = normalizeOptionalText(diseases);
         this.continuousMedication = continuousMedication;
         this.familyIncome = familyIncome;
         this.year = year;
@@ -71,7 +71,7 @@ public class AnnualRegistry {
                           Set<Disorder> disorders, Set<ServiceArea> serviceAreas) {
         this.id = id;
         this.bpc = bpc;
-        this.diseases = diseases;
+        this.diseases = normalizeOptionalText(diseases);
         this.continuousMedication = continuousMedication;
         this.familyIncome = familyIncome;
         this.year = year;
@@ -104,7 +104,11 @@ public class AnnualRegistry {
     @Override
     public int hashCode() { return Objects.hash(id); }
     public void setBpc(String bpc) { this.bpc = bpc; }
-    public void setDiseases(String diseases) { this.diseases = diseases; }
+    public void setDiseases(String diseases) { this.diseases = normalizeOptionalText(diseases); }
+
+    private static String normalizeOptionalText(String value) {
+        return (value == null || value.isBlank()) ? null : value;
+    }
     public void setContinuousMedication(String continuousMedication) { this.continuousMedication = continuousMedication; }
     public void setFamilyIncome(BigDecimal familyIncome) { this.familyIncome = familyIncome; }
     public void setYear(Integer year) { this.year = year; }
