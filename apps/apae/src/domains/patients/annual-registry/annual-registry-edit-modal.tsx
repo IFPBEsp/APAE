@@ -129,10 +129,10 @@ export default function AnnualRegistryEditModal({
                   <div className="space-y-3">
                     <FormField control={form.control} name="diseases" render={({ field }) => (
                       <FormItem>
-                        <FormLabel className={`font-bold text-xs ${errors.diseases ? "text-red-500" : "text-slate-700"}`}>Doenças</FormLabel>
+                        <FormLabel className={`font-bold text-xs ${errors.diseases ? "text-red-500" : "text-slate-700"}`}>Doenças (atuais e anteriores)</FormLabel>
                         <FormControl>
                           <div className={errors.diseases ? "border-red-500 border rounded-md" : ""}>
-                            <StringMultiSelect value={field.value || ""} onChange={field.onChange} placeholder="Digite doenças..." />
+                            <StringMultiSelect value={field.value || ""} onChange={field.onChange} placeholder="Ex.: Diabetes, Hipertensão, Catapora" />
                           </div>
                         </FormControl>
                         <FormMessage />
