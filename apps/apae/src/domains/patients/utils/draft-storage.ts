@@ -50,7 +50,7 @@ export function clearAllPatientDrafts() {
   patientDraftKeys().forEach((k) => localStorage.removeItem(k));
 }
 
-export function purgeForeignDrafts(currentUserId: string) {
+export function clearForeignPatientDrafts(currentUserId: string) {
   if (!canUseStorage()) return;
   for (const key of patientDraftKeys()) {
     try {
@@ -60,4 +60,8 @@ export function purgeForeignDrafts(currentUserId: string) {
       localStorage.removeItem(key);
     }
   }
+}
+
+export function purgeForeignDrafts(currentUserId: string) {
+  clearForeignPatientDrafts(currentUserId);
 }

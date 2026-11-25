@@ -8,6 +8,16 @@ import type {
   PatientPayload,
 } from "@/domains/patients/types/patient";
 
+export function hasRequiredRegistrationFiles(
+  additionals: Pick<MembersRegisterState["additionals"], "disability">,
+): boolean {
+  return additionals.disability.report instanceof File;
+}
+
+export function draftNeedsFileWarning(step: MembersRegisterStep): boolean {
+  return step === MembersRegisterStep.PROFILE;
+}
+
 export function buildPatientListQuery(
   values: PatientListQueryValues = {},
 ): URLSearchParams {
@@ -186,6 +196,9 @@ export function getStepForBackendField(
     return MembersRegisterStep.ADDRESS;
   }
   if (includesAny(fieldLower, ADDITIONALS_FIELDS)) {
+    return MembersRegisterStep.ADDITIONALS;
+  }
+  if (fieldLower.includes("reports")) {
     return MembersRegisterStep.ADDITIONALS;
   }
   if (fieldLower.includes("guardian")) {

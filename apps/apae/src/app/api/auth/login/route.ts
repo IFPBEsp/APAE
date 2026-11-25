@@ -66,7 +66,7 @@ export async function POST(req: Request) {
     await setSessionCookie(payload, expiresAtSec);
 
     return NextResponse.json(
-      { message: 'Login bem-sucedido' },
+      { message: 'Login bem-sucedido', userId: typeof jwtPayload?.sub === 'string' ? jwtPayload.sub : undefined },
       { status: 200 }
     );
   } catch (error) {
