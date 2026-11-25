@@ -72,7 +72,7 @@ export default function PersonDetailsPage() {
     id?: string;
     bpc: boolean;
     familyIncome: number;
-    diseases: string;
+    diseases: string | null;
     continuousMedication: string;
     disorders?: { id?: string; name: string }[];
     serviceAreas?: { id?: string; area: string }[];
@@ -374,7 +374,7 @@ export default function PersonDetailsPage() {
                 <InfoRow label="Recebe BPC?" value={annualRegistry .bpc} />
                 <InfoRow label="Renda Familiar" value={annualRegistry .familyIncome} />
                 <InfoRow label="Tipo de Atendimento" value={annualRegistry .serviceAreas?.map((atendimento) => atendimento.area).join(", ")} />
-                <InfoRow label="Doenças" value={annualRegistry .diseases} />
+                <InfoRow label="Doenças" value={annualRegistry.diseases?.trim() || null} />
                 <InfoRow label="Medicamentos Contínuos" value={annualRegistry .continuousMedication} />
                 <InfoRow label="Transtornos" value={annualRegistry.disorders?.map((d) => d.name).join(", ")} />
               </div>

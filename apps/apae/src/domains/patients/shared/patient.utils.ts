@@ -58,7 +58,7 @@ export function buildPatientPayload(
 
   const annualRegistryData = {
     bpc: additionals.bpc,
-    diseases: additionals.diseases || "Nenhuma",
+    diseases: additionals.diseases?.trim() || null,
     continuousMedication: additionals.medications || "Nenhum",
     serviceArea: additionals.care.types.map((area: string) => ({ area })),
     familyIncome: parseIncome(additionals.householdIncome),

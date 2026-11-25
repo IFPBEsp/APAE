@@ -78,7 +78,7 @@ class AnnualRegistryMapperTest {
     @Test
     void toEntity_ShouldHandleNullOptionalFields() {
         CreateAnnualRegistryDTO dto = new CreateAnnualRegistryDTO(
-                "BPC Não", "Nenhuma", null, new BigDecimal("1000.00"),
+                "BPC Não", null, null, new BigDecimal("1000.00"),
                 Year.of(2024), Set.of(), Set.of()
         );
 
@@ -88,9 +88,28 @@ class AnnualRegistryMapperTest {
         AnnualRegistry entity = annualRegistryMapper.toEntity(dto, disorderDtos, serviceAreaDtos, patientId);
 
         assertNotNull(entity);
+        assertNull(entity.getDiseases());
         assertNull(entity.getContinuousMedication());
         assertEquals(dto.bpc(), entity.getBpc());
-        assertEquals(dto.diseases(), entity.getDiseases());
+    }
+
+    @Test
+    void replaceEntityFromDto_ShouldNormalizeBlankDiseasesToNull() {
+        AnnualRegistry entity = new AnnualRegistry(
+                "BPC Antigo", "Diabetes", "Old med", new BigDecimal("1000.00"),
+                2023, patientId, Set.of(), Set.of()
+        );
+        ReplaceAnnualRegistryDTO dto = new ReplaceAnnualRegistryDTO(
+                "BPC Novo", "   ", new BigDecimal("3000.00"),
+                "Novo med", Set.of(), Set.of()
+        );
+
+        when(disorderMapper.toEntitySetFromResponse(disorderDtos)).thenReturn(dummyDisorders);
+        when(serviceAreaMapper.toEntitySetFromResponse(serviceAreaDtos)).thenReturn(dummyServiceAreas);
+
+        AnnualRegistry replaced = annualRegistryMapper.replaceEntityFromDto(entity, dto, disorderDtos, serviceAreaDtos);
+
+        assertNull(replaced.getDiseases());
     }
 
     @Test

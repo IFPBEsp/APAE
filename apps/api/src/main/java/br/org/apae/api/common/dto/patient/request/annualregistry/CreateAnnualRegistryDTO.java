@@ -13,7 +13,7 @@ import jakarta.validation.constraints.Size;
 public record CreateAnnualRegistryDTO(
                 @NotNull @Size(min = 1, max = 50) String bpc,
 
-                @NotNull String diseases,
+                String diseases,
 
                 String continuousMedication,
 

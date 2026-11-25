@@ -95,5 +95,23 @@ describe("getStepForBackendField", () => {
     expect(draftNeedsFileWarning(MembersRegisterStep.PROFILE)).toBe(true);
     expect(draftNeedsFileWarning(MembersRegisterStep.ADDITIONALS)).toBe(false);
     expect(draftNeedsFileWarning(MembersRegisterStep.GUARDIAN)).toBe(false);
+describe("buildPatientPayload - doenças opcional (#1151)", () => {
+  const buildWithDiseases = (diseases?: string): MembersRegisterState => ({
+    ...initialState,
+    additionals: {
+      ...initialState.additionals,
+      diseases,
+    },
+  });
+
+  it("envia null (e não 'Nenhuma') quando doenças está vazio, só espaços ou indefinido", () => {
+    expect(buildPatientPayload(buildWithDiseases("")).annualRegistry.diseases).toBeNull();
+    expect(buildPatientPayload(buildWithDiseases("   ")).annualRegistry.diseases).toBeNull();
+    expect(buildPatientPayload(buildWithDiseases(undefined)).annualRegistry.diseases).toBeNull();
+  });
+
+  it("envia o valor informado quando doenças é preenchido", () => {
+    const payload = buildPatientPayload(buildWithDiseases("Diabetes, Catapora"));
+    expect(payload.annualRegistry.diseases).toBe("Diabetes, Catapora");
   });
 });
