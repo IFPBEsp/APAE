@@ -25,7 +25,7 @@ export interface AnnualRegistry {
   id?: string;
   bpc: boolean | string;
   familyIncome: number | string;
-  diseases: string;
+  diseases: string | null;
   continuousMedication: string;
   medications?: string;
   medicamentos?: string;
