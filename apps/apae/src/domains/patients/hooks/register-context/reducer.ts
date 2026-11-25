@@ -113,7 +113,7 @@ export const initialState: MembersRegisterState = {
     vaccines: [],
     allergies: "",
     disability: { types: [], report: undefined },
-    care: { types: [] },
+    care: { types: [], referral: undefined },
     bpc: false,
     householdIncome: "",
   },

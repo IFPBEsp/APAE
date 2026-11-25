@@ -44,7 +44,9 @@ export interface AdditionalsData {
   vaccines: string[];
   allergies: string;
   disability: { types: string[]; report: File | string | undefined };
-  care: { types: string[] };
+  care: { 
+    types: string[];
+    referral: File | string | undefined };
   bpc: boolean;
   householdIncome: string;
 }

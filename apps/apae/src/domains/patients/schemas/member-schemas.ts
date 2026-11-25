@@ -201,6 +201,7 @@ export const Additionals = z.object({
     types: z
       .array(z.string().min(1))
       .min(1, "O tipo de atendimento é obrigatório."),
+    referral: z.instanceof(File, {message: "O encaminhamento é obrigatório."})  
   }),
   bpc: z.boolean(),
   householdIncome: z

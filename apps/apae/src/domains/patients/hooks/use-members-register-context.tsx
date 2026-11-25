@@ -41,6 +41,7 @@ export { MembersRegisterStep };
 export type { MembersRegisterState };
 
 type DraftCache = {
+  step?: MembersRegisterStep;
   personal?: {
     rg?: { issuing?: { date?: string | Date | null; } };
     birth?: { date?: string | Date };
@@ -52,6 +53,8 @@ function stripFiles(state: MembersRegisterState): MembersRegisterState {
 
   draft.additionals.disability.report =
     initialState.additionals.disability.report;
+  draft.additionals.care.referral =
+    initialState.additionals.care.referral;
   draft.profile.photo = initialState.profile.photo;
 
   return draft;
@@ -135,6 +138,8 @@ export function MembersRegisterProvider({
     }, []),
   };
 
+  
+
   useEffect(() => {
     if (hasHydrated.current) return;
     if (typeof window === "undefined") return;
@@ -144,8 +149,9 @@ export function MembersRegisterProvider({
     purgeForeignDrafts(ownerId);
 
     const draft = loadDraft<DraftCache>(STORAGE_KEY, ownerId);
+    
     if (draft) {
-      if (draftNeedsFileWarning(draft.step)) {
+      if (draft.step && draftNeedsFileWarning(draft.step)) {
         toast.warning("Os arquivos anexados não ficam salvos no rascunho. Anexe novamente o laudo, o encaminhamento e a foto.");
       }
       dispatch({
