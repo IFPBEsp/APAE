@@ -218,7 +218,13 @@ export const Kinship = z.object({
   cpf: cpfSchema,
   alive: z.boolean(),
   name: nomeCompletoSchema,
-  occupation: z.string().min(2, "Profissão inválida"),
+  occupation: z
+    .string()
+    .optional()
+    .refine(
+      (value) => !value || value.trim() === "" || value.trim().length >= 2,
+      "Profissão inválida",
+    ),
   type: z.string().min(1, "Informar o parentesco é obrigatório."),
   isLegalGuardian: z.boolean().default(false).optional(),
 });
