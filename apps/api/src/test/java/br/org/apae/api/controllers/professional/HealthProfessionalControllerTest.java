@@ -7,6 +7,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -14,6 +15,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mockito;
@@ -138,8 +140,7 @@ class HealthProfessionalControllerTest {
            base.name(),
            null,
            base.address(),
-           base.availabilities(),
-           base.profilePhoto()
+           base.availabilities()
    );
    var response = HealthProfessionalMockDto.createProfessionalResponse1();
 
@@ -176,8 +177,7 @@ class HealthProfessionalControllerTest {
            base.name(),
            "",
            base.address(),
-           base.availabilities(),
-           base.profilePhoto()
+           base.availabilities()
    );
    var response = HealthProfessionalMockDto.createProfessionalResponse1();
 
@@ -321,6 +321,28 @@ class HealthProfessionalControllerTest {
        .contentType(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsBytes(updateRequest)))
      .andExpect(status().isOk())
      .andExpect(jsonPath("$.id").value(id.toString()));
+  }
+
+  @Test
+  @DisplayName("Deve ignorar profilePhoto enviado no JSON de edição (200)")
+  void shouldIgnoreProfilePhotoInUpdateJson() throws Exception {
+   UUID id = HealthProfessionalMockDto.PROFESSIONAL_ID_1;
+   var response = HealthProfessionalMockDto.createProfessionalResponse1();
+   var updateRequest = HealthProfessionalMockDto.createHealthProfessionalRequest();
+
+   var body = (ObjectNode) objectMapper.valueToTree(updateRequest);
+   body.put("profilePhoto", "qualquer-coisa");
+   var expectedDto = objectMapper.treeToValue(objectMapper.valueToTree(updateRequest), UpdateHealthProfessionalDTO.class);
+
+   Mockito.when(service.updateProfessional(Mockito.eq(id), any(UpdateHealthProfessionalDTO.class))).thenReturn(response);
+
+   mockMvc.perform(put("/professionals/{id}", id).header("Authorization", AuthTestHelper.bearerToken())
+       .contentType(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsBytes(body)))
+     .andExpect(status().isOk());
+
+   ArgumentCaptor<UpdateHealthProfessionalDTO> captor = ArgumentCaptor.forClass(UpdateHealthProfessionalDTO.class);
+   Mockito.verify(service).updateProfessional(Mockito.eq(id), captor.capture());
+   assertEquals(expectedDto, captor.getValue());
   }
 
   @Test
