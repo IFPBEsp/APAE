@@ -227,19 +227,20 @@ curl -X POST http://localhost:8090/api/professionals/{PROFESSIONAL_ID}/documents
 
 ### 6.1 Acessar MinIO Console
 
-1. Acesse: http://localhost:9000
-2. Login: `ROOTUSER` / `CHANGEME123`
+1. Acesse o console: http://localhost:9001
+2. Login: valores de `MINIO_ROOT_USER` / `MINIO_ROOT_PASSWORD` do seu `.env`
 3. Procure pelo bucket com o nome do UUID do profissional
 
 ### 6.2 Verificar Arquivos via API MinIO
 
-```bash
-# Usar MinIO client (mc) se instalado
-mc ls local/{PROFESSIONAL_ID}/
+Com o MinIO client (`mc`) instalado, carregue as credenciais do `.env` no shell e
+configure o alias `local` (sem escrever os valores no comando):
 
-# Ou via API do MinIO
-curl -X GET "http://localhost:9000/{PROFESSIONAL_ID}/" \
-  -H "Authorization: AWS ROOTUSER:CHANGEME123"
+```bash
+set -a; . ./.env; set +a
+mc alias set local http://localhost:9000 "$MINIO_ROOT_USER" "$MINIO_ROOT_PASSWORD"
+
+mc ls local/{PROFESSIONAL_ID}/
 ```
 
 ### 6.3 Verificar Logs da Aplicação
