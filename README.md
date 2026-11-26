@@ -70,8 +70,9 @@ pnpm install
 cp .env.example .env
 ```
 
-O arquivo `.env.example` já contém valores adequados ao desenvolvimento local. Não use
-credenciais de produção nesse arquivo.
+O `.env.example` não traz os segredos (`JWT_SECRET` e credenciais do MinIO): gere os seus
+com o bloco do passo 2 de [DOCKER_LOCAL.md](docs/docs-docker/DOCKER_LOCAL.md#2-prepare-o-env-e-gere-os-segredos).
+Sem eles, o `docker compose` não sobe. Nunca coloque valores de segredo no `.env.example`.
 
 #### Passo 2: Preparar os serviços locais
 
@@ -269,7 +270,7 @@ Ao rodar `pnpm run dev`, o script verifica a existência do arquivo `.env`.
 Caso ele não exista, uma cópia será criada automaticamente a partir do `.env.example`.
 
 **Nota:** O script nunca sobrescreverá um arquivo `.env` já existente.
-Caso precise resetar as configurações, delete o `.env` manualmente, faça as modificações necessárias no .env.example e execute o comando novamente.
+Caso precise resetar as configurações, delete o `.env` manualmente, crie-o de novo gerando os segredos (passo 1 do setup) e execute o comando novamente. Não coloque valores de segredo no `.env.example`.
 
 ### Variáveis de Ambiente (Opcional)
 
