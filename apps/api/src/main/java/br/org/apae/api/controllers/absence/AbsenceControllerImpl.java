@@ -10,7 +10,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
@@ -20,7 +19,6 @@ import java.net.URI;
 import java.util.UUID;
 
 @RestController
-@CrossOrigin(origins = "http://localhost:3000")
 public class AbsenceControllerImpl implements AbsenceController {
 
     private final AbsenceApplicationService service;
