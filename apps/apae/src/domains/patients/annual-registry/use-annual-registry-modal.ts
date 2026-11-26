@@ -13,6 +13,7 @@ import {
   updateAnnualRegistryApi,
   updatePatientApi,
 } from "./annual-registry.api";
+import { toNullableString } from "@/domains/patients/shared/patient.utils";
 import type { DocumentDTO, FullPatientData, AnnualRegistry, ServiceTypeItem } from "./annual-registry.types";
 
 interface UseAnnualRegistryModalParams {
@@ -200,7 +201,7 @@ export function useAnnualRegistryModal({
     try {
       const registryId = initialData?.id;
       const income = parseFloat(cleanCurrency(data.familyIncome));
-      const medicationPayload = data.continuousMedication?.trim() ? data.continuousMedication.trim() : null;
+      const medicationPayload = toNullableString(data.continuousMedication);
 
       const regPayload = {
         bpc: data.bpc === "true",

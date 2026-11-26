@@ -18,8 +18,6 @@ public record ReplaceAnnualRegistryDTO(
 
         @NotNull @Positive
         BigDecimal familyIncome,
-
-       
         String continuousMedication,
 
         @NotNull

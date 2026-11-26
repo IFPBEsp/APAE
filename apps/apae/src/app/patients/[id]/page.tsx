@@ -73,7 +73,7 @@ export default function PersonDetailsPage() {
     bpc: boolean;
     familyIncome: number;
     diseases: string;
-    continuousMedication: string;
+    continuousMedication: string | null;
     disorders?: { id?: string; name: string }[];
     serviceAreas?: { id?: string; area: string }[];
   }
