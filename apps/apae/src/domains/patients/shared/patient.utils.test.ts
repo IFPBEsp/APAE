@@ -118,3 +118,26 @@ describe("buildPatientPayload - doenças opcional (#1151)", () => {
     expect(payload.annualRegistry.diseases).toBe("Diabetes, Catapora");
   });
 });
+
+describe("buildPatientPayload - vacinas opcional (#1154)", () => {
+  const buildWithVaccines = (vaccines: string[]): MembersRegisterState => ({
+    ...initialState,
+    additionals: {
+      ...initialState.additionals,
+      vaccines,
+    },
+  });
+
+  it("envia array vazio (nunca null) quando nenhuma vacina é selecionada", () => {
+    const payload = buildPatientPayload(buildWithVaccines([]));
+    expect(payload.vaccineNames).toEqual([]);
+    expect(payload.vaccineNames).not.toBeNull();
+  });
+
+  it("ignora itens vazios ou 'Não informado' e preserva vacinas válidas", () => {
+    const payload = buildPatientPayload(
+      buildWithVaccines(["", "   ", "Não informado", "BCG", "Poliomielite"]),
+    );
+    expect(payload.vaccineNames).toEqual([{ name: "BCG" }, { name: "Poliomielite" }]);
+  });
+});
