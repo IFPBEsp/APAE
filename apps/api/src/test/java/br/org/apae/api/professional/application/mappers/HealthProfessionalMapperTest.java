@@ -92,8 +92,7 @@ class HealthProfessionalMapperTest {
                 NAME,
                 IDENTITY_DOCUMENT,
                 address(),
-                availabilities,
-                PROFILE_PHOTO);
+                availabilities);
     }
 
     private static UpdateHealthProfessionalDTO updateDto(List<CreateAvailabilityDTO> availabilities) {
@@ -106,12 +105,11 @@ class HealthProfessionalMapperTest {
                 "Maria Souza",
                 "987654321",
                 updateAddress(),
-                availabilities,
-                "http://example.com/nova-foto.jpg");
+                availabilities);
     }
 
     @Test
-    @DisplayName("toEntity deve mapear documento profissional, foto de perfil e area de atendimento")
+    @DisplayName("toEntity deve mapear documento profissional e area de atendimento, sem foto de perfil")
     void toEntity_ShouldMapAllFields() {
         HealthProfessional entity = healthProfessionalMapper.toEntity(
                 createDto(List.of()),
@@ -119,7 +117,7 @@ class HealthProfessionalMapperTest {
                 professionalUser());
 
         assertEquals(PROFESSIONAL_DOCUMENT, entity.getProfessionalDocument());
-        assertEquals(PROFILE_PHOTO, entity.getProfilePhoto());
+        assertNull(entity.getProfilePhoto());
         assertNotNull(entity.getServiceArea());
         assertEquals(SERVICE_AREA_ID, entity.getServiceArea().getId());
         assertEquals(SERVICE_AREA_NAME, entity.getServiceArea().getArea());
@@ -229,9 +227,22 @@ class HealthProfessionalMapperTest {
         assertEquals("11888888888", result.getPhoneNumber());
         assertEquals("987654321", result.getIdentityDocument());
         assertEquals("CRP-99999", result.getProfessionalDocument());
-        assertEquals("http://example.com/nova-foto.jpg", result.getProfilePhoto());
         assertEquals(Integer.valueOf(2), result.getServiceArea().getId());
         assertEquals("Psicologia", result.getServiceArea().getArea());
+    }
+
+    @Test
+    @DisplayName("updateEntityFromDto deve preservar a foto de perfil que o profissional ja tinha")
+    void updateEntityFromDto_ShouldKeepExistingProfilePhoto() {
+        HealthProfessional professional = new HealthProfessional(
+                PROFESSIONAL_ID, professionalUser(), new ServiceArea(SERVICE_AREA_ID, SERVICE_AREA_NAME),
+                PROFESSIONAL_DOCUMENT);
+        professional.setProfilePhoto(PROFILE_PHOTO);
+
+        HealthProfessional result = healthProfessionalMapper.updateEntityFromDto(
+                professional, updateDto(null), new ServiceAreaResponseDTO(2, "Psicologia"));
+
+        assertEquals(PROFILE_PHOTO, result.getProfilePhoto());
     }
 
     @Test
