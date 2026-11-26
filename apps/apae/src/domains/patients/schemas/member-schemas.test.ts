@@ -78,6 +78,24 @@ describe("Órgão emissor", () => {
       },
     });
 
+  it("aceita os dados pessoais sem a cópia opcional da certidão", () => {
+    expect(Personal.safeParse(validPersonalBase).success).toBe(true);
+  });
+
+  it("aceita a cópia opcional da certidão como arquivo", () => {
+    expect(
+      Personal.safeParse({
+        ...validPersonalBase,
+        birth: {
+          ...validPersonalBase.birth,
+          file: new File(["cópia"], "certidao.pdf", {
+            type: "application/pdf",
+          }),
+        },
+      }).success,
+    ).toBe(true);
+  });
+
   it.each(["SSP/PB", "PC/RJ", "DETRAN/RJ", "MARINHA/RJ"])(
     "aceita órgão emissor válido: %s",
     (body) => {

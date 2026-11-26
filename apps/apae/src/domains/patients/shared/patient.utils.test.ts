@@ -95,6 +95,9 @@ describe("getStepForBackendField", () => {
     expect(draftNeedsFileWarning(MembersRegisterStep.PROFILE)).toBe(true);
     expect(draftNeedsFileWarning(MembersRegisterStep.ADDITIONALS)).toBe(false);
     expect(draftNeedsFileWarning(MembersRegisterStep.GUARDIAN)).toBe(false);
+  });
+});
+
 describe("buildPatientPayload - doenças opcional (#1151)", () => {
   const buildWithDiseases = (diseases?: string): MembersRegisterState => ({
     ...initialState,

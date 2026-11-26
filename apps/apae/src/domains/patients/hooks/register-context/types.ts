@@ -9,6 +9,7 @@ export interface PersonalData {
     certificate: string;
     date: Date;
     place: string;
+    file?: File;
     registryOffice?: string;
     book?: string;
     fls?: string;
