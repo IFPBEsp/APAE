@@ -21,16 +21,41 @@ docker compose version     # v2 (sem hífen)
 ```
 Docker Desktop (Mac/Windows) ou Docker Engine + Compose plugin (Linux).
 
-### 2. Prepare o `.env`
+### 2. Prepare o `.env` e gere os segredos
+O `.env.example` não traz valor para os segredos (`JWT_SECRET` e as credenciais
+do MinIO): cada ambiente gera os seus. Sem eles, o `docker compose` não sobe e
+avisa qual variável falta (`defina JWT_SECRET no .env`).
+
+Rode o bloco abaixo **uma vez**, na raiz do repositório. Ele copia o
+`.env.example` e preenche os segredos com valores aleatórios (funciona em
+Linux, macOS e Git Bash no Windows; precisa do `openssl`):
 ```bash
 cp .env.example .env
+
+JWT_SECRET="$(openssl rand -base64 48)"        # 48 bytes (mínimo: 32)
+MINIO_USER="apae-$(openssl rand -hex 4)"
+MINIO_PASSWORD="$(openssl rand -hex 24)"
+
+sed -i.bak \
+  -e "s|^JWT_SECRET=.*|JWT_SECRET=$JWT_SECRET|" \
+  -e "s|^MINIO_ROOT_USER=.*|MINIO_ROOT_USER=$MINIO_USER|" \
+  -e "s|^MINIO_ROOT_PASSWORD=.*|MINIO_ROOT_PASSWORD=$MINIO_PASSWORD|" \
+  -e "s|^MINIO_ACCESS_KEY=.*|MINIO_ACCESS_KEY=$MINIO_USER|" \
+  -e "s|^MINIO_SECRET_KEY=.*|MINIO_SECRET_KEY=$MINIO_PASSWORD|" \
+  .env && rm .env.bak
 ```
-Não precisa alterar nada para rodar local — os valores padrão funcionam.
+> Não rode de novo depois que o MinIO já tiver dados: o MinIO guarda as
+> credenciais root no volume na primeira subida. Se trocar a senha, rode
+> `docker compose down -v` antes (apaga Postgres e MinIO) ou ajuste os valores
+> à mão. Nunca coloque esses valores no `.env.example` nem em documentação.
+
+Fora os segredos, os valores do `.env.example` funcionam para rodar local.
 Se for personalizar, atenção principalmente em:
 - `POSTGRES_PORT` (padrão `5200`) — a porta no host
 - `POSTGRES_USER` / `POSTGRES_PASSWORD` — devem bater com `DB_USERNAME` /
   `DB_PASSWORD` (já batem por padrão)
-- `JWT_SECRET` — qualquer string base64 serve para dev
+- `MINIO_ACCESS_KEY` / `MINIO_SECRET_KEY` — devem ser iguais a
+  `MINIO_ROOT_USER` / `MINIO_ROOT_PASSWORD` (o bloco acima já faz isso)
 
 ### 3. (Opcional) Buildar as imagens localmente
 Se você quer testar as suas mudanças nos Dockerfiles **antes** de publicar no
@@ -198,18 +223,23 @@ docker build -t apae-geral-backend:local ./apps/api
 # sobe só o Postgres do compose primeiro
 docker compose up -d db
 
+# carrega os segredos do .env no shell atual (gerado no passo 2 do TL;DR)
+set -a; . ./.env; set +a
+
 # depois roda o backend isolado conectando nele
 docker run --rm -p 8080:8080 \
   --add-host=host.docker.internal:host-gateway \
   -e DB_URL=jdbc:postgresql://host.docker.internal:5200/apae \
-  -e DB_USERNAME=user \
-  -e DB_PASSWORD=pass \
-  -e JWT_SECRET=U29tZVNlY3JldEF0TGVhc3QtMjU2Qml0cw== \
+  -e DB_USERNAME="$DB_USERNAME" \
+  -e DB_PASSWORD="$DB_PASSWORD" \
+  -e JWT_SECRET="$JWT_SECRET" \
   -e MINIO_URL=http://host.docker.internal:9000 \
-  -e MINIO_ACCESS_KEY=ROOTUSER \
-  -e MINIO_SECRET_KEY=CHANGEME123 \
+  -e MINIO_ACCESS_KEY="$MINIO_ACCESS_KEY" \
+  -e MINIO_SECRET_KEY="$MINIO_SECRET_KEY" \
   apae-geral-backend:local
 ```
+> Não escreva os valores dos segredos direto no comando: eles ficam no
+> histórico do shell.
 
 > No **macOS / Windows** o `host.docker.internal` já existe sem `--add-host`,
 > mas a flag não atrapalha. No **Linux** ela é obrigatória.
@@ -257,6 +287,7 @@ docker exec apae-geral-frontend id
 
 | Sintoma | Causa provável | Como resolver |
 |---|---|---|
+| `required variable JWT_SECRET is missing a value: defina JWT_SECRET no .env` (ou `MINIO_*`) | `.env` ausente ou segredo vazio | Gere os segredos com o bloco do passo 2 do TL;DR |
 | `Connection to host.docker.internal:5200 refused` ao subir o backend isolado | Postgres não está rodando | `docker compose up -d db` antes (seção 4.2) |
 | Backend reinicia em loop, logs mostram `Hibernate: Unable to determine Dialect` | Backend subiu antes do Postgres terminar de iniciar | Use `docker compose up -d` (o `depends_on: condition: service_healthy` resolve), ou `docker compose restart apae-geral-backend` |
 | Frontend abre mas chamadas pra API caem em 404 | Buildou com `NEXT_PUBLIC_API_URL=/apae-geral/api` mas não tem proxy | Rebuilde com URL absoluto (seção 4.1) ou ponha um Nginx |
