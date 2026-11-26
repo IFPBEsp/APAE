@@ -25,7 +25,7 @@ public class Guardian {
     @Column(name = "nome", nullable = false)
     private String name;
 
-    @Column(name = "contato", nullable = false)
+    @Column(name = "contato")
     private String contact;
 
     @Column(name = "parentesco", nullable = false)
