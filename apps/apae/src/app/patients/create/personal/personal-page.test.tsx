@@ -3,9 +3,11 @@ import { render, screen, fireEvent } from "@testing-library/react";
 import MembersRegisterPersonalPage from "./page";
 import { MembersRegisterProvider } from "@/domains/patients/hooks/use-members-register-context";
 
+const { pathnameMock } = vi.hoisted(() => ({ pathnameMock: vi.fn() }));
+
 vi.mock("next/navigation", () => ({
   useRouter: () => ({ push: vi.fn(), back: vi.fn() }),
-  usePathname: () => "/patients/create/personal",
+  usePathname: pathnameMock,
   useParams: () => ({}),
 }));
 
@@ -24,6 +26,40 @@ function renderPage() {
 describe("MembersRegisterPersonalPage - Cartório, Livro e Folha (#1132)", () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    pathnameMock.mockReturnValue("/patients/create/personal");
+  });
+
+  it("permite anexar a cópia opcional da certidão e mostra o nome do arquivo", () => {
+    const { container } = renderPage();
+
+    expect(
+      screen.getByRole("button", {
+        name: "Selecionar Cópia da Certidão de Nascimento",
+      }),
+    ).toBeInTheDocument();
+
+    const fileInput = container.querySelector<HTMLInputElement>(
+      'input[type="file"]',
+    );
+    const file = new File(["cópia"], "certidao.pdf", {
+      type: "application/pdf",
+    });
+
+    fireEvent.change(fileInput!, { target: { files: [file] } });
+
+    expect(screen.getByText("Arquivo: certidao.pdf")).toBeInTheDocument();
+  });
+
+  it("esconde a seleção de arquivo durante a edição do paciente", () => {
+    pathnameMock.mockReturnValue("/patients/123/edit/personal");
+
+    renderPage();
+
+    expect(
+      screen.queryByRole("button", {
+        name: "Selecionar Cópia da Certidão de Nascimento",
+      }),
+    ).not.toBeInTheDocument();
   });
 
   it("não exibe os campos de cartório, livro e folha quando o campo da certidão está vazio", () => {

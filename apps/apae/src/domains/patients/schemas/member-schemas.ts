@@ -117,6 +117,7 @@ export const Personal = z
     birth: z
       .object({
       certificate: birthCertificateSchema,
+      file: z.instanceof(File).optional(),
       registryOffice: z.string().optional(),
       book: z.string().optional(),
       fls: z.string().optional(),
@@ -185,7 +186,7 @@ export const Personal = z
 export const Address = addressSchema;
 
 export const Additionals = z.object({
-  diseases: z.string().min(1, "O campo de doenças é obrigatório."),
+  diseases: z.string().optional(),
   medications: z.string().min(1, "O campo de medicações é obrigatório."),
   vaccines: z
     .array(z.string().min(1))

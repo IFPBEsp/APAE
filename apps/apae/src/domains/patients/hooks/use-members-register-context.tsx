@@ -34,11 +34,14 @@ import {
 
 import { membersRegisterReducer, initialState } from "./register-context/reducer";
 import { useRegisterSubmission } from "./register-context/useRegisterSubmission";
+import { toast } from "react-toastify";
+import { draftNeedsFileWarning } from "@/domains/patients/shared/patient.utils";
 
 export { MembersRegisterStep };
 export type { MembersRegisterState };
 
 type DraftCache = {
+  step?: MembersRegisterStep;
   personal?: {
     rg?: { issuing?: { date?: string | Date | null; } };
     birth?: { date?: string | Date };
@@ -50,6 +53,7 @@ function stripFiles(state: MembersRegisterState): MembersRegisterState {
 
   draft.additionals.disability.report =
     initialState.additionals.disability.report;
+  draft.personal.birth.file = initialState.personal.birth.file;
   draft.profile.photo = initialState.profile.photo;
 
   return draft;
@@ -133,6 +137,8 @@ export function MembersRegisterProvider({
     }, []),
   };
 
+  
+
   useEffect(() => {
     if (hasHydrated.current) return;
     if (typeof window === "undefined") return;
@@ -142,7 +148,11 @@ export function MembersRegisterProvider({
     purgeForeignDrafts(ownerId);
 
     const draft = loadDraft<DraftCache>(STORAGE_KEY, ownerId);
+    
     if (draft) {
+      if (draft.step && draftNeedsFileWarning(draft.step)) {
+        toast.warning("Os arquivos anexados não ficam salvos no rascunho. Anexe novamente o laudo, a foto e a cópia da certidão de nascimento.");
+      }
       dispatch({
         type: "LOAD_ALL_DATA",
         payload: reviveDates(draft) as MembersRegisterState,

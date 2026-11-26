@@ -133,6 +133,21 @@ public class AnnualRegistryControllerTest {
   }
 
   @Test
+  @DisplayName("Deve criar registro com sucesso quando doenças é nulo (201)")
+  void shouldCreateRegistryWithNullDiseasesSuccess() throws Exception {
+   UUID patientId = UUID.randomUUID();
+   CreateAnnualRegistryDTO requestDto = new CreateAnnualRegistryDTO("123456", null, "Nenhum", BigDecimal.valueOf(2000.00), Year.of(2024), Collections.emptySet(), Collections.emptySet());
+   AnnualRegistryResponseDTO responseDto = new AnnualRegistryResponseDTO(UUID.randomUUID(), "123456", null, "Nenhum", BigDecimal.valueOf(2000.00), 2024, patientId, new HashSet<>(), new HashSet<>());
+
+   when(annualRegistryService.createRegistry(any(), eq(patientId))).thenReturn(responseDto);
+
+   mockMvc.perform(post(BASE_URL, patientId).header("Authorization", AuthTestHelper.bearerToken())
+       .contentType(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(requestDto)).accept(MediaType.APPLICATION_JSON))
+     .andExpect(status().isCreated())
+     .andExpect(jsonPath("$.diseases").isEmpty());
+  }
+
+  @Test
   @DisplayName("Deve retornar Erro de Validação quando campos obrigatórios do DTO são nulos")
   void shouldReturnBadRequestWhenMandatoryFieldsAreNull() throws Exception {
    UUID patientId = UUID.randomUUID();
@@ -314,6 +329,22 @@ public class AnnualRegistryControllerTest {
    mockMvc.perform(put(BASE_URL + "/{registryId}", patientId, registryId).header("Authorization", AuthTestHelper.bearerToken())
        .contentType(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(replaceDto)))
      .andExpect(status().isOk());
+  }
+
+  @Test
+  @DisplayName("PUT - Deve substituir registro totalmente com sucesso quando doenças é nulo")
+  void shouldReplaceRegistryWithNullDiseasesSuccess() throws Exception {
+   UUID patientId = UUID.randomUUID();
+   UUID registryId = UUID.randomUUID();
+   ReplaceAnnualRegistryDTO replaceDto = new ReplaceAnnualRegistryDTO("987654", null, BigDecimal.valueOf(3000.00), "Novos Meds", Collections.emptySet(), Collections.emptySet());
+   AnnualRegistryResponseDTO responseDto = new AnnualRegistryResponseDTO(registryId, "987654", null, "Novos Meds", BigDecimal.valueOf(3000.00), 2024, patientId, new HashSet<>(), new HashSet<>());
+
+   when(annualRegistryService.replaceRegistry(eq(patientId), eq(registryId), any())).thenReturn(responseDto);
+
+   mockMvc.perform(put(BASE_URL + "/{registryId}", patientId, registryId).header("Authorization", AuthTestHelper.bearerToken())
+       .contentType(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(replaceDto)))
+     .andExpect(status().isOk())
+     .andExpect(jsonPath("$.diseases").isEmpty());
   }
 
   @Test

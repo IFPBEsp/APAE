@@ -1,7 +1,13 @@
 import { describe, expect, it } from "vitest";
 import { initialState } from "@/domains/patients/hooks/register-context/reducer";
 import type { MembersRegisterState } from "@/domains/patients/hooks/register-context/types";
-import { buildPatientPayload } from "./patient.utils";
+import {
+  buildPatientPayload,
+  draftNeedsFileWarning,
+  getStepForBackendField,
+  hasRequiredRegistrationFiles,
+} from "./patient.utils";
+import { MembersRegisterStep } from "../hooks/register-context/types";
 
 const buildState = (
   birth: Partial<MembersRegisterState["personal"]["birth"]>,
@@ -61,5 +67,54 @@ describe("buildPatientPayload - certidão (#1132)", () => {
   it("mantém o número da certidão informado", () => {
     const payload = buildPatientPayload(buildState({ certificate: "12345" }));
     expect(payload.birthCertificateNumber).toBe("12345");
+  });
+});
+
+describe("getStepForBackendField", () => {
+  it("mapeia reports para Informações Adicionais", () => {
+    expect(getStepForBackendField("reports")).toBe(
+      MembersRegisterStep.ADDITIONALS,
+    );
+  });
+
+  it("exige o laudo médico antes do cadastro", () => {
+    expect(
+      hasRequiredRegistrationFiles({
+        disability: { report: new File(["laudo"], "laudo.pdf"), types: [] },
+      }),
+    ).toBe(true);
+
+    expect(
+      hasRequiredRegistrationFiles({
+        disability: { report: undefined, types: [] },
+      }),
+    ).toBe(false);
+  });
+
+  it("avisa quando um rascunho recuperado já passou de Informações Adicionais", () => {
+    expect(draftNeedsFileWarning(MembersRegisterStep.PROFILE)).toBe(true);
+    expect(draftNeedsFileWarning(MembersRegisterStep.ADDITIONALS)).toBe(false);
+    expect(draftNeedsFileWarning(MembersRegisterStep.GUARDIAN)).toBe(false);
+  });
+});
+
+describe("buildPatientPayload - doenças opcional (#1151)", () => {
+  const buildWithDiseases = (diseases?: string): MembersRegisterState => ({
+    ...initialState,
+    additionals: {
+      ...initialState.additionals,
+      diseases,
+    },
+  });
+
+  it("envia null (e não 'Nenhuma') quando doenças está vazio, só espaços ou indefinido", () => {
+    expect(buildPatientPayload(buildWithDiseases("")).annualRegistry.diseases).toBeNull();
+    expect(buildPatientPayload(buildWithDiseases("   ")).annualRegistry.diseases).toBeNull();
+    expect(buildPatientPayload(buildWithDiseases(undefined)).annualRegistry.diseases).toBeNull();
+  });
+
+  it("envia o valor informado quando doenças é preenchido", () => {
+    const payload = buildPatientPayload(buildWithDiseases("Diabetes, Catapora"));
+    expect(payload.annualRegistry.diseases).toBe("Diabetes, Catapora");
   });
 });

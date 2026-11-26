@@ -46,7 +46,7 @@ function cleanPatientData(data: Record<string, unknown>) {
   return rest;
 }
 
-function mapRegistryToFormValues(
+export function mapRegistryToFormValues(
   year: string,
   registry: AnnualRegistry | null,
   patient: FullPatientData | null,
@@ -75,11 +75,18 @@ function mapRegistryToFormValues(
     registry?.medicamentos ||
     "";
 
+  const diseasesValue =
+    registry?.diseases &&
+    registry.diseases.trim() !== "" &&
+    registry.diseases !== "Não informado"
+      ? registry.diseases
+      : "";
+
   return {
     year,
     bpc: bpcString,
     familyIncome: registry?.familyIncome ? formatCurrencyForDisplay(registry.familyIncome) : "",
-    diseases: registry?.diseases ?? "",
+    diseases: diseasesValue,
     continuousMedication: medicationValue,
     allergies: patient?.allergies ?? "",
     disorders: registry?.disorders || [],
@@ -222,7 +229,7 @@ export function useAnnualRegistryModal({
       const regPayload = {
         bpc: data.bpc === "true",
         familyIncome: income,
-        diseases: data.diseases || "Nenhuma",
+        diseases: data.diseases?.trim() || null,
         continuousMedication: data.continuousMedication || "Nenhum",
         medications: data.continuousMedication || "Nenhum",
         medicamentos: data.continuousMedication || "Nenhum",

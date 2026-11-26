@@ -91,7 +91,7 @@ export default function MembersRegisterAdditionalsPage() {
 
   useEffect(() => {
     const hasData =
-      additionals.diseases !== "" ||
+      Boolean(additionals.diseases) ||
       additionals.vaccines.length > 0 ||
       additionals.disability.report instanceof File;
 
@@ -196,11 +196,12 @@ export default function MembersRegisterAdditionalsPage() {
                 name="diseases"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Doenças que já teve *</FormLabel>
+                    <FormLabel>Doenças (atuais e anteriores)</FormLabel>
                     <FormControl>
                       <Input
-                        placeholder="Catapora, Gripe H1N1, Pneumonia"
+                        placeholder="Ex.: Diabetes, Hipertensão, Catapora"
                         {...field}
+                        value={field.value ?? ""}
                         onChange={(e) => field.onChange(capitalizeFirst(e.target.value))}
                       />
                     </FormControl>

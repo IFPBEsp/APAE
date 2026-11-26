@@ -30,7 +30,7 @@ export async function bffFetch(
   });
 
   if (response.status === 401 && redirectOnUnauthorized) {
-    await endSession();
+    await endSession({ preserveDrafts: true });
   }
 
   return response;

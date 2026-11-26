@@ -1,5 +1,7 @@
 import { describe, expect, it } from "vitest";
-import { Personal, Guardian, Kinship, birthCertificateSchema } from "./member-schemas";
+import { Additionals, Personal, Guardian, Kinship, birthCertificateSchema } from "./member-schemas";
+import { annualRegistryFormSchema } from "@/domains/patients/annual-registry/annual-registry.schema";
+import { mapRegistryToFormValues } from "@/domains/patients/annual-registry/use-annual-registry-modal";
 
 const MATRICULA = "12345678901234567890123456789012";
 const MATRICULA_FORMATADA = "123456 78 90 1234 5 67890 123 4567890 12";
@@ -75,6 +77,24 @@ describe("Órgão emissor", () => {
         issuing: { ...validPersonalBase.rg.issuing, body },
       },
     });
+
+  it("aceita os dados pessoais sem a cópia opcional da certidão", () => {
+    expect(Personal.safeParse(validPersonalBase).success).toBe(true);
+  });
+
+  it("aceita a cópia opcional da certidão como arquivo", () => {
+    expect(
+      Personal.safeParse({
+        ...validPersonalBase,
+        birth: {
+          ...validPersonalBase.birth,
+          file: new File(["cópia"], "certidao.pdf", {
+            type: "application/pdf",
+          }),
+        },
+      }).success,
+    ).toBe(true);
+  });
 
   it.each(["SSP/PB", "PC/RJ", "DETRAN/RJ", "MARINHA/RJ"])(
     "aceita órgão emissor válido: %s",
@@ -205,5 +225,76 @@ describe("Cartório, livro e folha (#1132)", () => {
       parse({ certificate: "123456 78 90 1234 5 67890 123 4567890 12" })
         .success,
     ).toBe(true);
+  });
+});
+
+describe("Campo Doenças opcional (#1151)", () => {
+  const validAdditionalsBase = {
+    medications: "Losartana",
+    vaccines: ["BCG"],
+    allergies: "Poeira",
+    disability: {
+      types: ["TEA"],
+      report: new File([new Uint8Array(10)], "laudo.pdf", { type: "application/pdf" }),
+    },
+    care: {
+      types: ["Psicologia"],
+    },
+    bpc: false,
+    householdIncome: "R$ 1.500,00",
+  };
+
+  it("Additionals aceita doenças vazio, omitido ou preenchido", () => {
+    expect(Additionals.safeParse({ ...validAdditionalsBase, diseases: "" }).success).toBe(true);
+    expect(Additionals.safeParse({ ...validAdditionalsBase }).success).toBe(true);
+    expect(
+      Additionals.safeParse({ ...validAdditionalsBase, diseases: "Diabetes, Catapora" }).success,
+    ).toBe(true);
+  });
+
+  const validAnnualRegistryBase = {
+    year: "2026",
+    bpc: "false" as const,
+    familyIncome: "R$ 1.500,00",
+    continuousMedication: "Losartana",
+    allergies: "Poeira",
+    vaccines: [{ name: "BCG" }],
+    disorders: [{ name: "TEA" }],
+    serviceTypes: [{ area: "Psicologia" }],
+  };
+
+  it("annualRegistryFormSchema aceita doenças vazio, omitido ou preenchido", () => {
+    expect(
+      annualRegistryFormSchema.safeParse({ ...validAnnualRegistryBase, diseases: "" }).success,
+    ).toBe(true);
+    expect(annualRegistryFormSchema.safeParse({ ...validAnnualRegistryBase }).success).toBe(true);
+    expect(
+      annualRegistryFormSchema.safeParse({
+        ...validAnnualRegistryBase,
+        diseases: "Hipertensão, Catapora",
+      }).success,
+    ).toBe(true);
+  });
+
+  it("mapRegistryToFormValues abre o campo vazio quando diseases é null, vazio ou 'Não informado'", () => {
+    const baseRegistry = {
+      bpc: false,
+      familyIncome: 1500,
+      continuousMedication: "Losartana",
+    };
+
+    expect(
+      mapRegistryToFormValues("2026", { ...baseRegistry, diseases: null }, null).diseases,
+    ).toBe("");
+    expect(
+      mapRegistryToFormValues("2026", { ...baseRegistry, diseases: "   " }, null).diseases,
+    ).toBe("");
+    expect(
+      mapRegistryToFormValues("2026", { ...baseRegistry, diseases: "Não informado" }, null)
+        .diseases,
+    ).toBe("");
+    expect(
+      mapRegistryToFormValues("2026", { ...baseRegistry, diseases: "Diabetes" }, null).diseases,
+    ).toBe("Diabetes");
   });
 });
