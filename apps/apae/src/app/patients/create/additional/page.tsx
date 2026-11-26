@@ -251,11 +251,12 @@ export default function MembersRegisterAdditionalsPage() {
                 name="medications"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Tipo de medicação que toma *</FormLabel>
+                    <FormLabel>Tipo de medicação que toma</FormLabel>
                     <FormControl>
                       <Input
                         placeholder="Losartana, paracetamol"
                         {...field}
+                        value={field.value ?? ""}
                         onChange={(e) => field.onChange(capitalizeFirst(e.target.value))}
                       />
                     </FormControl>

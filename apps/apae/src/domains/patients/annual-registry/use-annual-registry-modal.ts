@@ -14,6 +14,7 @@ import {
   updateAnnualRegistryApi,
   updatePatientApi,
 } from "./annual-registry.api";
+import { toNullableString } from "@/domains/patients/shared/patient.utils";
 import type { DocumentDTO, FullPatientData, AnnualRegistry, ServiceTypeItem } from "./annual-registry.types";
 
 interface UseAnnualRegistryModalParams {
@@ -69,11 +70,13 @@ export function mapRegistryToFormValues(
       }))
     : [];
 
-  const medicationValue =
+  const rawMedication =
     registry?.continuousMedication ||
     registry?.medications ||
     registry?.medicamentos ||
     "";
+    const medicationValue =
+      rawMedication.trim() === "Não informado" ? "" : rawMedication;
 
   const diseasesValue =
     registry?.diseases &&
@@ -225,14 +228,15 @@ export function useAnnualRegistryModal({
     try {
       const registryId = initialData?.id;
       const income = parseFloat(cleanCurrency(data.familyIncome));
+      const medicationPayload = toNullableString(data.continuousMedication);
 
       const regPayload = {
         bpc: data.bpc === "true",
         familyIncome: income,
         diseases: data.diseases?.trim() || null,
-        continuousMedication: data.continuousMedication || "Nenhum",
-        medications: data.continuousMedication || "Nenhum",
-        medicamentos: data.continuousMedication || "Nenhum",
+        continuousMedication: medicationPayload,
+        medications: medicationPayload,
+        medicamentos: medicationPayload,
         disorders: (data.disorders || []).map((d: Record<string, unknown>) => ({ name: d.name || d.label || d.value, id: d.id })),
         serviceArea: (data.serviceTypes || []).map((s: Record<string, unknown>) => ({ id: s.id, area: s.area || s.name || s.label })),
         serviceAreas: (data.serviceTypes || []).map((s: Record<string, unknown>) => ({ id: s.id, area: s.area || s.name || s.label })),
@@ -268,7 +272,7 @@ export function useAnnualRegistryModal({
           nationality: baseData.nationality || baseData.birthplace || "",
           allergies: data.allergies || "Nenhuma",
           vaccineNames: vaccineList,
-          continuousMedication: data.continuousMedication || "Nenhum",
+          continuousMedication: medicationPayload,
         });
       }
 
