@@ -17,12 +17,13 @@ import { parseCivilDate } from "@/lib/date";
 import { bffFetchJson } from "@/lib/bff-client";
 import { normalizeStateToUF } from "@/lib/states";
 import { formatBirthCertificate } from "@/lib/formats";
+import { mapParentProfessionToForm } from "@/domains/patients/shared/patient.utils";
 
 interface ParentData {
   name?: string;
   cpf?: string;
-  rg?: string;
-  profession?: string;
+  rg?: string | null;
+  profession?: string | null;
   isAlive?: boolean;
   kinship?: string;
 }
@@ -155,7 +156,7 @@ function EditPatientDataLoader({ children }: { children: React.ReactNode }) {
               name: p.name || "",
               cpf: p.cpf || "",
               rg: p.rg || "",
-              occupation: p.profession || "",
+              occupation: mapParentProfessionToForm(p.profession),
               alive: p.isAlive ?? true,
               type: p.kinship || "",
               isLegalGuardian:
