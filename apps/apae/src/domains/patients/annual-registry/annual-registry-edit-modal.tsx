@@ -5,7 +5,8 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Loader2, Upload, FileText, RefreshCw, ExternalLink } from "lucide-react";
+import { Loader2, FileText, RefreshCw, ExternalLink } from "lucide-react";
+import { DocumentUpload } from "@/components/shared/DocumentUpload";
 import { StringMultiSelect } from "@/components/StringMultiSelect";
 import { GenericDatabaseSelect } from "@/components/GenericDatabaseSelect";
 import { useAnnualRegistryModal, availableYears } from "./use-annual-registry-modal";
@@ -36,7 +37,6 @@ export default function AnnualRegistryEditModal({
     isUploading,
     docType,
     setDocType,
-    fileInputRef,
     handleFileUpload,
     handleMoneyChange,
     onSubmit,
@@ -227,11 +227,12 @@ export default function AnnualRegistryEditModal({
                             {MEDICAL_DOC_TYPES.map((t) => <SelectItem key={t.value} value={t.value}>{t.label}</SelectItem>)}
                           </SelectContent>
                         </Select>
-                        <input type="file" ref={fileInputRef} onChange={handleFileUpload} className="hidden" accept=".pdf,.jpg,.png,.jpeg" disabled={isUploading} />
-                        <Button variant="outline" className="w-full bg-white text-[#0D4F97] border-[#0D4F97]/20 hover:bg-[#0D4F97] hover:text-white h-10 transition-all text-sm" onClick={() => fileInputRef.current?.click()} disabled={isUploading}>
-                          {isUploading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Upload className="mr-2 h-4 w-4" />}
-                          Selecionar Arquivo
-                        </Button>
+                        <DocumentUpload
+                          onFileChange={handleFileUpload}
+                          disabled={isUploading}
+                          showSelectedFile={false}
+                          clearInputOnSelect
+                        />
                       </div>
                     </div>
 

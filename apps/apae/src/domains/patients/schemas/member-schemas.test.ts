@@ -1,5 +1,12 @@
 import { describe, expect, it } from "vitest";
-import { Personal, Guardian, Kinship, birthCertificateSchema } from "./member-schemas";
+import {
+  Additionals,
+  Personal,
+  Guardian,
+  Kinship,
+  birthCertificateSchema,
+} from "./member-schemas";
+import { MAX_FILE_SIZE_BYTES } from "@/lib/constants";
 
 const MATRICULA = "12345678901234567890123456789012";
 const MATRICULA_FORMATADA = "123456 78 90 1234 5 67890 123 4567890 12";
@@ -205,5 +212,79 @@ describe("Cartório, livro e folha (#1132)", () => {
       parse({ certificate: "123456 78 90 1234 5 67890 123 4567890 12" })
         .success,
     ).toBe(true);
+  });
+});
+
+describe("Laudo da deficiência no cadastro de paciente (#1084)", () => {
+  const makeFile = (name: string, type: string, size = 1024) =>
+    new File([new Uint8Array(size)], name, { type });
+
+  const baseAdditionals = {
+    diseases: "Nenhuma",
+    medications: "Nenhum",
+    vaccines: ["BCG"],
+    allergies: "Nenhuma",
+    disability: {
+      types: ["TEA"],
+      report: makeFile("laudo.pdf", "application/pdf"),
+    },
+    care: {
+      types: ["Psicologia"],
+    },
+    bpc: false,
+    householdIncome: "R$ 1.500,00",
+  };
+
+  it("aceita laudo em PDF e em DOCX válidos", () => {
+    expect(Additionals.safeParse(baseAdditionals).success).toBe(true);
+
+    const docxReport = makeFile(
+      "laudo.docx",
+      "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+    );
+    expect(
+      Additionals.safeParse({
+        ...baseAdditionals,
+        disability: { ...baseAdditionals.disability, report: docxReport },
+      }).success,
+    ).toBe(true);
+  });
+
+  it("rejeita laudo vazio, em formato inválido ou acima de 10MB", () => {
+    const emptyReport = makeFile("vazio.pdf", "application/pdf", 0);
+    const txtReport = makeFile("laudo.txt", "text/plain");
+    const bigReport = makeFile(
+      "grande.pdf",
+      "application/pdf",
+      MAX_FILE_SIZE_BYTES + 1,
+    );
+
+    const emptyResult = Additionals.safeParse({
+      ...baseAdditionals,
+      disability: { ...baseAdditionals.disability, report: emptyReport },
+    });
+    const txtResult = Additionals.safeParse({
+      ...baseAdditionals,
+      disability: { ...baseAdditionals.disability, report: txtReport },
+    });
+    const bigResult = Additionals.safeParse({
+      ...baseAdditionals,
+      disability: { ...baseAdditionals.disability, report: bigReport },
+    });
+
+    expect(emptyResult.success).toBe(false);
+    expect(txtResult.success).toBe(false);
+    expect(bigResult.success).toBe(false);
+
+    if (!txtResult.success) {
+      expect(txtResult.error.issues[0].message).toBe(
+        "Formato inválido. Use PDF, DOCX, PNG, JPG ou WEBP",
+      );
+    }
+    if (!bigResult.success) {
+      expect(bigResult.error.issues[0].message).toBe(
+        "O arquivo excede o limite máximo permitido de 10MB",
+      );
+    }
   });
 });

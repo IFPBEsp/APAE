@@ -8,6 +8,7 @@ import {
   telefoneSchema,
 } from "@/lib/personal-data.schema";
 import { addressSchema } from "@/schemas/shared/address.schema";
+import { documentFileSchema } from "@/schemas/shared/document.schema";
 
 const OptionalRG = z
   .string()
@@ -195,7 +196,7 @@ export const Additionals = z.object({
     types: z
       .array(z.string().min(1))
       .min(1, "O tipo de atendimento é obrigatório."),
-    report: z.instanceof(File, { message: "O laudo é obrigatório." }),
+    report: documentFileSchema,
   }),
   care: z.object({
     types: z

@@ -1,7 +1,7 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
+import { DocumentUpload } from "@/components/shared/DocumentUpload";
 import {
   Dialog,
   DialogContent,
@@ -66,21 +66,13 @@ export default function ReplaceDocumentModal({
               </p>
             </div>
 
-            <div>
-              <p className="text-sm font-medium text-gray-700 mb-2">
-                Arquivo novo
-              </p>
-              <Input
-                type="file"
-                accept="application/pdf,image/*"
-                onChange={(event) =>
-                  onSelectedFileChange(event.target.files?.[0] ?? null)
-                }
-              />
-              <p className="mt-2 text-xs text-slate-500">
-                Arquivos PDF e imagens são aceitos.
-              </p>
-            </div>
+            <DocumentUpload
+              label="Arquivo novo"
+              file={selectedFile}
+              onFileChange={onSelectedFileChange}
+              disabled={loading}
+              showSelectedFile={false}
+            />
           </div>
 
           <div className="rounded-2xl border border-dashed border-slate-200 bg-white p-4">
