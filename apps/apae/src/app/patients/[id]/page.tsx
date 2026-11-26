@@ -363,7 +363,15 @@ export default function PersonDetailsPage() {
           
           <CardContent>
             <InfoRow label="Alergias" value={person.allergies} />
-            <InfoRow label="Vacinas" value={person.vaccineNames?.map((v) => v.name).join(", ")} />
+            <InfoRow
+              label="Vacinas"
+              value={
+                person.vaccineNames
+                  ?.map((v) => v.name?.trim())
+                  .filter(Boolean)
+                  .join(", ") || null
+              }
+            />
             
             <h3 className="font-bold text-base mt-4 pt-4 border-t text-[#0D4F97]">Registro Anual ({selectedYear})</h3>
 
