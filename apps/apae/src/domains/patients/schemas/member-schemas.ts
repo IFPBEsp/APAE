@@ -229,7 +229,13 @@ export const Kinships = z.object({
 
 export const Guardian = z.object({
   name: nomeCompletoSchema,
-  contact: telefoneSchema,
+  contact: z
+    .string()
+    .optional()
+    .refine(
+      (value) => !value?.trim() || telefoneSchema.safeParse(value).success,
+      "Número de telefone inválido",
+    ),
 
   kinship: z.string().min(1, "Informar o parentesco é obrigatório."),
   address: Address,

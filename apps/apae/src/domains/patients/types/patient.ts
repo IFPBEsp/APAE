@@ -15,7 +15,7 @@ export type PatientGuardianAddress = PatientAddress;
 
 export interface PatientGuardian {
   name: string;
-  contact: string;
+  contact: string | null;
   kinship: string;
   address?: PatientGuardianAddress;
 }
@@ -65,7 +65,7 @@ export interface PatientPayload {
   address: PatientAddress;
   guardian: {
     name: string;
-    contact: string;
+    contact: string | null;
     kinship: string;
     address: PatientGuardianAddress;
   };

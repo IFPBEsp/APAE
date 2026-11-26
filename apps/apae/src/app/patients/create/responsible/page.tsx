@@ -167,12 +167,12 @@ export default function MembersRegisterGuardianPage() {
             name="contact"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Contato de Emergência *</FormLabel>
+                <FormLabel>Contato de Emergência</FormLabel>
                 <FormControl>
                   <Input
                     placeholder="(00) 00000-0000"
                     maxLength={15}
-                    value={field.value}
+                    value={field.value ?? ""}
                     onChange={(e) => {
                       const formatted = formatPhone(e.target.value);
                       field.onChange(formatted);
