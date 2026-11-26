@@ -29,9 +29,7 @@ public record CreateHealthProfessionalDTO(
 
     @NotNull(message = "Endereço é obrigatório.") @Valid CreateAddressDTO address,
 
-    @Valid List<CreateAvailabilityDTO> availabilities,
-
-    String profilePhoto
+    @Valid List<CreateAvailabilityDTO> availabilities
 ) {
     public CreateHealthProfessionalDTO {
         if (identityDocument != null && identityDocument.isBlank()) {
