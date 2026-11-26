@@ -118,3 +118,23 @@ describe("buildPatientPayload - doenças opcional (#1151)", () => {
     expect(payload.annualRegistry.diseases).toBe("Diabetes, Catapora");
   });
 });
+
+describe("buildPatientPayload - CPF opcional do parente (#1156)", () => {
+  it("envia null quando o CPF do parente está vazio", () => {
+    const state: MembersRegisterState = {
+      ...initialState,
+      kinships: [
+        {
+          name: "João da Silva",
+          cpf: "",
+          rg: "",
+          occupation: "Professor",
+          alive: true,
+          type: "Pai",
+        },
+      ],
+    };
+
+    expect(buildPatientPayload(state).parents[0].cpf).toBeNull();
+  });
+});

@@ -20,7 +20,7 @@ import { formatBirthCertificate } from "@/lib/formats";
 
 interface ParentData {
   name?: string;
-  cpf?: string;
+  cpf?: string | null;
   rg?: string;
   profession?: string;
   isAlive?: boolean;

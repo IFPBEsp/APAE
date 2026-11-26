@@ -215,7 +215,7 @@ export const Additionals = z.object({
 
 export const Kinship = z.object({
   rg: OptionalRG,
-  cpf: cpfSchema,
+  cpf: cpfSchema.or(z.literal("")),
   alive: z.boolean(),
   name: nomeCompletoSchema,
   occupation: z.string().min(2, "Profissão inválida"),

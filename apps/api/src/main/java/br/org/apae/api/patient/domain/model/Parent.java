@@ -22,7 +22,7 @@ public class Parent {
     @Column(name = "rg")
     private String rg;
 
-    @Column(name = "cpf", nullable = false)
+    @Column(name = "cpf")
     private String cpf;
 
     @Column(name = "vivo", nullable = false)

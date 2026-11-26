@@ -200,7 +200,7 @@ export default function MembersRegisterKinshipsPage() {
               name={`kinships.${index}.cpf`}
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>CPF do parente *</FormLabel>
+                  <FormLabel>CPF do parente</FormLabel>
                   <FormControl>
                     <Input
                       placeholder="000.000.000-00"

@@ -120,7 +120,7 @@ export function buildPatientPayload(
     parents: kinships.map((k) => ({
       name: k.name || "Não informado",
       rg: k.rg || null,
-      cpf: k.cpf,
+      cpf: k.cpf || null,
       profession: k.occupation || "Não informado",
       isAlive: k.alive,
       kinship: k.type || "Pai/Mãe",
