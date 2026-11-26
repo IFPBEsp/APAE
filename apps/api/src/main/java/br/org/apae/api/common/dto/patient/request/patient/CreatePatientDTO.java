@@ -58,7 +58,7 @@ public record CreatePatientDTO(
 
     @NotEmpty(message = "É necessário fornecer os dados de pelo menos um parente ou responsável legal") @Valid List<CreateParentDTO> parents,
 
-    @NotEmpty(message = "A lista de vacinas não pode estar vazia") Set<CreateVaccineDTO> vaccineNames,
+    Set<CreateVaccineDTO> vaccineNames,
 
     @NotNull(message = "Cadastro anual é obrigatório") @Valid CreateAnnualRegistryDTO annualRegistry) {
 }
