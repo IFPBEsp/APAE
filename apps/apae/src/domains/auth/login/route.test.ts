@@ -84,7 +84,7 @@ describe("POST /api/auth/login", () => {
     const data = await res.json();
 
     expect(res.status).toBe(200);
-    expect(data).toEqual({ message: "Login bem-sucedido" });
+    expect(data).toEqual({ message: "Login bem-sucedido", userId: "admin@teste.local" });
     expect(postMock).toHaveBeenCalledWith("/auth/signin", {
       username: "admin@teste.local",
       password: "123456",

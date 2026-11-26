@@ -9,7 +9,7 @@ import { buildPatientPayload } from "@/domains/patients/shared/patient.utils";
 export function useRegisterSubmission(state: MembersRegisterState, STORAGE_KEY: string) {
   return useCallback(
     async (id?: string) => {
-      const { additionals, profile } = state;
+      const { additionals, profile, personal } = state;
       const patient = buildPatientPayload(state);
 
       if (id) {
@@ -39,12 +39,12 @@ export function useRegisterSubmission(state: MembersRegisterState, STORAGE_KEY: 
         formData.append("photo", profile.photo);
       }
 
-      if (additionals.disability.report instanceof File) {
-        formData.append("reports", additionals.disability.report);
+      if (personal.birth.file instanceof File) {
+        formData.append("birth_certificate", personal.birth.file);
       }
 
-      if (additionals.care.referral instanceof File) {
-        formData.append("referrals", additionals.care.referral);
+      if (additionals.disability.report instanceof File) {
+        formData.append("reports", additionals.disability.report);
       }
 
       const res = await bffFetch("/apae-geral/api/patients", {

@@ -91,10 +91,9 @@ export default function MembersRegisterAdditionalsPage() {
 
   useEffect(() => {
     const hasData =
-      additionals.diseases !== "" ||
+      Boolean(additionals.diseases) ||
       additionals.vaccines.length > 0 ||
-      additionals.disability.report instanceof File ||
-      additionals.care.referral instanceof File;
+      additionals.disability.report instanceof File;
 
     if (hasData) {
       form.reset(additionals as AdditionalsData);
@@ -197,11 +196,12 @@ export default function MembersRegisterAdditionalsPage() {
                 name="diseases"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Doenças que já teve *</FormLabel>
+                    <FormLabel>Doenças (atuais e anteriores)</FormLabel>
                     <FormControl>
                       <Input
-                        placeholder="Catapora, Gripe H1N1, Pneumonia"
+                        placeholder="Ex.: Diabetes, Hipertensão, Catapora"
                         {...field}
+                        value={field.value ?? ""}
                         onChange={(e) => field.onChange(capitalizeFirst(e.target.value))}
                       />
                     </FormControl>
@@ -383,39 +383,6 @@ export default function MembersRegisterAdditionalsPage() {
                           hideSelectAll={true}
                           onCreate={() => setModal("care")}
                         />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
-                <FormField
-                  control={form.control}
-                  name="care.referral"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Encaminhamento *</FormLabel>
-                      <FormControl>
-                        <FileInputButton
-                          id={field.name}
-                          className="min-w-3xs"
-                          onChange={(e) => {
-                            if (e.target.files && e.target.files[0]) {
-                              field.onChange(e.target.files[0]);
-                            }
-                          }}
-                        >
-                          {field.value instanceof File ? (
-                            <span
-                              className="truncate text-left"
-                              title={field.value.name}
-                            >
-                              Arquivo: {field.value.name}
-                            </span>
-                          ) : (
-                            "Selecionar Encaminhamento"
-                          )}
-                        </FileInputButton>
                       </FormControl>
                       <FormMessage />
                     </FormItem>

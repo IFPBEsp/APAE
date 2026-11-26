@@ -9,6 +9,7 @@ export interface PersonalData {
     certificate: string;
     date: Date;
     place: string;
+    file?: File;
     registryOffice?: string;
     book?: string;
     fls?: string;
@@ -39,12 +40,12 @@ export interface AddressData {
 
 export interface AdditionalsData {
   id?: string;
-  diseases: string;
-  medications: string | null;
+  diseases?: string;
+  medications?: string | null;
   vaccines: string[];
   allergies: string;
   disability: { types: string[]; report: File | string | undefined };
-  care: { types: string[]; referral: File | string | undefined };
+  care: { types: string[] };
   bpc: boolean;
   householdIncome: string;
 }

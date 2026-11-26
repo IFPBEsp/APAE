@@ -103,7 +103,7 @@ public class PatientDocumentsControllerTest {
                 UUID.randomUUID(),
                 "document.pdf",
                 category,
-                DocumentType.REFERRAL,
+                DocumentType.MEDICAL_REPORT,
                 patientId.toString(),
                 Year.now());
     }
@@ -130,7 +130,7 @@ public class PatientDocumentsControllerTest {
                             multipart(BASE_URL, patientId)
                                     .file(file)
                                     .param("category", "MEDICAL")
-                                    .param("type", "REFERRAL")
+                                    .param("type", "MEDICAL_REPORT")
                                     .header("Authorization", AuthTestHelper.bearerToken())
                                     .with(csrf()))
                     .andDo(new DebugResultHandler())
@@ -152,7 +152,7 @@ public class PatientDocumentsControllerTest {
                             multipart(BASE_URL, patientId)
                                     .file(file)
                                     .param("category", "MEDICAL")
-                                    .param("type", "REFERRAL")
+                                    .param("type", "MEDICAL_REPORT")
                                     .header("Authorization", AuthTestHelper.bearerToken())
                                     .with(csrf()))
                     .andExpect(status().isInternalServerError());
@@ -169,7 +169,7 @@ public class PatientDocumentsControllerTest {
                             multipart(BASE_URL, patientId)
                                     .file(invalidFile)
                                     .param("category", "MEDICAL")
-                                    .param("type", "REFERRAL")
+                                    .param("type", "MEDICAL_REPORT")
                                     .header("Authorization", AuthTestHelper.bearerToken())
                                     .with(csrf()))
                     .andExpect(status().isBadRequest())
@@ -194,7 +194,7 @@ public class PatientDocumentsControllerTest {
             when(documentService.listDocuments(any())).thenReturn(List.of(document(patientId, category)));
             DocumentWithUrlResponseDTO urlResponse = new DocumentWithUrlResponseDTO(
                     UUID.randomUUID(), "document.pdf", category,
-                    DocumentType.REFERRAL, patientId.toString(), Year.now(), "http://presigned-url");
+                    DocumentType.MEDICAL_REPORT, patientId.toString(), Year.now(), "http://presigned-url");
             when(documentService.generatePresignedUrl(any(), any())).thenReturn(urlResponse);
 
             mockMvc.perform(get(endpoint, patientId)
@@ -225,10 +225,10 @@ public class PatientDocumentsControllerTest {
             UUID documentId = UUID.randomUUID();
             DocumentDTO existingDoc = new DocumentDTO(
                     documentId, "old-document.pdf", DocumentCategory.MEDICAL,
-                    DocumentType.REFERRAL, patientId.toString(), Year.now());
+                    DocumentType.MEDICAL_REPORT, patientId.toString(), Year.now());
             DocumentDTO replacedDoc = new DocumentDTO(
                     UUID.randomUUID(), "new-document.pdf", DocumentCategory.MEDICAL,
-                    DocumentType.REFERRAL, patientId.toString(), Year.now());
+                    DocumentType.MEDICAL_REPORT, patientId.toString(), Year.now());
 
             when(documentService.listDocuments(any())).thenReturn(List.of(existingDoc));
             when(documentService.putDocument(any())).thenReturn(replacedDoc);
@@ -340,7 +340,7 @@ public class PatientDocumentsControllerTest {
                             multipart(BASE_URL, patientId)
                                     .file(file)
                                     .param("category", "INVALID")
-                                    .param("type", "REFERRAL")
+                                    .param("type", "MEDICAL_REPORT")
                                     .header("Authorization", AuthTestHelper.bearerToken())
                                     .with(csrf()))
                     .andExpect(status().isBadRequest())
@@ -378,7 +378,7 @@ public class PatientDocumentsControllerTest {
                             multipart(BASE_URL, patientId)
                                     .file(file)
                                     .param("category", "MEDICAL")
-                                    .param("type", "REFERRAL")
+                                    .param("type", "MEDICAL_REPORT")
                                     .header("Authorization", AuthTestHelper.bearerToken())
                                     .with(csrf()))
                     .andExpect(status().isNotFound());

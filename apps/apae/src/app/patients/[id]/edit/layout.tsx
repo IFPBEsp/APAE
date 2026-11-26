@@ -41,7 +41,7 @@ interface EditPatientAddress {
 interface EditPatientData {
   fullName?: string;
   cpf?: string;
-  contact?: string;
+  contact?: string | null;
   rg?: string;
   issuingAgency?: string;
   issueDate?: string;
@@ -57,12 +57,6 @@ interface EditPatientData {
   allergies?: string;
   isStudent?: boolean;
   address?: EditPatientAddress;
-  annualRegistry?: {
-    diseases?: string;
-    continuousMedication?: string;
-    bpc?: boolean;
-    familyIncome?: number;
-  };
   vaccineNames?: { name?: string }[];
   guardian?: {
     name?: string;
@@ -93,7 +87,10 @@ function EditPatientDataLoader({ children }: { children: React.ReactNode }) {
           personal: {
             name: data.fullName || "",
             cpf: data.cpf || "",
-            phone: data.contact || "",
+            phone:
+              data.contact && data.contact !== "Não informado"
+                ? data.contact
+                : "",
             rg: {
               number: data.rg || "",
               issuing: {
@@ -126,18 +123,16 @@ function EditPatientDataLoader({ children }: { children: React.ReactNode }) {
             district: data.address?.district || "",
           },
           additionals: {
-            diseases: data.annualRegistry?.diseases || "",
-            medications: data.annualRegistry?.continuousMedication || "",
+            diseases: "",
+            medications: "",
             vaccines:
               data.vaccineNames?.map((v: { name?: string }) => v.name || "") ||
               [],
             allergies: data.allergies || "",
             disability: { types: [], report: undefined },
-            care: { types: [], referral: undefined },
-            bpc: data.annualRegistry?.bpc ?? false,
-            householdIncome: data.annualRegistry?.familyIncome
-              ? (data.annualRegistry.familyIncome * 100).toString()
-              : "0",
+            care: { types: [] },
+            bpc: false,
+            householdIncome: "",
           },
           guardian: {
             name: data.guardian?.name || "",

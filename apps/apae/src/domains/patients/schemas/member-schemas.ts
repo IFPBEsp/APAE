@@ -92,7 +92,13 @@ export const Personal = z
   .object({
     name: nomeCompletoSchema,
     cpf: cpfSchema,
-    phone: telefoneSchema,
+    phone: z
+      .string()
+      .optional()
+      .refine(
+        (value) => !value || telefoneSchema.safeParse(value).success,
+        "Número de telefone inválido",
+      ),
     rg: z.object({
       number: OptionalRG,
       issuing: z.object({
@@ -111,6 +117,7 @@ export const Personal = z
     birth: z
       .object({
       certificate: birthCertificateSchema,
+      file: z.instanceof(File).optional(),
       registryOffice: z.string().optional(),
       book: z.string().optional(),
       fls: z.string().optional(),
@@ -179,7 +186,7 @@ export const Personal = z
 export const Address = addressSchema;
 
 export const Additionals = z.object({
-  diseases: z.string().min(1, "O campo de doenças é obrigatório."),
+  diseases: z.string().optional(),
   medications: z.string().optional().nullable(),
   vaccines: z
     .array(z.string().min(1))
@@ -195,9 +202,6 @@ export const Additionals = z.object({
     types: z
       .array(z.string().min(1))
       .min(1, "O tipo de atendimento é obrigatório."),
-    referral: z.instanceof(File, {
-      message: "O encaminhamento é obrigatório.",
-    }),
   }),
   bpc: z.boolean(),
   householdIncome: z

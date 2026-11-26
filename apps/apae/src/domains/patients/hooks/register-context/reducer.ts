@@ -38,7 +38,10 @@ export function membersRegisterReducer(
               ...action.payload.rg?.issuing,
             },
           },
-          birth: { ...state.personal.birth, ...action.payload.birth },
+          birth: {
+            ...state.personal.birth,
+            ...action.payload.birth,
+          },
         },
       };
     case "SET_KINSHIPS_DATA":
@@ -90,6 +93,7 @@ export const initialState: MembersRegisterState = {
       certificate: "",
       date: new Date(),
       place: "",
+      file: undefined,
       registryOffice: undefined,
       book: undefined,
       fls: undefined,
@@ -113,7 +117,7 @@ export const initialState: MembersRegisterState = {
     vaccines: [],
     allergies: "",
     disability: { types: [], report: undefined },
-    care: { types: [], referral: undefined },
+    care: { types: [] },
     bpc: false,
     householdIncome: "",
   },

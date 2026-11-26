@@ -13,7 +13,6 @@ public record ReplaceAnnualRegistryDTO(
         @NotNull @Size(min = 1, max = 50)
         String bpc,
 
-        @NotNull
         String diseases,
 
         @NotNull @Positive

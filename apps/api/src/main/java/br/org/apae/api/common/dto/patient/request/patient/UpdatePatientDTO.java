@@ -23,7 +23,7 @@ public record UpdatePatientDTO(
 
         @NotNull(message = "A data de nascimento não pode ser nula") @Past(message = "A data de nascimento deve ser uma data no passado") LocalDate birthDate,
 
-        @NotBlank(message = "O contato não pode estar em branco") String contact,
+        String contact,
 
         @NotBlank(message = "O número da certidão de nascimento não pode estar em branco") String birthCertificateNumber,
 

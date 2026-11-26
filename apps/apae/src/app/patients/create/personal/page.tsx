@@ -31,7 +31,7 @@ import { handleBackendValidationErrors } from "@/lib/utils/form-errors";
 import { formatCivilDateDisplayValue } from "@/lib/date";
 import { InputMask } from "@react-input/mask";
 
-import { DoubleColumn, FormButton, MembersRegisterForm } from "@/domains/patients/components/form";
+import { DoubleColumn, FileInputButton, FormButton, MembersRegisterForm } from "@/domains/patients/components/form";
 import z from "zod";
 
 export default function MembersRegisterPersonalPage() {
@@ -289,6 +289,33 @@ export default function MembersRegisterPersonalPage() {
             )}
           />
 
+          {!isEditing && (
+            <FormField
+              control={form.control}
+              name="birth.file"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Cópia da Certidão de Nascimento (opcional)</FormLabel>
+                  <FormControl>
+                    <FileInputButton
+                      id={field.name}
+                      className="min-w-3xs"
+                      onChange={(event) => {
+                        const file = event.target.files?.[0];
+                        if (file) field.onChange(file);
+                      }}
+                    >
+                      {field.value instanceof File
+                        ? `Arquivo: ${field.value.name}`
+                        : "Selecionar Cópia da Certidão de Nascimento"}
+                    </FileInputButton>
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          )}
+
           {showOldCertificateFields && (
             <>
               <p className="text-sm text-muted-foreground md:col-span-2">
@@ -401,7 +428,7 @@ export default function MembersRegisterPersonalPage() {
             name="phone"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Telefone *</FormLabel>
+                <FormLabel>Telefone</FormLabel>
                 <FormControl>
                   <Input
                     placeholder="(00) 00000-0000"

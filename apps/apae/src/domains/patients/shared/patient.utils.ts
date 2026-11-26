@@ -8,6 +8,16 @@ import type {
   PatientPayload,
 } from "@/domains/patients/types/patient";
 
+export function hasRequiredRegistrationFiles(
+  additionals: Pick<MembersRegisterState["additionals"], "disability">,
+): boolean {
+  return additionals.disability.report instanceof File;
+}
+
+export function draftNeedsFileWarning(step: MembersRegisterStep): boolean {
+  return step === MembersRegisterStep.PROFILE;
+}
+
 export function buildPatientListQuery(
   values: PatientListQueryValues = {},
 ): URLSearchParams {
@@ -53,7 +63,7 @@ export function buildPatientPayload(
 
   const annualRegistryData = {
     bpc: additionals.bpc,
-    diseases: additionals.diseases || "Nenhuma",
+    diseases: additionals.diseases?.trim() || null,
     continuousMedication: toNullableString(additionals.medications),
     serviceArea: additionals.care.types.map((area: string) => ({ area })),
     familyIncome: parseIncome(additionals.householdIncome),
@@ -65,7 +75,7 @@ export function buildPatientPayload(
     fullName: personal.name || "Não informado",
     nationality: personal.birth.place || "Brasileiro",
     birthDate: serializeCivilDate(personal.birth.date),
-    contact: personal.phone || "Não informado",
+    contact: personal.phone || null,
     birthCertificateNumber: personal.birth.certificate,
     registryOffice: personal.birth.registryOffice?.trim() || null,
     fls: personal.birth.fls?.trim() || null,
@@ -191,6 +201,9 @@ export function getStepForBackendField(
     return MembersRegisterStep.ADDRESS;
   }
   if (includesAny(fieldLower, ADDITIONALS_FIELDS)) {
+    return MembersRegisterStep.ADDITIONALS;
+  }
+  if (fieldLower.includes("reports")) {
     return MembersRegisterStep.ADDITIONALS;
   }
   if (fieldLower.includes("guardian")) {
