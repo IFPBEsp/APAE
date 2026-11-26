@@ -61,7 +61,7 @@ interface EditPatientData {
   vaccineNames?: { name?: string }[];
   guardian?: {
     name?: string;
-    contact?: string;
+    contact?: string | null;
     kinship?: string;
     address?: EditPatientAddress;
   };
@@ -137,7 +137,10 @@ function EditPatientDataLoader({ children }: { children: React.ReactNode }) {
           },
           guardian: {
             name: data.guardian?.name || "",
-            contact: data.guardian?.contact || "",
+            contact:
+              data.guardian?.contact && data.guardian.contact !== "Não informado"
+                ? data.guardian.contact
+                : "",
             kinship: data.guardian?.kinship || "",
             address: {
               cep: data.guardian?.address?.cep || "",

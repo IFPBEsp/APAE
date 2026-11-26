@@ -287,7 +287,7 @@ export default function PersonDetailsPage() {
                 <p className="font-bold text-base">Guardião Principal</p>
                 <InfoRow label="Nome" value={person.guardian.name} />
                 <InfoRow label="Parentesco" value={person.guardian.kinship} />
-                <InfoRow label="Contato" value={person.guardian.contact} />
+                <InfoRow label="Contato" value={person.guardian.contact || "Não informado"} />
                 <InfoRow label="Rua" value={person.guardian.address?.street} />
                 <InfoRow label="Número" value={person.guardian.address?.number} />
                 <InfoRow label="Bairro" value={person.guardian.address?.neighborhood} />

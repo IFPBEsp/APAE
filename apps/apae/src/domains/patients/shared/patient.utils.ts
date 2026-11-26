@@ -113,7 +113,7 @@ export function buildPatientPayload(
     },
     guardian: {
       name: guardian.name || "Não informado",
-      contact: guardian.contact || "Não informado",
+      contact: guardian.contact?.trim() || null,
       kinship: guardian.kinship || "Não informado",
       address: {
         city: guardian.address.city || "Não informado",
