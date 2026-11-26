@@ -303,7 +303,7 @@ export default function PersonDetailsPage() {
                 <InfoRow label="Nome" value={parent.name} />
                 <InfoRow label="CPF" value={parent.cpf} />
                 <InfoRow label="Parentesco" value={parent.kinship}/>
-                <InfoRow label="Profissão" value={parent.profession} />
+                <InfoRow label="Profissão" value={parent.profession?.trim() || null} />
                 <InfoRow label="Vivo?" value={parent.isAlive} />
               </div>
             ))}
