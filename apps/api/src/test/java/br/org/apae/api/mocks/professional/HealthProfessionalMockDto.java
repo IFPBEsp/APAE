@@ -80,8 +80,7 @@ public final class HealthProfessionalMockDto {
             List.of(
                 new CreateAvailabilityDTO("SEGUNDA", "MANHA"),
                 new CreateAvailabilityDTO("TERCA", "TARDE")
-            ),
-            "http://example.com/photo.jpg"
+            )
         );
     }
 
@@ -98,8 +97,7 @@ public final class HealthProfessionalMockDto {
             List.of(
                 new CreateAvailabilityDTO("SEGUNDA", "MANHA"),
                 new CreateAvailabilityDTO("TERCA", "TARDE")
-            ),
-            "http://example.com/photo.jpg"
+            )
         );
     }
 
