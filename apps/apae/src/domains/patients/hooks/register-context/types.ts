@@ -22,7 +22,7 @@ export interface KinshipData {
   cpf: string;
   alive: boolean;
   name: string;
-  occupation: string;
+  occupation?: string;
   isLegalGuardian?: boolean;
 }
 
