@@ -117,6 +117,7 @@ export const Personal = z
     birth: z
       .object({
       certificate: birthCertificateSchema,
+      file: z.instanceof(File).optional(),
       registryOffice: z.string().optional(),
       book: z.string().optional(),
       fls: z.string().optional(),

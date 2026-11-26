@@ -9,7 +9,7 @@ import { buildPatientPayload } from "@/domains/patients/shared/patient.utils";
 export function useRegisterSubmission(state: MembersRegisterState, STORAGE_KEY: string) {
   return useCallback(
     async (id?: string) => {
-      const { additionals, profile } = state;
+      const { additionals, profile, personal } = state;
       const patient = buildPatientPayload(state);
 
       if (id) {
@@ -37,6 +37,10 @@ export function useRegisterSubmission(state: MembersRegisterState, STORAGE_KEY: 
 
       if (profile.photo instanceof File) {
         formData.append("photo", profile.photo);
+      }
+
+      if (personal.birth.file instanceof File) {
+        formData.append("birth_certificate", personal.birth.file);
       }
 
       if (additionals.disability.report instanceof File) {

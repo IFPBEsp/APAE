@@ -18,6 +18,7 @@ import {
 
 const documentTypeTranslations: Record<string, string> = {
   MEDICAL_REPORT: "Laudo Médico",
+  BIRTH_CERTIFICATE: "Certidão de Nascimento",
   PRESCRIPTION: "Receita Médica",
   EXAM: "Exame",
   VACCINE_CARD: "Cartão de Vacina",
