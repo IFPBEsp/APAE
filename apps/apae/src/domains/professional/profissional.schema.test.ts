@@ -1,4 +1,5 @@
 import { describe, it, expect } from "vitest";
+import { MAX_FILE_SIZE_BYTES } from "@/lib/constants";
 import {
   registerSchema,
   updateProfessionalSchema,
@@ -257,4 +258,63 @@ describe("Critério: endereço do profissional aceita símbolos", () => {
         .success,
     ).toBe(true);
   });
+});
+
+describe("Critério: upload de documentos do profissional usa documentFileSchema compartilhado (#1085)", () => {
+  const docxMime =
+    "application/vnd.openxmlformats-officedocument.wordprocessingml.document";
+
+  it("aceita arquivo .docx válido em volunteerAgreement, curriculum e attachmentAny", () => {
+    const docx = makeFile("documento.docx", docxMime);
+    const result = registerSchema.safeParse({
+      ...makeRegisterValues(""),
+      volunteerAgreement: docx,
+      curriculum: docx,
+      attachmentAny: docx,
+    });
+
+    expect(result.success).toBe(true);
+  });
+
+  it.each(["volunteerAgreement", "curriculum", "attachmentAny"] as const)(
+    "rejeita formato inválido (.txt) em %s com a mensagem padronizada",
+    (field) => {
+      const txt = makeFile("notas.txt", "text/plain");
+      const result = registerSchema.safeParse({
+        ...makeRegisterValues(""),
+        [field]: txt,
+      });
+
+      expect(result.success).toBe(false);
+      if (!result.success) {
+        expect(result.error.issues[0].path).toEqual([field]);
+        expect(result.error.issues[0].message).toBe(
+          "Formato inválido. Use PDF, DOCX, PNG, JPG ou WEBP",
+        );
+      }
+    },
+  );
+
+  it.each(["volunteerAgreement", "curriculum", "attachmentAny"] as const)(
+    "rejeita arquivo acima de 10MB em %s com a mensagem de tamanho padronizada",
+    (field) => {
+      const oversized = makeFile(
+        "grande.pdf",
+        "application/pdf",
+        MAX_FILE_SIZE_BYTES + 1,
+      );
+      const result = registerSchema.safeParse({
+        ...makeRegisterValues(""),
+        [field]: oversized,
+      });
+
+      expect(result.success).toBe(false);
+      if (!result.success) {
+        expect(result.error.issues[0].path).toEqual([field]);
+        expect(result.error.issues[0].message).toBe(
+          "O arquivo excede o limite máximo permitido de 10MB",
+        );
+      }
+    },
+  );
 });

@@ -1,7 +1,6 @@
 import { useCallback, useMemo, useState } from "react";
 import { getProfessionalDocuments, removeProfessionalDocument } from "@/domains/professional/profissional-service";
 import { DocumentWithUrl } from "@/domains/documents/documents.types";
-import { isValidFile } from "@/domains/professional/shared/professional.utils";
 
 export function useProfessionalDocs(professionalId: string | undefined) {
   const [docs, setDocs] = useState<DocumentWithUrl[]>([]);
@@ -90,6 +89,5 @@ export function useProfessionalDocs(professionalId: string | undefined) {
     refreshDocuments,
     buildFormData,
     clearFiles,
-    isValidFile,
   };
 }
