@@ -26,6 +26,7 @@ const documentTypeTranslations: Record<string, string> = {
   SCHOOL_DOCUMENT: "Documento Escolar",
   PHOTO: "Foto",
   EXAMINATION: "Exame",
+  PROOF_OF_ADDRESS: "Comprovante de Residência",
   OTHER: "Outro",
 };
 

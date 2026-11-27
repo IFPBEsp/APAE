@@ -36,6 +36,7 @@ export interface AddressData {
   number: string;
   complement?: string;
   district: string;
+  proofOfAddress?: File;
 }
 
 export interface AdditionalsData {

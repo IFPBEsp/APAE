@@ -55,6 +55,7 @@ function stripFiles(state: MembersRegisterState): MembersRegisterState {
     initialState.additionals.disability.report;
   draft.personal.birth.file = initialState.personal.birth.file;
   draft.profile.photo = initialState.profile.photo;
+  draft.address.proofOfAddress = initialState.address.proofOfAddress;
 
   return draft;
 }

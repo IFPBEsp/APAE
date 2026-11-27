@@ -31,7 +31,7 @@ import { usePathname } from "next/navigation";
 import { handleBackendValidationErrors } from "@/lib/utils/form-errors";
 import { Checkbox } from "@/components/ui/checkbox";
 
-import { DoubleColumn, FormButton, MembersRegisterForm } from "@/domains/patients/components/form";
+import { DoubleColumn, FileInputButton, FormButton, MembersRegisterForm } from "@/domains/patients/components/form";
 import z from "zod";
 
 export default function MembersRegisterAddressPage() {
@@ -82,19 +82,24 @@ export default function MembersRegisterAddressPage() {
   useEffect(() => {
     if (!guardian.residesWithPatient) return;
 
-    const isAddressEmpty = Object.values(address).every(
-      (value) => value === "" || value === false
+    // proofOfAddress is ignored: a chosen file must not count as "filled address"
+    const { proofOfAddress, ...addressFields } = address;
+    const isAddressEmpty = Object.values(addressFields).every(
+      (value) => value === "" || value === false || value === undefined
     );
 
     if (!isAddressEmpty) return;
 
+    // Never copy/overwrite the proof file from the guardian: keep the one already chosen
+    const { proofOfAddress: _ignored, ...guardianAddressFields } = guardian.address;
+    void _ignored;
     const guardianAddress = {
-      ...guardian.address,
+      ...guardianAddressFields,
       state: normalizeStateToUF(guardian.address.state) as z.infer<typeof Address>["state"],
       noNumber: guardian.address.number === "SN",
     };
 
-    form.reset(guardianAddress);
+    form.reset({ ...guardianAddress, proofOfAddress: proofOfAddress as File | undefined });
     setAddressData(guardianAddress);
   }, [address, guardian, form, setAddressData]);
 
@@ -316,6 +321,33 @@ export default function MembersRegisterAddressPage() {
               </FormItem>
             )}
           />
+
+          {!isEditing && (
+            <FormField
+              control={form.control}
+              name="proofOfAddress"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Comprovante de Residência</FormLabel>
+                  <FormControl>
+                    <FileInputButton
+                      id={field.name}
+                      className="min-w-3xs"
+                      onChange={(event) => {
+                        const file = event.target.files?.[0];
+                        if (file) field.onChange(file);
+                      }}
+                    >
+                      {field.value instanceof File
+                        ? `Arquivo: ${field.value.name}`
+                        : "Selecionar Comprovante de Residência"}
+                    </FileInputButton>
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          )}
         </DoubleColumn>
       </MembersRegisterForm>
     </Form>
