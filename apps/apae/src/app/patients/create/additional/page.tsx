@@ -25,10 +25,10 @@ import z from "zod";
 import {
   DoubleCheckboxFormField,
   DoubleColumn,
-  FileInputButton,
   FormButton,
   MembersRegisterForm,
 } from "@/domains/patients/components/form";
+import { DocumentUpload } from "@/components/shared/DocumentUpload";
 import { CreatableMultiSelect } from "@/components/creatable-multi-select";
 import { useVaccinesContext } from "@/domains/vaccines/use-vaccines";
 import {
@@ -326,32 +326,29 @@ export default function MembersRegisterAdditionalsPage() {
                 <FormField
                   control={form.control}
                   name="disability.report"
-                  render={({ field }) => (
+                  render={({ field, fieldState }) => (
                     <FormItem>
                       <FormLabel>Laudo da Deficiência *</FormLabel>
                       <FormControl>
-                        <FileInputButton
+                        <DocumentUpload
                           id={field.name}
-                          className="min-w-3xs"
-                          onChange={(e) => {
-                            if (e.target.files && e.target.files[0]) {
-                              field.onChange(e.target.files[0]);
+                          file={field.value instanceof File ? field.value : null}
+                          externalError={fieldState.error?.message ?? null}
+                          onFileChange={(file) => {
+                            field.onChange(file ?? undefined);
+                          }}
+                          onErrorChange={(err) => {
+                            if (err) {
+                              form.setError("disability.report", {
+                                type: "manual",
+                                message: err,
+                              });
+                            } else {
+                              form.clearErrors("disability.report");
                             }
                           }}
-                        >
-                          {field.value instanceof File ? (
-                            <span
-                              className="truncate text-left"
-                              title={field.value.name}
-                            >
-                              Arquivo: {field.value.name}
-                            </span>
-                          ) : (
-                            "Selecionar Laudo"
-                          )}
-                        </FileInputButton>
+                        />
                       </FormControl>
-                      <FormMessage />
                     </FormItem>
                   )}
                 />

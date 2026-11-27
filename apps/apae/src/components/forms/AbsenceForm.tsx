@@ -1,10 +1,11 @@
 "use client";
 
-import React, { useRef, useState } from "react";
+import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
+import { DocumentUpload } from "@/components/shared/DocumentUpload";
 import {
   Form,
   FormField,
@@ -20,7 +21,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 
 import { toast } from "react-toastify";
@@ -53,7 +53,6 @@ export function AbsenceForm({
   const hasJustification = form.watch("hasJustification");
 
   const [file, setFile] = useState<File | null>(null);
-  const fileInputRef = useRef<HTMLInputElement | null>(null);
 
   const onSubmit = async (data: FormDataType) => {
     try {
@@ -76,10 +75,6 @@ export function AbsenceForm({
 
       form.reset();
       setFile(null);
-
-      if (fileInputRef.current) {
-        fileInputRef.current.value = "";
-      }
 
       onSuccess?.();
 
@@ -167,43 +162,11 @@ export function AbsenceForm({
                   )}
                 />
 
-                <div className="space-y-2">
-                  <FormLabel>Anexar documento</FormLabel>
-
-                  <Input
-                    ref={fileInputRef}
-                    type="file"
-                    onChange={(e) => {
-                      if (e.target.files?.[0]) {
-                        setFile(e.target.files[0]);
-                      }
-                    }}
-                  />
-
-                  {file && (
-                    <div className="flex items-center justify-between text-sm">
-                      <span className="text-muted-foreground">
-                        {file.name}
-                      </span>
-
-                      <Button
-                        type="button"
-                        variant="outline"
-                        size="sm"
-                        className="text-red-500 hover:text-red-600"
-                        onClick={() => {
-                          setFile(null);
-
-                          if (fileInputRef.current) {
-                            fileInputRef.current.value = "";
-                          }
-                        }}
-                      >
-                        Remover
-                      </Button>
-                    </div>
-                  )}
-                </div>
+                <DocumentUpload
+                  label="Anexar documento"
+                  file={file}
+                  onFileChange={setFile}
+                />
 
               </div>
             )}

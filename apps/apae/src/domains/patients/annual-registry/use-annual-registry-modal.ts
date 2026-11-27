@@ -1,9 +1,10 @@
 "use client";
 
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "react-toastify";
+import { validateDocumentFile } from "@/schemas/shared/document.schema";
 import { annualRegistryFormSchema, type AnnualRegistryFormValues } from "./annual-registry.schema";
 import {
   fetchDocumentsApi,
@@ -119,7 +120,6 @@ export function useAnnualRegistryModal({
   const [isUploading, setIsUploading] = useState(false);
   const [docType, setDocType] = useState("MEDICAL_REPORT");
   const [fullPatientData, setFullPatientData] = useState<FullPatientData | null>(null);
-  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const isLoadingInitialData = isOpen && !isInitialDataLoaded;
 
@@ -198,9 +198,9 @@ export function useAnnualRegistryModal({
     };
   }, [isOpen, patientId, mode, currentYear, initialData, loadDocuments, reset]);
 
-  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
+  const handleFileUpload = async (file: File | null) => {
     if (!file) return;
+    if (validateDocumentFile(file)) return;
     setIsUploading(true);
     const formData = new FormData();
     formData.append("file", file);
@@ -211,7 +211,6 @@ export function useAnnualRegistryModal({
       await uploadDocumentApi(patientId, formData);
       toast.success("Documento anexado!");
       await loadDocuments();
-      if (fileInputRef.current) fileInputRef.current.value = "";
     } catch (error) {
       console.error("[handleFileUpload] Erro ao enviar documento:", error);
       toast.error("Erro ao enviar documento.");
@@ -305,7 +304,6 @@ export function useAnnualRegistryModal({
     isUploading,
     docType,
     setDocType,
-    fileInputRef,
     handleFileUpload,
     handleMoneyChange,
     onSubmit,
