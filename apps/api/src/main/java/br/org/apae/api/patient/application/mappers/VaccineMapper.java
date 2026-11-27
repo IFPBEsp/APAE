@@ -4,6 +4,7 @@ import br.org.apae.api.common.dto.patient.request.vaccine.CreateVaccineDTO;
 import br.org.apae.api.common.dto.patient.response.vaccine.VaccineResponseDTO;
 import br.org.apae.api.patient.domain.model.Vaccine;
 
+import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -17,6 +18,9 @@ public class VaccineMapper {
     }
 
     public Set<Vaccine> toEntitySetFromResponse(Set<VaccineResponseDTO> responseDTOs) {
+        if (responseDTOs == null || responseDTOs.isEmpty()) {
+            return new HashSet<>();
+        }
         return responseDTOs.stream()
                 .map(dto -> new Vaccine(dto.id(), dto.name()))
                 .collect(Collectors.toSet());

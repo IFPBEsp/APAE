@@ -45,7 +45,7 @@ public record UpdatePatientDTO(
 
         String nis,
 
-        @NotBlank(message = "As alergias não podem estar em branco") String allergies,
+        String allergies,
 
         @NotNull(message = "O campo 'é estudante' não pode ser nulo") boolean isStudent,
 
@@ -55,5 +55,5 @@ public record UpdatePatientDTO(
 
         @NotEmpty(message = "É necessário fornecer os dados de pelo menos um parente ou responsável legal") @Valid List<UpdateParentDTO> parents,
 
-        @NotEmpty(message = "A lista de vacinas não pode estar vazia") Set<CreateVaccineDTO> vaccineNames) {
+        Set<CreateVaccineDTO> vaccineNames) {
 }

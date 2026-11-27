@@ -7,8 +7,8 @@ function generateId(): string {
   return `${Date.now().toString(36)}-${Math.random().toString(36).slice(2)}`;
 }
 
-export function startSession(): string {
-  const id = generateId();
+export function startSession(userId?: string): string {
+  const id = userId || generateId();
   localStorage.setItem(KEY, id);
   return id;
 }

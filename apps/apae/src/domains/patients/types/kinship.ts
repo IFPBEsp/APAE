@@ -4,7 +4,7 @@ export interface Kinship {
   cpf: string;
   alive: boolean;
   name: string;
-  occupation: string;
+  occupation?: string;
 }
 
 export interface KinshipData {

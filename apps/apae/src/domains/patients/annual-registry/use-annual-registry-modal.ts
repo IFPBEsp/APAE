@@ -15,6 +15,7 @@ import {
   updateAnnualRegistryApi,
   updatePatientApi,
 } from "./annual-registry.api";
+import { toNullableString } from "@/domains/patients/shared/patient.utils";
 import type { DocumentDTO, FullPatientData, AnnualRegistry, ServiceTypeItem } from "./annual-registry.types";
 
 interface UseAnnualRegistryModalParams {
@@ -47,7 +48,7 @@ function cleanPatientData(data: Record<string, unknown>) {
   return rest;
 }
 
-function mapRegistryToFormValues(
+export function mapRegistryToFormValues(
   year: string,
   registry: AnnualRegistry | null,
   patient: FullPatientData | null,
@@ -58,7 +59,14 @@ function mapRegistryToFormValues(
       : "false";
 
   const vaccineList = Array.isArray(patient?.vaccineNames)
-    ? patient.vaccineNames.map((v: unknown) => (typeof v === "string" ? { name: v } : v))
+    ? patient.vaccineNames
+        .map((v: unknown) => (typeof v === "string" ? { name: v } : v))
+        .filter((v): v is { name?: string; label?: string; value?: string; id?: string | number } => {
+          if (!v || typeof v !== "object") return false;
+          const item = v as { name?: string; label?: string; value?: string };
+          const text = String(item.name ?? item.label ?? item.value ?? "").trim();
+          return text !== "" && text !== "Não informado";
+        })
     : [];
 
   const sourceServiceAreas = registry?.serviceAreas ?? [];
@@ -70,17 +78,26 @@ function mapRegistryToFormValues(
       }))
     : [];
 
-  const medicationValue =
+  const rawMedication =
     registry?.continuousMedication ||
     registry?.medications ||
     registry?.medicamentos ||
     "";
+    const medicationValue =
+      rawMedication.trim() === "Não informado" ? "" : rawMedication;
+
+  const diseasesValue =
+    registry?.diseases &&
+    registry.diseases.trim() !== "" &&
+    registry.diseases !== "Não informado"
+      ? registry.diseases
+      : "";
 
   return {
     year,
     bpc: bpcString,
     familyIncome: registry?.familyIncome ? formatCurrencyForDisplay(registry.familyIncome) : "",
-    diseases: registry?.diseases ?? "",
+    diseases: diseasesValue,
     continuousMedication: medicationValue,
     allergies: patient?.allergies ?? "",
     disorders: registry?.disorders || [],
@@ -217,14 +234,15 @@ export function useAnnualRegistryModal({
     try {
       const registryId = initialData?.id;
       const income = parseFloat(cleanCurrency(data.familyIncome));
+      const medicationPayload = toNullableString(data.continuousMedication);
 
       const regPayload = {
         bpc: data.bpc === "true",
         familyIncome: income,
-        diseases: data.diseases || "Nenhuma",
-        continuousMedication: data.continuousMedication || "Nenhum",
-        medications: data.continuousMedication || "Nenhum",
-        medicamentos: data.continuousMedication || "Nenhum",
+        diseases: data.diseases?.trim() || null,
+        continuousMedication: medicationPayload,
+        medications: medicationPayload,
+        medicamentos: medicationPayload,
         disorders: (data.disorders || []).map((d: Record<string, unknown>) => ({ name: d.name || d.label || d.value, id: d.id })),
         serviceArea: (data.serviceTypes || []).map((s: Record<string, unknown>) => ({ id: s.id, area: s.area || s.name || s.label })),
         serviceAreas: (data.serviceTypes || []).map((s: Record<string, unknown>) => ({ id: s.id, area: s.area || s.name || s.label })),
@@ -253,14 +271,19 @@ export function useAnnualRegistryModal({
       }
 
       if (fullPatientData) {
-        const vaccineList = (data.vaccines || []).map((v: Record<string, unknown>) => ({ name: v.name || v.label || v.value, id: v.id }));
+        const vaccineList = (data.vaccines || [])
+          .map((v: Record<string, unknown>) => ({
+            name: String(v.name || v.label || v.value || "").trim(),
+            id: v.id,
+          }))
+          .filter((v) => v.name !== "" && v.name !== "Não informado");
         const baseData = cleanPatientData(fullPatientData as Record<string, unknown>);
         await updatePatientApi(patientId, {
           ...baseData,
           nationality: baseData.nationality || baseData.birthplace || "",
-          allergies: data.allergies || "Nenhuma",
+          allergies: data.allergies || null,
           vaccineNames: vaccineList,
-          continuousMedication: data.continuousMedication || "Nenhum",
+          continuousMedication: medicationPayload,
         });
       }
 

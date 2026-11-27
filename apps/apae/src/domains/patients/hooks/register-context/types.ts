@@ -9,6 +9,7 @@ export interface PersonalData {
     certificate: string;
     date: Date;
     place: string;
+    file?: File;
     registryOffice?: string;
     book?: string;
     fls?: string;
@@ -21,7 +22,7 @@ export interface KinshipData {
   cpf: string;
   alive: boolean;
   name: string;
-  occupation: string;
+  occupation?: string;
   isLegalGuardian?: boolean;
 }
 
@@ -39,8 +40,8 @@ export interface AddressData {
 
 export interface AdditionalsData {
   id?: string;
-  diseases: string;
-  medications: string;
+  diseases?: string;
+  medications?: string | null;
   vaccines: string[];
   allergies: string;
   disability: { types: string[]; report: File | string | undefined };
@@ -53,7 +54,7 @@ export interface GuardianData {
   address: AddressData;
   name: string;
   kinship: string;
-  contact: string;
+  contact?: string;
   residesWithPatient?: boolean;
 }
 

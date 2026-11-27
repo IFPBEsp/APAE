@@ -8,6 +8,16 @@ import type {
   PatientPayload,
 } from "@/domains/patients/types/patient";
 
+export function hasRequiredRegistrationFiles(
+  additionals: Pick<MembersRegisterState["additionals"], "disability">,
+): boolean {
+  return additionals.disability.report instanceof File;
+}
+
+export function draftNeedsFileWarning(step: MembersRegisterStep): boolean {
+  return step === MembersRegisterStep.PROFILE;
+}
+
 export function buildPatientListQuery(
   values: PatientListQueryValues = {},
 ): URLSearchParams {
@@ -39,6 +49,19 @@ function parseIncome(value: string) {
   return Number.isNaN(num) ? 0.0 : num;
 }
 
+export function toNullableString(value?: string | null): string | null {
+  const trimmed = value?.trim();
+  return trimmed ? trimmed : null;
+}
+
+export function mapParentProfessionToForm(value?: string | null): string {
+  const trimmed = value?.trim();
+  if (!trimmed || trimmed === "Não informado") {
+    return "";
+  }
+  return value ?? "";
+}
+
 export function buildPatientPayload(
   state: MembersRegisterState,
 ): PatientPayload {
@@ -48,8 +71,8 @@ export function buildPatientPayload(
 
   const annualRegistryData = {
     bpc: additionals.bpc,
-    diseases: additionals.diseases || "Nenhuma",
-    continuousMedication: additionals.medications || "Nenhum",
+    diseases: additionals.diseases?.trim() || null,
+    continuousMedication: toNullableString(additionals.medications),
     serviceArea: additionals.care.types.map((area: string) => ({ area })),
     familyIncome: parseIncome(additionals.householdIncome),
     year: new Date().getFullYear(),
@@ -76,8 +99,8 @@ export function buildPatientPayload(
     registrationDate: hasRG && personal.rg.issuing.date
       ? serializeCivilDate(personal.rg.issuing.date)
       : null,
-    allergies: additionals.allergies || "Nenhuma",
-    continuousMedication: additionals.medications || "Nenhum",
+    allergies: additionals.allergies || null,
+    continuousMedication: toNullableString(additionals.medications),
     isStudent: profile.role === "student",
     address: {
       city: address.city || "Não informado",
@@ -90,7 +113,7 @@ export function buildPatientPayload(
     },
     guardian: {
       name: guardian.name || "Não informado",
-      contact: guardian.contact || "Não informado",
+      contact: guardian.contact?.trim() || null,
       kinship: guardian.kinship || "Não informado",
       address: {
         city: guardian.address.city || "Não informado",
@@ -106,11 +129,14 @@ export function buildPatientPayload(
       name: k.name || "Não informado",
       rg: k.rg || null,
       cpf: k.cpf,
-      profession: k.occupation || "Não informado",
+      profession: toNullableString(k.occupation),
       isAlive: k.alive,
       kinship: k.type || "Pai/Mãe",
     })),
-    vaccineNames: additionals.vaccines.map((v) => ({ name: v })),
+    vaccineNames: (additionals.vaccines ?? [])
+      .map((v) => v.trim())
+      .filter((name) => name !== "" && name !== "Não informado")
+      .map((name) => ({ name })),
     annualRegistry: annualRegistryData,
   };
 }
@@ -186,6 +212,9 @@ export function getStepForBackendField(
     return MembersRegisterStep.ADDRESS;
   }
   if (includesAny(fieldLower, ADDITIONALS_FIELDS)) {
+    return MembersRegisterStep.ADDITIONALS;
+  }
+  if (fieldLower.includes("reports")) {
     return MembersRegisterStep.ADDITIONALS;
   }
   if (fieldLower.includes("guardian")) {

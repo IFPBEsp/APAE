@@ -72,8 +72,8 @@ export default function PersonDetailsPage() {
     id?: string;
     bpc: boolean;
     familyIncome: number;
-    diseases: string;
-    continuousMedication: string;
+    diseases: string | null;
+    continuousMedication: string | null;
     disorders?: { id?: string; name: string }[];
     serviceAreas?: { id?: string; area: string }[];
   }
@@ -287,7 +287,7 @@ export default function PersonDetailsPage() {
                 <p className="font-bold text-base">Guardião Principal</p>
                 <InfoRow label="Nome" value={person.guardian.name} />
                 <InfoRow label="Parentesco" value={person.guardian.kinship} />
-                <InfoRow label="Contato" value={person.guardian.contact} />
+                <InfoRow label="Contato" value={person.guardian.contact || "Não informado"} />
                 <InfoRow label="Rua" value={person.guardian.address?.street} />
                 <InfoRow label="Número" value={person.guardian.address?.number} />
                 <InfoRow label="Bairro" value={person.guardian.address?.neighborhood} />
@@ -303,7 +303,7 @@ export default function PersonDetailsPage() {
                 <InfoRow label="Nome" value={parent.name} />
                 <InfoRow label="CPF" value={parent.cpf} />
                 <InfoRow label="Parentesco" value={parent.kinship}/>
-                <InfoRow label="Profissão" value={parent.profession} />
+                <InfoRow label="Profissão" value={parent.profession?.trim() || null} />
                 <InfoRow label="Vivo?" value={parent.isAlive} />
               </div>
             ))}
@@ -363,7 +363,15 @@ export default function PersonDetailsPage() {
           
           <CardContent>
             <InfoRow label="Alergias" value={person.allergies} />
-            <InfoRow label="Vacinas" value={person.vaccineNames?.map((v) => v.name).join(", ")} />
+            <InfoRow
+              label="Vacinas"
+              value={
+                person.vaccineNames
+                  ?.map((v) => v.name?.trim())
+                  .filter(Boolean)
+                  .join(", ") || null
+              }
+            />
             
             <h3 className="font-bold text-base mt-4 pt-4 border-t text-[#0D4F97]">Registro Anual ({selectedYear})</h3>
 
@@ -374,7 +382,7 @@ export default function PersonDetailsPage() {
                 <InfoRow label="Recebe BPC?" value={annualRegistry .bpc} />
                 <InfoRow label="Renda Familiar" value={annualRegistry .familyIncome} />
                 <InfoRow label="Tipo de Atendimento" value={annualRegistry .serviceAreas?.map((atendimento) => atendimento.area).join(", ")} />
-                <InfoRow label="Doenças" value={annualRegistry .diseases} />
+                <InfoRow label="Doenças" value={annualRegistry.diseases?.trim() || null} />
                 <InfoRow label="Medicamentos Contínuos" value={annualRegistry .continuousMedication} />
                 <InfoRow label="Transtornos" value={annualRegistry.disorders?.map((d) => d.name).join(", ")} />
               </div>

@@ -79,7 +79,7 @@ public class Patient {
     @Column(name = "data_de_cadastro", nullable = false)
     private LocalDate registrationDate;
 
-    @Column(name = "alergias", nullable = false)
+    @Column(name = "alergias")
     private String allergies;
 
     @Column(name = "is_aluno", nullable = false)
@@ -125,7 +125,7 @@ public class Patient {
         this.issuingAgency = identification.getIssuingAgency();
 
         this.address = address;
-        this.vaccines = vaccines;
+        this.vaccines = vaccines != null ? new HashSet<>(vaccines) : new HashSet<>();
     }
 
     public Patient(UUID id, PersonalInfo personalInfo,
@@ -155,7 +155,7 @@ public class Patient {
         this.issuingAgency = identification.getIssuingAgency();
 
         this.address = address;
-        this.vaccines = vaccines;
+        this.vaccines = vaccines != null ? new HashSet<>(vaccines) : new HashSet<>();
     }
 
     public UUID getId() {

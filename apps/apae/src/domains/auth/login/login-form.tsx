@@ -28,9 +28,16 @@ import { zodResolver } from "@hookform/resolvers/zod";
 
 import { loginSchema, FormLogin } from "../authSchema";
 import { useLogin } from "./use-login";
+import { useEffect } from "react";
+import { toast } from "react-toastify";
 
 export function LoginForm() {
   const { submit } = useLogin();
+  useEffect(() => {
+    if (new URLSearchParams(window.location.search).get("sessionExpired") === "true") {
+      toast.info("Sua sessão expirou. Entre novamente para continuar o cadastro");
+    }
+  }, []);
 
   const form = useForm<FormLogin>({
     resolver: zodResolver(loginSchema),
