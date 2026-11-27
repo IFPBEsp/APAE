@@ -28,7 +28,7 @@ public class Parent {
     @Column(name = "vivo", nullable = false)
     private boolean isAlive;
 
-    @Column(name = "profissao", nullable = false)
+    @Column(name = "profissao")
     private String profession;
 
     @Column(name = "parentesco", nullable = false)
@@ -46,7 +46,7 @@ public class Parent {
         this.rg = rg;
         this.cpf = cpf;
         this.isAlive = isAlive;
-        this.profession = profession;
+        this.profession = normalizeOptionalText(profession);
         this.kinship = kinship;
         this.patientId = patientId;
     }
@@ -58,9 +58,13 @@ public class Parent {
         this.rg = rg;
         this.cpf = cpf;
         this.isAlive = isAlive;
-        this.profession = profession;
+        this.profession = normalizeOptionalText(profession);
         this.kinship = kinship;
         this.patientId = patientId;
+    }
+
+    private static String normalizeOptionalText(String value) {
+        return (value == null || value.isBlank()) ? null : value;
     }
 
     public UUID getId() {

@@ -413,3 +413,35 @@ describe("Contato de emergência do responsável opcional (#1158)", () => {
     }
   });
 });
+
+describe("Campo Profissão do parente opcional (#1157)", () => {
+  const validKinshipBase = {
+    rg: "",
+    cpf: "529.982.247-25",
+    alive: true,
+    name: "Maria da Silva",
+    type: "Mãe",
+  };
+
+  it("aceita profissão vazia, omitida ou apenas espaços", () => {
+    expect(Kinship.safeParse({ ...validKinshipBase, occupation: "" }).success).toBe(true);
+    expect(Kinship.safeParse({ ...validKinshipBase }).success).toBe(true);
+    expect(Kinship.safeParse({ ...validKinshipBase, occupation: "   " }).success).toBe(true);
+  });
+
+  it("recusa profissão com menos de 2 caracteres úteis quando preenchida", () => {
+    const singleChar = Kinship.safeParse({ ...validKinshipBase, occupation: "A" });
+    expect(singleChar.success).toBe(false);
+    if (!singleChar.success) {
+      expect(singleChar.error.issues[0].message).toBe("Profissão inválida");
+    }
+
+    const paddedSingleChar = Kinship.safeParse({ ...validKinshipBase, occupation: " A " });
+    expect(paddedSingleChar.success).toBe(false);
+  });
+
+  it("aceita profissão com 2 ou mais caracteres", () => {
+    expect(Kinship.safeParse({ ...validKinshipBase, occupation: "AB" }).success).toBe(true);
+    expect(Kinship.safeParse({ ...validKinshipBase, occupation: "Agricultora" }).success).toBe(true);
+  });
+});

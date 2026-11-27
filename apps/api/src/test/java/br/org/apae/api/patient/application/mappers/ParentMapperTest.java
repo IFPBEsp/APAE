@@ -131,4 +131,36 @@ class ParentMapperTest {
         assertEquals(1, dtos.size());
         assertEquals(entities.get(0).getId(), dtos.get(0).id());
     }
+
+    @Test
+    void toEntity_ShouldNormalizeBlankProfessionToNull() {
+        CreateParentDTO blankDto = new CreateParentDTO("Maria Mãe", "123456", "529.982.247-25", "   ", true, "Mãe");
+
+        Parent entity = parentMapper.toEntity(blankDto, patientId);
+
+        assertNull(entity.getProfession());
+    }
+
+    @Test
+    void updateEntityListFromDto_ShouldAllowNullAndBlankProfession() {
+        List<UpdateParentDTO> dtos = List.of(
+                new UpdateParentDTO("João Pai", "123", "529.982.247-25", null, Boolean.TRUE, "Pai"),
+                new UpdateParentDTO("Maria Mãe", "456", "529.982.247-25", "  ", Boolean.TRUE, "Mãe")
+        );
+
+        List<Parent> entities = parentMapper.updateEntityListFromDto(dtos, patientId);
+
+        assertEquals(2, entities.size());
+        assertNull(entities.get(0).getProfession());
+        assertNull(entities.get(1).getProfession());
+    }
+
+    @Test
+    void toResponseDTO_ShouldPreserveNullProfession() {
+        Parent entity = new Parent(UUID.randomUUID(), "Maria Mãe", "123", "529.982.247-25", true, null, "Mãe", patientId);
+
+        ParentResponseDTO dto = parentMapper.toResponseDTO(entity);
+
+        assertNull(dto.profession());
+    }
 }

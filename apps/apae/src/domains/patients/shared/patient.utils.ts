@@ -54,6 +54,14 @@ export function toNullableString(value?: string | null): string | null {
   return trimmed ? trimmed : null;
 }
 
+export function mapParentProfessionToForm(value?: string | null): string {
+  const trimmed = value?.trim();
+  if (!trimmed || trimmed === "Não informado") {
+    return "";
+  }
+  return value ?? "";
+}
+
 export function buildPatientPayload(
   state: MembersRegisterState,
 ): PatientPayload {
@@ -121,7 +129,7 @@ export function buildPatientPayload(
       name: k.name || "Não informado",
       rg: k.rg || null,
       cpf: k.cpf,
-      profession: k.occupation || "Não informado",
+      profession: toNullableString(k.occupation),
       isAlive: k.alive,
       kinship: k.type || "Pai/Mãe",
     })),

@@ -6,6 +6,7 @@ import {
   draftNeedsFileWarning,
   getStepForBackendField,
   hasRequiredRegistrationFiles,
+  mapParentProfessionToForm,
 } from "./patient.utils";
 import { MembersRegisterStep } from "../hooks/register-context/types";
 
@@ -160,5 +161,45 @@ describe("buildPatientPayload - contato de emergência do responsável opcional 
   it("envia o telefone formatado quando o contato do responsável é informado", () => {
     const payload = buildPatientPayload(buildWithGuardianContact("(83) 99999-9999"));
     expect(payload.guardian.contact).toBe("(83) 99999-9999");
+  });
+});
+
+describe("buildPatientPayload e edição - profissão do parente opcional (#1157)", () => {
+  const buildWithOccupation = (occupation?: string): MembersRegisterState => ({
+    ...initialState,
+    kinships: [
+      {
+        name: "Maria da Silva",
+        rg: "",
+        cpf: "529.982.247-25",
+        alive: true,
+        occupation,
+        type: "Mãe",
+      },
+    ],
+  });
+
+  it("envia null (e não 'Não informado') quando occupation está vazio, só espaços ou indefinido", () => {
+    expect(buildPatientPayload(buildWithOccupation("")).parents[0].profession).toBeNull();
+    expect(buildPatientPayload(buildWithOccupation("   ")).parents[0].profession).toBeNull();
+    expect(buildPatientPayload(buildWithOccupation(undefined)).parents[0].profession).toBeNull();
+  });
+
+  it("envia a profissão com trim quando preenchida", () => {
+    expect(buildPatientPayload(buildWithOccupation("Agricultora")).parents[0].profession).toBe(
+      "Agricultora",
+    );
+    expect(buildPatientPayload(buildWithOccupation("  Professor  ")).parents[0].profession).toBe(
+      "Professor",
+    );
+  });
+
+  it("mapParentProfessionToForm abre vazio quando profession é null, vazio ou 'Não informado'", () => {
+    expect(mapParentProfessionToForm(null)).toBe("");
+    expect(mapParentProfessionToForm(undefined)).toBe("");
+    expect(mapParentProfessionToForm("")).toBe("");
+    expect(mapParentProfessionToForm("   ")).toBe("");
+    expect(mapParentProfessionToForm("Não informado")).toBe("");
+    expect(mapParentProfessionToForm("Agricultora")).toBe("Agricultora");
   });
 });

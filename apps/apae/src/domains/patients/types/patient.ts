@@ -24,7 +24,7 @@ export interface PatientParentPayload {
   name: string;
   rg: string | null;
   cpf: string;
-  profession: string;
+  profession: string | null;
   isAlive: boolean;
   kinship: string;
 }
