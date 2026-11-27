@@ -67,10 +67,6 @@ public record PutDocumentArgsDTO(
         }
 
         public PutDocumentArgsDTO build() {
-            if (size <= 0) {
-                throw new InsufficientDataException();
-            }
-
             return new PutDocumentArgsDTO(
                     Optional.ofNullable(stream).orElseThrow(InsufficientDataException::new),
                     size,
