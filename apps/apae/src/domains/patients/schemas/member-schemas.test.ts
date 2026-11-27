@@ -127,6 +127,33 @@ describe("Órgão emissor", () => {
   });
 });
 
+describe("CPF do parente", () => {
+  const parent = {
+    rg: "",
+    cpf: "",
+    alive: true,
+    name: "João da Silva",
+    occupation: "Professor",
+    type: "Pai",
+  };
+
+  it("aceita CPF vazio", () => {
+    expect(Kinship.safeParse(parent).success).toBe(true);
+  });
+
+  it("continua recusando CPF preenchido inválido", () => {
+    expect(
+      Kinship.safeParse({ ...parent, cpf: "123.456.789-00" }).success,
+    ).toBe(false);
+  });
+
+  it("aceita CPF preenchido válido", () => {
+    expect(
+      Kinship.safeParse({ ...parent, cpf: "529.982.247-25" }).success,
+    ).toBe(true);
+  });
+});
+
 describe("Nomes com símbolos nos membros", () => {
   const nomes = [
     "Ana Clara D'Ávila",

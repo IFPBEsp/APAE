@@ -21,7 +21,7 @@ import { mapParentProfessionToForm } from "@/domains/patients/shared/patient.uti
 
 interface ParentData {
   name?: string;
-  cpf?: string;
+  cpf?: string | null;
   rg?: string | null;
   profession?: string | null;
   isAlive?: boolean;
