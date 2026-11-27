@@ -58,7 +58,14 @@ export function mapRegistryToFormValues(
       : "false";
 
   const vaccineList = Array.isArray(patient?.vaccineNames)
-    ? patient.vaccineNames.map((v: unknown) => (typeof v === "string" ? { name: v } : v))
+    ? patient.vaccineNames
+        .map((v: unknown) => (typeof v === "string" ? { name: v } : v))
+        .filter((v): v is { name?: string; label?: string; value?: string; id?: string | number } => {
+          if (!v || typeof v !== "object") return false;
+          const item = v as { name?: string; label?: string; value?: string };
+          const text = String(item.name ?? item.label ?? item.value ?? "").trim();
+          return text !== "" && text !== "Não informado";
+        })
     : [];
 
   const sourceServiceAreas = registry?.serviceAreas ?? [];
@@ -265,7 +272,12 @@ export function useAnnualRegistryModal({
       }
 
       if (fullPatientData) {
-        const vaccineList = (data.vaccines || []).map((v: Record<string, unknown>) => ({ name: v.name || v.label || v.value, id: v.id }));
+        const vaccineList = (data.vaccines || [])
+          .map((v: Record<string, unknown>) => ({
+            name: String(v.name || v.label || v.value || "").trim(),
+            id: v.id,
+          }))
+          .filter((v) => v.name !== "" && v.name !== "Não informado");
         const baseData = cleanPatientData(fullPatientData as Record<string, unknown>);
         await updatePatientApi(patientId, {
           ...baseData,

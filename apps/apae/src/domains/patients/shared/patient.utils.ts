@@ -125,7 +125,10 @@ export function buildPatientPayload(
       isAlive: k.alive,
       kinship: k.type || "Pai/Mãe",
     })),
-    vaccineNames: additionals.vaccines.map((v) => ({ name: v })),
+    vaccineNames: (additionals.vaccines ?? [])
+      .map((v) => v.trim())
+      .filter((name) => name !== "" && name !== "Não informado")
+      .map((name) => ({ name })),
     annualRegistry: annualRegistryData,
   };
 }

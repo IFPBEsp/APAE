@@ -126,7 +126,9 @@ function EditPatientDataLoader({ children }: { children: React.ReactNode }) {
             diseases: "",
             medications: "",
             vaccines:
-              data.vaccineNames?.map((v: { name?: string }) => v.name || "") ||
+              data.vaccineNames
+                ?.map((v: { name?: string }) => v.name?.trim() || "")
+                .filter((name) => name !== "" && name !== "Não informado") ||
               [],
             allergies: data.allergies || "",
             disability: { types: [], report: undefined },
