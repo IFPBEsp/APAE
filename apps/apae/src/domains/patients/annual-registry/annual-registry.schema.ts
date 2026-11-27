@@ -10,7 +10,7 @@ export const annualRegistryFormSchema = z.object({
   diseases: z.string().optional(),
   continuousMedication: z.string().optional().nullable(),
   allergies: z.string().min(1, "Informe as alergias ou 'Nenhuma'"),
-  vaccines: z.array(z.any()).min(1, "Selecione ao menos uma vacina"),
+  vaccines: z.array(z.any()),
   disorders: z.array(z.any()).min(1, "Selecione ao menos um transtorno"),
   serviceTypes: z.array(z.any()).min(1, "Selecione ao menos um atendimento"),
 });

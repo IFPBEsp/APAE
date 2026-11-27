@@ -125,7 +125,7 @@ public class Patient {
         this.issuingAgency = identification.getIssuingAgency();
 
         this.address = address;
-        this.vaccines = vaccines;
+        this.vaccines = vaccines != null ? new HashSet<>(vaccines) : new HashSet<>();
     }
 
     public Patient(UUID id, PersonalInfo personalInfo,
@@ -155,7 +155,7 @@ public class Patient {
         this.issuingAgency = identification.getIssuingAgency();
 
         this.address = address;
-        this.vaccines = vaccines;
+        this.vaccines = vaccines != null ? new HashSet<>(vaccines) : new HashSet<>();
     }
 
     public UUID getId() {

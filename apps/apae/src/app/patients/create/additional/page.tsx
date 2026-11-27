@@ -81,7 +81,7 @@ export default function MembersRegisterAdditionalsPage() {
     if (
       isEditing &&
       !isInitialized &&
-      (additionals.diseases || additionals.vaccines.length > 0)
+      (additionals.diseases || additionals.vaccines.length > 0 || Boolean(additionals.allergies))
     ) {
       form.reset(additionals as AdditionalsData);
       setIsInitialized(true);
@@ -103,7 +103,10 @@ export default function MembersRegisterAdditionalsPage() {
   const onSubmit = async (values: z.infer<typeof Additionals>) => {
     setIsLoading(true);
     try {
-      setAdditionalsData(values);
+      setAdditionalsData({
+        ...values,
+        vaccines: values.vaccines ?? [],
+      });
       setStep(MembersRegisterStep.PROFILE);
     } catch (error: unknown) {
       const err = error as { response?: { data?: Record<string, string[]> } };
@@ -216,7 +219,7 @@ export default function MembersRegisterAdditionalsPage() {
               name="vaccines"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Vacinas Tomadas *</FormLabel>
+                  <FormLabel>Vacinas Tomadas</FormLabel>
                   <FormControl>
                     <CreatableMultiSelect
                       key={`vaccines-select-${refreshKey}`}
