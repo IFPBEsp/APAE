@@ -141,3 +141,24 @@ describe("buildPatientPayload - vacinas opcional (#1154)", () => {
     expect(payload.vaccineNames).toEqual([{ name: "BCG" }, { name: "Poliomielite" }]);
   });
 });
+
+describe("buildPatientPayload - contato de emergência do responsável opcional (#1158)", () => {
+  const buildWithGuardianContact = (contact?: string): MembersRegisterState => ({
+    ...initialState,
+    guardian: {
+      ...initialState.guardian,
+      contact: contact as string,
+    },
+  });
+
+  it("envia null (e não 'Não informado') quando o contato do responsável está vazio, só espaços ou indefinido", () => {
+    expect(buildPatientPayload(buildWithGuardianContact("")).guardian.contact).toBeNull();
+    expect(buildPatientPayload(buildWithGuardianContact("   ")).guardian.contact).toBeNull();
+    expect(buildPatientPayload(buildWithGuardianContact(undefined)).guardian.contact).toBeNull();
+  });
+
+  it("envia o telefone formatado quando o contato do responsável é informado", () => {
+    const payload = buildPatientPayload(buildWithGuardianContact("(83) 99999-9999"));
+    expect(payload.guardian.contact).toBe("(83) 99999-9999");
+  });
+});

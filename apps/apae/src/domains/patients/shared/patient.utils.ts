@@ -49,6 +49,11 @@ function parseIncome(value: string) {
   return Number.isNaN(num) ? 0.0 : num;
 }
 
+export function toNullableString(value?: string | null): string | null {
+  const trimmed = value?.trim();
+  return trimmed ? trimmed : null;
+}
+
 export function buildPatientPayload(
   state: MembersRegisterState,
 ): PatientPayload {
@@ -59,7 +64,7 @@ export function buildPatientPayload(
   const annualRegistryData = {
     bpc: additionals.bpc,
     diseases: additionals.diseases?.trim() || null,
-    continuousMedication: additionals.medications || "Nenhum",
+    continuousMedication: toNullableString(additionals.medications),
     serviceArea: additionals.care.types.map((area: string) => ({ area })),
     familyIncome: parseIncome(additionals.householdIncome),
     year: new Date().getFullYear(),
@@ -87,7 +92,7 @@ export function buildPatientPayload(
       ? serializeCivilDate(personal.rg.issuing.date)
       : null,
     allergies: additionals.allergies || "Nenhuma",
-    continuousMedication: additionals.medications || "Nenhum",
+    continuousMedication: toNullableString(additionals.medications),
     isStudent: profile.role === "student",
     address: {
       city: address.city || "Não informado",
@@ -100,7 +105,7 @@ export function buildPatientPayload(
     },
     guardian: {
       name: guardian.name || "Não informado",
-      contact: guardian.contact || "Não informado",
+      contact: guardian.contact?.trim() || null,
       kinship: guardian.kinship || "Não informado",
       address: {
         city: guardian.address.city || "Não informado",

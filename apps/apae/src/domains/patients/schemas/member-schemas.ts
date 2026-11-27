@@ -1,6 +1,6 @@
 import z, { ZodCoercedDate } from "zod";
 import { parseCivilDate } from "@/lib/date";
-import { photoFileSchema } from "@/lib/photo.schema";
+import { optionalPhotoSchema } from "@/lib/photo.schema";
 import {
   cpfSchema,
   nomeCompletoSchema,
@@ -187,7 +187,7 @@ export const Address = addressSchema;
 
 export const Additionals = z.object({
   diseases: z.string().optional(),
-  medications: z.string().min(1, "O campo de medicações é obrigatório."),
+  medications: z.string().optional().nullable(),
   vaccines: z.array(z.string().min(1)),
   allergies: z.string().min(1, "O campo de alergias é obrigatório."),
   disability: z.object({
@@ -227,7 +227,13 @@ export const Kinships = z.object({
 
 export const Guardian = z.object({
   name: nomeCompletoSchema,
-  contact: telefoneSchema,
+  contact: z
+    .string()
+    .optional()
+    .refine(
+      (value) => !value?.trim() || telefoneSchema.safeParse(value).success,
+      "Número de telefone inválido",
+    ),
 
   kinship: z.string().min(1, "Informar o parentesco é obrigatório."),
   address: Address,
@@ -238,7 +244,7 @@ export const Profile = z.object({
   role: z.enum(["student", "patient"], {
     message: "Tipo de eficiência é obrigatório.",
   }),
-  photo: photoFileSchema,
+  photo: optionalPhotoSchema,
 });
 
 export type PersonalData = z.infer<typeof Personal>;

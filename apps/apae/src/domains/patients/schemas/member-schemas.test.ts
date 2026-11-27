@@ -374,3 +374,42 @@ describe("Campo Vacinas tomadas opcional (#1154)", () => {
     ).toEqual([{ name: "BCG" }]);
   });
 });
+
+describe("Contato de emergência do responsável opcional (#1158)", () => {
+  const validGuardianBase = {
+    name: "Maria da Silva",
+    kinship: "Mãe",
+    address: {
+      cep: "58135-000",
+      state: "PB" as const,
+      city: "Esperança",
+      neighborhood: "Centro",
+      street: "Rua A",
+      number: "100",
+      complement: "Casa",
+    },
+  };
+
+  it("aceita contato de emergência vazio, só espaços ou omitido", () => {
+    expect(Guardian.safeParse({ ...validGuardianBase, contact: "" }).success).toBe(true);
+    expect(Guardian.safeParse({ ...validGuardianBase, contact: "   " }).success).toBe(true);
+    expect(Guardian.safeParse({ ...validGuardianBase }).success).toBe(true);
+  });
+
+  it("aceita contato de emergência preenchido com formato válido", () => {
+    expect(
+      Guardian.safeParse({ ...validGuardianBase, contact: "(83) 99999-9999" }).success,
+    ).toBe(true);
+    expect(
+      Guardian.safeParse({ ...validGuardianBase, contact: "(83) 3361-1234" }).success,
+    ).toBe(true);
+  });
+
+  it("rejeita contato de emergência preenchido com formato inválido", () => {
+    const result = Guardian.safeParse({ ...validGuardianBase, contact: "(83) 123" });
+    expect(result.success).toBe(false);
+    if (!result.success) {
+      expect(result.error.issues[0].message).toBe("Número de telefone inválido");
+    }
+  });
+});

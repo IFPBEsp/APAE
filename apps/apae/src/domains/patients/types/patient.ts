@@ -15,7 +15,7 @@ export type PatientGuardianAddress = PatientAddress;
 
 export interface PatientGuardian {
   name: string;
-  contact: string;
+  contact: string | null;
   kinship: string;
   address?: PatientGuardianAddress;
 }
@@ -36,7 +36,7 @@ export interface PatientParent extends PatientParentPayload {
 export interface PatientAnnualRegistry {
   bpc: boolean;
   diseases: string | null;
-  continuousMedication: string;
+  continuousMedication: string | null;
   serviceArea: { area: string }[];
   familyIncome: number;
   year: number;
@@ -60,12 +60,12 @@ export interface PatientPayload {
   nis: string;
   registrationDate: Date | string | null;
   allergies: string;
-  continuousMedication: string;
+  continuousMedication: string | null;
   isStudent: boolean;
   address: PatientAddress;
   guardian: {
     name: string;
-    contact: string;
+    contact: string | null;
     kinship: string;
     address: PatientGuardianAddress;
   };

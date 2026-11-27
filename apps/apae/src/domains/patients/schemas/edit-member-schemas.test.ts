@@ -27,8 +27,10 @@ describe("Critério 1: cadastro de paciente valida tipo e tamanho da foto no sub
     expect(Profile.safeParse({ role: "patient", photo: validPhoto() }).success).toBe(true);
   });
 
-  it("rejeita foto ausente", () => {
-    expect(Profile.safeParse({ role: "patient" }).success).toBe(false);
+  it("aceita foto ausente", () => {
+    expect(Profile.safeParse({ role: "patient" }).success).toBe(true);
+    expect(Profile.safeParse({ role: "patient", photo: undefined }).success).toBe(true);
+    expect(Profile.safeParse({ role: "patient", photo: null }).success).toBe(true);
   });
 
   it("rejeita tipo inválido", () => {
@@ -92,9 +94,10 @@ describe("Critério 4: mensagens de erro consistentes com o schema compartilhado
     expect(photoMessages(result)).toEqual(sharedMessages(photo));
   });
 
-  it("cadastro: foto ausente usa a mesma mensagem do photoFileSchema", () => {
+  it("cadastro: foto ausente é aceita e não gera erros", () => {
     const result = Profile.safeParse({ role: "patient" });
-    expect(photoMessages(result)).toEqual(sharedMessages(undefined));
+    expect(result.success).toBe(true);
+    expect(photoMessages(result)).toEqual([]);
   });
 });
 
