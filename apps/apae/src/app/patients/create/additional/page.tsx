@@ -274,7 +274,7 @@ export default function MembersRegisterAdditionalsPage() {
               name="allergies"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Tem alergias? Quais? *</FormLabel>
+                  <FormLabel>Tem alergias? Quais?</FormLabel>
                   <FormControl>
                     <Input
                       placeholder="Alergia a abacaxi"

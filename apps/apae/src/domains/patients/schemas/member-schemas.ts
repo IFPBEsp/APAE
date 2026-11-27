@@ -189,7 +189,7 @@ export const Additionals = z.object({
   diseases: z.string().optional(),
   medications: z.string().optional().nullable(),
   vaccines: z.array(z.string().min(1)),
-  allergies: z.string().min(1, "O campo de alergias é obrigatório."),
+  allergies: z.string().optional(),
   disability: z.object({
     types: z
       .array(z.string().min(1))

@@ -282,7 +282,7 @@ export function useAnnualRegistryModal({
         await updatePatientApi(patientId, {
           ...baseData,
           nationality: baseData.nationality || baseData.birthplace || "",
-          allergies: data.allergies || "Nenhuma",
+          allergies: data.allergies || null,
           vaccineNames: vaccineList,
           continuousMedication: medicationPayload,
         });
