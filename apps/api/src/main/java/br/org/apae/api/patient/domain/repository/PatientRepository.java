@@ -1,5 +1,6 @@
 package br.org.apae.api.patient.domain.repository;
 
+import br.org.apae.api.common.util.LikePattern;
 import br.org.apae.api.patient.domain.model.Patient;
 import br.org.apae.api.patient.domain.repository.projection.PatientWithAbsenceProjection;
 import org.springframework.data.domain.Page;
@@ -22,6 +23,14 @@ public interface PatientRepository extends JpaRepository<Patient, UUID>, JpaSpec
     @Query("SELECT DISTINCT p.address.city FROM Patient p WHERE p.address.city IS NOT NULL AND p.address.city <> '' ORDER BY p.address.city ASC")
     List<String> findDistinctCities();
 
+    default Page<PatientWithAbsenceProjection> findPatientsWithAbsences(
+            Integer minAbsences,
+            String name,
+            Pageable pageable
+    ) {
+        return findPatientsWithAbsencesEscaped(minAbsences, LikePattern.contains(name), pageable);
+    }
+
     @Query("""
       SELECT p as patient,
              COUNT(a) as absenceCount,
@@ -29,11 +38,11 @@ public interface PatientRepository extends JpaRepository<Patient, UUID>, JpaSpec
       FROM Patient p
       LEFT JOIN Absence a
           ON a.generatedAppointment.patientId = p.id AND a.isJustified = false
-      WHERE LOWER(p.fullName) LIKE LOWER(CONCAT('%', :name, '%'))
+      WHERE LOWER(p.fullName) LIKE LOWER(:name) ESCAPE '\\'
       GROUP BY p.id
       HAVING COUNT(a) >= COALESCE(:minAbsences, 0)
     """)
-    Page<PatientWithAbsenceProjection> findPatientsWithAbsences(
+    Page<PatientWithAbsenceProjection> findPatientsWithAbsencesEscaped(
             @Param("minAbsences") Integer minAbsences,
             @Param("name") String name,
             Pageable pageable
