@@ -17,6 +17,7 @@ import type { PatientStatus } from "@/domains/patients/types/patient";
 import { useAbsenceAlerts } from "@/domains/absences/hooks/use-absence-alerts";
 import { cn } from "@/lib/utils";
 import { bffFetchJson } from "@/lib/bff-client";
+import { calculateAge } from "@/lib/date";
 import { normalizeStateToUF } from "@/lib/states";
 
 const statusLabels: Record<PatientStatus, string> = {
@@ -239,6 +240,7 @@ export default function PersonDetailsPage() {
           <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-x-4">
             <InfoRow label="Nome Completo" value={person.fullName} />
             <InfoRow label="Data de Nasc." value={person.birthDate} />
+            <InfoRow label="Idade" value={calculateAge(person.birthDate)} />
             <InfoRow label="Naturalidade" value={person.birthplace} />
             <InfoRow label="Contato" value={person.contact || "Não informado"} />
             <InfoRow label="Alergias" value={person.allergies} />
