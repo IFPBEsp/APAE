@@ -43,6 +43,10 @@ export function useRegisterSubmission(state: MembersRegisterState, STORAGE_KEY: 
         formData.append("birth_certificate", personal.birth.file);
       }
 
+      if (personal.rg.file instanceof File) {
+        formData.append("rg", personal.rg.file);
+      }
+
       if (additionals.disability.report instanceof File) {
         formData.append("reports", additionals.disability.report);
       }

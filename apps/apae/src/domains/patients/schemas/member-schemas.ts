@@ -112,6 +112,7 @@ export const Personal = z
           ),
         date: optionalCivilDateSchema,
       }),
+      file: z.instanceof(File).optional(),
     }),
     cns: CNS,
     nis: NIS,

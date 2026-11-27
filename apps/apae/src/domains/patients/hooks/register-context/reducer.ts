@@ -86,7 +86,7 @@ export const initialState: MembersRegisterState = {
     name: "",
     cpf: "",
     phone: "",
-    rg: { number: "", issuing: { body: "", date: null } },
+    rg: { number: "", issuing: { body: "", date: null }, file: undefined },
     cns: "",
     nis: "",
     birth: {
