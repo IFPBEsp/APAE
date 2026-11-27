@@ -8,9 +8,9 @@ export const annualRegistryFormSchema = z.object({
     return num >= 20000;
   }, "Mínimo R$ 200,00"),
   diseases: z.string().optional(),
-  continuousMedication: z.string().min(1, "Informe os medicamentos ou 'Nenhum'"),
+  continuousMedication: z.string().optional().nullable(),
   allergies: z.string().optional(),
-  vaccines: z.array(z.any()).min(1, "Selecione ao menos uma vacina"),
+  vaccines: z.array(z.any()),
   disorders: z.array(z.any()).min(1, "Selecione ao menos um transtorno"),
   serviceTypes: z.array(z.any()).min(1, "Selecione ao menos um atendimento"),
 });

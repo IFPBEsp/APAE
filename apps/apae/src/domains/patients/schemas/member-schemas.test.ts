@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { Additionals, Personal, Guardian, Kinship, birthCertificateSchema } from "./member-schemas";
+import { EditAdditionals } from "./edit-member-schemas";
 import { annualRegistryFormSchema } from "@/domains/patients/annual-registry/annual-registry.schema";
 import { mapRegistryToFormValues } from "@/domains/patients/annual-registry/use-annual-registry-modal";
 
@@ -296,5 +297,119 @@ describe("Campo Doenças opcional (#1151)", () => {
     expect(
       mapRegistryToFormValues("2026", { ...baseRegistry, diseases: "Diabetes" }, null).diseases,
     ).toBe("Diabetes");
+  });
+});
+
+describe("Campo Vacinas tomadas opcional (#1154)", () => {
+  const validAdditionalsBase = {
+    diseases: "",
+    medications: "Losartana",
+    allergies: "Poeira",
+    disability: {
+      types: ["TEA"],
+      report: new File([new Uint8Array(10)], "laudo.pdf", { type: "application/pdf" }),
+    },
+    care: {
+      types: ["Psicologia"],
+    },
+    bpc: false,
+    householdIncome: "R$ 1.500,00",
+  };
+
+  it("Additionals aceita lista vazia ou preenchida de vacinas", () => {
+    expect(Additionals.safeParse({ ...validAdditionalsBase, vaccines: [] }).success).toBe(true);
+    expect(Additionals.safeParse({ ...validAdditionalsBase, vaccines: ["BCG"] }).success).toBe(
+      true,
+    );
+  });
+
+  it("EditAdditionals aceita lista vazia ou preenchida de vacinas", () => {
+    expect(EditAdditionals.safeParse({ vaccines: [], allergies: "Poeira" }).success).toBe(true);
+    expect(EditAdditionals.safeParse({ vaccines: ["BCG"], allergies: "Poeira" }).success).toBe(
+      true,
+    );
+  });
+
+  it("annualRegistryFormSchema aceita lista vazia ou preenchida de vacinas", () => {
+    const base = {
+      year: "2026",
+      bpc: "false" as const,
+      familyIncome: "R$ 1.500,00",
+      diseases: "",
+      continuousMedication: "Losartana",
+      allergies: "Poeira",
+      disorders: [{ name: "TEA" }],
+      serviceTypes: [{ area: "Psicologia" }],
+    };
+
+    expect(annualRegistryFormSchema.safeParse({ ...base, vaccines: [] }).success).toBe(true);
+    expect(
+      annualRegistryFormSchema.safeParse({ ...base, vaccines: [{ name: "BCG" }] }).success,
+    ).toBe(true);
+  });
+
+  it("mapRegistryToFormValues abre vacinas vazio quando não há vacinas ou vem 'Não informado'", () => {
+    const baseRegistry = {
+      bpc: false,
+      familyIncome: 1500,
+      diseases: null,
+      continuousMedication: "Losartana",
+    };
+
+    expect(
+      mapRegistryToFormValues("2026", baseRegistry, { vaccineNames: [] }).vaccines,
+    ).toEqual([]);
+    expect(
+      mapRegistryToFormValues("2026", baseRegistry, { vaccineNames: undefined }).vaccines,
+    ).toEqual([]);
+    expect(
+      mapRegistryToFormValues("2026", baseRegistry, {
+        vaccineNames: [{ name: "Não informado" }, { name: "   " }],
+      }).vaccines,
+    ).toEqual([]);
+    expect(
+      mapRegistryToFormValues("2026", baseRegistry, {
+        vaccineNames: [{ name: "BCG" }],
+      }).vaccines,
+    ).toEqual([{ name: "BCG" }]);
+  });
+});
+
+describe("Contato de emergência do responsável opcional (#1158)", () => {
+  const validGuardianBase = {
+    name: "Maria da Silva",
+    kinship: "Mãe",
+    address: {
+      cep: "58135-000",
+      state: "PB" as const,
+      city: "Esperança",
+      neighborhood: "Centro",
+      street: "Rua A",
+      number: "100",
+      complement: "Casa",
+    },
+  };
+
+  it("aceita contato de emergência vazio, só espaços ou omitido", () => {
+    expect(Guardian.safeParse({ ...validGuardianBase, contact: "" }).success).toBe(true);
+    expect(Guardian.safeParse({ ...validGuardianBase, contact: "   " }).success).toBe(true);
+    expect(Guardian.safeParse({ ...validGuardianBase }).success).toBe(true);
+  });
+
+  it("aceita contato de emergência preenchido com formato válido", () => {
+    expect(
+      Guardian.safeParse({ ...validGuardianBase, contact: "(83) 99999-9999" }).success,
+    ).toBe(true);
+    expect(
+      Guardian.safeParse({ ...validGuardianBase, contact: "(83) 3361-1234" }).success,
+    ).toBe(true);
+  });
+
+  it("rejeita contato de emergência preenchido com formato inválido", () => {
+    const result = Guardian.safeParse({ ...validGuardianBase, contact: "(83) 123" });
+    expect(result.success).toBe(false);
+    if (!result.success) {
+      expect(result.error.issues[0].message).toBe("Número de telefone inválido");
+    }
   });
 });

@@ -9,7 +9,9 @@ describe("membersRegisterReducer birth certificate file", () => {
 
     const nextState = membersRegisterReducer(initialState, {
       type: "SET_PERSONAL_DATA",
-      payload: { birth: { file } },
+      payload: {
+        birth: { ...initialState.personal.birth, file },
+      },
     });
 
     expect(nextState.personal.birth.file).toBe(file);

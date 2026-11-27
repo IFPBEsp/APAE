@@ -201,6 +201,33 @@ public class PatientControllerTest {
   }
 
   @Test
+  @DisplayName("Deve criar um novo paciente sem vacinas (lista vazia) com sucesso (201)")
+  void shouldCreatePatientWithoutVaccinesSuccessfully() throws Exception {
+   CreatePatientDTO patientDTO = new CreatePatientDTO(
+     "João da Silva", "Brasileira", LocalDate.of(2010, 1, 1), "8399999999",
+     "123456", "Cartório X", "10", "A", "123456", LocalDate.of(2015, 1, 1),
+     "SSP/PB", "529.982.247-25", "123456789", "12345", LocalDate.now(), "Nenhuma",
+     true, createAddress(),
+     new CreateGuardianDTO("Mãe", "8399999999", "MÃE", createAddress()),
+     List.of(new CreateParentDTO("Pai", "123456", "529.982.247-25", "Autônomo", true, "PAI")),
+     Set.of(), createAnnualRegistry()
+   );
+   CreateDocumentsDTO docsDTO = PatientCreator.createDocuments();
+   PatientResponseDTO responseDTO = PatientCreator.createResponse();
+
+   when(patientService.createPatient(any(CreatePatientDTO.class), any(CreateDocumentsDTO.class))).thenReturn(responseDTO);
+
+   MockMultipartFile patientPart = new MockMultipartFile("patient", "", MediaType.APPLICATION_JSON_VALUE, objectMapper.writeValueAsString(patientDTO).getBytes(StandardCharsets.UTF_8));
+
+   mockMvc.perform(multipart(BASE_URL)
+       .file(patientPart).file((MockMultipartFile) docsDTO.rg()).file((MockMultipartFile) docsDTO.cpf())
+       .file((MockMultipartFile) docsDTO.proof_of_address()).file((MockMultipartFile) docsDTO.birth_certificate())
+       .file((MockMultipartFile) docsDTO.photo()).file((MockMultipartFile) docsDTO.reports().getFirst())
+       .header("Authorization", AuthTestHelper.bearerToken()).with(csrf()).contentType(MediaType.MULTIPART_FORM_DATA))
+     .andExpect(status().isCreated());
+  }
+
+  @Test
   @DisplayName("Deve retornar 400 ao criar paciente com dados inválidos")
   void shouldReturnBadRequestWhenCreateDataIsInvalid() throws Exception {
    CreatePatientDTO invalidDTO = createInvalidPatientRequest();
@@ -453,6 +480,28 @@ public class PatientControllerTest {
   void shouldUpdatePatientWithoutNisSuccessfully() throws Exception {
    UUID id = UUID.randomUUID();
    var updateDTO = PatientCreator.createUpdatePayloadWithoutNis();
+   PatientResponseDTO responseDTO = PatientCreator.createResponse();
+
+   when(patientService.updatePatient(id, updateDTO)).thenReturn(responseDTO);
+
+   mockMvc.perform(put(BASE_URL + "/{id}", id).header("Authorization", AuthTestHelper.bearerToken())
+       .content(objectMapper.writeValueAsString(updateDTO)).contentType(MediaType.APPLICATION_JSON).with(csrf()))
+     .andExpect(status().isOk())
+     .andExpect(jsonPath("$.id").value(responseDTO.id().toString()));
+  }
+
+  @Test
+  @DisplayName("Deve atualizar o paciente sem vacinas (lista vazia) com sucesso (200)")
+  void shouldUpdatePatientWithoutVaccinesSuccessfully() throws Exception {
+   UUID id = UUID.randomUUID();
+   var base = PatientCreator.createUpdatePayload();
+   var updateDTO = new UpdatePatientDTO(
+     base.fullName(), base.nationality(), base.birthDate(), base.contact(),
+     base.birthCertificateNumber(), base.registryOffice(), base.fls(), base.book(),
+     base.rg(), base.issueDate(), base.issuingAgency(), base.cpf(), base.cns(),
+     base.nis(), base.allergies(), base.isStudent(), base.address(),
+     base.guardian(), base.parents(), Set.of()
+   );
    PatientResponseDTO responseDTO = PatientCreator.createResponse();
 
    when(patientService.updatePatient(id, updateDTO)).thenReturn(responseDTO);

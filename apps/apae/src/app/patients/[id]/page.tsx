@@ -73,7 +73,7 @@ export default function PersonDetailsPage() {
     bpc: boolean;
     familyIncome: number;
     diseases: string | null;
-    continuousMedication: string;
+    continuousMedication: string | null;
     disorders?: { id?: string; name: string }[];
     serviceAreas?: { id?: string; area: string }[];
   }
@@ -287,7 +287,7 @@ export default function PersonDetailsPage() {
                 <p className="font-bold text-base">Guardião Principal</p>
                 <InfoRow label="Nome" value={person.guardian.name} />
                 <InfoRow label="Parentesco" value={person.guardian.kinship} />
-                <InfoRow label="Contato" value={person.guardian.contact} />
+                <InfoRow label="Contato" value={person.guardian.contact || "Não informado"} />
                 <InfoRow label="Rua" value={person.guardian.address?.street} />
                 <InfoRow label="Número" value={person.guardian.address?.number} />
                 <InfoRow label="Bairro" value={person.guardian.address?.neighborhood} />
@@ -363,7 +363,15 @@ export default function PersonDetailsPage() {
           
           <CardContent>
             <InfoRow label="Alergias" value={person.allergies} />
-            <InfoRow label="Vacinas" value={person.vaccineNames?.map((v) => v.name).join(", ")} />
+            <InfoRow
+              label="Vacinas"
+              value={
+                person.vaccineNames
+                  ?.map((v) => v.name?.trim())
+                  .filter(Boolean)
+                  .join(", ") || null
+              }
+            />
             
             <h3 className="font-bold text-base mt-4 pt-4 border-t text-[#0D4F97]">Registro Anual ({selectedYear})</h3>
 

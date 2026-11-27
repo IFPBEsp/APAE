@@ -60,7 +60,7 @@ interface EditPatientData {
   vaccineNames?: { name?: string }[];
   guardian?: {
     name?: string;
-    contact?: string;
+    contact?: string | null;
     kinship?: string;
     address?: EditPatientAddress;
   };
@@ -126,7 +126,9 @@ function EditPatientDataLoader({ children }: { children: React.ReactNode }) {
             diseases: "",
             medications: "",
             vaccines:
-              data.vaccineNames?.map((v: { name?: string }) => v.name || "") ||
+              data.vaccineNames
+                ?.map((v: { name?: string }) => v.name?.trim() || "")
+                .filter((name) => name !== "" && name !== "Não informado") ||
               [],
             allergies: data.allergies || "",
             disability: { types: [], report: undefined },
@@ -136,7 +138,10 @@ function EditPatientDataLoader({ children }: { children: React.ReactNode }) {
           },
           guardian: {
             name: data.guardian?.name || "",
-            contact: data.guardian?.contact || "",
+            contact:
+              data.guardian?.contact && data.guardian.contact !== "Não informado"
+                ? data.guardian.contact
+                : "",
             kinship: data.guardian?.kinship || "",
             address: {
               cep: data.guardian?.address?.cep || "",
