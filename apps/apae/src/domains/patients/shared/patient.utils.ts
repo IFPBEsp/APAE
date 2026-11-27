@@ -129,8 +129,6 @@ export function buildPatientPayload(
       name: k.name || "Não informado",
       rg: k.rg || null,
       cpf: k.cpf || null,
-      profession: k.occupation || "Não informado",
-      cpf: k.cpf,
       profession: toNullableString(k.occupation),
       isAlive: k.alive,
       kinship: k.type || "Pai/Mãe",

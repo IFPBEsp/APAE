@@ -137,6 +137,9 @@ describe("buildPatientPayload - CPF opcional do parente (#1156)", () => {
     };
 
     expect(buildPatientPayload(state).parents[0].cpf).toBeNull();
+  });
+});
+
 describe("buildPatientPayload - vacinas opcional (#1154)", () => {
   const buildWithVaccines = (vaccines: string[]): MembersRegisterState => ({
     ...initialState,
