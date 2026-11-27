@@ -15,7 +15,7 @@ export type PatientGuardianAddress = PatientAddress;
 
 export interface PatientGuardian {
   name: string;
-  contact: string;
+  contact: string | null;
   kinship: string;
   address?: PatientGuardianAddress;
 }
@@ -25,6 +25,8 @@ export interface PatientParentPayload {
   rg: string | null;
   cpf: string | null;
   profession: string;
+  cpf: string;
+  profession: string | null;
   isAlive: boolean;
   kinship: string;
 }
@@ -59,13 +61,13 @@ export interface PatientPayload {
   cns: string;
   nis: string;
   registrationDate: Date | string | null;
-  allergies: string;
+  allergies: string | null;
   continuousMedication: string | null;
   isStudent: boolean;
   address: PatientAddress;
   guardian: {
     name: string;
-    contact: string;
+    contact: string | null;
     kinship: string;
     address: PatientGuardianAddress;
   };

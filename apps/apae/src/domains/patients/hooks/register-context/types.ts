@@ -22,7 +22,7 @@ export interface KinshipData {
   cpf: string;
   alive: boolean;
   name: string;
-  occupation: string;
+  occupation?: string;
   isLegalGuardian?: boolean;
 }
 
@@ -54,7 +54,7 @@ export interface GuardianData {
   address: AddressData;
   name: string;
   kinship: string;
-  contact: string;
+  contact?: string;
   residesWithPatient?: boolean;
 }
 

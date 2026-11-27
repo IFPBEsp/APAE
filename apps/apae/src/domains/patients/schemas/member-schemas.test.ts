@@ -1,7 +1,15 @@
 import { describe, expect, it } from "vitest";
-import { Additionals, Personal, Guardian, Kinship, birthCertificateSchema } from "./member-schemas";
+import {
+  Additionals,
+  Personal,
+  Guardian,
+  Kinship,
+  birthCertificateSchema,
+} from "./member-schemas";
+import { EditAdditionals } from "./edit-member-schemas";
 import { annualRegistryFormSchema } from "@/domains/patients/annual-registry/annual-registry.schema";
 import { mapRegistryToFormValues } from "@/domains/patients/annual-registry/use-annual-registry-modal";
+import { MAX_FILE_SIZE_BYTES } from "@/lib/constants";
 
 const MATRICULA = "12345678901234567890123456789012";
 const MATRICULA_FORMATADA = "123456 78 90 1234 5 67890 123 4567890 12";
@@ -255,6 +263,80 @@ describe("Cartório, livro e folha (#1132)", () => {
   });
 });
 
+describe("Laudo da deficiência no cadastro de paciente (#1084)", () => {
+  const makeFile = (name: string, type: string, size = 1024) =>
+    new File([new Uint8Array(size)], name, { type });
+
+  const baseAdditionals = {
+    diseases: "Nenhuma",
+    medications: "Nenhum",
+    vaccines: ["BCG"],
+    allergies: "Nenhuma",
+    disability: {
+      types: ["TEA"],
+      report: makeFile("laudo.pdf", "application/pdf"),
+    },
+    care: {
+      types: ["Psicologia"],
+    },
+    bpc: false,
+    householdIncome: "R$ 1.500,00",
+  };
+
+  it("aceita laudo em PDF e em DOCX válidos", () => {
+    expect(Additionals.safeParse(baseAdditionals).success).toBe(true);
+
+    const docxReport = makeFile(
+      "laudo.docx",
+      "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+    );
+    expect(
+      Additionals.safeParse({
+        ...baseAdditionals,
+        disability: { ...baseAdditionals.disability, report: docxReport },
+      }).success,
+    ).toBe(true);
+  });
+
+  it("rejeita laudo vazio, em formato inválido ou acima de 10MB", () => {
+    const emptyReport = makeFile("vazio.pdf", "application/pdf", 0);
+    const txtReport = makeFile("laudo.txt", "text/plain");
+    const bigReport = makeFile(
+      "grande.pdf",
+      "application/pdf",
+      MAX_FILE_SIZE_BYTES + 1,
+    );
+
+    const emptyResult = Additionals.safeParse({
+      ...baseAdditionals,
+      disability: { ...baseAdditionals.disability, report: emptyReport },
+    });
+    const txtResult = Additionals.safeParse({
+      ...baseAdditionals,
+      disability: { ...baseAdditionals.disability, report: txtReport },
+    });
+    const bigResult = Additionals.safeParse({
+      ...baseAdditionals,
+      disability: { ...baseAdditionals.disability, report: bigReport },
+    });
+
+    expect(emptyResult.success).toBe(false);
+    expect(txtResult.success).toBe(false);
+    expect(bigResult.success).toBe(false);
+
+    if (!txtResult.success) {
+      expect(txtResult.error.issues[0].message).toBe(
+        "Formato inválido. Use PDF, DOCX, PNG, JPG ou WEBP",
+      );
+    }
+    if (!bigResult.success) {
+      expect(bigResult.error.issues[0].message).toBe(
+        "O arquivo excede o limite máximo permitido de 10MB",
+      );
+    }
+  });
+});
+
 describe("Campo Doenças opcional (#1151)", () => {
   const validAdditionalsBase = {
     medications: "Losartana",
@@ -323,5 +405,151 @@ describe("Campo Doenças opcional (#1151)", () => {
     expect(
       mapRegistryToFormValues("2026", { ...baseRegistry, diseases: "Diabetes" }, null).diseases,
     ).toBe("Diabetes");
+  });
+});
+
+describe("Campo Vacinas tomadas opcional (#1154)", () => {
+  const validAdditionalsBase = {
+    diseases: "",
+    medications: "Losartana",
+    allergies: "Poeira",
+    disability: {
+      types: ["TEA"],
+      report: new File([new Uint8Array(10)], "laudo.pdf", { type: "application/pdf" }),
+    },
+    care: {
+      types: ["Psicologia"],
+    },
+    bpc: false,
+    householdIncome: "R$ 1.500,00",
+  };
+
+  it("Additionals aceita lista vazia ou preenchida de vacinas", () => {
+    expect(Additionals.safeParse({ ...validAdditionalsBase, vaccines: [] }).success).toBe(true);
+    expect(Additionals.safeParse({ ...validAdditionalsBase, vaccines: ["BCG"] }).success).toBe(
+      true,
+    );
+  });
+
+  it("EditAdditionals aceita lista vazia ou preenchida de vacinas", () => {
+    expect(EditAdditionals.safeParse({ vaccines: [], allergies: "Poeira" }).success).toBe(true);
+    expect(EditAdditionals.safeParse({ vaccines: ["BCG"], allergies: "Poeira" }).success).toBe(
+      true,
+    );
+  });
+
+  it("annualRegistryFormSchema aceita lista vazia ou preenchida de vacinas", () => {
+    const base = {
+      year: "2026",
+      bpc: "false" as const,
+      familyIncome: "R$ 1.500,00",
+      diseases: "",
+      continuousMedication: "Losartana",
+      allergies: "Poeira",
+      disorders: [{ name: "TEA" }],
+      serviceTypes: [{ area: "Psicologia" }],
+    };
+
+    expect(annualRegistryFormSchema.safeParse({ ...base, vaccines: [] }).success).toBe(true);
+    expect(
+      annualRegistryFormSchema.safeParse({ ...base, vaccines: [{ name: "BCG" }] }).success,
+    ).toBe(true);
+  });
+
+  it("mapRegistryToFormValues abre vacinas vazio quando não há vacinas ou vem 'Não informado'", () => {
+    const baseRegistry = {
+      bpc: false,
+      familyIncome: 1500,
+      diseases: null,
+      continuousMedication: "Losartana",
+    };
+
+    expect(
+      mapRegistryToFormValues("2026", baseRegistry, { vaccineNames: [] }).vaccines,
+    ).toEqual([]);
+    expect(
+      mapRegistryToFormValues("2026", baseRegistry, { vaccineNames: undefined }).vaccines,
+    ).toEqual([]);
+    expect(
+      mapRegistryToFormValues("2026", baseRegistry, {
+        vaccineNames: [{ name: "Não informado" }, { name: "   " }],
+      }).vaccines,
+    ).toEqual([]);
+    expect(
+      mapRegistryToFormValues("2026", baseRegistry, {
+        vaccineNames: [{ name: "BCG" }],
+      }).vaccines,
+    ).toEqual([{ name: "BCG" }]);
+  });
+});
+
+describe("Contato de emergência do responsável opcional (#1158)", () => {
+  const validGuardianBase = {
+    name: "Maria da Silva",
+    kinship: "Mãe",
+    address: {
+      cep: "58135-000",
+      state: "PB" as const,
+      city: "Esperança",
+      neighborhood: "Centro",
+      street: "Rua A",
+      number: "100",
+      complement: "Casa",
+    },
+  };
+
+  it("aceita contato de emergência vazio, só espaços ou omitido", () => {
+    expect(Guardian.safeParse({ ...validGuardianBase, contact: "" }).success).toBe(true);
+    expect(Guardian.safeParse({ ...validGuardianBase, contact: "   " }).success).toBe(true);
+    expect(Guardian.safeParse({ ...validGuardianBase }).success).toBe(true);
+  });
+
+  it("aceita contato de emergência preenchido com formato válido", () => {
+    expect(
+      Guardian.safeParse({ ...validGuardianBase, contact: "(83) 99999-9999" }).success,
+    ).toBe(true);
+    expect(
+      Guardian.safeParse({ ...validGuardianBase, contact: "(83) 3361-1234" }).success,
+    ).toBe(true);
+  });
+
+  it("rejeita contato de emergência preenchido com formato inválido", () => {
+    const result = Guardian.safeParse({ ...validGuardianBase, contact: "(83) 123" });
+    expect(result.success).toBe(false);
+    if (!result.success) {
+      expect(result.error.issues[0].message).toBe("Número de telefone inválido");
+    }
+  });
+});
+
+describe("Campo Profissão do parente opcional (#1157)", () => {
+  const validKinshipBase = {
+    rg: "",
+    cpf: "529.982.247-25",
+    alive: true,
+    name: "Maria da Silva",
+    type: "Mãe",
+  };
+
+  it("aceita profissão vazia, omitida ou apenas espaços", () => {
+    expect(Kinship.safeParse({ ...validKinshipBase, occupation: "" }).success).toBe(true);
+    expect(Kinship.safeParse({ ...validKinshipBase }).success).toBe(true);
+    expect(Kinship.safeParse({ ...validKinshipBase, occupation: "   " }).success).toBe(true);
+  });
+
+  it("recusa profissão com menos de 2 caracteres úteis quando preenchida", () => {
+    const singleChar = Kinship.safeParse({ ...validKinshipBase, occupation: "A" });
+    expect(singleChar.success).toBe(false);
+    if (!singleChar.success) {
+      expect(singleChar.error.issues[0].message).toBe("Profissão inválida");
+    }
+
+    const paddedSingleChar = Kinship.safeParse({ ...validKinshipBase, occupation: " A " });
+    expect(paddedSingleChar.success).toBe(false);
+  });
+
+  it("aceita profissão com 2 ou mais caracteres", () => {
+    expect(Kinship.safeParse({ ...validKinshipBase, occupation: "AB" }).success).toBe(true);
+    expect(Kinship.safeParse({ ...validKinshipBase, occupation: "Agricultora" }).success).toBe(true);
   });
 });

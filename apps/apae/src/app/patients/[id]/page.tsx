@@ -17,6 +17,7 @@ import type { PatientStatus } from "@/domains/patients/types/patient";
 import { useAbsenceAlerts } from "@/domains/absences/hooks/use-absence-alerts";
 import { cn } from "@/lib/utils";
 import { bffFetchJson } from "@/lib/bff-client";
+import { calculateAge } from "@/lib/date";
 import { normalizeStateToUF } from "@/lib/states";
 
 const statusLabels: Record<PatientStatus, string> = {
@@ -239,6 +240,7 @@ export default function PersonDetailsPage() {
           <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-x-4">
             <InfoRow label="Nome Completo" value={person.fullName} />
             <InfoRow label="Data de Nasc." value={person.birthDate} />
+            <InfoRow label="Idade" value={calculateAge(person.birthDate)} />
             <InfoRow label="Naturalidade" value={person.birthplace} />
             <InfoRow label="Contato" value={person.contact || "Não informado"} />
             <InfoRow label="Alergias" value={person.allergies} />
@@ -287,7 +289,7 @@ export default function PersonDetailsPage() {
                 <p className="font-bold text-base">Guardião Principal</p>
                 <InfoRow label="Nome" value={person.guardian.name} />
                 <InfoRow label="Parentesco" value={person.guardian.kinship} />
-                <InfoRow label="Contato" value={person.guardian.contact} />
+                <InfoRow label="Contato" value={person.guardian.contact || "Não informado"} />
                 <InfoRow label="Rua" value={person.guardian.address?.street} />
                 <InfoRow label="Número" value={person.guardian.address?.number} />
                 <InfoRow label="Bairro" value={person.guardian.address?.neighborhood} />
@@ -303,7 +305,7 @@ export default function PersonDetailsPage() {
                 <InfoRow label="Nome" value={parent.name} />
                 <InfoRow label="CPF" value={parent.cpf} />
                 <InfoRow label="Parentesco" value={parent.kinship}/>
-                <InfoRow label="Profissão" value={parent.profession} />
+                <InfoRow label="Profissão" value={parent.profession?.trim() || null} />
                 <InfoRow label="Vivo?" value={parent.isAlive} />
               </div>
             ))}
@@ -363,7 +365,15 @@ export default function PersonDetailsPage() {
           
           <CardContent>
             <InfoRow label="Alergias" value={person.allergies} />
-            <InfoRow label="Vacinas" value={person.vaccineNames?.map((v) => v.name).join(", ")} />
+            <InfoRow
+              label="Vacinas"
+              value={
+                person.vaccineNames
+                  ?.map((v) => v.name?.trim())
+                  .filter(Boolean)
+                  .join(", ") || null
+              }
+            />
             
             <h3 className="font-bold text-base mt-4 pt-4 border-t text-[#0D4F97]">Registro Anual ({selectedYear})</h3>
 

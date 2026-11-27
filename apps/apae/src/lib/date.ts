@@ -49,3 +49,24 @@ export function serializeCivilDate(
   const day = String(date.getDate()).padStart(2, "0");
   return `${year}-${month}-${day}`;
 }
+
+export function calculateAge(
+  birthDate: string | Date | null | undefined,
+  referenceDate: string | Date = new Date(),
+): string | null {
+  const birth = parseCivilDate(birthDate);
+  const today = parseCivilDate(referenceDate);
+
+  if (!birth || !today) return null;
+
+  let years = today.getFullYear() - birth.getFullYear();
+  const monthDiff = today.getMonth() - birth.getMonth();
+
+  if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birth.getDate())) {
+    years -= 1;
+  }
+
+  if (years < 0) return null;
+
+  return years === 1 ? "1 ano" : `${years} anos`;
+}

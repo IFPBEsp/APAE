@@ -25,10 +25,10 @@ import z from "zod";
 import {
   DoubleCheckboxFormField,
   DoubleColumn,
-  FileInputButton,
   FormButton,
   MembersRegisterForm,
 } from "@/domains/patients/components/form";
+import { DocumentUpload } from "@/components/shared/DocumentUpload";
 import { CreatableMultiSelect } from "@/components/creatable-multi-select";
 import { useVaccinesContext } from "@/domains/vaccines/use-vaccines";
 import {
@@ -81,7 +81,7 @@ export default function MembersRegisterAdditionalsPage() {
     if (
       isEditing &&
       !isInitialized &&
-      (additionals.diseases || additionals.vaccines.length > 0)
+      (additionals.diseases || additionals.vaccines.length > 0 || Boolean(additionals.allergies))
     ) {
       form.reset(additionals as AdditionalsData);
       setIsInitialized(true);
@@ -103,7 +103,10 @@ export default function MembersRegisterAdditionalsPage() {
   const onSubmit = async (values: z.infer<typeof Additionals>) => {
     setIsLoading(true);
     try {
-      setAdditionalsData(values);
+      setAdditionalsData({
+        ...values,
+        vaccines: values.vaccines ?? [],
+      });
       setStep(MembersRegisterStep.PROFILE);
     } catch (error: unknown) {
       const err = error as { response?: { data?: Record<string, string[]> } };
@@ -216,7 +219,7 @@ export default function MembersRegisterAdditionalsPage() {
               name="vaccines"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Vacinas Tomadas *</FormLabel>
+                  <FormLabel>Vacinas Tomadas</FormLabel>
                   <FormControl>
                     <CreatableMultiSelect
                       key={`vaccines-select-${refreshKey}`}
@@ -271,7 +274,7 @@ export default function MembersRegisterAdditionalsPage() {
               name="allergies"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Tem alergias? Quais? *</FormLabel>
+                  <FormLabel>Tem alergias? Quais?</FormLabel>
                   <FormControl>
                     <Input
                       placeholder="Alergia a abacaxi"
@@ -323,32 +326,29 @@ export default function MembersRegisterAdditionalsPage() {
                 <FormField
                   control={form.control}
                   name="disability.report"
-                  render={({ field }) => (
+                  render={({ field, fieldState }) => (
                     <FormItem>
                       <FormLabel>Laudo da Deficiência *</FormLabel>
                       <FormControl>
-                        <FileInputButton
+                        <DocumentUpload
                           id={field.name}
-                          className="min-w-3xs"
-                          onChange={(e) => {
-                            if (e.target.files && e.target.files[0]) {
-                              field.onChange(e.target.files[0]);
+                          file={field.value instanceof File ? field.value : null}
+                          externalError={fieldState.error?.message ?? null}
+                          onFileChange={(file) => {
+                            field.onChange(file ?? undefined);
+                          }}
+                          onErrorChange={(err) => {
+                            if (err) {
+                              form.setError("disability.report", {
+                                type: "manual",
+                                message: err,
+                              });
+                            } else {
+                              form.clearErrors("disability.report");
                             }
                           }}
-                        >
-                          {field.value instanceof File ? (
-                            <span
-                              className="truncate text-left"
-                              title={field.value.name}
-                            >
-                              Arquivo: {field.value.name}
-                            </span>
-                          ) : (
-                            "Selecionar Laudo"
-                          )}
-                        </FileInputButton>
+                        />
                       </FormControl>
-                      <FormMessage />
                     </FormItem>
                   )}
                 />

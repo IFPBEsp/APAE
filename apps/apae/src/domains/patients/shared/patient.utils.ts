@@ -54,6 +54,14 @@ export function toNullableString(value?: string | null): string | null {
   return trimmed ? trimmed : null;
 }
 
+export function mapParentProfessionToForm(value?: string | null): string {
+  const trimmed = value?.trim();
+  if (!trimmed || trimmed === "Não informado") {
+    return "";
+  }
+  return value ?? "";
+}
+
 export function buildPatientPayload(
   state: MembersRegisterState,
 ): PatientPayload {
@@ -91,7 +99,7 @@ export function buildPatientPayload(
     registrationDate: hasRG && personal.rg.issuing.date
       ? serializeCivilDate(personal.rg.issuing.date)
       : null,
-    allergies: additionals.allergies || "Nenhuma",
+    allergies: additionals.allergies || null,
     continuousMedication: toNullableString(additionals.medications),
     isStudent: profile.role === "student",
     address: {
@@ -105,7 +113,7 @@ export function buildPatientPayload(
     },
     guardian: {
       name: guardian.name || "Não informado",
-      contact: guardian.contact || "Não informado",
+      contact: guardian.contact?.trim() || null,
       kinship: guardian.kinship || "Não informado",
       address: {
         city: guardian.address.city || "Não informado",
@@ -122,10 +130,15 @@ export function buildPatientPayload(
       rg: k.rg || null,
       cpf: k.cpf || null,
       profession: k.occupation || "Não informado",
+      cpf: k.cpf,
+      profession: toNullableString(k.occupation),
       isAlive: k.alive,
       kinship: k.type || "Pai/Mãe",
     })),
-    vaccineNames: additionals.vaccines.map((v) => ({ name: v })),
+    vaccineNames: (additionals.vaccines ?? [])
+      .map((v) => v.trim())
+      .filter((name) => name !== "" && name !== "Não informado")
+      .map((name) => ({ name })),
     annualRegistry: annualRegistryData,
   };
 }

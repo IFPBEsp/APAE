@@ -119,6 +119,10 @@ public class VaccineApplicationServiceImpl implements VaccineApplicationService 
     @Override
     @Transactional(readOnly = true)
     public Set<VaccineResponseDTO> findVaccines(Set<CreateVaccineDTO> createVaccineDTOs) {
+        if (createVaccineDTOs == null || createVaccineDTOs.isEmpty()) {
+            return Set.of();
+        }
+
         Set<String> names = createVaccineDTOs.stream().map(dto -> dto.name())
                 .collect(Collectors.toSet());
 

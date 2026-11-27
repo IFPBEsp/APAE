@@ -6,6 +6,7 @@ import {
   draftNeedsFileWarning,
   getStepForBackendField,
   hasRequiredRegistrationFiles,
+  mapParentProfessionToForm,
 } from "./patient.utils";
 import { MembersRegisterStep } from "../hooks/register-context/types";
 
@@ -136,5 +137,86 @@ describe("buildPatientPayload - CPF opcional do parente (#1156)", () => {
     };
 
     expect(buildPatientPayload(state).parents[0].cpf).toBeNull();
+describe("buildPatientPayload - vacinas opcional (#1154)", () => {
+  const buildWithVaccines = (vaccines: string[]): MembersRegisterState => ({
+    ...initialState,
+    additionals: {
+      ...initialState.additionals,
+      vaccines,
+    },
+  });
+
+  it("envia array vazio (nunca null) quando nenhuma vacina é selecionada", () => {
+    const payload = buildPatientPayload(buildWithVaccines([]));
+    expect(payload.vaccineNames).toEqual([]);
+    expect(payload.vaccineNames).not.toBeNull();
+  });
+
+  it("ignora itens vazios ou 'Não informado' e preserva vacinas válidas", () => {
+    const payload = buildPatientPayload(
+      buildWithVaccines(["", "   ", "Não informado", "BCG", "Poliomielite"]),
+    );
+    expect(payload.vaccineNames).toEqual([{ name: "BCG" }, { name: "Poliomielite" }]);
+  });
+});
+
+describe("buildPatientPayload - contato de emergência do responsável opcional (#1158)", () => {
+  const buildWithGuardianContact = (contact?: string): MembersRegisterState => ({
+    ...initialState,
+    guardian: {
+      ...initialState.guardian,
+      contact: contact as string,
+    },
+  });
+
+  it("envia null (e não 'Não informado') quando o contato do responsável está vazio, só espaços ou indefinido", () => {
+    expect(buildPatientPayload(buildWithGuardianContact("")).guardian.contact).toBeNull();
+    expect(buildPatientPayload(buildWithGuardianContact("   ")).guardian.contact).toBeNull();
+    expect(buildPatientPayload(buildWithGuardianContact(undefined)).guardian.contact).toBeNull();
+  });
+
+  it("envia o telefone formatado quando o contato do responsável é informado", () => {
+    const payload = buildPatientPayload(buildWithGuardianContact("(83) 99999-9999"));
+    expect(payload.guardian.contact).toBe("(83) 99999-9999");
+  });
+});
+
+describe("buildPatientPayload e edição - profissão do parente opcional (#1157)", () => {
+  const buildWithOccupation = (occupation?: string): MembersRegisterState => ({
+    ...initialState,
+    kinships: [
+      {
+        name: "Maria da Silva",
+        rg: "",
+        cpf: "529.982.247-25",
+        alive: true,
+        occupation,
+        type: "Mãe",
+      },
+    ],
+  });
+
+  it("envia null (e não 'Não informado') quando occupation está vazio, só espaços ou indefinido", () => {
+    expect(buildPatientPayload(buildWithOccupation("")).parents[0].profession).toBeNull();
+    expect(buildPatientPayload(buildWithOccupation("   ")).parents[0].profession).toBeNull();
+    expect(buildPatientPayload(buildWithOccupation(undefined)).parents[0].profession).toBeNull();
+  });
+
+  it("envia a profissão com trim quando preenchida", () => {
+    expect(buildPatientPayload(buildWithOccupation("Agricultora")).parents[0].profession).toBe(
+      "Agricultora",
+    );
+    expect(buildPatientPayload(buildWithOccupation("  Professor  ")).parents[0].profession).toBe(
+      "Professor",
+    );
+  });
+
+  it("mapParentProfessionToForm abre vazio quando profession é null, vazio ou 'Não informado'", () => {
+    expect(mapParentProfessionToForm(null)).toBe("");
+    expect(mapParentProfessionToForm(undefined)).toBe("");
+    expect(mapParentProfessionToForm("")).toBe("");
+    expect(mapParentProfessionToForm("   ")).toBe("");
+    expect(mapParentProfessionToForm("Não informado")).toBe("");
+    expect(mapParentProfessionToForm("Agricultora")).toBe("Agricultora");
   });
 });

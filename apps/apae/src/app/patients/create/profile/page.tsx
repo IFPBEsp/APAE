@@ -220,7 +220,7 @@ export default function MembersRegisterProfilePage() {
     if (isEditing && payload.photo instanceof File) {
       payload.photo = undefined;
     }
-    setProfileData(payload);
+    setProfileData({ ...payload, photo: payload.photo ?? undefined });
     setSubmitted(true);
   };
 
@@ -251,7 +251,7 @@ export default function MembersRegisterProfilePage() {
       >
         <div className="grid grid-cols-1 gap-6">
           <PhotoUpload
-            label={`Selecione uma foto ${isEditing ? "(Opcional na edição)" : "*"}`}
+            label="Selecione uma foto (opcional)"
             fileInputRef={fileInputRef}
             selectedPhoto={selectedPhoto}
             photoPreviewUrl={photoPreviewUrl}

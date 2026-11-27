@@ -182,11 +182,12 @@ export default function MembersRegisterKinshipsPage() {
               name={`kinships.${index}.occupation`}
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Profissão? *</FormLabel>
+                  <FormLabel>Profissão?</FormLabel>
                   <FormControl>
                     <Input
                       placeholder="Profissão"
                       {...field}
+                      value={field.value ?? ""}
                       onChange={(e) => field.onChange(capitalizeFirst(e.target.value))}
                     />
                   </FormControl>

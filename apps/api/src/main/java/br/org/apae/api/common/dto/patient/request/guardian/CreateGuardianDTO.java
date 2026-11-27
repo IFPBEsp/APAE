@@ -8,7 +8,7 @@ import jakarta.validation.constraints.NotNull;
 public record CreateGuardianDTO(
                 @NotBlank(message = "O nome não pode estar em branco") @NotNull String name,
 
-                @NotBlank(message = "O contato não pode estar em branco") @NotNull String contact,
+                String contact,
 
                 @NotBlank(message = "O parentesco não pode estar em branco") @NotNull String kinship,
 

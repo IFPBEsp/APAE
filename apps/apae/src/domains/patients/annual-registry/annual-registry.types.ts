@@ -39,7 +39,7 @@ export interface FullPatientData {
   allergies?: string;
   address?: Record<string, string | null | undefined>;
   guardian?: Record<string, string | Record<string, string> | null | undefined>;
-  parents?: Array<Record<string, string | boolean>>;
+  parents?: Array<Record<string, string | boolean | null | undefined>>;
   nationality?: string;
   birthplace?: string;
   [key: string]: unknown;

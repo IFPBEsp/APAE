@@ -1,9 +1,10 @@
 "use client";
 
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "react-toastify";
+import { validateDocumentFile } from "@/schemas/shared/document.schema";
 import { annualRegistryFormSchema, type AnnualRegistryFormValues } from "./annual-registry.schema";
 import {
   fetchDocumentsApi,
@@ -58,7 +59,14 @@ export function mapRegistryToFormValues(
       : "false";
 
   const vaccineList = Array.isArray(patient?.vaccineNames)
-    ? patient.vaccineNames.map((v: unknown) => (typeof v === "string" ? { name: v } : v))
+    ? patient.vaccineNames
+        .map((v: unknown) => (typeof v === "string" ? { name: v } : v))
+        .filter((v): v is { name?: string; label?: string; value?: string; id?: string | number } => {
+          if (!v || typeof v !== "object") return false;
+          const item = v as { name?: string; label?: string; value?: string };
+          const text = String(item.name ?? item.label ?? item.value ?? "").trim();
+          return text !== "" && text !== "Não informado";
+        })
     : [];
 
   const sourceServiceAreas = registry?.serviceAreas ?? [];
@@ -112,7 +120,6 @@ export function useAnnualRegistryModal({
   const [isUploading, setIsUploading] = useState(false);
   const [docType, setDocType] = useState("MEDICAL_REPORT");
   const [fullPatientData, setFullPatientData] = useState<FullPatientData | null>(null);
-  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const isLoadingInitialData = isOpen && !isInitialDataLoaded;
 
@@ -191,9 +198,9 @@ export function useAnnualRegistryModal({
     };
   }, [isOpen, patientId, mode, currentYear, initialData, loadDocuments, reset]);
 
-  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
+  const handleFileUpload = async (file: File | null) => {
     if (!file) return;
+    if (validateDocumentFile(file)) return;
     setIsUploading(true);
     const formData = new FormData();
     formData.append("file", file);
@@ -204,7 +211,6 @@ export function useAnnualRegistryModal({
       await uploadDocumentApi(patientId, formData);
       toast.success("Documento anexado!");
       await loadDocuments();
-      if (fileInputRef.current) fileInputRef.current.value = "";
     } catch (error) {
       console.error("[handleFileUpload] Erro ao enviar documento:", error);
       toast.error("Erro ao enviar documento.");
@@ -265,12 +271,17 @@ export function useAnnualRegistryModal({
       }
 
       if (fullPatientData) {
-        const vaccineList = (data.vaccines || []).map((v: Record<string, unknown>) => ({ name: v.name || v.label || v.value, id: v.id }));
+        const vaccineList = (data.vaccines || [])
+          .map((v: Record<string, unknown>) => ({
+            name: String(v.name || v.label || v.value || "").trim(),
+            id: v.id,
+          }))
+          .filter((v) => v.name !== "" && v.name !== "Não informado");
         const baseData = cleanPatientData(fullPatientData as Record<string, unknown>);
         await updatePatientApi(patientId, {
           ...baseData,
           nationality: baseData.nationality || baseData.birthplace || "",
-          allergies: data.allergies || "Nenhuma",
+          allergies: data.allergies || null,
           vaccineNames: vaccineList,
           continuousMedication: medicationPayload,
         });
@@ -293,7 +304,6 @@ export function useAnnualRegistryModal({
     isUploading,
     docType,
     setDocType,
-    fileInputRef,
     handleFileUpload,
     handleMoneyChange,
     onSubmit,
