@@ -9,11 +9,19 @@ import {
   validateDocumentFile,
 } from "@/schemas/shared/document.schema";
 
+export interface RejectedDocumentFile {
+  name: string;
+  reason: string;
+}
+
 export interface DocumentUploadProps {
   id?: string;
   label?: string;
   file?: File | null;
-  onFileChange: (file: File | null) => void;
+  onFileChange?: (file: File | null) => void;
+  files?: File[];
+  onFilesChange?: (files: File[]) => void;
+  multiple?: boolean;
   onErrorChange?: (error: string | null) => void;
   externalError?: string | null;
   disabled?: boolean;
@@ -27,6 +35,9 @@ export function DocumentUpload({
   label,
   file = null,
   onFileChange,
+  files = [],
+  onFilesChange,
+  multiple = false,
   onErrorChange,
   externalError = null,
   disabled = false,
@@ -36,12 +47,19 @@ export function DocumentUpload({
 }: DocumentUploadProps) {
   const inputRef = useRef<HTMLInputElement | null>(null);
   const [internalError, setInternalError] = useState<string | null>(null);
+  const [rejectedFiles, setRejectedFiles] = useState<RejectedDocumentFile[]>([]);
 
   useEffect(() => {
-    if (!file && inputRef.current) {
+    if (!multiple && !file && inputRef.current) {
       inputRef.current.value = "";
     }
-  }, [file]);
+  }, [file, multiple]);
+
+  useEffect(() => {
+    if (multiple && files.length === 0 && inputRef.current) {
+      inputRef.current.value = "";
+    }
+  }, [files.length, multiple]);
 
   const updateError = (err: string | null) => {
     setInternalError(err);
@@ -49,11 +67,41 @@ export function DocumentUpload({
   };
 
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    if (multiple) {
+      const selectedFiles = Array.from(event.target.files ?? []);
+      if (selectedFiles.length === 0) {
+        setRejectedFiles([]);
+        updateError(null);
+        onFilesChange?.([]);
+        return;
+      }
+
+      const valid: File[] = [];
+      const rejected: RejectedDocumentFile[] = [];
+
+      for (const item of selectedFiles) {
+        const validationError = validateDocumentFile(item);
+        if (validationError) {
+          rejected.push({ name: item.name, reason: validationError });
+        } else {
+          valid.push(item);
+        }
+      }
+
+      setRejectedFiles(rejected);
+      onFilesChange?.(valid);
+
+      if (valid.length === 0 && inputRef.current) {
+        inputRef.current.value = "";
+      }
+      return;
+    }
+
     const selected = event.target.files?.[0] ?? null;
 
     if (!selected) {
       updateError(null);
-      onFileChange(null);
+      onFileChange?.(null);
       return;
     }
 
@@ -62,13 +110,13 @@ export function DocumentUpload({
       if (inputRef.current) {
         inputRef.current.value = "";
       }
-      onFileChange(null);
+      onFileChange?.(null);
       updateError(validationError);
       return;
     }
 
     updateError(null);
-    onFileChange(selected);
+    onFileChange?.(selected);
     if (clearInputOnSelect && inputRef.current) {
       inputRef.current.value = "";
     }
@@ -78,8 +126,13 @@ export function DocumentUpload({
     if (inputRef.current) {
       inputRef.current.value = "";
     }
+    setRejectedFiles([]);
     updateError(null);
-    onFileChange(null);
+    if (multiple) {
+      onFilesChange?.([]);
+    } else {
+      onFileChange?.(null);
+    }
   };
 
   const errorMessage = internalError ?? externalError;
@@ -98,13 +151,14 @@ export function DocumentUpload({
         id={id}
         ref={inputRef}
         type="file"
+        multiple={multiple}
         accept={ALLOWED_DOCUMENT_ACCEPT}
         disabled={disabled}
         className="cursor-pointer bg-white"
         onChange={handleChange}
       />
       <p className="text-xs text-gray-500">{DOCUMENT_FORMAT_HINT}</p>
-      {showSelectedFile && file && (
+      {showSelectedFile && !multiple && file && (
         <div className="flex items-center justify-between gap-2 text-sm bg-gray-50 p-2 rounded border">
           <span
             className="text-xs text-gray-600 truncate"
@@ -125,8 +179,38 @@ export function DocumentUpload({
           )}
         </div>
       )}
+      {showSelectedFile && multiple && files.length > 0 && (
+        <div className="flex items-center justify-between gap-2 text-sm bg-gray-50 p-2 rounded border">
+          <span
+            className="text-xs text-gray-600 truncate"
+            title={files.map((f) => f.name).join(", ")}
+          >
+            Selecionado(s): {files.map((f) => f.name).join(", ")}
+          </span>
+          {showRemoveButton && (
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              disabled={disabled}
+              onClick={handleRemove}
+            >
+              Remover
+            </Button>
+          )}
+        </div>
+      )}
       {errorMessage && (
         <p className="text-sm text-red-500">{errorMessage}</p>
+      )}
+      {rejectedFiles.length > 0 && (
+        <ul className="space-y-1 text-sm text-red-500">
+          {rejectedFiles.map((item, index) => (
+            <li key={`${item.name}-${index}`}>
+              {item.name}: {item.reason}
+            </li>
+          ))}
+        </ul>
       )}
     </div>
   );

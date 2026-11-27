@@ -5,14 +5,12 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import type { JSX } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
+import { DocumentUpload } from "@/components/shared/DocumentUpload";
 import {
   Form,
   FormControl,
   FormField,
   FormItem,
-  FormLabel,
-  FormMessage,
 } from "@/components/ui/form";
 import { useCreateProfessional } from "@/domains/professional/hooks/use-create-profissional";
 import {
@@ -99,17 +97,29 @@ export default function ProfessionalRegister(): JSX.Element {
           <FormField
             control={form.control}
             name="volunteerAgreement"
-            render={({ field }) => (
+            render={({ field, fieldState }) => (
               <FormItem>
-                <FormLabel>Termo do Voluntário *</FormLabel>
                 <FormControl>
-                  <Input
-                    type="file"
-                    accept="image/*, application/pdf"
-                    onChange={(e) => field.onChange(e.target.files?.[0] ?? null)}
+                  <DocumentUpload
+                    id={field.name}
+                    label="Termo do Voluntário *"
+                    file={field.value instanceof File ? field.value : null}
+                    externalError={fieldState.error?.message ?? null}
+                    onFileChange={(file) => {
+                      field.onChange(file ?? undefined);
+                    }}
+                    onErrorChange={(err) => {
+                      if (err) {
+                        form.setError("volunteerAgreement", {
+                          type: "manual",
+                          message: err,
+                        });
+                      } else {
+                        form.clearErrors("volunteerAgreement");
+                      }
+                    }}
                   />
                 </FormControl>
-                <FormMessage />
               </FormItem>
             )}
           />
@@ -117,17 +127,29 @@ export default function ProfessionalRegister(): JSX.Element {
           <FormField
             control={form.control}
             name="curriculum"
-            render={({ field }) => (
+            render={({ field, fieldState }) => (
               <FormItem>
-                <FormLabel>Currículo *</FormLabel>
                 <FormControl>
-                  <Input
-                    type="file"
-                    accept="image/*, application/pdf"
-                    onChange={(e) => field.onChange(e.target.files?.[0] ?? null)}
+                  <DocumentUpload
+                    id={field.name}
+                    label="Currículo *"
+                    file={field.value instanceof File ? field.value : null}
+                    externalError={fieldState.error?.message ?? null}
+                    onFileChange={(file) => {
+                      field.onChange(file ?? undefined);
+                    }}
+                    onErrorChange={(err) => {
+                      if (err) {
+                        form.setError("curriculum", {
+                          type: "manual",
+                          message: err,
+                        });
+                      } else {
+                        form.clearErrors("curriculum");
+                      }
+                    }}
                   />
                 </FormControl>
-                <FormMessage />
               </FormItem>
             )}
           />
@@ -135,17 +157,29 @@ export default function ProfessionalRegister(): JSX.Element {
           <FormField
             control={form.control}
             name="attachmentAny"
-            render={({ field }) => (
+            render={({ field, fieldState }) => (
               <FormItem>
-                <FormLabel>Anexo qualquer</FormLabel>
                 <FormControl>
-                  <Input
-                    type="file"
-                    accept="image/*, application/pdf"
-                    onChange={(e) => field.onChange(e.target.files?.[0] ?? null)}
+                  <DocumentUpload
+                    id={field.name}
+                    label="Anexo qualquer"
+                    file={field.value instanceof File ? field.value : null}
+                    externalError={fieldState.error?.message ?? null}
+                    onFileChange={(file) => {
+                      field.onChange(file ?? undefined);
+                    }}
+                    onErrorChange={(err) => {
+                      if (err) {
+                        form.setError("attachmentAny", {
+                          type: "manual",
+                          message: err,
+                        });
+                      } else {
+                        form.clearErrors("attachmentAny");
+                      }
+                    }}
                   />
                 </FormControl>
-                <FormMessage />
               </FormItem>
             )}
           />

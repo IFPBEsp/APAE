@@ -5,25 +5,9 @@ import {
   rgSchema,
   telefoneSchema,
 } from "@/lib/personal-data.schema";
-import { MAX_FILE_SIZE_BYTES, MAX_FILE_SIZE_LABEL } from "@/lib/constants";
 import { optionalPhotoSchema, photoFileSchema } from "@/lib/photo.schema";
 import { addressSchema } from "@/schemas/shared/address.schema";
-
-const fileSchema = z
-  .instanceof(File, { message: "Selecione um arquivo" })
-  .refine((file) => file.size > 0, "Arquivo não pode estar vazio")
-  .refine(
-    (file) =>
-      [
-        "application/pdf",
-        "image/png",
-        "image/jpeg",
-        "image/jpg",
-        "image/webp",
-      ].includes(file.type),
-    "Apenas imagens ou PDF são permitidos"
-  )
-  .refine((file) => file.size <= MAX_FILE_SIZE_BYTES, `Arquivo deve ser menor que ${MAX_FILE_SIZE_LABEL}`);
+import { documentFileSchema } from "@/schemas/shared/document.schema";
 
 const baseSchema = z.object({
   fullName: nomeCompletoSchema,
@@ -62,9 +46,9 @@ const baseSchema = z.object({
 
 export const registerSchema = baseSchema.extend({
   photo: photoFileSchema,
-  volunteerAgreement: fileSchema,
-  curriculum: fileSchema,
-  attachmentAny: fileSchema.optional(),
+  volunteerAgreement: documentFileSchema,
+  curriculum: documentFileSchema,
+  attachmentAny: documentFileSchema.optional(),
 });
 
 export const updateProfessionalSchema = baseSchema;

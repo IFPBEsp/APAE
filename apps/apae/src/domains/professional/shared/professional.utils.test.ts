@@ -5,10 +5,8 @@ import {
   filterProfessionals,
   buildProfessionalPayload,
   mapProfessionalToForm,
-  isValidFile,
   getStatusActionConfig,
 } from "./professional.utils";
-import { MAX_FILE_SIZE_BYTES } from "@/lib/constants";
 
 const makeProfessional = (overrides: Record<string, unknown> = {}) =>
   ({
@@ -285,37 +283,6 @@ describe("mapProfessionalToForm", () => {
 
     expect(form.availability).toHaveLength(daysOfWeek.length * shifts.length);
     expect(form.availability.every((a) => !a.checked)).toBe(true);
-  });
-});
-
-describe("isValidFile", () => {
-  const makeFile = (type: string, size: number) =>
-    new File([new Uint8Array(size)], "arquivo", { type });
-
-  it.each([
-    "application/pdf",
-    "image/png",
-    "image/jpeg",
-    "image/jpg",
-    "image/webp",
-  ])("aceita o tipo %s", (type) => {
-    expect(isValidFile(makeFile(type, 1024))).toBe(true);
-  });
-
-  it("rejeita tipo não permitido", () => {
-    expect(isValidFile(makeFile("text/plain", 1024))).toBe(false);
-  });
-
-  it("rejeita arquivo vazio (size 0)", () => {
-    expect(isValidFile(makeFile("application/pdf", 0))).toBe(false);
-  });
-
-  it("aceita arquivo com exatamente o tamanho máximo", () => {
-    expect(isValidFile(makeFile("application/pdf", MAX_FILE_SIZE_BYTES))).toBe(true);
-  });
-
-  it("rejeita arquivo maior que o tamanho máximo", () => {
-    expect(isValidFile(makeFile("application/pdf", MAX_FILE_SIZE_BYTES + 1))).toBe(false);
   });
 });
 

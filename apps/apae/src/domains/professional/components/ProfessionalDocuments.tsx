@@ -2,8 +2,7 @@
 
 import { Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { FormControl, FormItem, FormLabel } from "@/components/ui/form";
+import { DocumentUpload } from "@/components/shared/DocumentUpload";
 import {
   AlertDialog, AlertDialogAction, AlertDialogCancel,
   AlertDialogContent, AlertDialogDescription,
@@ -32,7 +31,6 @@ interface ProfessionalDocumentsProps {
   setCurriculumFile: (f: File | null) => void;
   setVolunteerFile: (f: File | null) => void;
   setAttachmentFiles: (f: File[]) => void;
-  isValidFile: (f: File) => boolean;
   errorDocs?: string | null;
   successDocs?: boolean;
   hasAnyUpload: boolean;
@@ -45,7 +43,7 @@ export function ProfessionalDocuments({
   docToRemove, isConfirmBusy, openRemoveModal, confirmRemove,
   curriculumFile, volunteerFile, attachmentFiles,
   setCurriculumFile, setVolunteerFile, setAttachmentFiles,
-  isValidFile, errorDocs, successDocs, hasAnyUpload, loadingDocs,
+  errorDocs, successDocs, hasAnyUpload, loadingDocs,
 }: ProfessionalDocumentsProps) {
   return (
     <div className="space-y-4">
@@ -126,44 +124,27 @@ export function ProfessionalDocuments({
         )}
       </div>
 
-      <FormItem>
-        <FormLabel>Termo do Voluntário</FormLabel>
-        <FormControl>
-          <Input type="file" accept="image/*, application/pdf" onChange={(e) => {
-            const file = e.target.files?.[0];
-            if (!file) { setVolunteerFile(null); return; }
-            if (!isValidFile(file)) { alert("Apenas imagens ou PDF são permitidos"); e.target.value = ""; setVolunteerFile(null); return; }
-            setVolunteerFile(file);
-          }} />
-        </FormControl>
-        {volunteerFile && <p className="text-xs text-gray-600 mt-1">Selecionado: {volunteerFile.name}</p>}
-      </FormItem>
+      <DocumentUpload
+        label="Termo do Voluntário"
+        file={volunteerFile}
+        onFileChange={setVolunteerFile}
+        disabled={loadingDocs || docsLoading}
+      />
 
-      <FormItem>
-        <FormLabel>Currículo</FormLabel>
-        <FormControl>
-          <Input type="file" accept="image/*, application/pdf" onChange={(e) => {
-            const file = e.target.files?.[0];
-            if (!file) { setCurriculumFile(null); return; }
-            if (!isValidFile(file)) { alert("Apenas imagens ou PDF são permitidos"); e.target.value = ""; setCurriculumFile(null); return; }
-            setCurriculumFile(file);
-          }} />
-        </FormControl>
-        {curriculumFile && <p className="text-xs text-gray-600 mt-1">Selecionado: {curriculumFile.name}</p>}
-      </FormItem>
+      <DocumentUpload
+        label="Currículo"
+        file={curriculumFile}
+        onFileChange={setCurriculumFile}
+        disabled={loadingDocs || docsLoading}
+      />
 
-      <FormItem>
-        <FormLabel>Anexo qualquer</FormLabel>
-        <FormControl>
-          <Input type="file" accept="image/*, application/pdf" multiple onChange={(e) => {
-            const files = Array.from(e.target.files ?? []);
-            const valid = files.filter(isValidFile);
-            if (valid.length !== files.length) alert("Alguns arquivos foram ignorados. Apenas imagens ou PDF são permitidos.");
-            setAttachmentFiles(valid);
-          }} />
-        </FormControl>
-        {attachmentFiles.length > 0 && <p className="text-xs text-gray-600 mt-1">Selecionado(s): {attachmentFiles.length} arquivo(s)</p>}
-      </FormItem>
+      <DocumentUpload
+        label="Anexo qualquer"
+        multiple
+        files={attachmentFiles}
+        onFilesChange={setAttachmentFiles}
+        disabled={loadingDocs || docsLoading}
+      />
 
       {(errorDocs || successDocs) && (
         <div className="text-sm">

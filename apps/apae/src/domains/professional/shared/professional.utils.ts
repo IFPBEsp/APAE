@@ -1,7 +1,6 @@
 import { Professional } from "@/domains/professional/profissional.types";
 import { ProfessionalFormValues } from "@/domains/professional/profissional.schema";
 import { buildAvailabilityMatrixFromDTOs } from "./disponibilidade.utils";
-import { MAX_FILE_SIZE_BYTES } from "@/lib/constants";
 import { normalizeStateToUF } from "@/lib/states";
 
 type StatusFilter = "activate" | "inactivate";
@@ -75,20 +74,6 @@ export function mapProfessionalToForm(professional: Professional) {
     cep: professional.address.cep,
     availability: buildAvailabilityMatrixFromDTOs(professional.availabilities ?? []),
   };
-}
-
-export function isValidFile(file: File): boolean {
-  const allowedTypes = [
-    "application/pdf",
-    "image/png",
-    "image/jpeg",
-    "image/jpg",
-    "image/webp",
-  ];
-  const maxSize = MAX_FILE_SIZE_BYTES;
-  return (
-    allowedTypes.includes(file.type) && file.size > 0 && file.size <= maxSize
-  );
 }
 
 export function getStatusActionConfig(statusFilter: StatusFilter) {

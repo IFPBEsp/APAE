@@ -68,7 +68,6 @@ export default function ProfessionalUpdate(): JSX.Element {
     refreshDocuments,
     buildFormData,
     clearFiles,
-    isValidFile,
   } = useProfessionalDocs(professional?.id);
 
   useEffect(() => {
@@ -160,7 +159,6 @@ export default function ProfessionalUpdate(): JSX.Element {
             setCurriculumFile={setCurriculumFile}
             setVolunteerFile={setVolunteerFile}
             setAttachmentFiles={setAttachmentFiles}
-            isValidFile={isValidFile}
             errorDocs={errorDocs}
             successDocs={successDocs}
             hasAnyUpload={hasAnyUpload}
