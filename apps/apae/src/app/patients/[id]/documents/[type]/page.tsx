@@ -26,6 +26,7 @@ const documentTypeTranslations: Record<string, string> = {
   SCHOOL_DOCUMENT: "Documento Escolar",
   PHOTO: "Foto",
   EXAMINATION: "Exame",
+  RG: "RG",
   OTHER: "Outro",
 };
 
@@ -71,7 +72,6 @@ export default function DocumentTypePage() {
   const [replaceFile, setReplaceFile] = React.useState<File | null>(null);
   const [replaceLoading, setReplaceLoading] = React.useState(false);
 
-  // Generate a list of years (last 5 years + current year + next year)
   const availableYears = React.useMemo(() => {
     const currentYear = new Date().getFullYear();
     const years = [];

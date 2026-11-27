@@ -268,6 +268,34 @@ export default function MembersRegisterPersonalPage() {
             )}
           />
 
+          {}
+          {!isEditing && (
+            <FormField
+              control={form.control}
+              name="rg.file"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Cópia do RG (opcional)</FormLabel>
+                  <FormControl>
+                    <FileInputButton
+                      id={field.name}
+                      className="min-w-3xs"
+                      onChange={(event) => {
+                        const file = event.target.files?.[0];
+                        if (file) field.onChange(file);
+                      }}
+                    >
+                      {field.value instanceof File
+                        ? `Arquivo: ${field.value.name}`
+                        : "Selecionar Cópia do RG"}
+                    </FileInputButton>
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          )}
+
           <FormField
             control={form.control}
             name="birth.certificate"

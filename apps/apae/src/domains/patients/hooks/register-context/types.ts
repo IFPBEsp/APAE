@@ -2,7 +2,11 @@ export interface PersonalData {
   name: string;
   cpf: string;
   phone: string;
-  rg: { number: string; issuing: { body: string; date: Date | null } };
+  rg: {
+    number: string;
+    issuing: { body: string; date: Date | null };
+    file?: File;
+  };
   cns: string;
   nis: string;
   birth: {
