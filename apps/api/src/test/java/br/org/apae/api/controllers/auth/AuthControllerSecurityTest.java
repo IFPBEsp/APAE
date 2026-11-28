@@ -38,6 +38,9 @@ import br.org.apae.api.patient.application.interfaces.PatientApplicationService;
 import br.org.apae.api.servicearea.application.interfaces.ServiceAreaApplicationService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import java.time.Clock;
+import java.time.Instant;
+import java.time.ZoneOffset;
 import java.util.List;
 
 import org.junit.jupiter.api.DisplayName;
@@ -106,7 +109,8 @@ class AuthControllerSecurityTest {
                     authenticationConfiguration,
                     tokenProvider,
                     mock(PasswordRecoveryTokenRepository.class),
-                    mock(EmailSender.class));
+                    mock(EmailSender.class),
+                    Clock.fixed(Instant.EPOCH, ZoneOffset.UTC));
         }
     }
 
