@@ -48,6 +48,7 @@ class PatientDocumentsService {
                             .type(type)
                             .contentType(file.getContentType())
                             .stream(file.getInputStream())
+                            .size(file.getSize())
                             .build());
 
         } catch (Exception error) {

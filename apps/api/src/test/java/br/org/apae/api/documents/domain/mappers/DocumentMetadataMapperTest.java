@@ -23,6 +23,7 @@ class DocumentMetadataMapperTest {
     private static final UUID DOCUMENT_ID = UUID.fromString("1f2e3d4c-5b6a-7988-9a0b-1c2d3e4f5061");
     private static final String OWNER = "MARIA SOUZA";
     private static final int YEAR_VALUE = 2026;
+    private static final long SIZE_VALUE = 12_345L;
     private static final String MINIO_PREFIX = "X-Amz-Meta-";
 
     private static Map<String, String> minioMetadata() {
@@ -36,21 +37,37 @@ class DocumentMetadataMapperTest {
     }
 
     @Test
-    @DisplayName("from deve gravar as cinco chaves cruas esperadas pelo MinIO")
+    @DisplayName("from deve gravar as seis chaves cruas esperadas pelo MinIO")
     void from_ShouldBuildMapWithAllRawKeys() {
         Map<String, String> metadata = DocumentMetadataMapper.from(
                 DOCUMENT_ID,
                 DocumentCategory.MEDICAL,
                 DocumentType.MEDICAL_REPORT,
                 OWNER,
-                Year.of(YEAR_VALUE));
+                Year.of(YEAR_VALUE),
+                SIZE_VALUE);
 
-        assertEquals(5, metadata.size());
+        assertEquals(6, metadata.size());
         assertEquals(OWNER, metadata.get("owner"));
         assertEquals(DOCUMENT_ID.toString(), metadata.get("id"));
         assertEquals(DocumentCategory.MEDICAL.toString(), metadata.get("category"));
         assertEquals(DocumentType.MEDICAL_REPORT.toString(), metadata.get("type"));
         assertEquals(String.valueOf(YEAR_VALUE), metadata.get("year"));
+        assertEquals(String.valueOf(SIZE_VALUE), metadata.get("size"));
+    }
+
+    @Test
+    @DisplayName("from deve persistir o tamanho real informado nos metadados")
+    void from_ShouldPersistProvidedSize() {
+        Map<String, String> metadata = DocumentMetadataMapper.from(
+                DOCUMENT_ID,
+                DocumentCategory.MEDICAL,
+                DocumentType.MEDICAL_REPORT,
+                OWNER,
+                Year.of(YEAR_VALUE),
+                SIZE_VALUE);
+
+        assertEquals(String.valueOf(SIZE_VALUE), metadata.get("size"));
     }
 
     @Test
@@ -61,33 +78,12 @@ class DocumentMetadataMapperTest {
                 DocumentCategory.ABSENCE,
                 DocumentType.ATTACHMENTANY,
                 OWNER,
-                Year.of(YEAR_VALUE));
+                Year.of(YEAR_VALUE),
+                SIZE_VALUE);
 
         assertEquals("FALTA", metadata.get("category"));
         assertEquals("ANEXO_QUALQUER", metadata.get("type"));
         assertTrue(DocumentCategory.ABSENCE.toString().equals("FALTA"));
-    }
-
-    @Test
-    @DisplayName("from de DTO deve produzir exatamente o mesmo mapa da sobrecarga de cinco argumentos")
-    void fromDocumentDto_ShouldDelegateToFiveArgumentOverload() {
-        DocumentDTO dto = new DocumentDTO(
-                DOCUMENT_ID,
-                "DOCUMENTO_MEDICO/2026/LAUDO/" + DOCUMENT_ID,
-                DocumentCategory.MEDICAL,
-                DocumentType.MEDICAL_REPORT,
-                OWNER,
-                Year.of(YEAR_VALUE));
-
-        Map<String, String> fromDto = DocumentMetadataMapper.from(dto);
-        Map<String, String> fromArguments = DocumentMetadataMapper.from(
-                DOCUMENT_ID,
-                DocumentCategory.MEDICAL,
-                DocumentType.MEDICAL_REPORT,
-                OWNER,
-                Year.of(YEAR_VALUE));
-
-        assertEquals(fromArguments, fromDto);
     }
 
     @Test
@@ -152,14 +148,15 @@ class DocumentMetadataMapperTest {
     }
 
     @Test
-    @DisplayName("from de mapa nao faz round-trip com from de cinco argumentos, que grava chaves cruas")
-    void fromMap_ShouldNotRoundTripWithTheFiveArgumentOverload() {
+    @DisplayName("from de mapa nao faz round-trip com from de metadados, que grava chaves cruas")
+    void fromMap_ShouldNotRoundTripWithTheMetadataOverload() {
         Map<String, String> rawKeys = DocumentMetadataMapper.from(
                 DOCUMENT_ID,
                 DocumentCategory.MEDICAL,
                 DocumentType.MEDICAL_REPORT,
                 OWNER,
-                Year.of(YEAR_VALUE));
+                Year.of(YEAR_VALUE),
+                SIZE_VALUE);
 
         assertThrows(NullPointerException.class, () -> DocumentMetadataMapper.from(rawKeys));
     }

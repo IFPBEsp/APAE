@@ -11,6 +11,7 @@ import br.org.apae.api.documents.interfaces.exceptions.InsufficientDataException
 
 public record PutDocumentArgsDTO(
         InputStream stream,
+        long size,
         DocumentCategory category,
         DocumentType type,
         String contentType,
@@ -23,6 +24,7 @@ public record PutDocumentArgsDTO(
 
     public static class Builder {
         private InputStream stream;
+        private long size;
         private DocumentCategory category;
         private DocumentType type;
         private String contentType;
@@ -31,6 +33,11 @@ public record PutDocumentArgsDTO(
 
         public Builder stream(InputStream stream) {
             this.stream = stream;
+            return this;
+        }
+
+        public Builder size(long size) {
+            this.size = size;
             return this;
         }
 
@@ -62,6 +69,7 @@ public record PutDocumentArgsDTO(
         public PutDocumentArgsDTO build() {
             return new PutDocumentArgsDTO(
                     Optional.ofNullable(stream).orElseThrow(InsufficientDataException::new),
+                    size,
                     Optional.ofNullable(category).orElseThrow(InsufficientDataException::new),
                     Optional.ofNullable(type).orElseThrow(InsufficientDataException::new),
                     Optional.ofNullable(contentType).orElseThrow(InsufficientDataException::new),

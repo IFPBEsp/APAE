@@ -18,22 +18,15 @@ public class DocumentMetadataMapper {
                         DocumentCategory category,
                         DocumentType type,
                         String owner,
-                        Year year) {
+                        Year year,
+                        long size) {
                 return Map.of(
                                 "owner", owner,
                                 "id", id.toString(),
                                 "category", category.toString(),
                                 "type", type.toString(),
-                                "year", year.toString());
-        }
-
-        public static Map<String, String> from(DocumentDTO dto) {
-                return from(
-                                dto.id(),
-                                dto.category(),
-                                dto.type(),
-                                dto.owner(),
-                                dto.year());
+                                "year", year.toString(),
+                                "size", Long.toString(size));
         }
 
         private static String minioMetadataKey(String key) {

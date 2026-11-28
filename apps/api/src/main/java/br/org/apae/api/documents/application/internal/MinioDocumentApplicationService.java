@@ -100,7 +100,8 @@ public class MinioDocumentApplicationService implements DocumentApplicationServi
                 dto.category(),
                 dto.type(),
                 dto.owner(),
-                dto.year());
+                dto.year(),
+                dto.size());
 
         try {
             makeBucketIfNotExists(dto.owner());
@@ -108,7 +109,7 @@ public class MinioDocumentApplicationService implements DocumentApplicationServi
             client.putObject(
                     PutObjectArgs.builder()
                             .bucket(dto.owner())
-                            .stream(dto.stream(), dto.stream().available(), -1)
+                            .stream(dto.stream(), dto.size(), -1)
                             .contentType(dto.contentType())
                             .userMetadata(metadata)
                             .object(name)
