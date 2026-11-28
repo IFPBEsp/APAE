@@ -1,0 +1,2 @@
+CVE-2026-47884 exp:2027-05-31 # Falha em XsltView no spring-webmvc sem patch OSS na 6.2.x, exige Spring 7 / Spring Boot 4.x. A aplicacao atua como API REST JSON e nao utiliza XsltView.
+CVE-2026-47890 exp:2027-05-31 # Falha em SSE com view rendering no spring-webmvc sem patch OSS na 6.2.x, exige Spring 7 / Spring Boot 4.x. A aplicacao nao utiliza SSE integrado a view.
