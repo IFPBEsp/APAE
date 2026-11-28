@@ -1,6 +1,7 @@
 export interface PersonalData {
   name: string;
   cpf: string;
+  cpfFile?: File;
   phone: string;
   rg: { number: string; issuing: { body: string; date: Date | null } };
   cns: string;

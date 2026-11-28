@@ -19,4 +19,18 @@ describe("membersRegisterReducer birth certificate file", () => {
       initialState.personal.birth.certificate,
     );
   });
+
+  it("merges the optional CPF copy file into personal data without replacing other fields", () => {
+    const cpfFile = new File(["cópia"], "cpf.pdf", {
+      type: "application/pdf",
+    });
+
+    const nextState = membersRegisterReducer(initialState, {
+      type: "SET_PERSONAL_DATA",
+      payload: { cpfFile },
+    });
+
+    expect(nextState.personal.cpfFile).toBe(cpfFile);
+    expect(nextState.personal.cpf).toBe(initialState.personal.cpf);
+  });
 });

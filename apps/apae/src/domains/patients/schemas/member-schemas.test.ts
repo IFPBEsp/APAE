@@ -104,6 +104,17 @@ describe("Órgão emissor", () => {
     ).toBe(true);
   });
 
+  it("aceita a cópia opcional do CPF como arquivo", () => {
+    expect(
+      Personal.safeParse({
+        ...validPersonalBase,
+        cpfFile: new File(["cópia"], "cpf.pdf", {
+          type: "application/pdf",
+        }),
+      }).success,
+    ).toBe(true);
+  });
+
   it.each(["SSP/PB", "PC/RJ", "DETRAN/RJ", "MARINHA/RJ"])(
     "aceita órgão emissor válido: %s",
     (body) => {

@@ -29,6 +29,27 @@ describe("MembersRegisterPersonalPage - Cartório, Livro e Folha (#1132)", () =>
     pathnameMock.mockReturnValue("/patients/create/personal");
   });
 
+  it("permite anexar a cópia opcional do CPF e mostra o nome do arquivo", () => {
+    const { container } = renderPage();
+
+    expect(
+      screen.getByRole("button", {
+        name: "Selecionar Cópia do CPF",
+      }),
+    ).toBeInTheDocument();
+
+    const fileInput = container.querySelector<HTMLInputElement>(
+      'input[id="cpfFile-upload"]',
+    );
+    const file = new File(["cópia"], "cpf.pdf", {
+      type: "application/pdf",
+    });
+
+    fireEvent.change(fileInput!, { target: { files: [file] } });
+
+    expect(screen.getByText("Arquivo: cpf.pdf")).toBeInTheDocument();
+  });
+
   it("permite anexar a cópia opcional da certidão e mostra o nome do arquivo", () => {
     const { container } = renderPage();
 
@@ -39,7 +60,7 @@ describe("MembersRegisterPersonalPage - Cartório, Livro e Folha (#1132)", () =>
     ).toBeInTheDocument();
 
     const fileInput = container.querySelector<HTMLInputElement>(
-      'input[type="file"]',
+      'input[id="birth.file-upload"]',
     );
     const file = new File(["cópia"], "certidao.pdf", {
       type: "application/pdf",
@@ -50,10 +71,16 @@ describe("MembersRegisterPersonalPage - Cartório, Livro e Folha (#1132)", () =>
     expect(screen.getByText("Arquivo: certidao.pdf")).toBeInTheDocument();
   });
 
-  it("esconde a seleção de arquivo durante a edição do paciente", () => {
+  it("esconde a seleção de arquivos durante a edição do paciente", () => {
     pathnameMock.mockReturnValue("/patients/123/edit/personal");
 
     renderPage();
+
+    expect(
+      screen.queryByRole("button", {
+        name: "Selecionar Cópia do CPF",
+      }),
+    ).not.toBeInTheDocument();
 
     expect(
       screen.queryByRole("button", {

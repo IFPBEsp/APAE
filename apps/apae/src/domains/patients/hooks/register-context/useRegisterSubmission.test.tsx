@@ -56,3 +56,55 @@ describe("useRegisterSubmission birth certificate upload", () => {
     expect(requestBody.has("birth_certificate")).toBe(false);
   });
 });
+
+describe("useRegisterSubmission CPF copy upload", () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+    localStorage.clear();
+    vi.mocked(bffFetch).mockResolvedValue({
+      ok: false,
+      status: 400,
+      json: async () => ({}),
+    } as Response);
+  });
+
+  it("sends an attached CPF copy with the 'cpf' multipart field alongside patient JSON", async () => {
+    const cpfFile = new File(["cópia"], "cpf.pdf", {
+      type: "application/pdf",
+    });
+    const state: MembersRegisterState = {
+      ...initialState,
+      personal: {
+        ...initialState.personal,
+        cpf: "529.982.247-25",
+        cpfFile,
+      },
+    };
+    const { result } = renderHook(() =>
+      useRegisterSubmission(state, "patient-draft"),
+    );
+
+    await act(async () => {
+      await result.current();
+    });
+
+    const requestBody = vi.mocked(bffFetch).mock.calls[0][1]?.body as FormData;
+    expect(requestBody.get("cpf")).toBe(cpfFile);
+
+    const patientBlob = requestBody.get("patient") as Blob;
+    expect(patientBlob).toBeInstanceOf(Blob);
+  });
+
+  it("does not add the 'cpf' multipart field when no CPF file was selected", async () => {
+    const { result } = renderHook(() =>
+      useRegisterSubmission(initialState, "patient-draft"),
+    );
+
+    await act(async () => {
+      await result.current();
+    });
+
+    const requestBody = vi.mocked(bffFetch).mock.calls[0][1]?.body as FormData;
+    expect(requestBody.has("cpf")).toBe(false);
+  });
+});

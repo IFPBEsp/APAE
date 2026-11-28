@@ -85,6 +85,7 @@ export const initialState: MembersRegisterState = {
   personal: {
     name: "",
     cpf: "",
+    cpfFile: undefined,
     phone: "",
     rg: { number: "", issuing: { body: "", date: null } },
     cns: "",
