@@ -2,6 +2,7 @@ package br.org.apae.api.auth.application.internal;
 
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
+import java.time.Clock;
 import java.time.LocalDateTime;
 import java.util.HexFormat;
 import java.util.List;
@@ -45,6 +46,7 @@ public class AuthApplicationServiceImpl implements AuthApplicationService {
   private final AuthenticationConfiguration authenticationConfiguration;
   private final PasswordRecoveryTokenRepository passwordRecoveryTokenRepository;
   private final EmailSender emailSender;
+  private final Clock clock;
 
   @Value("${app.frontend.reset-password-url}")
   private String resetPasswordUrl;
@@ -55,13 +57,15 @@ public class AuthApplicationServiceImpl implements AuthApplicationService {
       AuthenticationConfiguration authenticationConfiguration,
       TokenProvider tokenProvider,
       PasswordRecoveryTokenRepository passwordRecoveryTokenRepository,
-      EmailSender emailSender) {
+      EmailSender emailSender,
+      Clock clock) {
     this.userService = userService;
     this.passwordEncoder = passwordEncoder;
     this.authenticationConfiguration = authenticationConfiguration;
     this.tokenProvider = tokenProvider;
     this.passwordRecoveryTokenRepository = passwordRecoveryTokenRepository;
     this.emailSender = emailSender;
+    this.clock = clock;
   }
 
   @Override
@@ -118,7 +122,7 @@ public class AuthApplicationServiceImpl implements AuthApplicationService {
     PasswordRecoveryToken passwordRecoveryToken = new PasswordRecoveryToken(
         tokenHash,
         user,
-        LocalDateTime.now().plusMinutes(PASSWORD_RECOVERY_EXPIRATION_MINUTES));
+        currentLocalDateTime().plusMinutes(PASSWORD_RECOVERY_EXPIRATION_MINUTES));
 
     passwordRecoveryTokenRepository.save(passwordRecoveryToken);
 
@@ -152,7 +156,7 @@ public class AuthApplicationServiceImpl implements AuthApplicationService {
       throw new AuthenticationException("Token já utilizado.");
     }
 
-    if (recoveryToken.getExpiresAt().isBefore(LocalDateTime.now())) {
+    if (recoveryToken.getExpiresAt().isBefore(currentLocalDateTime())) {
       throw new AuthenticationException("Token expirado.");
     }
 
@@ -164,6 +168,10 @@ public class AuthApplicationServiceImpl implements AuthApplicationService {
 
     recoveryToken.markAsUsed();
     passwordRecoveryTokenRepository.save(recoveryToken);
+  }
+
+  private LocalDateTime currentLocalDateTime() {
+    return LocalDateTime.ofInstant(clock.instant(), clock.getZone());
   }
 
   private String hashToken(String rawToken) {
