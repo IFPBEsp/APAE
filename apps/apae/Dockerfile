@@ -6,7 +6,7 @@ WORKDIR /app
 
 RUN npm install -g pnpm@10.33.4
 
-COPY package.json pnpm-lock.yaml ./
+COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
 COPY apps/apae/package.json ./apps/apae/
 
 RUN pnpm install --frozen-lockfile --shamefully-hoist
