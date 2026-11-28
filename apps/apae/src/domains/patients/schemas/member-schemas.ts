@@ -92,6 +92,7 @@ export const Personal = z
   .object({
     name: nomeCompletoSchema,
     cpf: cpfSchema,
+    cpfFile: z.instanceof(File).optional(),
     phone: z
       .string()
       .optional()

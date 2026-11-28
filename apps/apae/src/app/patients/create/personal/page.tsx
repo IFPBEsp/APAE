@@ -153,6 +153,40 @@ export default function MembersRegisterPersonalPage() {
             )}
           />
 
+          {!isEditing && (
+            <FormField
+              control={form.control}
+              name="cpfFile"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Cópia do CPF (opcional)</FormLabel>
+                  <FormControl>
+                    <FileInputButton
+                      id={field.name}
+                      className="min-w-3xs"
+                      onChange={(event) => {
+                        const file = event.target.files?.[0];
+                        if (file) field.onChange(file);
+                      }}
+                    >
+                      {field.value instanceof File ? (
+                        <span
+                          className="truncate text-left"
+                          title={field.value.name}
+                        >
+                          Arquivo: {field.value.name}
+                        </span>
+                      ) : (
+                        "Selecionar Cópia do CPF"
+                      )}
+                    </FileInputButton>
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          )}
+
           <FormField
             control={form.control}
             name="cns"

@@ -39,6 +39,10 @@ export function useRegisterSubmission(state: MembersRegisterState, STORAGE_KEY: 
         formData.append("photo", profile.photo);
       }
 
+      if (personal.cpfFile instanceof File) {
+        formData.append("cpf", personal.cpfFile);
+      }
+
       if (personal.birth.file instanceof File) {
         formData.append("birth_certificate", personal.birth.file);
       }
