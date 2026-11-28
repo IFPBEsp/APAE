@@ -184,7 +184,9 @@ export const Personal = z
     }
   });
 
-export const Address = addressSchema;
+export const Address = addressSchema.extend({
+  proofOfAddress: z.instanceof(File).optional(),
+});
 
 export const Additionals = z.object({
   diseases: z.string().optional(),

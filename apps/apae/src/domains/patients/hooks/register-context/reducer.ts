@@ -109,6 +109,7 @@ export const initialState: MembersRegisterState = {
     complement: "",
     noNumber: false,
     district: "",
+    proofOfAddress: undefined,
   },
   additionals: {
     id: undefined,

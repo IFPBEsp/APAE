@@ -26,12 +26,12 @@ import { Address } from "@/domains/patients/schemas/member-schemas";
 import { EditAddress } from "@/domains/patients/schemas/edit-member-schemas";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { usePathname } from "next/navigation";
 import { handleBackendValidationErrors } from "@/lib/utils/form-errors";
 import { Checkbox } from "@/components/ui/checkbox";
 
-import { DoubleColumn, FormButton, MembersRegisterForm } from "@/domains/patients/components/form";
+import { DoubleColumn, FileInputButton, FormButton, MembersRegisterForm } from "@/domains/patients/components/form";
 import z from "zod";
 
 export default function MembersRegisterAddressPage() {
@@ -79,24 +79,44 @@ export default function MembersRegisterAddressPage() {
     }
   }, [address, form]);
 
+  // Copies the guardian's address into the patient's address once per page visit
+  // when "reside junto com o Paciente" is checked. Runs regardless of the patient's
+  // address being empty or not (a previous visit / "Voltar" may have stored partial
+  // values, which used to block the copy). The proofOfAddress file is never touched.
+  const hasCopiedGuardianAddress = useRef(false);
+
   useEffect(() => {
+    if (hasCopiedGuardianAddress.current) return;
     if (!guardian.residesWithPatient) return;
 
-    const isAddressEmpty = Object.values(address).every(
-      (value) => value === "" || value === false
+    const guardianAddr = guardian.address;
+    const hasGuardianAddress = Boolean(
+      guardianAddr?.street || guardianAddr?.cep || guardianAddr?.city
     );
+    if (!hasGuardianAddress) return;
 
-    if (!isAddressEmpty) return;
+    hasCopiedGuardianAddress.current = true;
 
-    const guardianAddress = {
-      ...guardian.address,
-      state: normalizeStateToUF(guardian.address.state) as z.infer<typeof Address>["state"],
-      noNumber: guardian.address.number === "SN",
+    const copiedAddress = {
+      cep: guardianAddr.cep ?? "",
+      state: normalizeStateToUF(guardianAddr.state) as z.infer<typeof Address>["state"],
+      city: guardianAddr.city ?? "",
+      neighborhood: guardianAddr.neighborhood ?? "",
+      street: guardianAddr.street ?? "",
+      number: guardianAddr.number ?? "",
+      complement: guardianAddr.complement ?? "",
+      district: guardianAddr.district ?? "",
+      noNumber: guardianAddr.number === "SN",
     };
 
-    form.reset(guardianAddress);
-    setAddressData(guardianAddress);
-  }, [address, guardian, form, setAddressData]);
+    // Keep the proof file already attached (in the form or in the context)
+    const currentProof =
+      form.getValues("proofOfAddress") ?? address.proofOfAddress;
+
+    form.reset({ ...copiedAddress, proofOfAddress: currentProof });
+    // Partial update: the reducer merges, so proofOfAddress in the context is preserved
+    setAddressData({ ...copiedAddress, proofOfAddress: currentProof });
+  }, [address.proofOfAddress, guardian.residesWithPatient, guardian.address, form, setAddressData]);
 
   const onSubmit = async (values: z.infer<typeof Address>) => {
     setIsLoading(true);
@@ -316,6 +336,33 @@ export default function MembersRegisterAddressPage() {
               </FormItem>
             )}
           />
+
+          {!isEditing && (
+            <FormField
+              control={form.control}
+              name="proofOfAddress"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Comprovante de Residência</FormLabel>
+                  <FormControl>
+                    <FileInputButton
+                      id={field.name}
+                      className="min-w-3xs"
+                      onChange={(event) => {
+                        const file = event.target.files?.[0];
+                        if (file) field.onChange(file);
+                      }}
+                    >
+                      {field.value instanceof File
+                        ? `Arquivo: ${field.value.name}`
+                        : "Selecionar Comprovante de Residência"}
+                    </FileInputButton>
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          )}
         </DoubleColumn>
       </MembersRegisterForm>
     </Form>
