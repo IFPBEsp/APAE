@@ -1,5 +1,7 @@
 package br.org.apae.api.controllers.professional;
 import org.springframework.web.multipart.MultipartFile;
+import static org.hamcrest.Matchers.containsString;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.isNull;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -15,6 +17,11 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.CsvSource;
+import org.junit.jupiter.params.provider.MethodSource;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,10 +32,12 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.config.SpringDataWebConfiguration;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.request.MockMultipartHttpServletRequestBuilder;
 
 import br.org.apae.api.auth.application.internal.UserService;
 import br.org.apae.api.auth.infrastructure.security.JwtProvider;
@@ -38,6 +47,7 @@ import br.org.apae.api.auth.infrastructure.security.SecurityConfiguration;
 import br.org.apae.api.common.dto.professional.request.UpdateHealthProfessionalDTO;
 import br.org.apae.api.common.dto.professional.request.CreateHealthProfessionalDTO;
 import br.org.apae.api.common.dto.professional.request.documents.CreateProfessionalDocumentsDTO;
+import br.org.apae.api.common.dto.professional.request.documents.UpdateProfessionalDocumentsDTO;
 import br.org.apae.api.mocks.professional.HealthProfessionalMockDto;
 import br.org.apae.api.helpers.AuthTestHelper;
 import br.org.apae.api.professional.application.interfaces.HealthProfessionalApplicationService;
@@ -51,6 +61,7 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Stream;
 
 @Tag("controller")
 @Tag("health-professional")
@@ -61,6 +72,11 @@ import java.util.UUID;
  SecurityConfiguration.class
 })
 class HealthProfessionalControllerTest {
+
+ private static final String DOCX_MEDIA_TYPE = "application/vnd.openxmlformats-officedocument.wordprocessingml.document";
+ private static final String INVALID_DOCUMENT_MESSAGE =
+         "Formato de arquivo 'text/plain' não permitido. Formatos permitidos: PDF, JPG, PNG, DOCX, WEBP";
+ private static final int OVERSIZED_FILE_BYTES = 10 * 1024 * 1024 + 1;
 
  @Autowired
  private MockMvc mockMvc;
@@ -96,33 +112,40 @@ class HealthProfessionalControllerTest {
   Mockito.reset(service, documentApplicationService, jwtProvider, userService);
  }
 
+ static Stream<Arguments> allowedDocumentFormats() {
+  return Stream.of(
+          Arguments.of("document.pdf", MediaType.APPLICATION_PDF_VALUE),
+          Arguments.of("document.docx", DOCX_MEDIA_TYPE),
+          Arguments.of("document.jpg", MediaType.IMAGE_JPEG_VALUE),
+          Arguments.of("document.jpeg", MediaType.IMAGE_JPEG_VALUE),
+          Arguments.of("document.png", MediaType.IMAGE_PNG_VALUE),
+          Arguments.of("document.webp", "image/webp")
+  );
+ }
+
  @Nested
  @DisplayName("Cenários de Criação (POST)")
  class Criacao {
-  @Test
-  @DisplayName("Deve criar profissional sem foto com sucesso (201)")
-  void shouldCreateProfessionalSuccessfully() throws Exception {
-   var request = HealthProfessionalMockDto.createHealthProfessionalRequest();
-   var response = HealthProfessionalMockDto.createProfessionalResponse1();
-
+  @ParameterizedTest
+  @ValueSource(booleans = {false, true})
+  @DisplayName("Deve criar profissional sem foto e com anexo omitido ou vazio (201)")
+  void shouldCreateProfessionalSuccessfully(boolean includeEmptyAttachment) throws Exception {
    Mockito.when(service.createProfessional(
            any(CreateHealthProfessionalDTO.class),
            any(CreateProfessionalDocumentsDTO.class),
-           any(MultipartFile.class)
-   )).thenReturn(response);
+           isNull()
+   )).thenReturn(HealthProfessionalMockDto.createProfessionalResponse1());
 
-   var professionalPart = new MockMultipartFile("professional", "", MediaType.APPLICATION_JSON_VALUE, objectMapper.writeValueAsBytes(request));
+   var request = createProfessionalRequest()
+           .file(HealthProfessionalMockDto.volunteerAgreementFile())
+           .file(HealthProfessionalMockDto.curriculumFile());
+   if (includeEmptyAttachment) {
+    request.file(new MockMultipartFile("attachmentAny", new byte[0]));
+   }
 
-   mockMvc.perform(multipart("/professionals")
-                   .file(professionalPart)
-                   .file(HealthProfessionalMockDto.volunteerAgreementFile())
-                   .file(HealthProfessionalMockDto.curriculumFile())
-                   .file(HealthProfessionalMockDto.attachmentAnyFile())
-                   .header("Authorization", AuthTestHelper.bearerToken())
-                   .contentType(MediaType.MULTIPART_FORM_DATA))
-           .andExpect(status().isCreated());
+   mockMvc.perform(request).andExpect(status().isCreated());
 
-   Mockito.verify(service).createProfessional(any(), any(), any());
+   Mockito.verify(service).createProfessional(any(), any(), isNull());
   }
 
   @Test
@@ -222,10 +245,10 @@ class HealthProfessionalControllerTest {
    Mockito.verify(service, Mockito.never()).createProfessional(any(), any(), any());
   }
 
-  @Test
+  @ParameterizedTest
+  @CsvSource({"profile.png, image/png", "profile.jpg, image/jpeg", "profile.jpeg, image/jpeg", "profile.webp, image/webp"})
   @DisplayName("Deve criar profissional com foto com sucesso (201)")
-  void shouldCreateProfessionalWithPhotoSuccessfully() throws Exception {
-   var request = HealthProfessionalMockDto.createHealthProfessionalRequest();
+  void shouldCreateProfessionalWithPhotoSuccessfully(String filename, String contentType) throws Exception {
    var response = HealthProfessionalMockDto.createProfessionalResponse1();
 
    Mockito.when(service.createProfessional(
@@ -234,19 +257,89 @@ class HealthProfessionalControllerTest {
            any(MultipartFile.class)
    )).thenReturn(response);
 
-   var professionalPart = new MockMultipartFile("professional", "", MediaType.APPLICATION_JSON_VALUE, objectMapper.writeValueAsBytes(request));
-
-   mockMvc.perform(multipart("/professionals")
-                   .file(professionalPart)
+   var photo = new MockMultipartFile("profilePhoto", filename, contentType, new byte[]{1});
+   mockMvc.perform(createProfessionalRequest()
                    .file(HealthProfessionalMockDto.volunteerAgreementFile())
                    .file(HealthProfessionalMockDto.curriculumFile())
                    .file(HealthProfessionalMockDto.attachmentAnyFile())
-                   .file(HealthProfessionalMockDto.profilePhoto())
-                   .header("Authorization", AuthTestHelper.bearerToken())
-                   .contentType(MediaType.MULTIPART_FORM_DATA))
+                   .file(photo))
            .andExpect(status().isCreated());
 
-   Mockito.verify(service).createProfessional(any(), any(), any());
+   Mockito.verify(service).createProfessional(any(), any(), Mockito.same(photo));
+  }
+
+  @ParameterizedTest
+  @MethodSource("br.org.apae.api.controllers.professional.HealthProfessionalControllerTest#allowedDocumentFormats")
+  @DisplayName("Deve aceitar os formatos permitidos nos documentos do cadastro (201)")
+  void shouldAcceptAllowedDocumentFormats(String filename, String contentType) throws Exception {
+   Mockito.when(service.createProfessional(any(), any(), isNull()))
+           .thenReturn(HealthProfessionalMockDto.createProfessionalResponse1());
+
+   mockMvc.perform(createProfessionalRequest()
+                   .file(new MockMultipartFile("volunteerAgreement", filename, contentType, new byte[]{1}))
+                   .file(new MockMultipartFile("curriculum", filename, contentType, new byte[]{1}))
+                   .file(new MockMultipartFile("attachmentAny", filename, contentType, new byte[]{1})))
+           .andExpect(status().isCreated());
+  }
+
+  @ParameterizedTest
+  @ValueSource(strings = {"volunteerAgreement", "curriculum", "attachmentAny"})
+  @DisplayName("Deve recusar TXT nos documentos do cadastro (400)")
+  void shouldRejectInvalidDocumentFormat(String field) throws Exception {
+   var invalidFile = new MockMultipartFile(field, "document.txt", MediaType.TEXT_PLAIN_VALUE, new byte[]{1});
+   var request = createProfessionalRequest().file(invalidFile);
+   if (!field.equals("volunteerAgreement")) {
+    request.file(HealthProfessionalMockDto.volunteerAgreementFile());
+   }
+   if (!field.equals("curriculum")) {
+    request.file(HealthProfessionalMockDto.curriculumFile());
+   }
+
+   mockMvc.perform(request)
+           .andExpect(status().isBadRequest())
+           .andExpect(jsonPath("$.fields[0].field").value(field))
+           .andExpect(jsonPath("$.fields[0].message").value(INVALID_DOCUMENT_MESSAGE));
+   Mockito.verifyNoInteractions(service);
+  }
+
+  @ParameterizedTest
+  @CsvSource({"profile.pdf, application/pdf", "profile.docx, " + DOCX_MEDIA_TYPE})
+  @DisplayName("Deve recusar PDF e DOCX como foto no cadastro (400)")
+  void shouldRejectNonImageProfilePhoto(String filename, String contentType) throws Exception {
+   var photo = new MockMultipartFile("profilePhoto", filename, contentType, new byte[]{1});
+
+   mockMvc.perform(createProfessionalRequest()
+                   .file(HealthProfessionalMockDto.volunteerAgreementFile())
+                   .file(HealthProfessionalMockDto.curriculumFile())
+                   .file(photo))
+           .andExpect(status().isBadRequest())
+           .andExpect(jsonPath("$.fields[0].field").value("profilePhoto"))
+           .andExpect(jsonPath("$.fields[0].message").value(
+                   "Formato de arquivo '%s' não permitido. Formatos permitidos: PNG, JPG, JPEG, WEBP".formatted(contentType)));
+   Mockito.verifyNoInteractions(service);
+  }
+
+  @Test
+  @DisplayName("Deve recusar documento acima de 10 MB no cadastro (400)")
+  void shouldRejectOversizedDocument() throws Exception {
+   var curriculum = new MockMultipartFile("curriculum", "large.pdf", MediaType.APPLICATION_PDF_VALUE,
+           new byte[OVERSIZED_FILE_BYTES]);
+
+   mockMvc.perform(createProfessionalRequest()
+                   .file(HealthProfessionalMockDto.volunteerAgreementFile())
+                   .file(curriculum))
+           .andExpect(status().isBadRequest())
+           .andExpect(jsonPath("$.fields[0].field").value("curriculum"))
+           .andExpect(jsonPath("$.fields[0].message").value(containsString("excede o limite máximo")));
+   Mockito.verifyNoInteractions(service);
+  }
+
+  private MockMultipartHttpServletRequestBuilder createProfessionalRequest() throws Exception {
+   var professionalPart = new MockMultipartFile("professional", "", MediaType.APPLICATION_JSON_VALUE,
+           objectMapper.writeValueAsBytes(HealthProfessionalMockDto.createHealthProfessionalRequest()));
+   var request = multipart("/professionals").file(professionalPart);
+   request.header("Authorization", AuthTestHelper.bearerToken());
+   return request;
   }
  }
 
@@ -372,14 +465,79 @@ class HealthProfessionalControllerTest {
      .andExpect(jsonPath("$[0].url").value("https://aws.s3.url/presigned"));
   }
 
-  @Test
+  @ParameterizedTest
+  @MethodSource("br.org.apae.api.controllers.professional.HealthProfessionalControllerTest#allowedDocumentFormats")
   @DisplayName("Deve atualizar documentos do profissional com sucesso (204) via PATCH Multipart")
-  void shouldUpdateProfessionalDocumentsSuccessfully() throws Exception {
+  void shouldUpdateProfessionalDocumentsSuccessfully(String filename, String contentType) throws Exception {
    UUID id = HealthProfessionalMockDto.PROFESSIONAL_ID_1;
-   mockMvc.perform(multipart("/professionals/{id}/documents", id).file(HealthProfessionalMockDto.volunteerAgreementFile()).file(HealthProfessionalMockDto.curriculumFile())
-       .with(request -> { request.setMethod("PATCH"); return request; }).header("Authorization", AuthTestHelper.bearerToken()).contentType(MediaType.MULTIPART_FORM_DATA))
-     .andExpect(status().isNoContent());
-   Mockito.verify(service).updateProfessionalDocuments(Mockito.eq(id), any());
+   var firstAttachment = HealthProfessionalMockDto.attachmentAnyFile();
+   var additionalAttachment = new MockMultipartFile("attachmentAny", filename, contentType, new byte[]{1});
+
+   mockMvc.perform(updateDocumentsRequest(id)
+                   .file(HealthProfessionalMockDto.volunteerAgreementFile())
+                   .file(HealthProfessionalMockDto.curriculumFile())
+                   .file(firstAttachment)
+                   .file(additionalAttachment))
+           .andExpect(status().isNoContent());
+
+   var captor = ArgumentCaptor.forClass(UpdateProfessionalDocumentsDTO.class);
+   Mockito.verify(service).updateProfessionalDocuments(Mockito.eq(id), captor.capture());
+   assertEquals(List.of(firstAttachment, additionalAttachment), captor.getValue().attachmentAny());
+  }
+
+  @ParameterizedTest
+  @ValueSource(booleans = {false, true})
+  @DisplayName("Deve atualizar apenas o currículo com anexo omitido ou vazio (204)")
+  void shouldAcceptPartialDocumentUpdate(boolean includeEmptyAttachment) throws Exception {
+   UUID id = HealthProfessionalMockDto.PROFESSIONAL_ID_1;
+   var curriculum = HealthProfessionalMockDto.curriculumFile();
+   var request = updateDocumentsRequest(id).file(curriculum);
+   if (includeEmptyAttachment) {
+    request.file(new MockMultipartFile("attachmentAny", new byte[0]));
+   }
+
+   mockMvc.perform(request).andExpect(status().isNoContent());
+
+   var captor = ArgumentCaptor.forClass(UpdateProfessionalDocumentsDTO.class);
+   Mockito.verify(service).updateProfessionalDocuments(Mockito.eq(id), captor.capture());
+   assertNull(captor.getValue().volunteerAgreement());
+   assertEquals(curriculum, captor.getValue().curriculum());
+  }
+
+  @ParameterizedTest
+  @ValueSource(strings = {"volunteerAgreement", "curriculum", "attachmentAny"})
+  @DisplayName("Deve recusar TXT na edição, inclusive após um anexo válido (400)")
+  void shouldRejectInvalidDocumentFormat(String field) throws Exception {
+   var request = updateDocumentsRequest(HealthProfessionalMockDto.PROFESSIONAL_ID_1)
+           .file(HealthProfessionalMockDto.attachmentAnyFile())
+           .file(new MockMultipartFile(field, "document.txt", MediaType.TEXT_PLAIN_VALUE, new byte[]{1}));
+
+   mockMvc.perform(request)
+           .andExpect(status().isBadRequest())
+           .andExpect(jsonPath("$.fields[0].field").value(field))
+           .andExpect(jsonPath("$.fields[0].message").value(INVALID_DOCUMENT_MESSAGE));
+   Mockito.verifyNoInteractions(service);
+  }
+
+  @Test
+  @DisplayName("Deve recusar anexo acima de 10 MB mesmo com outro anexo válido (400)")
+  void shouldRejectOversizedAttachment() throws Exception {
+   var attachment = new MockMultipartFile("attachmentAny", "large.pdf", MediaType.APPLICATION_PDF_VALUE,
+           new byte[OVERSIZED_FILE_BYTES]);
+
+   mockMvc.perform(updateDocumentsRequest(HealthProfessionalMockDto.PROFESSIONAL_ID_1)
+                   .file(HealthProfessionalMockDto.attachmentAnyFile())
+                   .file(attachment))
+           .andExpect(status().isBadRequest())
+           .andExpect(jsonPath("$.fields[0].field").value("attachmentAny"))
+           .andExpect(jsonPath("$.fields[0].message").value(containsString("excede o limite máximo")));
+   Mockito.verifyNoInteractions(service);
+  }
+
+  private MockMultipartHttpServletRequestBuilder updateDocumentsRequest(UUID id) {
+   var request = multipart(HttpMethod.PATCH, "/professionals/{id}/documents", id);
+   request.header("Authorization", AuthTestHelper.bearerToken());
+   return request;
   }
 
   @Test

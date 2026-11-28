@@ -36,7 +36,7 @@ public final class HealthProfessionalMockDto {
     }
 
     public static MockMultipartFile attachmentAnyFile() {
-        return new MockMultipartFile("attachmentAny", "attachment.txt", MediaType.TEXT_PLAIN_VALUE, "optional attachment content".getBytes());
+        return new MockMultipartFile("attachmentAny", "attachment.pdf", MediaType.APPLICATION_PDF_VALUE, "optional attachment content".getBytes());
     }
 
     public static CreateProfessionalDocumentsDTO createProfessionalDocumentsRequest() {

@@ -23,6 +23,7 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import br.org.apae.api.documents.interfaces.validations.NotEmptyFiles;
 import br.org.apae.api.documents.interfaces.validations.ValidFileFormat;
 import br.org.apae.api.documents.interfaces.validations.ValidFileSize;
+import br.org.apae.api.documents.interfaces.validations.ValidImageFormat;
 
 import org.springframework.data.domain.Sort;
 import java.util.List;
@@ -52,7 +53,7 @@ public interface HealthProfessionalController {
   ResponseEntity<HealthProfessionalResponseDTO> createHealthProfessional(
     @RequestPart("professional") @Valid CreateHealthProfessionalDTO dto,
     @ModelAttribute @Valid CreateProfessionalDocumentsDTO documentsDTO,
-    @RequestPart(value = "profilePhoto", required = false) @ValidFileSize @ValidFileFormat MultipartFile profilePhoto
+    @RequestPart(value = "profilePhoto", required = false) @ValidFileSize @ValidImageFormat MultipartFile profilePhoto
     );
   @GetMapping("/{id}/documents")
   @Operation(
@@ -126,7 +127,7 @@ public interface HealthProfessionalController {
     )
     ResponseEntity<Void> updateProfessionalDocuments(
         @PathVariable UUID id,
-        @ModelAttribute UpdateProfessionalDocumentsDTO documentsDTO
+        @ModelAttribute @Valid UpdateProfessionalDocumentsDTO documentsDTO
     );
 
   @DeleteMapping("/{id}/documents/{documentId}")
